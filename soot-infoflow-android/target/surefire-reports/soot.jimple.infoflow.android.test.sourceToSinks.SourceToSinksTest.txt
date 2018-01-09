@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: soot.jimple.infoflow.android.test.sourceToSinks.SourceToSinksTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.932 sec - in soot.jimple.infoflow.android.test.sourceToSinks.SourceToSinksTest
