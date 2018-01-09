@@ -1,0 +1,71 @@
+name: "edu.mit.icc_non_constant_class_object"
+version: 1
+used_permissions: "android.permission.READ_PHONE_STATE"
+components {
+  name: "edu.mit.icc_non_constant_class_object.IsolateActivity"
+  kind: ACTIVITY
+  exported: false
+  extras {
+    extra: "DroidBench"
+    instruction {
+      statement: "$r3 = virtualinvoke $r2.<android.content.Intent: java.lang.String getStringExtra(java.lang.String)>(\"DroidBench\")"
+      class_name: "edu.mit.icc_non_constant_class_object.IsolateActivity"
+      method: "<edu.mit.icc_non_constant_class_object.IsolateActivity: void onCreate(android.os.Bundle)>"
+      id: 4
+    }
+  }
+}
+components {
+  name: "edu.mit.icc_non_constant_class_object.InFlowActivity"
+  kind: ACTIVITY
+  exported: false
+  extras {
+    extra: "DroidBench"
+    instruction {
+      statement: "$r3 = virtualinvoke $r2.<android.content.Intent: java.lang.String getStringExtra(java.lang.String)>(\"DroidBench\")"
+      class_name: "edu.mit.icc_non_constant_class_object.InFlowActivity"
+      method: "<edu.mit.icc_non_constant_class_object.InFlowActivity: void onCreate(android.os.Bundle)>"
+      id: 5
+    }
+  }
+}
+components {
+  name: "edu.mit.icc_non_constant_class_object.OutFlowActivity"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "android.intent.action.MAIN"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.LAUNCHER"
+    }
+  }
+  exit_points {
+    instruction {
+      statement: "virtualinvoke r0.<edu.mit.icc_non_constant_class_object.OutFlowActivity: void startActivity(android.content.Intent)>(r8)"
+      class_name: "edu.mit.icc_non_constant_class_object.OutFlowActivity"
+      method: "<edu.mit.icc_non_constant_class_object.OutFlowActivity: void onCreate(android.os.Bundle)>"
+      id: 13
+    }
+    kind: ACTIVITY
+    intents {
+      attributes {
+        kind: EXTRA
+        value: "DroidBench"
+      }
+      attributes {
+        kind: CLASS
+        value: "edu.mit.icc_non_constant_class_object.InFlowActivity"
+      }
+      attributes {
+        kind: PACKAGE
+        value: "edu.mit.icc_non_constant_class_object"
+      }
+    }
+  }
+}
+analysis_start: 1470642581
+analysis_end: 1470642582

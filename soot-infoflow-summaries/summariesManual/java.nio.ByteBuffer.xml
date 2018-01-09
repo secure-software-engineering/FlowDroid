@@ -1,0 +1,452 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.nio.ByteBuffer get(byte[])">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer get(byte[],int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="char getChar()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="char getChar(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double getDouble()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double getDouble(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getFloat()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getFloat(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getInt()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getInt(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getLong()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getLong(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="short getShort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="short getShort(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(byte,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(byte[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(java.nio.ByteBuffer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer put(int,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putChar(char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putChar(int,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putDouble(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putDouble(int,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putFloat(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putFloat(int,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.nio.ByteBuffer putInt(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putInt(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.nio.ByteBuffer putLong(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putLong(int,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.nio.ByteBuffer putShort(short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer putShort(int,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer slice()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte[] array()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer compact()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer wrap(byte[])">
+			<flows>
+		        <flow isAlias="true" typeChecking="false">
+		          <from sourceSinkType="Parameter" ParameterIndex="0" />
+		          <to sourceSinkType="Return" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+		            AccessPathTypes="[byte[]]" />
+		        </flow>
+			</flows>
+		</method>
+		<method id="java.nio.ByteBuffer wrap(byte[],int,int)">
+			<flows>
+		        <flow isAlias="true" typeChecking="false">
+		          <from sourceSinkType="Parameter" ParameterIndex="0" />
+		          <to sourceSinkType="Return" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+		            AccessPathTypes="[byte[]]" />
+		        </flow>
+			</flows>
+		</method>
+	    <method id="java.nio.ByteBuffer asReadOnlyBuffer()">
+	      <flows>
+	        <flow isAlias="true" typeChecking="false">
+	          <from sourceSinkType="Field" />
+	          <to sourceSinkType="Return" />
+	        </flow>
+	      </flows>
+	    </method>
+	    <method id="java.nio.ByteBuffer compact()">
+	      <flows>
+	        <flow isAlias="true" typeChecking="false">
+	          <from sourceSinkType="Field" />
+	          <to sourceSinkType="Return" />
+	        </flow>
+	      </flows>
+	    </method>
+		<method id="java.nio.ByteBuffer duplicate()">
+			<flows>
+		        <flow isAlias="true" typeChecking="false">
+				  <from sourceSinkType="Field" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream]" />
+		          <to sourceSinkType="Return" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+		            AccessPathTypes="[byte[]]" />
+		        </flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.Object)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.lang.ref.Reference"
+						AccessPath="[java.lang.ref.Reference: java.lang.Object referent]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.Object,java.lang.ref.ReferenceQueue)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.lang.ref.Reference"
+						AccessPath="[java.lang.ref.Reference: java.lang.Object referent]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object get()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.lang.ref.Reference"
+						AccessPath="[java.lang.ref.Reference: java.lang.Object referent]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void clear()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[java.lang.ref.Reference: java.lang.Object referent]" />
+			</clears>
+		</method>
+	</methods>
+</summary>

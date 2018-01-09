@@ -1,0 +1,5 @@
+* text=auto
+
+*.java text
+*.class binary
+*.jar binary

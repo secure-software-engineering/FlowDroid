@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.io.Reader)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean nextBoolean()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double nextDouble()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int nextInt()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long nextLong()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String nextName()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String nextString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonToken peek()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.util.JsonReader: java.io.Reader reader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

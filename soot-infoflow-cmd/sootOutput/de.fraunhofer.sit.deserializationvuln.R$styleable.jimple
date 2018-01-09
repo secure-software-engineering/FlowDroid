@@ -1,0 +1,604 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$styleable extends java.lang.Object
+{
+    public static final int[] ConstraintLayout_Layout;
+    public static final int ConstraintLayout_Layout_android_maxHeight;
+    public static final int ConstraintLayout_Layout_android_maxWidth;
+    public static final int ConstraintLayout_Layout_android_minHeight;
+    public static final int ConstraintLayout_Layout_android_minWidth;
+    public static final int ConstraintLayout_Layout_android_orientation;
+    public static final int ConstraintLayout_Layout_constraintSet;
+    public static final int ConstraintLayout_Layout_layout_constraintBaseline_creator;
+    public static final int ConstraintLayout_Layout_layout_constraintBaseline_toBaselineOf;
+    public static final int ConstraintLayout_Layout_layout_constraintBottom_creator;
+    public static final int ConstraintLayout_Layout_layout_constraintBottom_toBottomOf;
+    public static final int ConstraintLayout_Layout_layout_constraintBottom_toTopOf;
+    public static final int ConstraintLayout_Layout_layout_constraintDimensionRatio;
+    public static final int ConstraintLayout_Layout_layout_constraintEnd_toEndOf;
+    public static final int ConstraintLayout_Layout_layout_constraintEnd_toStartOf;
+    public static final int ConstraintLayout_Layout_layout_constraintGuide_begin;
+    public static final int ConstraintLayout_Layout_layout_constraintGuide_end;
+    public static final int ConstraintLayout_Layout_layout_constraintGuide_percent;
+    public static final int ConstraintLayout_Layout_layout_constraintHeight_default;
+    public static final int ConstraintLayout_Layout_layout_constraintHeight_max;
+    public static final int ConstraintLayout_Layout_layout_constraintHeight_min;
+    public static final int ConstraintLayout_Layout_layout_constraintHorizontal_bias;
+    public static final int ConstraintLayout_Layout_layout_constraintHorizontal_chainStyle;
+    public static final int ConstraintLayout_Layout_layout_constraintHorizontal_weight;
+    public static final int ConstraintLayout_Layout_layout_constraintLeft_creator;
+    public static final int ConstraintLayout_Layout_layout_constraintLeft_toLeftOf;
+    public static final int ConstraintLayout_Layout_layout_constraintLeft_toRightOf;
+    public static final int ConstraintLayout_Layout_layout_constraintRight_creator;
+    public static final int ConstraintLayout_Layout_layout_constraintRight_toLeftOf;
+    public static final int ConstraintLayout_Layout_layout_constraintRight_toRightOf;
+    public static final int ConstraintLayout_Layout_layout_constraintStart_toEndOf;
+    public static final int ConstraintLayout_Layout_layout_constraintStart_toStartOf;
+    public static final int ConstraintLayout_Layout_layout_constraintTop_creator;
+    public static final int ConstraintLayout_Layout_layout_constraintTop_toBottomOf;
+    public static final int ConstraintLayout_Layout_layout_constraintTop_toTopOf;
+    public static final int ConstraintLayout_Layout_layout_constraintVertical_bias;
+    public static final int ConstraintLayout_Layout_layout_constraintVertical_chainStyle;
+    public static final int ConstraintLayout_Layout_layout_constraintVertical_weight;
+    public static final int ConstraintLayout_Layout_layout_constraintWidth_default;
+    public static final int ConstraintLayout_Layout_layout_constraintWidth_max;
+    public static final int ConstraintLayout_Layout_layout_constraintWidth_min;
+    public static final int ConstraintLayout_Layout_layout_editor_absoluteX;
+    public static final int ConstraintLayout_Layout_layout_editor_absoluteY;
+    public static final int ConstraintLayout_Layout_layout_goneMarginBottom;
+    public static final int ConstraintLayout_Layout_layout_goneMarginEnd;
+    public static final int ConstraintLayout_Layout_layout_goneMarginLeft;
+    public static final int ConstraintLayout_Layout_layout_goneMarginRight;
+    public static final int ConstraintLayout_Layout_layout_goneMarginStart;
+    public static final int ConstraintLayout_Layout_layout_goneMarginTop;
+    public static final int ConstraintLayout_Layout_layout_optimizationLevel;
+    public static final int[] ConstraintSet;
+    public static final int ConstraintSet_android_alpha;
+    public static final int ConstraintSet_android_elevation;
+    public static final int ConstraintSet_android_id;
+    public static final int ConstraintSet_android_layout_height;
+    public static final int ConstraintSet_android_layout_marginBottom;
+    public static final int ConstraintSet_android_layout_marginEnd;
+    public static final int ConstraintSet_android_layout_marginLeft;
+    public static final int ConstraintSet_android_layout_marginRight;
+    public static final int ConstraintSet_android_layout_marginStart;
+    public static final int ConstraintSet_android_layout_marginTop;
+    public static final int ConstraintSet_android_layout_width;
+    public static final int ConstraintSet_android_orientation;
+    public static final int ConstraintSet_android_rotationX;
+    public static final int ConstraintSet_android_rotationY;
+    public static final int ConstraintSet_android_scaleX;
+    public static final int ConstraintSet_android_scaleY;
+    public static final int ConstraintSet_android_transformPivotX;
+    public static final int ConstraintSet_android_transformPivotY;
+    public static final int ConstraintSet_android_translationX;
+    public static final int ConstraintSet_android_translationY;
+    public static final int ConstraintSet_android_translationZ;
+    public static final int ConstraintSet_android_visibility;
+    public static final int ConstraintSet_layout_constraintBaseline_creator;
+    public static final int ConstraintSet_layout_constraintBaseline_toBaselineOf;
+    public static final int ConstraintSet_layout_constraintBottom_creator;
+    public static final int ConstraintSet_layout_constraintBottom_toBottomOf;
+    public static final int ConstraintSet_layout_constraintBottom_toTopOf;
+    public static final int ConstraintSet_layout_constraintDimensionRatio;
+    public static final int ConstraintSet_layout_constraintEnd_toEndOf;
+    public static final int ConstraintSet_layout_constraintEnd_toStartOf;
+    public static final int ConstraintSet_layout_constraintGuide_begin;
+    public static final int ConstraintSet_layout_constraintGuide_end;
+    public static final int ConstraintSet_layout_constraintGuide_percent;
+    public static final int ConstraintSet_layout_constraintHeight_default;
+    public static final int ConstraintSet_layout_constraintHeight_max;
+    public static final int ConstraintSet_layout_constraintHeight_min;
+    public static final int ConstraintSet_layout_constraintHorizontal_bias;
+    public static final int ConstraintSet_layout_constraintHorizontal_chainStyle;
+    public static final int ConstraintSet_layout_constraintHorizontal_weight;
+    public static final int ConstraintSet_layout_constraintLeft_creator;
+    public static final int ConstraintSet_layout_constraintLeft_toLeftOf;
+    public static final int ConstraintSet_layout_constraintLeft_toRightOf;
+    public static final int ConstraintSet_layout_constraintRight_creator;
+    public static final int ConstraintSet_layout_constraintRight_toLeftOf;
+    public static final int ConstraintSet_layout_constraintRight_toRightOf;
+    public static final int ConstraintSet_layout_constraintStart_toEndOf;
+    public static final int ConstraintSet_layout_constraintStart_toStartOf;
+    public static final int ConstraintSet_layout_constraintTop_creator;
+    public static final int ConstraintSet_layout_constraintTop_toBottomOf;
+    public static final int ConstraintSet_layout_constraintTop_toTopOf;
+    public static final int ConstraintSet_layout_constraintVertical_bias;
+    public static final int ConstraintSet_layout_constraintVertical_chainStyle;
+    public static final int ConstraintSet_layout_constraintVertical_weight;
+    public static final int ConstraintSet_layout_constraintWidth_default;
+    public static final int ConstraintSet_layout_constraintWidth_max;
+    public static final int ConstraintSet_layout_constraintWidth_min;
+    public static final int ConstraintSet_layout_editor_absoluteX;
+    public static final int ConstraintSet_layout_editor_absoluteY;
+    public static final int ConstraintSet_layout_goneMarginBottom;
+    public static final int ConstraintSet_layout_goneMarginEnd;
+    public static final int ConstraintSet_layout_goneMarginLeft;
+    public static final int ConstraintSet_layout_goneMarginRight;
+    public static final int ConstraintSet_layout_goneMarginStart;
+    public static final int ConstraintSet_layout_goneMarginTop;
+    public static final int[] LinearConstraintLayout;
+    public static final int LinearConstraintLayout_android_orientation;
+
+    static void <clinit>()
+    {
+        int[] $r0;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginTop> = 63;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginStart> = 62;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginRight> = 61;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginLeft> = 60;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginEnd> = 59;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_goneMarginBottom> = 58;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_editor_absoluteY> = 57;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_editor_absoluteX> = 56;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintWidth_min> = 55;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintWidth_max> = 54;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintWidth_default> = 53;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintVertical_weight> = 52;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintVertical_chainStyle> = 51;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintVertical_bias> = 50;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintTop_toTopOf> = 49;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintTop_toBottomOf> = 48;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintTop_creator> = 47;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintStart_toStartOf> = 46;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintStart_toEndOf> = 45;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintRight_toRightOf> = 44;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintRight_toLeftOf> = 43;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintRight_creator> = 42;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintLeft_toRightOf> = 41;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintLeft_toLeftOf> = 40;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintLeft_creator> = 39;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHorizontal_weight> = 38;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHorizontal_chainStyle> = 37;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHorizontal_bias> = 36;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHeight_min> = 35;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHeight_max> = 34;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintHeight_default> = 33;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintGuide_percent> = 32;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintGuide_end> = 31;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintGuide_begin> = 30;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintEnd_toStartOf> = 29;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintEnd_toEndOf> = 28;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintDimensionRatio> = 27;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintBottom_toTopOf> = 26;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintBottom_toBottomOf> = 25;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintBottom_creator> = 24;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintBaseline_toBaselineOf> = 23;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_layout_constraintBaseline_creator> = 22;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_visibility> = 2;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_translationZ> = 20;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_translationY> = 13;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_translationX> = 12;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_transformPivotY> = 11;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_transformPivotX> = 10;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_scaleY> = 15;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_scaleX> = 14;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_rotationY> = 17;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_rotationX> = 16;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_orientation> = 0;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_width> = 3;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginTop> = 6;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginStart> = 18;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginRight> = 7;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginLeft> = 5;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginEnd> = 19;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_marginBottom> = 8;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_layout_height> = 4;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_id> = 1;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_elevation> = 21;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintSet_android_alpha> = 9;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_optimizationLevel> = 48;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginTop> = 47;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginStart> = 46;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginRight> = 45;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginLeft> = 44;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginEnd> = 43;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_goneMarginBottom> = 42;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_editor_absoluteY> = 41;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_editor_absoluteX> = 40;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintWidth_min> = 39;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintWidth_max> = 38;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintWidth_default> = 37;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintVertical_weight> = 36;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintVertical_chainStyle> = 35;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintVertical_bias> = 34;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintTop_toTopOf> = 33;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintTop_toBottomOf> = 32;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintTop_creator> = 31;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintStart_toStartOf> = 30;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintStart_toEndOf> = 29;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintRight_toRightOf> = 28;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintRight_toLeftOf> = 27;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintRight_creator> = 26;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintLeft_toRightOf> = 25;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintLeft_toLeftOf> = 24;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintLeft_creator> = 23;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHorizontal_weight> = 22;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHorizontal_chainStyle> = 21;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHorizontal_bias> = 20;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHeight_min> = 19;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHeight_max> = 18;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintHeight_default> = 17;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintGuide_percent> = 16;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintGuide_end> = 15;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintGuide_begin> = 14;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintEnd_toStartOf> = 13;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintEnd_toEndOf> = 12;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintDimensionRatio> = 11;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintBottom_toTopOf> = 10;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintBottom_toBottomOf> = 9;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintBottom_creator> = 8;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintBaseline_toBaselineOf> = 7;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_layout_constraintBaseline_creator> = 6;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_constraintSet> = 5;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_android_orientation> = 0;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_android_minWidth> = 3;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_android_minHeight> = 4;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_android_maxWidth> = 1;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int ConstraintLayout_Layout_android_maxHeight> = 2;
+
+        $r0 = newarray (int)[49];
+
+        $r0[0] = 16842948;
+
+        $r0[1] = 16843039;
+
+        $r0[2] = 16843040;
+
+        $r0[3] = 16843071;
+
+        $r0[4] = 16843072;
+
+        $r0[5] = 2130771968;
+
+        $r0[6] = 2130771969;
+
+        $r0[7] = 2130771970;
+
+        $r0[8] = 2130771971;
+
+        $r0[9] = 2130771972;
+
+        $r0[10] = 2130771973;
+
+        $r0[11] = 2130771974;
+
+        $r0[12] = 2130771975;
+
+        $r0[13] = 2130771976;
+
+        $r0[14] = 2130771977;
+
+        $r0[15] = 2130771978;
+
+        $r0[16] = 2130771979;
+
+        $r0[17] = 2130771980;
+
+        $r0[18] = 2130771981;
+
+        $r0[19] = 2130771982;
+
+        $r0[20] = 2130771983;
+
+        $r0[21] = 2130771984;
+
+        $r0[22] = 2130771985;
+
+        $r0[23] = 2130771986;
+
+        $r0[24] = 2130771987;
+
+        $r0[25] = 2130771988;
+
+        $r0[26] = 2130771989;
+
+        $r0[27] = 2130771990;
+
+        $r0[28] = 2130771991;
+
+        $r0[29] = 2130771992;
+
+        $r0[30] = 2130771993;
+
+        $r0[31] = 2130771994;
+
+        $r0[32] = 2130771995;
+
+        $r0[33] = 2130771996;
+
+        $r0[34] = 2130771997;
+
+        $r0[35] = 2130771998;
+
+        $r0[36] = 2130771999;
+
+        $r0[37] = 2130772000;
+
+        $r0[38] = 2130772001;
+
+        $r0[39] = 2130772002;
+
+        $r0[40] = 2130772003;
+
+        $r0[41] = 2130772004;
+
+        $r0[42] = 2130772005;
+
+        $r0[43] = 2130772006;
+
+        $r0[44] = 2130772007;
+
+        $r0[45] = 2130772008;
+
+        $r0[46] = 2130772009;
+
+        $r0[47] = 2130772010;
+
+        $r0[48] = 2130772011;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int[] ConstraintLayout_Layout> = $r0;
+
+        $r0 = newarray (int)[64];
+
+        $r0[0] = 16842948;
+
+        $r0[1] = 16842960;
+
+        $r0[2] = 16842972;
+
+        $r0[3] = 16842996;
+
+        $r0[4] = 16842997;
+
+        $r0[5] = 16842999;
+
+        $r0[6] = 16843000;
+
+        $r0[7] = 16843001;
+
+        $r0[8] = 16843002;
+
+        $r0[9] = 16843551;
+
+        $r0[10] = 16843552;
+
+        $r0[11] = 16843553;
+
+        $r0[12] = 16843554;
+
+        $r0[13] = 16843555;
+
+        $r0[14] = 16843556;
+
+        $r0[15] = 16843557;
+
+        $r0[16] = 16843559;
+
+        $r0[17] = 16843560;
+
+        $r0[18] = 16843701;
+
+        $r0[19] = 16843702;
+
+        $r0[20] = 16843770;
+
+        $r0[21] = 16843840;
+
+        $r0[22] = 2130771969;
+
+        $r0[23] = 2130771970;
+
+        $r0[24] = 2130771971;
+
+        $r0[25] = 2130771972;
+
+        $r0[26] = 2130771973;
+
+        $r0[27] = 2130771974;
+
+        $r0[28] = 2130771975;
+
+        $r0[29] = 2130771976;
+
+        $r0[30] = 2130771977;
+
+        $r0[31] = 2130771978;
+
+        $r0[32] = 2130771979;
+
+        $r0[33] = 2130771980;
+
+        $r0[34] = 2130771981;
+
+        $r0[35] = 2130771982;
+
+        $r0[36] = 2130771983;
+
+        $r0[37] = 2130771984;
+
+        $r0[38] = 2130771985;
+
+        $r0[39] = 2130771986;
+
+        $r0[40] = 2130771987;
+
+        $r0[41] = 2130771988;
+
+        $r0[42] = 2130771989;
+
+        $r0[43] = 2130771990;
+
+        $r0[44] = 2130771991;
+
+        $r0[45] = 2130771992;
+
+        $r0[46] = 2130771993;
+
+        $r0[47] = 2130771994;
+
+        $r0[48] = 2130771995;
+
+        $r0[49] = 2130771996;
+
+        $r0[50] = 2130771997;
+
+        $r0[51] = 2130771998;
+
+        $r0[52] = 2130771999;
+
+        $r0[53] = 2130772000;
+
+        $r0[54] = 2130772001;
+
+        $r0[55] = 2130772002;
+
+        $r0[56] = 2130772003;
+
+        $r0[57] = 2130772004;
+
+        $r0[58] = 2130772005;
+
+        $r0[59] = 2130772006;
+
+        $r0[60] = 2130772007;
+
+        $r0[61] = 2130772008;
+
+        $r0[62] = 2130772009;
+
+        $r0[63] = 2130772010;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int[] ConstraintSet> = $r0;
+
+        $r0 = newarray (int)[1];
+
+        $r0[0] = 16842948;
+
+        <de.fraunhofer.sit.deserializationvuln.R$styleable: int[] LinearConstraintLayout> = $r0;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$styleable $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$styleable;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+  <methods>
+    <method id="void write(byte[])">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="void write(byte[],int,int)">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="void write(int)">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString()">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString(java.lang.String)">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString(int)">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="byte[] toByteArray()">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="void writeTo(java.io.OutputStream)">
+      <flows>
+        <flow isAlias="false">
+          <from sourceSinkType="Field" AccessPath="[java.io.OutputStream: byte[] innerArray]" AccessPathTypes="[byte[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+      </flows>
+    </method>
+  </methods>
+</summary>

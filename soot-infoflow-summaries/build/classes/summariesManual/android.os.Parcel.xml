@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.lang.Object[] readArray(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.ArrayList readArrayList(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readBinderArray(android.os.IBinder[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readBinderList(java.util.List)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readBooleanArray(boolean[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Bundle readBundle()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" 
+						AccessPath="[android.os.Bundle: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte readByte()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readByteArray(byte[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readCharArray(char[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double readDouble()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readDoubleArray(double[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float readFloat()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readFloatArray(float[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.HashMap readHashMap(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int readInt()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readIntArray(int[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readList(java.util.List,java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long readLong()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readLongArray(long[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readMap(java.util.Map,java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Parcelable readParcelable(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.os.Parcelable"
+						AccessPath="[android.os.Parcelable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Parcelable[] readParcelableArray(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.os.Parcelable"
+						AccessPath="[android.os.Parcelable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.PersistableBundle readPersistableBundle()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.os.PersistableBundle"
+						AccessPath="[android.os.PersistableBundle: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.PersistableBundle readPersistableBundle(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.os.PersistableBundle"
+						AccessPath="[android.os.PersistableBundle: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.Serializable readSerializable()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="java.io.Serializable"
+						AccessPath="[java.io.Serializable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.Size readSize()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.util.Size"
+						AccessPath="[android.util.Size: int width]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.util.Size"
+						AccessPath="[android.util.Size: int height]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.SparseArray readSparseArray()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.util.SparseArray"
+						AccessPath="[android.util.SparseArray: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.SparseBooleanArray readSparseBooleanArray()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="android.util.SparseBooleanArray"
+						AccessPath="[android.util.SparseBooleanArray: boolean[] data]"
+						AccessPathTypes="[boolean[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String readString()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readStringArray(java.lang.String[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readStringList(java.util.List,java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="1"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.IBinder readStrongBinder()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readTypedArray(java.lang.Object[],android.os.Parcelable$Creator)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readTypedArray(java.util.List,android.os.Parcelable$Creator)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object readTypedObject(android.os.Parcelable$Creator)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object readValue(java.lang.ClassLoader)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void unmarshall(byte[],int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeArray(java.lang.Object[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeBinderArray(android.os.IBinder[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeBinderList(java.util.List)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeBooleanArray(boolean[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeBundle(android.os.Bundle)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Bundle: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeByte(byte)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeByteArray(byte[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeByteArray(byte[],int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeCharArray(char[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeDouble(double)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeDoubleArray(double[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeException(java.lang.Exception)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeException(java.io.FileDescriptor)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeFloat(float)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeFloatArray(float[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeInt(int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeIntArray(int[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeInterfaceToken(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeList(java.util.List)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeLong(long)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeLongArray(long[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeMap(java.util.Map)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeParcelable(android.os.Parcelable,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcelable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeParcelableArray(android.os.Parcelable[],int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcelable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writePersistableBundle(android.os.PersistableBundle)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.PersistableBundle: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.PersistableBundle"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeSerializable(java.io.Serializable)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.io.Serializable: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeSize(android.util.Size)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.Size: int width]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.Size: int height]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeSizeF(android.util.SizeF)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.SizeF: float width]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.SizeF: float height]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeSparseArray(android.util.SparseArray)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.SparseArray: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeSparseBooleanArray(android.util.SparseBooleanArray)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.util.SparseBooleanArray: boolean[] data]"
+						AccessPathTypes="[boolean[]]" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeString(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeStringArray(java.lang.String[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeStringList(java.util.List)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeStrongBinder(android.os.IBinder)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeStrongInterface(android.os.IInterface)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeTypedArray(java.lang.Object[],int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeTypedList(java.util.List)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeTypedObject(java.lang.Object,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeValue(java.lang.Object)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

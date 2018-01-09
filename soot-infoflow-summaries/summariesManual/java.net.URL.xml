@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String,int,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String,int,java.lang.String,java.net.URLStreamHandler)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.net.URL,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.net.URL,java.lang.String,java.net.URLStreamHandler)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getDefaultPort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getFile()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHost()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getPort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getProtocol()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getQuery()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getRef()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getUserInfo()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="4" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="4" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="5" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="6" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="7" />
+					<to sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toExternalForm()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.URI toURI()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String scheme]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: int port]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String fragment]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.net.URI"
+						AccessPath="[java.net.URI: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.InputStream openStream()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return"  BaseType="java.io.InputStream"
+						AccessPath="[java.io.InputStream: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

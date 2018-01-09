@@ -1,0 +1,28 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$color extends java.lang.Object
+{
+    public static final int colorAccent;
+    public static final int colorPrimary;
+    public static final int colorPrimaryDark;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$color $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$color;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$color: int colorPrimaryDark> = 2130837506;
+
+        <de.fraunhofer.sit.deserializationvuln.R$color: int colorPrimary> = 2130837505;
+
+        <de.fraunhofer.sit.deserializationvuln.R$color: int colorAccent> = 2130837504;
+
+        return;
+    }
+}

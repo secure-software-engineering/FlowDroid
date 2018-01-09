@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------------
+Test set: soot.jimple.infoflow.android.test.xmlParser.XmlParserTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.067 sec <<< FAILURE! - in soot.jimple.infoflow.android.test.xmlParser.XmlParserTest
+emptyXmlTest(soot.jimple.infoflow.android.test.xmlParser.XmlParserTest)  Time elapsed: 0.022 sec  <<< ERROR!
+java.lang.Exception: Unexpected exception, expected<java.lang.RuntimeException> but was<java.io.IOException>
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:368)
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:362)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.compareParserResults(XmlParserTest.java:36)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.emptyXmlTest(XmlParserTest.java:63)
+
+emptyTxtTest(soot.jimple.infoflow.android.test.xmlParser.XmlParserTest)  Time elapsed: 0.009 sec  <<< ERROR!
+java.lang.Exception: Unexpected exception, expected<java.lang.RuntimeException> but was<java.io.IOException>
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:368)
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:362)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.compareParserResults(XmlParserTest.java:36)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.emptyTxtTest(XmlParserTest.java:86)
+
+notValidXmlTest(soot.jimple.infoflow.android.test.xmlParser.XmlParserTest)  Time elapsed: 0.009 sec  <<< ERROR!
+java.lang.Exception: Unexpected exception, expected<java.lang.RuntimeException> but was<java.io.IOException>
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:368)
+	at soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.fromFile(XMLSourceSinkParser.java:362)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.compareParserResults(XmlParserTest.java:36)
+	at soot.jimple.infoflow.android.test.xmlParser.XmlParserTest.notValidXmlTest(XmlParserTest.java:122)
+

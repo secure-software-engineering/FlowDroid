@@ -1,0 +1,25 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$drawable extends java.lang.Object
+{
+    public static final int ic_launcher_background;
+    public static final int ic_launcher_foreground;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$drawable $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$drawable;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$drawable: int ic_launcher_foreground> = 2130903042;
+
+        <de.fraunhofer.sit.deserializationvuln.R$drawable: int ic_launcher_background> = 2130903041;
+
+        return;
+    }
+}

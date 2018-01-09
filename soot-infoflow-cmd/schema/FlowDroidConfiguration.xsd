@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="configuration"> 
+	<xs:complexType> 
+    	<xs:all>
+        	<xs:element name="inputFiles" type="inputFilesType" minOccurs="1" maxOccurs="1"/>
+        	<xs:element name="sources" type="sourcesSinksSpecType" minOccurs="0" maxOccurs="1"/>
+        	<xs:element name="sinks" type="sourcesSinksSpecType" minOccurs="0" maxOccurs="1"/>
+        	<xs:element name="androidConfiguration" type="androidConfigType" minOccurs="0" maxOccurs="1"/>
+        	<xs:element name="iccConfiguration" type="iccConfigType" minOccurs="0" maxOccurs="1"/>
+        	<xs:element name="dataFlowConfiguration" type="dataFlowConfigType" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+</xs:element>
+
+<xs:complexType name="inputFilesType">
+	<xs:all>
+		<xs:element name="targetAPK" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="sourceSinkFile" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="androidPlatform" type="xs:string" minOccurs="0" maxOccurs="1" />
+		<xs:element name="outputFile" type="xs:string" minOccurs="0" maxOccurs="1" />
+	</xs:all>
+</xs:complexType>
+
+<xs:complexType name="sourcesSinksSpecType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="category" type="sourcesSinksElementType" />
+		</xs:sequence>
+	<xs:attribute name="defaultMode" type="defaultSourceSinkModeType" default="UseAllButExcluded" use="optional" />
+</xs:complexType>
+
+<xs:complexType name="sourcesSinksElementType">
+	<xs:attribute name="id" type="predefinedCategoryId" use="required" />
+	<xs:attribute name="customId" type="xs:string" use="optional" />
+	<xs:attribute name="mode" type="categoryModeType" use="required" />
+</xs:complexType>
+
+<xs:simpleType name="defaultSourceSinkModeType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="UseAllButExcluded" />
+		<xs:enumeration value="UseOnlyIncluded" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="categoryModeType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="Include" />
+		<xs:enumeration value="Exclude" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="predefinedCategoryId">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="NO_CATEGORY" />
+		<xs:enumeration value="HARDWARE_INFO" />
+		<xs:enumeration value="UNIQUE_IDENTIFIER" />
+		<xs:enumeration value="LOCATION_INFORMATION" />
+		<xs:enumeration value="NETWORK_INFORMATION" />
+		<xs:enumeration value="ACCOUNT_INFORMATION" />
+		<xs:enumeration value="EMAIL_INFORMATION" />
+		<xs:enumeration value="FILE_INFORMATION" />
+		<xs:enumeration value="BLUETOOTH_INFORMATION" />
+		<xs:enumeration value="VOIP_INFORMATION" />
+		<xs:enumeration value="VOIP_INFORMATION" />
+		<xs:enumeration value="DATABASE_INFORMATION" />
+		<xs:enumeration value="PHONE_INFORMATION" />
+		<xs:enumeration value="PHONE_CONNECTION" />
+		<xs:enumeration value="INTER_APP_COMMUNICATION" />
+		<xs:enumeration value="VOIP" />
+		<xs:enumeration value="PHONE_STATE" />
+		<xs:enumeration value="EMAIL" />
+		<xs:enumeration value="BLUETOOTH" />
+		<xs:enumeration value="ACCOUNT_SETTINGS" />
+		<xs:enumeration value="VIDEO" />
+		<xs:enumeration value="SYNCHRONIZATION_DATA" />
+		<xs:enumeration value="NETWORK" />
+		<xs:enumeration value="EMAIL_SETTINGS" />
+		<xs:enumeration value="FILE" />
+		<xs:enumeration value="LOG" />
+		<xs:enumeration value="AUDIO" />
+		<xs:enumeration value="SMS_MMS" />
+		<xs:enumeration value="CONTACT_INFORMATION" />
+		<xs:enumeration value="CALENDAR_INFORMATION" />
+		<xs:enumeration value="SYSTEM_SETTINGS" />
+		<xs:enumeration value="IMAGE" />
+		<xs:enumeration value="BROWSER_INFORMATION" />
+		<xs:enumeration value="NFC" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="layoutMatchingModeType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="NoMatch" />
+		<xs:enumeration value="MatchAll" />
+		<xs:enumeration value="MatchSensitiveOnly" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="callbackSourceModeType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="NoParametersAsSources" />
+		<xs:enumeration value="AllParametersAsSources" />
+		<xs:enumeration value="SourceListOnly" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="implicitFlowMode">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="NoImplicitFlows" />
+		<xs:enumeration value="ArrayAccesses" />
+		<xs:enumeration value="AllImplicitFlows" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="pathReconstructionMode">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="NoPaths" />
+		<xs:enumeration value="Fast" />
+		<xs:enumeration value="Precise" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="androidConfigType">
+		<xs:all>
+			<xs:element name="enableCallbacks" type="xs:boolean" minOccurs="0" />
+			<xs:element name="filterThreadCallbacks" type="xs:boolean" minOccurs="0" />
+			<xs:element name="maxCallbacksPerComponent" type="xs:int" minOccurs="0" />
+			<xs:element name="maxCallbackDepth" type="xs:int" minOccurs="0" />
+			<xs:element name="layoutMatchingMode" type="layoutMatchingModeType" minOccurs="0" />
+			<xs:element name="mergeDexFiles" type="xs:boolean" minOccurs="0" />
+			<xs:element name="callbackSourceMode" type="callbackSourceModeType" minOccurs="0" />
+			<xs:element name="callbackAnalysisTimeout" type="xs:int" minOccurs="0" />
+		</xs:all>
+</xs:complexType>
+
+<xs:complexType name="iccConfigType">
+		<xs:all>
+			<xs:element name="enableICCTracking" type="xs:boolean" minOccurs="0" />
+			<xs:element name="modelFile" type="xs:string" minOccurs="0" />
+			<xs:element name="purifyResults" type="xs:boolean" minOccurs="0" />
+		</xs:all>
+</xs:complexType>
+
+<xs:complexType name="dataFlowConfigType">
+		<xs:all>
+			<xs:element name="maxJoinPointAbstractions" type="xs:int" minOccurs="0" />
+			<xs:element name="maxCalleesPerCallSite" type="xs:int" minOccurs="0" />
+			<xs:element name="implicitFlowMode" type="implicitFlowMode" minOccurs="0" default="NoImplicitFlows" />
+			<xs:element name="enableStaticFields" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableExceptions" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableArrays" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableReflection" type="xs:boolean" minOccurs="0" />
+			<xs:element name="flowSensitiveAliasing" type="xs:boolean" minOccurs="0" />
+			<xs:element name="logSourcesAndSinks" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableArraySizeTainting" type="xs:boolean" minOccurs="0" />
+			<xs:element name="pathReconstructionMode" type="pathReconstructionMode" minOccurs="0" />
+			<xs:element name="pathAgnosticResults" type="xs:boolean" minOccurs="0" default="true" />
+			<xs:element name="maxCallStackSize" type="xs:int" minOccurs="0" />
+			<xs:element name="maxPathLength" type="xs:int" minOccurs="0" />
+			<xs:element name="maxPathsPerAbstraction" type="xs:int" minOccurs="0" />
+			<xs:element name="dataFlowTimeout" type="xs:int" minOccurs="0" />
+			<xs:element name="pathReconstructionTimeout" type="xs:int" minOccurs="0" />
+			<xs:element name="pathReconstructionBatchSize" type="xs:int" minOccurs="0" />
+			<xs:element name="writeOutputFiles" type="xs:boolean" minOccurs="0" />
+		</xs:all>
+</xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: soot-infoflow
+Bundle-SymbolicName: soot-infoflow
+Bundle-Version: 1.0.0.qualifier
+Bundle-ClassPath: soot-infoflow.jar
+Require-Bundle: org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7

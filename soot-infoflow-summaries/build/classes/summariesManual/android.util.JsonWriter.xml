@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.io.Writer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter beginArray()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter beginObject()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter endArray()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter endObject()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter name(java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter nullValue()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setIndent(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter value(double)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter value(java.lang.Number)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter value(boolean)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter value(long)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.util.JsonWriter value(java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

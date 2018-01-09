@@ -1,0 +1,52 @@
+name: "lu.uni.snt.serval"
+version: 1
+used_permissions: "android.permission.READ_PHONE_STATE"
+components {
+  name: "lu.uni.snt.serval.IntentSource1"
+  kind: ACTIVITY
+  exported: true
+  extras {
+    extra: "(.*)"
+    instruction {
+      statement: "r10 = virtualinvoke r7.<android.os.Bundle: java.lang.Object get(java.lang.String)>($r2)"
+      class_name: "lu.uni.snt.serval.IntentSource1"
+      method: "<lu.uni.snt.serval.IntentSource1: void onActivityResult(int,int,android.content.Intent)>"
+      id: 15
+    }
+  }
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "android.intent.action.MAIN"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.LAUNCHER"
+    }
+  }
+  exit_points {
+    instruction {
+      statement: "virtualinvoke r0.<lu.uni.snt.serval.IntentSource1: void startActivityForResult(android.content.Intent,int)>($r2, 1)"
+      class_name: "lu.uni.snt.serval.IntentSource1"
+      method: "<lu.uni.snt.serval.IntentSource1: void onCreate(android.os.Bundle)>"
+      id: 6
+    }
+    kind: ACTIVITY
+    intents {
+      attributes {
+        kind: ACTION
+        value: "<INTENT>"
+      }
+      attributes {
+        kind: CATEGORY
+        value: "<INTENT>"
+      }
+      attributes {
+        kind: EXTRA
+        value: "<INTENT>"
+      }
+    }
+  }
+}
+analysis_start: 1470642648
+analysis_end: 1470642649

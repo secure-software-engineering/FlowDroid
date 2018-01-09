@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.net.Proxy$Type,java.net.SocketAddress)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.Proxy$Type type]"
+						AccessPathTypes="[java.net.Proxy$Type]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.SocketAddress address]"
+						AccessPathTypes="[java.net.SocketAddress]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.SocketAddress address()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.SocketAddress address]"
+						AccessPathTypes="[java.net.SocketAddress]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.Proxy$Type type]"
+						AccessPathTypes="[java.net.Proxy$Type]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.SocketAddress address]"
+						AccessPathTypes="[java.net.SocketAddress]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.Proxy$Type type()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.Proxy"
+						AccessPath="[java.net.Proxy: java.net.Proxy$Type type]"
+						AccessPathTypes="[java.net.Proxy$Type]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

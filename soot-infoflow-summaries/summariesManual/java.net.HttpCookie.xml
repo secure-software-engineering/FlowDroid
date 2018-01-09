@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String name]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object clone()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+ 			</flows>
+		</method>
+		<method id="java.lang.String getComment()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String comment]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getCommentURL()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String commentURL]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getDiscard()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean discard]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getDomain()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String domain]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getMaxAge()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: long maxAge]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getName()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String name]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getPath()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getPortlist()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String portlist]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getSecure()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean secure]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getVersion()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: int version]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getExpired()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean expired]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean isHttpOnly()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean httpOnly]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List parse(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String comment]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String commentURL]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String domain]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String name]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String path]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.Object[],java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setComment(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String comment]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setCommentURL(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String commentURL]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDiscard(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean discard]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDomain(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String domain]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setHttpOnly(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean httpOnly]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setMaxAge(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: long maxAge]"
+						AccessPathTypes="[long]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setPath(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setPortlist(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String portlist]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setSecure(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean secure]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setValue(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setVersion(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: int version]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String comment]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String commentURL]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean expired]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean discard]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String domain]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean httpOnly]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: long maxAge]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String name]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String portlist]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean secure]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: int version]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

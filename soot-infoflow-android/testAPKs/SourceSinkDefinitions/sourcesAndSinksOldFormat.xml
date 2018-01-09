@@ -1,0 +1,24 @@
+<de.testApp.sourcetosink1.MainActivity: java.lang.String source()> -> _SOURCE_
+<de.testApp.sourcetosink1.MainActivity: void sink(java.lang.String)> -> _SINK_ 
+	
+<de.testApp.sourcetosink2.MainActivity: java.lang.String source()> -> _SOURCE_
+<de.testApp.sourcetosink2.MainActivity: void sink1(java.lang.String,java.lang.String)> -> _SINK_ 
+<de.testApp.sourcetosink2.MainActivity: void sink2(java.lang.String,java.lang.String)> -> _SINK_ 
+
+		
+<de.testApp.sourcetosink3.MainActivity: void source1(de.testApp.sourcetosink3.MainActivity$A)> -> _SOURCE_
+<de.testApp.sourcetosink3.MainActivity: void sink1(double,boolean)> -> _SINK_
+<de.testApp.sourcetosink3.MainActivity: void sink2(java.lang.Object,boolean)> -> _SINK_
+	
+<de.testApp.sourcetosink4.MainActivity: java.lang.String source()> -> _SOURCE_
+<de.testApp.sourcetosink4.MainActivity: void sink()> -> _SINK_
+	
+<de.testApp.sourcetosink5.MainActivity: void source1()> -> _SOURCE_
+<de.testApp.sourcetosink5.MainActivity: void sink1(double,boolean)> -> _SINK_
+<de.testApp.sourcetosink5.MainActivity: void sink2(java.lang.Object,boolean)> -> _SINK_
+   
+<de.testApp.sourcetosink6.SourceAndSinks: void parameterSource(de.testApp.sourcetosink6.ObjA)> -> _SOURCE_
+<de.testApp.sourcetosink6.SourceAndSinks: void baseSource()> -> _SOURCE_
+<de.testApp.sourcetosink6.SourceAndSinks: java.lang.String returnSource()> -> _SOURCE_
+<de.testApp.sourcetosink6.SourceAndSinks: void parameterSink(de.testApp.sourcetosink6.ObjA,de.testApp.sourcetosink6.ObjA)> -> _SINK_
+<de.testApp.sourcetosink6.SourceAndSinks: void baseSink()> -> _SINK_

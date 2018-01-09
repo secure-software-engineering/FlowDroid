@@ -1,0 +1,25 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$mipmap extends java.lang.Object
+{
+    public static final int ic_launcher;
+    public static final int ic_launcher_round;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$mipmap $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$mipmap;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$mipmap: int ic_launcher_round> = 2131099649;
+
+        <de.fraunhofer.sit.deserializationvuln.R$mipmap: int ic_launcher> = 2131099648;
+
+        return;
+    }
+}

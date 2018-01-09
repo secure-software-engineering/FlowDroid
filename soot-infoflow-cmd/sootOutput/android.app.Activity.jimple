@@ -1,0 +1,28 @@
+public class android.app.Activity extends android.view.ContextThemeWrapper implements android.view.LayoutInflater$Factory2, android.view.Window$Callback, android.view.KeyEvent$Callback, android.view.View$OnCreateContextMenuListener, android.content.ComponentCallbacks2
+{
+
+    public final android.app.Application getApplication()
+    {
+        android.app.Activity this;
+        android.app.Application retApplication;
+
+        this := @this: android.app.Activity;
+
+        retApplication = <il.ac.tau.MyApplicationHolder: android.app.Application application>;
+
+        return retApplication;
+    }
+
+    public android.app.FragmentManager getFragmentManager()
+    {
+        android.app.Activity this;
+        android.app.FragmentManager retFragMan;
+
+        this := @this: android.app.Activity;
+
+        retFragMan = new android.app.FragmentManager;
+
+        return retFragMan;
+    }
+
+}

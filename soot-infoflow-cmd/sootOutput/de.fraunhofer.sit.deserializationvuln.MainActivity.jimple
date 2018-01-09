@@ -1,0 +1,74 @@
+public class de.fraunhofer.sit.deserializationvuln.MainActivity extends android.app.Activity
+{
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.MainActivity $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.MainActivity;
+
+        specialinvoke $r0.<android.app.Activity: void <init>()>();
+
+        return;
+    }
+
+    protected void onCreate(android.os.Bundle)
+    {
+        de.fraunhofer.sit.deserializationvuln.MainActivity $r0;
+        android.os.Bundle $r1;
+        byte[] $r2;
+        java.lang.Exception $r3;
+        java.io.ByteArrayInputStream $r4;
+        java.io.ObjectInputStream $r5;
+        java.net.URL $r6;
+        java.io.InputStream $r7;
+        int $i0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.MainActivity;
+
+        $r1 := @parameter0: android.os.Bundle;
+
+        specialinvoke $r0.<android.app.Activity: void onCreate(android.os.Bundle)>($r1);
+
+        virtualinvoke $r0.<de.fraunhofer.sit.deserializationvuln.MainActivity: void setContentView(int)>(2131034112);
+
+        $r6 = new java.net.URL;
+
+     label1:
+        specialinvoke $r6.<java.net.URL: void <init>(java.lang.String)>("http://google.de");
+
+        $r7 = virtualinvoke $r6.<java.net.URL: java.io.InputStream openStream()>();
+
+        $r2 = newarray (byte)[1048576];
+
+        $i0 = virtualinvoke $r7.<java.io.InputStream: int read(byte[])>($r2);
+
+     label2:
+        $r4 = new java.io.ByteArrayInputStream;
+
+     label3:
+        specialinvoke $r4.<java.io.ByteArrayInputStream: void <init>(byte[],int,int)>($r2, 0, $i0);
+
+     label4:
+        $r5 = new java.io.ObjectInputStream;
+
+     label5:
+        specialinvoke $r5.<java.io.ObjectInputStream: void <init>(java.io.InputStream)>($r4);
+
+        virtualinvoke $r5.<java.io.ObjectInputStream: java.lang.Object readObject()>();
+
+     label6:
+        return;
+
+     label7:
+        $r3 := @caughtexception;
+
+        virtualinvoke $r3.<java.lang.Exception: void printStackTrace()>();
+
+        return;
+
+        catch java.lang.Exception from label1 to label2 with label7;
+        catch java.lang.Exception from label3 to label4 with label7;
+        catch java.lang.Exception from label5 to label6 with label7;
+    }
+}

@@ -1,0 +1,74 @@
+name: "edu.mit.icc_event_ordering"
+version: 1
+used_permissions: "android.permission.READ_PHONE_STATE"
+components {
+  name: "edu.mit.icc_event_ordering.OutFlowActivity"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "android.intent.action.MAIN"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.LAUNCHER"
+    }
+  }
+  exit_points {
+    instruction {
+      statement: "virtualinvoke r0.<edu.mit.icc_event_ordering.OutFlowActivity: void startActivity(android.content.Intent)>($r2)"
+      class_name: "edu.mit.icc_event_ordering.OutFlowActivity"
+      method: "<edu.mit.icc_event_ordering.OutFlowActivity: void onCreate(android.os.Bundle)>"
+      id: 6
+    }
+    kind: ACTIVITY
+    intents {
+      attributes {
+        kind: ACTION
+        value: "edu.mit.icc_event_ordering.ACTION"
+      }
+    }
+  }
+}
+components {
+  name: "edu.mit.icc_event_ordering.IsolateActivity"
+  kind: ACTIVITY
+  exported: true
+  extras {
+    extra: "DroidBench"
+    instruction {
+      statement: "$r3 = virtualinvoke $r2.<android.content.Intent: java.lang.String getStringExtra(java.lang.String)>(\"DroidBench\")"
+      class_name: "edu.mit.icc_event_ordering.IsolateActivity"
+      method: "<edu.mit.icc_event_ordering.IsolateActivity: void onCreate(android.os.Bundle)>"
+      id: 4
+    }
+  }
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "edu.mit.icc_event_ordering.EDIT"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.DEFAULT"
+    }
+  }
+}
+components {
+  name: "edu.mit.icc_event_ordering.InFlowActivity"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "edu.mit.icc_event_ordering.ACTION"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.DEFAULT"
+    }
+  }
+}
+analysis_start: 1470642619
+analysis_end: 1470642621

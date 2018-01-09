@@ -1,0 +1,22 @@
+public interface  android.content.ServiceConnection extends java.lang.Object
+{
+
+    public abstract void onServiceConnected(android.content.ComponentName, android.os.IBinder);
+
+    public void onServiceConnected(android.content.ComponentName)
+    {
+        android.content.ServiceConnection $r0;
+        android.content.ComponentName $r1;
+        java.lang.Error $r2;
+
+        $r0 := @this: android.content.ServiceConnection;
+
+        $r1 := @parameter0: android.content.ComponentName;
+
+        $r2 = new java.lang.Error;
+
+        specialinvoke $r2.<java.lang.Error: void <init>(java.lang.String)>("Unresolved compilation error: Method <android.content.ServiceConnection: void onServiceConnected(android.content.ComponentName)> does not exist!");
+
+        throw $r2;
+    }
+}

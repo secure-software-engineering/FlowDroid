@@ -1,0 +1,22 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$layout extends java.lang.Object
+{
+    public static final int activity_main;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$layout $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$layout;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$layout: int activity_main> = 2131034112;
+
+        return;
+    }
+}

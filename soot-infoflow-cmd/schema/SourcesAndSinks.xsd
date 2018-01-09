@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="sinkSources"> 
+	<xs:complexType> 
+	    <xs:sequence>
+	        <xs:element name="category" type="categoryType" minOccurs="1" maxOccurs="unbounded"/>
+	    </xs:sequence>
+    </xs:complexType>
+</xs:element>
+
+<!-- Help for describing the method for sinkSources -->
+<xs:complexType name="categoryType">
+	<xs:sequence>
+	    <xs:choice minOccurs="1" maxOccurs="unbounded">
+	        <xs:element name="method" type="methodType" />
+	        <xs:element name="field" type="fieldType" />
+	    </xs:choice>
+	</xs:sequence>
+    <xs:attribute name="id" type="categoryEnum" use="required" />
+    <xs:attribute name="customId" type="xs:string" use="optional" />
+    <xs:attribute name="description" type="xs:string" use="optional" />
+</xs:complexType>
+
+<xs:complexType name="methodType">
+	<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="base" type="apElement" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="return" type="apElement" minOccurs="0" maxOccurs="1" />
+			<xs:element name="param" type="apElementWithIndex" minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
+	</xs:sequence>
+	<xs:attribute name="signature" type="xs:string" use="required"/>
+	<xs:attribute name="callType" type="callType" use="optional" default="methodCall" />
+</xs:complexType>
+
+<xs:complexType name="fieldType">
+	<xs:sequence>
+		<xs:element name="accessPath" type="metaPath" minOccurs="0" maxOccurs="1"/>	
+	</xs:sequence>
+	<xs:attribute name="signature" type="xs:string" use="required" />
+	<xs:attribute name="description" type="xs:string" use="optional" />
+</xs:complexType>
+
+<xs:simpleType name="callType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="methodCall" />
+		<xs:enumeration value="callback" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="apElement">
+	<xs:sequence>
+		<xs:element name="accessPath" type="metaPath" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="type" type="xs:string" use="optional" />
+	<xs:attribute name="description" type="xs:string" use="optional" />
+</xs:complexType>
+								
+<xs:complexType name="apElementWithIndex">
+    <xs:complexContent>
+		<xs:extension base="apElement">
+			<xs:attribute name="index" type="indexType" use="required"/>
+		</xs:extension>
+	</xs:complexContent>
+</xs:complexType>
+
+<xs:simpleType name="indexType">
+    <xs:restriction base="xs:int">
+	    <xs:minInclusive value="0"/>
+	    <xs:maxInclusive value="128" />
+    </xs:restriction>
+</xs:simpleType>
+
+<!-- Help type for discribing the accesspath for baseType, returnType and paramType -->
+<xs:complexType name="metaPath">
+    <xs:sequence>
+        <xs:element name="pathElement" type="pathElementType" minOccurs="0" maxOccurs="unbounded"/> 
+    </xs:sequence>
+    <xs:attribute name="isSource" type="xs:boolean" default="false"/>
+    <xs:attribute name="isSink" type="xs:boolean" default="false"/>
+</xs:complexType>
+
+<xs:complexType name="pathElementType">
+    <xs:simpleContent>
+        <xs:extension base="xs:string">
+            <xs:attribute name="type" type="xs:string" use="required"/>
+            <xs:attribute name="field" type="xs:string" use="required"/>
+        </xs:extension>
+    </xs:simpleContent>
+</xs:complexType>
+
+
+
+
+
+
+<!--Special type to describe a potential sink.
+				Distinguishing between all categories(ALL), sources(NO_CATEGORY-PHONE_INFORMATION), sinks(PHONE_CONNECTION-LOG) and shared (AUDIO-NFC). -->
+
+<xs:simpleType name="categoryEnum">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="ALL" />
+		<xs:enumeration value="NO_CATEGORY" />
+		<xs:enumeration value="HARDWARE_INFO" />
+		<xs:enumeration value="UNIQUE_IDENTIFIER" />
+		<xs:enumeration value="LOCATION_INFORMATION" />
+		<xs:enumeration value="NETWORK_INFORMATION" />
+		<xs:enumeration value="ACCOUNT_INFORMATION" />
+		<xs:enumeration value="EMAIL_INFORMATION" />
+		<xs:enumeration value="FILE_INFORMATION" />
+		<xs:enumeration value="BLUETOOTH_INFORMATION" />
+		<xs:enumeration value="VOIP_INFORMATION" />
+		<xs:enumeration value="DATABASE_INFORMATION" />
+		<xs:enumeration value="PHONE_INFORMATION" />
+		<xs:enumeration value="PHONE_CONNECTION" />
+		<xs:enumeration value="INTER_APP_COMMUNINCATION" />
+		<xs:enumeration value="VOIP" />
+		<xs:enumeration value="PHONE_STATE" />
+		<xs:enumeration value="EMAIL" />
+		<xs:enumeration value="BLUETOOTH" />
+		<xs:enumeration value="ACCOUNT_SETTINGS" />
+		<xs:enumeration value="VIDEO" />
+		<xs:enumeration value="SYNCHRONIZATION_DATA" />
+		<xs:enumeration value="NETWORK" />
+		<xs:enumeration value="EMAIL_SETTINGS" />
+		<xs:enumeration value="FILE" />
+		<xs:enumeration value="LOG" />
+		<xs:enumeration value="AUDIO" />
+		<xs:enumeration value="SMS_MMS" />
+		<xs:enumeration value="CONTACT_INFORMATION" />
+		<xs:enumeration value="CALENDAR_INFORMATION" />
+		<xs:enumeration value="SYSTEM_SETTINGS" />
+		<xs:enumeration value="IMAGE" />
+		<xs:enumeration value="BROWSER_INFORMATION" />
+		<xs:enumeration value="NFC" />
+	</xs:restriction>
+</xs:simpleType>
+
+
+</xs:schema>

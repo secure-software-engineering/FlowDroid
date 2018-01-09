@@ -1,0 +1,41 @@
+public final class de.fraunhofer.sit.deserializationvuln.BuildConfig extends java.lang.Object
+{
+    public static final java.lang.String APPLICATION_ID;
+    public static final java.lang.String BUILD_TYPE;
+    public static final boolean DEBUG;
+    public static final java.lang.String FLAVOR;
+    public static final int VERSION_CODE;
+    public static final java.lang.String VERSION_NAME;
+
+    static void <clinit>()
+    {
+        boolean $z0;
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: java.lang.String VERSION_NAME> = "1.0";
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: int VERSION_CODE> = 1;
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: java.lang.String FLAVOR> = "";
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: java.lang.String BUILD_TYPE> = "debug";
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: java.lang.String APPLICATION_ID> = "de.fraunhofer.sit.deserializationvuln";
+
+        $z0 = staticinvoke <java.lang.Boolean: boolean parseBoolean(java.lang.String)>("true");
+
+        <de.fraunhofer.sit.deserializationvuln.BuildConfig: boolean DEBUG> = $z0;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.BuildConfig $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.BuildConfig;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

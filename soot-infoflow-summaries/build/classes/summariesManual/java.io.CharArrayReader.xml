@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(char[])">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(char[],int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int read()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int read(char[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int read(char[],int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int read(java.nio.CharBuffer)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

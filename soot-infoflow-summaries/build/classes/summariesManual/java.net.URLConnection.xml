@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.net.URL)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addRequestProperty(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getAllowUserInteraction()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean allowUserInteraction]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getConnectTimeout()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: int connectTimeout]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getDefaultUseCaches()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean defaultUseCaches]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getDoInput()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean doInput]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getDoOutput()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean doOutput]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHeaderField(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHeaderField(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getHeaderFieldDate(java.lang.String,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getHeaderFieldInt(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getHeaderFieldKey(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getHeaderFieldLong(java.lang.String,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map getHeaderFields()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] headerValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getIfModifiedSince()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: long ifModifiedSince]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.InputStream getInputStream()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+					<to sourceSinkType="Return" BaseType="java.io.InputStream"
+						AccessPath="[java.io.InputStream: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.OutputStream getOutputStream()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+					<to sourceSinkType="Return" BaseType="java.io.OutputStream"
+						AccessPath="[java.io.OutputStream: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getReadTimeout()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: int readTimeout]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map getRequestProperties()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getRequestProperty(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.URL getURL()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getUseCaches()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean useCaches]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String guessContentTypeFromName(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String guessContentTypeFromStream(java.io.InputStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						BaseType="java.io.InputStream"
+						AccessPath="[java.io.InputStream: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setAllowUserInteraction(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean allowUserInteraction]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setConnectTimeout(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: int connectTimeout]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDefaultUseCaches(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean defaultUseCaches]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDoInput(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean doInput]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDoOutput(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean doOutput]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setIfModifiedSince(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: long ifModifiedSince]"
+						AccessPathTypes="[long]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setReadTimeout(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: int readTimeout]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setRequestProperty(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.lang.String[] requestValues]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setUseCaches(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: boolean useCaches]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

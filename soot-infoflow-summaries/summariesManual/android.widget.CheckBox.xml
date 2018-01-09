@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="android.text.Editable isChecked()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[android.widget.CheckBox: boolean isChecked]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setChecked(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[android.widget.CheckBox: boolean isChecked]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+  </methods>
+</summary>

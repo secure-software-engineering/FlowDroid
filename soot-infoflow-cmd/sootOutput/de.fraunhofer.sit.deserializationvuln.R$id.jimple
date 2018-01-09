@@ -1,0 +1,46 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$id extends java.lang.Object
+{
+    public static final int all;
+    public static final int basic;
+    public static final int chains;
+    public static final int none;
+    public static final int packed;
+    public static final int parent;
+    public static final int spread;
+    public static final int spread_inside;
+    public static final int wrap;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$id $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$id;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$id: int wrap> = 2130968584;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int spread_inside> = 2130968583;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int spread> = 2130968582;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int parent> = 2130968581;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int packed> = 2130968580;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int none> = 2130968579;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int chains> = 2130968578;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int basic> = 2130968577;
+
+        <de.fraunhofer.sit.deserializationvuln.R$id: int all> = 2130968576;
+
+        return;
+    }
+}

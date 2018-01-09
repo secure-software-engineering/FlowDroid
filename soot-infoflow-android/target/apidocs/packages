@@ -1,0 +1,15 @@
+soot.jimple.infoflow.android.axml
+soot.jimple.infoflow.android.axml.parsers
+soot.jimple.infoflow.android.callbacks
+soot.jimple.infoflow.android.callbacks.filters
+soot.jimple.infoflow.android.config
+soot.jimple.infoflow.android.data
+soot.jimple.infoflow.android.data.parsers
+soot.jimple.infoflow.android.iccta
+soot.jimple.infoflow.android
+soot.jimple.infoflow.android.manifest
+soot.jimple.infoflow.android.resources
+soot.jimple.infoflow.android.resources.controls
+soot.jimple.infoflow.android.results.xml
+soot.jimple.infoflow.android.source
+soot.jimple.infoflow.android.source.parsers.xml

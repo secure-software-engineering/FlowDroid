@@ -1,0 +1,31 @@
+name: "edu.mit.shared_preferences"
+version: 1
+used_permissions: "android.permission.READ_PHONE_STATE"
+components {
+  name: "edu.mit.shared_preferences.MainActivity"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "android.intent.action.MAIN"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.LAUNCHER"
+    }
+  }
+}
+components {
+  name: "edu.mit.shared_preferences.AnotherActivity"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "edu.mit.DroidBench"
+    }
+  }
+}
+analysis_start: 1470642653
+analysis_end: 1470642655

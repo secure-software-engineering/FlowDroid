@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="summary">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="methods">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="method" type="methodType" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="fileFormatVersion" type="xs:int" />
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="methodType">
+	<xs:sequence>
+		<xs:element name="flows" minOccurs="0" maxOccurs="1">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="flow" type="flowType" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="clears" minOccurs="0" maxOccurs="1">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="clear" type="clearType" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+	<xs:attribute name="id" type="xs:string" />
+</xs:complexType>
+
+<xs:complexType name="flowType">
+	<xs:sequence>
+		<xs:element name="from" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
+		<xs:element name="to" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+	
+	<!-- 
+	True if the "from" object reference is stored in the "to" element instead of just
+	copying over the data.
+	 -->
+	<xs:attribute name="isAlias" type="xs:boolean" />
+	
+	<!--
+	True if no type checks shall be conducted. In that case, data can be copied from
+	the "from" element to the "to" element even if the respective types are not cast-
+	compatible.
+	 -->
+	<xs:attribute name="typeChecking" type="xs:boolean" use="optional" default="true" />
+	
+	<!--
+	True if no further fields shall be appended to the "to" element. Imagine the "from"
+	element references a.b and copies it to d, but a.b.c is tainted. Without this option,
+	the resulting taint would be on d.c. With this option, it would only be on d.  
+	 -->
+	<xs:attribute name="cutSubfields" type="xs:boolean" use="optional" default="false" />
+</xs:complexType>
+
+<xs:complexType name="clearType">
+	<xs:attribute name="sourceSinkType" type="sourceSinkType" use="required" />
+	<xs:attribute name="ParameterIndex" type="xs:int" />
+	<xs:attribute name="AccessPath" type="xs:string" />
+</xs:complexType>
+
+<xs:complexType name="fromToDefinition">
+	<xs:attribute name="sourceSinkType" type="sourceSinkType" use="required" />
+	<xs:attribute name="ParameterIndex" type="xs:int" />
+	<xs:attribute name="BaseType" type="xs:string" />
+	<xs:attribute name="AccessPath" type="xs:string" />
+	<xs:attribute name="AccessPathTypes" type="xs:string" />
+	<xs:attribute name="gap" type="xs:int" />
+</xs:complexType>
+
+<xs:simpleType name="sourceSinkType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="Custom" />
+		<xs:enumeration value="Field" />
+		<xs:enumeration value="Parameter" />
+		<xs:enumeration value="GapBaseObject" />
+		<xs:enumeration value="Return" />
+	</xs:restriction>
+</xs:simpleType>
+
+</xs:schema>

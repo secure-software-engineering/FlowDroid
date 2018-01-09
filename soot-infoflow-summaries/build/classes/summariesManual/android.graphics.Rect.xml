@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(int,int,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(android.graphics.Rect)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int centerX">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int centerY()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float exactCenterX">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float exactCenterY()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String flattenToString()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int height()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void inset(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void offset(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void offsetTo(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readFromParcel(android.os.Parcel)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(int,int,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(android.graphics.Rect)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setEmpty()">
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[android.graphics.Rect: int left]" />
+				<clear sourceSinkType="Field" AccessPath="[android.graphics.Rect: int top]" />
+				<clear sourceSinkType="Field" AccessPath="[android.graphics.Rect: int right]" />
+				<clear sourceSinkType="Field" AccessPath="[android.graphics.Rect: int bottom]" />
+			</clears>
+		</method>
+		<method id="java.lang.String toShortString()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.graphics.Rect unflattenFromString(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void union(int,int,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void union(android.graphics.Rect)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void union(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int width()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

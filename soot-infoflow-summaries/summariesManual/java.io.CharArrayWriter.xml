@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.io.CharArrayWriter append(char)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.CharArrayWriter append(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.CharArrayWriter append(java.lang.CharSequence,int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="char[] toCharArray()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(char[],int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(char[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(char[],int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(java.lang.String,int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(java.io.Writer)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.CharArrayWriter: char[] array]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

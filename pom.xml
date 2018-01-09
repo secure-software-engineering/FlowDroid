@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.fraunhofer.sit.flowdroid</groupId>
+	<artifactId>parent</artifactId>
+	<version>2.5.1</version>
+	<name>FlowDroid Parent Module</name>
+	<packaging>pom</packaging>
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<modules>
+		<module>soot-infoflow</module>
+		<module>soot-infoflow-android</module>
+		<module>soot-infoflow-summaries</module>
+		<module>soot-infoflow-cmd</module>
+	</modules>
+
+</project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.io.PrintStream)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.util.PrintStreamPrinter: java.io.Printer printer]"
+						AccessPathTypes="[java.io.Printer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.util.PrintStreamPrinter: java.io.Printer printer]"
+						AccessPathTypes="[java.io.Printer]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

@@ -1,0 +1,22 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$style extends java.lang.Object
+{
+    public static final int AppTheme;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$style $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$style;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$style: int AppTheme> = 2131230720;
+
+        return;
+    }
+}

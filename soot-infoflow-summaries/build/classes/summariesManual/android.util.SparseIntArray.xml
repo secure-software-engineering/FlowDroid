@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void append(int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void clear()">
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[android.util.SparseIntArray: int[] data]" />
+			</clears>
+		</method>
+		<method id="int get(int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int get(int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void put(int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int valueAt(int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.util.SparseIntArray"
+						AccessPath="[android.util.SparseIntArray: int[] data]"
+						AccessPathTypes="[int[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

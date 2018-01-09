@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.net.InetAddress,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address]"
+						AccessPathTypes="[java.net.InetAddress]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String address]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.InetSocketAddress createUnresolved(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String address]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.InetAddress getAddress()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address]"
+						AccessPathTypes="[java.net.InetAddress]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.InetAddress getHostName()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.InetAddress getHostString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
+						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getPort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address]"
+						AccessPathTypes="[java.net.InetAddress]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
+						AccessPath="[java.net.InetSocketAddress: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

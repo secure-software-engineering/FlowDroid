@@ -1,0 +1,174 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+  <methods>
+    <method id="long[] array()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer asReadOnlyBuffer()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer compact()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer duplicate()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="long get()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer get(long[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer get(long[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="long get(int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer put(long)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer put(long[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer put(long[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer put(java.nio.LongBuffer)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer put(int,long)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="1" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer wrap(long[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.LongBuffer wrap(long[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.LongBuffer: long[] buffer]"
+          	AccessPathTypes="[long[]]" />
+        </flow>
+      </flows>
+    </method>
+  </methods>
+ </summary>

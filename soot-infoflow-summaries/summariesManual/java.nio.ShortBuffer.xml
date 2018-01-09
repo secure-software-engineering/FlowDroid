@@ -1,0 +1,174 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+  <methods>
+    <method id="long[] array()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer asReadOnlyBuffer()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer compact()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer duplicate()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="short get()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer get(short[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer get(short[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="short get(int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer put(short)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer put(short[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer put(short[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer put(java.nio.ShortBuffer)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer put(int,short)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="1" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer wrap(short[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.ShortBuffer wrap(short[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.ShortBuffer: short[] buffer]"
+          	AccessPathTypes="[short[]]" />
+        </flow>
+      </flows>
+    </method>
+  </methods>
+ </summary>

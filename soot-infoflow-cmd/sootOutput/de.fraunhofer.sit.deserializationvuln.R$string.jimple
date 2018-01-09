@@ -1,0 +1,22 @@
+public final class de.fraunhofer.sit.deserializationvuln.R$string extends java.lang.Object
+{
+    public static final int app_name;
+
+    public void <init>()
+    {
+        de.fraunhofer.sit.deserializationvuln.R$string $r0;
+
+        $r0 := @this: de.fraunhofer.sit.deserializationvuln.R$string;
+
+        specialinvoke $r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <de.fraunhofer.sit.deserializationvuln.R$string: int app_name> = 2131165184;
+
+        return;
+    }
+}

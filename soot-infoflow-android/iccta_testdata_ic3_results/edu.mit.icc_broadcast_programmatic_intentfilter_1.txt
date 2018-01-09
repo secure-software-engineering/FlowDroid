@@ -1,0 +1,56 @@
+name: "edu.mit.icc_broadcast_programmatic_intentfilter"
+version: 1
+used_permissions: "android.permission.READ_PHONE_STATE"
+components {
+  name: "edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest"
+  kind: ACTIVITY
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "android.intent.action.MAIN"
+    }
+    attributes {
+      kind: CATEGORY
+      value: "android.intent.category.LAUNCHER"
+    }
+  }
+  exit_points {
+    instruction {
+      statement: "virtualinvoke r0.<edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest: void sendBroadcast(android.content.Intent)>(r1)"
+      class_name: "edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest"
+      method: "<edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest: void onDestroy()>"
+      id: 8
+    }
+    kind: RECEIVER
+    intents {
+      attributes {
+        kind: ACTION
+        value: "edu.mit.icc_broadcast_programmatic_intentfilter.action"
+      }
+      attributes {
+        kind: EXTRA
+        value: "imei"
+      }
+    }
+  }
+}
+components {
+  name: "edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest$1"
+  kind: DYNAMIC_RECEIVER
+  exported: true
+  intent_filters {
+    attributes {
+      kind: ACTION
+      value: "edu.mit.icc_broadcast_programmatic_intentfilter.action"
+    }
+  }
+  registration_instruction {
+    statement: "virtualinvoke r0.<edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest: android.content.Intent registerReceiver(android.content.BroadcastReceiver,android.content.IntentFilter)>($r2, $r3)"
+    class_name: "edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest"
+    method: "<edu.mit.icc_broadcast_programmatic_intentfilter.BroadcastTest: void onCreate(android.os.Bundle)>"
+    id: 8
+  }
+}
+analysis_start: 1470642596
+analysis_end: 1470642597

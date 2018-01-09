@@ -1,0 +1,293 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+  <methods>
+    <method id="java.nio.CharBuffer append(char)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer append(java.lang.CharSequence)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer append(java.lang.CharSequence,int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="char[] array()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="char charAt(int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer asReadOnlyBuffer()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer compact()">
+      <flows>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer duplicate()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return"  />
+        </flow>
+      </flows>
+    </method>
+    <method id="char get()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer get(char[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer get(char[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="char get(int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(char)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(char[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(char[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(java.nio.CharBuffer)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(int,char)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="1" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(java.lang.String)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer put(java.lang.String,int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+        <flow isAlias="true" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="int read(java.nio.CharBuffer)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer slice()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return"  />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer subSequence(int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" />
+          <to sourceSinkType="Return"  />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.lang.String toString()">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Field" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+          <to sourceSinkType="Return" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer wrap(char[])">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer wrap(char[],int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer wrap(java.lang.CharSequence)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+      </flows>
+    </method>
+    <method id="java.nio.CharBuffer wrap(java.lang.CharSequence,int,int)">
+      <flows>
+        <flow isAlias="false" typeChecking="false">
+          <from sourceSinkType="Parameter" ParameterIndex="0" />
+          <to sourceSinkType="Return" AccessPath="[java.nio.CharBuffer: char[] buffer]"
+          	AccessPathTypes="[char[]]" />
+        </flow>
+      </flows>
+    </method>
+  </methods>
+ </summary>

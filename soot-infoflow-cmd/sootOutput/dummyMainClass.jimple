@@ -1,0 +1,43 @@
+class dummyMainClass
+{
+
+    public static void dummyMainMethod(java.lang.String[])
+    {
+        java.lang.String[] $r0;
+        int $i0;
+        de.fraunhofer.sit.deserializationvuln.MainActivity $r1;
+
+        $r0 := @parameter0: java.lang.String[];
+
+        $i0 = 0;
+
+     label1:
+        if $i0 == 0 goto label5;
+
+     label2:
+        $r1 = new de.fraunhofer.sit.deserializationvuln.MainActivity;
+
+        specialinvoke $r1.<de.fraunhofer.sit.deserializationvuln.MainActivity: void <init>()>();
+
+        if $i0 == 1 goto label5;
+
+        virtualinvoke $r1.<de.fraunhofer.sit.deserializationvuln.MainActivity: void onCreate(android.os.Bundle)>(null);
+
+     label3:
+        if $i0 == 4 goto label3;
+
+        if $i0 == 5 goto label4;
+
+        if $i0 == 6 goto label3;
+
+     label4:
+        $r1 = null;
+
+        if $i0 == 7 goto label2;
+
+     label5:
+        if $i0 == 8 goto label1;
+
+        return;
+    }
+}

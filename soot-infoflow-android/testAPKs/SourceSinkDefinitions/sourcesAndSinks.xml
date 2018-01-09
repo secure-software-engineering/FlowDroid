@@ -1,0 +1,143 @@
+<sinkSources>
+	<category id="NO_CATEGORY">	
+		<method signature="&lt;de.testApp.sourcetosink1.MainActivity: java.lang.String source()&gt;">
+			<return type="java.lang.String">
+				<accessPath isSource="true" isSink="false">
+				   	<!-- Wenn leer, dann primitiver Datentyp (int, double, String,...)-->
+				</accessPath>
+			</return>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink1.MainActivity: void sink(java.lang.String)&gt;">
+			<param index="0" type="java.lang.String">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+		</method>
+		
+		<method signature="&lt;de.testApp.sourcetosink2.MainActivity: java.lang.String source()&gt;">
+			<return type="java.lang.String">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink2.MainActivity: void sink1(java.lang.String,java.lang.String)&gt;">
+			<param index="0" type="java.lang.String">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<param index="1" type="java.lang.String">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink2.MainActivity: void sink2(java.lang.String,java.lang.String)&gt;">
+			<!--first Parameter missing because it is no sink--> 
+			<param index="0" type="java.lang.String">
+				<accessPath isSource="false" isSink="false" />
+			</param>
+			<param index="1" type="java.lang.String">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink2.MainActivity: void noSink(java.lang.String)&gt;">
+			<param index="0" type="java.lang.String">
+				<accessPath isSource="false" isSink="false" />
+			</param>
+		</method>
+			
+		<method signature="&lt;de.testApp.sourcetosink3.MainActivity: void source1(de.testApp.sourcetosink3.MainActivity$A)&gt;">
+			<param index="0" type="de.testApp.sourcetosink3.MainActivity$A">
+				<accessPath isSource="true" isSink="false">
+				    <pathElement type="double" field="b" />
+				</accessPath>
+			</param>
+		</method>	
+		
+		<method signature="&lt;de.testApp.sourcetosink3.MainActivity: void sink1(double,boolean)&gt;">
+			<param index="0" type="double">
+				<accessPath isSource="false" isSink="true">
+				</accessPath>
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink3.MainActivity: void sink2(java.lang.Object,boolean)&gt;">
+			<param index="0" type="java.lang.Object">
+				<accessPath isSource="false" isSink="true">
+				</accessPath>
+			</param>
+		</method>	
+		
+		<method signature="&lt;de.testApp.sourcetosink4.MainActivity: java.lang.String source()&gt;">
+			<base type="de.testApp.sourcetosink4.MainActivity">
+				<accessPath isSource="true" isSink="false">
+				    <pathElement type="java.lang.String" field="a" />
+				</accessPath>
+			</base>
+			<return type="java.lang.String">
+				<accessPath isSource="true" isSink="false">
+				</accessPath>
+			</return>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink4.MainActivity: void sink()&gt;">
+			<base type="de.testApp.sourcetosink4.MainActivity">
+				<accessPath isSource="false" isSink="true">
+				    <pathElement type="java.lang.String" field="a" />
+				</accessPath>
+			</base>
+		</method>
+		
+		<method signature="&lt;de.testApp.sourcetosink5.MainActivity: void source1()&gt;">
+			<base type="de.testApp.sourcetosink5.MainActivity">
+				<accessPath isSource="true" isSink="false">
+				    <pathElement type="double" field="a" />
+				</accessPath>
+			</base>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink5.MainActivity: void sink1(double,boolean)&gt;">
+			<param index="0" type="double">
+				<accessPath isSource="false" isSink="true">
+				</accessPath>
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink5.MainActivity: void sink2(java.lang.Object,boolean)&gt;">
+			<param index="0" type="java.lang.Object">
+				<accessPath isSource="false" isSink="true">
+				</accessPath>
+			</param>
+		</method>	
+		
+		<method signature="&lt;de.testApp.sourcetosink6.SourceAndSinks: void parameterSource(de.testApp.sourcetosink6.ObjA)&gt;">
+			<param index="0" type="de.testApp.sourcetosink6.ObjA">
+				<accessPath isSource="true" isSink="false">
+				    <pathElement type="de.testApp.sourcetosink6.ObjAB" field="ab" />
+				    <pathElement type="java.lang.String" field="f" />
+				</accessPath>
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink6.SourceAndSinks: void baseSource()&gt;">
+			<base type="de.testApp.sourcetosink6.SourceAndSinks">
+				<accessPath isSource="true" isSink="false">
+				    <pathElement type="java.lang.String" field="a" />
+				</accessPath>
+			</base>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink6.SourceAndSinks: java.lang.String returnSource()&gt;">
+			<return type="java.lang.String">
+				<accessPath isSource="true" isSink="false">
+				</accessPath>
+			</return>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink6.SourceAndSinks: void parameterSink(de.testApp.sourcetosink6.ObjA,de.testApp.sourcetosink6.ObjA)&gt;">
+			<param index="0" type="de.testApp.sourcetosink6.ObjA">
+				<accessPath isSource="false" isSink="true">
+				    <pathElement type="java.lang.String" field="f" />
+				</accessPath>
+			</param>
+			<param index="1" type="de.testApp.sourcetosink6.ObjA">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+		</method>
+		<method signature="&lt;de.testApp.sourcetosink6.SourceAndSinks: void baseSink()&gt;">
+			<base type="de.testApp.sourcetosink6.SourceAndSinks">
+				<accessPath isSource="false" isSink="true">
+				    <pathElement type="java.lang.String" field="a" />
+				</accessPath>
+			</base>
+		</method>
+	</category>
+</sinkSources>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(int,int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(android.graphics.Point)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void offset(int,int)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object clone()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="java.lang.Object" />
+					<to sourceSinkType="Return" BaseType="java.lang.Object" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void readFromParcel(android.os.Parcel)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(int,int)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" />
+					<to sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int y]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" BaseType="android.graphics.Point"
+						AccessPath="[android.graphics.Point: int x]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

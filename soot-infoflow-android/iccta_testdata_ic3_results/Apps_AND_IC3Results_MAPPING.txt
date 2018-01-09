@@ -1,0 +1,11 @@
+ActivityCommunication1.apk-->de.ecspride_1.txt");
+ActivityCommunication3.apk-->edu.mit.icc_componentname_class_constant_1.txt");
+ActivityCommunication4.apk-->edu.mit.icc_concat_action_string_1.txt");
+ActivityCommunication5.apk-->edu.mit.icc_intent_component_name_1.txt");
+ActivityCommunication7.apk-->edu.mit.icc_non_constant_class_object_1.txt");
+BroadcastTaintAndLeak1.apk-->edu.mit.icc_broadcast_programmatic_intentfilter_1.txt");
+ComponentNotInManifest1.apk-->edu.mit.icc_component_not_in_manifest_1.txt");
+UnresolvableIntent1.apk-->edu.mit.icc_unresolvable_intent_1.txt");
+ServiceCommunication1.apk-->edu.mit.icc_service_messages_1.txt");
+IntentSink1.apk-->de.ecspride_1.txt");    //here we have a problem in DroidBench, in which ActivityCommunication1.apk and IntentSink1.apk share the same package name
+IntentSource1.apk-->lu.uni.snt.serval_1.txt");

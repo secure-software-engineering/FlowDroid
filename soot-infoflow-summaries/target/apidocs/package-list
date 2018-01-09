@@ -1,0 +1,12 @@
+soot.jimple.infoflow.methodSummary
+soot.jimple.infoflow.methodSummary.data.factory
+soot.jimple.infoflow.methodSummary.data.provider
+soot.jimple.infoflow.methodSummary.data.sourceSink
+soot.jimple.infoflow.methodSummary.data.summary
+soot.jimple.infoflow.methodSummary.generator
+soot.jimple.infoflow.methodSummary.handler
+soot.jimple.infoflow.methodSummary.postProcessor
+soot.jimple.infoflow.methodSummary.source
+soot.jimple.infoflow.methodSummary.taintWrappers
+soot.jimple.infoflow.methodSummary.util
+soot.jimple.infoflow.methodSummary.xml
