@@ -84,7 +84,7 @@
 		<method id="java.net.InetAddress getHostName()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
 						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
 						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
 					<to sourceSinkType="Return" />
@@ -94,7 +94,7 @@
 		<method id="java.net.InetAddress getHostString()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Return" BaseType="java.net.InetSocketAddress"
+					<from sourceSinkType="Field" BaseType="java.net.InetSocketAddress"
 						AccessPath="[java.net.InetSocketAddress: java.net.InetAddress address,java.net.InetAddress: java.lang.String host]"
 						AccessPathTypes="[java.net.InetAddress,java.lang.String]" />
 					<to sourceSinkType="Return" />
