@@ -417,9 +417,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 	public static XMLSourceSinkParser fromFile(String fileName, ICategoryFilter categoryFilter) throws IOException {
 		logger.info(String.format("Loading sources and sinks from %s...", fileName));
-		if (!verifyXML(getStream(fileName))) {
-			throw new IOException("The XML-File isn't valid, schema validation failed.");
-		}
+		verifyXML(getStream(fileName));
+
 		InputStream inputStream = getStream(fileName);
 		try {
 			return fromStream(inputStream, categoryFilter);
@@ -541,36 +540,29 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	 * 
 	 * @param fileName
 	 *            of the XML
-	 * @return true = valid XML false = invalid XML
 	 * @throws IOException
 	 */
-	private static boolean verifyXML(InputStream inp) throws IOException {
+	private static void verifyXML(InputStream inp) throws IOException {
 		SchemaFactory sf = SchemaFactory.newInstance(W3C_XML_SCHEMA);
 
 		// Read the schema
 		StreamSource xsdFile = new StreamSource(ResourceUtils.getResourceStream(XSD_FILE_PATH));
 
 		StreamSource xmlFile = new StreamSource(inp);
-		boolean validXML = false;
 		try {
 			Schema schema = sf.newSchema(xsdFile);
 			Validator validator = schema.newValidator();
 			try {
 				validator.validate(xmlFile);
-				validXML = true;
 			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			if (!validXML) {
-				new IOException("File isn't  valid against the xsd");
+				throw new IOException("File isn't  valid against the xsd", e);
 			}
 		} catch (SAXException e) {
-			e.printStackTrace();
+			throw new IOException("File isn't  valid against the xsd", e);
 		} finally {
 			xsdFile.getInputStream().close();
 			xmlFile.getInputStream().close();
 		}
-		return validXML;
 	}
 
 	@Override

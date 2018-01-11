@@ -31,6 +31,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * SourceSinkManager for Android applications. This class uses precise access
@@ -192,7 +193,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 		SootField[] fields = new SootField[apt.getFields().length];
 		for (int i = 0; i < fields.length; i++) {
 			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(apt.getFieldTypes()[i - 1]);
-			Type fieldType = RefType.v(apt.getFieldTypes()[i]);
+			Type fieldType = TypeUtils.getTypeFromString(apt.getFieldTypes()[i]);
 			String fieldName = apt.getFields()[i];
 			SootField fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
 			if (fld == null) {
