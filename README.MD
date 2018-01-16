@@ -37,6 +37,33 @@ Either way, you will find the built JAR files in the "target" folder of the resp
 dependencies that are required for the build. Unless you need to build FlowDroid on a machine without an Internet connection,
 thing should be pretty easy.
 
+## Running The Command-Line Tool
+
+If you want to use the command-line tool to run the data flow tracker, you can use the following command:
+
+```
+java -jar soot-infoflow-cmd/target/soot-infoflow-cmd-jar-with-dependencies.jar \
+    -a <APK File> \
+    -p <Android JAR folder> \
+    -s <SourcesSinks file>
+```
+
+The Android JAR folder is the "platforms" directory inside your Android SDK installation folder. The definition file for sources
+and sinks defines what shall be treated as a source of sensitive information and what shall be treated as a sink that can possibly
+leak sensitive data to the outside world. These definitions are specific to your use case. However, if you are looking for privacy
+issues, you can use our default file "SourcesAndSinks.txt" in the "soot-infoflow-android" folder as a starting point.
+
+For finding out about the other options of the command-line tool, you can run the tool with the "--help" option or have a look at
+the MainClass.initializeCommandLineOptions()" method in the source code (module soot-infoflow-cmd).
+
+## Using FlowDroid as a library
+
+If you want to include FlowDroid as a library into your own solution, you can directly reference the respective JAR files. If you
+use Maven, you can add FlowDroid as a reference and have Maven resolve all required components. Depending on what you want to analyze
+(Android apps or Java programs), your dependencies may vary.
+
+In this section, we will collect code and configuration snippets for common tasks with FlowDroid.
+
 ## Publications
 
 If you want to read the details on how FlowDroid works, <a href="http://tuprints.ulb.tu-darmstadt.de/5937/">the PhD thesis of
