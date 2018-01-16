@@ -4,15 +4,20 @@ This repository hosts the FlowDroid data flow analysis tool. FlowDroid staticall
 Its goal is to provide researchers and practitioners with a tool and library on which they can base their own research projects and
 product implementations. We are happy to see that FlowDroid is now widely used in academia as well as industry.
 
-## Using The Data Flow Tracker
+## Obtaining The Tool
 
-You can use FlowDroid either through its command-line interface (module soot-infoflow-cmd) or as a library. In general, if you would
-like to implement something and need a data flow tracker as a component, you are better off by integrating the FlowDroid modules as
-JAR files. If you just need the results quickly, simply run the command-line interface.
+You can either build FlowDroid on your own using Maven, or you can download a release from here on Github.
 
-FlowDroid is supported on Windows, Mac OS, and Linux.
+### Downloading The Release
 
-## Building The Tool
+The <a href="https://github.com/secure-software-engineering/FlowDroid/releases">Release Page</a> contains all pre-built JAR
+files for each release that we officially publish. We recommend using the latest and greatest version unless you have a specific
+issue that prevents you from doing so. In that case, please let us know (see contact below).
+
+For a quick start with FlowDroid, look at "Using The Data Flow Tracker" below. If you only want to use the command-line tool,
+all you need is the "soot-infoflow-cmd-jar-with-dependencies.jar" file.
+
+### Building The Tool With Maven
 
 From version 2.5 on, FlowDroid is built using Maven. Use
 
@@ -37,7 +42,19 @@ Either way, you will find the built JAR files in the "target" folder of the resp
 dependencies that are required for the build. Unless you need to build FlowDroid on a machine without an Internet connection,
 thing should be pretty easy.
 
-## Running The Command-Line Tool
+### Building The Tool With Eclipse
+
+We work on FlowDroid using the Eclipse IDE. All modules are Eclipse projects and can be imported into the Eclipse IDE. They will appear as Maven projects there and Eclipse should take care of downloading all required dependencies for you.
+
+## Using The Data Flow Tracker
+
+You can use FlowDroid either through its command-line interface (module soot-infoflow-cmd) or as a library. In general, if you would
+like to implement something and need a data flow tracker as a component, you are better off by integrating the FlowDroid modules as
+JAR files. If you just need the results quickly, simply run the command-line interface.
+
+FlowDroid is supported on Windows, Mac OS, and Linux.
+
+### Running The Command-Line Tool
 
 If you want to use the command-line tool to run the data flow tracker, you can use the following command:
 
@@ -56,7 +73,7 @@ issues, you can use our default file "SourcesAndSinks.txt" in the "soot-infoflow
 For finding out about the other options of the command-line tool, you can run the tool with the "--help" option or have a look at
 the MainClass.initializeCommandLineOptions()" method in the source code (module soot-infoflow-cmd).
 
-## Using FlowDroid as a library
+### Using FlowDroid as a library
 
 If you want to include FlowDroid as a library into your own solution, you can directly reference the respective JAR files. If you
 use Maven, you can add FlowDroid as a reference and have Maven resolve all required components. Depending on what you want to analyze
