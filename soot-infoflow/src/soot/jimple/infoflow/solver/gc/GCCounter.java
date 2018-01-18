@@ -10,7 +10,7 @@ import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 class GCCounter<N, D extends FastSolverLinkedNode<D, N>> {
 
 	private final AtomicInteger scheduledTasks = new AtomicInteger();
-	private ConcurrentMap<GCCounter<N, D>, Object> callees;
+	private volatile ConcurrentMap<GCCounter<N, D>, Object> callees;
 
 	public void incTasks() {
 		scheduledTasks.incrementAndGet();
