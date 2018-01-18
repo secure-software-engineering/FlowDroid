@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * This list is intended to be used to save lists, which share the same elements at the 
+ * This list is intended to be used to save lists, which share the same elements at the start
+ * of the list.
+ * The list is meant to be iterated in reverse order, and operations requiring accessing the head
+ * will be slower.
  * @author Marc Miltenberger
  * @param <T> the type to save in this list
  */
@@ -263,43 +266,71 @@ public class ExtensibleList<T> {
 
 		ExtensibleList<T> check = this;
 		int lockedAt = -1;
-		while (check != null) {
-			if (check.actualList != null) {
-				int elem;
-				if (lockedAt == -1)
-					elem = check.actualList.size() - 1;
-				else
-					elem = lockedAt;
+		boolean updateHash = remove;
+		try {
+			while (check != null) {
+				if (check.actualList != null) {
+					int elem;
+					if (lockedAt == -1)
+						elem = check.actualList.size() - 1;
+					else
+						elem = lockedAt;
 
-				T current = check.actualList.get(elem);
-				if (remove) {
-					if (elem < check.lastLocked) {
-						//Too bad... We cannot remove the element, since it is locked (some other list may need it).
-						ExtensibleList<T> result = new ExtensibleList<>();
-						result.actualList = new ArrayList<T>(size);
-						ExtensibleListIterator<T> it = reverseIterator();
-						it.next(); //remove first element
-						while (it.hasNext()) {
-							T n = it.next();
-							result.actualList.add(n);
+					if (remove) {
+						if (elem < check.lastLocked) {
+							//Too bad... We cannot remove the element, since it is locked (some other list may need it).
+							ExtensibleList<T> result = new ExtensibleList<>();
+							result.actualList = new ArrayList<T>(size);
+							ExtensibleListIterator<T> it = reverseIterator();
+							it.next(); //remove first element
+							while (it.hasNext()) {
+								T n = it.next();
+								result.actualList.add(n);
+							}
+							Collections.reverse(result.actualList);
+							result.size = size - 1;
+							updateHash = false;
+							return result;
 						}
-						Collections.reverse(result.actualList);
-						result.size = size - 1;
-						return result;
-					}
-					T b = check.actualList.remove(elem);
-					size--;
+						T b = check.actualList.remove(elem);
+						size--;
 
-					//We need to recompute the hash code:
-					savedHashCode = Integer.MIN_VALUE;
-					/*					check.check.remove(check.check.size() - 1);
-										check();*/
-					return b;
-				} else
-					return check.actualList.get(elem);
+						//We need to recompute the hash code:
+						savedHashCode = Integer.MIN_VALUE;
+						/*					check.check.remove(check.check.size() - 1);
+											check();*/
+						return b;
+					} else
+						return check.actualList.get(elem);
+				}
+				lockedAt = check.previousLockedAt - 1;
+				check = check.previous;
 			}
-			lockedAt = check.previousLockedAt - 1;
-			check = check.previous;
+		} finally {
+			if (updateHash) {
+				//we have changed one list, so let's update all hashcodes from here up to
+				//this list
+				//since this list was not locked, we do not have to worry about other lists,
+				//since no other list should dependent on that list where we removed the element.
+				ExtensibleList<T> update = this;
+				List<ExtensibleList<T>> chain = new ArrayList<ExtensibleList<T>>();
+				while (true) {
+					chain.add(update);
+					if (update == check)
+						break;
+					update = update.previous;
+				}
+
+				int parentHashCode = check.parentHashCode;
+				ListIterator<ExtensibleList<T>> l = chain.listIterator(chain.size());
+				while (l.hasPrevious()) {
+					ExtensibleList<T> list = l.previous();
+					list.parentHashCode = parentHashCode;
+					//force recomputation
+					list.savedHashCode = Integer.MIN_VALUE;
+					parentHashCode = list.onlyElementHashCode();
+				}
+			}
 		}
 
 		return null;
