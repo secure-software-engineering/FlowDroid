@@ -169,8 +169,9 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		SourceContextAndPath scap = clone();
 		Object c = scap.callStack.removeLast();
 		if (c instanceof ExtensibleList) {
+			Stmt last = scap.callStack.getLast();
 			scap.callStack = (ExtensibleList<Stmt>) c;
-			return new Pair<>(scap, scap.callStack.getLast());
+			return new Pair<>(scap, last);
 		} else
 			return new Pair<>(scap, (Stmt) c);
 	}

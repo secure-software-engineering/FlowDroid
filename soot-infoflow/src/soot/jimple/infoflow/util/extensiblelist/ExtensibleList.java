@@ -119,7 +119,7 @@ public class ExtensibleList<T> {
 		int h = parentHashCode;
 		if (actualList != null) {
 			for (T l : actualList) {
-				h ^= l.hashCode();
+				h = 31 * h + l.hashCode();
 			}
 		}
 		savedHashCode = h;
@@ -221,7 +221,7 @@ public class ExtensibleList<T> {
 	 * @return true when this list is empty
 	 */
 	public boolean isEmpty() {
-		return size() == 0;
+		return size == 0;
 	}
 
 	/**
