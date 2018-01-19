@@ -461,4 +461,9 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		return isKilled;
 	}
 
+	@Override
+	public int getStoredEdgeCount() {
+		return 0;
+	}
+
 }
