@@ -296,8 +296,7 @@ public class Infoflow extends AbstractInfoflow {
 					config.getEnableExceptionTracking());
 
 			// Check whether we need to run with one source at a time
-			IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime()
-					&& sourcesSinks != null
+			IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime() && sourcesSinks != null
 					&& sourcesSinks instanceof IOneSourceAtATimeManager ? (IOneSourceAtATimeManager) sourcesSinks
 							: null;
 
@@ -327,8 +326,7 @@ public class Infoflow extends AbstractInfoflow {
 
 				// Get the zero fact
 				Abstraction zeroValue = aliasingStrategy.getSolver() != null
-						? aliasingStrategy.getSolver().getTabulationProblem().createZeroValue()
-						: null;
+						? aliasingStrategy.getSolver().getTabulationProblem().createZeroValue() : null;
 
 				// Initialize the aliasing infrastructure
 				Aliasing aliasing = new Aliasing(aliasingStrategy, manager);
@@ -614,8 +612,7 @@ public class Infoflow extends AbstractInfoflow {
 				// of memory before
 				Runtime.getRuntime().gc();
 				logger.info("Memory consumption after path building: " + (getUsedMemory() / 1000 / 1000) + " MB");
-				logger.info("Path reconstruction took "
-						+ (System.nanoTime() - beforePathReconstruction) / 1E9
+				logger.info("Path reconstruction took " + (System.nanoTime() - beforePathReconstruction) / 1E9
 						+ " seconds");
 			}
 
@@ -651,7 +648,8 @@ public class Infoflow extends AbstractInfoflow {
 				PackManager.v().writeOutput();
 
 			maxMemoryConsumption = Math.max(maxMemoryConsumption, getUsedMemory());
-			System.out.println("Maximum memory consumption: " + maxMemoryConsumption / 1E6 + " MB");
+			logger.info(String.format("Data flow solver took %f seconds. Maximum memory consumption: %f MB",
+					(System.nanoTime() - beforeCallgraph) / 1E9, maxMemoryConsumption / 1E6));
 		} catch (Exception ex) {
 			StringWriter stacktrace = new StringWriter();
 			PrintWriter pw = new PrintWriter(stacktrace);
@@ -734,8 +732,7 @@ public class Infoflow extends AbstractInfoflow {
 		for (Iterator<AbstractionAtSink> absAtSinkIt = res.iterator(); absAtSinkIt.hasNext();) {
 			AbstractionAtSink curAbs = absAtSinkIt.next();
 			for (AbstractionAtSink checkAbs : res)
-				if (checkAbs != curAbs
-						&& checkAbs.getSinkStmt() == curAbs.getSinkStmt()
+				if (checkAbs != curAbs && checkAbs.getSinkStmt() == curAbs.getSinkStmt()
 						&& checkAbs.getAbstraction().isImplicit() == curAbs.getAbstraction().isImplicit()
 						&& checkAbs.getAbstraction().getSourceContext() == curAbs.getAbstraction().getSourceContext())
 					if (checkAbs.getAbstraction().getAccessPath().entails(curAbs.getAbstraction().getAccessPath())) {
