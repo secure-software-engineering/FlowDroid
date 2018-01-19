@@ -148,7 +148,7 @@ public class ExtensibleList<T> {
 	 */
 	public ExtensibleList<T> add(T add) {
 		if (actualList == null)
-			actualList = new ArrayList<T>(1);
+			actualList = new ArrayList<T>(4);
 		actualList.add(add);
 		size++;
 
