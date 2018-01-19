@@ -113,8 +113,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 					// seen before, we skip it. Otherwise, we would run through
 					// loops infinitely.
 					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.equals(abs)
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite())
+							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
+							&& a.equals(abs))
 						return null;
 				}
 
