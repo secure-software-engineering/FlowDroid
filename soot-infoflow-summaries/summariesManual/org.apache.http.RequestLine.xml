@@ -7,7 +7,7 @@
 					<from sourceSinkType="Field"
 						AccessPath="[org.apache.http.RequestLine: java.lang.String uri]"
 						AccessPathTypes="[java.lang.String]" />
-					<from sourceSinkType="Return" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>

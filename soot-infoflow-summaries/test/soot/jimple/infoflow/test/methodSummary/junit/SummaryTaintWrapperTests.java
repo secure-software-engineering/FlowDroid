@@ -1,12 +1,14 @@
 package soot.jimple.infoflow.test.methodSummary.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +27,7 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
+import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -210,6 +213,12 @@ public class SummaryTaintWrapperTests {
 		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void killTaint2()>");
 	}
 
+	@Test
+	public void testAllSummaries() throws URISyntaxException, IOException {
+		EagerSummaryProvider provider = new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);
+		assertFalse(provider.hasLoadingErrors());
+	}
+
 	private void testFlowForMethod(String m) {
 		Infoflow iFlow = null;
 		try {
@@ -244,7 +253,8 @@ public class SummaryTaintWrapperTests {
 			InfoflowResults map = infoflow.getResults();
 
 			assertTrue(map.containsSinkMethod(sink));
-			assertTrue(map.isPathBetweenMethods(sink, source[0]) || map.isPathBetweenMethods(sink, source[1])
+			assertTrue(map.isPathBetweenMethods(sink, source[0])
+					|| map.isPathBetweenMethods(sink, source[1])
 					|| map.isPathBetweenMethods(sink, source[2]));
 			assertEquals(resultCount, map.size());
 		} else {
@@ -301,8 +311,13 @@ public class SummaryTaintWrapperTests {
 			fail("Test aborted - none of the test sources are available");
 		}
 
-		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath()
-				+ sep + testSrc4.getCanonicalPath();
+		appPath = testSrc1.getCanonicalPath()
+				+ sep
+				+ testSrc2.getCanonicalPath()
+				+ sep
+				+ testSrc3.getCanonicalPath()
+				+ sep
+				+ testSrc4.getCanonicalPath();
 		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
 	}
 
