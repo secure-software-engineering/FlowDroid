@@ -296,7 +296,8 @@ public class Infoflow extends AbstractInfoflow {
 					config.getEnableExceptionTracking());
 
 			// Check whether we need to run with one source at a time
-			IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime() && sourcesSinks != null
+			IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime()
+					&& sourcesSinks != null
 					&& sourcesSinks instanceof IOneSourceAtATimeManager ? (IOneSourceAtATimeManager) sourcesSinks
 							: null;
 
@@ -326,7 +327,8 @@ public class Infoflow extends AbstractInfoflow {
 
 				// Get the zero fact
 				Abstraction zeroValue = aliasingStrategy.getSolver() != null
-						? aliasingStrategy.getSolver().getTabulationProblem().createZeroValue() : null;
+						? aliasingStrategy.getSolver().getTabulationProblem().createZeroValue()
+						: null;
 
 				// Initialize the aliasing infrastructure
 				Aliasing aliasing = new Aliasing(aliasingStrategy, manager);
@@ -370,6 +372,7 @@ public class Infoflow extends AbstractInfoflow {
 				}
 
 				InterruptableExecutor resultExecutor = null;
+				long beforePathReconstruction = 0;
 				try {
 					// Print our configuration
 					if (config.getFlowSensitiveAliasing() && !aliasingStrategy.isFlowSensitive())
@@ -529,6 +532,7 @@ public class Infoflow extends AbstractInfoflow {
 						pathTimeoutWatcher.addSolver(builder);
 						pathTimeoutWatcher.start();
 					}
+					beforePathReconstruction = System.nanoTime();
 
 					// Do the normal result computation in the end unless we
 					// have used incremental path building
@@ -610,6 +614,9 @@ public class Infoflow extends AbstractInfoflow {
 				// of memory before
 				Runtime.getRuntime().gc();
 				logger.info("Memory consumption after path building: " + (getUsedMemory() / 1000 / 1000) + " MB");
+				logger.info("Path reconstruction took "
+						+ (System.nanoTime() - beforePathReconstruction) / 1E9
+						+ " seconds");
 			}
 
 			// Execute the post-processors
@@ -727,7 +734,8 @@ public class Infoflow extends AbstractInfoflow {
 		for (Iterator<AbstractionAtSink> absAtSinkIt = res.iterator(); absAtSinkIt.hasNext();) {
 			AbstractionAtSink curAbs = absAtSinkIt.next();
 			for (AbstractionAtSink checkAbs : res)
-				if (checkAbs != curAbs && checkAbs.getSinkStmt() == curAbs.getSinkStmt()
+				if (checkAbs != curAbs
+						&& checkAbs.getSinkStmt() == curAbs.getSinkStmt()
 						&& checkAbs.getAbstraction().isImplicit() == curAbs.getAbstraction().isImplicit()
 						&& checkAbs.getAbstraction().getSourceContext() == curAbs.getAbstraction().getSourceContext())
 					if (checkAbs.getAbstraction().getAccessPath().entails(curAbs.getAbstraction().getAccessPath())) {

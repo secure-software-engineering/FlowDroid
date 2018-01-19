@@ -31,6 +31,7 @@ import soot.jimple.infoflow.data.AccessPathFactory.BasePair;
 import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.util.BaseSelector;
+import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
 
 /**
  * Path tracking item adapted for reconstructing source access paths
@@ -80,10 +81,10 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Extend the call stack
 		if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
 			if (scap.callStack == null)
-				scap.callStack = new ArrayList<Stmt>();
-			else if (!scap.callStack.isEmpty() && scap.callStack.get(0) == abs.getCorrespondingCallSite())
+				scap.callStack = new ExtensibleList<Stmt>();
+			else if (!scap.callStack.isEmpty() && scap.callStack.getFirstSlow() == abs.getCorrespondingCallSite())
 				return null;
-			scap.callStack.add(0, abs.getCorrespondingCallSite());
+			scap.callStack = scap.callStack.addFirstSlow(abs.getCorrespondingCallSite());
 		}
 
 		// Compute the next access path
@@ -231,7 +232,9 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 			// For aliasing relationships, we also need to check the right
 			// side
-			if (rightOp instanceof Local && rightOp == scap.curAP.getPlainValue() && !assignStmt.containsInvokeExpr()
+			if (rightOp instanceof Local
+					&& rightOp == scap.curAP.getPlainValue()
+					&& !assignStmt.containsInvokeExpr()
 					&& !(assignStmt.getRightOp() instanceof LengthExpr)) {
 				// Get the next value from the right side of the assignment
 				final Value[] leftOps = BaseSelector.selectBaseList(assignStmt.getLeftOp(), false);
@@ -475,9 +478,9 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		final SummarySourceContextAndPath scap = new SummarySourceContextAndPath(manager, getAccessPath(), getStmt(),
 				curAP, isAlias, depth, new ArrayList<>(callees), getUserData());
 		if (callStack != null)
-			scap.callStack = new ArrayList<Stmt>(callStack);
+			scap.callStack = new ExtensibleList<Stmt>(callStack);
 		if (path != null)
-			scap.path = new ArrayList<Abstraction>(path);
+			scap.path = new ExtensibleList<Abstraction>(path);
 		return scap;
 	}
 
