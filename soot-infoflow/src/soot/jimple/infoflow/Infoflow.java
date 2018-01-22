@@ -471,8 +471,7 @@ public class Infoflow extends AbstractInfoflow {
 					if (nativeCallHandler != null)
 						nativeCallHandler.shutdown();
 
-					logger.info(
-							"IFDS problem with {} forward and {} backward edges solved, " + "processing {} results...",
+					logger.info("IFDS problem with {} forward and {} backward edges solved, processing {} results...",
 							forwardSolver.getPropagationCount(), aliasingStrategy.getSolver() == null ? 0
 									: aliasingStrategy.getSolver().getPropagationCount(),
 							res == null ? 0 : res.size());
