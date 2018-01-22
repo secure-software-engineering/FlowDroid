@@ -269,7 +269,7 @@ public class ExtensibleList<T> {
 		boolean updateHash = remove;
 		try {
 			while (check != null) {
-				if (check.actualList != null) {
+				if (check.actualList != null && !check.actualList.isEmpty()) {
 					int elem;
 					if (lockedAt == -1)
 						elem = check.actualList.size() - 1;
@@ -305,6 +305,9 @@ public class ExtensibleList<T> {
 				}
 				lockedAt = check.previousLockedAt - 1;
 				check = check.previous;
+			}
+			if (remove) {
+				throw new RuntimeException("No element found to delete");
 			}
 		} finally {
 			if (updateHash) {
