@@ -218,8 +218,13 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.callStack == null) {
 			if (scap.callStack != null)
 				return false;
-		} else if (callStack.size() != scap.callStack.size() || !this.callStack.equals(scap.callStack))
-			return false;
+		} else {
+			if (scap.callStack == null && !callStack.isEmpty())
+				return false;
+
+			if (callStack.size() != scap.callStack.size() || !this.callStack.equals(scap.callStack))
+				return false;
+		}
 
 		if (mergeDifferentPaths) {
 			if (!this.path.equals(scap.path))
