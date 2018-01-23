@@ -87,8 +87,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
-	 * registers a list of classes to be automatically scanned for Android lifecycle
-	 * methods
+	 * registers a list of classes to be automatically scanned for Android
+	 * lifecycle methods
 	 * 
 	 * @param androidClasses
 	 *            The list of classes to be automatically scanned for Android
@@ -100,16 +100,16 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
-	 * registers a list of classes to be automatically scanned for Android lifecycle
-	 * methods
+	 * registers a list of classes to be automatically scanned for Android
+	 * lifecycle methods
 	 * 
 	 * @param androidClasses
 	 *            The list of classes to be automatically scanned for Android
 	 *            lifecycle methods
 	 * @param additionalEntryPoints
-	 *            Additional entry points to be called during the running phase of
-	 *            the respective component. These values must be valid Soot method
-	 *            signatures.
+	 *            Additional entry points to be called during the running phase
+	 *            of the respective component. These values must be valid Soot
+	 *            method signatures.
 	 */
 	public AndroidEntryPointCreator(Collection<SootClass> androidClasses, Collection<String> additionalEntryPoints) {
 		this.androidClasses = androidClasses;
@@ -123,10 +123,10 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 	 * lifecycle
 	 * 
 	 * @param callbackFunctions
-	 *            The list of callback functions to be integrated into the Android
-	 *            lifecycle. This is a mapping from the Android element class
-	 *            (activity, service, etc.) to the list of callback methods for that
-	 *            element.
+	 *            The list of callback functions to be integrated into the
+	 *            Android lifecycle. This is a mapping from the Android element
+	 *            class (activity, service, etc.) to the list of callback
+	 *            methods for that element.
 	 */
 	public void setCallbackFunctions(MultiMap<SootClass, SootMethod> callbackFunctions) {
 		this.callbackFunctions = callbackFunctions;
@@ -137,8 +137,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 	 * 
 	 * @return callbackFunctions The list of callback functions of the Android
 	 *         lifecycle. This is a mapping from the Android element class
-	 *         (activity, service, etc.) to the list of callback methods for that
-	 *         element.
+	 *         (activity, service, etc.) to the list of callback methods for
+	 *         that element.
 	 */
 	public MultiMap<SootClass, SootMethod> getCallbackFunctions() {
 		return callbackFunctions;
@@ -661,9 +661,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 		if (componentType == ComponentType.GCMBaseIntentService) {
 			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
 				SootMethod sm = findMethod(currentClass, sig);
-				if (sm != null
-						&& !sm.getDeclaringClass().getName()
-								.equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
+				if (sm != null && !sm.getDeclaringClass().getName()
+						.equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
 					hasAdditionalMethods |= createPlainMethodCall(classLocal, sm);
 			}
 		} else if (componentType == ComponentType.GCMListenerService) {
@@ -868,9 +867,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 			if (entryPoints != null) {
 				if (modelAdditionalMethods)
 					for (SootMethod currentMethod : currentClass.getMethods())
-						if (entryPoints.contains(currentMethod.toString())
-								&& !AndroidEntryPointConstants.getActivityLifecycleMethods()
-										.contains(currentMethod.getSubSignature())) {
+						if (entryPoints.contains(currentMethod.toString()) && !AndroidEntryPointConstants
+								.getActivityLifecycleMethods().contains(currentMethod.getSubSignature())) {
 							hasMethodsToInvoke = true;
 							break;
 						}
@@ -1040,7 +1038,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 	 * @param applicationClass
 	 *            The class in which the user-defined application is implemented
 	 * @param applicationLocal
-	 *            The local containing the instance of the user-defined application
+	 *            The local containing the instance of the user-defined
+	 *            application
 	 */
 	private void addApplicationCallbackMethods() {
 		if (!this.callbackFunctions.containsKey(applicationClass))
@@ -1123,8 +1122,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 	 *            rather existing ones shall be used.
 	 * @param callbackSignature
 	 *            An empty string if calls to all callback methods for the given
-	 *            class shall be generated, otherwise the subsignature of the only
-	 *            callback method to generate.
+	 *            class shall be generated, otherwise the subsignature of the
+	 *            only callback method to generate.
 	 * @return True if a matching callback has been found, otherwise false.
 	 */
 	private boolean addCallbackMethods(SootClass currentClass, Set<SootClass> referenceClasses,
@@ -1205,9 +1204,9 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 	 * @param className
 	 *            The class for which to get the callback methods
 	 * @param callbackSignature
-	 *            An empty string if all callback methods for the given class shall
-	 *            be return, otherwise the subsignature of the only callback method
-	 *            to return.
+	 *            An empty string if all callback methods for the given class
+	 *            shall be return, otherwise the subsignature of the only
+	 *            callback method to return.
 	 * @return The callback methods registered for the given class
 	 */
 	private MultiMap<SootClass, SootMethod> getCallbackMethodsForClass(SootClass clazz, String callbackSignature) {
@@ -1296,8 +1295,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 
 	/**
 	 * Sets whether additional methods which are present in a component, but are
-	 * neither lifecycle methods nor callbacks, shall also be modeled in the dummy
-	 * main method.
+	 * neither lifecycle methods nor callbacks, shall also be modeled in the
+	 * dummy main method.
 	 * 
 	 * @param modelAdditionalMethods
 	 *            True if additional methods shall be modeled, otherwise false
@@ -1308,8 +1307,8 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 
 	/**
 	 * Gets whether additional methods which are present in a component, but are
-	 * neither lifecycle methods nor callbacks, shall also be modeled in the dummy
-	 * main method.
+	 * neither lifecycle methods nor callbacks, shall also be modeled in the
+	 * dummy main method.
 	 * 
 	 * @return True if additional methods shall be modeled, otherwise false
 	 */
