@@ -123,7 +123,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scWebView.getType()))
 			return true;
 
-		logger.warn("Layout class %s is not derived from android.view.View", theClass.getName());
+		logger.warn(String.format("Layout class %s is not derived from android.view.View", theClass.getName()));
 		return false;
 	}
 
@@ -170,9 +170,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Parses all layout XML files in the given APK file and loads the IDs of the
-	 * user controls in it. This method only registers a Soot phase that is run when
-	 * the Soot packs are next run
+	 * Parses all layout XML files in the given APK file and loads the IDs of
+	 * the user controls in it. This method only registers a Soot phase that is
+	 * run when the Soot packs are next run
 	 * 
 	 * @param fileName
 	 *            The APK file in which to look for user controls
@@ -188,9 +188,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Parses all layout XML files in the given APK file and loads the IDs of the
-	 * user controls in it. This method directly executes the analyses witout
-	 * registering any Soot phases.<
+	 * Parses all layout XML files in the given APK file and loads the IDs of
+	 * the user controls in it. This method directly executes the analyses
+	 * witout registering any Soot phases.<
 	 * 
 	 * @param fileName
 	 *            The APK file in which to look for user controls
@@ -357,8 +357,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Gets the user controls found in the layout XML file. The result is a mapping
-	 * from the id to the respective layout control.
+	 * Gets the user controls found in the layout XML file. The result is a
+	 * mapping from the id to the respective layout control.
 	 * 
 	 * @return The layout controls found in the XML file.
 	 */
@@ -370,9 +370,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Gets the user controls found in the layout XML file. The result is a mapping
-	 * from the file name in which the control was found to the respective layout
-	 * control.
+	 * Gets the user controls found in the layout XML file. The result is a
+	 * mapping from the file name in which the control was found to the
+	 * respective layout control.
 	 * 
 	 * @return The layout controls found in the XML file.
 	 */
@@ -391,8 +391,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Gets the fragments found in the layout XML file. The result is a mapping from
-	 * the activity class to the set of found fragments ids.
+	 * Gets the fragments found in the layout XML file. The result is a mapping
+	 * from the activity class to the set of found fragments ids.
 	 * 
 	 * @return The fragments found in the XML file.
 	 */

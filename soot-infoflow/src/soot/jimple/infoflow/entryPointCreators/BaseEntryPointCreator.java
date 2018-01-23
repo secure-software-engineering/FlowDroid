@@ -246,9 +246,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	protected Stmt buildMethodCall(SootMethod methodToCall, Body body, Local classLocal, LocalGenerator gen,
 			Set<SootClass> parentClasses) {
-		assert methodToCall != null : "Current method was null";
-		assert body != null : "Body was null";
-		assert gen != null : "Local generator was null";
+		// If we don't have a method, we cannot call it (sad but true)
+		if (methodToCall == null)
+			return null;
 
 		if (classLocal == null && !methodToCall.isStatic()) {
 			logger.warn("Cannot call method {}, because there is no local for base object: {}", methodToCall,
