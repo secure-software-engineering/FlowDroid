@@ -240,6 +240,7 @@ public class HeapTestsPtsAliasing extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
+	//This test does not work at the moment:
 	//@Test(timeout = 300000)
 	public void negativeMultiLevelTest2() {
 		IInfoflow infoflow = initInfoflow();
