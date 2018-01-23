@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.results.InfoflowResults;
 
@@ -66,6 +67,7 @@ public class CallbackTests extends JUnitTests {
 			@Override
 			public void configureAnalyzer(InfoflowAndroidConfiguration config) {
 				config.getSourceSinkConfig().setLayoutMatchingMode(LayoutMatchingMode.MatchAll);
+				config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
 			}
 		});
 

@@ -372,6 +372,7 @@
 ~<android.app.Activity: void setContentView(int)>
 ~<android.app.Activity: void setContentView(android.view.View)>
 <android.widget.EditText: android.text.Editable getText()>
+<android.widget.Button: void setHint(java.lang.CharSequence)>
 <android.text.Editable: java.lang.String toString()>
 
 <javax.servlet.ServletResponse: java.io.PrintWriter getWriter()>
