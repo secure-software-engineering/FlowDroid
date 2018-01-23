@@ -196,8 +196,7 @@ public class AndroidEntryPointCreator extends BaseEntryPointCreator implements I
 					// Conditionally call the onCreate method
 					NopStmt thenStmt = Jimple.v().newNopStmt();
 					createIfStmt(thenStmt);
-					buildMethodCall(findMethod(currentClass, AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE), body,
-							localVal, generator);
+					searchAndBuildMethod(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE, currentClass, localVal);
 					body.getUnits().add(thenStmt);
 					hasContentProviders = true;
 				}
