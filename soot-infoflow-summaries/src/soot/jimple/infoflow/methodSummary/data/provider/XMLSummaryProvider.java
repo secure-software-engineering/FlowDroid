@@ -188,22 +188,24 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	public boolean supportsClass(String clazz) {
 		if (supportedClasses.contains(clazz))
 			return true;
-		if (loadableClasses.contains(clazz))
+		if (loadableClasses != null && loadableClasses.contains(clazz))
 			return true;
 		return false;
 	}
 
 	@Override
 	public ClassSummaries getMethodFlows(Set<String> classes, String methodSignature) {
-		for (String className : classes)
-			if (loadableClasses.contains(className))
-				loadClass(className);
+		if (loadableClasses != null) {
+			for (String className : classes)
+				if (loadableClasses.contains(className))
+					loadClass(className);
+		}
 		return summaries.filterForMethod(classes, methodSignature);
 	}
 
 	@Override
 	public MethodSummaries getMethodFlows(String className, String methodSignature) {
-		if (loadableClasses.contains(className))
+		if (loadableClasses != null && loadableClasses.contains(className))
 			loadClass(className);
 		MethodSummaries classSummaries = summaries.getClassSummaries(className);
 		return classSummaries == null ? null : classSummaries.filterForMethod(methodSignature);
@@ -219,7 +221,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 				if (fileToClass(f).equals(clazz)) {
 					try {
 						summaries.merge(clazz, reader.read(f));
-						loadableClasses.remove(clazz);
+						if (loadableClasses != null)
+							loadableClasses.remove(clazz);
 						supportedClasses.add(clazz);
 						break;
 					} catch (Exception e) {
@@ -235,7 +238,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 				if (fileToClass(getFileName(path)).equals(clazz)) {
 					try (InputStream inputStream = path.getFileSystem().provider().newInputStream(path)) {
 						summaries.merge(clazz, reader.read(new InputStreamReader(inputStream)));
-						loadableClasses.remove(clazz);
+						if (loadableClasses != null)
+							loadableClasses.remove(clazz);
 						supportedClasses.add(clazz);
 						break;
 					} catch (Exception e) {
@@ -281,7 +285,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public MethodSummaries getClassFlows(String className) {
-		if (loadableClasses.contains(className))
+		if (loadableClasses != null && loadableClasses.contains(className))
 			loadClass(className);
 		return summaries.getClassSummaries(className);
 	}
