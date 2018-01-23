@@ -415,4 +415,15 @@ public class ExtensibleList<T> {
 		list.size = size + 1;
 		return list;
 	}
+
+	@Override
+	public String toString() {
+		List<T> res = new ArrayList<T>();
+		ExtensibleListIterator<T> it = reverseIterator();
+		while (it.hasNext()) {
+			res.add(it.next());
+		}
+		Collections.reverse(res);
+		return res.toString();
+	}
 }
