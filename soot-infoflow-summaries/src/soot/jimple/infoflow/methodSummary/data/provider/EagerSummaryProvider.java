@@ -3,7 +3,6 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,6 +42,6 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	private void load() {
 		for (Object s : loadableClasses.toArray())
 			loadClass(s.toString());
-		loadableClasses = Collections.emptySet();
+		loadableClasses = null;
 	}
 }

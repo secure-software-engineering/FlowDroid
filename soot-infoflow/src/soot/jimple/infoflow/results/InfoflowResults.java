@@ -45,8 +45,8 @@ public class InfoflowResults {
 
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
-	private MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
-	private List<String> exceptions = null;
+	private volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
+	private volatile List<String> exceptions = null;
 	private int terminationState = TERMINATION_SUCCESS;
 
 	/**

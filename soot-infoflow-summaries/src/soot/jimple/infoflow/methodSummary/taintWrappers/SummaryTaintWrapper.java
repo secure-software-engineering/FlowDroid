@@ -352,8 +352,12 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		this.manager = manager;
 
 		// Load all classes for which we have summaries to signatures
-		for (String className : flows.getLoadableClasses())
-			loadClass(className);
+		Set<String> loadableClasses = flows.getLoadableClasses();
+		if (loadableClasses != null) {
+			for (String className : loadableClasses)
+				loadClass(className);
+		}
+
 		for (String className : flows.getSupportedClasses())
 			loadClass(className);
 
@@ -460,7 +464,8 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		Set<Taint> res = null;
 
 		// Check whether the base object or some field in it is tainted
-		if (!sm.isStatic() && (ap.isLocal() || ap.isInstanceFieldRef())
+		if (!sm.isStatic()
+				&& (ap.isLocal() || ap.isInstanceFieldRef())
 				&& ap.getPlainValue() == sm.getActiveBody().getThisLocal()) {
 			if (res == null)
 				res = new HashSet<>();
@@ -661,7 +666,8 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 			wrapperMisses.incrementAndGet();
 			SootMethod method = stmt.getInvokeExpr().getMethod();
 
-			if (!classSupported.value && reportMissingSummaries
+			if (!classSupported.value
+					&& reportMissingSummaries
 					&& SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
 				System.out.println("Missing summary for class " + method.getDeclaringClass());
 
@@ -785,7 +791,8 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 				SootMethod callee = Scene.v().grabMethod(curGap.getSignature());
 				if (callee != null)
 					for (SootMethod implementor : getAllImplementors(callee))
-						if (implementor.getDeclaringClass().isConcrete() && !implementor.getDeclaringClass().isPhantom()
+						if (implementor.getDeclaringClass().isConcrete()
+								&& !implementor.getDeclaringClass().isPhantom()
 								&& implementor.isConcrete()) {
 							Set<AccessPathPropagator> implementorPropagators = spawnAnalysisIntoClientCode(implementor,
 									curPropagator);
@@ -1224,12 +1231,17 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		else if (flowSource.isThis() && taint.isField())
 			return true;
 		// A value can also flow from the return value of a gap to somewhere
-		else if (flowSource.isReturn() && flowSource.getGap() != null && taint.getGap() != null
+		else if (flowSource.isReturn()
+				&& flowSource.getGap() != null
+				&& taint.getGap() != null
 				&& compareFields(taint, flowSource))
 			return true;
 		// For aliases, we over-approximate flows from the return edge to all
 		// possible exit nodes
-		else if (flowSource.isReturn() && flowSource.getGap() == null && taint.getGap() == null && taint.isReturn()
+		else if (flowSource.isReturn()
+				&& flowSource.getGap() == null
+				&& taint.getGap() == null
+				&& taint.isReturn()
 				&& compareFields(taint, flowSource))
 			return true;
 		return false;
@@ -1255,7 +1267,8 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		if (checkType == Scene.v().getObjectType())
 			return baseType instanceof RefType;
 
-		return baseType == checkType || fastHierarchy.canStoreType(baseType, checkType)
+		return baseType == checkType
+				|| fastHierarchy.canStoreType(baseType, checkType)
 				|| fastHierarchy.canStoreType(checkType, baseType);
 	}
 
@@ -1466,8 +1479,10 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 			// If we taint something in the base object, its type must match. We
 			// might have a taint for "a" in o.add(a) and need to check whether
 			// "o" matches the expected type in our summary.
-			if (!(sinkType instanceof PrimType) && !isCastCompatible(taintType, sinkType)
-					&& flowSink.getType() == SourceSinkType.Field && !checkTypes) {
+			if (!(sinkType instanceof PrimType)
+					&& !isCastCompatible(taintType, sinkType)
+					&& flowSink.getType() == SourceSinkType.Field
+					&& !checkTypes) {
 				// If the target is an array, the value might also flow into an
 				// element
 				boolean found = false;
