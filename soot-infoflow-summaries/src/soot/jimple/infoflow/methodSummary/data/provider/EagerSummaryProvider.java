@@ -39,7 +39,7 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 		load();
 	}
 
-	private void load() {
+	protected void load() {
 		for (Object s : loadableClasses.toArray())
 			loadClass(s.toString());
 		loadableClasses = null;

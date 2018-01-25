@@ -88,7 +88,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 					boolean isClassSupported = false;
 
 					// Get the flows in the target method
-					MethodSummaries methodFlows = flows.getMethodFlows(clazz.getName(), methodSig);
+					MethodSummaries methodFlows = flows.getMethodFlows(clazz, methodSig);
 					isClassSupported |= flows.supportsClass(clazz.getName());
 					classSummaries.merge(clazz.getName(), methodFlows);
 
@@ -97,8 +97,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 					if (classSummaries.isEmpty() && !clazz.isConcrete()) {
 						for (SootClass childClass : getAllChildClasses(clazz)) {
 							isClassSupported |= flows.supportsClass(childClass.getName());
-							classSummaries.merge(childClass.getName(),
-									flows.getMethodFlows(childClass.getName(), methodSig));
+							classSummaries.merge(childClass.getName(), flows.getMethodFlows(childClass, methodSig));
 						}
 					}
 
@@ -107,7 +106,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 					if (!isClassSupported && classSummaries.isEmpty()) {
 						for (SootClass intf : clazz.getInterfaces()) {
 							isClassSupported |= flows.supportsClass(intf.getName());
-							classSummaries.merge(intf.getName(), flows.getMethodFlows(intf.getName(), methodSig));
+							classSummaries.merge(intf.getName(), flows.getMethodFlows(intf, methodSig));
 						}
 					}
 
@@ -1044,7 +1043,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		if (stmt != null) {
 			// Check the callees reported by the ICFG
 			for (SootMethod callee : manager.getICFG().getCalleesOfCallAt(stmt)) {
-				MethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass().getName(), subsig);
+				MethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass(), subsig);
 				if (flows != null && !flows.isEmpty()) {
 					if (classSupported != null)
 						classSupported.value = true;

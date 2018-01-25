@@ -2,6 +2,7 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 
 import java.util.Set;
 
+import soot.SootClass;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 
@@ -41,8 +42,10 @@ public interface IMethodSummaryProvider {
 
 	/**
 	 * Gets the data flows inside the given method for the given class.
+	 * The different overloads are functionally equivalent, but may use the
+	 * different types in order to be faster
 	 * 
-	 * @param className
+	 * @param sootClass
 	 *            The class containing the method. If two classes B and C inherit
 	 *            from some class A, methods in A can either be evaluated in the
 	 *            context of B or C.
@@ -50,7 +53,24 @@ public interface IMethodSummaryProvider {
 	 *            The signature of the method for which to get the flow summaries.
 	 * @return The flow summaries for the given method in the given class
 	 */
-	public MethodSummaries getMethodFlows(String className, String methodSubSignature);
+	public default MethodSummaries getMethodFlows(SootClass sootClass, String methodSubSignature) {
+		return getMethodFlows(sootClass.getName(), methodSubSignature);
+	}
+
+	/**
+	 * Gets the data flows inside the given method for the given class.
+	 * The different overloads are functionally equivalent, but may use the
+	 * different types in order to be faster
+	 * 
+	 * @param sootClass
+	 *            The class containing the method. If two classes B and C inherit
+	 *            from some class A, methods in A can either be evaluated in the
+	 *            context of B or C.
+	 * @param methodSignature
+	 *            The signature of the method for which to get the flow summaries.
+	 * @return The flow summaries for the given method in the given class
+	 */
+	public MethodSummaries getMethodFlows(String className, String methodSignature);
 
 	/**
 	 * Gets all flows for the given method signature in the given set of classes
