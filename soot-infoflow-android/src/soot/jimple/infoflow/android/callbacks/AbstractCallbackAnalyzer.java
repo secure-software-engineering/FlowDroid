@@ -543,8 +543,9 @@ public abstract class AbstractCallbackAnalyzer {
 		SootMethod m = c.getMethodUnsafe(methodSignature);
 		if (m != null)
 			return m;
-		if (c.hasSuperclass())
-			return getMethodFromHierarchyEx(c.getSuperclass(), methodSignature);
+		SootClass superClass = c.getSuperclassUnsafe();
+		if (superClass != null)
+			return getMethodFromHierarchyEx(superClass, methodSignature);
 		return null;
 	}
 
@@ -568,8 +569,9 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// If we are a class, one of our superclasses might implement an Android
 		// interface
-		if (sootClass.hasSuperclass())
-			analyzeClassInterfaceCallbacks(baseClass, sootClass.getSuperclass(), lifecycleElement);
+		SootClass superClass = sootClass.getSuperclassUnsafe();
+		if (superClass != null)
+			analyzeClassInterfaceCallbacks(baseClass, superClass, lifecycleElement);
 
 		// Do we implement one of the well-known interfaces?
 		for (SootClass i : collectAllInterfaces(sootClass)) {
