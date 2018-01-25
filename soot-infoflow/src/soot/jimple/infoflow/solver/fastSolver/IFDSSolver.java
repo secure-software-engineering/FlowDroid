@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -642,7 +643,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 				else
 					isEssential = memoryManager.isEssentialJoinPoint(targetVal, relatedCallSite);
 
-				if (maxJoinPointAbstractions < 0 || existingVal.getNeighborCount() < maxJoinPointAbstractions
+				if (maxJoinPointAbstractions < 0
+						|| existingVal.getNeighborCount() < maxJoinPointAbstractions
 						|| isEssential)
 					existingVal.addNeighbor(targetVal);
 			}
@@ -698,7 +700,19 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Factory method for this solver's thread-pool executor.
 	 */
 	protected InterruptableExecutor getExecutor() {
-		return new SetPoolExecutor(1, this.numThreads, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		SetPoolExecutor executor = new SetPoolExecutor(1, this.numThreads, 30, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<Runnable>());
+		executor.setThreadFactory(new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread thrIFDS = new Thread(r);
+				thrIFDS.setDaemon(true);
+				thrIFDS.setName("IFDS");
+				return thrIFDS;
+			}
+		});
+		return executor;
 	}
 
 	/**
