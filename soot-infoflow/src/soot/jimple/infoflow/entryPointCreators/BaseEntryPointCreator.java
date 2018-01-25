@@ -548,7 +548,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		// Make sure that we don't run into loops
 		if (!constructionStack.add(createdClass)) {
 			if (warnOnConstructorLoop) {
-				logger.warn("Ran into a constructor generation loop for class " + createdClass
+				logger.warn("Ran into a constructor generation loop for class "
+						+ createdClass
 						+ ", substituting with null...");
 			}
 			Local tempLocal = generator.generateLocal(RefType.v(createdClass));
@@ -605,7 +606,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 					// outer class. In this case, we do not generate a new
 					// instance, but use the one we already have.
 					String typeName = type.toString().replaceAll("\\[\\]]", "");
-					if (type instanceof RefType && isInnerClass && typeName.equals(outerClass)
+					if (type instanceof RefType
+							&& isInnerClass
+							&& typeName.equals(outerClass)
 							&& this.localVarsForClasses.containsKey(typeName))
 						params.add(this.localVarsForClasses.get(typeName));
 					else if (shallowMode) {
@@ -725,8 +728,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	protected static boolean isSimpleType(String t) {
-		if (t.equals("java.lang.String") || t.equals("void") || t.equals("char") || t.equals("byte")
-				|| t.equals("short") || t.equals("int") || t.equals("float") || t.equals("long") || t.equals("double")
+		if (t.equals("java.lang.String")
+				|| t.equals("void")
+				|| t.equals("char")
+				|| t.equals("byte")
+				|| t.equals("short")
+				|| t.equals("int")
+				|| t.equals("float")
+				|| t.equals("long")
+				|| t.equals("double")
 				|| t.equals("boolean")) {
 			return true;
 		} else {
@@ -770,8 +780,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 *         otherwise null
 	 */
 	protected SootMethod findMethod(SootClass currentClass, String subsignature) {
-		if (currentClass.declaresMethod(subsignature)) {
-			return currentClass.getMethod(subsignature);
+		SootMethod m = currentClass.getMethodUnsafe(subsignature);
+		if (m != null) {
+			return m;
 		}
 		if (currentClass.hasSuperclass()) {
 			return findMethod(currentClass.getSuperclass(), subsignature);

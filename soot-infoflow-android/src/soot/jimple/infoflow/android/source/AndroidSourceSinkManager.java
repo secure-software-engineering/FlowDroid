@@ -500,8 +500,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			// Check whether we have any of the interfaces on the list
 			final String subSig = callee.getSubSignature();
 			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
-				if (i.declaresMethod(subSig)) {
-					def = getSourceDefinition(i.getMethod(subSig));
+				SootMethod m = i.getMethodUnsafe(subSig);
+				if (m != null) {
+					def = getSourceDefinition(m);
 					if (def != null)
 						return def;
 				}
@@ -713,7 +714,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 						new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
 			}
 			if (id == null) {
-				logger.debug("Could not find assignment to local " + ((Local) ie.getArg(0)).getName() + " in method "
+				logger.debug("Could not find assignment to local "
+						+ ((Local) ie.getArg(0)).getName()
+						+ " in method "
 						+ cfg.getMethodOf(sCallSite).getSignature());
 				return null;
 			}
