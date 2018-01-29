@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.android.manifest;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,7 +33,7 @@ import soot.jimple.infoflow.util.SystemClassHandler;
  *      "http://developer.android.com/guide/topics/manifest/manifest-intro.html">App
  *      Manifest</a>
  */
-public class ProcessManifest {
+public class ProcessManifest implements Closeable {
 
 	/**
 	 * Enumeration containing the various component types supported in Android
@@ -448,7 +450,7 @@ public class ProcessManifest {
 	 */
 	public int getVersionCode() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionCode");
-		return attr == null ? -1 : Integer.parseInt("" + attr.getValue());
+		return attr == null ? -1 : Integer.parseInt(attr.getValue().toString());
 	}
 
 	/**
@@ -458,7 +460,7 @@ public class ProcessManifest {
 	 */
 	public String getVersionName() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionName");
-		return attr == null ? null : (String) attr.getValue();
+		return attr == null ? null : attr.getValue().toString();
 	}
 
 	/**
@@ -499,7 +501,7 @@ public class ProcessManifest {
 		if (attr.getValue() instanceof Integer)
 			return (Integer) attr.getValue();
 
-		return Integer.parseInt("" + attr.getValue());
+		return Integer.parseInt(attr.getValue().toString());
 	}
 
 	/**
@@ -519,7 +521,7 @@ public class ProcessManifest {
 		if (attr.getValue() instanceof Integer)
 			return (Integer) attr.getValue();
 
-		return Integer.parseInt("" + attr.getValue());
+		return Integer.parseInt(attr.getValue().toString());
 	}
 
 	/**
@@ -623,7 +625,7 @@ public class ProcessManifest {
 	 * @return
 	 */
 	public Set<AXmlNode> getLaunchableActivities() {
-		Set<AXmlNode> allLaunchableActivities = new HashSet<AXmlNode>();
+		Set<AXmlNode> allLaunchableActivities = new LinkedHashSet<AXmlNode>();
 
 		for (AXmlNode activity : activities) {
 			for (AXmlNode activityChildren : activity.getChildren()) {
