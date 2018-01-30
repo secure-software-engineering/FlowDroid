@@ -105,18 +105,11 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 			@Override
 			public void run() {
 				// Sleep until we have reached the timeout
-				boolean allTerminated = true;
+				boolean allTerminated = isTerminated();
 				long timeElapsed = 0;
+
 				while (!stopped && ((timeElapsed = System.currentTimeMillis() - startTime) < 1000 * timeout)) {
-					// Check whether all solvers in our watchlist have finished
-					// their work
-					allTerminated = true;
-					for (IMemoryBoundedSolver solver : solvers.keySet()) {
-						if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated()) {
-							allTerminated = false;
-							break;
-						}
-					}
+					allTerminated = isTerminated();
 					if (allTerminated)
 						break;
 
@@ -141,6 +134,20 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 				}
 
 				logger.info("FlowDroid timeout watcher terminated");
+			}
+
+			private boolean isTerminated() {
+				boolean allTerminated;
+				// Check whether all solvers in our watchlist have finished
+				// their work
+				allTerminated = true;
+				for (IMemoryBoundedSolver solver : solvers.keySet()) {
+					if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated()) {
+						allTerminated = false;
+						break;
+					}
+				}
+				return allTerminated;
 			}
 
 		}, "FlowDroid Timeout Watcher").start();

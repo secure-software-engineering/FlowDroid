@@ -853,7 +853,7 @@ public class SetupApplication {
 										hasNewCallback = true;
 									break;
 								}
-								SootClass sclass = currentClass.getSuperclass();
+								SootClass sclass = currentClass.getSuperclassUnsafe();
 								if (sclass == null) {
 									logger.error(String.format("Callback method %s not found in class %s", methodName,
 											callbackClass.getName()));
