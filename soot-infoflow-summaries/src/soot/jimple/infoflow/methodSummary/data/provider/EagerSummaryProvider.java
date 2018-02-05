@@ -44,4 +44,10 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 			loadClass(s.toString());
 		loadableClasses = null;
 	}
+
+	@Override
+	public boolean mayHaveSummaryForMethod(String subsig) {
+		return subsigMethodsWithSummaries.contains(subsig);
+	}
+
 }

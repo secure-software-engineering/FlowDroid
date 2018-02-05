@@ -1037,28 +1037,37 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 			}
 		}
 
-		// Check the callgraph
-		ClassSummaries classSummaries = new ClassSummaries();
 		final String subsig = method.getSubSignature();
-		if (stmt != null) {
-			// Check the callees reported by the ICFG
-			for (SootMethod callee : manager.getICFG().getCalleesOfCallAt(stmt)) {
-				MethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass(), subsig);
-				if (flows != null && !flows.isEmpty()) {
-					if (classSupported != null)
-						classSupported.value = true;
-					classSummaries.merge("<dummy>", flows);
+		if (!flows.mayHaveSummaryForMethod(subsig))
+			return ClassSummaries.EMPTY_SUMMARIES;
+
+		ClassSummaries classSummaries = null;
+		if (!method.isConstructor() && !method.isStaticInitializer() && !method.isStatic()) {
+
+			// Check the callgraph
+			if (stmt != null) {
+				// Check the callees reported by the ICFG
+				for (SootMethod callee : manager.getICFG().getCalleesOfCallAt(stmt)) {
+					MethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass(), subsig);
+					if (flows != null && !flows.isEmpty()) {
+						if (classSupported != null)
+							classSupported.value = true;
+						if (classSummaries == null)
+							classSummaries = new ClassSummaries();
+						classSummaries.merge("<dummy>", flows);
+					}
 				}
 			}
 		}
 
 		// Check the direct callee
-		if (classSummaries.isEmpty()) {
+		if (classSummaries == null || classSummaries.isEmpty()) {
 			SummaryResponse response = methodToImplFlows
 					.getUnchecked(new SummaryQuery(method.getDeclaringClass(), subsig));
 			if (response != null) {
 				if (classSupported != null)
 					classSupported.value = response.isClassSupported;
+				classSummaries = new ClassSummaries();
 				classSummaries.merge(response.classSummaries);
 			}
 		}

@@ -92,4 +92,11 @@ public interface IMethodSummaryProvider {
 	 */
 	public MethodSummaries getClassFlows(String clazz);
 
+	/**
+	 * Returns true iff there exists a summary for a given subsignature 
+	 * @param subsig the sub signature
+	 * @return true iff there exists a summary for a given subsignature
+	 */
+	public boolean mayHaveSummaryForMethod(String subsig);
+
 }
