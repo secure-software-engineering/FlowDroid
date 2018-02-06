@@ -708,7 +708,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			public Thread newThread(Runnable r) {
 				Thread thrIFDS = new Thread(r);
 				thrIFDS.setDaemon(true);
-				thrIFDS.setName("IFDS");
+				thrIFDS.setName("IFDS Solver");
 				return thrIFDS;
 			}
 		});

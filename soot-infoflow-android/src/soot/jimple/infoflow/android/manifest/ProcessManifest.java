@@ -436,7 +436,7 @@ public class ProcessManifest implements Closeable {
 	public String getPackageName() {
 		if (cache_PackageName == null) {
 			AXmlAttribute<?> attr = this.manifest.getAttribute("package");
-			if (attr != null)
+			if (attr != null && attr.getValue() != null)
 				cache_PackageName = (String) attr.getValue();
 		}
 		return cache_PackageName;
@@ -450,7 +450,7 @@ public class ProcessManifest implements Closeable {
 	 */
 	public int getVersionCode() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionCode");
-		return attr == null ? -1 : Integer.parseInt(attr.getValue().toString());
+		return attr == null || attr.getValue() == null ? -1 : Integer.parseInt(attr.getValue().toString());
 	}
 
 	/**
@@ -460,7 +460,7 @@ public class ProcessManifest implements Closeable {
 	 */
 	public String getVersionName() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionName");
-		return attr == null ? null : attr.getValue().toString();
+		return attr == null || attr.getValue() == null ? null : attr.getValue().toString();
 	}
 
 	/**
@@ -470,7 +470,7 @@ public class ProcessManifest implements Closeable {
 	 */
 	public String getApplicationName() {
 		AXmlAttribute<?> attr = this.application.getAttribute("name");
-		return attr == null ? null : expandClassName((String) attr.getValue());
+		return attr == null || attr.getValue() == null ? null : expandClassName((String) attr.getValue());
 	}
 
 	/**
@@ -480,7 +480,7 @@ public class ProcessManifest implements Closeable {
 	 */
 	public boolean isApplicationEnabled() {
 		AXmlAttribute<?> attr = this.application.getAttribute("enabled");
-		return attr == null || !attr.getValue().equals(Boolean.FALSE);
+		return attr == null || attr.getValue() == null || !attr.getValue().equals(Boolean.FALSE);
 	}
 
 	/**
@@ -495,7 +495,7 @@ public class ProcessManifest implements Closeable {
 			return -1;
 		AXmlAttribute<?> attr = usesSdk.get(0).getAttribute("minSdkVersion");
 
-		if (attr == null)
+		if (attr == null || attr.getValue() == null)
 			return -1;
 
 		if (attr.getValue() instanceof Integer)
@@ -515,7 +515,7 @@ public class ProcessManifest implements Closeable {
 			return -1;
 		AXmlAttribute<?> attr = usesSdk.get(0).getAttribute("targetSdkVersion");
 
-		if (attr == null)
+		if (attr == null || attr.getValue() == null)
 			return -1;
 
 		if (attr.getValue() instanceof Integer)

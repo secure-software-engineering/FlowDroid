@@ -321,7 +321,7 @@ public class Infoflow extends AbstractInfoflow {
 					public Thread newThread(Runnable r) {
 						Thread thrIFDS = new Thread(r);
 						thrIFDS.setDaemon(true);
-						thrIFDS.setName("Soot Infoflow");
+						thrIFDS.setName("FlowDroid");
 						return thrIFDS;
 					}
 				});
