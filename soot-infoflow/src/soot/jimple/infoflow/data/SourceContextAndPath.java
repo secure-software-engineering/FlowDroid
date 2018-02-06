@@ -77,8 +77,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	 *            The abstraction to put on the taint propagation path
 	 * @param pathConfig
 	 *            The configuration for constructing taint propagation paths
-	 * @return The new taint propagation path. If this path would contain a
-	 *         loop, null is returned instead of the looping path.
+	 * @return The new taint propagation path. If this path would contain a loop,
+	 *         null is returned instead of the looping path.
 	 */
 	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
 		if (abs == null)
@@ -113,13 +113,15 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 					// seen before, we skip it. Otherwise, we would run through
 					// loops infinitely.
 					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite() && a.equals(abs))
+							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
+							&& a.equals(abs))
 						return null;
 				}
 
 				// We cannot leave the same method at two different sites
 				Abstraction topAbs = path.getLast();
-				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
+				if (topAbs.equals(abs)
+						&& topAbs.getCorrespondingCallSite() != null
 						&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
 						&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
 					return null;
@@ -130,7 +132,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();
 			scap.path.add(abs);
-			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
+			if (pathConfig != null
+					&& pathConfig.getMaxPathLength() > 0
 					&& scap.path.size() > pathConfig.getMaxPathLength())
 				return null;
 		}
@@ -141,7 +144,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 				scap = this.clone();
 			if (scap.callStack == null)
 				scap.callStack = new ExtensibleList<Stmt>();
-			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
+			else if (pathConfig != null
+					&& pathConfig.getMaxCallStackSize() > 0
 					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
 				return null;
 			scap.callStack.add(abs.getCorrespondingCallSite());
@@ -154,9 +158,9 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Pops the top item off the call stack.
 	 * 
-	 * @return The new {@link SourceContextAndPath} object as the first element
-	 *         of the pair and the call stack item that was popped off as the
-	 *         second element. If there is no call stack, null is returned.
+	 * @return The new {@link SourceContextAndPath} object as the first element of
+	 *         the pair and the call stack item that was popped off as the second
+	 *         element. If there is no call stack, null is returned.
 	 */
 	public Pair<SourceContextAndPath, Stmt> popTopCallStackItem() {
 		if (callStack == null || callStack.isEmpty())
@@ -173,8 +177,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	}
 
 	/**
-	 * Gets whether the current call stack is empty, i.e., the path is in the
-	 * method from which it originated
+	 * Gets whether the current call stack is empty, i.e., the path is in the method
+	 * from which it originated
 	 * 
 	 * @return True if the call stack is empty, otherwise false
 	 */
@@ -201,7 +205,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.hashCode != 0 && scap.hashCode != 0 && this.hashCode != scap.hashCode)
 			return false;
 
-		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults() && path != null
+		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults()
+				&& path != null
 				&& scap.path != null;
 		if (mergeDifferentPaths) {
 			if (path.size() != scap.path.size()) {
@@ -213,11 +218,13 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.callStack == null) {
 			if (scap.callStack != null)
 				return false;
-		} else if (scap.callStack == null) {
-			if (this.callStack != null)
+		} else {
+			if (scap.callStack == null || scap.callStack.isEmpty())
 				return false;
-		} else if (callStack.size() != scap.callStack.size() || !this.callStack.equals(scap.callStack))
-			return false;
+
+			if (callStack.size() != scap.callStack.size() || !this.callStack.equals(scap.callStack))
+				return false;
+		}
 
 		if (mergeDifferentPaths) {
 			if (!this.path.equals(scap.path))
