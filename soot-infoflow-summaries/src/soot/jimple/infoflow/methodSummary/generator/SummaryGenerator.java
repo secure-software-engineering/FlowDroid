@@ -159,13 +159,13 @@ public class SummaryGenerator {
 
 			// We also need to analyze methods of parent classes except for
 			// those methods that have been overwritten in the child class
-			SootClass curClass = sc;
-			while (curClass.hasSuperclass()) {
-				curClass = curClass.getSuperclass();
+			SootClass curClass = sc.getSuperclassUnsafe();
+			while (curClass != null) {
 				for (SootMethod sm : curClass.getMethods())
 					if (sm.isConcrete() && (sm.isPublic() || sm.isProtected()))
 						if (doneMethods.add(sm.getSubSignature()))
 							methods.add(sm.getSignature());
+				curClass = curClass.getSuperclassUnsafe();
 			}
 		}
 
@@ -201,8 +201,12 @@ public class SummaryGenerator {
 					curSummaries.merge(newSums);
 				}
 
-				System.out.println("Class summaries for " + entry.getKey() + " done in "
-						+ (System.nanoTime() - nanosBeforeClass) / 1E9 + " seconds for " + curSummaries.getFlowCount()
+				System.out.println("Class summaries for "
+						+ entry.getKey()
+						+ " done in "
+						+ (System.nanoTime() - nanosBeforeClass) / 1E9
+						+ " seconds for "
+						+ curSummaries.getFlowCount()
 						+ " summaries");
 			}
 
@@ -403,8 +407,11 @@ public class SummaryGenerator {
 			throw e;
 		}
 
-		System.out.println("Method summary for " + methodSig + " done in "
-				+ (System.nanoTime() - nanosBeforeMethod) / 1E9 + " seconds");
+		System.out.println("Method summary for "
+				+ methodSig
+				+ " done in "
+				+ (System.nanoTime() - nanosBeforeMethod) / 1E9
+				+ " seconds");
 		return summaries;
 	}
 

@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
@@ -36,8 +37,18 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 	 */
 	private InterruptableExecutor createExecutor(int maxThreadNum) {
 		int numThreads = Runtime.getRuntime().availableProcessors();
-		return new InterruptableExecutor(maxThreadNum == -1 ? numThreads : Math.min(maxThreadNum, numThreads),
-				Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		InterruptableExecutor executor = new InterruptableExecutor(
+				maxThreadNum == -1 ? numThreads : Math.min(maxThreadNum, numThreads), Integer.MAX_VALUE, 30,
+				TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		executor.setThreadFactory(new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				Thread thr = new Thread(r, "Path reconstruction");
+				return thr;
+			}
+		});
+		return executor;
 	}
 
 	@Override

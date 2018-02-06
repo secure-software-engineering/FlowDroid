@@ -39,9 +39,15 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 		load();
 	}
 
-	private void load() {
+	protected void load() {
 		for (Object s : loadableClasses.toArray())
 			loadClass(s.toString());
 		loadableClasses = null;
 	}
+
+	@Override
+	public boolean mayHaveSummaryForMethod(String subsig) {
+		return subsigMethodsWithSummaries.contains(subsig);
+	}
+
 }

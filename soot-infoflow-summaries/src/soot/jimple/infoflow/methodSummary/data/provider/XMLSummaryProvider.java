@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.SootMethod;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.xml.XMLReader;
@@ -44,6 +45,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	private Set<Path> pathes;
 	private FileSystem fileSystem;
 
+	protected Set<String> subsigMethodsWithSummaries = new HashSet<String>();
 	private boolean hasLoadingErrors;
 
 	/**
@@ -237,7 +239,21 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 			for (Path path : pathes) {
 				if (fileToClass(getFileName(path)).equals(clazz)) {
 					try (InputStream inputStream = path.getFileSystem().provider().newInputStream(path)) {
-						summaries.merge(clazz, reader.read(new InputStreamReader(inputStream)));
+						MethodSummaries read = reader.read(new InputStreamReader(inputStream));
+						if (read.getFlows() != null) {
+							for (String sig : read.getFlows().keySet()) {
+								if (!filter(sig))
+									subsigMethodsWithSummaries.add(sig);
+							}
+						}
+						if (read.getClears() != null) {
+							for (String sig : read.getClears().keySet()) {
+								if (!filter(sig))
+									subsigMethodsWithSummaries.add(sig);
+							}
+						}
+						subsigMethodsWithSummaries.addAll(read.getFlows().keySet());
+						summaries.merge(clazz, read);
 						if (loadableClasses != null)
 							loadableClasses.remove(clazz);
 						supportedClasses.add(clazz);
@@ -250,6 +266,10 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 				}
 			}
 		}
+	}
+
+	private boolean filter(String sig) {
+		return sig.equals(SootMethod.constructorName) || sig.equals(SootMethod.staticInitializerName);
 	}
 
 	public boolean hasLoadingErrors() {
@@ -288,6 +308,15 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 		if (loadableClasses != null && loadableClasses.contains(className))
 			loadClass(className);
 		return summaries.getClassSummaries(className);
+	}
+
+	@Override
+	public boolean mayHaveSummaryForMethod(String subsig) {
+		if (loadableClasses == null || loadableClasses.isEmpty())
+
+			//we don't know, there are unloaded classes...
+			return true;
+		return subsigMethodsWithSummaries.contains(subsig);
 	}
 
 }
