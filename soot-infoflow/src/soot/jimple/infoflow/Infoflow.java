@@ -77,7 +77,6 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.solver.cfg.InfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
 import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
@@ -917,8 +916,9 @@ public class Infoflow extends AbstractInfoflow {
 	 *            The SourceSinkManager
 	 */
 	private void eliminateDeadCode(ISourceSinkManager sourcesSinks) {
-		InfoflowManager dceManager = new InfoflowManager(config, null, new InfoflowCFG(), null, null, null,
-				new AccessPathFactory(config));
+		InfoflowManager dceManager = new InfoflowManager(config, null,
+				icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(), config.getEnableExceptionTracking()), null,
+				null, null, new AccessPathFactory(config));
 
 		ICodeOptimizer dce = new DeadCodeEliminator();
 		dce.initialize(config);
