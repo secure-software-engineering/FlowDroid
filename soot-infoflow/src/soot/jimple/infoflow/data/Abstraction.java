@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
+import gnu.trove.set.hash.TCustomHashSet;
+import gnu.trove.strategy.HashingStrategy;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
@@ -75,6 +75,63 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	private boolean dependsOnCutAP = false;
 
 	private AtomicBitSet pathFlags = null;
+
+	public static class NeighborHashingStrategy implements HashingStrategy<Abstraction> {
+
+		private static final long serialVersionUID = 4836518478381414909L;
+		private static final NeighborHashingStrategy INSTANCE = new NeighborHashingStrategy();
+
+		@Override
+		public int computeHashCode(Abstraction abs) {
+			if (abs.hashCode != 0)
+				return abs.hashCode;
+
+			final int prime = 31;
+			int result = 1;
+
+			// deliberately ignore prevAbs
+			result = prime * result + ((abs.sourceContext == null) ? 0 : abs.sourceContext.hashCode());
+			result = prime * result + ((abs.accessPath == null) ? 0 : abs.accessPath.hashCode());
+			result = prime * result + ((abs.activationUnit == null) ? 0 : abs.activationUnit.hashCode());
+			result = prime * result + (abs.exceptionThrown ? 1231 : 1237);
+			result = prime * result + ((abs.postdominators == null) ? 0 : abs.postdominators.hashCode());
+			result = prime * result + (abs.dependsOnCutAP ? 1231 : 1237);
+			result = prime * result + (abs.isImplicit ? 1231 : 1237);
+			result = prime * result + ((abs.predecessor == null) ? 0 : abs.predecessor.hashCode());
+			abs.hashCode = result;
+
+			return result;
+		}
+
+		@Override
+		public boolean equals(Abstraction abs1, Abstraction abs2) {
+			if (abs1 == abs2)
+				return true;
+			if (abs1 == null || abs2 == null || abs1.getClass() != abs2.getClass())
+				return false;
+
+			// If we have already computed hash codes, we can use them for
+			// comparison
+			int hashCode1 = abs1.hashCode;
+			int hashCode2 = abs2.hashCode;
+			if (hashCode1 != 0 && hashCode2 != 0 && hashCode1 != hashCode2)
+				return false;
+
+			if (abs1.accessPath == null) {
+				if (abs2.accessPath != null)
+					return false;
+			} else if (!abs1.equals(abs2.accessPath))
+				return false;
+			if (abs1.predecessor == null) {
+				if (abs2.predecessor != null)
+					return false;
+			} else if (!abs1.equals(abs2.predecessor))
+				return false;
+
+			return abs1.localEquals(abs2);
+		}
+
+	}
 
 	public Abstraction(SourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
 			boolean exceptionThrown, boolean isImplicit) {
@@ -473,7 +530,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 		synchronized (this) {
 			if (neighbors == null)
-				neighbors = Sets.newIdentityHashSet();
+				neighbors = new TCustomHashSet<Abstraction>(NeighborHashingStrategy.INSTANCE);
 			else if (InfoflowConfiguration.getMergeNeighbors()) {
 				// Check if we already have an identical neighbor
 				for (Abstraction nb : neighbors) {
