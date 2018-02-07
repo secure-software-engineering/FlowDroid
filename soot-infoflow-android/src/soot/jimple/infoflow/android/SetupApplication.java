@@ -550,7 +550,7 @@ public class SetupApplication {
 	private void constructCallgraphInternal() {
 		// If we are configured to use an existing callgraph, we may not replace
 		// it
-		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExisingCallgraph)
+		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 			return;
 
 		// Do we need ICC instrumentation?
@@ -727,7 +727,7 @@ public class SetupApplication {
 				// If we work with an existing callgraph, the callgraph never
 				// changes and thus it doesn't make any sense to go multiple
 				// rounds
-				if (config.getSootIntegrationMode() == SootIntegrationMode.UseExisingCallgraph)
+				if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 					break;
 			}
 		} finally {
@@ -799,7 +799,7 @@ public class SetupApplication {
 	private void releaseCallgraph() {
 		// If we are configured to use an existing callgraph, we may not release
 		// it
-		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExisingCallgraph)
+		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 			return;
 
 		Scene.v().releaseCallGraph();
@@ -1002,7 +1002,7 @@ public class SetupApplication {
 	private void createMainMethod(SootClass component) {
 		// There is no need to create a main method if we don't want to generate
 		// a callgraph
-		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExisingCallgraph)
+		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 			return;
 
 		// Always update the entry point creator to reflect the newest set
