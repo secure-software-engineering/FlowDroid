@@ -903,7 +903,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * 
 		 */
-		UseExisingCallgraph;
+		UseExistingCallgraph;
 
 		/**
 		 * Gets whether this integration mode requires FlowDroid to build its own
