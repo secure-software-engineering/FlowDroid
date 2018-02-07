@@ -379,10 +379,12 @@ public abstract class AbstractCallbackAnalyzer {
 
 						// Make sure that we referring to the correct class and
 						// method
-						isFragmentTransaction = scFragmentTransaction != null && Scene.v().getFastHierarchy()
-								.canStoreType(iinvExpr.getBase().getType(), scFragmentTransaction.getType());
-						isFragmentTransaction |= scSupportFragmentTransaction != null && Scene.v().getFastHierarchy()
-								.canStoreType(iinvExpr.getBase().getType(), scSupportFragmentTransaction.getType());
+						isFragmentTransaction = scFragmentTransaction != null
+								&& Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(),
+										scFragmentTransaction.getType());
+						isFragmentTransaction |= scSupportFragmentTransaction != null
+								&& Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(),
+										scSupportFragmentTransaction.getType());
 						isAddTransaction = stmt.getInvokeExpr().getMethod().getName().equals("add")
 								|| stmt.getInvokeExpr().getMethod().getName().equals("replace");
 
@@ -397,8 +399,9 @@ public abstract class AbstractCallbackAnalyzer {
 
 									boolean addFragment = scFragment != null
 											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
-									addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
-											.canStoreType(rt, scSupportFragment.getType());
+									addFragment |= scSupportFragment != null
+											&& Scene.v().getFastHierarchy().canStoreType(rt,
+													scSupportFragment.getType());
 									if (addFragment)
 										fragmentClasses.put(method.getDeclaringClass(), rt.getSootClass());
 								}
@@ -539,10 +542,12 @@ public abstract class AbstractCallbackAnalyzer {
 	}
 
 	private SootMethod getMethodFromHierarchyEx(SootClass c, String methodSignature) {
-		if (c.declaresMethod(methodSignature))
-			return c.getMethod(methodSignature);
-		if (c.hasSuperclass())
-			return getMethodFromHierarchyEx(c.getSuperclass(), methodSignature);
+		SootMethod m = c.getMethodUnsafe(methodSignature);
+		if (m != null)
+			return m;
+		SootClass superClass = c.getSuperclassUnsafe();
+		if (superClass != null)
+			return getMethodFromHierarchyEx(superClass, methodSignature);
 		return null;
 	}
 
@@ -566,8 +571,9 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// If we are a class, one of our superclasses might implement an Android
 		// interface
-		if (sootClass.hasSuperclass())
-			analyzeClassInterfaceCallbacks(baseClass, sootClass.getSuperclass(), lifecycleElement);
+		SootClass superClass = sootClass.getSuperclassUnsafe();
+		if (superClass != null)
+			analyzeClassInterfaceCallbacks(baseClass, superClass, lifecycleElement);
 
 		// Do we implement one of the well-known interfaces?
 		for (SootClass i : collectAllInterfaces(sootClass)) {
@@ -593,7 +599,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 *         callback, otherwise false
 	 */
 	private boolean isUICallback(SootClass i) {
-		return i.getName().startsWith("android.widget") || i.getName().startsWith("android.view")
+		return i.getName().startsWith("android.widget")
+				|| i.getName().startsWith("android.view")
 				|| i.getName().startsWith("android.content.DialogInterface$");
 	}
 

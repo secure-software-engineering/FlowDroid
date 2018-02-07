@@ -853,12 +853,13 @@ public class SetupApplication {
 										hasNewCallback = true;
 									break;
 								}
-								if (!currentClass.hasSuperclass()) {
+								SootClass sclass = currentClass.getSuperclassUnsafe();
+								if (sclass == null) {
 									logger.error(String.format("Callback method %s not found in class %s", methodName,
 											callbackClass.getName()));
 									break;
 								}
-								currentClass = currentClass.getSuperclass();
+								currentClass = sclass;
 							}
 						}
 					}

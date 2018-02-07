@@ -59,4 +59,9 @@ public class MemorySummaryProvider implements IMethodSummaryProvider {
 		return summaries.getClassSummaries(clazz);
 	}
 
+	@Override
+	public boolean mayHaveSummaryForMethod(String subsig) {
+		return true;
+	}
+
 }

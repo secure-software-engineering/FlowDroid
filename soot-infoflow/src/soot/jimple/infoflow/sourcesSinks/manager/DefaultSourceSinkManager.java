@@ -65,8 +65,9 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 						set.add(i);
 						set.addAll(interfacesOf.getUnchecked(i));
 					}
-					if (sc.hasSuperclass())
-						set.addAll(interfacesOf.getUnchecked(sc.getSuperclass()));
+					SootClass superClass = sc.getSuperclassUnsafe();
+					if (superClass != null)
+						set.addAll(interfacesOf.getUnchecked(superClass));
 					return set;
 				}
 
