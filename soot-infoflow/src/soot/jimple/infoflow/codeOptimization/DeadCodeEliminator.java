@@ -12,8 +12,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
-import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
@@ -49,7 +49,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 				continue;
 
 			// Exclude the dummy main method
-			if (Scene.v().getEntryPoints().contains(sm.method()))
+			if (entryPoints.contains(sm.method()))
 				continue;
 
 			List<Unit> callSites = getCallsInMethod(sm.method());
@@ -66,8 +66,8 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 		}
 
 		// Perform an inter-procedural constant propagation and code cleanup
-		InterproceduralConstantValuePropagator ipcvp = new InterproceduralConstantValuePropagator(manager,
-				Scene.v().getEntryPoints(), sourcesSinks, taintWrapper);
+		InterproceduralConstantValuePropagator ipcvp = new InterproceduralConstantValuePropagator(manager, entryPoints,
+				sourcesSinks, taintWrapper);
 		ipcvp.setRemoveSideEffectFreeMethods(
 				config.getCodeEliminationMode() == CodeEliminationMode.RemoveSideEffectFreeCode
 						&& config.getImplicitFlowMode() != ImplicitFlowMode.AllImplicitFlows);
@@ -103,8 +103,8 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 * 
 	 * @param method
 	 *            The method from which to get all invocations
-	 * @return The list of units calling other methods in the given method if
-	 *         there is at least one such unit. Otherwise null.
+	 * @return The list of units calling other methods in the given method if there
+	 *         is at least one such unit. Otherwise null.
 	 */
 	private List<Unit> getCallsInMethod(SootMethod method) {
 		List<Unit> callSites = null;

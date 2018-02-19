@@ -39,8 +39,8 @@ import soot.jimple.toolkits.scalar.NopEliminator;
 
 /**
  * Entry point creator that performs Java method invocations. The invocation
- * order is simulated to be arbitrary. If you only need a sequential list,
- * use the {@link SequentialEntryPointCreator} instead.
+ * order is simulated to be arbitrary. If you only need a sequential list, use
+ * the {@link SequentialEntryPointCreator} instead.
  * 
  * @author Steven Arzt
  */
@@ -52,16 +52,18 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 
 	/**
 	 * Creates a new instanceof the {@link DefaultEntryPointCreator} class
-	 * @param methodsToCall A collection containing the methods to be called
-	 * in the dummy main method. Note that the order of the method calls is
-	 * simulated to be arbitrary. Entries must be valid Soot method signatures.
+	 * 
+	 * @param methodsToCall
+	 *            A collection containing the methods to be called in the dummy main
+	 *            method. Note that the order of the method calls is simulated to be
+	 *            arbitrary. Entries must be valid Soot method signatures.
 	 */
 	public DefaultEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
 	}
 
 	@Override
-	protected SootMethod createDummyMainInternal(SootMethod mainMethod) {
+	protected SootMethod createDummyMainInternal() {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
@@ -122,6 +124,11 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 	@Override
 	public Collection<String> getRequiredClasses() {
 		return SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false).keySet();
+	}
+
+	@Override
+	public Collection<SootMethod> getAdditionalMethods() {
+		return null;
 	}
 
 }

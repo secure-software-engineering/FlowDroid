@@ -7,7 +7,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 
 /**
  * A callback filter that disallows inner classes from being used in other host

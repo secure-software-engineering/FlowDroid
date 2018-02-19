@@ -361,9 +361,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 *         otherwise false
 	 */
 	private boolean typeSupportsConstants(Type returnType) {
-		if (returnType == IntType.v()
-				|| returnType == LongType.v()
-				|| returnType == FloatType.v()
+		if (returnType == IntType.v() || returnType == LongType.v() || returnType == FloatType.v()
 				|| returnType == DoubleType.v())
 			return true;
 
@@ -488,15 +486,6 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						Scene.v().addClass(exceptionClass);
 					}
 
-					// Create the new method
-					thrower = Scene.v().makeSootMethod("throw" + exceptionThrowers.size(),
-							Collections.<Type>emptyList(), VoidType.v());
-					thrower.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
-
-					final Body body = Jimple.v().newBody(thrower);
-					thrower.setActiveBody(body);
-					final SootMethod meth = thrower;
-
 					IEntryPointCreator epc = new BaseEntryPointCreator() {
 
 						@Override
@@ -505,7 +494,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						}
 
 						@Override
-						protected SootMethod createDummyMainInternal(SootMethod emptySootMethod) {
+						protected SootMethod createDummyMainInternal() {
 							LocalGenerator generator = new LocalGenerator(body);
 
 							// Create the counter used for the opaque predicate
@@ -534,13 +523,35 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 							body.getUnits().add(throwNewEx);
 
 							body.getUnits().add(afterEx);
-							return meth;
+							return mainMethod;
+						}
+
+						@Override
+						protected void createEmptyMainMethod() {
+							// Create the new method
+							SootMethod thrower = Scene.v().makeSootMethod("throw" + exceptionThrowers.size(),
+									Collections.<Type>emptyList(), VoidType.v());
+							thrower.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
+
+							final Body body = Jimple.v().newBody(thrower);
+							thrower.setActiveBody(body);
+
+							// Register the new method
+							exceptionThrowers.put(t.getException(), thrower);
+							exceptionClass.addMethod(thrower);
+
+							// Make it available to the entry point creator
+							mainMethod = thrower;
+						}
+
+						@Override
+						public Collection<SootMethod> getAdditionalMethods() {
+							return null;
 						}
 
 					};
-					epc.createDummyMain(thrower);
-					exceptionThrowers.put(t.getException(), thrower);
-					exceptionClass.addMethod(thrower);
+
+					epc.createDummyMain();
 				}
 
 				// Call the exception thrower after the old call site
@@ -731,8 +742,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 * @return True if the given method is an Android library stub, false otherwise
 	 */
 	private boolean methodIsAndroidStub(SootMethod method) {
-		if (!(Options.v().src_prec() == Options.src_prec_apk
-				&& method.getDeclaringClass().isLibraryClass()
+		if (!(Options.v().src_prec() == Options.src_prec_apk && method.getDeclaringClass().isLibraryClass()
 				&& SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName())))
 			return false;
 
@@ -740,8 +750,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		for (Unit u : method.getActiveBody().getUnits()) {
 			if (u instanceof DefinitionStmt) {
 				DefinitionStmt defStmt = (DefinitionStmt) u;
-				if (!(defStmt.getRightOp() instanceof ThisRef)
-						&& !(defStmt.getRightOp() instanceof ParameterRef)
+				if (!(defStmt.getRightOp() instanceof ThisRef) && !(defStmt.getRightOp() instanceof ParameterRef)
 						&& !(defStmt.getRightOp() instanceof NewExpr))
 					return false;
 			} else if (u instanceof InvokeStmt) {
@@ -783,8 +792,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		boolean hasCallSites = false;
 		for (Unit callSite : callSites) {
 			// If this call site is in an excluded method, we ignore it
-			if (excludedMethods != null
-					&& manager.getICFG().isReachable(callSite)
+			if (excludedMethods != null && manager.getICFG().isReachable(callSite)
 					&& excludedMethods.contains(manager.getICFG().getMethodOf(callSite)))
 				continue;
 

@@ -19,14 +19,13 @@ import soot.Unit;
 import soot.Value;
 import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.internal.JSpecialInvokeExpr;
-import soot.jimple.internal.JVirtualInvokeExpr;
 
 public class IccRedirectionCreator {
 
@@ -37,10 +36,6 @@ public class IccRedirectionCreator {
 	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
 	private static RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
 
-	// dest to SootMethod is not good since one dest can have multiple redirect
-	// method
-	// private Map<String, SootMethod> destinations2SootMethod = new
-	// HashMap<String, SootMethod>();
 	private Map<String, SootMethod> source2RedirectMethod = new HashMap<String, SootMethod>();
 	private Map<String, SootClass> destination2sootClass = new HashMap<String, SootClass>();
 
@@ -57,8 +52,6 @@ public class IccRedirectionCreator {
 
 			ipcSC.setApplicationClass();
 			ipcSC.setInScene(true);
-
-			// Scene.v().addClass(ipcSC);
 		}
 		return s;
 	}
@@ -86,20 +79,7 @@ public class IccRedirectionCreator {
 	 */
 	public SootMethod getRedirectMethod(IccLink link) {
 		if (!destination2sootClass.keySet().contains(link.getDestinationC())) {
-			SootClass destinationSC = null;
-
-			// if
-			// (link.getExit_kind().equals(IccTAConstants.ContentProviderExitKind))
-			// {
-			// destinationSC =
-			// IccInstrumentDestination.v().instrumentDestinationForContentProvider(link.getDestinationC());
-			// }
-			// else
-			// {
-			destinationSC = IccInstrumentDestination.v().instrumentDestination(link);
-			// }
-
-			// build up destination2sootClass map
+			SootClass destinationSC = IccInstrumentDestination.v().instrumentDestination(link);
 			destination2sootClass.put(link.getDestinationC(), destinationSC);
 		}
 
@@ -114,17 +94,18 @@ public class IccRedirectionCreator {
 			if (stmt.containsInvokeExpr()) {
 				if (stmt.getInvokeExpr().getMethod().getName().equals("startActivityForResult")) {
 					Value expr = stmt.getInvokeExprBox().getValue();
-					String clsName = "";
-					if (expr instanceof JVirtualInvokeExpr) {
-						JVirtualInvokeExpr jviExpr = (JVirtualInvokeExpr) expr;
-						clsName = jviExpr.getBase().getType().toString();
-					} else if (expr instanceof JSpecialInvokeExpr) {
-						JSpecialInvokeExpr jsiExpr = (JSpecialInvokeExpr) expr;
-						clsName = jsiExpr.getBase().getType().toString();
+					SootClass sc = null;
+					if (expr instanceof InstanceInvokeExpr) {
+						InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) expr;
+						Type tp = iiexpr.getBase().getType();
+						if (tp instanceof RefType) {
+							RefType rt = (RefType) tp;
+							sc = rt.getSootClass();
+						}
 					}
 
-					SootClass sc = Scene.v().getSootClass(clsName);
-					redirectMethod = generateRedirectMethodForStartActivityForResult(sc, instrumentedDestinationSC);
+					if (sc != null)
+						redirectMethod = generateRedirectMethodForStartActivityForResult(sc, instrumentedDestinationSC);
 				} else if (stmt.getInvokeExpr().getMethod().getName().equals("bindService")) {
 					Value v = stmt.getInvokeExpr().getArg(1);
 
@@ -216,7 +197,6 @@ public class IccRedirectionCreator {
 		b.getUnits().add(intentParameterU);
 		b.getUnits().add(newU);
 		b.getUnits().add(initU);
-		// b.getUnits().add(nullParamU);
 		b.getUnits().add(callU);
 		b.getUnits().add(nullarIntentLocalParamU);
 		b.getUnits().add(destCompCallU);
@@ -260,18 +240,12 @@ public class IccRedirectionCreator {
 
 		// call dummyMainMethod
 		method = wrapper.getMethodByName(IccDummyMainCreator.DUMMY_MAIN_METHOD);
-		// args = new ArrayList<Value>();
-		// Local pLocal = lg.generateLocal(RefType.v("android.os.Bundle"));
-		// Unit nullParamU = Jimple.v().newAssignStmt(pLocal,
-		// NullConstant.v());
-		// args.add(pLocal);
 		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(al, method.makeRef());
 		Unit callU = Jimple.v().newInvokeStmt(invoke);
 
 		b.getUnits().add(intentParameterU);
 		b.getUnits().add(newU);
 		b.getUnits().add(initU);
-		// b.getUnits().add(nullParamU);
 		b.getUnits().add(callU);
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
 

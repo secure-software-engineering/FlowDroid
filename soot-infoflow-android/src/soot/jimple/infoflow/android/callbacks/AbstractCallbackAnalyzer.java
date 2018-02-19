@@ -46,7 +46,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;

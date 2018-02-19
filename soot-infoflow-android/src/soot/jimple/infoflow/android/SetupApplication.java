@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -74,7 +75,7 @@ import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointCreator;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
@@ -111,7 +112,8 @@ public class SetupApplication {
 
 	private Set<SootClass> entrypoints = null;
 	private Set<String> callbackClasses = null;
-	private SootMethod dummyMainMethod = null;
+	protected SootMethod dummyMainMethod = null;
+	protected Map<SootClass, SootMethod> componentToEntryPoint = null;
 
 	protected ARSCFileParser resources = null;
 	protected ProcessManifest manifest = null;
@@ -142,8 +144,8 @@ public class SetupApplication {
 	private InPlaceInfoflow infoflow = null;
 
 	/**
-	 * Class for aggregating the data flow results obtained through multiple
-	 * runs of the data flow solver.
+	 * Class for aggregating the data flow results obtained through multiple runs of
+	 * the data flow solver.
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -171,8 +173,8 @@ public class SetupApplication {
 		}
 
 		/**
-		 * Gets the total number of source-to-sink connections from the last
-		 * partial result that was added to this aggregator
+		 * Gets the total number of source-to-sink connections from the last partial
+		 * result that was added to this aggregator
 		 * 
 		 * @return The results from the last run of the data flow analysis
 		 */
@@ -189,11 +191,11 @@ public class SetupApplication {
 		}
 
 		/**
-		 * Gets the ICFG that was returned together with the last set of data
-		 * flow results
+		 * Gets the ICFG that was returned together with the last set of data flow
+		 * results
 		 * 
-		 * @return The ICFG that was returned together with the last set of data
-		 *         flow results
+		 * @return The ICFG that was returned together with the last set of data flow
+		 *         results
 		 */
 		public IInfoflowCFG getLastICFG() {
 			return this.lastICFG;
@@ -215,9 +217,9 @@ public class SetupApplication {
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
 	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot
-	 *            shall automatically select the JAR file to be used or the path
-	 *            to a single JAR file to force one.
+	 *            The path to the Android SDK's "platforms" directory if Soot shall
+	 *            automatically select the JAR file to be used or the path to a
+	 *            single JAR file to force one.
 	 * @param apkFileLocation
 	 *            The path to the APK file to be analyzed
 	 */
@@ -229,9 +231,9 @@ public class SetupApplication {
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
 	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot
-	 *            shall automatically select the JAR file to be used or the path
-	 *            to a single JAR file to force one.
+	 *            The path to the Android SDK's "platforms" directory if Soot shall
+	 *            automatically select the JAR file to be used or the path to a
+	 *            single JAR file to force one.
 	 * @param apkFileLocation
 	 *            The path to the APK file to be analyzed
 	 * @param ipcManager
@@ -246,9 +248,9 @@ public class SetupApplication {
 	 * Creates a basic data flow configuration with only the input files set
 	 * 
 	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot
-	 *            shall automatically select the JAR file to be used or the path
-	 *            to a single JAR file to force one.
+	 *            The path to the Android SDK's "platforms" directory if Soot shall
+	 *            automatically select the JAR file to be used or the path to a
+	 *            single JAR file to force one.
 	 * @param apkFileLocation
 	 *            The path to the APK file to be analyzed
 	 * @return The new configuration
@@ -275,16 +277,20 @@ public class SetupApplication {
 
 		// We can use either a specific platform JAR file or automatically
 		// select the right one
-		String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
-		if (platformDir == null || platformDir.isEmpty())
-			throw new RuntimeException("Android platform directory not specified");
-		File f = new File(platformDir);
-		this.forceAndroidJar = f.isFile();
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+			String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
+			if (platformDir == null || platformDir.isEmpty())
+				throw new RuntimeException("Android platform directory not specified");
+			File f = new File(platformDir);
+			this.forceAndroidJar = f.isFile();
+		} else {
+			this.forceAndroidJar = false;
+		}
 	}
 
 	/**
-	 * Gets the set of sinks loaded into FlowDroid These are the sinks as they
-	 * are defined through the SourceSinkManager.
+	 * Gets the set of sinks loaded into FlowDroid These are the sinks as they are
+	 * defined through the SourceSinkManager.
 	 * 
 	 * @return The set of sinks loaded into FlowDroid
 	 */
@@ -293,9 +299,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Gets the concrete instances of sinks that have been collected inside the
-	 * app. This method returns null if source and sink logging has not been
-	 * enabled (see InfoflowConfiguration.setLogSourcesAndSinks()).
+	 * Gets the concrete instances of sinks that have been collected inside the app.
+	 * This method returns null if source and sink logging has not been enabled (see
+	 * InfoflowConfiguration.setLogSourcesAndSinks()).
 	 * 
 	 * @return The set of concrete sink instances in the app
 	 */
@@ -319,8 +325,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Gets the set of sources loaded into FlowDroid. These are the sources as
-	 * they are defined through the SourceSinkManager.
+	 * Gets the set of sources loaded into FlowDroid. These are the sources as they
+	 * are defined through the SourceSinkManager.
 	 * 
 	 * @return The set of sources loaded into FlowDroid
 	 */
@@ -329,9 +335,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Gets the concrete instances of sources that have been collected inside
-	 * the app. This method returns null if source and sink logging has not been
-	 * enabled (see InfoflowConfiguration.setLogSourcesAndSinks()).
+	 * Gets the concrete instances of sources that have been collected inside the
+	 * app. This method returns null if source and sink logging has not been enabled
+	 * (see InfoflowConfiguration.setLogSourcesAndSinks()).
 	 * 
 	 * @return The set of concrete source instances in the app
 	 */
@@ -357,8 +363,7 @@ public class SetupApplication {
 	/**
 	 * Gets the set of classes containing entry point methods for the lifecycle
 	 * 
-	 * @return The set of classes containing entry point methods for the
-	 *         lifecycle
+	 * @return The set of classes containing entry point methods for the lifecycle
 	 */
 	public Set<SootClass> getEntrypointClasses() {
 		return entrypoints;
@@ -379,9 +384,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Sets the class names of callbacks. If this value is null, it
-	 * automatically loads the names from AndroidCallbacks.txt as the default
-	 * behavior.
+	 * Sets the class names of callbacks. If this value is null, it automatically
+	 * loads the names from AndroidCallbacks.txt as the default behavior.
 	 * 
 	 * @param callbackClasses
 	 *            The class names of callbacks or null to use the default file.
@@ -442,12 +446,12 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Calculates the sets of sources, sinks, entry points, and callbacks
-	 * methods for the given APK file.
+	 * Calculates the sets of sources, sinks, entry points, and callbacks methods
+	 * for the given APK file.
 	 * 
 	 * @param sourcesAndSinks
-	 *            A provider from which the analysis can obtain the list of
-	 *            sources and sinks
+	 *            A provider from which the analysis can obtain the list of sources
+	 *            and sinks
 	 * @throws IOException
 	 *             Thrown if the given source/sink file could not be read.
 	 * @throws XmlPullParserException
@@ -459,15 +463,15 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Calculates the sets of sources, sinks, entry points, and callbacks
-	 * methods for the entry point in the given APK file.
+	 * Calculates the sets of sources, sinks, entry points, and callbacks methods
+	 * for the entry point in the given APK file.
 	 * 
 	 * @param sourcesAndSinks
-	 *            A provider from which the analysis can obtain the list of
-	 *            sources and sinks
+	 *            A provider from which the analysis can obtain the list of sources
+	 *            and sinks
 	 * @param entryPoint
-	 *            The entry point for which to calculate the callbacks. Pass
-	 *            null to calculate callbacks for all entry points.
+	 *            The entry point for which to calculate the callbacks. Pass null to
+	 *            calculate callbacks for all entry points.
 	 * @throws IOException
 	 *             Thrown if the given source/sink file could not be read.
 	 * @throws XmlPullParserException
@@ -515,8 +519,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Creates a new layout file parser. Derived classes can override this
-	 * method to supply their own parser.
+	 * Creates a new layout file parser. Derived classes can override this method to
+	 * supply their own parser.
 	 * 
 	 * @return The newly created layout file parser.
 	 */
@@ -525,8 +529,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Creates an instance of {@link ISourceSinkManager} that defines what
-	 * FlowDorid shall consider as a source or sink, respectively.
+	 * Creates an instance of {@link ISourceSinkManager} that defines what FlowDorid
+	 * shall consider as a source or sink, respectively.
 	 * 
 	 * @param lfp
 	 *            The parser that handles the layout XML files
@@ -588,8 +592,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Calculates the set of callback methods declared in the XML resource files
-	 * or the app's source code
+	 * Calculates the set of callback methods declared in the XML resource files or
+	 * the app's source code
 	 * 
 	 * @param lfp
 	 *            The layout file parser to be used for analyzing UI controls
@@ -809,16 +813,16 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Collects the XML-based callback methods, e.g., Button.onClick() declared
-	 * in layout XML files
+	 * Collects the XML-based callback methods, e.g., Button.onClick() declared in
+	 * layout XML files
 	 * 
 	 * @param lfp
 	 *            The layout file parser
 	 * @param jimpleClass
-	 *            The analysis class that gives us a mapping between layout IDs
-	 *            and components
-	 * @return True if at least one new callback method has been added,
-	 *         otherwise false
+	 *            The analysis class that gives us a mapping between layout IDs and
+	 *            components
+	 * @return True if at least one new callback method has been added, otherwise
+	 *         false
 	 */
 	private boolean collectXmlBasedCallbackMethods(LayoutFileParser lfp, AbstractCallbackAnalyzer jimpleClass) {
 		SootMethod smViewOnClick = Scene.v()
@@ -896,15 +900,15 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Calculates the set of callback methods declared in the XML resource files
-	 * or the app's source code. This method prefers performance over precision
-	 * and scans the code including unreachable methods.
+	 * Calculates the set of callback methods declared in the XML resource files or
+	 * the app's source code. This method prefers performance over precision and
+	 * scans the code including unreachable methods.
 	 * 
 	 * @param lfp
 	 *            The layout file parser to be used for analyzing UI controls
 	 * @param entryPoint
-	 *            The entry point for which to calculate the callbacks. Pass
-	 *            null to calculate callbacks for all entry points.
+	 *            The entry point for which to calculate the callbacks. Pass null to
+	 *            calculate callbacks for all entry points.
 	 * @throws IOException
 	 *             Thrown if a required configuration cannot be read
 	 */
@@ -944,14 +948,14 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Registers the callback methods in the given layout control so that they
-	 * are included in the dummy main method
+	 * Registers the callback methods in the given layout control so that they are
+	 * included in the dummy main method
 	 * 
 	 * @param callbackClass
 	 *            The class with which to associate the layout callbacks
 	 * @param lc
-	 *            The layout control whose callbacks are to be associated with
-	 *            the given class
+	 *            The layout control whose callbacks are to be associated with the
+	 *            given class
 	 */
 	private void registerCallbackMethodsForView(SootClass callbackClass, LayoutControl lc) {
 		// Ignore system classes
@@ -992,13 +996,12 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Creates the main method based on the current callback information,
-	 * injects it into the Soot scene.
+	 * Creates the main method based on the current callback information, injects it
+	 * into the Soot scene.
 	 * 
 	 * @param The
-	 *            class name of a component to create a main method containing
-	 *            only that component, or null to create main method for all
-	 *            components
+	 *            class name of a component to create a main method containing only
+	 *            that component, or null to create main method for all components
 	 */
 	private void createMainMethod(SootClass component) {
 		// There is no need to create a main method if we don't want to generate
@@ -1008,7 +1011,9 @@ public class SetupApplication {
 
 		// Always update the entry point creator to reflect the newest set
 		// of callback methods
-		dummyMainMethod = createEntryPointCreator(component).createDummyMain();
+		AndroidEntryPointCreator entryPointCreator = createEntryPointCreator(component);
+		dummyMainMethod = entryPointCreator.createDummyMain();
+		componentToEntryPoint = entryPointCreator.getComponentToEntryPointMap();
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMainMethod));
 		if (!dummyMainMethod.getDeclaringClass().isInScene())
 			Scene.v().addClass(dummyMainMethod.getDeclaringClass());
@@ -1132,8 +1137,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Specialized {@link Infoflow} class that allows the data flow analysis to
-	 * be run inside an existing Soot instance
+	 * Specialized {@link Infoflow} class that allows the data flow analysis to be
+	 * run inside an existing Soot instance
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -1141,22 +1146,25 @@ public class SetupApplication {
 	private static class InPlaceInfoflow extends Infoflow {
 
 		/**
-		 * Creates a new instance of the Infoflow class for analyzing Android
-		 * APK files.
+		 * Creates a new instance of the Infoflow class for analyzing Android APK files.
 		 * 
 		 * @param androidPath
-		 *            If forceAndroidJar is false, this is the base directory of
-		 *            the platform files in the Android SDK. If forceAndroidJar
-		 *            is true, this is the full path of a single android.jar
-		 *            file.
+		 *            If forceAndroidJar is false, this is the base directory of the
+		 *            platform files in the Android SDK. If forceAndroidJar is true,
+		 *            this is the full path of a single android.jar file.
 		 * @param forceAndroidJar
-		 *            True if a single platform JAR file shall be forced, false
-		 *            if Soot shall pick the appropriate platform version
+		 *            True if a single platform JAR file shall be forced, false if Soot
+		 *            shall pick the appropriate platform version
 		 * @param icfgFactory
 		 *            The interprocedural CFG to be used by the InfoFlowProblem
+		 * @param additionalEntryPointMethods
+		 *            Additional methods generated by the entry point creator that are
+		 *            not directly entry ypoints on their own
 		 */
-		public InPlaceInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
+		public InPlaceInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
+				Collection<SootMethod> additionalEntryPointMethods) {
 			super(androidPath, forceAndroidJar, icfgFactory);
+			this.additionalEntryPointMethods = additionalEntryPointMethods;
 		}
 
 		public void runAnalysis(final ISourceSinkManager sourcesSinks, SootMethod entryPoint) {
@@ -1167,10 +1175,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Constructs a callgraph only without running the actual data flow
-	 * analysis. If you want to run a data flow analysis, do not call this
-	 * method. Instead, call runInfoflow() directly, which will take care all
-	 * necessary prerequisites.
+	 * Constructs a callgraph only without running the actual data flow analysis. If
+	 * you want to run a data flow analysis, do not call this method. Instead, call
+	 * runInfoflow() directly, which will take care all necessary prerequisites.
 	 */
 	public void constructCallgraph() {
 		boolean oldRunAnalysis = config.isTaintAnalysisEnabled();
@@ -1237,8 +1244,8 @@ public class SetupApplication {
 	 * Runs the data flow analysis.
 	 * 
 	 * @param sourceSinkFile
-	 *            The full path and file name of the file containing the sources
-	 *            and sinks
+	 *            The full path and file name of the file containing the sources and
+	 *            sinks
 	 * @throws IOException
 	 *             Thrown if the given source/sink file could not be read.
 	 * @throws XmlPullParserException
@@ -1323,16 +1330,13 @@ public class SetupApplication {
 			throw new RuntimeException("Callgraph construction failed", e);
 		}
 
-		// Create the data flow tracker
-		infoflow = createInfoflow();
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
-		infoflow.addResultsAvailableHandler(resultAggregator);
 
 		// In one-component-at-a-time, we do not have a single entry point
 		// creator
 		List<SootClass> entrypointWorklist;
 		if (config.getOneComponentAtATime())
-			entrypointWorklist = new ArrayList<SootClass>(entrypoints);
+			entrypointWorklist = new ArrayList<>(entrypoints);
 		else {
 			entrypointWorklist = new ArrayList<>();
 			SootClass dummyEntrypoint;
@@ -1378,6 +1382,10 @@ public class SetupApplication {
 				createMainMethod(entrypoint);
 				constructCallgraphInternal();
 			}
+
+			// Create and run the data flow tracker
+			infoflow = createInfoflow();
+			infoflow.addResultsAvailableHandler(resultAggregator);
 			infoflow.runAnalysis(sourceSinkManager, dummyMainMethod);
 
 			// Update the statistics
@@ -1446,7 +1454,8 @@ public class SetupApplication {
 	private InPlaceInfoflow createInfoflow() {
 		// Initialize and configure the data flow tracker
 		final String androidJar = config.getAnalysisFileConfig().getTargetAPKFile();
-		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory);
+		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory,
+				componentToEntryPoint.values());
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
@@ -1486,14 +1495,14 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Creates the {@link AndroidEntryPointCreator} instance which will later
-	 * create the dummy main method for the analysis
+	 * Creates the {@link AndroidEntryPointCreator} instance which will later create
+	 * the dummy main method for the analysis
 	 * 
 	 * @param component
 	 *            The single component to include in the dummy main method. Pass
 	 *            null to include all components in the dummy main method.
-	 * @return The {@link AndroidEntryPointCreator} responsible for generating
-	 *         the dummy main method
+	 * @return The {@link AndroidEntryPointCreator} responsible for generating the
+	 *         dummy main method
 	 */
 	private AndroidEntryPointCreator createEntryPointCreator(SootClass component) {
 		Set<SootClass> components = getComponentsToAnalyze(component);
@@ -1523,9 +1532,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Gets the components to analyze. If the given component is not null, we
-	 * assume that only this component and the application class (if any) shall
-	 * be analyzed. Otherwise, all components are to be analyzed.
+	 * Gets the components to analyze. If the given component is not null, we assume
+	 * that only this component and the application class (if any) shall be
+	 * analyzed. Otherwise, all components are to be analyzed.
 	 * 
 	 * @param component
 	 *            A component class name to only analyze this class and the
@@ -1550,9 +1559,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Gets the dummy main method that was used for the last callgraph
-	 * construction. You need to run a data flow analysis or call
-	 * constructCallgraph() first, otherwise you will get a null result.
+	 * Gets the dummy main method that was used for the last callgraph construction.
+	 * You need to run a data flow analysis or call constructCallgraph() first,
+	 * otherwise you will get a null result.
 	 * 
 	 * @return The dummy main method
 	 */
@@ -1576,20 +1585,20 @@ public class SetupApplication {
 	 * analysis
 	 * 
 	 * @param config
-	 *            The extra Soot configuration options to be used when running
-	 *            the analysis, null if the defaults shall be used
+	 *            The extra Soot configuration options to be used when running the
+	 *            analysis, null if the defaults shall be used
 	 */
 	public void setSootConfig(IInfoflowConfig config) {
 		this.sootConfig = config;
 	}
 
 	/**
-	 * Sets the factory class to be used for constructing interprocedural
-	 * control flow graphs
+	 * Sets the factory class to be used for constructing interprocedural control
+	 * flow graphs
 	 * 
 	 * @param factory
-	 *            The factory to be used. If null is passed, the default factory
-	 *            is used.
+	 *            The factory to be used. If null is passed, the default factory is
+	 *            used.
 	 */
 	public void setIcfgFactory(BiDirICFGFactory factory) {
 		this.cfgFactory = factory;
@@ -1629,21 +1638,20 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Adds a new handler that shall be executed when the results of the data
-	 * flow analysis are available
+	 * Adds a new handler that shall be executed when the results of the data flow
+	 * analysis are available
 	 * 
 	 * @param handler
-	 *            The callback to invoke when the data flow results are
-	 *            available
+	 *            The callback to invoke when the data flow results are available
 	 */
 	public void addResultsAvailableHandler(ResultsAvailableHandler handler) {
 		this.resultsAvailableHandlers.add(handler);
 	}
 
 	/**
-	 * Aborts the data flow analysis. This is useful when the analysis
-	 * controller is running in a different thread and the main thread (e.g., a
-	 * GUI) wants to abort the analysis
+	 * Aborts the data flow analysis. This is useful when the analysis controller is
+	 * running in a different thread and the main thread (e.g., a GUI) wants to
+	 * abort the analysis
 	 */
 	public void abortAnalysis() {
 		if (infoflow != null)
@@ -1651,8 +1659,8 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Sets the IPC manager for modeling inter-component and inter-application
-	 * data flows
+	 * Sets the IPC manager for modeling inter-component and inter-application data
+	 * flows
 	 * 
 	 * @param ipcManager
 	 *            The IPC manager to use for modeling inter-component and
@@ -1663,9 +1671,9 @@ public class SetupApplication {
 	}
 
 	/**
-	 * Sets the taint propagation handler, which will be notified when the data
-	 * flow analysis processes an edge. Use this callback if you need a hook
-	 * into the low-level data flow analysis.
+	 * Sets the taint propagation handler, which will be notified when the data flow
+	 * analysis processes an edge. Use this callback if you need a hook into the
+	 * low-level data flow analysis.
 	 * 
 	 * @param taintPropagationHandler
 	 *            The propagation handler to register

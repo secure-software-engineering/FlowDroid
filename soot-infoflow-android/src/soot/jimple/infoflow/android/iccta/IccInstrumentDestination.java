@@ -256,7 +256,7 @@ public class IccInstrumentDestination {
 						if (sm.getParameterCount() == 1 && sm.getParameterType(0).equals(INTENT_TYPE)) {
 							List<Value> args = new ArrayList<Value>();
 							args.add(intentParameterLocal);
-							superU = (Unit) Jimple.v()
+							superU = Jimple.v()
 									.newInvokeStmt(Jimple.v().newSpecialInvokeExpr(thisLocal, sm.makeRef(), args));
 							continue;
 						}
@@ -266,7 +266,7 @@ public class IccInstrumentDestination {
 							args.add(NullConstant.v());
 						}
 
-						superU = (Unit) Jimple.v()
+						superU = Jimple.v()
 								.newInvokeStmt(Jimple.v().newSpecialInvokeExpr(thisLocal, sm.makeRef(), args));
 						break;
 					}

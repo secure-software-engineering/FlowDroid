@@ -22,7 +22,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/soot.jimple.infoflow"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/soot.jimple.infoflow.android"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

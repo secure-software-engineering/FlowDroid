@@ -28,8 +28,8 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	 * Creates a new instanceof the {@link SequentialEntryPointCreator} class
 	 * 
 	 * @param methodsToCall
-	 *            A collection containing the methods to be called in the dummy
-	 *            main method. Entries must be valid Soot method signatures.
+	 *            A collection containing the methods to be called in the dummy main
+	 *            method. Entries must be valid Soot method signatures.
 	 */
 	public SequentialEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
@@ -41,7 +41,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	}
 
 	@Override
-	protected SootMethod createDummyMainInternal(SootMethod mainMethod) {
+	protected SootMethod createDummyMainInternal() {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
@@ -78,6 +78,11 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 		body.getUnits().add(Jimple.v().newReturnVoidStmt());
 
 		return mainMethod;
+	}
+
+	@Override
+	public Collection<SootMethod> getAdditionalMethods() {
+		return null;
 	}
 
 }

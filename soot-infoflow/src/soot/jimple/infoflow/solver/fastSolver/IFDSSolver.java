@@ -643,8 +643,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 				else
 					isEssential = memoryManager.isEssentialJoinPoint(targetVal, relatedCallSite);
 
-				if (maxJoinPointAbstractions < 0
-						|| existingVal.getNeighborCount() < maxJoinPointAbstractions
+				if (maxJoinPointAbstractions < 0 || existingVal.getNeighborCount() < maxJoinPointAbstractions
 						|| isEssential)
 					existingVal.addNeighbor(targetVal);
 			}

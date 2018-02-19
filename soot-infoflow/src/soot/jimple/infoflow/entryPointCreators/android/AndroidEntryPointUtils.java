@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.entryPointCreators;
+package soot.jimple.infoflow.entryPointCreators.android;
 
 import java.util.HashMap;
 import java.util.Map;
