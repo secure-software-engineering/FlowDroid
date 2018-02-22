@@ -27,6 +27,7 @@ import soot.RefType;
 import soot.Scene;
 import soot.SceneTransformer;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Trap;
 import soot.Type;
@@ -546,6 +547,11 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 						@Override
 						public Collection<SootMethod> getAdditionalMethods() {
+							return null;
+						}
+
+						@Override
+						public Collection<SootField> getAdditionalFields() {
 							return null;
 						}
 

@@ -24,6 +24,7 @@ import soot.IntType;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
 import soot.javaToJimple.LocalGenerator;
@@ -128,6 +129,11 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 
 	@Override
 	public Collection<SootMethod> getAdditionalMethods() {
+		return null;
+	}
+
+	@Override
+	public Collection<SootField> getAdditionalFields() {
 		return null;
 	}
 

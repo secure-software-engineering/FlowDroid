@@ -1,10 +1,8 @@
 package soot.jimple.infoflow.entryPointCreators.android.components;
 
-import soot.Local;
 import soot.SootClass;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
-import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 
@@ -20,13 +18,10 @@ public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPo
 		super(component, applicationClass);
 	}
 
-	protected void generateComponentLifecycle(Local localVal) {
-		generateServiceConnectionLifecycle(component, localVal);
-	}
-
-	private void generateServiceConnectionLifecycle(SootClass currentClass, Local classLocal) {
+	@Override
+	protected void generateComponentLifecycle() {
 		Stmt onServiceConnectedStmt = searchAndBuildMethod(
-				AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICECONNECTED, currentClass, classLocal);
+				AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICECONNECTED, component, thisLocal);
 		body.getUnits().add(onServiceConnectedStmt);
 
 		// methods
@@ -39,10 +34,8 @@ public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPo
 		createIfStmt(startWhileStmt);
 
 		Stmt onServiceDisconnectedStmt = searchAndBuildMethod(
-				AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICEDISCONNECTED, currentClass, classLocal);
+				AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICEDISCONNECTED, component, thisLocal);
 		body.getUnits().add(onServiceDisconnectedStmt);
-
-		body.getUnits().add(Jimple.v().newAssignStmt(classLocal, NullConstant.v()));
 	}
 
 }

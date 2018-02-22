@@ -1,10 +1,8 @@
 package soot.jimple.infoflow.entryPointCreators.android.components;
 
-import soot.Local;
 import soot.SootClass;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
-import soot.jimple.NullConstant;
 
 /**
  * Entry point creator for content providers
@@ -19,19 +17,7 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 	}
 
 	@Override
-	protected void generateComponentLifecycle(Local localVal) {
-		generateContentProviderLifecycle(component, localVal);
-	}
-
-	/**
-	 * Generates the lifecycle for an Android content provider class
-	 * 
-	 * @param currentClass
-	 *            The class for which to build the content provider lifecycle
-	 * @param classLocal
-	 *            The local referencing an instance of the current class
-	 */
-	private void generateContentProviderLifecycle(SootClass currentClass, Local classLocal) {
+	protected void generateComponentLifecycle() {
 		// ContentProvider.onCreate() runs before everything else, even before
 		// Application.onCreate(). We must thus handle it elsewhere.
 		// Stmt onCreateStmt =
@@ -49,7 +35,6 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 		addCallbackMethods();
 
 		body.getUnits().add(endWhileStmt);
-		body.getUnits().add(Jimple.v().newAssignStmt(classLocal, NullConstant.v()));
 	}
 
 }

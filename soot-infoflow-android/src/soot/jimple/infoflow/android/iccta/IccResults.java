@@ -47,19 +47,21 @@ public class IccResults {
 		Set<String> iccSources = new HashSet<String>();
 		Set<String> iccSinks = new HashSet<String>();
 
-		for (ResultSinkInfo sink : results.getResults().keySet()) {
-			for (ResultSourceInfo source : results.getResults().get(sink)) {
-				String sourceBelongingClass = cfg.getMethodOf(source.getStmt()).getDeclaringClass().getName();
-				String sinkBelongingClass = cfg.getMethodOf(sink.getStmt()).getDeclaringClass().getName();
+		if (!results.isEmpty()) {
+			for (ResultSinkInfo sink : results.getResults().keySet()) {
+				for (ResultSourceInfo source : results.getResults().get(sink)) {
+					String sourceBelongingClass = cfg.getMethodOf(source.getStmt()).getDeclaringClass().getName();
+					String sinkBelongingClass = cfg.getMethodOf(sink.getStmt()).getDeclaringClass().getName();
 
-				if (!sourceBelongingClass.equals(sinkBelongingClass)) {
-					String iccSource = cfg.getMethodOf(source.getStmt()).getSignature() + "/" + source.getStmt();
-					iccSources.add(iccSource);
+					if (!sourceBelongingClass.equals(sinkBelongingClass)) {
+						String iccSource = cfg.getMethodOf(source.getStmt()).getSignature() + "/" + source.getStmt();
+						iccSources.add(iccSource);
 
-					String iccSink = cfg.getMethodOf(sink.getStmt()).getSignature() + "/" + sink.getStmt();
-					iccSinks.add(iccSink);
+						String iccSink = cfg.getMethodOf(sink.getStmt()).getSignature() + "/" + sink.getStmt();
+						iccSinks.add(iccSink);
 
-					cleanResults.addResult(sink, source);
+						cleanResults.addResult(sink, source);
+					}
 				}
 			}
 		}
@@ -69,13 +71,12 @@ public class IccResults {
 		 * (ResultSourceInfo source : results.getResults().get(sink)) { if
 		 * (isIrrelevantSource(source)) { continue; }
 		 * 
-		 * String tmpSource = cfg.getMethodOf(source.getSource()).getSignature()
-		 * + "/" + source.getSource(); String tmpSink =
-		 * cfg.getMethodOf(sink.getSink()).getSignature() + "/" +
-		 * sink.getSink();
+		 * String tmpSource = cfg.getMethodOf(source.getSource()).getSignature() + "/" +
+		 * source.getSource(); String tmpSink =
+		 * cfg.getMethodOf(sink.getSink()).getSignature() + "/" + sink.getSink();
 		 * 
-		 * if (! iccSources.contains(tmpSource) && ! iccSinks.contains(tmpSink))
-		 * { cleanResults.addResult(sink, source); } } }
+		 * if (! iccSources.contains(tmpSource) && ! iccSinks.contains(tmpSink)) {
+		 * cleanResults.addResult(sink, source); } } }
 		 */
 
 		return cleanResults;

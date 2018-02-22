@@ -112,8 +112,7 @@ public class SetupApplication {
 
 	private Set<SootClass> entrypoints = null;
 	private Set<String> callbackClasses = null;
-	protected SootMethod dummyMainMethod = null;
-	protected Map<SootClass, SootMethod> componentToEntryPoint = null;
+	protected AndroidEntryPointCreator entryPointCreator = null;
 
 	protected ARSCFileParser resources = null;
 	protected ProcessManifest manifest = null;
@@ -560,7 +559,9 @@ public class SetupApplication {
 		// Do we need ICC instrumentation?
 		IccInstrumenter iccInstrumenter = null;
 		if (config.getIccConfig().isIccEnabled()) {
-			iccInstrumenter = new IccInstrumenter(config.getIccConfig().getIccModel());
+			iccInstrumenter = new IccInstrumenter(config.getIccConfig().getIccModel(),
+					entryPointCreator.getGeneratedMainMethod().getDeclaringClass(),
+					entryPointCreator.getComponentToEntryPointInfo());
 			iccInstrumenter.onBeforeCallgraphConstruction();
 
 			// To support Messenger-based ICC
@@ -1011,9 +1012,8 @@ public class SetupApplication {
 
 		// Always update the entry point creator to reflect the newest set
 		// of callback methods
-		AndroidEntryPointCreator entryPointCreator = createEntryPointCreator(component);
-		dummyMainMethod = entryPointCreator.createDummyMain();
-		componentToEntryPoint = entryPointCreator.getComponentToEntryPointMap();
+		entryPointCreator = createEntryPointCreator(component);
+		SootMethod dummyMainMethod = entryPointCreator.createDummyMain();
 		Scene.v().setEntryPoints(Collections.singletonList(dummyMainMethod));
 		if (!dummyMainMethod.getDeclaringClass().isInScene())
 			Scene.v().addClass(dummyMainMethod.getDeclaringClass());
@@ -1306,7 +1306,7 @@ public class SetupApplication {
 		this.collectedSinks = config.getLogSourcesAndSinks() ? new HashSet<Stmt>() : null;
 		this.maxMemoryConsumption = 0;
 		this.sourceSinkProvider = sourcesAndSinks;
-		this.dummyMainMethod = null;
+		this.entryPointCreator = null;
 		this.infoflow = null;
 
 		// Perform some sanity checks on the configuration
@@ -1386,7 +1386,7 @@ public class SetupApplication {
 			// Create and run the data flow tracker
 			infoflow = createInfoflow();
 			infoflow.addResultsAvailableHandler(resultAggregator);
-			infoflow.runAnalysis(sourceSinkManager, dummyMainMethod);
+			infoflow.runAnalysis(sourceSinkManager, entryPointCreator.getGeneratedMainMethod());
 
 			// Update the statistics
 			this.maxMemoryConsumption = Math.max(this.maxMemoryConsumption, infoflow.getMaxMemoryConsumption());
@@ -1455,7 +1455,7 @@ public class SetupApplication {
 		// Initialize and configure the data flow tracker
 		final String androidJar = config.getAnalysisFileConfig().getTargetAPKFile();
 		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory,
-				componentToEntryPoint.values());
+				entryPointCreator.getComponentToEntryPointInfo().getLifecycleMethods());
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
@@ -1506,7 +1506,13 @@ public class SetupApplication {
 	 */
 	private AndroidEntryPointCreator createEntryPointCreator(SootClass component) {
 		Set<SootClass> components = getComponentsToAnalyze(component);
-		AndroidEntryPointCreator entryPointCreator = new AndroidEntryPointCreator(components);
+
+		// If we we already have an entry point creator, we make sure to clean up our
+		// leftovers from previous runs
+		if (entryPointCreator != null)
+			entryPointCreator.reset();
+
+		entryPointCreator = new AndroidEntryPointCreator(components);
 
 		MultiMap<SootClass, SootMethod> callbackMethodSigs = new HashMultiMap<>();
 		if (component == null) {
@@ -1566,7 +1572,7 @@ public class SetupApplication {
 	 * @return The dummy main method
 	 */
 	public SootMethod getDummyMainMethod() {
-		return dummyMainMethod;
+		return entryPointCreator.getGeneratedMainMethod();
 	}
 
 	/**

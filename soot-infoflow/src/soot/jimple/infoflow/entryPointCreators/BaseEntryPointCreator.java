@@ -124,6 +124,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		substituteCallParams = b;
 	}
 
+	@Override
 	public void setSubstituteClasses(List<String> l) {
 		substituteClasses = l;
 	}
@@ -136,6 +137,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				Scene.v().forceResolve(className, SootClass.BODIES).setApplicationClass();
 
 		// Create the empty main method
+		createAdditionalFields();
+		createAdditionalMethods();
 		createEmptyMainMethod();
 		body = mainMethod.getActiveBody();
 
@@ -214,6 +217,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		Local paramLocal = lg.generateLocal(stringArrayType);
 		body.getUnits()
 				.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(stringArrayType, 0)));
+	}
+
+	/**
+	 * Creates additional fields in the entry point class that are required by the
+	 * dummy main method
+	 */
+	protected void createAdditionalFields() {
+		// empty in default implementation
+	}
+
+	/**
+	 * Creates additional methods in the entry point class that are required by the
+	 * dummy main method
+	 */
+	protected void createAdditionalMethods() {
+		// empty in default implementation
 	}
 
 	/**
@@ -970,6 +989,11 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		EqExpr cond = jimple.newEqExpr(intCounter, IntConstant.v(conditionCounter++));
 		IfStmt ifStmt = jimple.newIfStmt(cond, target);
 		body.getUnits().add(ifStmt);
+	}
+
+	@Override
+	public SootMethod getGeneratedMainMethod() {
+		return mainMethod;
 	}
 
 }

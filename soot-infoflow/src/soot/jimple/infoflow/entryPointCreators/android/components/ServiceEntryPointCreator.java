@@ -1,11 +1,18 @@
 package soot.jimple.infoflow.entryPointCreators.android.components;
 
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+
 import soot.Local;
+import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
-import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
@@ -18,31 +25,21 @@ import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.Co
  */
 public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator {
 
+	protected SootField binderField = null;
+
 	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass) {
 		super(component, applicationClass);
 	}
 
 	@Override
-	protected void generateComponentLifecycle(Local localVal) {
-		generateServiceLifecycle(component, localVal);
-	}
-
-	/**
-	 * Generates the lifecycle for an Android service class
-	 * 
-	 * @param currentClass
-	 *            The class for which to build the service lifecycle
-	 * @param classLocal
-	 *            The local referencing an instance of the current class
-	 */
-	private void generateServiceLifecycle(SootClass currentClass, Local classLocal) {
+	protected void generateComponentLifecycle() {
 		// 1. onCreate:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, component, thisLocal);
 
 		// service has two different lifecycles:
 		// lifecycle1:
 		// 2. onStart:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, component, thisLocal);
 
 		// onStartCommand can be called an arbitrary number of times, or never
 		NopStmt beforeStartCommand = Jimple.v().newNopStmt();
@@ -50,7 +47,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		body.getUnits().add(beforeStartCommand);
 		createIfStmt(afterStartCommand);
 
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, component, thisLocal);
 		createIfStmt(beforeStartCommand);
 		body.getUnits().add(afterStartCommand);
 
@@ -61,22 +58,22 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		body.getUnits().add(startWhileStmt);
 		createIfStmt(endWhileStmt);
 
-		ComponentType componentType = entryPointUtils.getComponentType(currentClass);
+		ComponentType componentType = entryPointUtils.getComponentType(component);
 		boolean hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService) {
 			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(currentClass, sig);
+				SootMethod sm = findMethod(component, sig);
 				if (sm != null && !sm.getDeclaringClass().getName()
 						.equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
-					if (createPlainMethodCall(classLocal, sm))
+					if (createPlainMethodCall(thisLocal, sm))
 						hasAdditionalMethods = true;
 			}
 		} else if (componentType == ComponentType.GCMListenerService) {
 			for (String sig : AndroidEntryPointConstants.getGCMListenerServiceMethods()) {
-				SootMethod sm = findMethod(currentClass, sig);
+				SootMethod sm = findMethod(component, sig);
 				if (sm != null
 						&& !sm.getDeclaringClass().getName().equals(AndroidEntryPointConstants.GCMLISTENERSERVICECLASS))
-					if (createPlainMethodCall(classLocal, sm))
+					if (createPlainMethodCall(thisLocal, sm))
 						hasAdditionalMethods = true;
 			}
 		}
@@ -89,7 +86,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// lifecycle2 start
 		// onBind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, component, thisLocal);
 
 		NopStmt beforemethodsStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(beforemethodsStmt);
@@ -100,9 +97,9 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService)
 			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(currentClass, sig);
+				SootMethod sm = findMethod(component, sig);
 				if (sm != null && !sm.getName().equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
-					if (createPlainMethodCall(classLocal, sm))
+					if (createPlainMethodCall(thisLocal, sm))
 						hasAdditionalMethods = true;
 			}
 		addCallbackMethods();
@@ -112,19 +109,98 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// onUnbind:
 		Stmt onDestroyStmt = Jimple.v().newNopStmt();
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, component, thisLocal);
 		createIfStmt(onDestroyStmt); // fall through to rebind or go to destroy
 
 		// onRebind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, component, thisLocal);
 		createIfStmt(beforemethodsStmt);
 
 		// lifecycle2 end
 
 		// onDestroy:
 		body.getUnits().add(onDestroyStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, currentClass, classLocal);
-		body.getUnits().add(Jimple.v().newAssignStmt(classLocal, NullConstant.v()));
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, component, thisLocal);
+	}
+
+	@Override
+	protected void createAdditionalFields() {
+		super.createAdditionalFields();
+
+		// Create a name for a field for the binder (passed to us in onBind())
+		String fieldName = "ipcIntent";
+		int fieldIdx = 0;
+		while (component.declaresFieldByName(fieldName))
+			fieldName = "ipcBinder_" + fieldIdx++;
+
+		// Create the field itself
+		binderField = Scene.v().makeSootField(fieldName, RefType.v("android.os.IBinder"), Modifier.PUBLIC);
+		component.addField(binderField);
+	}
+
+	@Override
+	protected void createAdditionalMethods() {
+		super.createAdditionalMethods();
+
+		// We need to instrument the onBind() method to store the binder in the field
+		instrumentOnBind();
+	}
+
+	/**
+	 * Modifies the onBind() method such that it stores the IBinder, which gets
+	 * passed in as an argument, in the global field
+	 */
+	private void instrumentOnBind() {
+		SootMethod sm = component.getMethodUnsafe("android.os.IBinder onBind(android.content.Intent)");
+		final Type intentType = RefType.v("android.content.Intent");
+		final Type binderType = RefType.v("android.os.IBinder");
+		if (sm == null || !sm.hasActiveBody()) {
+			// Create a new onBind() method
+			if (sm == null) {
+				sm = Scene.v().makeSootMethod("onBind", Collections.singletonList(intentType), binderType,
+						Modifier.PUBLIC);
+				component.addMethod(sm);
+			}
+
+			// Create the body
+			final JimpleBody b = Jimple.v().newBody(sm);
+			sm.setActiveBody(b);
+			b.insertIdentityStmts();
+
+			final Local thisLocal = b.getThisLocal();
+			final Local binderLocal = b.getParameterLocal(0);
+
+			b.getUnits().add(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()),
+					binderLocal));
+			b.getUnits().add(Jimple.v().newReturnStmt(binderLocal));
+		} else {
+			// Modify the existing onBind() method
+			JimpleBody b = (JimpleBody) sm.getActiveBody();
+			Stmt firstNonIdentityStmt = b.getFirstNonIdentityStmt();
+
+			final Local thisLocal = b.getThisLocal();
+			final Local binderLocal = b.getParameterLocal(0);
+
+			b.getUnits().insertAfter(Jimple.v()
+					.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()), binderLocal),
+					firstNonIdentityStmt);
+		}
+	}
+
+	@Override
+	protected void reset() {
+		super.reset();
+
+		component.removeField(binderField);
+		binderField = null;
+	}
+
+	@Override
+	public ComponentEntryPointInfo getComponentInfo() {
+		ServiceEntryPointInfo serviceInfo = new ServiceEntryPointInfo(mainMethod);
+		serviceInfo.setIntentField(intentField);
+		serviceInfo.setBinderField(binderField);
+		return serviceInfo;
 	}
 
 }

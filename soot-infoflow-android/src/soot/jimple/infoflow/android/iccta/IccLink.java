@@ -10,7 +10,6 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.util.Chain;
 
 public class IccLink {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -23,8 +22,6 @@ public class IccLink {
 	String exit_kind;
 	String destinationC;
 
-	Chain<Unit> units = null;
-
 	public IccLink() {
 	}
 
@@ -33,11 +30,10 @@ public class IccLink {
 			try {
 				fromSM = Scene.v().getMethod(fromSMString);
 				Body body = fromSM.retrieveActiveBody();
-				units = body.getUnits();
 
 				int i = 0;
 
-				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+				for (Iterator<Unit> iter = body.getUnits().snapshotIterator(); iter.hasNext();) {
 					Stmt stmt = (Stmt) iter.next();
 
 					if (i == instruction) {
@@ -107,14 +103,6 @@ public class IccLink {
 
 	public void setDestinationC(String destinationC) {
 		this.destinationC = destinationC;
-	}
-
-	public Chain<Unit> getUnits() {
-		return units;
-	}
-
-	public void setUnits(Chain<Unit> units) {
-		this.units = units;
 	}
 
 	public String getIccMethod() {

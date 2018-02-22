@@ -8,6 +8,7 @@ import soot.Body;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
@@ -82,6 +83,11 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 
 	@Override
 	public Collection<SootMethod> getAdditionalMethods() {
+		return null;
+	}
+
+	@Override
+	public Collection<SootField> getAdditionalFields() {
 		return null;
 	}
 

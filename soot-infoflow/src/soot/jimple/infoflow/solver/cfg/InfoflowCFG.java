@@ -328,8 +328,8 @@ public class InfoflowCFG implements IInfoflowCFG {
 								methodToCallees.put(method, callee);
 								hasInvocation = true;
 							} else {
-								reads = calleeUse == StaticFieldUse.Read || calleeUse == StaticFieldUse.ReadWrite;
-								writes = calleeUse == StaticFieldUse.Write || calleeUse == StaticFieldUse.ReadWrite;
+								reads |= calleeUse == StaticFieldUse.Read || calleeUse == StaticFieldUse.ReadWrite;
+								writes |= calleeUse == StaticFieldUse.Write || calleeUse == StaticFieldUse.ReadWrite;
 							}
 						}
 					}

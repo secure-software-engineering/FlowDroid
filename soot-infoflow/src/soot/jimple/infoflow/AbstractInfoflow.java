@@ -74,8 +74,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 *            platform files in the Android SDK. If forceAndroidJar is true,
 	 *            this is the full path of a single android.jar file.
 	 * @param forceAndroidJar
-	 *            True if a single platform JAR file shall be forced, false if
-	 *            Soot shall pick the appropriate platform version
+	 *            True if a single platform JAR file shall be forced, false if Soot
+	 *            shall pick the appropriate platform version
 	 */
 	public AbstractInfoflow(BiDirICFGFactory icfgFactory, String androidPath, boolean forceAndroidJar) {
 		if (icfgFactory == null) {
@@ -170,9 +170,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param libPath
 	 *            The Soot classpath containing the libraries
 	 * @param classes
-	 *            The set of classes that shall be checked for data flow
-	 *            analysis seeds. All sources in these classes are used as
-	 *            seeds.
+	 *            The set of classes that shall be checked for data flow analysis
+	 *            seeds. All sources in these classes are used as seeds.
 	 */
 	protected void initializeSoot(String appPath, String libPath, Collection<String> classes) {
 		initializeSoot(appPath, libPath, classes, "");
@@ -186,10 +185,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param libPath
 	 *            The Soot classpath containing the libraries
 	 * @param classes
-	 *            The set of classes that shall be checked for data flow
-	 *            analysis seeds. All sources in these classes are used as
-	 *            seeds. If a non-empty extra seed is given, this one is used
-	 *            too.
+	 *            The set of classes that shall be checked for data flow analysis
+	 *            seeds. All sources in these classes are used as seeds. If a
+	 *            non-empty extra seed is given, this one is used too.
 	 */
 	protected void initializeSoot(String appPath, String libPath, Collection<String> classes, String extraSeed) {
 		// reset Soot:

@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.entryPointCreators.android;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.Co
 import soot.jimple.infoflow.entryPointCreators.android.components.AbstractComponentEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.ActivityEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.BroadcastReceiverEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.android.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.entryPointCreators.android.components.ContentProviderEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.ServiceConnectionEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.ServiceEntryPointCreator;
@@ -77,7 +79,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private Map<SootClass, SootField> callbackClassToField = new HashMap<>();
 
 	private MultiMap<SootClass, SootClass> fragmentClasses = null;
-	private Map<SootClass, SootMethod> componentToEntryPoint = new HashMap<>();
+	private ComponentEntryPointCollection componentToInfo = new ComponentEntryPointCollection();
 
 	private final Collection<SootClass> androidClasses;
 
@@ -208,6 +210,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 			// Before-class marker
 			Stmt beforeComponentStmt = Jimple.v().newNopStmt();
+			Stmt afterComponentStmt = Jimple.v().newNopStmt();
 			body.getUnits().add(beforeComponentStmt);
 
 			// Generate the lifecycles for the different kinds of Android
@@ -235,14 +238,23 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				break;
 			}
 
+			// We may skip the complete component
+			createIfStmt(afterComponentStmt);
+
 			// Create a call to the component's lifecycle method
 			if (componentCreator != null) {
 				componentCreator.setCallbacks(callbackFunctions.get(currentClass));
 				SootMethod lifecycleMethod = componentCreator.createDummyMain();
-				componentToEntryPoint.put(currentClass, lifecycleMethod);
-				body.getUnits().add(Jimple.v()
-						.newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(), NullConstant.v())));
+				componentToInfo.put(currentClass, componentCreator.getComponentInfo());
+
+				// dummyMain(component, intent)
+				body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
+						Collections.singletonList(NullConstant.v()))));
 			}
+
+			// Jump back to the front of the component
+			createIfStmt(beforeComponentStmt);
+			body.getUnits().add(afterComponentStmt);
 		}
 
 		// Add conditional calls to the application callback methods
@@ -436,11 +448,16 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	@Override
 	public Collection<SootMethod> getAdditionalMethods() {
-		return componentToEntryPoint.values();
+		return componentToInfo.getLifecycleMethods();
 	}
 
-	public Map<SootClass, SootMethod> getComponentToEntryPointMap() {
-		return componentToEntryPoint;
+	@Override
+	public Collection<SootField> getAdditionalFields() {
+		return componentToInfo.getAdditionalFields();
+	}
+
+	public ComponentEntryPointCollection getComponentToEntryPointInfo() {
+		return componentToInfo;
 	}
 
 	/**
@@ -470,17 +487,20 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	}
 
 	@Override
-	protected void reset() {
+	public void reset() {
 		super.reset();
 
 		// Get rid of the generated component methods
-		for (SootMethod sm : componentToEntryPoint.values())
+		for (SootMethod sm : getAdditionalMethods())
 			sm.getDeclaringClass().removeMethod(sm);
-		componentToEntryPoint.clear();
+		for (SootField sf : getAdditionalFields())
+			sf.getDeclaringClass().removeField(sf);
 
 		// Get rid of the generated fields
 		for (SootField fld : callbackClassToField.values())
 			fld.getDeclaringClass().removeField(fld);
+
+		componentToInfo.clear();
 		callbackClassToField.clear();
 	}
 
