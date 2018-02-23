@@ -906,6 +906,32 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 		this.appPackageName = appPackageName;
 	}
 
+	private SootMethod grabMethod(String sootClassName,String subSignature)
+	{
+		Scene scene=Scene.v();
+		if(!scene.containsClass(sootClassName))
+			return null;
+		SootClass sootClass=scene.getSootClass(sootClassName);
+
+
+		List<SootMethod> sootMethods=null;
+
+		sootMethods= sootClass.getMethods();
+
+		for (SootMethod s: sootMethods)
+		{
+			String[] tempSignature=s.getSubSignature().split(" ");
+
+			if(tempSignature.length==2)
+			{
+				if(tempSignature[1].equals(subSignature))
+					return s;
+			}
+
+		}
+		return null;
+	}
+
 	@Override
 	public void initialize() {
 		// Get the Soot method or field for the source signatures we have
@@ -916,8 +942,17 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 				SourceSinkDefinition sourceSinkDef = entry.getValue();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
 					SootMethod sm = Scene.v().grabMethod(entry.getKey());
+
 					if (sm != null)
 						sourceMethods.put(sm, sourceSinkDef);
+					else{ //in case method signature doesn't contain return type
+						String className=((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getClassName();
+
+						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
+						SootMethod sootMethod=	grabMethod(className,subSignatureWithoutReturnType);
+						if(sootMethod!=null)
+							sourceMethods.put(sootMethod, sourceSinkDef);
+					}
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
 					SootField sf = Scene.v().grabField(entry.getKey());
 					if (sf != null)
@@ -925,6 +960,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 				}
 			}
 			sourceDefs = null;
+
 		}
 
 		// Get the Soot method or field for the sink signatures we have
@@ -937,10 +973,17 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 					SootMethod sm = Scene.v().grabMethod(entry.getKey());
 					if (sm != null)
 						sinkMethods.put(sm, entry.getValue());
+					else{//in case method signature doesn't contain return type
+						String className=((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getClassName();
+						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
+						SootMethod sootMethod=	grabMethod(className,subSignatureWithoutReturnType);
+						if(sootMethod!=null)
+							sinkMethods.put(sootMethod, sourceSinkDef);
+					}
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
 					SootField sf = Scene.v().grabField(entry.getKey());
 					if (sf != null)
-						sourceFields.put(sf, sourceSinkDef);
+						sinkFields.put(sf, sourceSinkDef);
 				}
 			}
 			sinkDefs = null;
@@ -956,14 +999,14 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 					// broadcast
 					Scene.v().getSootClass("android.content.ContentResolver"), // provider
 					Scene.v().getSootClass("android.app.Activity") // some
-																	// methods
-																	// (e.g.,
-																	// onActivityResult)
-																	// only
-																	// defined
-																	// in
-																	// Activity
-																	// class
+					// methods
+					// (e.g.,
+					// onActivityResult)
+					// only
+					// defined
+					// in
+					// Activity
+					// class
 			};
 
 		// Get some frequently-used methods
