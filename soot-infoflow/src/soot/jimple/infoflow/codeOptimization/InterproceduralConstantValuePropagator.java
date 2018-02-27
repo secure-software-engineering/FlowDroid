@@ -558,6 +558,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					};
 
 					epc.createDummyMain();
+					thrower = epc.getGeneratedMainMethod();
 				}
 
 				// Call the exception thrower after the old call site
