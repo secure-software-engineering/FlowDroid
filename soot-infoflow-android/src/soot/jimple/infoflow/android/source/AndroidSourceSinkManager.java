@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
@@ -58,6 +58,7 @@ import soot.jimple.infoflow.android.resources.ARSCFileParser.ResPackage;
 import soot.jimple.infoflow.android.resources.controls.LayoutControl;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
@@ -79,7 +80,7 @@ import soot.tagkit.Tag;
 
 /**
  * SourceManager implementation for AndroidSources
- * 
+ *
  * @author Steven Arzt
  */
 public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceAtATimeManager {
@@ -88,7 +89,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Types of sources supported by this SourceSinkManager
-	 * 
+	 *
 	 * @author Steven Arzt
 	 */
 	public static enum SourceType {
@@ -162,7 +163,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
 	 * either strong or weak matching.
-	 * 
+	 *
 	 * @param sources
 	 *            The list of source methods
 	 * @param sinks
@@ -171,7 +172,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *            The configuration of the data flow analyzer
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-			InfoflowAndroidConfiguration config) {
+									InfoflowAndroidConfiguration config) {
 		this(sources, sinks, Collections.<CallbackDefinition>emptySet(), config, null);
 	}
 
@@ -179,7 +180,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
 	 * strong matching, i.e. the methods in the code must exactly match those in the
 	 * list.
-	 * 
+	 *
 	 * @param sources
 	 *            The list of source methods
 	 * @param sinks
@@ -199,8 +200,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *            controls
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
-			Map<Integer, LayoutControl> layoutControls) {
+									Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
+									Map<Integer, LayoutControl> layoutControls) {
 		this.sourceSinkConfig = config.getSourceSinkConfig();
 
 		this.sourceDefs = new HashMap<>();
@@ -223,7 +224,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Gets the field or method signature of the given source/sink definition
-	 * 
+	 *
 	 * @param am
 	 *            The source/sink definition for which to get a Soot signature
 	 * @return The Soot signature associated with the given source/sink definition
@@ -242,7 +243,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Gets the sink definition for the given call site and tainted access path
-	 * 
+	 *
 	 * @param sCallSite
 	 *            The call site
 	 * @param manager
@@ -340,7 +341,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Scans the hierarchy of the class containing the given method to find any
 	 * implementations of the same method further up in the hierarchy for which
 	 * there is a SourceSinkDefinition in the given map
-	 * 
+	 *
 	 * @param callee
 	 *            The method for which to look for a SourceSinkDefinition
 	 * @param map
@@ -349,7 +350,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *         somewhere up in the class hiearchy if it exists, otherwise null.
 	 */
 	private static SourceSinkDefinition findDefinitionInHierarchy(SootMethod callee,
-			Map<SootMethod, SourceSinkDefinition> map) {
+																  Map<SootMethod, SourceSinkDefinition> map) {
 		final String subSig = callee.getSubSignature();
 		SootClass curClass = callee.getDeclaringClass();
 		while (curClass != null) {
@@ -425,7 +426,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given method is registered as a source method. If so,
 	 * returns the corresponding definition, otherwise null.
-	 * 
+	 *
 	 * @param method
 	 *            The method to check
 	 * @return The respective source definition if the given method is a source
@@ -439,7 +440,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Checks whether the given method is registered as a source method
-	 * 
+	 *
 	 * @param method
 	 *            The method to check
 	 * @return True if the given method is a source method, otherwise false
@@ -457,7 +458,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given method is registered as a callback method. If so,
 	 * the corresponding source definition is returned, otherwise null is returned.
-	 * 
+	 *
 	 * @param method
 	 *            The method to check
 	 * @return The source definition object if the given method is a callback
@@ -477,7 +478,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Checks whether the given statement is a source, i.e. introduces new
 	 * information into the application. If so, the source definition is returned,
 	 * otherwise null
-	 * 
+	 *
 	 * @param sCallSite
 	 *            The statement to check for a source
 	 * @param cfg
@@ -549,7 +550,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given statement accesses a field that has been marked as a
 	 * source
-	 * 
+	 *
 	 * @param stmt
 	 *            The statement to check
 	 * @param cfg
@@ -570,7 +571,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Checks whether the given statement obtains data from a callback source
-	 * 
+	 *
 	 * @param sCallSite
 	 *            The statement to check
 	 * @param cfg
@@ -641,7 +642,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given call site indicates a UI source, e.g. a password
 	 * input. If so, creates a {@link SourceSinkDefinition} for it
-	 * 
+	 *
 	 * @param sCallSite
 	 *            The call site that may potentially read data from a sensitive UI
 	 *            control
@@ -735,7 +736,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Finds the last assignment to the given local representing a resource ID by
 	 * searching upwards from the given statement
-	 * 
+	 *
 	 * @param stmt
 	 *            The statement from which to look backwards
 	 * @param local
@@ -743,7 +744,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * @return The last value assigned to the given variable
 	 */
 	private Integer findLastResIDAssignment(Stmt stmt, Local local, BiDiInterproceduralCFG<Unit, SootMethod> cfg,
-			Set<Stmt> doneSet) {
+											Set<Stmt> doneSet) {
 		if (!doneSet.add(stmt))
 			return null;
 
@@ -817,7 +818,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Finds the given resource in the given package
-	 * 
+	 *
 	 * @param resName
 	 *            The name of the resource to retrieve
 	 * @param resID
@@ -849,7 +850,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Finds the last assignment to the given String local by searching upwards from
 	 * the given statement
-	 * 
+	 *
 	 * @param stmt
 	 *            The statement from which to look backwards
 	 * @param local
@@ -888,7 +889,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Sets the resource packages to be used for finding sensitive layout controls
 	 * as sources
-	 * 
+	 *
 	 * @param resourcePackages
 	 *            The resource packages to be used for looking up layout controls
 	 */
@@ -898,7 +899,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	/**
 	 * Sets the name of the app's base package
-	 * 
+	 *
 	 * @param appPackageName
 	 *            The name of the app's base package
 	 */
@@ -906,17 +907,30 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 		this.appPackageName = appPackageName;
 	}
 
-	private SootMethod grabMethod(String sootClassName,String subSignature)
+	/**
+	 * Gets a soot method defined by class name and its sub signature
+	 * from the loaded methods in the Scene object
+	 *
+	 * @param sootClassName
+	 *            The class name of the method
+	 * @param subSignature
+	 *            The sub signature of the method which is the method name and its parameters
+	 * @return The soot method of the given class and sub signature or null
+	 */
+	private SootMethod grabMethodWithoutReturn(String sootClassName, String subSignature)
 	{
 		Scene scene=Scene.v();
 		if(!scene.containsClass(sootClassName))
 			return null;
-		SootClass sootClass=scene.getSootClass(sootClassName);
+		SootClass sootClass=Scene.v().getSootClass(sootClassName);
 
+		/*SootClass sootClass=Scene.v().getSootClassUnsafe(sootClassName);
+		if(sootClass==null)
+			return null;*/
 
 		List<SootMethod> sootMethods=null;
 
-		sootMethods= sootClass.getMethods();
+		sootMethods = sootClass.getMethods();
 
 		for (SootMethod s: sootMethods)
 		{
@@ -941,18 +955,25 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			for (Entry<String, SourceSinkDefinition> entry : sourceDefs.entrySet()) {
 				SourceSinkDefinition sourceSinkDef = entry.getValue();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
-					SootMethod sm = Scene.v().grabMethod(entry.getKey());
-
-					if (sm != null)
-						sourceMethods.put(sm, sourceSinkDef);
-					else{ //in case method signature doesn't contain return type
-						String className=((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getClassName();
+					SootMethodAndClass method=((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
+					String returnType=method.getReturnType();
+					boolean isMethodWithoutReturnType=	returnType==null||returnType.isEmpty();
+					if(isMethodWithoutReturnType)
+					{
+						String className=method.getClassName();
 
 						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
-						SootMethod sootMethod=	grabMethod(className,subSignatureWithoutReturnType);
+						SootMethod sootMethod=	grabMethodWithoutReturn(className,subSignatureWithoutReturnType);
 						if(sootMethod!=null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
 					}
+					else
+					{
+						SootMethod sm = Scene.v().grabMethod(entry.getKey());
+						if (sm != null)
+							sourceMethods.put(sm, sourceSinkDef);
+					}
+
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
 					SootField sf = Scene.v().grabField(entry.getKey());
 					if (sf != null)
@@ -969,17 +990,25 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			sinkFields = new HashMap<>();
 			for (Entry<String, SourceSinkDefinition> entry : sinkDefs.entrySet()) {
 				SourceSinkDefinition sourceSinkDef = entry.getValue();
-				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
-					SootMethod sm = Scene.v().grabMethod(entry.getKey());
-					if (sm != null)
-						sinkMethods.put(sm, entry.getValue());
-					else{//in case method signature doesn't contain return type
-						String className=((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getClassName();
+				if (sourceSinkDef instanceof MethodSourceSinkDefinition)
+				{
+					SootMethodAndClass method=((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
+					String returnType=method.getReturnType();
+					boolean isMethodWithoutReturnType=	returnType==null||returnType.isEmpty();
+					if(isMethodWithoutReturnType)
+					{
+						String className=method.getClassName();
 						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
-						SootMethod sootMethod=	grabMethod(className,subSignatureWithoutReturnType);
+						SootMethod sootMethod=	grabMethodWithoutReturn(className,subSignatureWithoutReturnType);
 						if(sootMethod!=null)
 							sinkMethods.put(sootMethod, sourceSinkDef);
 					}
+					else{
+						SootMethod sm = Scene.v().grabMethod(entry.getKey());
+						if (sm != null)
+							sinkMethods.put(sm, entry.getValue());
+					}
+
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
 					SootField sf = Scene.v().grabField(entry.getKey());
 					if (sf != null)
@@ -1063,7 +1092,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Excludes the given method from the source/sink analysis. No sources or sinks
 	 * will be detected in excluded methods.
-	 * 
+	 *
 	 * @param toExclude
 	 *            The method to exclude
 	 */
