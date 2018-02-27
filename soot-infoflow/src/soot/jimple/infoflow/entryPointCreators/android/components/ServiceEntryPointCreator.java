@@ -14,6 +14,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
 
@@ -160,6 +161,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 				sm = Scene.v().makeSootMethod("onBind", Collections.singletonList(intentType), binderType,
 						Modifier.PUBLIC);
 				component.addMethod(sm);
+				sm.addTag(SimulatedCodeElementTag.TAG);
 			}
 
 			// Create the body

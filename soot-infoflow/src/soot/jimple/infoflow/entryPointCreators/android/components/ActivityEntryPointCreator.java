@@ -26,6 +26,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
 import soot.util.MultiMap;
 
@@ -361,6 +362,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		SootMethod sm = Scene.v().makeSootMethod("getIntent", Collections.<Type>emptyList(), intentType,
 				Modifier.PUBLIC);
 		component.addMethod(sm);
+		sm.addTag(SimulatedCodeElementTag.TAG);
 
 		JimpleBody b = Jimple.v().newBody(sm);
 		sm.setActiveBody(b);
@@ -387,6 +389,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		SootMethod sm = Scene.v().makeSootMethod("setIntent", Collections.singletonList(intentType), VoidType.v(),
 				Modifier.PUBLIC);
 		component.addMethod(sm);
+		sm.addTag(SimulatedCodeElementTag.TAG);
 
 		JimpleBody b = Jimple.v().newBody(sm);
 		sm.setActiveBody(b);
@@ -414,6 +417,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		params.add(intentType);
 		SootMethod sm = Scene.v().makeSootMethod("setResult", params, VoidType.v(), Modifier.PUBLIC);
 		component.addMethod(sm);
+		sm.addTag(SimulatedCodeElementTag.TAG);
 
 		JimpleBody b = Jimple.v().newBody(sm);
 		sm.setActiveBody(b);
@@ -427,7 +431,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// Activity.setResult() is final. We need to change that
 		SootMethod smSetResult = Scene.v()
 				.grabMethod("<android.app.Activity: void setResult(int,android.content.Intent)>");
-		if (smSetResult != null)
+		if (smSetResult != null && smSetResult.getDeclaringClass().isApplicationClass())
 			smSetResult.setModifiers(smSetResult.getModifiers() & ~Modifier.FINAL);
 	}
 
