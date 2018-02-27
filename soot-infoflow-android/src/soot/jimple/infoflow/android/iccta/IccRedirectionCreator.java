@@ -38,8 +38,10 @@ public class IccRedirectionCreator {
 
 	private Map<String, SootMethod> source2RedirectMethod = new HashMap<>();
 
-	private final SootClass dummyMainClass;
-	private final ComponentEntryPointCollection componentToEntryPoint;
+	protected final SootClass dummyMainClass;
+	protected final ComponentEntryPointCollection componentToEntryPoint;
+
+	protected IccInstrumentSource instrumentSource = IccInstrumentSource.v();
 
 	public IccRedirectionCreator(SootClass dummyMainClass, ComponentEntryPointCollection componentToEntryPoint) {
 		this.componentToEntryPoint = componentToEntryPoint;
@@ -47,16 +49,15 @@ public class IccRedirectionCreator {
 	}
 
 	public void redirectToDestination(IccLink link) {
-		if (Scene.v().getSootClass(link.getDestinationC()).isPhantom()) {
+		if (link.getDestinationC().isPhantom())
 			return;
-		}
 
 		// 1) generate redirect method
 		SootMethod redirectSM = getRedirectMethod(link);
 
 		// 2) instrument the source to call the generated redirect method after
 		// ICC methods
-		IccInstrumentSource.v().instrumentSource(link, redirectSM);
+		instrumentSource.instrumentSource(link, redirectSM);
 	}
 
 	/**
@@ -66,7 +67,7 @@ public class IccRedirectionCreator {
 	 * @return
 	 */
 	protected SootMethod getRedirectMethod(IccLink link) {
-		SootClass instrumentedDestinationSC = Scene.v().getSootClass(link.getDestinationC());
+		SootClass instrumentedDestinationSC = link.getDestinationC();
 		SootMethod redirectMethod = source2RedirectMethod.get(link.toString());
 
 		if (redirectMethod == null) {

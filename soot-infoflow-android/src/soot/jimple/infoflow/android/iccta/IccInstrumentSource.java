@@ -5,15 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import soot.PatchingChain;
+import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
-import soot.jimple.AssignStmt;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
-import soot.jimple.internal.JSpecialInvokeExpr;
-import soot.jimple.internal.JVirtualInvokeExpr;
 import soot.tagkit.Tag;
 
 /**
@@ -26,7 +25,11 @@ public class IccInstrumentSource {
 
 	private static IccInstrumentSource s = null;
 
+	protected final SootMethod smStartActivityForResult;
+
 	private IccInstrumentSource() {
+		smStartActivityForResult = Scene.v()
+				.grabMethod("<android.app.Activity: void startActivityForResult(android.content.Intent,int)>");
 	}
 
 	public static IccInstrumentSource v() {
@@ -41,32 +44,6 @@ public class IccInstrumentSource {
 		insertRedirectMethodCallAfterIccMethod(link, redirectMethod);
 	}
 
-	public void insertRedirectMethodCallAfterIccMethodForContentProvider(IccLink link, SootMethod redirectMethod) {
-		List<Value> args = null;
-
-		Stmt fromStmt = (Stmt) link.getFromU();
-
-		if (fromStmt == null) {
-			return;
-		}
-
-		if (redirectMethod == null) {
-			return;
-		}
-
-		if (fromStmt instanceof AssignStmt) {
-			AssignStmt as = (AssignStmt) fromStmt;
-			Unit redirectAssignU = (Unit) Jimple.v().newAssignStmt(as.getLeftOp(),
-					Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
-			link.getFromSM().retrieveActiveBody().getUnits().insertAfter(redirectAssignU, link.getFromU());
-		} else {
-			Unit redirectCallU = (Unit) Jimple.v()
-					.newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
-
-			link.getFromSM().retrieveActiveBody().getUnits().insertAfter(redirectCallU, link.getFromU());
-		}
-	}
-
 	/**
 	 * We have the intent in a register at this point, create a new statement to
 	 * call the static method with the intent as parameter
@@ -74,34 +51,20 @@ public class IccInstrumentSource {
 	 * @param link
 	 * @param redirectMethod
 	 */
-	public void insertRedirectMethodCallAfterIccMethod(IccLink link, SootMethod redirectMethod) {
-		List<Value> args = new ArrayList<Value>();
-
+	protected void insertRedirectMethodCallAfterIccMethod(IccLink link, SootMethod redirectMethod) {
 		Stmt fromStmt = (Stmt) link.getFromU();
-
-		if (fromStmt == null) {
+		if (fromStmt == null || !fromStmt.containsInvokeExpr())
 			return;
-		}
+
+		SootMethod callee = fromStmt.getInvokeExpr().getMethod();
 
 		// specially deal with startActivityForResult since they have two
 		// parameters
-		if (fromStmt.toString().contains("startActivityForResult")) {
-
-			Value expr = fromStmt.getInvokeExprBox().getValue();
-			Value arg0 = null;
-			if (expr instanceof JVirtualInvokeExpr) {
-				JVirtualInvokeExpr jviExpr = (JVirtualInvokeExpr) expr;
-				arg0 = jviExpr.getBase();
-			} else if (expr instanceof JSpecialInvokeExpr) {
-				JSpecialInvokeExpr jsiExpr = (JSpecialInvokeExpr) expr;
-				arg0 = jsiExpr.getBase();
-			}
-
-			// Value arg0 =
-			// fromStmt.getInvokeExpr().getUseBoxes().get(0).getValue();
-			Value arg1 = fromStmt.getInvokeExpr().getArg(0);
-			args.add(arg0);
-			args.add(arg1);
+		List<Value> args = new ArrayList<Value>();
+		if (callee == smStartActivityForResult) {
+			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) fromStmt.getInvokeExpr();
+			args.add(iiexpr.getBase());
+			args.add(iiexpr.getArg(0));
 		} else if (fromStmt.toString().contains("bindService")) {
 			Value arg0 = fromStmt.getInvokeExpr().getArg(0); // intent
 			Value arg1 = fromStmt.getInvokeExpr().getArg(1); // serviceConnection
@@ -145,13 +108,13 @@ public class IccInstrumentSource {
 	}
 
 	/**
-	 * Copy all the tags of {from} to {to}, if {to} already contain the copied
-	 * tag, then overwrite it.
+	 * Copy all the tags of {from} to {to}, if {to} already contain the copied tag,
+	 * then overwrite it.
 	 * 
 	 * @param from
 	 * @param to
 	 */
-	public static void copyTags(Unit from, Unit to) {
+	protected static void copyTags(Unit from, Unit to) {
 		List<Tag> tags = from.getTags();
 
 		for (Tag tag : tags) {

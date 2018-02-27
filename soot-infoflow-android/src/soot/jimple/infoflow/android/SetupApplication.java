@@ -59,7 +59,6 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
 import soot.jimple.infoflow.android.iccta.IccResults;
-import soot.jimple.infoflow.android.iccta.MessengerInstrumenter;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
@@ -113,18 +112,19 @@ public class SetupApplication {
 	private Set<SootClass> entrypoints = null;
 	private Set<String> callbackClasses = null;
 	protected AndroidEntryPointCreator entryPointCreator = null;
+	protected IccInstrumenter iccInstrumenter = null;
 
 	protected ARSCFileParser resources = null;
 	protected ProcessManifest manifest = null;
 	protected IValueProvider valueProvider = null;
 
 	private final boolean forceAndroidJar;
-	private ITaintPropagationWrapper taintWrapper;
+	protected ITaintPropagationWrapper taintWrapper;
 
-	private ISourceSinkManager sourceSinkManager = null;
+	protected ISourceSinkManager sourceSinkManager = null;
 
-	private IInfoflowConfig sootConfig = new SootConfigForAndroid();
-	private BiDirICFGFactory cfgFactory = null;
+	protected IInfoflowConfig sootConfig = new SootConfigForAndroid();
+	protected BiDirICFGFactory cfgFactory = null;
 
 	private IIPCManager ipcManager = null;
 
@@ -136,11 +136,11 @@ public class SetupApplication {
 	private String callbackFile = "AndroidCallbacks.txt";
 	private SootClass scView = null;
 
-	private Set<PreAnalysisHandler> preprocessors = new HashSet<>();
-	private Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
-	private TaintPropagationHandler taintPropagationHandler = null;
+	protected Set<PreAnalysisHandler> preprocessors = new HashSet<>();
+	protected Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
+	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private InPlaceInfoflow infoflow = null;
+	protected InPlaceInfoflow infoflow = null;
 
 	/**
 	 * Class for aggregating the data flow results obtained through multiple runs of
@@ -557,16 +557,10 @@ public class SetupApplication {
 			return;
 
 		// Do we need ICC instrumentation?
-		IccInstrumenter iccInstrumenter = null;
 		if (config.getIccConfig().isIccEnabled()) {
-			iccInstrumenter = new IccInstrumenter(config.getIccConfig().getIccModel(),
-					entryPointCreator.getGeneratedMainMethod().getDeclaringClass(),
-					entryPointCreator.getComponentToEntryPointInfo());
+			if (iccInstrumenter == null)
+				iccInstrumenter = createIccInstrumenter();
 			iccInstrumenter.onBeforeCallgraphConstruction();
-
-			// To support Messenger-based ICC
-			MessengerInstrumenter msgInstrumenter = new MessengerInstrumenter();
-			msgInstrumenter.onBeforeCallgraphConstruction();
 		}
 
 		// Run the preprocessors
@@ -590,6 +584,20 @@ public class SetupApplication {
 
 		// Make sure that we have a hierarchy
 		Scene.v().getOrMakeFastHierarchy();
+	}
+
+	/**
+	 * Creates the ICC instrumentation class
+	 * 
+	 * @return An instance of the class for instrumenting the app's code for
+	 *         inter-component communication
+	 */
+	protected IccInstrumenter createIccInstrumenter() {
+		IccInstrumenter iccInstrumenter;
+		iccInstrumenter = new IccInstrumenter(config.getIccConfig().getIccModel(),
+				entryPointCreator.getGeneratedMainMethod().getDeclaringClass(),
+				entryPointCreator.getComponentToEntryPointInfo());
+		return iccInstrumenter;
 	}
 
 	/**
@@ -1306,7 +1314,6 @@ public class SetupApplication {
 		this.collectedSinks = config.getLogSourcesAndSinks() ? new HashSet<Stmt>() : null;
 		this.maxMemoryConsumption = 0;
 		this.sourceSinkProvider = sourcesAndSinks;
-		this.entryPointCreator = null;
 		this.infoflow = null;
 
 		// Perform some sanity checks on the configuration
@@ -1452,6 +1459,12 @@ public class SetupApplication {
 	 * @return A properly configured instance of the {@link Infoflow} class
 	 */
 	private InPlaceInfoflow createInfoflow() {
+		// Some sanity checks
+		if (entryPointCreator == null)
+			throw new RuntimeException("No entry point available");
+		if (entryPointCreator.getComponentToEntryPointInfo() == null)
+			throw new RuntimeException("No information about component entry points available");
+
 		// Initialize and configure the data flow tracker
 		final String androidJar = config.getAnalysisFileConfig().getTargetAPKFile();
 		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory,
@@ -1652,6 +1665,14 @@ public class SetupApplication {
 	 */
 	public void addResultsAvailableHandler(ResultsAvailableHandler handler) {
 		this.resultsAvailableHandlers.add(handler);
+	}
+
+	/**
+	 * Clears the list of handlers that shall be executed when the data flow results
+	 * are available
+	 */
+	public void clearResultsAvailableHandlers() {
+		this.resultsAvailableHandlers.clear();
 	}
 
 	/**
