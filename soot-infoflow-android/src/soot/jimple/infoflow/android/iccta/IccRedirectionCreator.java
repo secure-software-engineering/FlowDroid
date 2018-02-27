@@ -116,7 +116,7 @@ public class IccRedirectionCreator {
 		newSM_parameters.add(originActivity.getType());
 		newSM_parameters.add(INTENT_TYPE);
 
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, VoidType.v(),
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, newSM_parameters, VoidType.v(),
 				Modifier.STATIC | Modifier.PUBLIC);
 		dummyMainClass.addMethod(newSM);
 		final JimpleBody b = Jimple.v().newBody(newSM);
@@ -167,8 +167,8 @@ public class IccRedirectionCreator {
 
 	protected SootMethod generateRedirectMethod(SootClass wrapper) {
 		String newSM_name = "redirector" + num++;
-		SootMethod newSM = new SootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE), VoidType.v(),
-				Modifier.STATIC | Modifier.PUBLIC);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
+				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -197,8 +197,8 @@ public class IccRedirectionCreator {
 
 	protected SootMethod generateRedirectMethodForStartActivity(SootClass wrapper) {
 		String newSM_name = "redirector" + num++;
-		SootMethod newSM = new SootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE), VoidType.v(),
-				Modifier.STATIC | Modifier.PUBLIC);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
+				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -232,7 +232,7 @@ public class IccRedirectionCreator {
 		newSM_parameters.add(serviceConnection.getType());
 		newSM_parameters.add(INTENT_TYPE);
 
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, VoidType.v(),
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, newSM_parameters, VoidType.v(),
 				Modifier.STATIC | Modifier.PUBLIC);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
@@ -293,8 +293,8 @@ public class IccRedirectionCreator {
 	protected SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootClass destProvider) {
 		SootMethod iccMethod = iccStmt.getInvokeExpr().getMethod();
 		String newSM_name = "redirector" + num++;
-		SootMethod newSM = new SootMethod(newSM_name, iccMethod.getParameterTypes(), iccMethod.getReturnType(),
-				Modifier.STATIC | Modifier.PUBLIC);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, iccMethod.getParameterTypes(),
+				iccMethod.getReturnType(), Modifier.STATIC | Modifier.PUBLIC);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);

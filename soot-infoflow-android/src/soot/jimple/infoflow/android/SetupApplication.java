@@ -75,6 +75,7 @@ import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
 import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.android.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
@@ -1460,15 +1461,24 @@ public class SetupApplication {
 	 */
 	private InPlaceInfoflow createInfoflow() {
 		// Some sanity checks
-		if (entryPointCreator == null)
-			throw new RuntimeException("No entry point available");
-		if (entryPointCreator.getComponentToEntryPointInfo() == null)
-			throw new RuntimeException("No information about component entry points available");
+		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
+			if (entryPointCreator == null)
+				throw new RuntimeException("No entry point available");
+			if (entryPointCreator.getComponentToEntryPointInfo() == null)
+				throw new RuntimeException("No information about component entry points available");
+		}
+
+		// Get the component lifecycle methods
+		Collection<SootMethod> lifecycleMethods = Collections.emptySet();
+		if (entryPointCreator != null) {
+			ComponentEntryPointCollection entryPoints = entryPointCreator.getComponentToEntryPointInfo();
+			if (entryPoints != null)
+				lifecycleMethods = entryPoints.getLifecycleMethods();
+		}
 
 		// Initialize and configure the data flow tracker
 		final String androidJar = config.getAnalysisFileConfig().getTargetAPKFile();
-		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory,
-				entryPointCreator.getComponentToEntryPointInfo().getLifecycleMethods());
+		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
