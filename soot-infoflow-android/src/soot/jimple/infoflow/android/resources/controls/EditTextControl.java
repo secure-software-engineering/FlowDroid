@@ -21,6 +21,8 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  */
 public class EditTextControl extends LayoutControl {
 
+	public final static int TYPE_CLASS_TEXT = 0x00000001;
+	public final static int TYPE_CLASS_NUMBER = 0x00000002;
 	public final static int TYPE_NUMBER_VARIATION_PASSWORD = 0x00000010;
 	public final static int TYPE_TEXT_VARIATION_PASSWORD = 0x00000080;
 	public final static int TYPE_TEXT_VARIATION_VISIBLE_PASSWORD = 0x00000090;
@@ -135,10 +137,20 @@ public class EditTextControl extends LayoutControl {
 
 	@Override
 	public boolean isSensitive() {
-		return isPassword || ((inputType & TYPE_NUMBER_VARIATION_PASSWORD) == TYPE_NUMBER_VARIATION_PASSWORD)
-				|| ((inputType & TYPE_TEXT_VARIATION_PASSWORD) == TYPE_TEXT_VARIATION_PASSWORD)
-				|| ((inputType & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-				|| ((inputType & TYPE_TEXT_VARIATION_WEB_PASSWORD) == TYPE_TEXT_VARIATION_WEB_PASSWORD);
+		if (isPassword)
+			return true;
+
+		if ((inputType & TYPE_CLASS_NUMBER) == TYPE_CLASS_NUMBER)
+			return ((inputType & TYPE_NUMBER_VARIATION_PASSWORD) == TYPE_NUMBER_VARIATION_PASSWORD);
+
+		if ((inputType & TYPE_CLASS_TEXT) == TYPE_CLASS_TEXT) {
+			return ((inputType & TYPE_NUMBER_VARIATION_PASSWORD) == TYPE_NUMBER_VARIATION_PASSWORD)
+					|| ((inputType & TYPE_TEXT_VARIATION_PASSWORD) == TYPE_TEXT_VARIATION_PASSWORD)
+					|| ((inputType & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
+					|| ((inputType & TYPE_TEXT_VARIATION_WEB_PASSWORD) == TYPE_TEXT_VARIATION_WEB_PASSWORD);
+		}
+		return false;
+
 	}
 
 	@Override
