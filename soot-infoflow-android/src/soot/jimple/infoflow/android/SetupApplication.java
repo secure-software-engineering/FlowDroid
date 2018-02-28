@@ -571,6 +571,11 @@ public class SetupApplication {
 		// Make sure that we don't have any weird leftovers
 		releaseCallgraph();
 
+		// If we didn't create the Soot instance, we can't be sure what its callgraph
+		// configuration is
+		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingInstance)
+			configureCallgraph();
+
 		// Construct the actual callgraph
 		logger.info("Constructing the callgraph...");
 		PackManager.v().getPack("cg").apply();
@@ -1062,11 +1067,8 @@ public class SetupApplication {
 	/**
 	 * Initializes soot for running the soot-based phases of the application
 	 * metadata analysis
-	 * 
-	 * @param constructCallgraph
-	 *            True if a callgraph shall be constructed, otherwise false
 	 */
-	private void initializeSoot(boolean constructCallgraph) {
+	private void initializeSoot() {
 		logger.info("Initializing Soot...");
 
 		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
@@ -1081,7 +1083,7 @@ public class SetupApplication {
 			Options.v().set_output_format(Options.output_format_jimple);
 		else
 			Options.v().set_output_format(Options.output_format_none);
-		Options.v().set_whole_program(constructCallgraph);
+		Options.v().set_whole_program(true);
 		Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
 		if (forceAndroidJar)
 			Options.v().set_force_android_jar(androidJar);
@@ -1100,36 +1102,7 @@ public class SetupApplication {
 
 		Options.v().set_soot_classpath(getClasspath());
 		Main.v().autoSetOptions();
-
-		// Configure the callgraph algorithm
-		if (constructCallgraph) {
-			switch (config.getCallgraphAlgorithm()) {
-			case AutomaticSelection:
-			case SPARK:
-				Options.v().setPhaseOption("cg.spark", "on");
-				break;
-			case GEOM:
-				Options.v().setPhaseOption("cg.spark", "on");
-				AbstractInfoflow.setGeomPtaSpecificOptions();
-				break;
-			case CHA:
-				Options.v().setPhaseOption("cg.cha", "on");
-				break;
-			case RTA:
-				Options.v().setPhaseOption("cg.spark", "on");
-				Options.v().setPhaseOption("cg.spark", "rta:true");
-				Options.v().setPhaseOption("cg.spark", "on-fly-cg:false");
-				break;
-			case VTA:
-				Options.v().setPhaseOption("cg.spark", "on");
-				Options.v().setPhaseOption("cg.spark", "vta:true");
-				break;
-			default:
-				throw new RuntimeException("Invalid callgraph algorithm");
-			}
-		}
-		if (config.getEnableReflection())
-			Options.v().setPhaseOption("cg", "types-for-invoke:true");
+		configureCallgraph();
 
 		// Load whatever we need
 		logger.info("Loading dex files...");
@@ -1143,6 +1116,39 @@ public class SetupApplication {
 		// algorithm would flood us with invalid edges.
 		LibraryClassPatcher patcher = new LibraryClassPatcher();
 		patcher.patchLibraries();
+	}
+
+	/**
+	 * Configures the callgraph options for Soot according to FlowDroid's settings
+	 */
+	protected void configureCallgraph() {
+		// Configure the callgraph algorithm
+		switch (config.getCallgraphAlgorithm()) {
+		case AutomaticSelection:
+		case SPARK:
+			Options.v().setPhaseOption("cg.spark", "on");
+			break;
+		case GEOM:
+			Options.v().setPhaseOption("cg.spark", "on");
+			AbstractInfoflow.setGeomPtaSpecificOptions();
+			break;
+		case CHA:
+			Options.v().setPhaseOption("cg.cha", "on");
+			break;
+		case RTA:
+			Options.v().setPhaseOption("cg.spark", "on");
+			Options.v().setPhaseOption("cg.spark", "rta:true");
+			Options.v().setPhaseOption("cg.spark", "on-fly-cg:false");
+			break;
+		case VTA:
+			Options.v().setPhaseOption("cg.spark", "on");
+			Options.v().setPhaseOption("cg.spark", "vta:true");
+			break;
+		default:
+			throw new RuntimeException("Invalid callgraph algorithm");
+		}
+		if (config.getEnableReflection())
+			Options.v().setPhaseOption("cg", "types-for-invoke:true");
 	}
 
 	/**
@@ -1194,8 +1200,7 @@ public class SetupApplication {
 			config.setTaintAnalysisEnabled(false);
 
 			// The runInfoflow method can take a null provider as long as we
-			// don't
-			// attempt to run a data flow analysis.
+			// don't attempt to run a data flow analysis.
 			this.runInfoflow((ISourceSinkDefinitionProvider) null);
 		} finally {
 			config.setTaintAnalysisEnabled(oldRunAnalysis);
@@ -1326,7 +1331,7 @@ public class SetupApplication {
 		// Start a new Soot instance
 		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
 			G.reset();
-			initializeSoot(true);
+			initializeSoot();
 		}
 
 		// Perform basic app parsing
@@ -1347,11 +1352,9 @@ public class SetupApplication {
 			entrypointWorklist = new ArrayList<>(entrypoints);
 		else {
 			entrypointWorklist = new ArrayList<>();
-			SootClass dummyEntrypoint;
-			if (Scene.v().containsClass("dummy"))
-				dummyEntrypoint = Scene.v().getSootClass("dummy");
-			else
-				dummyEntrypoint = new SootClass("dummy");
+			SootClass dummyEntrypoint = Scene.v().getSootClassUnsafe("dummy");
+			if (dummyEntrypoint == null)
+				dummyEntrypoint = Scene.v().makeSootClass("dummy");
 			entrypointWorklist.add(dummyEntrypoint);
 		}
 
