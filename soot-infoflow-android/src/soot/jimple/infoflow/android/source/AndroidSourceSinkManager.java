@@ -919,30 +919,25 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 */
 	private SootMethod grabMethodWithoutReturn(String sootClassName, String subSignature)
 	{
-		Scene scene=Scene.v();
-		if(!scene.containsClass(sootClassName))
-			return null;
-		SootClass sootClass=Scene.v().getSootClass(sootClassName);
-
-		/*SootClass sootClass=Scene.v().getSootClassUnsafe(sootClassName);
+		SootClass sootClass=Scene.v().getSootClassUnsafe(sootClassName);
 		if(sootClass==null)
-			return null;*/
+			return null;
 
 		List<SootMethod> sootMethods=null;
+		if(sootClass.resolvingLevel()!=0) {
+			sootMethods = sootClass.getMethods();
 
-		sootMethods = sootClass.getMethods();
+			for (SootMethod s : sootMethods) {
+				String[] tempSignature = s.getSubSignature().split(" ");
 
-		for (SootMethod s: sootMethods)
-		{
-			String[] tempSignature=s.getSubSignature().split(" ");
+				if (tempSignature.length == 2) {
+					if (tempSignature[1].equals(subSignature))
+						return s;
+				}
 
-			if(tempSignature.length==2)
-			{
-				if(tempSignature[1].equals(subSignature))
-					return s;
 			}
-
 		}
+
 		return null;
 	}
 
