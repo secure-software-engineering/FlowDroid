@@ -1363,6 +1363,9 @@ public class SetupApplication {
 		while (!entrypointWorklist.isEmpty()) {
 			SootClass entrypoint = entrypointWorklist.remove(0);
 
+			// Get rid of leftovers from the last entry point
+			resultAggregator.clearLastResults();
+
 			// Perform basic app parsing
 			try {
 				if (config.getOneComponentAtATime())
@@ -1422,7 +1425,6 @@ public class SetupApplication {
 			// Notify our result handlers
 			for (ResultsAvailableHandler handler : resultsAvailableHandlers)
 				handler.onResultsAvailable(resultAggregator.getLastICFG(), resultAggregator.getLastResults());
-			resultAggregator.clearLastResults();
 		}
 
 		// Write the results to disk if requested
@@ -1430,6 +1432,7 @@ public class SetupApplication {
 
 		// We return the aggregated results
 		this.infoflow = null;
+		resultAggregator.clearLastResults();
 		return resultAggregator.getAggregatedResults();
 	}
 
