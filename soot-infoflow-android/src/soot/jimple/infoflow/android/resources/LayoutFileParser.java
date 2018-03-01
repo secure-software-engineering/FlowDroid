@@ -363,9 +363,11 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * @return The layout controls found in the XML file.
 	 */
 	public Map<Integer, LayoutControl> getUserControlsByID() {
-		Map<Integer, LayoutControl> res = new HashMap<Integer, LayoutControl>();
-		for (LayoutControl lc : this.userControls.values())
-			res.put(lc.getID(), lc);
+		Map<Integer, LayoutControl> res = new HashMap<>();
+		for (LayoutControl lc : this.userControls.values()) {
+			if (lc.getID() != -1)
+				res.put(lc.getID(), lc);
+		}
 		return res;
 	}
 

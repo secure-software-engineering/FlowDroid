@@ -35,7 +35,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 	@Override
 	public void computeTaintPaths(final Set<AbstractionAtSink> res) {
-		if (res.isEmpty())
+		if (res == null || res.isEmpty())
 			return;
 
 		logger.info("Obtainted {} connections between sources and sinks", res.size());

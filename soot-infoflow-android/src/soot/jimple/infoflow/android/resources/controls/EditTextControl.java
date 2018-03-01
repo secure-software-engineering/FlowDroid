@@ -118,14 +118,14 @@ public class EditTextControl extends LayoutControl {
 		final String attrName = attribute.getName().trim();
 		final int type = attribute.getType();
 
-		if (attrName.equals("inputType") && attribute.getType() == AxmlVisitor.TYPE_INT_HEX) {
+		if (attrName.equals("inputType") && type == AxmlVisitor.TYPE_INT_HEX) {
 			inputType = (Integer) attribute.getValue();
 		} else if (attrName.equals("password")) {
-			if (attribute.getType() == AxmlVisitor.TYPE_INT_HEX)
+			if (type == AxmlVisitor.TYPE_INT_HEX)
 				isPassword = ((Integer) attribute.getValue()) != 0; // -1 for
 			// true, 0
 			// for false
-			else if (attribute.getType() == AxmlVisitor.TYPE_INT_BOOLEAN)
+			else if (type == AxmlVisitor.TYPE_INT_BOOLEAN)
 				isPassword = (Boolean) attribute.getValue();
 			else
 				throw new RuntimeException("Unknown representation of boolean data type");
