@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.Local;
 import soot.Modifier;
 import soot.NullType;
@@ -33,6 +36,7 @@ public class IccRedirectionCreator {
 
 	private static int num = 0;
 
+	private final static Logger logger = LoggerFactory.getLogger(IccRedirectionCreator.class);
 	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
 	private static RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
 
@@ -54,6 +58,9 @@ public class IccRedirectionCreator {
 
 		// 1) generate redirect method
 		SootMethod redirectSM = getRedirectMethod(link);
+
+		if (redirectSM == null)
+			return;
 
 		// 2) instrument the source to call the generated redirect method after
 		// ICC methods
@@ -85,6 +92,8 @@ public class IccRedirectionCreator {
 							RefType rt = (RefType) tp;
 							redirectMethod = generateRedirectMethodForStartActivityForResult(rt.getSootClass(),
 									instrumentedDestinationSC);
+							if (redirectMethod == null)
+								return null;
 						}
 					}
 				} else if (stmt.getInvokeExpr().getMethod().getName().equals("bindService")) {
@@ -93,9 +102,13 @@ public class IccRedirectionCreator {
 						RefType rt = (RefType) v.getType();
 						redirectMethod = generateRedirectMethodForBindService(rt.getSootClass(),
 								instrumentedDestinationSC);
+						if (redirectMethod == null)
+							return null;
 					}
 				} else {
 					redirectMethod = generateRedirectMethod(instrumentedDestinationSC);
+					if (redirectMethod == null)
+						return null;
 				}
 			}
 
@@ -166,6 +179,12 @@ public class IccRedirectionCreator {
 	}
 
 	protected SootMethod generateRedirectMethod(SootClass wrapper) {
+		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			return null;
+		}
+
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
 				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
@@ -181,10 +200,6 @@ public class IccRedirectionCreator {
 
 		// call dummyMainMethod
 		{
-			SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
-			if (targetDummyMain == null)
-				throw new RuntimeException(
-						String.format("Destination component %s has no dummy main method", wrapper.getName()));
 			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(targetDummyMain.makeRef(),
 					Collections.singletonList(intentParameterLocal))));
 
@@ -196,6 +211,11 @@ public class IccRedirectionCreator {
 	}
 
 	protected SootMethod generateRedirectMethodForStartActivity(SootClass wrapper) {
+		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			return null;
+		}
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
 				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
@@ -211,10 +231,6 @@ public class IccRedirectionCreator {
 
 		// call dummyMainMethod
 		{
-			SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
-			if (targetDummyMain == null)
-				throw new RuntimeException(
-						String.format("Destination component %s has no dummy main method", wrapper.getName()));
 			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(targetDummyMain.makeRef(),
 					Collections.singletonList(intentParameterLocal))));
 
@@ -226,6 +242,16 @@ public class IccRedirectionCreator {
 	}
 
 	protected SootMethod generateRedirectMethodForBindService(SootClass serviceConnection, SootClass destComp) {
+		ServiceEntryPointInfo entryPointInfo = (ServiceEntryPointInfo) componentToEntryPoint.get(destComp);
+		if (entryPointInfo == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			return null;
+		}
+		SootMethod targetDummyMain = entryPointInfo.getEntryPoint();
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			return null;
+		}
 		String newSM_name = "redirector" + num++;
 
 		List<Type> newSM_parameters = new ArrayList<>();
@@ -249,12 +275,7 @@ public class IccRedirectionCreator {
 
 		// call dummy main method
 		Local componentLocal = lg.generateLocal(destComp.getType());
-		ServiceEntryPointInfo entryPointInfo = (ServiceEntryPointInfo) componentToEntryPoint.get(destComp);
 		{
-			SootMethod targetDummyMain = entryPointInfo.getEntryPoint();
-			if (targetDummyMain == null)
-				throw new RuntimeException(
-						String.format("Destination component %s has no dummy main method", destComp.getName()));
 			b.getUnits().add(Jimple.v().newAssignStmt(componentLocal, Jimple.v()
 					.newStaticInvokeExpr(targetDummyMain.makeRef(), Collections.singletonList(intentParameterLocal))));
 
