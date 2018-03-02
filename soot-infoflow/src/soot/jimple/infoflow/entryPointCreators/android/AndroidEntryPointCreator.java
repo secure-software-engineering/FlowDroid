@@ -338,9 +338,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				fieldName = baseName + "_" + idx;
 				idx++;
 			}
-			SootField fld = new SootField(fieldName, RefType.v(callbackClass));
+			SootField fld = Scene.v().makeSootField(fieldName, RefType.v(callbackClass),
+					Modifier.PRIVATE | Modifier.STATIC);
 			mainMethod.getDeclaringClass().addField(fld);
-			fld.setModifiers(Modifier.PRIVATE | Modifier.STATIC);
 			callbackClassToField.put(callbackClass, fld);
 		}
 	}
