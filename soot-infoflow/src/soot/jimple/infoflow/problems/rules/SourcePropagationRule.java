@@ -49,8 +49,9 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 							false, false);
 					res.add(abs);
 
-					// Compute the aliases
-					for (ValueBox vb : stmt.getUseAndDefBoxes()) {
+					// Compute the aliases. This is only relevant for variables that are not
+					// entirely overwritten.
+					for (ValueBox vb : stmt.getUseBoxes()) {
 						if (ap.startsWith(vb.getValue())) {
 							// We need a relaxed "can have aliases" check here.
 							// Even if we have a local, the source/sink manager
