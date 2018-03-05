@@ -34,7 +34,8 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		if (source == getZeroValue()) {
 			// Check whether this can be a source at all
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager() != null
-					? getManager().getSourceSinkManager().getSourceInfo(stmt, getManager()) : null;
+					? getManager().getSourceSinkManager().getSourceInfo(stmt, getManager())
+					: null;
 
 			// We never propagate zero facts onwards
 			killSource.value = true;

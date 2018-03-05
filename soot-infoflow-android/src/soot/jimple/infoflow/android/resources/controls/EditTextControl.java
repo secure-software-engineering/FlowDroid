@@ -33,12 +33,14 @@ public class EditTextControl extends LayoutControl {
 
 	static {
 		UI_PASSWORD_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
-				Collections.singleton(AccessPathTuple.fromPathElements(Collections.singletonList("content"),
-						Collections.singletonList("android.text.Editable"), SourceSinkType.Source)),
+				Collections.singleton(AccessPathTuple.fromPathElements("android.widget.TextView",
+						Collections.singletonList("content"), Collections.singletonList("android.text.Editable"),
+						SourceSinkType.Source)),
 				CallType.MethodCall);
 		UI_ELEMENT_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
-				Collections.singleton(AccessPathTuple.fromPathElements(Collections.singletonList("content"),
-						Collections.singletonList("android.text.Editable"), SourceSinkType.Source)),
+				Collections.singleton(AccessPathTuple.fromPathElements("android.widget.TextView",
+						Collections.singletonList("content"), Collections.singletonList("android.text.Editable"),
+						SourceSinkType.Source)),
 				CallType.MethodCall);
 
 		UI_PASSWORD_SOURCE_DEF.setCategory(new ISourceSinkCategory() {
@@ -149,7 +151,6 @@ public class EditTextControl extends LayoutControl {
 					|| ((inputType & TYPE_TEXT_VARIATION_WEB_PASSWORD) == TYPE_TEXT_VARIATION_WEB_PASSWORD);
 		}
 		return false;
-
 	}
 
 	@Override

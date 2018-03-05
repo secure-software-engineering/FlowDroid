@@ -51,12 +51,12 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.CharSequence getText()">
+		<method id="android.text.Editable getText()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
-						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+						AccessPath="[android.widget.TextView: android.text.Editable content]"
+						AccessPathTypes="[android.text.Editable]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

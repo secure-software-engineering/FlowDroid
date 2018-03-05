@@ -104,17 +104,16 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			 * Computes the aliases for the given statement
 			 * 
 			 * @param def
-			 *            The definition statement from which to extract the
-			 *            alias information
+			 *            The definition statement from which to extract the alias
+			 *            information
 			 * @param leftValue
-			 *            The left side of def. Passed in to allow for caching,
-			 *            no need to recompute this for every abstraction being
-			 *            processed.
+			 *            The left side of def. Passed in to allow for caching, no need to
+			 *            recompute this for every abstraction being processed.
 			 * @param d1
 			 *            The abstraction at the method's start node
 			 * @param source
-			 *            The source abstraction of the alias search from before
-			 *            the current statement
+			 *            The source abstraction of the alias search from before the current
+			 *            statement
 			 * @return The set of abstractions after the current statement
 			 */
 			private Set<Abstraction> computeAliases(final DefinitionStmt defStmt, Value leftValue, Abstraction d1,
@@ -449,9 +448,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					paramLocals[i] = dest.getActiveBody().getParameterLocal(i);
 
 				final boolean isSource = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSourceInfo((Stmt) src, manager) != null : false;
+						? manager.getSourceSinkManager().getSourceInfo((Stmt) src, manager) != null
+						: false;
 				final boolean isSink = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null : false;
+						? manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null
+						: false;
 
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
@@ -759,8 +760,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 														iIExpr) ? iIExpr.getArg(0) : iIExpr.getBase();
 
 												AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-														source.getAccessPath(), callerBaseLocal, isReflectiveCallSite
-																? null : source.getAccessPath().getBaseType(),
+														source.getAccessPath(), callerBaseLocal,
+														isReflectiveCallSite ? null
+																: source.getAccessPath().getBaseType(),
 														false);
 												Abstraction abs = checkAbstraction(
 														source.deriveNewAbstraction(ap, (Stmt) exitStmt));

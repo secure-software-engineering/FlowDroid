@@ -21,6 +21,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.entryPointCreators.android.AbstractAndroidEntryPointCreator;
+import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -155,12 +156,13 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			createIfStmt(beforeComponentStmt);
 
 		} finally {
+			body.getUnits().add(endClassStmt);
 			if (thisLocal == null)
 				body.getUnits().add(Jimple.v().newReturnStmt(NullConstant.v()));
 			else
 				body.getUnits().add(Jimple.v().newReturnStmt(thisLocal));
-			body.getUnits().add(endClassStmt);
 		}
+		NopEliminator.v().transform(body);
 		System.out.println(mainMethod.getActiveBody());
 		return mainMethod;
 	}
