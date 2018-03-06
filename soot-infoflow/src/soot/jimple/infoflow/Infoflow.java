@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -79,12 +78,13 @@ import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
-import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
 import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
+import soot.jimple.infoflow.threading.DefaultExecutorFactory;
+import soot.jimple.infoflow.threading.IExecutorFactory;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
@@ -106,6 +106,7 @@ public class Infoflow extends AbstractInfoflow {
 	private TaintPropagationHandler taintPropagationHandler = null;
 	private TaintPropagationHandler backwardsPropagationHandler = null;
 	private IMemoryManagerFactory memoryManagerFactory = new DefaultMemoryManagerFactory();
+	private IExecutorFactory executorFactory = new DefaultExecutorFactory();
 
 	private long maxMemoryConsumption = -1;
 	private FlowDroidMemoryWatcher memoryWatcher = null;
@@ -312,7 +313,7 @@ public class Infoflow extends AbstractInfoflow {
 
 				// Create the executor that takes care of the workers
 				int numThreads = Runtime.getRuntime().availableProcessors();
-				InterruptableExecutor executor = createExecutor(numThreads, true);
+				InterruptableExecutor executor = executorFactory.createExecutor(numThreads, true, config);
 				executor.setThreadFactory(new ThreadFactory() {
 
 					@Override
@@ -431,7 +432,17 @@ public class Infoflow extends AbstractInfoflow {
 
 					// Register the handler for interim results
 					TaintPropagationResults propagationResults = forwardProblem.getResults();
-					resultExecutor = createExecutor(numThreads, false);
+					resultExecutor = executorFactory.createExecutor(numThreads, false, config);
+					executor.setThreadFactory(new ThreadFactory() {
+
+						@Override
+						public Thread newThread(Runnable r) {
+							Thread thrPath = new Thread(r);
+							thrPath.setDaemon(true);
+							thrPath.setName("FlowDroid Path Reconstruction");
+							return thrPath;
+						}
+					});
 
 					// Create the path builder
 					final IAbstractionPathBuilder builder = new BatchPathBuilder(manager,
@@ -574,7 +585,11 @@ public class Infoflow extends AbstractInfoflow {
 
 						// Wait for the path builders to terminate
 						try {
-							resultExecutor.awaitCompletion();
+							// The path reconstruction should stop on time anyway. In case it doesn't, we
+							// make sure that we don't get stuck.
+							resultExecutor.awaitCompletion(
+									manager.getConfig().getPathConfiguration().getPathReconstructionTimeout() + 20,
+									TimeUnit.SECONDS);
 						} catch (InterruptedException e) {
 							logger.error("Could not wait for executor termination", e);
 						}
@@ -940,28 +955,6 @@ public class Infoflow extends AbstractInfoflow {
 		dce.run(dceManager, excludedMethods, sourcesSinks, taintWrapper);
 	}
 
-	/**
-	 * Creates a new executor object for spawning worker threads
-	 * 
-	 * @param numThreads
-	 *            The number of threads to use
-	 * @param allowSetSemantics
-	 *            True if the executor shall have thread semantics, i.e., never
-	 *            schedule the same task twice
-	 * @return The generated executor
-	 */
-	private InterruptableExecutor createExecutor(int numThreads, boolean allowSetSemantics) {
-		if (allowSetSemantics) {
-			return new SetPoolExecutor(
-					config.getMaxThreadNum() == -1 ? numThreads : Math.min(config.getMaxThreadNum(), numThreads),
-					Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-		} else {
-			return new InterruptableExecutor(
-					config.getMaxThreadNum() == -1 ? numThreads : Math.min(config.getMaxThreadNum(), numThreads),
-					Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-		}
-	}
-
 	protected Collection<SootMethod> getMethodsForSeeds(IInfoflowCFG icfg) {
 		List<SootMethod> seeds = new LinkedList<SootMethod>();
 		// If we have a callgraph, we retrieve the reachable methods. Otherwise,
@@ -1168,6 +1161,16 @@ public class Infoflow extends AbstractInfoflow {
 	 */
 	public void setMemoryManagerFactory(IMemoryManagerFactory factory) {
 		this.memoryManagerFactory = factory;
+	}
+
+	/**
+	 * Sets the factoey to be used for creating thread pool executors
+	 * 
+	 * @param executorFactory
+	 *            The executor factory to use
+	 */
+	public void setExecutorFactory(IExecutorFactory executorFactory) {
+		this.executorFactory = executorFactory;
 	}
 
 	/**
