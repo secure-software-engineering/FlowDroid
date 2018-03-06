@@ -433,7 +433,7 @@ public class Infoflow extends AbstractInfoflow {
 					// Register the handler for interim results
 					TaintPropagationResults propagationResults = forwardProblem.getResults();
 					resultExecutor = executorFactory.createExecutor(numThreads, false, config);
-					executor.setThreadFactory(new ThreadFactory() {
+					resultExecutor.setThreadFactory(new ThreadFactory() {
 
 						@Override
 						public Thread newThread(Runnable r) {
