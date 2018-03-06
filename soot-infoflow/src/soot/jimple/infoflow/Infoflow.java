@@ -588,7 +588,7 @@ public class Infoflow extends AbstractInfoflow {
 							// The path reconstruction should stop on time anyway. In case it doesn't, we
 							// make sure that we don't get stuck.
 							resultExecutor.awaitCompletion(
-									manager.getConfig().getPathConfiguration().getPathReconstructionTimeout() + 20,
+									config.getPathConfiguration().getPathReconstructionTimeout() + 20,
 									TimeUnit.SECONDS);
 						} catch (InterruptedException e) {
 							logger.error("Could not wait for executor termination", e);

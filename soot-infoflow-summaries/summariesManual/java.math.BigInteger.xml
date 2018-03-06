@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -14,16 +15,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
-				</flow>
-			</flows>
-		</method>
-		<method id="void &lt;init&gt;(char[],int,int)">
-			<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -32,16 +25,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
-				</flow>
-			</flows>
-		</method>
-		<method id="void &lt;init&gt;(int[],int)">
-			<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -50,7 +35,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -59,7 +45,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -195,7 +182,7 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="double floatValue()">
+		<method id="float floatValue()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" AccessPath="[java.math.BigInteger: java.lang.Object value]"
@@ -389,13 +376,6 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" AccessPath="[java.math.BigInteger: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
-				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"
-						AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
