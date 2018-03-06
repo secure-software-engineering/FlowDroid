@@ -80,7 +80,7 @@
 						AccessPath="[java.lang.Throwable: java.lang.StackTraceElement[] stackTrace]"
 						AccessPathTypes="[java.lang.StackTraceElement[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
-						sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+						AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
