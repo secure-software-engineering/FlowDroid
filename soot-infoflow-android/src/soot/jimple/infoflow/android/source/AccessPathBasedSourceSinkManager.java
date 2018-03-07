@@ -60,28 +60,26 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 	/**
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
-	 * strong matching, i.e. the methods in the code must exactly match those in
-	 * the list.
+	 * strong matching, i.e. the methods in the code must exactly match those in the
+	 * list.
 	 * 
 	 * @param sources
 	 *            The list of source methods
 	 * @param sinks
 	 *            The list of sink methods
 	 * @param callbackMethods
-	 *            The list of callback methods whose parameters are sources
-	 *            through which the application receives data from the operating
-	 *            system
+	 *            The list of callback methods whose parameters are sources through
+	 *            which the application receives data from the operating system
 	 * @param weakMatching
 	 *            True for weak matching: If an entry in the list has no return
-	 *            type, it matches arbitrary return types if the rest of the
-	 *            method signature is compatible. False for strong matching: The
-	 *            method signature in the code exactly match the one in the
-	 *            list.
+	 *            type, it matches arbitrary return types if the rest of the method
+	 *            signature is compatible. False for strong matching: The method
+	 *            signature in the code exactly match the one in the list.
 	 * @param config
 	 *            The configuration of the data flow analyzer
 	 * @param layoutControls
-	 *            A map from reference identifiers to the respective Android
-	 *            layout controls
+	 *            A map from reference identifiers to the respective Android layout
+	 *            controls
 	 */
 	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
@@ -176,10 +174,10 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 * @param manager
 	 *            The manager to be used for creating new access paths
 	 * @param canHaveImmutableAliases
-	 *            Specifies if the newly tainted value can have aliases that are
-	 *            not overwritten by the current operation, i.e., whether there
-	 *            must be an alias analysis from the source statement backwards
-	 *            through the code
+	 *            Specifies if the newly tainted value can have aliases that are not
+	 *            overwritten by the current operation, i.e., whether there must be
+	 *            an alias analysis from the source statement backwards through the
+	 *            code
 	 * @return The newly created access path
 	 */
 	private AccessPath getAccessPathFromDef(Value baseVal, AccessPathTuple apt, InfoflowManager manager,
@@ -189,7 +187,11 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
 					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 
-		SootClass baseClass = ((RefType) baseVal.getType()).getSootClass();
+		// Do we have a base type?
+		String sBaseType = apt.getBaseType();
+		RefType baseType = sBaseType == null || sBaseType.isEmpty() ? null : RefType.v(sBaseType);
+		SootClass baseClass = baseType == null ? ((RefType) baseVal.getType()).getSootClass() : baseType.getSootClass();
+
 		SootField[] fields = new SootField[apt.getFields().length];
 		for (int i = 0; i < fields.length; i++) {
 			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(apt.getFieldTypes()[i - 1]);
@@ -212,7 +214,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			fields[i] = fld;
 		}
 
-		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, null, null, true, false, true,
+		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, baseType, null, true, false, true,
 				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 	}
 
@@ -281,8 +283,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 *            The access path to check
 	 * @param apt
 	 *            The definition against which to check the access path
-	 * @return True if the given access path matches the given definition,
-	 *         otherwise false
+	 * @return True if the given access path matches the given definition, otherwise
+	 *         false
 	 */
 	private boolean accessPathMatches(AccessPath sourceAccessPath, AccessPathTuple apt) {
 		// If the source or sink definitions does not specify any fields, it

@@ -11,9 +11,10 @@ import java.util.List;
  */
 public class AccessPathTuple {
 
-	private String[] fields;
-	private String[] fieldTypes;
-	private SourceSinkType sinkSource;
+	private final String baseType;
+	private final String[] fields;
+	private final String[] fieldTypes;
+	private final SourceSinkType sinkSource;
 	private String description;
 
 	private int hashCode = 0;
@@ -22,21 +23,26 @@ public class AccessPathTuple {
 	private static AccessPathTuple SINK_TUPLE;
 
 	AccessPathTuple(String[] fields, String[] fieldTypes, SourceSinkType sinkSource) {
+		this(null, fields, fieldTypes, sinkSource);
+	}
+
+	AccessPathTuple(String baseType, String[] fields, String[] fieldTypes, SourceSinkType sinkSource) {
+		this.baseType = baseType;
 		this.fields = fields;
 		this.fieldTypes = fieldTypes;
 		this.sinkSource = sinkSource;
 	}
 
 	/**
-	 * Simplified factory method for creating an access path that just denotes
-	 * the base object
+	 * Simplified factory method for creating an access path that just denotes the
+	 * base object
 	 * 
 	 * @param isSource
-	 *            True if the referenced access path shall be considered a data
-	 *            flow source
+	 *            True if the referenced access path shall be considered a data flow
+	 *            source
 	 * @param isSink
-	 *            True if the referenced access path shall be considered a data
-	 *            flow sink
+	 *            True if the referenced access path shall be considered a data flow
+	 *            sink
 	 * @return The newly created access path object
 	 */
 	public static AccessPathTuple create(boolean isSource, boolean isSink) {
@@ -53,15 +59,24 @@ public class AccessPathTuple {
 
 	public static AccessPathTuple fromPathElements(List<String> fields, List<String> fieldTypes,
 			SourceSinkType sourceSinkType) {
+		return fromPathElements(null, fields, fieldTypes, sourceSinkType);
+	}
+
+	public static AccessPathTuple fromPathElements(String baseType, List<String> fields, List<String> fieldTypes,
+			SourceSinkType sourceSinkType) {
 		String[] fieldArray = fields == null || fields.isEmpty() ? null : fields.toArray(new String[fields.size()]);
 		String[] fieldTypeArray = fieldTypes == null || fieldTypes.isEmpty() ? null
 				: fieldTypes.toArray(new String[fieldTypes.size()]);
-		return new AccessPathTuple(fieldArray, fieldTypeArray, sourceSinkType);
+		return new AccessPathTuple(baseType, fieldArray, fieldTypeArray, sourceSinkType);
 	}
 
 	public static AccessPathTuple fromPathElements(String[] fields, String[] fieldTypes, boolean isSource,
 			boolean isSink) {
 		return new AccessPathTuple(fields, fieldTypes, SourceSinkType.fromFlags(isSink, isSource));
+	}
+
+	public String getBaseType() {
+		return this.baseType;
 	}
 
 	public String[] getFields() {
@@ -124,6 +139,7 @@ public class AccessPathTuple {
 
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + Arrays.hashCode(fieldTypes);
 		result = prime * result + Arrays.hashCode(fields);
@@ -141,6 +157,11 @@ public class AccessPathTuple {
 		if (getClass() != obj.getClass())
 			return false;
 		AccessPathTuple other = (AccessPathTuple) obj;
+		if (baseType == null) {
+			if (other.baseType != null)
+				return false;
+		} else if (!baseType.equals(other.baseType))
+			return false;
 		if (description == null) {
 			if (other.description != null)
 				return false;
@@ -156,12 +177,12 @@ public class AccessPathTuple {
 	}
 
 	/**
-	 * Checks whether this tuple is equivalent to one of the simple predefined
-	 * ones. If so, it returns the shared predefined object. Otherwise, it
-	 * returns this object.
+	 * Checks whether this tuple is equivalent to one of the simple predefined ones.
+	 * If so, it returns the shared predefined object. Otherwise, it returns this
+	 * object.
 	 * 
-	 * @return A shared object that is equal to this one if possible, otherwise
-	 *         this object
+	 * @return A shared object that is equal to this one if possible, otherwise this
+	 *         object
 	 */
 	public AccessPathTuple simplify() {
 		AccessPathTuple blankSource = getBlankSourceTuple();
