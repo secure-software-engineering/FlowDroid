@@ -78,6 +78,8 @@ import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.tagkit.IntegerConstantValueTag;
 import soot.tagkit.Tag;
 
+import static soot.SootClass.DANGLING;
+
 /**
  * SourceManager implementation for AndroidSources
  *
@@ -924,7 +926,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			return null;
 
 		List<SootMethod> sootMethods=null;
-		if(sootClass.resolvingLevel()!=0) {
+		if(sootClass.resolvingLevel()!=DANGLING) {
 			sootMethods = sootClass.getMethods();
 
 			for (SootMethod s : sootMethods) {
