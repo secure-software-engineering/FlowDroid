@@ -1068,7 +1068,8 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
 				if (iinv.getBase() == taintedAbs.getAccessPath().getPlainValue()) {
 					Type baseType = iinv.getBase().getType();
-					declaredClass = ((RefType) baseType).getSootClass();
+					if (baseType instanceof RefType)
+						declaredClass = ((RefType) baseType).getSootClass();
 				}
 			}
 		}
