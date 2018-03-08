@@ -93,11 +93,9 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	 * @param sinks
 	 *            The list of methods to be treated as sinks
 	 * @param parameterTaintMethods
-	 *            The list of methods whose parameters shall be regarded as
-	 *            sources
+	 *            The list of methods whose parameters shall be regarded as sources
 	 * @param returnTaintMethods
-	 *            The list of methods whose return values shall be regarded as
-	 *            sinks
+	 *            The list of methods whose return values shall be regarded as sinks
 	 */
 	public DefaultSourceSinkManager(Collection<String> sources, Collection<String> sinks,
 			Collection<String> parameterTaintMethods, Collection<String> returnTaintMethods) {
@@ -167,12 +165,11 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	 * Checks whether the given call sites invokes a source method
 	 * 
 	 * @param manager
-	 *            The manager object providing access to the configuration and
-	 *            the interprocedural control flow graph
+	 *            The manager object providing access to the configuration and the
+	 *            interprocedural control flow graph
 	 * @param sCallSite
 	 *            The call site to check
-	 * @return True if the given call site invoked a source method, otherwise
-	 *         false
+	 * @return True if the given call site invoked a source method, otherwise false
 	 */
 	private boolean isSourceMethod(InfoflowManager manager, Stmt sCallSite) {
 		// We only support method calls
@@ -187,14 +184,15 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		// Check whether we have any of the interfaces on the list
 		String subSig = callee.getSubSignature();
 		for (SootClass i : interfacesOf.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
-			if (i.declaresMethod(subSig)) {
-				if (this.sources.contains(subSig))
-					return true;
-			}
+			SootMethod sm = i.getMethodUnsafe(subSig);
+			if (sm != null && this.sources.contains(sm))
+				return true;
 		}
 
 		// Ask the CFG in case we don't know any better
-		for (SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
+		for (
+
+		SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
 			if (this.sources.contains(sm))
 				return true;
 		}
@@ -250,12 +248,12 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	 * Checks whether the given call sites invokes a sink method
 	 * 
 	 * @param manager
-	 *            The manager object providing access to the configuration and
-	 *            the interprocedural control flow graph
+	 *            The manager object providing access to the configuration and the
+	 *            interprocedural control flow graph
 	 * @param sCallSite
 	 *            The call site to check
-	 * @return The method that was discovered as a sink, or null if no sink
-	 *         could be found
+	 * @return The method that was discovered as a sink, or null if no sink could be
+	 *         found
 	 */
 	private SootMethodAndClass isSinkMethod(InfoflowManager manager, Stmt sCallSite) {
 		// Is the method directly in the sink set?
@@ -282,24 +280,22 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	}
 
 	/**
-	 * Sets the list of methods whose parameters shall be regarded as taint
-	 * sources
+	 * Sets the list of methods whose parameters shall be regarded as taint sources
 	 * 
 	 * @param parameterTaintMethods
-	 *            The list of methods whose parameters shall be regarded as
-	 *            taint sources
+	 *            The list of methods whose parameters shall be regarded as taint
+	 *            sources
 	 */
 	public void setParameterTaintMethods(List<String> parameterTaintMethods) {
 		this.parameterTaintMethodDefs = parameterTaintMethods;
 	}
 
 	/**
-	 * Sets the list of methods whose return values shall be regarded as taint
-	 * sinks
+	 * Sets the list of methods whose return values shall be regarded as taint sinks
 	 * 
 	 * @param returnTaintMethods
-	 *            The list of methods whose return values shall be regarded as
-	 *            taint sinks
+	 *            The list of methods whose return values shall be regarded as taint
+	 *            sinks
 	 */
 	public void setReturnTaintMethods(List<String> returnTaintMethods) {
 		this.returnTaintMethodDefs = returnTaintMethods;
