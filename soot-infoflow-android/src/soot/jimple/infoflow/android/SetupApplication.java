@@ -553,9 +553,12 @@ public class SetupApplication {
 	 */
 	private void constructCallgraphInternal() {
 		// If we are configured to use an existing callgraph, we may not replace
-		// it
-		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
+		// it. However, we must make sure that there really is one.
+		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph) {
+			if (!Scene.v().hasCallGraph())
+				throw new RuntimeException("FlowDroid is configured to use an existing callgraph, but there is none");
 			return;
+		}
 
 		// Do we need ICC instrumentation?
 		if (config.getIccConfig().isIccEnabled()) {
