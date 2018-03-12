@@ -23,9 +23,8 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
-	 * Special class for encapsulating taint abstractions for a full equality
-	 * check including those fields (predecessor, etc.) that are normally left
-	 * out
+	 * Special class for encapsulating taint abstractions for a full equality check
+	 * including those fields (predecessor, etc.) that are normally left out
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -92,8 +91,8 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 		 */
 		EraseNothing,
 		/**
-		 * Keep only those path tracking items that are necessary for context-
-		 * sensitive path reconstruction.
+		 * Keep only those path tracking items that are necessary for context- sensitive
+		 * path reconstruction.
 		 */
 		KeepOnlyContextData,
 		/**
@@ -204,11 +203,9 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 				// Normal statements
 				else if (erasePathData == PathDataErasureMode.KeepOnlyContextData
 						&& curAbs.getCorrespondingCallSite() == null && curAbs.getCurrentStmt() != null) {
-					// Lock the abstraction and check again. This is to make
-					// sure that no
-					// other thread has already erased the path data in the
-					// meantime and
-					// we access null objects.
+					// Lock the abstraction and check again. This is to make sure that no other
+					// thread has already erased the path data in the meantime and we access null
+					// objects.
 					synchronized (curAbs) {
 						if (curAbs.getCorrespondingCallSite() == null && curAbs.getCurrentStmt() != null
 								&& !curAbs.getCurrentStmt().containsInvokeExpr()
@@ -223,11 +220,9 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 			}
 		}
 
-		// If an intermediate statement does not change any taint state, skip
-		// it.
-		// Note that we should not do this when we're reconstructing paths or we
-		// might
-		// lose statements along the way.
+		// If an intermediate statement does not change any taint state, skip it. Note
+		// that we should not do this when we're reconstructing paths or we might lose
+		// statements along the way.
 		if (erasePathData != PathDataErasureMode.EraseNothing) {
 			Abstraction pred = obj.getPredecessor();
 			Abstraction curAbs = pred;

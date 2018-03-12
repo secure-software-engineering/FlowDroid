@@ -61,16 +61,15 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	private int hashCode = 0;
 
 	/**
-	 * The postdominators we need to pass in order to leave the current
-	 * conditional branch. Do not use the synchronized Stack class here to avoid
-	 * deadlocks.
+	 * The postdominators we need to pass in order to leave the current conditional
+	 * branch. Do not use the synchronized Stack class here to avoid deadlocks.
 	 */
 	private List<UnitContainer> postdominators = null;
 	private boolean isImplicit = false;
 
 	/**
-	 * Only valid for inactive abstractions. Specifies whether an access paths
-	 * has been cut during alias analysis.
+	 * Only valid for inactive abstractions. Specifies whether an access paths has
+	 * been cut during alias analysis.
 	 */
 	private boolean dependsOnCutAP = false;
 
@@ -151,8 +150,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Creates an abstraction as a copy of an existing abstraction, only
-	 * exchanging the access path. -> only used by AbstractionWithPath
+	 * Creates an abstraction as a copy of an existing abstraction, only exchanging
+	 * the access path. -> only used by AbstractionWithPath
 	 * 
 	 * @param p
 	 *            The access path for the new abstraction
@@ -245,8 +244,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Derives a new abstraction that models the current local being thrown as
-	 * an exception
+	 * Derives a new abstraction that models the current local being thrown as an
+	 * exception
 	 * 
 	 * @param throwStmt
 	 *            The statement at which the exception was thrown
@@ -262,8 +261,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Derives a new abstraction that models the current local being caught as
-	 * an exception
+	 * Derives a new abstraction that models the current local being caught as an
+	 * exception
 	 * 
 	 * @param ap
 	 *            The access path in which the tainted exception is stored
@@ -314,8 +313,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	/**
 	 * Gets whether this value has been thrown as an exception
 	 * 
-	 * @return True if this value has been thrown as an exception, otherwise
-	 *         false
+	 * @return True if this value has been thrown as an exception, otherwise false
 	 */
 	public boolean getExceptionThrown() {
 		return this.exceptionThrown;
@@ -418,8 +416,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Checks whether this object locally equals the given object, i.e. the both
-	 * are equal modulo the access path
+	 * Checks whether this object locally equals the given object, i.e. the both are
+	 * equal modulo the access path
 	 * 
 	 * @param other
 	 *            The object to compare this object with
@@ -479,8 +477,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * 
 	 * @param other
 	 *            The other taint abstraction
-	 * @return True if this object at least taints everything that is also
-	 *         tainted by the given object
+	 * @return True if this object at least taints everything that is also tainted
+	 *         by the given object
 	 */
 	public boolean entails(Abstraction other) {
 		if (accessPath == null) {
@@ -579,13 +577,13 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Registers that a worker thread with the given ID has already processed
-	 * this abstraction
+	 * Registers that a worker thread with the given ID has already processed this
+	 * abstraction
 	 * 
 	 * @param id
 	 *            The ID of the worker thread
-	 * @return True if the worker thread with the given ID has not been
-	 *         registered before, otherwise false
+	 * @return True if the worker thread with the given ID has not been registered
+	 *         before, otherwise false
 	 */
 	public boolean registerPathFlag(int id, int maxSize) {
 		if (pathFlags == null || pathFlags.size() < maxSize) {
@@ -622,8 +620,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * For internal use by memory manager only. Setting a new access path will
-	 * not update any dependent data such as cached hashes. Handle with care!
+	 * For internal use by memory manager only. Setting a new access path will not
+	 * update any dependent data such as cached hashes. Handle with care!
 	 */
 	void setAccessPath(AccessPath accessPath) {
 		this.accessPath = accessPath;

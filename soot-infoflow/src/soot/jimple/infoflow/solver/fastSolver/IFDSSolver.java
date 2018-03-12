@@ -507,7 +507,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (followReturnsPastSeeds && d1 == zeroValue && (inc == null || inc.isEmpty())) {
 			Collection<N> callers = icfg.getCallersOf(methodThatNeedsSummary);
 			for (N c : callers) {
-				SootMethod callerMethod = icfg.getMethodOf(c);
 				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
 					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
 							retSiteC);
@@ -793,7 +792,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 *            The strategy to use for shortening predecessor paths
 	 */
 	public void setPredecessorShorteningMode(PredecessorShorteningMode mode) {
-		this.shorteningMode = mode;
+		// this.shorteningMode = mode;
 	}
 
 	/**
