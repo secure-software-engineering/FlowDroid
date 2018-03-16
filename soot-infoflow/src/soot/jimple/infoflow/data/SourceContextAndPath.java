@@ -94,6 +94,16 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (abs.getCorrespondingCallSite() == null && !trackPath)
 			return this;
 
+		// We can only switch from data flow taints to alias taints at the point where
+		// the alias analysis as started. We cannot jump into the middle of an alias
+		// propagation for a potentially unrelated alias query.
+		if (trackPath && this.path != null && !abs.isAbstractionActive()) {
+			Abstraction lastAbs = path.getLast();
+			if (lastAbs.isAbstractionActive())
+				if (abs.getActivationUnit() != abs.getCurrentStmt())
+					return null;
+		}
+
 		SourceContextAndPath scap = null;
 		if (trackPath && abs.getCurrentStmt() != null) {
 			// Do not add the very same abstraction over and over again.
@@ -113,15 +123,13 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 					// seen before, we skip it. Otherwise, we would run through
 					// loops infinitely.
 					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
-							&& a.equals(abs))
+							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite() && a.equals(abs))
 						return null;
 				}
 
 				// We cannot leave the same method at two different sites
 				Abstraction topAbs = path.getLast();
-				if (topAbs.equals(abs)
-						&& topAbs.getCorrespondingCallSite() != null
+				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
 						&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
 						&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
 					return null;
@@ -132,8 +140,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();
 			scap.path.add(abs);
-			if (pathConfig != null
-					&& pathConfig.getMaxPathLength() > 0
+			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
 					&& scap.path.size() > pathConfig.getMaxPathLength())
 				return null;
 		}
@@ -144,8 +151,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 				scap = this.clone();
 			if (scap.callStack == null)
 				scap.callStack = new ExtensibleList<Stmt>();
-			else if (pathConfig != null
-					&& pathConfig.getMaxCallStackSize() > 0
+			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
 					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
 				return null;
 			scap.callStack.add(abs.getCorrespondingCallSite());
@@ -205,8 +211,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.hashCode != 0 && scap.hashCode != 0 && this.hashCode != scap.hashCode)
 			return false;
 
-		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults()
-				&& path != null
+		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults() && path != null
 				&& scap.path != null;
 		if (mergeDifferentPaths) {
 			if (path.size() != scap.path.size()) {

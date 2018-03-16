@@ -568,4 +568,25 @@ public class TypeTestCode {
 		cm.publish(arr3[0]);
 	}
 
+	public void aliasPerformanceTest1() {
+		String id = TelephonyManager.getDeviceId();
+
+		B a = new B();
+
+		X x2 = new X();
+		X x = new X();
+		foo(x);
+		x = x2;
+		a.data = id;
+		x.b = a;
+		x2.o = id;
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(x2.b.data);
+	}
+
+	private void foo(X x) {
+		System.out.println(x.b.data);
+	}
+
 }

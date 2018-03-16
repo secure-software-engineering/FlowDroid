@@ -17,29 +17,26 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
  * @author Steven Arzt
  */
 public class FlowSensitiveAliasStrategy extends AbstractBulkAliasStrategy {
-	
+
 	private final IInfoflowSolver bSolver;
-	
+
 	public FlowSensitiveAliasStrategy(InfoflowManager manager, IInfoflowSolver backwardsSolver) {
 		super(manager);
 		this.bSolver = backwardsSolver;
 	}
 
 	@Override
-	public void computeAliasTaints
-			(final Abstraction d1, final Stmt src,
-			final Value targetValue, Set<Abstraction> taintSet,
-			SootMethod method, Abstraction newAbs) {
+	public void computeAliasTaints(final Abstraction d1, final Stmt src, final Value targetValue,
+			Set<Abstraction> taintSet, SootMethod method, Abstraction newAbs) {
 		// Start the backwards solver
 		Abstraction bwAbs = newAbs.deriveInactiveAbstraction(src);
 		for (Unit predUnit : manager.getICFG().getPredsOf(src))
-			bSolver.processEdge(new PathEdge<Unit, Abstraction>(d1,
-					predUnit, bwAbs));
+			bSolver.processEdge(new PathEdge<Unit, Abstraction>(d1, predUnit, bwAbs));
 	}
-	
+
 	@Override
-	public void injectCallingContext(Abstraction d3, IInfoflowSolver fSolver,
-			SootMethod callee, Unit callSite, Abstraction source, Abstraction d1) {
+	public void injectCallingContext(Abstraction d3, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
+			Abstraction source, Abstraction d1) {
 		bSolver.injectContext(fSolver, callee, d3, callSite, source, d1);
 	}
 
@@ -62,5 +59,5 @@ public class FlowSensitiveAliasStrategy extends AbstractBulkAliasStrategy {
 	public void cleanup() {
 		bSolver.cleanup();
 	}
-	
+
 }

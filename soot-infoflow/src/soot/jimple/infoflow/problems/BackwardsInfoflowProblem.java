@@ -244,11 +244,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							return res;
 						}
 
-						if (newLeftAbs == null) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									leftValue, newType, false);
-							newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
-						}
+						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
+								leftValue, newType, false);
+						newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
 					}
 
 					if (newLeftAbs != null) {
