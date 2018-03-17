@@ -791,6 +791,7 @@ public class InfoflowConfiguration {
 	private boolean writeOutputFiles = false;
 	private boolean logSourcesAndSinks = false;
 	private boolean enableReflection = false;
+	private boolean enableMultipleDex = false;
 
 	private boolean inspectSources = false;
 	private boolean inspectSinks = false;
@@ -1415,6 +1416,27 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets whether multiple dex shall be supported
+	 *
+	 * @return True if multiple dex shall be supported, otherwise
+	 *         false
+	 */
+	public boolean getEnableMultipleDex() {
+		return this.enableMultipleDex;
+	}
+
+	/**
+	 * Sets whether multiple dex shall be supported
+	 *
+	 * @param enableReflections
+	 *            True if multiple dex shall be supported, otherwise
+	 *            false
+	 */
+	public void setEnableMultipleDex(boolean enableMultipleDex) {
+		this.enableMultipleDex = enableMultipleDex;
+	}
+
+	/**
 	 * Gets whether the taint analysis is enabled. If it is disabled, FlowDroid
 	 * will initialize the Soot instance and then return immediately.
 	 * 
@@ -1636,6 +1658,8 @@ public class InfoflowConfiguration {
 		if (enableExceptions != other.enableExceptions)
 			return false;
 		if (enableReflection != other.enableReflection)
+			return false;
+		if (enableMultipleDex != other.enableMultipleDex)
 			return false;
 		if (enableStaticFields != other.enableStaticFields)
 			return false;

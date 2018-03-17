@@ -64,6 +64,7 @@ public class MainClass {
 	private static final String OPTION_NO_EXCEPTIONAL_FLOWS = "ne";
 	private static final String OPTION_NO_TYPE_CHECKING = "nt";
 	private static final String OPTION_REFLECTION = "r";
+	private static final String OPTION_MULTIPLE_DEX = "mu";
 
 	// Taint wrapper
 	private static final String OPTION_TAINT_WRAPPER = "tw";
@@ -131,6 +132,7 @@ public class MainClass {
 		options.addOption(OPTION_NO_TYPE_CHECKING, "notypechecking", false,
 				"Disable type checking during taint propagation");
 		options.addOption(OPTION_REFLECTION, "enablereflection", false, "Enable support for reflective method calls");
+		options.addOption(OPTION_MULTIPLE_DEX, "multidex", false, "Process all dex file in apk");
 
 		// Taint wrapper
 		options.addOption(OPTION_TAINT_WRAPPER, "taintwrapper", true,
@@ -549,6 +551,8 @@ public class MainClass {
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
 			config.setEnableRefection(true);
+		if (cmd.hasOption(OPTION_MULTIPLE_DEX))
+			config.setEnableMultipleDex(true);
 
 		// Individual settings
 		{

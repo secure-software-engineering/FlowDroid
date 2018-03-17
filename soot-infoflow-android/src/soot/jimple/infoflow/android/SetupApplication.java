@@ -1115,6 +1115,8 @@ public class SetupApplication {
 		}
 		if (config.getEnableReflection())
 			Options.v().setPhaseOption("cg", "types-for-invoke:true");
+		if (config.getEnableMultipleDex())
+			Options.v().set_process_multiple_dex(true);
 
 		// Load whatever we need
 		logger.info("Loading dex files...");
