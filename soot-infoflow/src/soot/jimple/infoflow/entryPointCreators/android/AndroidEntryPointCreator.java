@@ -491,14 +491,20 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		super.reset();
 
 		// Get rid of the generated component methods
-		for (SootMethod sm : getAdditionalMethods())
-			sm.getDeclaringClass().removeMethod(sm);
-		for (SootField sf : getAdditionalFields())
-			sf.getDeclaringClass().removeField(sf);
+		for (SootMethod sm : getAdditionalMethods()) {
+			if (sm.isDeclared())
+				sm.getDeclaringClass().removeMethod(sm);
+		}
+		for (SootField sf : getAdditionalFields()) {
+			if (sf.isDeclared())
+				sf.getDeclaringClass().removeField(sf);
+		}
 
 		// Get rid of the generated fields
-		for (SootField fld : callbackClassToField.values())
-			fld.getDeclaringClass().removeField(fld);
+		for (SootField fld : callbackClassToField.values()) {
+			if (fld.isDeclared())
+				fld.getDeclaringClass().removeField(fld);
+		}
 
 		componentToInfo.clear();
 		callbackClassToField.clear();

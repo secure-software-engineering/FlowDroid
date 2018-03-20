@@ -181,7 +181,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		currentStmt = null;
 	}
 
-	public final Abstraction deriveInactiveAbstraction(Unit activationUnit) {
+	public final Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
 		if (!flowSensitiveAliasing) {
 			assert this.isAbstractionActive();
 			return this;

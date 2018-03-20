@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import heros.solver.Pair;
@@ -144,8 +145,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	}
 
 	/**
-	 * Checks whether the given abstraction is a source. If so, a result entry
-	 * is created.
+	 * Checks whether the given abstraction is a source. If so, a result entry is
+	 * created.
 	 * 
 	 * @param abs
 	 *            The abstraction to check

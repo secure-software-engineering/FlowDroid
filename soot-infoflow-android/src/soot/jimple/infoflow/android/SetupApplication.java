@@ -702,11 +702,13 @@ public class SetupApplication {
 
 				// Run the soot-based operations
 				constructCallgraphInternal();
+				if (!Scene.v().hasCallGraph())
+					throw new RuntimeException("No callgraph in Scene even after creating one. That's very sad "
+							+ "and should never happen.");
 				PackManager.v().getPack("wjtp").apply();
 
 				// Creating all callgraph takes time and memory. Check whether
-				// the
-				// solver has been aborted in the meantime
+				// the solver has been aborted in the meantime
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
 					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
 						logger.warn("Aborted callback collection because of low memory");
@@ -1201,6 +1203,12 @@ public class SetupApplication {
 		boolean oldRunAnalysis = config.isTaintAnalysisEnabled();
 		try {
 			config.setTaintAnalysisEnabled(false);
+
+			// If FlowDroid is configured to use an existing callgraph, we cannot create a
+			// new one
+			if (!config.getSootIntegrationMode().needsToBuildCallgraph())
+				throw new RuntimeException("FlowDroid is configured to use an existing callgraph. Please "
+						+ "change this option before trying to create a new callgraph.");
 
 			// The runInfoflow method can take a null provider as long as we
 			// don't attempt to run a data flow analysis.
