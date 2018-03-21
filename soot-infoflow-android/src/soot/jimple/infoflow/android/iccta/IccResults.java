@@ -66,19 +66,6 @@ public class IccResults {
 			}
 		}
 
-		/*
-		 * for (ResultSinkInfo sink : results.getResults().keySet()) { for
-		 * (ResultSourceInfo source : results.getResults().get(sink)) { if
-		 * (isIrrelevantSource(source)) { continue; }
-		 * 
-		 * String tmpSource = cfg.getMethodOf(source.getSource()).getSignature() + "/" +
-		 * source.getSource(); String tmpSink =
-		 * cfg.getMethodOf(sink.getSink()).getSignature() + "/" + sink.getSink();
-		 * 
-		 * if (! iccSources.contains(tmpSource) && ! iccSinks.contains(tmpSink)) {
-		 * cleanResults.addResult(sink, source); } } }
-		 */
-
 		return cleanResults;
 	}
 

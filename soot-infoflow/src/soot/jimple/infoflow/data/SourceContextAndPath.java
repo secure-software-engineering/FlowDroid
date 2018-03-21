@@ -97,11 +97,16 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		// We can only switch from data flow taints to alias taints at the point where
 		// the alias analysis as started. We cannot jump into the middle of an alias
 		// propagation for a potentially unrelated alias query.
-		if (trackPath && this.path != null && !abs.isAbstractionActive()) {
+		if (trackPath && this.path != null) {
 			Abstraction lastAbs = path.getLast();
-			if (lastAbs.isAbstractionActive())
+			if (!abs.isAbstractionActive() && lastAbs.isAbstractionActive()) {
 				if (abs.getActivationUnit() != abs.getCurrentStmt())
 					return null;
+			}
+			if (abs.isAbstractionActive() && !lastAbs.isAbstractionActive()) {
+				if (lastAbs.getActivationUnit() != abs.getCurrentStmt())
+					return null;
+			}
 		}
 
 		SourceContextAndPath scap = null;
@@ -173,13 +178,17 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			return null;
 
 		SourceContextAndPath scap = clone();
+		Stmt lastStmt = null;
 		Object c = scap.callStack.removeLast();
 		if (c instanceof ExtensibleList) {
-			Stmt last = scap.callStack.getLast();
+			lastStmt = scap.callStack.getLast();
 			scap.callStack = (ExtensibleList<Stmt>) c;
-			return new Pair<>(scap, last);
 		} else
-			return new Pair<>(scap, (Stmt) c);
+			lastStmt = (Stmt) c;
+
+		if (scap.callStack.isEmpty())
+			scap.callStack = null;
+		return new Pair<>(scap, lastStmt);
 	}
 
 	/**
@@ -220,8 +229,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			}
 		}
 
-		if (this.callStack == null) {
-			if (scap.callStack != null)
+		if (this.callStack == null || this.callStack.isEmpty()) {
+			if (scap.callStack != null && !scap.callStack.isEmpty())
 				return false;
 		} else {
 			if (scap.callStack == null || scap.callStack.isEmpty())
