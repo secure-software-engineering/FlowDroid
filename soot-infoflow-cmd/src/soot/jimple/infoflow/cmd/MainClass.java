@@ -548,7 +548,7 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_NO_TYPE_CHECKING))
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
-			config.setEnableRefection(true);
+			config.setEnableReflection(true);
 
 		// Individual settings
 		{

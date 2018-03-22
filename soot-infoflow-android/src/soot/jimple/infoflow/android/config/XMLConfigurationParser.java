@@ -208,7 +208,7 @@ public class XMLConfigurationParser {
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_ARRAYS))
 						config.setEnableArrayTracking(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_REFLECTION))
-						config.setEnableRefection(Boolean.valueOf(data));
+						config.setEnableReflection(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_FLOW_SENSITIVE_ALIASING))
 						config.setFlowSensitiveAliasing(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_LOG_SOURCES_AND_SINKS))
