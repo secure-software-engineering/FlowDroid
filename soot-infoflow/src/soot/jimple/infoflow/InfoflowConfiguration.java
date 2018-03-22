@@ -1410,7 +1410,7 @@ public class InfoflowConfiguration {
 	 *            True if reflective method calls shall be supported, otherwise
 	 *            false
 	 */
-	public void setEnableRefection(boolean enableReflections) {
+	public void setEnableReflection(boolean enableReflections) {
 		this.enableReflection = enableReflections;
 	}
 

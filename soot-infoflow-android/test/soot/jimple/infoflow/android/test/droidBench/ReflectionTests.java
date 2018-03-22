@@ -26,7 +26,7 @@ public class ReflectionTests extends JUnitTests {
 		
 		@Override
 		public void configureAnalyzer(InfoflowAndroidConfiguration config) {
-			config.setEnableRefection(true);
+			config.setEnableReflection(true);
 		}
 		
 	};
