@@ -1523,8 +1523,6 @@ public class SetupApplication {
 				final IccConfiguration iccConfig = config.getIccConfig();
 				if (iccConfig.isIccResultsPurifyEnabled())
 					results = IccResults.clean(cfg, results);
-				else if (iccConfig.isIccEnabled())
-					results = IccResults.expand(cfg, results);
 
 				return results;
 			}
