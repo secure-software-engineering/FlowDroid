@@ -243,6 +243,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 			// Create a call to the component's lifecycle method
 			if (componentCreator != null) {
+				componentCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
 				componentCreator.setCallbacks(callbackFunctions.get(currentClass));
 				SootMethod lifecycleMethod = componentCreator.createDummyMain();
 				componentToInfo.put(currentClass, componentCreator.getComponentInfo());

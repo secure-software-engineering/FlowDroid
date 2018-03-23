@@ -820,7 +820,7 @@ public class SetupApplication {
 	/**
 	 * Releases the callgraph and all intermediate objects associated with it
 	 */
-	private void releaseCallgraph() {
+	protected void releaseCallgraph() {
 		// If we are configured to use an existing callgraph, we may not release
 		// it
 		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
@@ -1028,6 +1028,12 @@ public class SetupApplication {
 		// a callgraph
 		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 			return;
+
+		// Get rid of the previous main methods we have generated
+		if (Scene.v().hasCustomEntryPoints()) {
+			for (SootMethod sm : Scene.v().getEntryPoints())
+				Scene.v().removeClass(sm.getDeclaringClass());
+		}
 
 		// Always update the entry point creator to reflect the newest set
 		// of callback methods

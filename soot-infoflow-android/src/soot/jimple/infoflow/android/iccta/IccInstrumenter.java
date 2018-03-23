@@ -21,6 +21,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.entryPointCreators.android.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.util.Chain;
+import soot.util.HashMultiMap;
+import soot.util.MultiMap;
 
 public class IccInstrumenter implements PreAnalysisHandler {
 
@@ -30,8 +32,11 @@ public class IccInstrumenter implements PreAnalysisHandler {
 	protected final SootClass dummyMainClass;
 	protected final ComponentEntryPointCollection componentToEntryPoint;
 
-	private final SootMethod smMessengerSend;
-	private final Set<SootMethod> processedMethods = new HashSet<>();
+	protected IccRedirectionCreator redirectionCreator = null;
+
+	protected final SootMethod smMessengerSend;
+	protected final Set<SootMethod> processedMethods = new HashSet<>();
+	protected final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
 
 	public IccInstrumenter(String iccModel, SootClass dummyMainClass,
 			ComponentEntryPointCollection componentToEntryPoint) {
@@ -52,8 +57,13 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		List<IccLink> iccLinks = provider.getIccLinks();
 		logger.info("[IccTA] ...End Loading the ICC Model");
 
+		// Create the redirection creator
+		if (redirectionCreator == null)
+			redirectionCreator = new IccRedirectionCreator(dummyMainClass, componentToEntryPoint);
+		else
+			redirectionCreator.undoInstrumentation();
+
 		logger.info("[IccTA] Lauching ICC Redirection Creation...");
-		IccRedirectionCreator redirectionCreator = new IccRedirectionCreator(dummyMainClass, componentToEntryPoint);
 		for (IccLink link : iccLinks) {
 			if (link.fromU == null) {
 				continue;
@@ -61,7 +71,19 @@ public class IccInstrumenter implements PreAnalysisHandler {
 			redirectionCreator.redirectToDestination(link);
 		}
 
+		// Remove any potential leftovers from the last last instrumentation
+		for (Body body : instrumentedUnits.keySet()) {
+			for (Unit u : instrumentedUnits.get(body)) {
+				body.getUnits().remove(u);
+			}
+		}
+		instrumentedUnits.clear();
+
+		// Instrument the messenger class
 		instrumentMessenger();
+
+		// Remove data that is no longer needed
+		processedMethods.clear();
 
 		logger.info("[IccTA] ...End ICC Redirection Creation");
 	}
@@ -100,16 +122,19 @@ public class IccInstrumenter implements PreAnalysisHandler {
 									Unit newU = Jimple.v().newAssignStmt(handlerLocal,
 											Jimple.v().newNewExpr(handler.getType()));
 									body.getUnits().insertAfter(newU, stmt);
+									instrumentedUnits.put(body, newU);
 
 									SootMethod initMethod = handler.getMethod("void <init>()");
 									Unit initU = Jimple.v().newInvokeStmt(
 											Jimple.v().newSpecialInvokeExpr(handlerLocal, initMethod.makeRef()));
 									body.getUnits().insertAfter(initU, newU);
+									instrumentedUnits.put(body, initU);
 
 									SootMethod hmMethod = handler.getMethod("void handleMessage(android.os.Message)");
 									Unit callHMU = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(
 											handlerLocal, hmMethod.makeRef(), stmt.getInvokeExpr().getArg(0)));
 									body.getUnits().insertAfter(callHMU, initU);
+									instrumentedUnits.put(body, callHMU);
 								}
 							}
 						}
