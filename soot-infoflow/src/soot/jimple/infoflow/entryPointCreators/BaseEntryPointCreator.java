@@ -973,6 +973,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	protected void reset() {
 		localVarsForClasses.clear();
+		conditionCounter = 0;
 	}
 
 	/**

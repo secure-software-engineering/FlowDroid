@@ -677,8 +677,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 		// We need special treatment for the Android support classes
 		if (!isResourceCall) {
-			if (callee.getDeclaringClass().isPhantom()
-					&& callee.getDeclaringClass().getName().startsWith("android.support.")
+			if (callee.getDeclaringClass().getName().startsWith("android.support.v")
 					&& callee.getSubSignature().equals(smActivityFindViewById.getSubSignature()))
 				isResourceCall = true;
 		}

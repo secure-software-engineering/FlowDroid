@@ -452,6 +452,10 @@ public class IccRedirectionCreator {
 	 * Removes all units that have previously been created by the instrumenter
 	 */
 	public void undoInstrumentation() {
+		// Remove the redirection methods
+		for (SootMethod sm : source2RedirectMethod.values())
+			sm.getDeclaringClass().removeMethod(sm);
+
 		for (Body body : instrumentedUnits.keySet()) {
 			for (Unit u : instrumentedUnits.get(body)) {
 				body.getUnits().remove(u);

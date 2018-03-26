@@ -1029,12 +1029,6 @@ public class SetupApplication {
 		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 			return;
 
-		// Get rid of the previous main methods we have generated
-		if (Scene.v().hasCustomEntryPoints()) {
-			for (SootMethod sm : Scene.v().getEntryPoints())
-				Scene.v().removeClass(sm.getDeclaringClass());
-		}
-
 		// Always update the entry point creator to reflect the newest set
 		// of callback methods
 		entryPointCreator = createEntryPointCreator(component);
@@ -1553,10 +1547,12 @@ public class SetupApplication {
 
 		// If we we already have an entry point creator, we make sure to clean up our
 		// leftovers from previous runs
-		if (entryPointCreator != null)
+		if (entryPointCreator == null)
+			entryPointCreator = new AndroidEntryPointCreator(components);
+		else {
+			entryPointCreator.removeGeneratedMethods(false);
 			entryPointCreator.reset();
-
-		entryPointCreator = new AndroidEntryPointCreator(components);
+		}
 
 		MultiMap<SootClass, SootMethod> callbackMethodSigs = new HashMultiMap<>();
 		if (component == null) {
@@ -1578,6 +1574,7 @@ public class SetupApplication {
 		}
 		entryPointCreator.setCallbackFunctions(callbackMethodSigs);
 		entryPointCreator.setFragments(fragmentClasses);
+		entryPointCreator.setComponents(components);
 		return entryPointCreator;
 	}
 
