@@ -1494,7 +1494,7 @@ public class SetupApplication {
 		}
 
 		// Initialize and configure the data flow tracker
-		final String androidJar = config.getAnalysisFileConfig().getTargetAPKFile();
+		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
 		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
