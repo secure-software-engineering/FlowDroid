@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.android.entryPointCreators.android;
+package soot.jimple.infoflow.android.entryPointCreators;
 
 import java.util.Collection;
 import java.util.Collections;

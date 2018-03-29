@@ -4,7 +4,7 @@ import soot.SootClass;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 
 /**
  * Entry point creator for Android broadcast receivers

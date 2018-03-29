@@ -57,7 +57,7 @@ import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
-import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointCreator;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
 import soot.jimple.infoflow.android.iccta.IccResults;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;

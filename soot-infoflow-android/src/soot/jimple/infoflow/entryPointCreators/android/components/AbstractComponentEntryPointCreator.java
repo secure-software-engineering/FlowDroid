@@ -20,7 +20,7 @@ import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.entryPointCreators.android.AbstractAndroidEntryPointCreator;
+import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;

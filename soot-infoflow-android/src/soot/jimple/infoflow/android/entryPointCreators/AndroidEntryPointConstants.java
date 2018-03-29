@@ -8,7 +8,7 @@
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
-package soot.jimple.infoflow.android.entryPointCreators.android;
+package soot.jimple.infoflow.android.entryPointCreators;
 
 import java.util.Arrays;
 import java.util.List;

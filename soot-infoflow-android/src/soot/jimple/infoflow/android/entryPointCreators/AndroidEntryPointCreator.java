@@ -8,7 +8,7 @@
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
-package soot.jimple.infoflow.android.entryPointCreators.android;
+package soot.jimple.infoflow.android.entryPointCreators;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +32,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;

@@ -52,7 +52,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingM
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkConfiguration;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
-import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointUtils;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.ResPackage;
