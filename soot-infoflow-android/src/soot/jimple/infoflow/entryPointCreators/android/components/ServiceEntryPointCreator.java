@@ -14,9 +14,9 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
-import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
-import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
 
 /**
  * Entry point creator for Android services

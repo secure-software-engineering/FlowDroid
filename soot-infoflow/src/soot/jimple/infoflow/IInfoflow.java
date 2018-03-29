@@ -19,7 +19,7 @@ import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.ipc.IIPCManager;
-import soot.jimple.infoflow.nativ.INativeCallHandler;
+import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
