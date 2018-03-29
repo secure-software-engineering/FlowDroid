@@ -50,8 +50,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected final static int TYPE_NULL = 0x00;
 	/**
-	 * The 'data' holds a ResTable_ref, a reference to another resource table
-	 * entry.
+	 * The 'data' holds a ResTable_ref, a reference to another resource table entry.
 	 */
 	protected final static int TYPE_REFERENCE = 0x01;
 	/**
@@ -59,8 +58,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected final static int TYPE_ATTRIBUTE = 0x02;
 	/**
-	 * The 'data' holds an index into the containing resource table's global
-	 * value string pool.
+	 * The 'data' holds an index into the containing resource table's global value
+	 * string pool.
 	 */
 	protected final static int TYPE_STRING = 0x03;
 	/**
@@ -134,8 +133,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected final static int ATTR_MAX = (0x01000000 | (2 & 0xFFFF));
 	/**
-	 * Localization of this resource is can be encouraged or required with an
-	 * aapt flag if this is set
+	 * Localization of this resource is can be encouraged or required with an aapt
+	 * flag if this is set
 	 */
 	protected final static int ATTR_L10N = (0x01000000 | (3 & 0xFFFF));
 
@@ -189,9 +188,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected final static int COMPLEX_UNIT_FRACTION_PARENT = 1;
 	/**
-	 * Where the radix information is, telling where the decimal place appears
-	 * in the mantissa. This give us 4 possible fixed point representations as
-	 * defined below.
+	 * Where the radix information is, telling where the decimal place appears in
+	 * the mantissa. This give us 4 possible fixed point representations as defined
+	 * below.
 	 */
 	protected final static int COMPLEX_RADIX_SHIFT = 4;
 	protected final static int COMPLEX_RADIX_MASK = 0x3;
@@ -212,8 +211,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected final static int COMPLEX_RADIX_0p23 = 3;
 	/**
-	 * Where the actual value is. This gives us 23 bits of precision. The top
-	 * bit is the sign.
+	 * Where the actual value is. This gives us 23 bits of precision. The top bit is
+	 * the sign.
 	 */
 	protected final static int COMPLEX_MANTISSA_SHIFT = 8;
 	protected final static int COMPLEX_MANTISSA_MASK = 0xffffff;
@@ -223,13 +222,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 			1.0f / (1 << 15) * MANTISSA_MULT, 1.0f / (1 << 23) * MANTISSA_MULT };
 
 	/**
-	 * If set, this is a complex entry, holding a set of name/value mappings. It
-	 * is followed by an array of ResTable_Map structures.
+	 * If set, this is a complex entry, holding a set of name/value mappings. It is
+	 * followed by an array of ResTable_Map structures.
 	 */
 	public final static int FLAG_COMPLEX = 0x0001;
 	/**
-	 * If set, this resource has been declared public, so libraries are allowed
-	 * to reference it.
+	 * If set, this resource has been declared public, so libraries are allowed to
+	 * reference it.
 	 */
 	public final static int FLAG_PUBLIC = 0x0002;
 
@@ -273,9 +272,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 		}
 
 		/**
-		 * Gets a list of all resources in this type regardless of the
-		 * configuration. Resources sharing the same ID will only be returned
-		 * once, taking the value from the first applicable configuration.
+		 * Gets a list of all resources in this type regardless of the configuration.
+		 * Resources sharing the same ID will only be returned once, taking the value
+		 * from the first applicable configuration.
 		 * 
 		 * @return A list of all resources of this type.
 		 */
@@ -289,13 +288,29 @@ public class ARSCFileParser extends AbstractResourceParser {
 		}
 
 		/**
-		 * Gets the first resource with the given name or null if no such
-		 * resource exists
+		 * Gets all resource of the current type that have the given id
+		 * 
+		 * @param resourceID
+		 *            The resource id to look for
+		 * @return A list containing all resources with the given id
+		 */
+		public List<AbstractResource> getAllResources(int resourceID) {
+			List<AbstractResource> resourceList = new ArrayList<>();
+			for (ResConfig rc : this.configurations)
+				for (AbstractResource res : rc.getResources())
+					if (res.resourceID == resourceID)
+						resourceList.add(res);
+			return resourceList;
+		}
+
+		/**
+		 * Gets the first resource with the given name or null if no such resource
+		 * exists
 		 * 
 		 * @param resourceName
 		 *            The resource name to look for
-		 * @return The first resource with the given name or null if no such
-		 *         resource exists
+		 * @return The first resource with the given name or null if no such resource
+		 *         exists
 		 */
 		public AbstractResource getResourceByName(String resourceName) {
 			for (ResConfig rc : this.configurations)
@@ -658,20 +673,20 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	protected class ResChunk_Header {
 		/**
-		 * Type identifier of this chunk. The meaning of this value depends on
-		 * the containing class.
+		 * Type identifier of this chunk. The meaning of this value depends on the
+		 * containing class.
 		 */
 		int type; // uint16
 		/**
-		 * Size of the chunk header (in bytes). Adding this value to the address
-		 * of the chunk allows you to find the associated data (if any).
+		 * Size of the chunk header (in bytes). Adding this value to the address of the
+		 * chunk allows you to find the associated data (if any).
 		 */
 		int headerSize; // uint16
 		/**
-		 * Total size of this chunk (in bytes). This is the chunkSize plus the
-		 * size of any data associated with the chunk. Adding this value to the
-		 * chunk allows you to completely skip its contents. If this value is
-		 * the same as chunkSize, there is no data associated with the chunk.
+		 * Total size of this chunk (in bytes). This is the chunkSize plus the size of
+		 * any data associated with the chunk. Adding this value to the chunk allows you
+		 * to completely skip its contents. If this value is the same as chunkSize,
+		 * there is no data associated with the chunk.
 		 */
 		int size; // uint32
 	}
@@ -680,13 +695,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		ResChunk_Header header;
 
 		/**
-		 * Number of strings in this pool (number of uint32_t indices that
-		 * follow in the data).
+		 * Number of strings in this pool (number of uint32_t indices that follow in the
+		 * data).
 		 */
 		int stringCount; // uint32
 		/**
-		 * Number of style span arrays in the pool (number of uint32_t indices
-		 * follow the string indices).
+		 * Number of style span arrays in the pool (number of uint32_t indices follow
+		 * the string indices).
 		 */
 		int styleCount; // uint32
 		/**
@@ -712,9 +727,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 		ResChunk_Header header;
 
 		/**
-		 * If this is the base package, its ID. Package IDs start at 1
-		 * (corresponding to the value of the package bits in a resource
-		 * identifier). 0 means that this is not a base package.
+		 * If this is the base package, its ID. Package IDs start at 1 (corresponding to
+		 * the value of the package bits in a resource identifier). 0 means that this is
+		 * not a base package.
 		 */
 		int id; // uint32
 		/**
@@ -722,9 +737,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		String name; // char16
 		/**
-		 * Offset to a ResStringPool_Header defining the resource type symbol
-		 * table. If zero, this package is inheriting from another base package
-		 * (overriding specific values in it).
+		 * Offset to a ResStringPool_Header defining the resource type symbol table. If
+		 * zero, this package is inheriting from another base package (overriding
+		 * specific values in it).
 		 */
 		int typeStrings; // uint32
 		/**
@@ -732,9 +747,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int lastPublicType; // uint32
 		/**
-		 * Offset to a ResStringPool_Header defining the resource key symbol
-		 * table. If zero, this package is inheriting from another base package
-		 * (overriding specific values in it).
+		 * Offset to a ResStringPool_Header defining the resource key symbol table. If
+		 * zero, this package is inheriting from another base package (overriding
+		 * specific values in it).
 		 */
 		int keyStrings; // uint32
 		/**
@@ -750,16 +765,15 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * 
 	 * This structure is followed by an array of integers providing the set of
 	 * configuration change flags (ResTable_Config::CONFIG_*) that have multiple
-	 * resources for that configuration. In addition, the high bit is set if
-	 * that resource has been made public.
+	 * resources for that configuration. In addition, the high bit is set if that
+	 * resource has been made public.
 	 */
 	protected class ResTable_TypeSpec {
 		ResChunk_Header header;
 
 		/**
-		 * The type identifier this chunk is holding. Type IDs start at 1
-		 * (corresponding to the value of the type bits in a resource
-		 * identifier). 0 is invalid.
+		 * The type identifier this chunk is holding. Type IDs start at 1 (corresponding
+		 * to the value of the type bits in a resource identifier). 0 is invalid.
 		 */
 		int id; // uint8
 		/**
@@ -778,25 +792,23 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 	/**
 	 * A collection of resource entries for a particular resource data type.
-	 * Followed by an array of uint32_t defining the resource values,
-	 * corresponding to the array of type strings in the
-	 * ResTable_Package::typeStrings string block. Each of these hold an index
-	 * from entriesStart; a value of NO_ENTRY means that entry is not defined.
+	 * Followed by an array of uint32_t defining the resource values, corresponding
+	 * to the array of type strings in the ResTable_Package::typeStrings string
+	 * block. Each of these hold an index from entriesStart; a value of NO_ENTRY
+	 * means that entry is not defined.
 	 * 
-	 * There may be multiple of these chunks for a particular resource type,
-	 * supply different configuration variations for the resource values of that
-	 * type.
+	 * There may be multiple of these chunks for a particular resource type, supply
+	 * different configuration variations for the resource values of that type.
 	 *
-	 * It would be nice to have an additional ordered index of entries, so we
-	 * can do a binary search if trying to find a resource by string name.
+	 * It would be nice to have an additional ordered index of entries, so we can do
+	 * a binary search if trying to find a resource by string name.
 	 */
 	protected class ResTable_Type {
 		ResChunk_Header header;
 
 		/**
-		 * The type identifier this chunk is holding. Type IDs start at 1
-		 * (corresponding to the value of the type bits in a resource
-		 * identifier). 0 is invalid.
+		 * The type identifier this chunk is holding. Type IDs start at 1 (corresponding
+		 * to the value of the type bits in a resource identifier). 0 is invalid.
 		 */
 		int id; // uint8
 		/**
@@ -963,11 +975,11 @@ public class ARSCFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * This is the beginning of information about an entry in the resource
-	 * table. It holds the reference to the name of this entry, and is
-	 * immediately followed by one of: * A Res_value structure, if FLAG_COMPLEX
-	 * is -not- set * An array of ResTable_Map structures, if FLAG_COMPLEX is
-	 * set. These supply a set of name/value mappings of data.
+	 * This is the beginning of information about an entry in the resource table. It
+	 * holds the reference to the name of this entry, and is immediately followed by
+	 * one of: * A Res_value structure, if FLAG_COMPLEX is -not- set * An array of
+	 * ResTable_Map structures, if FLAG_COMPLEX is set. These supply a set of
+	 * name/value mappings of data.
 	 */
 	protected class ResTable_Entry {
 		/**
@@ -1024,9 +1036,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	protected class ResTable_Map {
 		/**
 		 * The resource identifier defining this mapping's name. For attribute
-		 * resources, 'name' can be one of the following special resource types
-		 * to supply meta-data about the attribute; for all other resource types
-		 * it must be an attribute resource.
+		 * resources, 'name' can be one of the following special resource types to
+		 * supply meta-data about the attribute; for all other resource types it must be
+		 * an attribute resource.
 		 */
 		int name; // uint32
 
@@ -1349,16 +1361,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 *         otherwise false.
 	 */
 	protected boolean isAttribute(ResTable_Map map) {
-		return map.name == ATTR_TYPE
-				|| map.name == ATTR_MIN
-				|| map.name == ATTR_MAX
-				|| map.name == ATTR_L10N
-				|| map.name == ATTR_OTHER
-				|| map.name == ATTR_ZERO
-				|| map.name == ATTR_ONE
-				|| map.name == ATTR_TWO
-				|| map.name == ATTR_FEW
-				|| map.name == ATTR_MANY;
+		return map.name == ATTR_TYPE || map.name == ATTR_MIN || map.name == ATTR_MAX || map.name == ATTR_L10N
+				|| map.name == ATTR_OTHER || map.name == ATTR_ZERO || map.name == ATTR_ONE || map.name == ATTR_TWO
+				|| map.name == ATTR_FEW || map.name == ATTR_MANY;
 	}
 
 	/**
@@ -1700,8 +1705,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Reads a chunk header from the input stream and stores the data in the
-	 * given object.
+	 * Reads a chunk header from the input stream and stores the data in the given
+	 * object.
 	 * 
 	 * @param stream
 	 *            The stream from which to read the chunk header
@@ -1717,8 +1722,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	}
 
 	/**
-	 * Reads a chunk header from the input stream and stores the data in the
-	 * given object.
+	 * Reads a chunk header from the input stream and stores the data in the given
+	 * object.
 	 * 
 	 * @param nextChunkHeader
 	 *            The data object in which to put the chunk header
@@ -1780,10 +1785,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * configuration-agnostic and simply returns the first match it finds.
 	 * 
 	 * @param resourceId
-	 *            The Android resource ID for which to the find the resource
-	 *            object
-	 * @return The resource object with the given Android resource ID if it has
-	 *         been found, otherwise null.
+	 *            The Android resource ID for which to the find the resource object
+	 * @return The resource object with the given Android resource ID if it has been
+	 *         found, otherwise null.
 	 */
 	public AbstractResource findResource(int resourceId) {
 		ResourceId id = parseResourceId(resourceId);
@@ -1796,6 +1800,29 @@ public class ARSCFileParser extends AbstractResourceParser {
 				break;
 			}
 		return null;
+	}
+
+	/**
+	 * Finds all resources with the given Android resource ID. This method returns
+	 * all matching resources, regardless of their respective configuration.
+	 * 
+	 * @param resourceId
+	 *            The Android resource ID for which to the find the resource object
+	 * @return The resource object with the given Android resource ID if it has been
+	 *         found, otherwise null.
+	 */
+	public List<AbstractResource> findAllResources(int resourceId) {
+		List<AbstractResource> resourceList = new ArrayList<>();
+		ResourceId id = parseResourceId(resourceId);
+		for (ResPackage resPackage : this.packages)
+			if (resPackage.packageId == id.packageId) {
+				for (ResType resType : resPackage.types)
+					if (resType.id == id.typeId) {
+						resourceList.addAll(resType.getAllResources(resourceId));
+					}
+				break;
+			}
+		return resourceList;
 	}
 
 	public ResType findResourceType(int resourceId) {
