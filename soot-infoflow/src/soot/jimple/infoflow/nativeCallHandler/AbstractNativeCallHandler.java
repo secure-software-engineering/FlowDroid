@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.nativ;
+package soot.jimple.infoflow.nativeCallHandler;
 
 import soot.jimple.infoflow.InfoflowManager;
 

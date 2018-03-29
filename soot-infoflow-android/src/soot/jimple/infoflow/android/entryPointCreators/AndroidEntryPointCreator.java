@@ -8,7 +8,7 @@
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
-package soot.jimple.infoflow.entryPointCreators.android;
+package soot.jimple.infoflow.android.entryPointCreators;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,10 +32,11 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
-import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.entryPointCreators.android.components.AbstractComponentEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.ActivityEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.BroadcastReceiverEntryPointCreator;
@@ -83,6 +84,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private Collection<SootClass> components;
 
+	private ProcessManifest manifest;
+
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -92,7 +95,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 *            The list of classes to be automatically scanned for Android
 	 *            lifecycle methods
 	 */
-	public AndroidEntryPointCreator(Collection<SootClass> components) {
+	public AndroidEntryPointCreator(ProcessManifest manifest, Collection<SootClass> components) {
+		this.manifest = manifest;
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
 	}
@@ -294,11 +298,16 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 * Find the application class and its callbacks
 	 */
 	private void initializeApplicationClass() {
+
+		String applicationName = manifest.getApplicationName();
+		// We can only look for callbacks if we have an application class
+		if (applicationName == null || applicationName.isEmpty())
+			return;
 		// Find the application class
 		for (SootClass currentClass : components) {
 			// Is this the application class?
-			if (entryPointUtils.isApplicationClass(currentClass)) {
-				if (applicationClass != null)
+			if (entryPointUtils.isApplicationClass(currentClass) && currentClass.getName().equals(applicationName)) {
+				if (applicationClass != null && currentClass != applicationClass)
 					throw new RuntimeException("Multiple application classes in app");
 				applicationClass = currentClass;
 				break;

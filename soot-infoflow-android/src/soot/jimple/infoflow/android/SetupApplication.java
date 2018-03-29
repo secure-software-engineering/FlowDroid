@@ -57,6 +57,7 @@ import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
 import soot.jimple.infoflow.android.iccta.IccResults;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
@@ -74,7 +75,6 @@ import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
-import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.android.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
@@ -1548,7 +1548,7 @@ public class SetupApplication {
 		// If we we already have an entry point creator, we make sure to clean up our
 		// leftovers from previous runs
 		if (entryPointCreator == null)
-			entryPointCreator = new AndroidEntryPointCreator(components);
+			entryPointCreator = new AndroidEntryPointCreator(manifest, components);
 		else {
 			entryPointCreator.removeGeneratedMethods(false);
 			entryPointCreator.reset();
@@ -1598,9 +1598,9 @@ public class SetupApplication {
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 
-			String applictionName = manifest.getApplicationName();
-			if (applictionName != null && !applictionName.isEmpty())
-				components.add(Scene.v().getSootClassUnsafe(applictionName));
+			String applicationName = manifest.getApplicationName();
+			if (applicationName != null && !applicationName.isEmpty())
+				components.add(Scene.v().getSootClassUnsafe(applicationName));
 			return components;
 		}
 	}

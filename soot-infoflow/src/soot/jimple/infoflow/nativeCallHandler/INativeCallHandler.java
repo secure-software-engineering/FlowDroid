@@ -8,7 +8,7 @@
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
-package soot.jimple.infoflow.nativ;
+package soot.jimple.infoflow.nativeCallHandler;
 
 import java.util.Set;
 

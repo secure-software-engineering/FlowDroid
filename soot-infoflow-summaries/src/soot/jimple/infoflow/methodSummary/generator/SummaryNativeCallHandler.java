@@ -8,9 +8,9 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.nativ.AbstractNativeCallHandler;
-import soot.jimple.infoflow.nativ.DefaultNativeCallHandler;
-import soot.jimple.infoflow.nativ.INativeCallHandler;
+import soot.jimple.infoflow.nativeCallHandler.AbstractNativeCallHandler;
+import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
+import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 
 /**
  * Handler for dealing with native calls during summary generation

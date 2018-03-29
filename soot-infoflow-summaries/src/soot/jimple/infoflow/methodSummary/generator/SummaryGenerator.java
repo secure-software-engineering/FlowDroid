@@ -38,7 +38,7 @@ import soot.jimple.infoflow.methodSummary.handler.SummaryTaintPropagationHandler
 import soot.jimple.infoflow.methodSummary.postProcessor.InfoflowResultPostProcessor;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryFlowCompactor;
 import soot.jimple.infoflow.methodSummary.source.SummarySourceSinkManager;
-import soot.jimple.infoflow.nativ.INativeCallHandler;
+import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;

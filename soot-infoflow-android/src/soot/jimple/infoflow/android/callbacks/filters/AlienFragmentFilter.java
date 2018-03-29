@@ -3,7 +3,7 @@ package soot.jimple.infoflow.android.callbacks.filters;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.infoflow.entryPointCreators.android.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.util.MultiMap;
 
 /**
