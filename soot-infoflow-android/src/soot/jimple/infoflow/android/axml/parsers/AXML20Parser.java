@@ -12,6 +12,8 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
+import soot.jimple.infoflow.android.axml.AXmlComplexValue;
+import soot.jimple.infoflow.android.axml.AXmlComplexValue.Unit;
 import soot.jimple.infoflow.android.axml.AXmlNamespace;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.tagkit.IntegerConstantValueTag;
@@ -69,8 +71,8 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 				tname = name.trim();
 
 			// Read out the field data
-			if (type == AxmlVisitor.TYPE_REFERENCE || type == AxmlVisitor.TYPE_INT_HEX
-					|| type == AxmlVisitor.TYPE_FIRST_INT) {
+			if (type == AXmlConstants.TYPE_REFERENCE || type == AXmlConstants.TYPE_INT_HEX
+					|| type == AXmlConstants.TYPE_INT_DEC) {
 				if (obj instanceof Integer)
 					this.node.addAttribute(
 							new AXmlAttribute<Integer>(tname, resourceId, type, (Integer) obj, ns, false));
@@ -86,7 +88,7 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 					}
 				} else
 					throw new RuntimeException("Unsupported value type");
-			} else if (type == AxmlVisitor.TYPE_STRING) {
+			} else if (type == AXmlConstants.TYPE_STRING) {
 				if (obj instanceof String)
 					this.node.addAttribute(new AXmlAttribute<String>(tname, resourceId, type, (String) obj, ns, false));
 				else if (obj instanceof ValueWrapper) {
@@ -94,7 +96,7 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 					this.node.addAttribute(new AXmlAttribute<String>(tname, resourceId, type, wrapper.raw, ns, false));
 				} else
 					throw new RuntimeException("Unsupported value type");
-			} else if (type == AxmlVisitor.TYPE_INT_BOOLEAN) {
+			} else if (type == AXmlConstants.TYPE_INT_BOOLEAN) {
 				if (obj instanceof Boolean)
 					this.node.addAttribute(
 							new AXmlAttribute<Boolean>(tname, resourceId, type, (Boolean) obj, ns, false));
@@ -104,9 +106,75 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 							Boolean.valueOf(wrapper.raw), ns, false));
 				} else
 					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_FLOAT) {
+				if (obj instanceof Integer) {
+					float floatVal = Float.intBitsToFloat((Integer) obj);
+					this.node.addAttribute(new AXmlAttribute<Float>(tname, resourceId, type, floatVal, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_DIMENSION) {
+				if (obj instanceof Integer) {
+					AXmlComplexValue complexValue = parseComplexValue((Integer) obj);
+					this.node.addAttribute(
+							new AXmlAttribute<AXmlComplexValue>(tname, resourceId, type, complexValue, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
 			}
 
 			super.attr(ns, name, resourceId, type, obj);
+		}
+
+		/**
+		 * Parses the given Android complex value
+		 * 
+		 * @param complexValue
+		 *            The numeric complex value to parse
+		 * @return A data object that contains the information from the complex value
+		 */
+		private AXmlComplexValue parseComplexValue(int complexValue) {
+			// Get the unit
+			int unitVal = complexValue >> AXmlConstants.COMPLEX_UNIT_SHIFT;
+			unitVal &= AXmlConstants.COMPLEX_UNIT_MASK;
+			Unit complexUnit = parseComplexUnit(unitVal);
+
+			// Get the radix
+			int radixVal = complexValue >> AXmlConstants.COMPLEX_RADIX_SHIFT;
+			radixVal &= AXmlConstants.COMPLEX_RADIX_MASK;
+
+			// Get the mantissa
+			int mantissa = complexValue >> AXmlConstants.COMPLEX_MANTISSA_SHIFT;
+			mantissa &= AXmlConstants.COMPLEX_MANTISSA_MASK;
+
+			return new AXmlComplexValue(complexUnit, mantissa, radixVal);
+		}
+
+		/**
+		 * Parses the given numeric complex unit into one of the well-known enum
+		 * constants
+		 * 
+		 * @param unitVal
+		 *            The numeric complex unit
+		 * @return One of the well-known constants for complex units
+		 */
+		private Unit parseComplexUnit(int unitVal) {
+			switch (unitVal) {
+			// Not all cases are listed here, because some of them have the same numeric
+			// value
+			case AXmlConstants.COMPLEX_UNIT_DIP:
+				return Unit.DIP;
+			case AXmlConstants.COMPLEX_UNIT_IN:
+				return Unit.IN;
+			case AXmlConstants.COMPLEX_UNIT_MM:
+				return Unit.MM;
+			case AXmlConstants.COMPLEX_UNIT_PT:
+				return Unit.PT;
+			case AXmlConstants.COMPLEX_UNIT_PX:
+				return Unit.PX;
+			case AXmlConstants.COMPLEX_UNIT_SP:
+				return Unit.SP;
+			default:
+				throw new RuntimeException(String.format("Unknown complex unit %d", unitVal));
+			}
 		}
 
 		@Override
