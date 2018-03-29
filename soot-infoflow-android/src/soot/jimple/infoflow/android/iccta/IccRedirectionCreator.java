@@ -41,6 +41,30 @@ import soot.util.MultiMap;
 
 public class IccRedirectionCreator {
 
+	/**
+	 * Interface to notify external code that a new invocation statement for a
+	 * redirector method has been inserted
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public interface IRedirectorCallInserted {
+
+		/**
+		 * Method that is called when a new invocation to a redirector statement has
+		 * been inserted
+		 * 
+		 * @param link
+		 *            The inter-component link for which a statement has been injected
+		 * @param callStmt
+		 *            The statement that has been injected
+		 * @param redirectorMethod
+		 *            The redirector method that is being called
+		 */
+		public void onRedirectorCallInserted(IccLink link, Stmt callStmt, SootMethod redirectorMethod);
+
+	}
+
 	private static int num = 0;
 
 	private final static Logger logger = LoggerFactory.getLogger(IccRedirectionCreator.class);
@@ -53,6 +77,8 @@ public class IccRedirectionCreator {
 	protected final SootClass dummyMainClass;
 	protected final ComponentEntryPointCollection componentToEntryPoint;
 	protected final SootMethod smStartActivityForResult;
+
+	protected IRedirectorCallInserted instrumentationCallback = null;
 
 	public IccRedirectionCreator(SootClass dummyMainClass, ComponentEntryPointCollection componentToEntryPoint) {
 		this.componentToEntryPoint = componentToEntryPoint;
@@ -401,8 +427,7 @@ public class IccRedirectionCreator {
 			return;
 		}
 
-		Unit redirectCallU = (Unit) Jimple.v()
-				.newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
+		Stmt redirectCallU = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
 
 		final Body body = link.getFromSM().retrieveActiveBody();
 		final PatchingChain<Unit> units = body.getUnits();
@@ -410,6 +435,8 @@ public class IccRedirectionCreator {
 		copyTags(link.getFromU(), redirectCallU);
 		units.insertAfter(redirectCallU, link.getFromU());
 		instrumentedUnits.put(body, redirectCallU);
+		if (instrumentationCallback != null)
+			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
 
 		// remove the real ICC methods call stmt
 		// link.getFromSM().retrieveActiveBody().getUnits().remove(link.getFromU());
@@ -463,6 +490,17 @@ public class IccRedirectionCreator {
 		}
 		instrumentedUnits.clear();
 		source2RedirectMethod.clear();
+	}
+
+	/**
+	 * Sets the callback that shall be notified when a new statement has been
+	 * injected to model inter-component call relationships
+	 * 
+	 * @param instrumentationCallback
+	 *            The callback to notify of new instrumentation statements
+	 */
+	public void setInstrumentationCallback(IRedirectorCallInserted instrumentationCallback) {
+		this.instrumentationCallback = instrumentationCallback;
 	}
 
 }

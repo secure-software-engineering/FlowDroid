@@ -12,6 +12,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
+import soot.jimple.infoflow.android.axml.AXmlColorValue;
 import soot.jimple.infoflow.android.axml.AXmlComplexValue;
 import soot.jimple.infoflow.android.axml.AXmlComplexValue.Unit;
 import soot.jimple.infoflow.android.axml.AXmlNamespace;
@@ -117,6 +118,52 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 					AXmlComplexValue complexValue = parseComplexValue((Integer) obj);
 					this.node.addAttribute(
 							new AXmlAttribute<AXmlComplexValue>(tname, resourceId, type, complexValue, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB8) {
+				if (obj instanceof Integer) {
+					int color = (Integer) obj;
+					int bb = color & 0x000000FF;
+					int gg = (color & 0x0000FF00) >> 8;
+					int rr = (color & 0x00FF0000) >> 16;
+					int aa = (color & 0xFF000000) >> 24;
+					AXmlColorValue colorVal = new AXmlColorValue(aa, rr, gg, bb);
+					this.node.addAttribute(
+							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB4) {
+				if (obj instanceof Integer) {
+					int color = (Integer) obj;
+					int b = color & 0x000F;
+					int g = (color & 0x00F0) >> 4;
+					int r = (color & 0x0F00) >> 8;
+					int a = (color & 0xF000) >> 12;
+					AXmlColorValue colorVal = new AXmlColorValue(a, r, g, b);
+					this.node.addAttribute(
+							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_RGB8) {
+				if (obj instanceof Integer) {
+					int color = (Integer) obj;
+					int bb = color & 0x000000FF;
+					int gg = (color & 0x0000FF00) >> 8;
+					int rr = (color & 0x00FF0000) >> 16;
+					AXmlColorValue colorVal = new AXmlColorValue(rr, gg, bb);
+					this.node.addAttribute(
+							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
+				} else
+					throw new RuntimeException("Unsupported value type");
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB4) {
+				if (obj instanceof Integer) {
+					int color = (Integer) obj;
+					int b = color & 0x000F;
+					int g = (color & 0x00F0) >> 4;
+					int r = (color & 0x0F00) >> 8;
+					AXmlColorValue colorVal = new AXmlColorValue(r, g, b);
+					this.node.addAttribute(
+							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
 				} else
 					throw new RuntimeException("Unsupported value type");
 			}
