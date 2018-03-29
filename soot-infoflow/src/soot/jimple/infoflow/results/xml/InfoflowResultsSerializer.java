@@ -24,7 +24,7 @@ import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
  */
 public class InfoflowResultsSerializer {
 
-	public static final int FILE_FORMAT_VERSION = 100;
+	public static final int FILE_FORMAT_VERSION = 101;
 
 	protected boolean serializeTaintPath = true;
 	protected IInfoflowCFG icfg;
@@ -122,6 +122,8 @@ public class InfoflowResultsSerializer {
 	private void writeSourceInfo(ResultSourceInfo source, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(XmlConstants.Tags.source);
 		writer.writeAttribute(XmlConstants.Attributes.statement, source.getStmt().toString());
+		if(source.getDefinition().getCategory()!=null)
+			writer.writeAttribute(XmlConstants.Attributes.category,source.getDefinition().getCategory().getHumanReadableDescription());
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(source.getStmt()).getSignature());
 
@@ -135,6 +137,7 @@ public class InfoflowResultsSerializer {
 
 				Stmt curStmt = source.getPath()[i];
 				writer.writeAttribute(XmlConstants.Attributes.statement, curStmt.toString());
+
 				if (icfg != null)
 					writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(curStmt).getSignature());
 
@@ -178,6 +181,8 @@ public class InfoflowResultsSerializer {
 	private void writeSinkInfo(ResultSinkInfo sink, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(XmlConstants.Tags.sink);
 		writer.writeAttribute(XmlConstants.Attributes.statement, sink.getStmt().toString());
+		if(sink.getDefinition().getCategory()!=null)
+			writer.writeAttribute(XmlConstants.Attributes.category,sink.getDefinition().getCategory().getHumanReadableDescription());
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(sink.getStmt()).getSignature());
 		writeAdditionalSinkInfo(sink, writer);

@@ -31,7 +31,7 @@ to build the tool and run all unit tests. The Android JAR folder is the "platfor
 folder. The DroidBench folder is the location of DroidBench, our micro-benchmark suite. These two environment variables are only
 required for running the unit tests.
 
-If you do want DroidBench, or are in a hurry and just want to build the tool without the tests (they can take
+If you do not want DroidBench, or are in a hurry and just want to build the tool without the tests (they can take
 quite some time to complete, we have more than 400 of them), try
 
 ```
