@@ -138,6 +138,7 @@ public class SootMethodRepresentationParser {
 
 	/**
 	 * Parses a Soot method subsignature and returns the method name
+	 *
 	 * @param subSignature The Soot subsignature to parse
 	 * @return The name of the method being invoked if the given subsignature
 	 * could be parsed successfully, otherwise an empty string.
@@ -148,13 +149,19 @@ public class SootMethodRepresentationParser {
 			this.patternSubsigToName = pattern;
 		}
 		Matcher matcher = patternSubsigToName.matcher(subSignature);
-		if (matcher.find())
-			return matcher.group(2);
-		return "";
+
+		if (!matcher.find() ) {    //in case no return value exists
+			Pattern pattern = Pattern.compile("^\\s*(.+)\\((.*?)\\)\\s*$");
+			this.patternSubsigToName = pattern;
+			return getMethodNameFromSubSignature(subSignature);
+		}
+		String method = matcher.group(matcher.groupCount()-1);
+		return method;
 	}
 
 	/**
 	 * Parses a Soot method subsignature and returns the list of parameter types
+	 *
 	 * @param subSignature The Soot subsignature to parse
 	 * @return The list of formal parameters in the given subsignature invoked
 	 * if the given subsignature could be parsed successfully, otherwise null.
@@ -165,11 +172,17 @@ public class SootMethodRepresentationParser {
 			this.patternSubsigToName = pattern;
 		}
 		Matcher matcher = patternSubsigToName.matcher(subSignature);
-		if (!matcher.find() || matcher.groupCount() < 3)
+		if (!matcher.find() ) {    //in case no return value exists
+			Pattern pattern = Pattern.compile("^\\s*(.+)\\((.*?)\\)\\s*$");
+			this.patternSubsigToName = pattern;
+			return getParameterTypesFromSubSignature(subSignature);
+		}
+		String params = matcher.group(matcher.groupCount());
+		if(params.equals(""))
 			return null;
-		
-		String params = matcher.group(3);
-		return params.split("\\s*,\\s*");
+		else
+			return params.split("\\s*,\\s*");
+
 	}
 
 }

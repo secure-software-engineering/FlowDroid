@@ -40,8 +40,8 @@ class XmlConstants {
 		public static final String value = "Value";
 		public static final String type = "Type";
 		public static final String taintSubFields = "TaintSubFields";
-		
-		
+
+		public static final String category = "Category";
 	}
 	
 	class Values {
