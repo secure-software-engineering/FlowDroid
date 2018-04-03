@@ -427,7 +427,7 @@ public class SetupApplication {
 	 * @throws XmlPullParserException
 	 *             Thrown if the Android manifest file could not be read.
 	 */
-	private void parseAppResources() throws IOException, XmlPullParserException {
+	protected void parseAppResources() throws IOException, XmlPullParserException {
 		final String targetAPK = config.getAnalysisFileConfig().getTargetAPKFile();
 
 		// To look for callbacks, we need to start somewhere. We use the Android
