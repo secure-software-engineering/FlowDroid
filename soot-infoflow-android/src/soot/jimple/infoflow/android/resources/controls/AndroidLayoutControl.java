@@ -16,7 +16,7 @@ import java.util.Map;
 import pxb.android.axml.AxmlVisitor;
 import soot.SootClass;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.resources.controls.LayoutControl;
 
 /**
  * Data class representing a layout control on the android screen
@@ -24,7 +24,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  * @author Steven Arzt
  *
  */
-public abstract class LayoutControl {
+public abstract class AndroidLayoutControl extends LayoutControl {
 
 	protected int id;
 	protected SootClass viewClass;
@@ -32,16 +32,16 @@ public abstract class LayoutControl {
 
 	private Map<String, Object> additionalAttributes = null;
 
-	LayoutControl(SootClass viewClass) {
+	AndroidLayoutControl(SootClass viewClass) {
 		this(-1, viewClass);
 	}
 
-	public LayoutControl(int id, SootClass viewClass) {
+	public AndroidLayoutControl(int id, SootClass viewClass) {
 		this.id = id;
 		this.viewClass = viewClass;
 	}
 
-	public LayoutControl(int id, SootClass viewClass, Map<String, Object> additionalAttributes) {
+	public AndroidLayoutControl(int id, SootClass viewClass, Map<String, Object> additionalAttributes) {
 		this(id, viewClass);
 		this.additionalAttributes = additionalAttributes;
 	}
@@ -53,25 +53,6 @@ public abstract class LayoutControl {
 	public SootClass getViewClass() {
 		return this.viewClass;
 	}
-
-	/**
-	 * Gets whether this control can contain sensitive data according to some
-	 * reasonable general definition
-	 * 
-	 * @return True if this control can contain sensitive information, otherwise
-	 *         false
-	 */
-	public boolean isSensitive() {
-		return false;
-	}
-
-	/**
-	 * If this control shall be treated as a source, this method is called to obtain
-	 * the precise definition of the source
-	 * 
-	 * @return The source definition for this layout control
-	 */
-	public abstract SourceSinkDefinition getSourceDefinition();
 
 	/**
 	 * Adds an additional attribute to this layout control
@@ -181,7 +162,7 @@ public abstract class LayoutControl {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		LayoutControl other = (LayoutControl) obj;
+		AndroidLayoutControl other = (AndroidLayoutControl) obj;
 		if (additionalAttributes == null) {
 			if (other.additionalAttributes != null)
 				return false;

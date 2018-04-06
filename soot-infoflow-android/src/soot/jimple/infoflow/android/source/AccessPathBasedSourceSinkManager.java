@@ -21,7 +21,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition;
-import soot.jimple.infoflow.android.resources.controls.LayoutControl;
+import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
@@ -83,7 +83,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 */
 	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
-			Map<Integer, LayoutControl> layoutControls) {
+			Map<Integer, AndroidLayoutControl> layoutControls) {
 		super(sources, sinks, callbackMethods, config, layoutControls);
 	}
 

@@ -16,7 +16,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  * @author Steven Arzt
  *
  */
-public class GenericLayoutControl extends LayoutControl {
+public class GenericLayoutControl extends AndroidLayoutControl {
 
 	protected final static SourceSinkDefinition UI_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
 			Collections.singleton(AccessPathTuple.fromPathElements(Collections.singletonList("content"),
