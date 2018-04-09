@@ -59,7 +59,7 @@ import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.ResPackage;
-import soot.jimple.infoflow.android.resources.controls.LayoutControl;
+import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
@@ -131,7 +131,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	protected Map<SootField, SourceSinkDefinition> sinkFields;
 
 	protected final SourceSinkConfiguration sourceSinkConfig;
-	protected final Map<Integer, LayoutControl> layoutControls;
+	protected final Map<Integer, AndroidLayoutControl> layoutControls;
 	protected List<ARSCFileParser.ResPackage> resourcePackages;
 
 	protected String appPackageName = "";
@@ -205,7 +205,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
-			Map<Integer, LayoutControl> layoutControls) {
+			Map<Integer, AndroidLayoutControl> layoutControls) {
 		this.sourceSinkConfig = config.getSourceSinkConfig();
 
 		this.sourceDefs = new HashMap<>();
@@ -727,7 +727,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 				return null;
 			}
 
-			LayoutControl control = this.layoutControls.get(id);
+			AndroidLayoutControl control = this.layoutControls.get(id);
 			if (control == null)
 				return null;
 			if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly

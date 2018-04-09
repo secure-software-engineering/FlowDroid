@@ -19,7 +19,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  * @author Steven Arzt
  *
  */
-public class EditTextControl extends LayoutControl {
+public class EditTextControl extends AndroidLayoutControl {
 
 	public final static int TYPE_CLASS_TEXT = 0x00000001;
 	public final static int TYPE_CLASS_NUMBER = 0x00000002;

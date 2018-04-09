@@ -65,7 +65,7 @@ import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.StringResource;
 import soot.jimple.infoflow.android.resources.LayoutFileParser;
-import soot.jimple.infoflow.android.resources.controls.LayoutControl;
+import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.android.results.xml.InfoflowResultsSerializer;
 import soot.jimple.infoflow.android.source.AccessPathBasedSourceSinkManager;
 import soot.jimple.infoflow.android.source.ConfigurationBasedCategoryFilter;
@@ -897,9 +897,9 @@ public class SetupApplication {
 
 					// For user-defined views, we need to emulate their
 					// callbacks
-					Set<LayoutControl> controls = lfp.getUserControls().get(layoutFileName);
+					Set<AndroidLayoutControl> controls = lfp.getUserControls().get(layoutFileName);
 					if (controls != null) {
-						for (LayoutControl lc : controls)
+						for (AndroidLayoutControl lc : controls)
 							if (!SystemClassHandler.isClassInSystemPackage(lc.getViewClass().getName()))
 								registerCallbackMethodsForView(callbackClass, lc);
 					}
@@ -977,7 +977,7 @@ public class SetupApplication {
 	 *            The layout control whose callbacks are to be associated with the
 	 *            given class
 	 */
-	private void registerCallbackMethodsForView(SootClass callbackClass, LayoutControl lc) {
+	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
 		if (SystemClassHandler.isClassInSystemPackage(callbackClass.getName()))
 			return;
