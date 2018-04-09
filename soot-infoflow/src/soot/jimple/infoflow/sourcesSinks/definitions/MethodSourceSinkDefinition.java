@@ -42,7 +42,13 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 		 * The method is a callback that is invoked by the Android operating
 		 * system
 		 */
-		Callback
+		Callback,
+
+		/**
+		 * All return values in the method are considered
+		 * (only supported as sink)
+		 */
+		Return
 	}
 
 	/**
@@ -185,7 +191,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					break;
 				}
 
-		return (baseObjects == null || baseObjects.isEmpty()) && parametersEmpty
+		return (baseObjects == null || baseObjects.isEmpty())
+				&& parametersEmpty
 				&& (returnValues == null || returnValues.isEmpty());
 	}
 
