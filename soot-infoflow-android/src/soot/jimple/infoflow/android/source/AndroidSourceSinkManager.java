@@ -10,6 +10,8 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.source;
 
+import static soot.SootClass.DANGLING;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,6 +45,7 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ParameterRef;
+import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.InfoflowManager;
@@ -77,8 +80,6 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.tagkit.IntegerConstantValueTag;
 import soot.tagkit.Tag;
-
-import static soot.SootClass.DANGLING;
 
 /**
  * SourceManager implementation for AndroidSources
@@ -124,6 +125,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 
 	protected Map<SootMethod, SourceSinkDefinition> sourceMethods;
 	protected Map<SootMethod, SourceSinkDefinition> sinkMethods;
+	protected Map<SootMethod, SourceSinkDefinition> sinkReturnMethods;
 	private Map<SootMethod, CallbackDefinition> callbackMethods;
 	protected Map<SootField, SourceSinkDefinition> sourceFields;
 	protected Map<SootField, SourceSinkDefinition> sinkFields;
@@ -174,7 +176,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *            The configuration of the data flow analyzer
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-									InfoflowAndroidConfiguration config) {
+			InfoflowAndroidConfiguration config) {
 		this(sources, sinks, Collections.<CallbackDefinition>emptySet(), config, null);
 	}
 
@@ -202,8 +204,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *            controls
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-									Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
-									Map<Integer, AndroidLayoutControl> layoutControls) {
+			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
+			Map<Integer, AndroidLayoutControl> layoutControls) {
 		this.sourceSinkConfig = config.getSourceSinkConfig();
 
 		this.sourceDefs = new HashMap<>();
@@ -334,6 +336,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 				if (def != null)
 					return def;
 			}
+		} else if (sCallSite instanceof ReturnStmt) {
+			return sinkReturnMethods.get(manager.getICFG().getMethodOf(sCallSite));
 		}
 
 		return null;
@@ -352,7 +356,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *         somewhere up in the class hiearchy if it exists, otherwise null.
 	 */
 	private static SourceSinkDefinition findDefinitionInHierarchy(SootMethod callee,
-																  Map<SootMethod, SourceSinkDefinition> map) {
+			Map<SootMethod, SourceSinkDefinition> map) {
 		final String subSig = callee.getSubSignature();
 		SootClass curClass = callee.getDeclaringClass();
 		while (curClass != null) {
@@ -716,7 +720,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 						new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
 			}
 			if (id == null) {
-				logger.debug("Could not find assignment to local " + ((Local) ie.getArg(0)).getName() + " in method "
+				logger.debug("Could not find assignment to local "
+						+ ((Local) ie.getArg(0)).getName()
+						+ " in method "
 						+ cfg.getMethodOf(sCallSite).getSignature());
 				return null;
 			}
@@ -743,7 +749,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * @return The last value assigned to the given variable
 	 */
 	private Integer findLastResIDAssignment(Stmt stmt, Local local, BiDiInterproceduralCFG<Unit, SootMethod> cfg,
-											Set<Stmt> doneSet) {
+			Set<Stmt> doneSet) {
 		if (!doneSet.add(stmt))
 			return null;
 
@@ -916,14 +922,13 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 *            The sub signature of the method which is the method name and its parameters
 	 * @return The soot method of the given class and sub signature or null
 	 */
-	private SootMethod grabMethodWithoutReturn(String sootClassName, String subSignature)
-	{
-		SootClass sootClass=Scene.v().getSootClassUnsafe(sootClassName);
-		if(sootClass==null)
+	private SootMethod grabMethodWithoutReturn(String sootClassName, String subSignature) {
+		SootClass sootClass = Scene.v().getSootClassUnsafe(sootClassName);
+		if (sootClass == null)
 			return null;
 
-		List<SootMethod> sootMethods=null;
-		if(sootClass.resolvingLevel()!=DANGLING) {
+		List<SootMethod> sootMethods = null;
+		if (sootClass.resolvingLevel() != DANGLING) {
 			sootMethods = sootClass.getMethods();
 
 			for (SootMethod s : sootMethods) {
@@ -949,20 +954,18 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			for (Entry<String, SourceSinkDefinition> entry : sourceDefs.entrySet()) {
 				SourceSinkDefinition sourceSinkDef = entry.getValue();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
-					SootMethodAndClass method=((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
-					String returnType=method.getReturnType();
-					boolean isMethodWithoutReturnType=	returnType==null||returnType.isEmpty();
-					if(isMethodWithoutReturnType)
-					{
-						String className=method.getClassName();
+					SootMethodAndClass method = ((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
+					String returnType = method.getReturnType();
+					boolean isMethodWithoutReturnType = returnType == null || returnType.isEmpty();
+					if (isMethodWithoutReturnType) {
+						String className = method.getClassName();
 
-						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
-						SootMethod sootMethod=	grabMethodWithoutReturn(className,subSignatureWithoutReturnType);
-						if(sootMethod!=null)
+						String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef).getMethod()
+								.getSubSignature());
+						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
+						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
-					}
-					else
-					{
+					} else {
 						SootMethod sm = Scene.v().grabMethod(entry.getKey());
 						if (sm != null)
 							sourceMethods.put(sm, sourceSinkDef);
@@ -982,25 +985,32 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 		if (sinkDefs != null) {
 			sinkMethods = new HashMap<>();
 			sinkFields = new HashMap<>();
+			sinkReturnMethods = new HashMap<>();
 			for (Entry<String, SourceSinkDefinition> entry : sinkDefs.entrySet()) {
 				SourceSinkDefinition sourceSinkDef = entry.getValue();
-				if (sourceSinkDef instanceof MethodSourceSinkDefinition)
-				{
-					SootMethodAndClass method=((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
-					String returnType=method.getReturnType();
-					boolean isMethodWithoutReturnType=	returnType==null||returnType.isEmpty();
-					if(isMethodWithoutReturnType)
-					{
-						String className=method.getClassName();
-						String subSignatureWithoutReturnType=(((MethodSourceSinkDefinition) sourceSinkDef).getMethod().getSubSignature());
-						SootMethod sootMethod=	grabMethodWithoutReturn(className,subSignatureWithoutReturnType);
-						if(sootMethod!=null)
-							sinkMethods.put(sootMethod, sourceSinkDef);
-					}
-					else{
-						SootMethod sm = Scene.v().grabMethod(entry.getKey());
-						if (sm != null)
-							sinkMethods.put(sm, entry.getValue());
+				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
+					MethodSourceSinkDefinition methodSourceSinkDef = ((MethodSourceSinkDefinition) sourceSinkDef);
+					if (methodSourceSinkDef.getCallType() == CallType.Return) {
+						SootMethodAndClass method = methodSourceSinkDef.getMethod();
+						SootMethod m = Scene.v().grabMethod(method.getSignature());
+						if (m != null)
+							sinkReturnMethods.put(m, methodSourceSinkDef);
+					} else {
+						SootMethodAndClass method = methodSourceSinkDef.getMethod();
+						String returnType = method.getReturnType();
+						boolean isMethodWithoutReturnType = returnType == null || returnType.isEmpty();
+						if (isMethodWithoutReturnType) {
+							String className = method.getClassName();
+							String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef)
+									.getMethod().getSubSignature());
+							SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
+							if (sootMethod != null)
+								sinkMethods.put(sootMethod, sourceSinkDef);
+						} else {
+							SootMethod sm = Scene.v().grabMethod(entry.getKey());
+							if (sm != null)
+								sinkMethods.put(sm, entry.getValue());
+						}
 					}
 
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {

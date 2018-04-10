@@ -27,6 +27,7 @@ import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
@@ -117,7 +118,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				break;
 			case MethodCall:
 				// Check whether we need to taint the base object
-				if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
+				if (sCallSite instanceof InvokeStmt
+						&& sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
 						&& methodDef.getBaseObjects() != null) {
 					Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
 					for (AccessPathTuple apt : methodDef.getBaseObjects())
@@ -134,7 +136,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				}
 
 				// Check whether we need to taint parameters
-				if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
+				if (sCallSite.containsInvokeExpr()
+						&& methodDef.getParameters() != null
 						&& methodDef.getParameters().length > 0)
 					for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++)
 						if (methodDef.getParameters().length > i)
@@ -227,7 +230,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 		// If we have no precise information, we conservatively assume that
 		// everything is tainted without looking at the access path. Only
 		// exception: separate compilation assumption
-		if (def.isEmpty()) {
+		if (def.isEmpty() && sCallSite.containsInvokeExpr()) {
 			if (SystemClassHandler.isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
 				return new SinkInfo(def);
 			else
@@ -241,6 +244,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
+			if (methodDef.getCallType() == CallType.Return)
+				return new SinkInfo(def);
 
 			// Check whether the base object matches our definition
 			if (sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
