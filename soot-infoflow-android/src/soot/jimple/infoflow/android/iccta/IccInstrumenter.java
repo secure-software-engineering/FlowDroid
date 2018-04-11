@@ -18,7 +18,7 @@ import soot.Unit;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.entryPointCreators.android.components.ComponentEntryPointCollection;
+import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.util.Chain;
 import soot.util.HashMultiMap;

@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import soot.AnySubType;
 import soot.Body;
+import soot.FastHierarchy;
 import soot.Local;
 import soot.RefType;
 import soot.Scene;
@@ -65,7 +66,16 @@ import soot.util.MultiMap;
  */
 public abstract class AbstractCallbackAnalyzer {
 
+	private static final String SIG_CAR_CREATE = "<android.car.Car: android.car.Car createCar(android.content.Context,android.content.ServiceConnection)>";
+
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+	protected final SootClass scContext = Scene.v().getSootClassUnsafe("android.content.Context");
+
+	protected final SootClass scBroadcastReceiver = Scene.v()
+			.getSootClassUnsafe(AndroidEntryPointConstants.BROADCASTRECEIVERCLASS);
+	protected final SootClass scServiceConnection = Scene.v()
+			.getSootClassUnsafe(AndroidEntryPointConstants.SERVICECONNECTIONINTERFACE);
 
 	protected final SootClass scFragmentTransaction = Scene.v().getSootClassUnsafe("android.app.FragmentTransaction");
 	protected final SootClass scFragment = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.FRAGMENTCLASS);
@@ -312,13 +322,47 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
 
+		final FastHierarchy fastHierarchy = Scene.v().getFastHierarchy();
+		final RefType contextType = scContext.getType();
 		for (Unit u : method.getActiveBody().getUnits()) {
 			Stmt stmt = (Stmt) u;
 			if (stmt.containsInvokeExpr()) {
-				if (stmt.getInvokeExpr().getMethodRef().name().equals("registerReceiver")
-						&& stmt.getInvokeExpr().getArgCount() > 0
-						&& isInheritedMethod(stmt, "android.content.ContextWrapper", "android.content.Context")) {
-					Value br = stmt.getInvokeExpr().getArg(0);
+				final InvokeExpr iexpr = stmt.getInvokeExpr();
+				final SootMethodRef methodRef = iexpr.getMethodRef();
+				if (methodRef.name().equals("registerReceiver") && iexpr.getArgCount() > 0
+						&& fastHierarchy.canStoreType(methodRef.declaringClass().getType(), contextType)) {
+					Value br = iexpr.getArg(0);
+					if (br.getType() instanceof RefType) {
+						RefType rt = (RefType) br.getType();
+						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+							dynamicManifestComponents.add(rt.getSootClass());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks whether the given method dynamically registers a new service
+	 * connection
+	 * 
+	 * @param method
+	 *            The method to check
+	 */
+	protected void analyzeMethodForServiceConnection(SootMethod method) {
+		// Do not analyze system classes
+		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+			return;
+		if (!method.isConcrete() || !method.hasActiveBody())
+			return;
+
+		for (Unit u : method.getActiveBody().getUnits()) {
+			Stmt stmt = (Stmt) u;
+			if (stmt.containsInvokeExpr()) {
+				final InvokeExpr iexpr = stmt.getInvokeExpr();
+				final SootMethodRef methodRef = iexpr.getMethodRef();
+				if (methodRef.getSignature().equals(SIG_CAR_CREATE)) {
+					Value br = iexpr.getArg(1);
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
 						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
@@ -421,7 +465,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * @return True if the given call can end up in a method inherited from one of
 	 *         the given classes, otherwise falae
 	 */
-	private boolean isInheritedMethod(Stmt stmt, String... classNames) {
+	protected boolean isInheritedMethod(Stmt stmt, String... classNames) {
 		if (!stmt.containsInvokeExpr())
 			return false;
 

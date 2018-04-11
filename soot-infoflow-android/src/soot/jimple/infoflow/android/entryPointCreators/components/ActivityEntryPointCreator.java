@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.entryPointCreators.android.components;
+package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.util.ArrayList;
 import java.util.Collections;

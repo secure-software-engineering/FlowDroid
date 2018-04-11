@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.entryPointCreators.android.components;
+package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import soot.SootClass;
 import soot.jimple.Jimple;

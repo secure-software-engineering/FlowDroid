@@ -11,6 +11,7 @@ import pxb.android.axml.ValueWrapper;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
+import soot.SootResolver.SootClassNotFoundException;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlColorValue;
 import soot.jimple.infoflow.android.axml.AXmlComplexValue;
@@ -53,20 +54,25 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 			if (tname == null || tname.isEmpty()) {
 				tname = idToNameMap.get(resourceId);
 				if (tname == null) {
-					SootClass rClass = Scene.v().forceResolve("android.R$attr", SootClass.BODIES);
-					outer: for (SootField sf : rClass.getFields())
-						for (Tag t : sf.getTags())
-							if (t instanceof IntegerConstantValueTag) {
-								IntegerConstantValueTag cvt = (IntegerConstantValueTag) t;
-								if (cvt.getIntValue() == resourceId) {
-									tname = sf.getName();
-									idToNameMap.put(resourceId, tname);
-									// fake the Android namespace
-									ns = "http://schemas.android.com/apk/res/android";
-									break outer;
+					try {
+						SootClass rClass = Scene.v().forceResolve("android.R$attr", SootClass.BODIES);
+						outer: for (SootField sf : rClass.getFields())
+							for (Tag t : sf.getTags())
+								if (t instanceof IntegerConstantValueTag) {
+									IntegerConstantValueTag cvt = (IntegerConstantValueTag) t;
+									if (cvt.getIntValue() == resourceId) {
+										tname = sf.getName();
+										idToNameMap.put(resourceId, tname);
+										// fake the Android namespace
+										ns = "http://schemas.android.com/apk/res/android";
+										break outer;
+									}
+									break;
 								}
-								break;
-							}
+					} catch (SootClassNotFoundException ex) {
+						// Without a name, we cannot really carry on
+						return;
+					}
 				}
 			} else
 				tname = name.trim();

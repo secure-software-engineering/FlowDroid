@@ -49,6 +49,7 @@ public class FastCallbackAnalyzer extends AbstractCallbackAnalyzer {
 					if (sm.isConcrete()) {
 						analyzeMethodForCallbackRegistrations(null, sm);
 						analyzeMethodForDynamicBroadcastReceiver(sm);
+						analyzeMethodForServiceConnection(sm);
 					}
 				}
 

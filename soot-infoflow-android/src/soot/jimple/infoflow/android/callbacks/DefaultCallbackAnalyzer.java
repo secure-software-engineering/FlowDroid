@@ -74,8 +74,8 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	/**
 	 * Helper class that computes reachable methods only from a given set of
 	 * starting methods, while ignoring all other methods. It will not take
-	 * everything that is already reachable in the callgraph as the seed, but
-	 * only work on what is explicitly given as the entry points.
+	 * everything that is already reachable in the callgraph as the seed, but only
+	 * work on what is explicitly given as the entry points.
 	 * 
 	 * This class is heavily based on Soot's {@link ReachableMethods} class by
 	 * Ondrej Lhotak.
@@ -95,9 +95,9 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		 * Creates a new instance of the {@link MyReachableMethods} class
 		 * 
 		 * @param originalComponent
-		 *            The original component or which we are looking for
-		 *            callback registrations. This information is used to more
-		 *            precisely model calls to abstract methods.
+		 *            The original component or which we are looking for callback
+		 *            registrations. This information is used to more precisely model
+		 *            calls to abstract methods.
 		 * @param entryPoints
 		 *            The entry points from which to find the reachable methods
 		 */
@@ -179,18 +179,18 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		}
 
 		/**
-		 * Returns a QueueReader object containing all methods found reachable
-		 * so far, and which will be informed of any new methods that are later
-		 * found to be reachable.
+		 * Returns a QueueReader object containing all methods found reachable so far,
+		 * and which will be informed of any new methods that are later found to be
+		 * reachable.
 		 */
 		public QueueReader<MethodOrMethodContext> listener() {
 			return allReachables.clone();
 		}
 
 		/**
-		 * Returns a QueueReader object which will contain ONLY NEW methods
-		 * which will be found to be reachable, but not those that have already
-		 * been found to be reachable.
+		 * Returns a QueueReader object which will contain ONLY NEW methods which will
+		 * be found to be reachable, but not those that have already been found to be
+		 * reachable.
 		 */
 		public QueueReader<MethodOrMethodContext> newListener() {
 			return reachables.reader();
@@ -209,10 +209,9 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	}
 
 	/**
-	 * Collects the callback methods for all Android default handlers
-	 * implemented in the source code. Note that this operation runs inside
-	 * Soot, so this method only registers a new phase that will be executed
-	 * when Soot is next run
+	 * Collects the callback methods for all Android default handlers implemented in
+	 * the source code. Note that this operation runs inside Soot, so this method
+	 * only registers a new phase that will be executed when Soot is next run
 	 */
 	@Override
 	public void collectCallbackMethods() {
@@ -327,13 +326,12 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 	/**
 	 * This method takes a lifecycle class and the list of lifecycle method
-	 * subsignatures. For each subsignature, it checks whether the given class
-	 * or one of its superclass overwrites the respective methods. All findings
-	 * are collected in a set and returned.
+	 * subsignatures. For each subsignature, it checks whether the given class or
+	 * one of its superclass overwrites the respective methods. All findings are
+	 * collected in a set and returned.
 	 * 
 	 * @param sc
-	 *            The class in which to look for lifecycle method
-	 *            implementations
+	 *            The class in which to look for lifecycle method implementations
 	 * @param methods
 	 *            The list of lifecycle method subsignatures for the type of
 	 *            component that the given class corresponds to
@@ -370,6 +368,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			SootMethod method = reachableMethods.next().method();
 			analyzeMethodForCallbackRegistrations(lifecycleElement, method);
 			analyzeMethodForDynamicBroadcastReceiver(method);
+			analyzeMethodForServiceConnection(method);
 			analyzeMethodForFragmentTransaction(lifecycleElement, method);
 		}
 	}

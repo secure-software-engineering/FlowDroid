@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.entryPointCreators.android.components;
+package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.util.HashSet;
 import java.util.Set;
