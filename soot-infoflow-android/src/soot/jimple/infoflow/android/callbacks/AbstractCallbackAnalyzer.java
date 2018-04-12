@@ -30,6 +30,7 @@ import soot.AnySubType;
 import soot.Body;
 import soot.FastHierarchy;
 import soot.Local;
+import soot.PointsToSet;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
@@ -363,6 +364,20 @@ public abstract class AbstractCallbackAnalyzer {
 				final SootMethodRef methodRef = iexpr.getMethodRef();
 				if (methodRef.getSignature().equals(SIG_CAR_CREATE)) {
 					Value br = iexpr.getArg(1);
+
+					// We need all possible types for the parameter
+					if (br instanceof Local && Scene.v().hasPointsToAnalysis()) {
+						PointsToSet pts = Scene.v().getPointsToAnalysis().reachingObjects((Local) br);
+						for (Type tp : pts.possibleTypes()) {
+							if (tp instanceof RefType) {
+								RefType rt = (RefType) tp;
+								if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+									dynamicManifestComponents.add(rt.getSootClass());
+							}
+						}
+					}
+
+					// Just to be sure, also add the declared type
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
 						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
