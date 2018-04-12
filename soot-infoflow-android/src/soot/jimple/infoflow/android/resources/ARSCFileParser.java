@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -235,10 +236,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 	private final Map<Integer, String> stringTable = new HashMap<Integer, String>();
 	private final List<ResPackage> packages = new ArrayList<ResPackage>();
 
-	public class ResPackage {
+	public static class ResPackage {
 		private int packageId;
 		private String packageName;
-		private List<ResType> types = new ArrayList<ResType>();
+		private List<ResType> types = new ArrayList<>();
 
 		public int getPackageId() {
 			return this.packageId;
@@ -252,13 +253,47 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return this.types;
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + packageId;
+			result = prime * result + ((packageName == null) ? 0 : packageName.hashCode());
+			result = prime * result + ((types == null) ? 0 : types.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResPackage other = (ResPackage) obj;
+			if (packageId != other.packageId)
+				return false;
+			if (packageName == null) {
+				if (other.packageName != null)
+					return false;
+			} else if (!packageName.equals(other.packageName))
+				return false;
+			if (types == null) {
+				if (other.types != null)
+					return false;
+			} else if (!types.equals(other.types))
+				return false;
+			return true;
+		}
+
 	}
 
 	/**
 	 * A resource type in an Android resource file. All resources are associated
 	 * with a type.
 	 */
-	public class ResType {
+	public static class ResType {
 		private int id;
 		private String typeName;
 		private List<ResConfig> configurations = new ArrayList<ResConfig>();
@@ -354,13 +389,47 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public String toString() {
 			return this.typeName;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((configurations == null) ? 0 : configurations.hashCode());
+			result = prime * result + id;
+			result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResType other = (ResType) obj;
+			if (configurations == null) {
+				if (other.configurations != null)
+					return false;
+			} else if (!configurations.equals(other.configurations))
+				return false;
+			if (id != other.id)
+				return false;
+			if (typeName == null) {
+				if (other.typeName != null)
+					return false;
+			} else if (!typeName.equals(other.typeName))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * A configuration in an Android resource file. All resources are associated
 	 * with a configuration (which may be the default one).
 	 */
-	public class ResConfig {
+	public static class ResConfig {
 		private ResTable_Config config;
 		private List<AbstractResource> resources = new ArrayList<AbstractResource>();
 
@@ -371,12 +440,43 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public List<AbstractResource> getResources() {
 			return this.resources;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((config == null) ? 0 : config.hashCode());
+			result = prime * result + ((resources == null) ? 0 : resources.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResConfig other = (ResConfig) obj;
+			if (config == null) {
+				if (other.config != null)
+					return false;
+			} else if (!config.equals(other.config))
+				return false;
+			if (resources == null) {
+				if (other.resources != null)
+					return false;
+			} else if (!resources.equals(other.resources))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Abstract base class for all Android resources.
 	 */
-	public abstract class AbstractResource {
+	public static abstract class AbstractResource {
 		private String resourceName;
 		private int resourceID;
 
@@ -387,18 +487,46 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public int getResourceID() {
 			return this.resourceID;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + resourceID;
+			result = prime * result + ((resourceName == null) ? 0 : resourceName.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AbstractResource other = (AbstractResource) obj;
+			if (resourceID != other.resourceID)
+				return false;
+			if (resourceName == null) {
+				if (other.resourceName != null)
+					return false;
+			} else if (!resourceName.equals(other.resourceName))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource that does not contain any data
 	 */
-	public class NullResource extends AbstractResource {
+	public static class NullResource extends AbstractResource {
 	}
 
 	/**
 	 * Android resource containing a reference to another resource.
 	 */
-	public class ReferenceResource extends AbstractResource {
+	public static class ReferenceResource extends AbstractResource {
 		private int referenceID;
 
 		public ReferenceResource(int id) {
@@ -408,12 +536,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public int getReferenceID() {
 			return this.referenceID;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + referenceID;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ReferenceResource other = (ReferenceResource) obj;
+			if (referenceID != other.referenceID)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing an attribute resource identifier.
 	 */
-	public class AttributeResource extends AbstractResource {
+	public static class AttributeResource extends AbstractResource {
 		private int attributeID;
 
 		public AttributeResource(int id) {
@@ -423,12 +573,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public int getAttributeID() {
 			return this.attributeID;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + attributeID;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AttributeResource other = (AttributeResource) obj;
+			if (attributeID != other.attributeID)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing string data.
 	 */
-	public class StringResource extends AbstractResource {
+	public static class StringResource extends AbstractResource {
 		private String value;
 
 		public StringResource(String value) {
@@ -443,12 +615,37 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public String toString() {
 			return this.value;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			StringResource other = (StringResource) obj;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!value.equals(other.value))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing integer data.
 	 */
-	public class IntegerResource extends AbstractResource {
+	public static class IntegerResource extends AbstractResource {
 		private int value;
 
 		public IntegerResource(int value) {
@@ -463,12 +660,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public String toString() {
 			return Integer.toString(value);
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + value;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			IntegerResource other = (IntegerResource) obj;
+			if (value != other.value)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing a single-precision floating point number
 	 */
-	public class FloatResource extends AbstractResource {
+	public static class FloatResource extends AbstractResource {
 		private float value;
 
 		public FloatResource(float value) {
@@ -483,12 +702,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public String toString() {
 			return Float.toString(value);
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Float.floatToIntBits(value);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FloatResource other = (FloatResource) obj;
+			if (Float.floatToIntBits(value) != Float.floatToIntBits(other.value))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing boolean data.
 	 */
-	public class BooleanResource extends AbstractResource {
+	public static class BooleanResource extends AbstractResource {
 		private boolean value;
 
 		public BooleanResource(int value) {
@@ -504,12 +745,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return Boolean.toString(value);
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (value ? 1231 : 1237);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			BooleanResource other = (BooleanResource) obj;
+			if (value != other.value)
+				return false;
+			return true;
+		}
+
 	}
 
 	/**
 	 * Android resource containing color data.
 	 */
-	public class ColorResource extends AbstractResource {
+	public static class ColorResource extends AbstractResource {
 		private int a;
 		private int r;
 		private int g;
@@ -543,6 +806,88 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return String.format("#%02x%02x%02x%02x", a, r, g, b);
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + a;
+			result = prime * result + b;
+			result = prime * result + g;
+			result = prime * result + r;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ColorResource other = (ColorResource) obj;
+			if (a != other.a)
+				return false;
+			if (b != other.b)
+				return false;
+			if (g != other.g)
+				return false;
+			if (r != other.r)
+				return false;
+			return true;
+		}
+
+	}
+
+	/**
+	 * Special Android resource that contains an array of other resources
+	 */
+	public static class ArrayResource extends AbstractResource {
+
+		private final List<AbstractResource> arrayElements;
+
+		public ArrayResource() {
+			this.arrayElements = new ArrayList<>();
+		}
+
+		public ArrayResource(List<AbstractResource> arrayElements) {
+			this.arrayElements = arrayElements;
+		}
+
+		public void add(AbstractResource resource) {
+			this.arrayElements.add(resource);
+		}
+
+		@Override
+		public String toString() {
+			return this.arrayElements.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((arrayElements == null) ? 0 : arrayElements.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ArrayResource other = (ArrayResource) obj;
+			if (arrayElements == null) {
+				if (other.arrayElements != null)
+					return false;
+			} else if (!arrayElements.equals(other.arrayElements))
+				return false;
+			return true;
+		}
+
 	}
 
 	/**
@@ -564,7 +909,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Android resource containing fraction data (e.g. element width relative to
 	 * some other control).
 	 */
-	public class FractionResource extends AbstractResource {
+	public static class FractionResource extends AbstractResource {
 		private FractionType type;
 		private float value;
 
@@ -580,6 +925,31 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public float getValue() {
 			return this.value;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			result = prime * result + Float.floatToIntBits(value);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FractionResource other = (FractionResource) obj;
+			if (type != other.type)
+				return false;
+			if (Float.floatToIntBits(value) != Float.floatToIntBits(other.value))
+				return false;
+			return true;
+		}
 	}
 
 	/**
@@ -592,7 +962,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	/**
 	 * Android resource containing dimension data like "11pt".
 	 */
-	public class DimensionResource extends AbstractResource {
+	public static class DimensionResource extends AbstractResource {
 		private int value;
 		private Dimension unit;
 
@@ -639,12 +1009,37 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public String toString() {
 			return Integer.toString(this.value) + unit.toString().toLowerCase();
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + ((unit == null) ? 0 : unit.hashCode());
+			result = prime * result + value;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			DimensionResource other = (DimensionResource) obj;
+			if (unit != other.unit)
+				return false;
+			if (value != other.value)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Android resource containing complex map data.
 	 */
-	public class ComplexResource extends AbstractResource {
+	public static class ComplexResource extends AbstractResource {
 		private Map<String, AbstractResource> value;
 
 		public ComplexResource() {
@@ -658,20 +1053,73 @@ public class ARSCFileParser extends AbstractResourceParser {
 		public Map<String, AbstractResource> getValue() {
 			return this.value;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ComplexResource other = (ComplexResource) obj;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!value.equals(other.value))
+				return false;
+			return true;
+		}
 	}
 
-	protected class ResTable_Header {
+	protected static class ResTable_Header {
 		ResChunk_Header header = new ResChunk_Header();
 		/**
 		 * The number of ResTable_package structures
 		 */
 		int packageCount; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((header == null) ? 0 : header.hashCode());
+			result = prime * result + packageCount;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Header other = (ResTable_Header) obj;
+			if (header == null) {
+				if (other.header != null)
+					return false;
+			} else if (!header.equals(other.header))
+				return false;
+			if (packageCount != other.packageCount)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Header that appears at the front of every data chunk in a resource
 	 */
-	protected class ResChunk_Header {
+	protected static class ResChunk_Header {
 		/**
 		 * Type identifier of this chunk. The meaning of this value depends on the
 		 * containing class.
@@ -689,9 +1137,37 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * there is no data associated with the chunk.
 		 */
 		int size; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + headerSize;
+			result = prime * result + size;
+			result = prime * result + type;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResChunk_Header other = (ResChunk_Header) obj;
+			if (headerSize != other.headerSize)
+				return false;
+			if (size != other.size)
+				return false;
+			if (type != other.type)
+				return false;
+			return true;
+		}
 	}
 
-	protected class ResStringPool_Header {
+	protected static class ResStringPool_Header {
 		ResChunk_Header header;
 
 		/**
@@ -721,9 +1197,52 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Index from the header of the style data.
 		 */
 		int stylesStart; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (flagsSorted ? 1231 : 1237);
+			result = prime * result + (flagsUTF8 ? 1231 : 1237);
+			result = prime * result + ((header == null) ? 0 : header.hashCode());
+			result = prime * result + stringCount;
+			result = prime * result + stringsStart;
+			result = prime * result + styleCount;
+			result = prime * result + stylesStart;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResStringPool_Header other = (ResStringPool_Header) obj;
+			if (flagsSorted != other.flagsSorted)
+				return false;
+			if (flagsUTF8 != other.flagsUTF8)
+				return false;
+			if (header == null) {
+				if (other.header != null)
+					return false;
+			} else if (!header.equals(other.header))
+				return false;
+			if (stringCount != other.stringCount)
+				return false;
+			if (stringsStart != other.stringsStart)
+				return false;
+			if (styleCount != other.styleCount)
+				return false;
+			if (stylesStart != other.stylesStart)
+				return false;
+			return true;
+		}
 	}
 
-	protected class ResTable_Package {
+	protected static class ResTable_Package {
 		ResChunk_Header header;
 
 		/**
@@ -756,6 +1275,52 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Last index into keyStrings that is for public use by others.
 		 */
 		int lastPublicKey; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((header == null) ? 0 : header.hashCode());
+			result = prime * result + id;
+			result = prime * result + keyStrings;
+			result = prime * result + lastPublicKey;
+			result = prime * result + lastPublicType;
+			result = prime * result + ((name == null) ? 0 : name.hashCode());
+			result = prime * result + typeStrings;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Package other = (ResTable_Package) obj;
+			if (header == null) {
+				if (other.header != null)
+					return false;
+			} else if (!header.equals(other.header))
+				return false;
+			if (id != other.id)
+				return false;
+			if (keyStrings != other.keyStrings)
+				return false;
+			if (lastPublicKey != other.lastPublicKey)
+				return false;
+			if (lastPublicType != other.lastPublicType)
+				return false;
+			if (name == null) {
+				if (other.name != null)
+					return false;
+			} else if (!name.equals(other.name))
+				return false;
+			if (typeStrings != other.typeStrings)
+				return false;
+			return true;
+		}
 	}
 
 	/**
@@ -768,7 +1333,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * resources for that configuration. In addition, the high bit is set if that
 	 * resource has been made public.
 	 */
-	protected class ResTable_TypeSpec {
+	protected static class ResTable_TypeSpec {
 		ResChunk_Header header;
 
 		/**
@@ -788,6 +1353,43 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Number of uint32_t entry configuration masks that follow.
 		 */
 		int entryCount; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + entryCount;
+			result = prime * result + ((header == null) ? 0 : header.hashCode());
+			result = prime * result + id;
+			result = prime * result + res0;
+			result = prime * result + res1;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_TypeSpec other = (ResTable_TypeSpec) obj;
+			if (entryCount != other.entryCount)
+				return false;
+			if (header == null) {
+				if (other.header != null)
+					return false;
+			} else if (!header.equals(other.header))
+				return false;
+			if (id != other.id)
+				return false;
+			if (res0 != other.res0)
+				return false;
+			if (res1 != other.res1)
+				return false;
+			return true;
+		}
 	}
 
 	/**
@@ -803,7 +1405,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * It would be nice to have an additional ordered index of entries, so we can do
 	 * a binary search if trying to find a resource by string name.
 	 */
-	protected class ResTable_Type {
+	protected static class ResTable_Type {
 		ResChunk_Header header;
 
 		/**
@@ -832,12 +1434,58 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Configuration this collection of entries is designed for,
 		 */
 		ResTable_Config config = new ResTable_Config();
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((config == null) ? 0 : config.hashCode());
+			result = prime * result + entriesStart;
+			result = prime * result + entryCount;
+			result = prime * result + ((header == null) ? 0 : header.hashCode());
+			result = prime * result + id;
+			result = prime * result + res0;
+			result = prime * result + res1;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Type other = (ResTable_Type) obj;
+			if (config == null) {
+				if (other.config != null)
+					return false;
+			} else if (!config.equals(other.config))
+				return false;
+			if (entriesStart != other.entriesStart)
+				return false;
+			if (entryCount != other.entryCount)
+				return false;
+			if (header == null) {
+				if (other.header != null)
+					return false;
+			} else if (!header.equals(other.header))
+				return false;
+			if (id != other.id)
+				return false;
+			if (res0 != other.res0)
+				return false;
+			if (res1 != other.res1)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Describes a particular resource configuration.
 	 */
-	public class ResTable_Config {
+	public static class ResTable_Config {
 		/**
 		 * Number of bytes in this structure
 		 */
@@ -972,6 +1620,94 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return new String(localeVariant);
 		}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(country);
+			result = prime * result + density;
+			result = prime * result + inputFlags;
+			result = prime * result + inputPad0;
+			result = prime * result + keyboard;
+			result = prime * result + Arrays.hashCode(language);
+			result = prime * result + Arrays.hashCode(localeScript);
+			result = prime * result + Arrays.hashCode(localeVariant);
+			result = prime * result + minorVersion;
+			result = prime * result + mmc;
+			result = prime * result + mnc;
+			result = prime * result + navigation;
+			result = prime * result + orientation;
+			result = prime * result + screenHeight;
+			result = prime * result + screenHeightDp;
+			result = prime * result + screenLayout;
+			result = prime * result + screenWidth;
+			result = prime * result + screenWidthDp;
+			result = prime * result + sdkVersion;
+			result = prime * result + size;
+			result = prime * result + smallestScreenWidthDp;
+			result = prime * result + touchscreen;
+			result = prime * result + uiMode;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Config other = (ResTable_Config) obj;
+			if (!Arrays.equals(country, other.country))
+				return false;
+			if (density != other.density)
+				return false;
+			if (inputFlags != other.inputFlags)
+				return false;
+			if (inputPad0 != other.inputPad0)
+				return false;
+			if (keyboard != other.keyboard)
+				return false;
+			if (!Arrays.equals(language, other.language))
+				return false;
+			if (!Arrays.equals(localeScript, other.localeScript))
+				return false;
+			if (!Arrays.equals(localeVariant, other.localeVariant))
+				return false;
+			if (minorVersion != other.minorVersion)
+				return false;
+			if (mmc != other.mmc)
+				return false;
+			if (mnc != other.mnc)
+				return false;
+			if (navigation != other.navigation)
+				return false;
+			if (orientation != other.orientation)
+				return false;
+			if (screenHeight != other.screenHeight)
+				return false;
+			if (screenHeightDp != other.screenHeightDp)
+				return false;
+			if (screenLayout != other.screenLayout)
+				return false;
+			if (screenWidth != other.screenWidth)
+				return false;
+			if (screenWidthDp != other.screenWidthDp)
+				return false;
+			if (sdkVersion != other.sdkVersion)
+				return false;
+			if (size != other.size)
+				return false;
+			if (smallestScreenWidthDp != other.smallestScreenWidthDp)
+				return false;
+			if (touchscreen != other.touchscreen)
+				return false;
+			if (uiMode != other.uiMode)
+				return false;
+			return true;
+		}
+
 	}
 
 	/**
@@ -981,7 +1717,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * ResTable_Map structures, if FLAG_COMPLEX is set. These supply a set of
 	 * name/value mappings of data.
 	 */
-	protected class ResTable_Entry {
+	protected static class ResTable_Entry {
 		/**
 		 * Number of bytes in this structure
 		 */
@@ -992,13 +1728,44 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Reference into ResTable_Package::KeyStrings identifying this entry.
 		 */
 		int key;
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (flagsComplex ? 1231 : 1237);
+			result = prime * result + (flagsPublic ? 1231 : 1237);
+			result = prime * result + key;
+			result = prime * result + size;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Entry other = (ResTable_Entry) obj;
+			if (flagsComplex != other.flagsComplex)
+				return false;
+			if (flagsPublic != other.flagsPublic)
+				return false;
+			if (key != other.key)
+				return false;
+			if (size != other.size)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Extended form of a ResTable_Entry for map entries, defining a parent map
 	 * resource from which to inherit values.
 	 */
-	protected class ResTable_Map_Entry extends ResTable_Entry {
+	protected static class ResTable_Map_Entry extends ResTable_Entry {
 		/**
 		 * Resource identifier of the parent mapping, or 0 if there is none.
 		 */
@@ -1007,12 +1774,37 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Number of name/value pairs that follow for FLAG_COMPLEX.
 		 */
 		int count; // uint32
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + count;
+			result = prime * result + parent;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Map_Entry other = (ResTable_Map_Entry) obj;
+			if (count != other.count)
+				return false;
+			if (parent != other.parent)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Representation of a value in a resource, supplying type information.
 	 */
-	protected class Res_Value {
+	protected static class Res_Value {
 		/**
 		 * Number of bytes in this structure.
 		 */
@@ -1028,12 +1820,43 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * The data for this type, as interpreted according to dataType.
 		 */
 		int data; // uint16
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + data;
+			result = prime * result + dataType;
+			result = prime * result + res0;
+			result = prime * result + size;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Res_Value other = (Res_Value) obj;
+			if (data != other.data)
+				return false;
+			if (dataType != other.dataType)
+				return false;
+			if (res0 != other.res0)
+				return false;
+			if (size != other.size)
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * A single name/value mapping that is part of a complex resource entry.
 	 */
-	protected class ResTable_Map {
+	protected static class ResTable_Map {
 		/**
 		 * The resource identifier defining this mapping's name. For attribute
 		 * resources, 'name' can be one of the following special resource types to
@@ -1046,12 +1869,40 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * This mapping's value.
 		 */
 		Res_Value value = new Res_Value();
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + name;
+			result = prime * result + ((value == null) ? 0 : value.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResTable_Map other = (ResTable_Map) obj;
+			if (name != other.name)
+				return false;
+			if (value == null) {
+				if (other.value != null)
+					return false;
+			} else if (!value.equals(other.value))
+				return false;
+			return true;
+		}
 	}
 
 	/**
 	 * Class containing the data encoded in an Android resource ID
 	 */
-	public class ResourceId {
+	public static class ResourceId {
 		private int packageId;
 		private int typeId;
 		private int itemIndex;
@@ -1077,6 +1928,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		@Override
 		public String toString() {
 			return "Package " + this.packageId + ", type " + this.typeId + ", item " + this.itemIndex;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + itemIndex;
+			result = prime * result + packageId;
+			result = prime * result + typeId;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ResourceId other = (ResourceId) obj;
+			if (itemIndex != other.itemIndex)
+				return false;
+			if (packageId != other.packageId)
+				return false;
+			if (typeId != other.typeId)
+				return false;
+			return true;
 		}
 	}
 
@@ -1284,7 +2163,25 @@ public class ARSCFileParser extends AbstractResourceParser {
 								for (int j = 0; j < ((ResTable_Map_Entry) entry).count; j++) {
 									ResTable_Map map = new ResTable_Map();
 									entryOffset = readComplexValue(map, remainingData, entryOffset);
-									cmpRes.value.put(map.name + "", parseValue(map.value));
+
+									final String mapName = map.name + "";
+									AbstractResource value = parseValue(map.value);
+
+									// If we are dealing with an array, we put it into a special array container
+									if (resType.typeName != null && resType.typeName.equals("array")
+											&& value instanceof StringResource) {
+
+										AbstractResource existingResource = cmpRes.value.get(mapName);
+										if (existingResource == null) {
+											existingResource = new ArrayResource();
+											cmpRes.value.put(mapName, existingResource);
+										}
+
+										// We silently ignore inconsistencies at thze moment
+										if (existingResource instanceof ArrayResource)
+											((ArrayResource) existingResource).add(value);
+									} else
+										cmpRes.value.put(mapName, value);
 								}
 							} else {
 								Res_Value val = new Res_Value();
