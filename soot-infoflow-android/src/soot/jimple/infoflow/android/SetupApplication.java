@@ -1044,7 +1044,7 @@ public class SetupApplication {
 
 	/**
 	 * Gets the source/sink manager constructed for FlowDroid. Make sure to call
-	 * calculateSourcesSinksEntryPoints() first, or you will get a null result.
+	 * constructCallgraph() first, or you will get a null result.
 	 * 
 	 * @return FlowDroid's source/sink manager
 	 */
