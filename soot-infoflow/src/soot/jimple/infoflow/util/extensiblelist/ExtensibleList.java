@@ -166,6 +166,7 @@ public class ExtensibleList<T> {
 			actualList = new ArrayList<T>(4);
 		actualList.add(add);
 		size++;
+		savedHashCode = Integer.MIN_VALUE;
 
 		// printStats();
 		/*

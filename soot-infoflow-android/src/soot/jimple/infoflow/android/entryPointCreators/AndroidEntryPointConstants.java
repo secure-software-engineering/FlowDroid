@@ -92,7 +92,7 @@ public class AndroidEntryPointConstants {
 	public static final String APPLICATION_ONCREATE = "void onCreate()";
 	public static final String APPLICATION_ONTERMINATE = "void onTerminate()";
 
-	public static final String SERVICECONNECTION_ONSERVICECONNECTED = "void onServiceConnected(android.content.ComponentName, android.os.IBinder)";
+	public static final String SERVICECONNECTION_ONSERVICECONNECTED = "void onServiceConnected(android.content.ComponentName,android.os.IBinder)";
 	public static final String SERVICECONNECTION_ONSERVICEDISCONNECTED = "void onServiceDisconnected(android.content.ComponentName)";
 
 	public static final String ACTIVITYLIFECYCLECALLBACKSINTERFACE = "android.app.Application$ActivityLifecycleCallbacks";

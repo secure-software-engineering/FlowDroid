@@ -51,8 +51,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	private final static Logger logger = LoggerFactory.getLogger(XMLSourceSinkParser.class);
 
 	/**
-	 * Filter interface for excluding certain categories from the source/sink
-	 * set
+	 * Filter interface for excluding certain categories from the source/sink set
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -74,12 +73,11 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		 * @param category
 		 *            The category in which the source or sink is defined
 		 * @param sourceSinkType
-		 *            Specifies whether the category is used for sources or
-		 *            sinks
-		 * @return The acceptable use of the given category. This is a reduction
-		 *         from the given type. If the requested type, for example, is
-		 *         "Both", this method may return "Source", if the category
-		 *         shall only be used for sources, but not for sinks.
+		 *            Specifies whether the category is used for sources or sinks
+		 * @return The acceptable use of the given category. This is a reduction from
+		 *         the given type. If the requested type, for example, is "Both", this
+		 *         method may return "Source", if the category shall only be used for
+		 *         sources, but not for sinks.
 		 */
 		public SourceSinkType filter(CategoryDefinition category, SourceSinkType sourceSinkType);
 
@@ -115,14 +113,13 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		private Set<AccessPathTuple> returnAPs = new HashSet<>();
 
 		/**
-		 * Event Handler for the starting element for SAX. Possible start
-		 * elements for filling AndroidMethod objects with the new data format:
-		 * - method: Setting parsingvalues to false or null and get and set the
-		 * signature and category, - accessPath: To get the information whether
-		 * the AndroidMethod is a sink or source, - and the other elements
-		 * doesn't care for creating the AndroidMethod object. At these element
-		 * we will look, if calling the method getAccessPath (using an new SAX
-		 * Handler)
+		 * Event Handler for the starting element for SAX. Possible start elements for
+		 * filling AndroidMethod objects with the new data format: - method: Setting
+		 * parsingvalues to false or null and get and set the signature and category, -
+		 * accessPath: To get the information whether the AndroidMethod is a sink or
+		 * source, - and the other elements doesn't care for creating the AndroidMethod
+		 * object. At these element we will look, if calling the method getAccessPath
+		 * (using an new SAX Handler)
 		 */
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes)
@@ -246,18 +243,17 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		}
 
 		/**
-		 * PathElement is the only element having values inside -> nothing to do
-		 * here. Doesn't care at the current state of parsing.
+		 * PathElement is the only element having values inside -> nothing to do here.
+		 * Doesn't care at the current state of parsing.
 		 **/
 		@Override
 		public void characters(char[] ch, int start, int length) throws SAXException {
 		}
 
 		/**
-		 * EventHandler for the End of an element. -> Putting the values into
-		 * the objects. For additional information: startElement description.
-		 * Starting with the innerst elements and switching up to the outer
-		 * elements
+		 * EventHandler for the End of an element. -> Putting the values into the
+		 * objects. For additional information: startElement description. Starting with
+		 * the innerst elements and switching up to the outer elements
 		 * 
 		 * - pathElement -> means field sensitive, adding SootFields
 		 */
@@ -385,8 +381,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		 * Adds a new source or sink definition
 		 * 
 		 * @param signature
-		 *            The signature of the method or field that is considered a
-		 *            source or a sink
+		 *            The signature of the method or field that is considered a source
+		 *            or a sink
 		 * @param ssd
 		 *            The source or sink definition
 		 */
@@ -457,8 +453,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 	/**
 	 * gets the category for the given values. If this is the first time such a
-	 * category is requested, the respective definition is created. Otherwise,
-	 * the existing one is returned.
+	 * category is requested, the respective definition is created. Otherwise, the
+	 * existing one is returned.
 	 * 
 	 * @param systemCategory
 	 *            The system-defined category name
@@ -481,8 +477,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	}
 
 	/**
-	 * Creates a new instance of the {@link XMLSourceSinkParser} class and reads
-	 * the source and sink definitions from the given stream
+	 * Creates a new instance of the {@link XMLSourceSinkParser} class and reads the
+	 * source and sink definitions from the given stream
 	 * 
 	 * @param stream
 	 *            The stream from which to read the sources and sinks
@@ -508,7 +504,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		// Build the source and sink lists
 		for (SourceSinkDefinition def : sourcesAndSinks.values()) {
 			SourceSinkDefinition sourceDef = def.getSourceOnlyDefinition();
-			if (!sourceDef.isEmpty()) {
+			if (sourceDef != null && !sourceDef.isEmpty()) {
 				if (sourceDef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition methodSrc = (MethodSourceSinkDefinition) sourceDef;
 					if (methodSrc.getMethod() instanceof AndroidMethod) {
@@ -520,7 +516,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 			}
 
 			SourceSinkDefinition sinkDef = def.getSinkOnlyDefinition();
-			if (!sinkDef.isEmpty()) {
+			if (sinkDef != null && !sinkDef.isEmpty()) {
 				if (sourceDef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition methodSink = (MethodSourceSinkDefinition) sourceDef;
 					if (methodSink.getMethod() instanceof AndroidMethod) {
