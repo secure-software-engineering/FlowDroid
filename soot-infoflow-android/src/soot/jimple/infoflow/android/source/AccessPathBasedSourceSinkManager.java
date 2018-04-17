@@ -29,6 +29,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -118,8 +119,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				break;
 			case MethodCall:
 				// Check whether we need to taint the base object
-				if (sCallSite instanceof InvokeStmt
-						&& sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
+				if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
 						&& methodDef.getBaseObjects() != null) {
 					Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
 					for (AccessPathTuple apt : methodDef.getBaseObjects())
@@ -136,8 +136,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				}
 
 				// Check whether we need to taint parameters
-				if (sCallSite.containsInvokeExpr()
-						&& methodDef.getParameters() != null
+				if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
 						&& methodDef.getParameters().length > 0)
 					for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++)
 						if (methodDef.getParameters().length > i)
@@ -158,6 +157,11 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 					if (apt.getSourceSinkType().isSource())
 						aps.add(getAccessPathFromDef(assignStmt.getLeftOp(), apt, manager, false));
 			}
+		} else if (def instanceof StatementSourceSinkDefinition) {
+			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
+			for (AccessPathTuple apt : ssdef.getAccessPaths())
+				if (apt.getSourceSinkType().isSource())
+					aps.add(getAccessPathFromDef(ssdef.getLocal(), apt, manager, true));
 		}
 
 		// If we don't have any information, we cannot continue
@@ -275,6 +279,11 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
 						return new SinkInfo(def);
 			}
+		} else if (def instanceof StatementSourceSinkDefinition) {
+			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
+			for (AccessPathTuple apt : ssdef.getAccessPaths())
+				if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
+					return new SinkInfo(def);
 		}
 
 		// No matching access path found

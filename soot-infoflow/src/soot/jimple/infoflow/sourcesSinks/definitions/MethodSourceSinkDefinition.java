@@ -27,8 +27,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	private Set<AccessPathTuple> returnValues;
 
 	/**
-	 * Enumeration containing the different types of method invocations that can
-	 * be defined as sources or sinks
+	 * Enumeration containing the different types of method invocations that can be
+	 * defined as sources or sinks
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -38,24 +38,23 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 		 * The app calls the method
 		 */
 		MethodCall,
+
 		/**
-		 * The method is a callback that is invoked by the Android operating
-		 * system
+		 * The method is a callback that is invoked by the Android operating system
 		 */
 		Callback,
 
 		/**
-		 * All return values in the method are considered
-		 * (only supported as sink)
+		 * All return values in the method are considered (only supported as sink)
 		 */
 		Return
 	}
 
 	/**
-	 * Creates a new instance of the {@link SourceSinkDefinition} class without
-	 * a method. This constructor is intended to be used for sources that arise
-	 * from UI elements or other programming constructs that are not directly
-	 * associated with a single method being called.
+	 * Creates a new instance of the {@link SourceSinkDefinition} class without a
+	 * method. This constructor is intended to be used for sources that arise from
+	 * UI elements or other programming constructs that are not directly associated
+	 * with a single method being called.
 	 */
 	public MethodSourceSinkDefinition(Set<AccessPathTuple> baseObjects, Set<AccessPathTuple>[] parameters,
 			Set<AccessPathTuple> returnValues, CallType callType) {
@@ -83,8 +82,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	 * @param callType
 	 *            The type of calls to define as sources or sinks
 	 * @param returnValues
-	 *            The source definitions for the return value of the current
-	 *            method
+	 *            The source definitions for the return value of the current method
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
 			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType) {
@@ -105,8 +103,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the type of method invocations that are denoted by this source or
-	 * sink
+	 * Gets the type of method invocations that are denoted by this source or sink
 	 * 
 	 * @return The type of method invocations that are denoted by this source or
 	 *         sink
@@ -116,8 +113,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the source and sink definitions for the base object on which a
-	 * method of this class is invoked
+	 * Gets the source and sink definitions for the base object on which a method of
+	 * this class is invoked
 	 * 
 	 * @return The source and sink definitions for the base object
 	 */
@@ -126,8 +123,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the number of access paths defined as sources or sinks on base
-	 * objects
+	 * Gets the number of access paths defined as sources or sinks on base objects
 	 * 
 	 * @return The number of access paths defined as sources or sinks on base
 	 *         objects
@@ -148,8 +144,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Gets the number of access paths defined as sources or sinks on parameters
 	 * 
-	 * @return The number of access paths defined as sources or sinks on
-	 *         parameters
+	 * @return The number of access paths defined as sources or sinks on parameters
 	 */
 	public int getParameterCount() {
 		if (this.parameters == null || this.parameters.length == 0)
@@ -171,8 +166,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the number of access paths defined as sources or sinks on return
-	 * values
+	 * Gets the number of access paths defined as sources or sinks on return values
 	 * 
 	 * @return The number of access paths defined as sources or sinks on return
 	 *         values
@@ -191,8 +185,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					break;
 				}
 
-		return (baseObjects == null || baseObjects.isEmpty())
-				&& parametersEmpty
+		return (baseObjects == null || baseObjects.isEmpty()) && parametersEmpty
 				&& (returnValues == null || returnValues.isEmpty());
 	}
 
@@ -311,11 +304,11 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the shared source definition that is not associated with any method
-	 * and taints the base object
+	 * Gets the shared source definition that is not associated with any method and
+	 * taints the base object
 	 * 
-	 * @return The shared blank source definition that is not associated with
-	 *         any method and taints the base object
+	 * @return The shared blank source definition that is not associated with any
+	 *         method and taints the base object
 	 */
 	public static MethodSourceSinkDefinition getBaseObjectSource() {
 		if (BASE_OBJ_SOURCE == null)
@@ -325,8 +318,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the shared sink definition that is not associated with any method
-	 * and taints the base object
+	 * Gets the shared sink definition that is not associated with any method and
+	 * taints the base object
 	 * 
 	 * @return The shared blank sink definition that is not associated with any
 	 *         method and taints the base object
@@ -427,12 +420,12 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Checks whether this definition is equivalent to one of the simple
-	 * predefined ones. If so, it returns the shared predefined object.
-	 * Otherwise, it returns this object.
+	 * Checks whether this definition is equivalent to one of the simple predefined
+	 * ones. If so, it returns the shared predefined object. Otherwise, it returns
+	 * this object.
 	 * 
-	 * @return A shared object that is equal to this one if possible, otherwise
-	 *         this object
+	 * @return A shared object that is equal to this one if possible, otherwise this
+	 *         object
 	 */
 	public MethodSourceSinkDefinition simplify() {
 		MethodSourceSinkDefinition baseObjSource = getBaseObjectSource();

@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +61,11 @@ public class AccessPathTuple {
 	public static AccessPathTuple fromPathElements(List<String> fields, List<String> fieldTypes,
 			SourceSinkType sourceSinkType) {
 		return fromPathElements(null, fields, fieldTypes, sourceSinkType);
+	}
+
+	public static AccessPathTuple fromPathElements(String field, String fieldType, SourceSinkType sourceSinkType) {
+		return fromPathElements(null, Collections.singletonList(field), Collections.singletonList(fieldType),
+				sourceSinkType);
 	}
 
 	public static AccessPathTuple fromPathElements(String baseType, List<String> fields, List<String> fieldTypes,
