@@ -93,4 +93,46 @@ public class StatementSourceSinkDefinition extends SourceSinkDefinition {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Local %s at %s", local, stmt);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
+		result = prime * result + ((local == null) ? 0 : local.hashCode());
+		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StatementSourceSinkDefinition other = (StatementSourceSinkDefinition) obj;
+		if (accessPaths == null) {
+			if (other.accessPaths != null)
+				return false;
+		} else if (!accessPaths.equals(other.accessPaths))
+			return false;
+		if (local == null) {
+			if (other.local != null)
+				return false;
+		} else if (!local.equals(other.local))
+			return false;
+		if (stmt == null) {
+			if (other.stmt != null)
+				return false;
+		} else if (!stmt.equals(other.stmt))
+			return false;
+		return true;
+	}
+
 }

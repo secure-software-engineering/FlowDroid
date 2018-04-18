@@ -57,6 +57,20 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	 * @throws IOException
 	 */
 	public XMLSummaryProvider(String folderInJar) throws URISyntaxException, IOException {
+		this(folderInJar, XMLSummaryProvider.class);
+	}
+
+	/**
+	 * Loads a summary from a folder within the StubDroid jar file.
+	 * 
+	 * @param folderInJar
+	 *            The folder in the JAR file from which to load the summary files
+	 * @param parentClass
+	 *            The class in whose jar to look for the summary files
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public XMLSummaryProvider(String folderInJar, Class<?> parentClass) throws URISyntaxException, IOException {
 		File f = new File(folderInJar);
 		if (f.exists()) {
 			load(f);
@@ -65,11 +79,10 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 		URI uri = null;
 		String jarRelativePath = folderInJar.startsWith("/") ? folderInJar : "/" + folderInJar;
-		URL resourceURL = XMLSummaryProvider.class.getResource(jarRelativePath);
+		URL resourceURL = parentClass.getResource(jarRelativePath);
 		if (resourceURL == null) {
 			logger.warn(String.format("Could not find folder %s in JAR, trying normal folder on disk...", folderInJar));
-			String classLocation = XMLSummaryProvider.class.getProtectionDomain().getCodeSource().getLocation()
-					.getPath();
+			String classLocation = parentClass.getProtectionDomain().getCodeSource().getLocation().getPath();
 			File classFile = new File(new URI("file:///" + classLocation));
 			if (classFile.getCanonicalPath().endsWith("build" + File.separator + "classes"))
 				classFile = classFile.getParentFile().getParentFile();
@@ -314,7 +327,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	public boolean mayHaveSummaryForMethod(String subsig) {
 		if (loadableClasses == null || loadableClasses.isEmpty())
 
-			//we don't know, there are unloaded classes...
+			// we don't know, there are unloaded classes...
 			return true;
 		return subsigMethodsWithSummaries.contains(subsig);
 	}

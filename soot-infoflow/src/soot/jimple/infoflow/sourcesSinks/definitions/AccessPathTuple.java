@@ -64,7 +64,12 @@ public class AccessPathTuple {
 	}
 
 	public static AccessPathTuple fromPathElements(String field, String fieldType, SourceSinkType sourceSinkType) {
-		return fromPathElements(null, Collections.singletonList(field), Collections.singletonList(fieldType),
+		return fromPathElements(null, field, fieldType, sourceSinkType);
+	}
+
+	public static AccessPathTuple fromPathElements(String baseType, String field, String fieldType,
+			SourceSinkType sourceSinkType) {
+		return fromPathElements(baseType, Collections.singletonList(field), Collections.singletonList(fieldType),
 				sourceSinkType);
 	}
 

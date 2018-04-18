@@ -15,6 +15,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,8 +51,8 @@ public class InfoflowResults {
 	private int terminationState = TERMINATION_SUCCESS;
 
 	/**
-	 * Gets the exceptions that have happened during the data flow analysis.
-	 * This collection is immutable.
+	 * Gets the exceptions that have happened during the data flow analysis. This
+	 * collection is immutable.
 	 * 
 	 * @return
 	 */
@@ -91,8 +92,8 @@ public class InfoflowResults {
 
 	/**
 	 * Gets the total number of source-to-sink connections. If there are two
-	 * connections along different paths between the same source and sink,
-	 * size() will return 1, but numConnections() will return 2.
+	 * connections along different paths between the same source and sink, size()
+	 * will return 1, but numConnections() will return 2.
 	 * 
 	 * @return The number of source-to-sink connections in this result object
 	 */
@@ -105,8 +106,7 @@ public class InfoflowResults {
 	}
 
 	/**
-	 * Gets whether this result object is empty, i.e. contains no information
-	 * flows
+	 * Gets whether this result object is empty, i.e. contains no information flows
 	 * 
 	 * @return True if this result object is empty, otherwise false.
 	 */
@@ -115,8 +115,8 @@ public class InfoflowResults {
 	}
 
 	/**
-	 * Checks whether this result object contains a sink that exactly matches
-	 * the given value.
+	 * Checks whether this result object contains a sink that exactly matches the
+	 * given value.
 	 * 
 	 * @param sink
 	 *            The sink to check for
@@ -224,12 +224,30 @@ public class InfoflowResults {
 	}
 
 	/**
-	 * Gets all results in this object as a hash map.
+	 * Gets all results in this object as a hash map from sinks to sets of sources.
 	 * 
 	 * @return All results in this object as a hash map.
 	 */
 	public MultiMap<ResultSinkInfo, ResultSourceInfo> getResults() {
 		return this.results;
+	}
+
+	/**
+	 * Gets the data flow results in a flat set
+	 * 
+	 * @return The data flow results in a flat set. If no data flows are available,
+	 *         the return value is null.
+	 */
+	public Set<DataFlowResult> getResultSet() {
+		if (results == null || results.isEmpty())
+			return null;
+
+		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
+		for (ResultSinkInfo sink : results.keySet()) {
+			for (ResultSourceInfo source : results.get(sink))
+				set.add(new DataFlowResult(source, sink));
+		}
+		return set;
 	}
 
 	/**
@@ -317,8 +335,8 @@ public class InfoflowResults {
 	 * 
 	 * @param sinkSignature
 	 *            The sink's method signature to look for
-	 * @return The key of the entry with the given method signature if such an
-	 *         entry has been found, otherwise null.
+	 * @return The key of the entry with the given method signature if such an entry
+	 *         has been found, otherwise null.
 	 */
 	private List<ResultSinkInfo> findSinkByMethodSignature(String sinkSignature) {
 		if (this.results == null)
@@ -382,8 +400,8 @@ public class InfoflowResults {
 
 	/**
 	 * Gets the termination state that describes whether the data flow analysis
-	 * terminated normally or whether one or more phases terminated prematurely
-	 * due to a timeout or an out-of-memory condition
+	 * terminated normally or whether one or more phases terminated prematurely due
+	 * to a timeout or an out-of-memory condition
 	 * 
 	 * @return The termination state
 	 */
@@ -393,8 +411,8 @@ public class InfoflowResults {
 
 	/**
 	 * Sets the termination state that describes whether the data flow analysis
-	 * terminated normally or whether one or more phases terminated prematurely
-	 * due to a timeout or an out-of-memory condition
+	 * terminated normally or whether one or more phases terminated prematurely due
+	 * to a timeout or an out-of-memory condition
 	 * 
 	 * @param terminationState
 	 *            The termination state
@@ -406,8 +424,7 @@ public class InfoflowResults {
 	/**
 	 * Gets whether the analysis was aborted due to a timeout
 	 * 
-	 * @return True if the analysis was aborted due to a timeout, otherwise
-	 *         false
+	 * @return True if the analysis was aborted due to a timeout, otherwise false
 	 */
 	public boolean wasAbortedTimeout() {
 		return ((terminationState & TERMINATION_DATA_FLOW_TIMEOUT) == TERMINATION_DATA_FLOW_TIMEOUT)

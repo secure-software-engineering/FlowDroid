@@ -1847,4 +1847,13 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		this.fallbackWrapper = fallbackWrapper;
 	}
 
+	/**
+	 * Gets the provider from which this taint wrapper loads it flows
+	 * 
+	 * @return The provider from which this taint wrapper loads it flows
+	 */
+	public IMethodSummaryProvider getProvider() {
+		return this.flows;
+	}
+
 }

@@ -24,6 +24,20 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 	}
 
 	/**
+	 * Loads a summary from a folder within the StubDroid jar file.
+	 * 
+	 * @param folderInJar
+	 *            The folder in the JAR file from which to load the summary files
+	 * @param parentClass
+	 *            The class in whose jar to look for the summary files
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public LazySummaryProvider(String folderInJar, Class<?> parentClass) throws URISyntaxException, IOException {
+		super(folderInJar, parentClass);
+	}
+
+	/**
 	 * Loads a file or all files in a dir (not recursively)
 	 * 
 	 * @param source
