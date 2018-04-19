@@ -14,14 +14,12 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 public abstract class AbstractTaintPropagationRule implements ITaintPropagationRule {
 
 	protected final InfoflowManager manager;
-	protected final Aliasing aliasing;
 	protected final Abstraction zeroValue;
 	protected final TaintPropagationResults results;
 
-	public AbstractTaintPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
+	public AbstractTaintPropagationRule(InfoflowManager manager, Abstraction zeroValue,
 			TaintPropagationResults results) {
 		this.manager = manager;
-		this.aliasing = aliasing;
 		this.zeroValue = zeroValue;
 		this.results = results;
 	}
@@ -31,7 +29,7 @@ public abstract class AbstractTaintPropagationRule implements ITaintPropagationR
 	}
 
 	protected Aliasing getAliasing() {
-		return this.aliasing;
+		return this.manager.getAliasing();
 	}
 
 	protected Abstraction getZeroValue() {

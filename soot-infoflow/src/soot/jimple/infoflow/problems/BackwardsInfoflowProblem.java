@@ -413,7 +413,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 							// Notify the handler if we have one
 							if (taintPropagationHandler != null)
-								taintPropagationHandler.notifyFlowIn(src, source, interproceduralCFG(),
+								taintPropagationHandler.notifyFlowIn(src, source, manager,
 										FlowFunctionType.NormalFlowFunction);
 
 							Set<Abstraction> res = computeAliases(defStmt, leftValue, d1, source);
@@ -471,7 +471,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(stmt, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									FlowFunctionType.CallFlowFunction);
 
 						// if we do not have to look into sources or sinks:
@@ -661,7 +661,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(stmt, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									FlowFunctionType.ReturnFlowFunction);
 
 						// easy: static
@@ -806,7 +806,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(call, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(call, source, manager,
 									FlowFunctionType.CallToReturnFlowFunction);
 
 						// Compute wrapper aliases

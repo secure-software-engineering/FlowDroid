@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import soot.Unit;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 
 /**
  * Taint propagation handler that processes a sequence of inner handlers. For
@@ -58,17 +58,17 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	}
 
 	@Override
-	public void notifyFlowIn(Unit stmt, Abstraction taint, IInfoflowCFG cfg, FlowFunctionType type) {
+	public void notifyFlowIn(Unit stmt, Abstraction taint, InfoflowManager manager, FlowFunctionType type) {
 		for (TaintPropagationHandler handler : innerHandlers)
-			handler.notifyFlowIn(stmt, taint, cfg, type);
+			handler.notifyFlowIn(stmt, taint, manager, type);
 	}
 
 	@Override
 	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			IInfoflowCFG cfg, FlowFunctionType type) {
+			InfoflowManager manager, FlowFunctionType type) {
 		Set<Abstraction> resultSet = new HashSet<>();
 		for (TaintPropagationHandler handler : innerHandlers) {
-			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, cfg, type);
+			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type);
 			if (handlerResults != null && !handlerResults.isEmpty())
 				resultSet.addAll(handlerResults);
 		}

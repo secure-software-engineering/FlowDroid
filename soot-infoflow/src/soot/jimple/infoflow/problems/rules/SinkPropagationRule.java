@@ -13,7 +13,6 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -30,9 +29,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 	private boolean killState = false;
 
-	public SinkPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public SinkPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	@Override
@@ -59,8 +57,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	/**
-	 * Checks whether the given taint abstraction at the given satement triggers
-	 * a sink. If so, a new result is recorded
+	 * Checks whether the given taint abstraction at the given satement triggers a
+	 * sink. If so, a new result is recorded
 	 * 
 	 * @param d1
 	 *            The context abstraction

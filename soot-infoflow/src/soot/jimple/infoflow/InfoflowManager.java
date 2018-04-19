@@ -1,6 +1,7 @@
 package soot.jimple.infoflow;
 
 import soot.FastHierarchy;
+import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -26,6 +27,7 @@ public class InfoflowManager {
 	private final TypeUtils typeUtils;
 	private final FastHierarchy hierarchy;
 	private final AccessPathFactory accessPathFactory;
+	private Aliasing aliasing;
 
 	InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
 			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
@@ -141,6 +143,15 @@ public class InfoflowManager {
 	 */
 	public void cleanup() {
 		forwardSolver = null;
+		aliasing = null;
+	}
+
+	public void setAliasing(Aliasing aliasing) {
+		this.aliasing = aliasing;
+	}
+
+	public Aliasing getAliasing() {
+		return aliasing;
 	}
 
 }

@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: java.lang.String provider]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(android.location.Location)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float bearingTo(android.location.Location)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float bearing]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.location.Location: float bearing]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String convert(double,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void distanceBetween(double,double,double,double,float[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="4" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float distanceTo(android.location.Location)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.location.Location: double longitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.location.Location: double latitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getAccuracy()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float accuracy]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double getAltitude()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: double altitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getBearing()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float bearing]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getBearingAccuracyDegrees()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float bearingAccuracy]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Bundle getExtras()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Location: java.lang.String[] extraKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[android.location.Location: java.lang.String[] keys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Location: java.lang.Object[] extraValues]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[android.location.Location: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double getLatitude()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: double latitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double getLongitude()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: double longitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getProvider()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: java.lang.String provider]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getSpeed()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float speed]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getSpeedAccuracyMetersPerSecond()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float speedAccuracy]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float getVerticalAccuracyMeters()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: float verticalAccuracy]"
+						AccessPathTypes="[float]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void removeAccuracy()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float accuracy]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float verticalAccuracy]" />
+			</clears>
+		</method>
+		<method id="void removeAltitude()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: double altitude]" />
+			</clears>
+		</method>
+		<method id="void removeBearing()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float bearing]" />
+			</clears>
+		</method>
+		<method id="void removeSpeed()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float speed]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float speedAccuracy]" />
+			</clears>
+		</method>
+		<method id="void reset()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float accuracy]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float verticalAccuracy]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: double altitude]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float bearing]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float speed]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: float speedAccuracy]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: double longitude]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[android.location.Location: double latitude]" />
+			</clears>
+		</method>
+		<method id="void set(android.location.Location)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setAccuracy(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float accuracy]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setAltitude(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: double altitude]"
+						AccessPathTypes="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setBearing(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float bearing]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setBearingAccuracyDegrees(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float bearingAccuracy]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setExtras(android.os.Bundle)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.location.Location: java.lang.String[] keys]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Location: java.lang.String[] extraKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.location.Location: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Location: java.lang.Object[] extraValues]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setLatitude(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: double latitude]"
+						AccessPathTypes="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setLongitude(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: double longitude]"
+						AccessPathTypes="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setProvider(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: java.lang.String provider]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setSpeed(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float speed]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setSpeedAccuracyMetersPerSecond(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float speedAccuracy]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setVerticalAccuracyMeters(float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.location.Location"
+						AccessPath="[android.location.Location: float verticalAccuracy]"
+						AccessPathTypes="[float]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: double longitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.location.Location: double latitude]"
+						AccessPathTypes="[double]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

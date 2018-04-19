@@ -343,9 +343,10 @@ public class Infoflow extends AbstractInfoflow {
 				Aliasing aliasing = new Aliasing(aliasingStrategy, manager);
 				if (dummyMainMethod != null)
 					aliasing.excludeMethodFromMustAlias(dummyMainMethod);
+				manager.setAliasing(aliasing);
 
 				// Initialize the data flow problem
-				InfoflowProblem forwardProblem = new InfoflowProblem(manager, aliasingStrategy, aliasing, zeroValue);
+				InfoflowProblem forwardProblem = new InfoflowProblem(manager, zeroValue);
 
 				// We need to create the right data flow solver
 				IInfoflowSolver forwardSolver = createForwardSolver(executor, forwardProblem);

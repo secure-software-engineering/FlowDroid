@@ -8,7 +8,6 @@ import soot.SootMethod;
 import soot.ValueBox;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -24,9 +23,8 @@ import soot.jimple.infoflow.util.TypeUtils;
  */
 public class SourcePropagationRule extends AbstractTaintPropagationRule {
 
-	public SourcePropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public SourcePropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	private Collection<Abstraction> propagate(Abstraction d1, Abstraction source, Stmt stmt,

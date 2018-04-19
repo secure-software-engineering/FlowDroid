@@ -197,11 +197,11 @@ public class Aliasing {
 	 *            The access path
 	 * @param val
 	 *            The value
-	 * @return The access path that actually matched if the given value and
-	 *         access path alias. In the simplest case, this is the given access
-	 *         path. When using recursive access paths, it can however also be a
-	 *         base expansion. If the given access path and value do not alias,
-	 *         null is returned.
+	 * @return The access path that actually matched if the given value and access
+	 *         path alias. In the simplest case, this is the given access path. When
+	 *         using recursive access paths, it can however also be a base
+	 *         expansion. If the given access path and value do not alias, null is
+	 *         returned.
 	 */
 	public AccessPath mayAlias(AccessPath ap, Value val) {
 		// What cannot be represented in an access path cannot alias
@@ -255,8 +255,8 @@ public class Aliasing {
 	 *            The first field
 	 * @param field2
 	 *            The second field
-	 * @return True if the two fields must always point to the same runtime
-	 *         object, otherwise false
+	 * @return True if the two fields must always point to the same runtime object,
+	 *         otherwise false
 	 */
 	public boolean mustAlias(SootField field1, SootField field2) {
 		return field1 == field2;
@@ -271,8 +271,8 @@ public class Aliasing {
 	 *            The second value
 	 * @param position
 	 *            The statement at which to check for an aliasing relationship
-	 * @return True if the two values must always point to the same runtime
-	 *         object, otherwise false
+	 * @return True if the two values must always point to the same runtime object,
+	 *         otherwise false
 	 */
 	public boolean mustAlias(Local val1, Local val2, Stmt position) {
 		if (val1 == val2)
@@ -296,16 +296,16 @@ public class Aliasing {
 	}
 
 	/**
-	 * Checks whether the given newly created taint can have an alias at the
-	 * given statement. Assume a statement a.x = source(). This will check
-	 * whether tainting a.<?> can induce new aliases or not.
+	 * Checks whether the given newly created taint can have an alias at the given
+	 * statement. Assume a statement a.x = source(). This will check whether
+	 * tainting a.<?> can induce new aliases or not.
 	 * 
 	 * @param val
 	 *            The value which gets tainted
 	 * @param source
 	 *            The source from which the taints comes from
-	 * @return True if the analysis must look for aliases for the newly
-	 *         constructed taint, otherwise false
+	 * @return True if the analysis must look for aliases for the newly constructed
+	 *         taint, otherwise false
 	 */
 	public static boolean canHaveAliases(Stmt stmt, Value val, Abstraction source) {
 		if (stmt instanceof DefinitionStmt) {
@@ -365,8 +365,8 @@ public class Aliasing {
 	 *            The value to check
 	 * @param source
 	 *            The taint abstraction to check
-	 * @return True if the given value has the same base value as the given
-	 *         taint abstraction, otherwise false
+	 * @return True if the given value has the same base value as the given taint
+	 *         abstraction, otherwise false
 	 */
 	public static boolean baseMatches(final Value baseValue, Abstraction source) {
 		if (baseValue instanceof Local) {
@@ -394,8 +394,8 @@ public class Aliasing {
 	 *            The value to check
 	 * @param source
 	 *            The taint abstraction to check
-	 * @return True if the given value has the same base value as the given
-	 *         taint abstraction and no further elements, otherwise false
+	 * @return True if the given value has the same base value as the given taint
+	 *         abstraction and no further elements, otherwise false
 	 */
 	public static boolean baseMatchesStrict(final Value baseValue, Abstraction source) {
 		if (!baseMatches(baseValue, source))

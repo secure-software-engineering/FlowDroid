@@ -5,16 +5,15 @@ import java.util.Collection;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 public class StopAfterFirstKFlowsPropagationRule extends AbstractTaintPropagationRule {
 
-	public StopAfterFirstKFlowsPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
+	public StopAfterFirstKFlowsPropagationRule(InfoflowManager manager, Abstraction zeroValue,
 			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+		super(manager, zeroValue, results);
 	}
 
 	/**
