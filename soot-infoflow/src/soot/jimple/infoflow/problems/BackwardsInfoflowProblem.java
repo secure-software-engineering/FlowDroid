@@ -654,8 +654,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
 
 						// If we have no caller, we have nowhere to propagate.
-						// This
-						// can happen when leaving the main method.
+						// This can happen when leaving the main method.
 						if (callSite == null)
 							return null;
 

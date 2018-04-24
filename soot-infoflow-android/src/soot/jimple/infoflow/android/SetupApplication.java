@@ -140,6 +140,7 @@ public class SetupApplication {
 	protected Set<PreAnalysisHandler> preprocessors = new HashSet<>();
 	protected Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
 	protected TaintPropagationHandler taintPropagationHandler = null;
+	protected TaintPropagationHandler backwardsPropagationHandler = null;
 
 	protected InPlaceInfoflow infoflow = null;
 
@@ -1502,6 +1503,7 @@ public class SetupApplication {
 		info.setSootConfig(sootConfig);
 		info.setTaintWrapper(taintWrapper);
 		info.setTaintPropagationHandler(taintPropagationHandler);
+		info.setBackwardsPropagationHandler(backwardsPropagationHandler);
 
 		// We use a specialized memory manager that knows about Android
 		info.setMemoryManagerFactory(new IMemoryManagerFactory() {
@@ -1735,6 +1737,18 @@ public class SetupApplication {
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler taintPropagationHandler) {
 		this.taintPropagationHandler = taintPropagationHandler;
+	}
+
+	/**
+	 * Sets the backwards propagation handler, which will be notified when the alias
+	 * analysis processes an edge. Use this callback if you need a hook into the
+	 * low-level alias analysis.
+	 * 
+	 * @param backwardsPropagationHandler
+	 *            The propagation handler to register
+	 */
+	public void setBackwardsPropagationHandler(TaintPropagationHandler backwardsPropagationHandler) {
+		this.backwardsPropagationHandler = backwardsPropagationHandler;
 	}
 
 	/**

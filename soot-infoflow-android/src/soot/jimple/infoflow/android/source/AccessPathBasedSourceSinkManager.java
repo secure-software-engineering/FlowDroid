@@ -4,12 +4,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import soot.PrimType;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.Type;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
@@ -23,7 +17,6 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition;
 import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
@@ -33,7 +26,6 @@ import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefiniti
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * SourceSinkManager for Android applications. This class uses precise access
@@ -113,7 +105,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 						ParameterRef paramRef = (ParameterRef) is.getRightOp();
 						if (methodDef.getParameters() != null && methodDef.getParameters().length > paramRef.getIndex())
 							for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()])
-								aps.add(getAccessPathFromDef(is.getLeftOp(), apt, manager, false));
+								aps.add(apt.toAccessPath(is.getLeftOp(), manager, false));
 					}
 				}
 				break;
@@ -124,7 +116,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 					Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
 					for (AccessPathTuple apt : methodDef.getBaseObjects())
 						if (apt.getSourceSinkType().isSource())
-							aps.add(getAccessPathFromDef(baseVal, apt, manager, true));
+							aps.add(apt.toAccessPath(baseVal, manager, true));
 				}
 
 				// Check whether we need to taint the return object
@@ -132,7 +124,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 					Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
 					for (AccessPathTuple apt : methodDef.getReturnValues())
 						if (apt.getSourceSinkType().isSource())
-							aps.add(getAccessPathFromDef(returnVal, apt, manager, false));
+							aps.add(apt.toAccessPath(returnVal, manager, false));
 				}
 
 				// Check whether we need to taint parameters
@@ -142,8 +134,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 						if (methodDef.getParameters().length > i)
 							for (AccessPathTuple apt : methodDef.getParameters()[i])
 								if (apt.getSourceSinkType().isSource())
-									aps.add(getAccessPathFromDef(sCallSite.getInvokeExpr().getArg(i), apt, manager,
-											true));
+									aps.add(apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true));
 				break;
 			default:
 				return null;
@@ -155,13 +146,13 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				AssignStmt assignStmt = (AssignStmt) sCallSite;
 				for (AccessPathTuple apt : fieldDef.getAccessPaths())
 					if (apt.getSourceSinkType().isSource())
-						aps.add(getAccessPathFromDef(assignStmt.getLeftOp(), apt, manager, false));
+						aps.add(apt.toAccessPath(assignStmt.getLeftOp(), manager, false));
 			}
 		} else if (def instanceof StatementSourceSinkDefinition) {
 			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
 			for (AccessPathTuple apt : ssdef.getAccessPaths())
 				if (apt.getSourceSinkType().isSource())
-					aps.add(getAccessPathFromDef(ssdef.getLocal(), apt, manager, true));
+					aps.add(apt.toAccessPath(ssdef.getLocal(), manager, true));
 		}
 
 		// If we don't have any information, we cannot continue
@@ -169,60 +160,6 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			return null;
 
 		return new SourceInfo(def, aps);
-	}
-
-	/**
-	 * Creates an access path from an access path definition object
-	 * 
-	 * @param baseVal
-	 *            The base for the new access path
-	 * @param apt
-	 *            The definition from which to create the new access path
-	 * @param manager
-	 *            The manager to be used for creating new access paths
-	 * @param canHaveImmutableAliases
-	 *            Specifies if the newly tainted value can have aliases that are not
-	 *            overwritten by the current operation, i.e., whether there must be
-	 *            an alias analysis from the source statement backwards through the
-	 *            code
-	 * @return The newly created access path
-	 */
-	private AccessPath getAccessPathFromDef(Value baseVal, AccessPathTuple apt, InfoflowManager manager,
-			boolean canHaveImmutableAliases) {
-		if (baseVal.getType() instanceof PrimType || apt.getFields() == null || apt.getFields().length == 0)
-			// no immutable aliases, we overwrite the return values as a whole
-			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
-					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
-
-		// Do we have a base type?
-		String sBaseType = apt.getBaseType();
-		RefType baseType = sBaseType == null || sBaseType.isEmpty() ? null : RefType.v(sBaseType);
-		SootClass baseClass = baseType == null ? ((RefType) baseVal.getType()).getSootClass() : baseType.getSootClass();
-
-		SootField[] fields = new SootField[apt.getFields().length];
-		for (int i = 0; i < fields.length; i++) {
-			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(apt.getFieldTypes()[i - 1]);
-			Type fieldType = TypeUtils.getTypeFromString(apt.getFieldTypes()[i]);
-			String fieldName = apt.getFields()[i];
-			SootField fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
-			if (fld == null) {
-				synchronized (lastFieldClass) {
-					fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
-					if (fld == null) {
-						// Create the phantom field
-						SootField f = Scene.v().makeSootField(fieldName, fieldType, 0);
-						f.setPhantom(true);
-						lastFieldClass.addField(f);
-					}
-				}
-			}
-			if (fld == null)
-				return null;
-			fields[i] = fld;
-		}
-
-		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, baseType, null, true, false, true,
-				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 	}
 
 	@Override

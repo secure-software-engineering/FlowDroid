@@ -4,6 +4,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import soot.PrimType;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.Type;
+import soot.Value;
+import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.util.TypeUtils;
+
 /**
  * Helper to save an AccessPath with the information about sink and sources.
  * 
@@ -204,6 +216,56 @@ public class AccessPathTuple {
 			return blankSink;
 		else
 			return this;
+	}
+
+	/**
+	 * Creates an access path from an access path definition object
+	 * 
+	 * @param baseVal
+	 *            The base for the new access path
+	 * @param manager
+	 *            The manager to be used for creating new access paths
+	 * @param canHaveImmutableAliases
+	 *            Specifies if the newly tainted value can have aliases that are not
+	 *            overwritten by the current operation, i.e., whether there must be
+	 *            an alias analysis from the source statement backwards through the
+	 *            code
+	 * @return The newly created access path
+	 */
+	public AccessPath toAccessPath(Value baseVal, InfoflowManager manager, boolean canHaveImmutableAliases) {
+		if (baseVal.getType() instanceof PrimType || fields == null || fields.length == 0)
+			// no immutable aliases, we overwrite the return values as a whole
+			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
+					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
+
+		// Do we have a base type?
+		RefType baseType = this.baseType == null || this.baseType.isEmpty() ? null : RefType.v(this.baseType);
+		SootClass baseClass = baseType == null ? ((RefType) baseVal.getType()).getSootClass() : baseType.getSootClass();
+
+		SootField[] fields = new SootField[this.fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			final String fieldName = this.fields[i];
+			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(fieldTypes[i - 1]);
+			Type fieldType = TypeUtils.getTypeFromString(fieldTypes[i]);
+			SootField fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
+			if (fld == null) {
+				synchronized (lastFieldClass) {
+					fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
+					if (fld == null) {
+						// Create the phantom field
+						SootField f = Scene.v().makeSootField(fieldName, fieldType, 0);
+						f.setPhantom(true);
+						fld = lastFieldClass.getOrAddField(f);
+					}
+				}
+			}
+			if (fld == null)
+				return null;
+			fields[i] = fld;
+		}
+
+		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, baseType, null, true, false, true,
+				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 	}
 
 }

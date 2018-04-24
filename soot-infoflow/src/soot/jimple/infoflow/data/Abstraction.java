@@ -35,45 +35,45 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  */
 public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction, Unit> {
 
-	private static boolean flowSensitiveAliasing = true;
+	protected static boolean flowSensitiveAliasing = true;
 
 	/**
 	 * the access path contains the currently tainted variable or field
 	 */
-	private AccessPath accessPath;
+	protected AccessPath accessPath;
 
-	private Abstraction predecessor = null;
-	private Set<Abstraction> neighbors = null;
-	private Stmt currentStmt = null;
-	private Stmt correspondingCallSite = null;
+	protected Abstraction predecessor = null;
+	protected Set<Abstraction> neighbors = null;
+	protected Stmt currentStmt = null;
+	protected Stmt correspondingCallSite = null;
 
-	private SourceContext sourceContext = null;
+	protected SourceContext sourceContext = null;
 
 	/**
 	 * Unit/Stmt which activates the taint when the abstraction passes it
 	 */
-	private Unit activationUnit = null;
+	protected Unit activationUnit = null;
 	/**
 	 * taint is thrown by an exception (is set to false when it reaches the
 	 * catch-Stmt)
 	 */
-	private boolean exceptionThrown = false;
-	private int hashCode = 0;
+	protected boolean exceptionThrown = false;
+	protected int hashCode = 0;
 
 	/**
 	 * The postdominators we need to pass in order to leave the current conditional
 	 * branch. Do not use the synchronized Stack class here to avoid deadlocks.
 	 */
-	private List<UnitContainer> postdominators = null;
-	private boolean isImplicit = false;
+	protected List<UnitContainer> postdominators = null;
+	protected boolean isImplicit = false;
 
 	/**
 	 * Only valid for inactive abstractions. Specifies whether an access paths has
 	 * been cut during alias analysis.
 	 */
-	private boolean dependsOnCutAP = false;
+	protected boolean dependsOnCutAP = false;
 
-	private AtomicBitSet pathFlags = null;
+	protected AtomicBitSet pathFlags = null;
 
 	public static class NeighborHashingStrategy implements HashingStrategy<Abstraction> {
 

@@ -24,7 +24,7 @@ public class PropagationRuleManager {
 	protected final InfoflowManager manager;
 	protected final Abstraction zeroValue;
 	protected final TaintPropagationResults results;
-	private final ITaintPropagationRule[] rules;
+	protected final ITaintPropagationRule[] rules;
 
 	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		this.manager = manager;
@@ -244,6 +244,15 @@ public class PropagationRuleManager {
 			}
 		}
 		return res;
+	}
+
+	/**
+	 * Gets the array of rules registered in this manager object
+	 * 
+	 * @return The array of rules registered in this manager object
+	 */
+	public ITaintPropagationRule[] getRules() {
+		return rules;
 	}
 
 }

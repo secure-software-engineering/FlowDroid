@@ -1010,4 +1010,14 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 		return this.results;
 	}
 
+	/**
+	 * Gets the rules that FlowDroid uses internally to conduct specific analysis
+	 * tasks such as handling sources or sinks
+	 * 
+	 * @return The propagation rule manager
+	 */
+	public PropagationRuleManager getPropagationRules() {
+		return propagationRules;
+	}
+
 }
