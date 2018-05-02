@@ -38,6 +38,7 @@ import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPo
 import soot.tagkit.Tag;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
+import soot.util.NumberedString;
 
 public class IccRedirectionCreator {
 
@@ -76,7 +77,7 @@ public class IccRedirectionCreator {
 
 	protected final SootClass dummyMainClass;
 	protected final ComponentEntryPointCollection componentToEntryPoint;
-	protected final SootMethod smStartActivityForResult;
+	protected final NumberedString subsigStartActivityForResult;
 
 	protected IRedirectorCallInserted instrumentationCallback = null;
 
@@ -84,8 +85,8 @@ public class IccRedirectionCreator {
 		this.componentToEntryPoint = componentToEntryPoint;
 		this.dummyMainClass = dummyMainClass;
 
-		smStartActivityForResult = Scene.v()
-				.grabMethod("<android.app.Activity: void startActivityForResult(android.content.Intent,int)>");
+		subsigStartActivityForResult = Scene.v().getSubSigNumberer()
+				.findOrAdd("void startActivityForResult(android.content.Intent,int)");
 	}
 
 	public void redirectToDestination(IccLink link) {
@@ -409,7 +410,7 @@ public class IccRedirectionCreator {
 		// specially deal with startActivityForResult since they have two
 		// parameters
 		List<Value> args = new ArrayList<Value>();
-		if (callee == smStartActivityForResult) {
+		if (callee.getNumberedSubSignature().equals(subsigStartActivityForResult)) {
 			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) fromStmt.getInvokeExpr();
 			args.add(iiexpr.getBase());
 			args.add(iiexpr.getArg(0));
