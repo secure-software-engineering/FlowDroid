@@ -25,9 +25,9 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 
 	public static final MethodSummaries EMPTY_SUMMARIES = new ImmutableMethodSummaries();
 
-	private MultiMap<String, MethodFlow> flows;
-	private MultiMap<String, MethodClear> clears;
-	private Map<Integer, GapDefinition> gaps;
+	private volatile MultiMap<String, MethodFlow> flows;
+	private volatile MultiMap<String, MethodClear> clears;
+	private volatile Map<Integer, GapDefinition> gaps;
 
 	public MethodSummaries() {
 		this(new ConcurrentHashMultiMap<String, MethodFlow>());
@@ -166,6 +166,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			for (String key : newFlows.flows.keySet()) {
 				for (MethodFlow flow : newFlows.flows.get(key)) {
 					MethodFlow replacedFlow = flow.replaceGaps(renumberedGaps);
+					ensureFlows();
 					flows.put(key, replacedFlow);
 				}
 			}
@@ -176,6 +177,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			for (String key : newFlows.clears.keySet()) {
 				for (MethodClear clear : newFlows.clears.get(key)) {
 					MethodClear replacedFlow = clear.replaceGaps(renumberedGaps);
+					ensureClears();
 					clears.put(key, replacedFlow);
 				}
 			}
@@ -188,6 +190,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 				GapDefinition replacedGap = renumberedGaps.get(newGapId);
 				if (replacedGap == null)
 					replacedGap = newFlows.gaps.get(newGapId);
+				ensureGaps();
 				gaps.put(replacedGap.getID(), replacedGap);
 			}
 		}
