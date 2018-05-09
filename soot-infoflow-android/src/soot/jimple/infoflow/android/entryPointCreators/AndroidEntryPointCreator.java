@@ -240,6 +240,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			case ContentProvider:
 				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass);
 				break;
+			default:
+				componentCreator = null;
+				break;
 			}
 
 			// We may skip the complete component
