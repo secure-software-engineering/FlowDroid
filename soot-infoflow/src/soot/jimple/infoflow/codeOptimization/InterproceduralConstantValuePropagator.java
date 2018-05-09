@@ -239,11 +239,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						Edge edge = edgeIt.next();
 						SootMethod callee = edge.tgt();
 
-						// If this method returns nothing, is side-effect free
-						// and does not
-						// call a sink, we can remove it altogether. No data can
-						// ever flow
-						// out of it.
+						// If this method returns nothing, is side-effect free and does not call a sink,
+						// we can remove it altogether. No data can ever flow out of it.
 						boolean remove = callee.getReturnType() == VoidType.v() && !hasSideEffectsOrReadsThis(callee);
 						remove |= !hasSideEffectsOrCallsSink(callee);
 
@@ -252,16 +249,14 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 							callEdgesRemoved++;
 
 							// If this callee threw an exception, we have to
-							// make
-							// up for it
+							// make up for it
 							fixExceptions(sm, s, exceptions);
 						} else if (!sm.getName().equals("<clinit>"))
 							allCalleesRemoved = false;
 					}
 
 					// If all call edges have been removed from a call site, we
-					// can
-					// kill the call site altogether
+					// can kill the call site altogether
 					if (allCalleesRemoved && !isSourceSinkOrTaintWrapped(s))
 						removeCallSite(s, sm);
 				}
@@ -529,9 +524,16 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 						@Override
 						protected void createEmptyMainMethod() {
+							// Make sure that we don't end up with duplicate method names
+							int methodIdx = exceptionThrowers.size();
+							String methodName;
+							do {
+								methodName = "throw" + methodIdx++;
+							} while (exceptionClass.declaresMethodByName(methodName));
+
 							// Create the new method
-							SootMethod thrower = Scene.v().makeSootMethod("throw" + exceptionThrowers.size(),
-									Collections.<Type>emptyList(), VoidType.v());
+							SootMethod thrower = Scene.v().makeSootMethod(methodName, Collections.<Type>emptyList(),
+									VoidType.v());
 							thrower.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
 
 							final Body body = Jimple.v().newBody(thrower);
