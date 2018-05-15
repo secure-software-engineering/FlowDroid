@@ -551,9 +551,11 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		// Remove the additional methods
 		for (SootMethod sm : getAdditionalMethods()) {
-			final SootClass declaringClass = sm.getDeclaringClass();
-			if (declaringClass.isInScene())
-				declaringClass.removeMethod(sm);
+			if (sm.isDeclared()) {
+				final SootClass declaringClass = sm.getDeclaringClass();
+				if (declaringClass.isInScene())
+					declaringClass.removeMethod(sm);
+			}
 		}
 	}
 
