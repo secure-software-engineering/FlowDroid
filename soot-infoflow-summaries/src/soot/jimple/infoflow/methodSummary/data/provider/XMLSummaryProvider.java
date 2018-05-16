@@ -325,10 +325,11 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public boolean mayHaveSummaryForMethod(String subsig) {
-		if (loadableClasses == null || loadableClasses.isEmpty())
-
+		if (loadableClasses != null && !loadableClasses.isEmpty()) {
 			// we don't know, there are unloaded classes...
 			return true;
+		}
+
 		return subsigMethodsWithSummaries.contains(subsig);
 	}
 

@@ -1345,18 +1345,15 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	 *         source, otherwise false
 	 */
 	private boolean compareFields(Taint taintedPath, AbstractFlowSinkSource flowSource) {
-		// If a is tainted, the summary must match a. If a.* is tainted, the
-		// summary can also be a.b.
-		if (taintedPath.getFieldCount() == 0)
-			return !flowSource.isField() || taintedPath.taintSubFields();
-
 		// if we have x.f....fn and the source is x.f'.f1'...f'n+1 and we don't
 		// taint sub, we can't have a match
-		if (taintedPath.getFieldCount() < flowSource.getAccessPathLength() && !taintedPath.taintSubFields())
-			return false;
+		if (taintedPath.getAccessPathLength() < flowSource.getAccessPathLength()) {
+			if (!taintedPath.taintSubFields() || flowSource.isMatchStrict())
+				return false;
+		}
 
 		// Compare the shared sub-path
-		for (int i = 0; i < taintedPath.getFieldCount() && i < flowSource.getAccessPathLength(); i++) {
+		for (int i = 0; i < taintedPath.getAccessPathLength() && i < flowSource.getAccessPathLength(); i++) {
 			String taintField = taintedPath.getAccessPath()[i];
 			String sourceField = flowSource.getAccessPath()[i];
 			if (!sourceField.equals(taintField))
@@ -1444,8 +1441,6 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	 * 
 	 * @param flow
 	 *            The flow between source and sink
-	 * @param flowSink
-	 *            The sink definition of the flow
 	 * @param taint
 	 *            The taint at the source statement
 	 * @param gap
@@ -1647,7 +1642,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		if (!flowSource.hasAccessPath())
 			return taintedPath.getAccessPath();
 
-		int fieldCnt = taintedPath.getFieldCount() - flowSource.getAccessPathLength();
+		int fieldCnt = taintedPath.getAccessPathLength() - flowSource.getAccessPathLength();
 		if (fieldCnt <= 0)
 			return null;
 
@@ -1672,7 +1667,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		if (!flowSource.hasAccessPath())
 			return taintedPath.getAccessPathTypes();
 
-		int fieldCnt = taintedPath.getFieldCount() - flowSource.getAccessPathLength();
+		int fieldCnt = taintedPath.getAccessPathLength() - flowSource.getAccessPathLength();
 		if (fieldCnt <= 0)
 			return null;
 

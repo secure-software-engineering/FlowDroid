@@ -49,4 +49,5 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 	public LazySummaryProvider(List<File> files) {
 		super(files);
 	}
+
 }

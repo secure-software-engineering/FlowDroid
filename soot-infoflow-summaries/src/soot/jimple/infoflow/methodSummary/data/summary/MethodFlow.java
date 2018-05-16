@@ -33,15 +33,15 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * @param to
 	 *            The end of the data flow (sink)
 	 * @param isAlias
-	 *            True if the source and the sink alias, false if this is not
-	 *            the case.
+	 *            True if the source and the sink alias, false if this is not the
+	 *            case.
 	 * @param typeChecking
-	 *            True if type checking shall be performed before applying this
-	 *            data flow, otherwise false
+	 *            True if type checking shall be performed before applying this data
+	 *            flow, otherwise false
 	 * @param cutSubFields
-	 *            True if no sub fields shall be copied from the source to the
-	 *            sink. If "a.b" is tainted and the source is "a", the field "b"
-	 *            will not appended to the sink if this option is enabled.
+	 *            True if no sub fields shall be copied from the source to the sink.
+	 *            If "a.b" is tainted and the source is "a", the field "b" will not
+	 *            appended to the sink if this option is enabled.
 	 */
 	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, boolean typeChecking,
 			boolean cutSubFields) {
@@ -72,14 +72,13 @@ public class MethodFlow extends AbstractMethodSummary {
 	}
 
 	/**
-	 * Checks whether the current flow is coarser than the given flow, i.e., if
-	 * all elements referenced by the given flow are also referenced by this
-	 * flow
+	 * Checks whether the current flow is coarser than the given flow, i.e., if all
+	 * elements referenced by the given flow are also referenced by this flow
 	 * 
 	 * @param flow
 	 *            The flow with which to compare the current flow
-	 * @return True if the current flow is coarser than the given flow,
-	 *         otherwise false
+	 * @return True if the current flow is coarser than the given flow, otherwise
+	 *         false
 	 */
 	public boolean isCoarserThan(MethodFlow flow) {
 		if (flow.equals(this))
@@ -95,17 +94,17 @@ public class MethodFlow extends AbstractMethodSummary {
 	 */
 	public MethodFlow reverse() {
 		FlowSource reverseSource = new FlowSource(to.getType(), to.getParameterIndex(), to.getBaseType(),
-				to.getAccessPath(), to.getAccessPathTypes(), to.getGap());
+				to.getAccessPath(), to.getAccessPathTypes(), to.getGap(), to.isMatchStrict());
 		FlowSink reverseSink = new FlowSink(from.getType(), from.getParameterIndex(), from.getBaseType(),
-				from.getAccessPath(), from.getAccessPathTypes(), to.taintSubFields(), from.getGap());
+				from.getAccessPath(), from.getAccessPathTypes(), to.taintSubFields(), from.getGap(),
+				from.isMatchStrict());
 		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, typeChecking);
 	}
 
 	/**
 	 * Gets whether the source and the sink of this data flow alias
 	 * 
-	 * @return True the source and the sink of this data flow alias, otherwise
-	 *         false
+	 * @return True the source and the sink of this data flow alias, otherwise false
 	 */
 	public boolean isAlias() {
 		return this.isAlias;
@@ -115,20 +114,20 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * Gets whether type checking shall be performed before applying this method
 	 * flow
 	 * 
-	 * @return True if type checking shall be performed before applying this
-	 *         method flow, otherwise false
+	 * @return True if type checking shall be performed before applying this method
+	 *         flow, otherwise false
 	 */
 	public boolean getTypeChecking() {
 		return this.typeChecking;
 	}
 
 	/**
-	 * Gets whether sub fields shall not be appended when applying this method
-	 * flow. If "a.b" is tainted and the source is "a", the field "b" will not
-	 * appended to the sink if this option is enabled.
+	 * Gets whether sub fields shall not be appended when applying this method flow.
+	 * If "a.b" is tainted and the source is "a", the field "b" will not appended to
+	 * the sink if this option is enabled.
 	 * 
-	 * @return True if sub fields shall be discarded and shall not be appended
-	 *         to the sink
+	 * @return True if sub fields shall be discarded and shall not be appended to
+	 *         the sink
 	 */
 	public boolean getCutSubFields() {
 		return cutSubFields;

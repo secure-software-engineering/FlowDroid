@@ -3,9 +3,9 @@ package soot.jimple.infoflow.methodSummary.xml;
 public class XMLConstants {
 	// xml summary tree
 	/*
-	 * <summary> <gaps> <gap> </gap> ... </gaps> <methods> <method> <flows>
-	 * <flow> <from></from> <to></to> </flow> ... </flows> </method> ...
-	 * </methods> </summary>
+	 * <summary> <gaps> <gap> </gap> ... </gaps> <methods> <method> <flows> <flow>
+	 * <from></from> <to></to> </flow> ... </flows> </method> ... </methods>
+	 * </summary>
 	 */
 	public static final String TREE_SUMMARY = "summary";
 	public static final String TREE_METHODS = "methods";
@@ -33,6 +33,7 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_IS_ALIAS = "isAlias";
 	public static final String ATTRIBUTE_TYPE_CHECKING = "typeChecking";
 	public static final String ATTRIBUTE_CUT_SUBFIELDS = "cutSubfields";
+	public static final String ATTRIBUTE_MATCH_STRICT = "matchStrict";
 
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";

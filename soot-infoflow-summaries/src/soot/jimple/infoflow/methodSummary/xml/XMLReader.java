@@ -2,6 +2,7 @@ package soot.jimple.infoflow.methodSummary.xml;
 
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_MATCH_STRICT;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMTER_INDEX;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_TAINT_SUB_FIELDS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_CLEAR;
@@ -51,14 +52,13 @@ public class XMLReader {
 	}
 
 	/**
-	 * Reads a summary xml and returns the MethodSummaries. This method closes
-	 * the reader.
+	 * Reads a summary xml and returns the MethodSummaries. This method closes the
+	 * reader.
 	 * 
 	 * @param reader
 	 *            The reader from which to read the method summaries
 	 * @return The summary data object read from the given reader
-	 * @return XMLStreamException Thrown in case of a syntax error in the input
-	 *         file
+	 * @return XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException
 	 *             Thrown if the reader could not be read
 	 */
@@ -199,14 +199,13 @@ public class XMLReader {
 	}
 
 	/**
-	 * Reads a summary xml file and returns the MethodSummaries which are saved
-	 * in that file
+	 * Reads a summary xml file and returns the MethodSummaries which are saved in
+	 * that file
 	 * 
 	 * @param fileName
 	 *            The file from which to read the method summaries
 	 * @return The summary data object read from the given file
-	 * @return XMLStreamException Thrown in case of a syntax error in the input
-	 *         file
+	 * @return XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException
 	 *             Thrown if the file could not be read
 	 */
@@ -257,13 +256,14 @@ public class XMLReader {
 			throws SummaryXMLException {
 		if (isField(attributes)) {
 			return new FlowSource(SourceSinkType.Field, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), getGapDefinition(attributes, summary));
+					getAccessPathTypes(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSource(SourceSinkType.Parameter, paramterIdx(attributes), getBaseType(attributes),
-					getAccessPath(attributes), getAccessPathTypes(attributes), getGapDefinition(attributes, summary));
+					getAccessPath(attributes), getAccessPathTypes(attributes), getGapDefinition(attributes, summary),
+					isMatchStrict(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSource(SourceSinkType.GapBaseObject, getBaseType(attributes),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isReturn(attributes)) {
 			GapDefinition gap = getGapDefinition(attributes, summary);
 			if (gap == null)
@@ -271,7 +271,7 @@ public class XMLReader {
 						"Return values can only be " + "sources if they have a gap specification");
 
 			return new FlowSource(SourceSinkType.Return, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), getGapDefinition(attributes, summary));
+					getAccessPathTypes(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		}
 		throw new SummaryXMLException("Invalid flow source definition");
 	}
@@ -289,17 +289,19 @@ public class XMLReader {
 	private FlowSink createSink(MethodSummaries summary, Map<String, String> attributes) throws SummaryXMLException {
 		if (isField(attributes)) {
 			return new FlowSink(SourceSinkType.Field, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary));
+					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary),
+					isMatchStrict(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSink(SourceSinkType.Parameter, paramterIdx(attributes), getBaseType(attributes),
 					getAccessPath(attributes), getAccessPathTypes(attributes), taintSubFields(attributes),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isReturn(attributes)) {
 			return new FlowSink(SourceSinkType.Return, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary));
+					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary),
+					isMatchStrict(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSink(SourceSinkType.GapBaseObject, -1, getBaseType(attributes), false,
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		}
 		throw new SummaryXMLException();
 	}
@@ -370,6 +372,13 @@ public class XMLReader {
 			}
 		}
 		return null;
+	}
+
+	private boolean isMatchStrict(Map<String, String> attributes) {
+		String str = attributes.get(ATTRIBUTE_MATCH_STRICT);
+		if (str != null && !str.isEmpty())
+			return Boolean.valueOf(str);
+		return false;
 	}
 
 	private boolean isParameter(Map<String, String> attributes) {
