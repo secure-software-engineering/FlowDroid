@@ -208,7 +208,7 @@ public class MainClass {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine cmd = parser.parse(options, args);
-			
+
 			// Do we need to display the user manual?
 			if (cmd.hasOption("?") || cmd.hasOption("help")) {
 				formatter.printHelp("soot-infoflow-cmd [OPTIONS]", options);
@@ -218,7 +218,8 @@ public class MainClass {
 			// Do we have a configuration file?
 			String configFile = cmd.getOptionValue(OPTION_CONFIG_FILE);
 			final InfoflowAndroidConfiguration config = configFile == null || configFile.isEmpty()
-					? new InfoflowAndroidConfiguration() : loadConfigurationFile(configFile);
+					? new InfoflowAndroidConfiguration()
+					: loadConfigurationFile(configFile);
 			if (config == null)
 				return;
 
@@ -250,8 +251,8 @@ public class MainClass {
 	 * 
 	 * @param cmd
 	 *            The command-line parameters
-	 * @return The taint wrapper to use for the data flow analysis, or null in
-	 *         case no taint wrapper shall be used
+	 * @return The taint wrapper to use for the data flow analysis, or null in case
+	 *         no taint wrapper shall be used
 	 */
 	private ITaintPropagationWrapper initializeTaintWrapper(CommandLine cmd) throws Exception {
 		// Get the definition file(s) for the taint wrapper
@@ -526,16 +527,19 @@ public class MainClass {
 
 		// Timeouts
 		{
-			int timeout = getIntOption(cmd, OPTION_TIMEOUT);
-			config.setDataFlowTimeout(timeout);
+			Integer timeout = getIntOption(cmd, OPTION_TIMEOUT);
+			if (timeout != null)
+				config.setDataFlowTimeout(timeout);
 		}
 		{
-			int timeout = getIntOption(cmd, OPTION_CALLBACK_TIMEOUT);
-			config.getCallbackConfig().setCallbackAnalysisTimeout(timeout);
+			Integer timeout = getIntOption(cmd, OPTION_CALLBACK_TIMEOUT);
+			if (timeout != null)
+				config.getCallbackConfig().setCallbackAnalysisTimeout(timeout);
 		}
 		{
-			int timeout = getIntOption(cmd, OPTION_RESULT_TIMEOUT);
-			config.getPathConfiguration().setPathReconstructionTimeout(timeout);
+			Integer timeout = getIntOption(cmd, OPTION_RESULT_TIMEOUT);
+			if (timeout != null)
+				config.getPathConfiguration().setPathReconstructionTimeout(timeout);
 		}
 
 		// Optional features
@@ -552,8 +556,8 @@ public class MainClass {
 
 		// Individual settings
 		{
-			int aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);
-			if (aplength >= 0)
+			Integer aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);
+			if (aplength != null)
 				config.setAccessPathLength(aplength);
 		}
 		if (cmd.hasOption(OPTION_FLOW_INSENSITIVE_ALIASING))
@@ -575,13 +579,13 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_SINGLE_JOIN_POINT))
 			config.getSolverConfiguration().setSingleJoinPointAbstraction(true);
 		{
-			int maxCallbacks = getIntOption(cmd, OPTION_MAX_CALLBACKS_COMPONENT);
-			if (maxCallbacks >= 0)
+			Integer maxCallbacks = getIntOption(cmd, OPTION_MAX_CALLBACKS_COMPONENT);
+			if (maxCallbacks != null)
 				config.getCallbackConfig().setMaxCallbacksPerComponent(maxCallbacks);
 		}
 		{
-			int maxDepth = getIntOption(cmd, OPTION_MAX_CALLBACKS_DEPTH);
-			if (maxDepth >= 0)
+			Integer maxDepth = getIntOption(cmd, OPTION_MAX_CALLBACKS_DEPTH);
+			if (maxDepth != null)
 				config.getCallbackConfig().setMaxAnalysisCallbackDepth(maxDepth);
 		}
 
@@ -647,10 +651,10 @@ public class MainClass {
 		}
 	}
 
-	private int getIntOption(CommandLine cmd, String option) {
+	private Integer getIntOption(CommandLine cmd, String option) {
 		String str = cmd.getOptionValue(option);
 		if (str == null || str.isEmpty())
-			return -1;
+			return null;
 		else
 			return Integer.parseInt(str);
 	}

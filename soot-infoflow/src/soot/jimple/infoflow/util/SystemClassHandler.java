@@ -24,7 +24,8 @@ public class SystemClassHandler {
 	public static boolean isClassInSystemPackage(String className) {
 		return className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
-				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.");
+				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
+				|| className.startsWith("com.android.");
 	}
 
 	/**

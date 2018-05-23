@@ -190,7 +190,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Parses all layout XML files in the given APK file and loads the IDs of the
 	 * user controls in it. This method directly executes the analyses witout
-	 * registering any Soot phases.<
+	 * registering any Soot phases.
 	 * 
 	 * @param fileName
 	 *            The APK file in which to look for user controls

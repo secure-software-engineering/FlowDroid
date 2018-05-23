@@ -180,4 +180,6 @@ android.widget.SlidingDrawer$OnDrawerScrollListener
 android.widget.TabHost$OnTabChangeListener
 android.widget.TextView$OnEditorActionListener
 android.widget.TimePicker$OnTimeChangedListener
-android.widget.ZoomButtonsController$OnZoomListener 
+android.widget.ZoomButtonsController$OnZoomListener
+com.android.volley.Response$Listener
+com.android.volley.Response$ErrorListener

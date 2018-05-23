@@ -291,9 +291,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			mainMethod.getActiveBody().validate();
 
 		logger.debug("Generated main method:\n{}", body);
-
-		System.out.println(mainMethod.getActiveBody());
-
 		return mainMethod;
 	}
 

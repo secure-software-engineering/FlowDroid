@@ -26,6 +26,15 @@ public class DataFlowResult {
 	}
 
 	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(source.toString());
+		sb.append(" -> ");
+		sb.append(sink.toString());
+		return sb.toString();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

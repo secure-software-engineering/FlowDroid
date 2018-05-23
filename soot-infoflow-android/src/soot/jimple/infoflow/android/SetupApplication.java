@@ -53,6 +53,7 @@ import soot.jimple.infoflow.android.callbacks.FastCallbackAnalyzer;
 import soot.jimple.infoflow.android.callbacks.filters.AlienFragmentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.AlienHostComponentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.ApplicationCallbackFilter;
+import soot.jimple.infoflow.android.callbacks.filters.UnreachableConstructorFilter;
 import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
@@ -647,6 +648,7 @@ public class SetupApplication {
 			jimpleClass.setValueProvider(valueProvider);
 		jimpleClass.addCallbackFilter(new AlienHostComponentFilter(entrypoints));
 		jimpleClass.addCallbackFilter(new ApplicationCallbackFilter(entrypoints));
+		jimpleClass.addCallbackFilter(new UnreachableConstructorFilter());
 		jimpleClass.collectCallbackMethods();
 
 		// Find the user-defined sources in the layout XML files. This

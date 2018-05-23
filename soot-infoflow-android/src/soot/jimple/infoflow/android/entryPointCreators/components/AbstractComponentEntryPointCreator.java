@@ -230,6 +230,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		boolean callbackFound = false;
 		for (SootClass callbackClass : callbackClasses.keySet()) {
+			Set<SootMethod> callbackMethods = callbackClasses.get(callbackClass);
+
 			// If we already have a parent class that defines this callback, we
 			// use it. Otherwise, we create a new one.
 			boolean hasParentClass = false;
@@ -237,7 +239,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				Local parentLocal = this.localVarsForClasses.get(parentClass);
 				if (isCompatible(parentClass, callbackClass)) {
 					// Create the method invocation
-					addSingleCallbackMethod(referenceClasses, callbackClasses, callbackClass, parentLocal);
+					addSingleCallbackMethod(referenceClasses, callbackMethods, callbackClass, parentLocal);
 					callbackFound = true;
 					hasParentClass = true;
 				}
@@ -260,7 +262,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 						continue;
 				}
 
-				addSingleCallbackMethod(referenceClasses, callbackClasses, callbackClass, classLocal);
+				addSingleCallbackMethod(referenceClasses, callbackMethods, callbackClass, classLocal);
 				callbackFound = true;
 
 				// Clean up the base local if we generated it
@@ -307,16 +309,16 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	 * @param referenceClasses
 	 *            The classes for which no new instances shall be created, but
 	 *            rather existing ones shall be used.
-	 * @param callbackClasses
-	 *            The map between callback classes and their callback methods
+	 * @param callbackMethods
+	 *            The callback methods for which to generate invocations
 	 * @param callbackClass
 	 *            The class for which to create invocations
 	 * @param classLocal
 	 *            The base local of the respective class instance
 	 */
-	private void addSingleCallbackMethod(Set<SootClass> referenceClasses,
-			MultiMap<SootClass, SootMethod> callbackClasses, SootClass callbackClass, Local classLocal) {
-		for (SootMethod callbackMethod : callbackClasses.get(callbackClass)) {
+	private void addSingleCallbackMethod(Set<SootClass> referenceClasses, Set<SootMethod> callbackMethods,
+			SootClass callbackClass, Local classLocal) {
+		for (SootMethod callbackMethod : callbackMethods) {
 			// We always create an opaque predicate to allow for skipping the
 			// callback
 			NopStmt thenStmt = Jimple.v().newNopStmt();

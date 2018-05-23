@@ -17,9 +17,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -95,7 +97,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
 	protected final Map<SootClass, Integer> fragmentIDs = new HashMap<>();
 
-	protected final Set<ICallbackFilter> callbackFilters = new HashSet<ICallbackFilter>();
+	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
 	protected final Set<SootClass> excludedEntryPoints = new HashSet<>();
 
 	protected IValueProvider valueProvider = new SimpleConstantValueProvider();
@@ -220,11 +222,9 @@ public abstract class AbstractCallbackAnalyzer {
 						if (!SystemClassHandler.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
 							continue;
 
-						// We have a formal parameter type that corresponds to
-						// one of the Android
-						// callback interfaces. Look for definitions of the
-						// parameter to estimate
-						// the actual type.
+						// We have a formal parameter type that corresponds to one of the Android
+						// callback interfaces. Look for definitions of the parameter to estimate the
+						// actual type.
 						if (arg instanceof Local) {
 							Set<Type> possibleTypes = Scene.v().getPointsToAnalysis().reachingObjects((Local) arg)
 									.possibleTypes();

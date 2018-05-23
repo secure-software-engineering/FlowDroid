@@ -64,11 +64,6 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 * @param callbackMethods
 	 *            The list of callback methods whose parameters are sources through
 	 *            which the application receives data from the operating system
-	 * @param weakMatching
-	 *            True for weak matching: If an entry in the list has no return
-	 *            type, it matches arbitrary return types if the rest of the method
-	 *            signature is compatible. False for strong matching: The method
-	 *            signature in the code exactly match the one in the list.
 	 * @param config
 	 *            The configuration of the data flow analyzer
 	 * @param layoutControls
