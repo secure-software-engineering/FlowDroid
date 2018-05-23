@@ -47,12 +47,6 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 				}
 			}
 		}
-
-		if (!hasConstructor) {
-			if (component.getName().contains("ActivityLoginHome"))
-				System.out.println("x");
-		}
-
 		return hasConstructor;
 	}
 

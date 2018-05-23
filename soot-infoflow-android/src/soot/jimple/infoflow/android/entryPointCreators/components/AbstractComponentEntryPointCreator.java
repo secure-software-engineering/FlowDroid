@@ -163,7 +163,6 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				body.getUnits().add(Jimple.v().newReturnStmt(thisLocal));
 		}
 		NopEliminator.v().transform(body);
-		System.out.println(mainMethod.getActiveBody());
 		return mainMethod;
 	}
 
