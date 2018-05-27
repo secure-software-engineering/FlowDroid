@@ -20,11 +20,11 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	private static MethodSourceSinkDefinition BASE_OBJ_SINK;
 	private static MethodSourceSinkDefinition[] PARAM_OBJ_SOURCE = new MethodSourceSinkDefinition[5];
 
-	private final SootMethodAndClass method;
-	private final CallType callType;
-	private Set<AccessPathTuple> baseObjects;
-	private Set<AccessPathTuple>[] parameters;
-	private Set<AccessPathTuple> returnValues;
+	protected final SootMethodAndClass method;
+	protected final CallType callType;
+	protected Set<AccessPathTuple> baseObjects;
+	protected Set<AccessPathTuple>[] parameters;
+	protected Set<AccessPathTuple> returnValues;
 
 	/**
 	 * Enumeration containing the different types of method invocations that can be
@@ -226,9 +226,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					returnSources.add(apt);
 		}
 
-		MethodSourceSinkDefinition mssd = new MethodSourceSinkDefinition(method, baseSources, paramSources,
-				returnSources, callType);
-		mssd.setCategory(category);
+		MethodSourceSinkDefinition mssd = buildNewDefinition(baseSources, paramSources, returnSources);
 		return mssd;
 	}
 
@@ -264,10 +262,30 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					returnSinks.add(apt);
 		}
 
-		MethodSourceSinkDefinition mssd = new MethodSourceSinkDefinition(method, baseSinks, paramSinks, returnSinks,
-				callType);
-		mssd.setCategory(category);
+		MethodSourceSinkDefinition mssd = buildNewDefinition(baseSinks, paramSinks, returnSinks);
 		return mssd;
+	}
+
+	/**
+	 * Factory method for creating a new method-based source/sink definition based
+	 * on the current one. This method is used when transforming the current
+	 * definition. Derived classes can override this method to create instances of
+	 * the correct class.
+	 * 
+	 * @param baseAPTs
+	 *            The access paths rooted in the base object
+	 * @param paramAPTs
+	 *            The access paths rooted in the method's parameters
+	 * @param returnAPTs
+	 *            The access paths rooted in the return value
+	 * @return The new source/sink definition object
+	 */
+	protected MethodSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> baseAPTs,
+			Set<AccessPathTuple>[] paramAPTs, Set<AccessPathTuple> returnAPTs) {
+		MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method, baseAPTs, paramAPTs, returnAPTs,
+				callType);
+		def.setCategory(category);
+		return def;
 	}
 
 	@Override

@@ -421,7 +421,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 	public static XMLSourceSinkParser fromStream(InputStream inputStream, ICategoryFilter categoryFilter)
 			throws IOException {
-		XMLSourceSinkParser pmp = new XMLSourceSinkParser(inputStream, categoryFilter);
+		XMLSourceSinkParser pmp = new XMLSourceSinkParser(categoryFilter);
+		pmp.parseInputStream(inputStream);
 		return pmp;
 	}
 
@@ -461,21 +462,14 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	}
 
 	/**
-	 * Creates a new instance of the {@link XMLSourceSinkParser} class and reads the
-	 * source and sink definitions from the given stream
+	 * Creates a new instance of the {@link XMLSourceSinkParser} class
 	 * 
-	 * @param stream
-	 *            The stream from which to read the sources and sinks
+	 * @param filter
+	 *            A filter for excluding certain categories of sources and sinks
 	 */
-	protected XMLSourceSinkParser(InputStream stream, ICategoryFilter categoryFilter) {
+	protected XMLSourceSinkParser(ICategoryFilter categoryFilter) {
 		this.sourcesAndSinks = new HashMap<>();
 		this.categoryFilter = categoryFilter;
-
-		// Parse the data
-		parseInputStream(stream, categoryFilter);
-
-		// Build the source and sink lists
-		buildSourceSinkLists();
 	}
 
 	/**
@@ -483,10 +477,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	 * 
 	 * @param stream
 	 *            The stream whose data to parse
-	 * @param filter
-	 *            A filter for excluding certain categories of sources and sinks
 	 */
-	protected void parseInputStream(InputStream stream, ICategoryFilter categoryFilter) {
+	protected void parseInputStream(InputStream stream) {
 		SAXParserFactory pf = SAXParserFactory.newInstance();
 		try {
 			SAXParser parser = pf.newSAXParser();
@@ -498,6 +490,9 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// Build the source and sink lists
+		buildSourceSinkLists();
 	}
 
 	/**

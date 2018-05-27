@@ -11,8 +11,8 @@ import java.util.Set;
  */
 public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 
-	private final String fieldSignature;
-	private Set<AccessPathTuple> accessPaths;
+	protected final String fieldSignature;
+	protected Set<AccessPathTuple> accessPaths;
 
 	/**
 	 * Creates a new instance of the {@link FieldSourceSinkDefinition} class
@@ -30,8 +30,8 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 	 * @param fieldSignature
 	 *            The Soot signature of the target field
 	 * @param accessPaths
-	 *            The access paths on the field that have been defined as
-	 *            sources or sinks
+	 *            The access paths on the field that have been defined as sources or
+	 *            sinks
 	 */
 	public FieldSourceSinkDefinition(String fieldSignature, Set<AccessPathTuple> accessPaths) {
 		this.fieldSignature = fieldSignature;
@@ -48,11 +48,10 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the access paths on the field that have been defined as sources or
-	 * sinks
+	 * Gets the access paths on the field that have been defined as sources or sinks
 	 * 
-	 * @return The access paths on the field that have been defined as sources
-	 *         or sinks
+	 * @return The access paths on the field that have been defined as sources or
+	 *         sinks
 	 */
 	public Set<AccessPathTuple> getAccessPaths() {
 		return accessPaths;
@@ -67,7 +66,7 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 				if (apt.getSourceSinkType().isSource())
 					sources.add(apt);
 		}
-		return new FieldSourceSinkDefinition(fieldSignature, sources);
+		return buildNewDefinition(sources);
 	}
 
 	@Override
@@ -79,7 +78,21 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 				if (apt.getSourceSinkType().isSink())
 					sinks.add(apt);
 		}
-		return new FieldSourceSinkDefinition(fieldSignature, sinks);
+		return buildNewDefinition(sinks);
+	}
+
+	/**
+	 * Factory method for creating a new field-based source/sink definition based on
+	 * the current one. This method is used when transforming the current
+	 * definition. Derived classes can override this method to create instances of
+	 * the correct class.
+	 * 
+	 * @param accessPaths
+	 *            The of access paths for the new definition
+	 * @return The new source/sink definition
+	 */
+	protected SourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> accessPaths) {
+		return new FieldSourceSinkDefinition(fieldSignature, accessPaths);
 	}
 
 	@Override
