@@ -171,6 +171,29 @@ public class InfoflowResults {
 				apPath);
 	}
 
+	/**
+	 * Adds the given result to this data structure
+	 * 
+	 * @param sinkDefinition
+	 *            The definition of the sink
+	 * @param sink
+	 *            The access path that arrived at the sink statement
+	 * @param sinkStmt
+	 *            The sink statement
+	 * @param sourceDefinition
+	 *            The definition of the source
+	 * @param source
+	 *            The access path that originated from the source statement
+	 * @param sourceStmt
+	 *            The source statement
+	 * @param userData
+	 *            Optional user data to associate with the source
+	 * @param propagationPath
+	 *            The statements over which the data flow was propagated
+	 * @param propagationAccessPath
+	 *            The access paths along the data flow propagation path
+	 * @return The new data flow result
+	 */
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(SourceSinkDefinition sinkDefinition, AccessPath sink,
 			Stmt sinkStmt, SourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath) {
@@ -180,6 +203,18 @@ public class InfoflowResults {
 
 		this.addResult(sinkObj, sourceObj);
 		return new Pair<>(sourceObj, sinkObj);
+	}
+
+	/**
+	 * Adds the given data flow result to this data structure
+	 * 
+	 * @param res
+	 *            The data flow result to add
+	 */
+	public void addResult(DataFlowResult res) {
+		if (res != null) {
+			addResult(res.getSink(), res.getSource());
+		}
 	}
 
 	/**
@@ -220,7 +255,20 @@ public class InfoflowResults {
 				for (ResultSourceInfo source : results.getResults().get(sink))
 					addResult(sink, source);
 		}
+	}
 
+	/**
+	 * Adds the given data flow results to this result object
+	 * 
+	 * @param results
+	 *            The data flow results to add
+	 */
+	public void addAll(Set<DataFlowResult> results) {
+		if (results == null || results.isEmpty())
+			return;
+
+		for (DataFlowResult res : results)
+			addResult(res);
 	}
 
 	/**
