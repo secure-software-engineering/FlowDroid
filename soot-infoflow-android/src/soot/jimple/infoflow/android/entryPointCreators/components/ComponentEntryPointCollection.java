@@ -56,4 +56,8 @@ public class ComponentEntryPointCollection {
 		componentToEntryPointInfo.clear();
 	}
 
+	public boolean hasEntryPointForComponent(SootClass component) {
+		return componentToEntryPointInfo.containsKey(component);
+	}
+
 }

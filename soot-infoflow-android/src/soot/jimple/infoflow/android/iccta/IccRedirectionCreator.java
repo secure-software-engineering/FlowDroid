@@ -95,7 +95,6 @@ public class IccRedirectionCreator {
 
 		// 1) generate redirect method
 		SootMethod redirectSM = getRedirectMethod(link);
-
 		if (redirectSM == null)
 			return;
 
@@ -111,9 +110,14 @@ public class IccRedirectionCreator {
 	 * @return
 	 */
 	protected SootMethod getRedirectMethod(IccLink link) {
+		// If the target component is, e.g., disabled in the manifest, we do not have an
+		// entry point for it
 		SootClass instrumentedDestinationSC = link.getDestinationC();
-		SootMethod redirectMethod = source2RedirectMethod.get(link.toString());
+		if (!componentToEntryPoint.hasEntryPointForComponent(instrumentedDestinationSC))
+			return null;
 
+		// Get the redirection method and create it if it doesn't exist
+		SootMethod redirectMethod = source2RedirectMethod.get(link.toString());
 		if (redirectMethod == null) {
 			// build up source2RedirectMethod map
 			String source = link.toString();

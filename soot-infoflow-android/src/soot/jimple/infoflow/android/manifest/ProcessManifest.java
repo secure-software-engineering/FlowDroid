@@ -108,8 +108,7 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Processes an AppManifest which is provided by the given
-	 * {@link InputStream}.
+	 * Processes an AppManifest which is provided by the given {@link InputStream}.
 	 * 
 	 * @param manifestIS
 	 *            InputStream for an AppManifest.
@@ -123,8 +122,8 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Initialises the {@link ProcessManifest} by parsing the manifest provided
-	 * by the given {@link InputStream}.
+	 * Initialises the {@link ProcessManifest} by parsing the manifest provided by
+	 * the given {@link InputStream}.
 	 * 
 	 * @param manifestIS
 	 *            InputStream for an AppManifest.
@@ -187,8 +186,8 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Returns the handler which opened the APK file. If {@link ProcessManifest}
-	 * was instanciated directly with an {@link InputStream} this will return
+	 * Returns the handler which opened the APK file. If {@link ProcessManifest} was
+	 * instanciated directly with an {@link InputStream} this will return
 	 * <code>null</code>.
 	 * 
 	 * @return APK Handler
@@ -220,8 +219,8 @@ public class ProcessManifest implements Closeable {
 	 * 
 	 * @return list with all providers
 	 */
-	public ArrayList<AXmlNode> getProviders() {
-		return new ArrayList<AXmlNode>(this.providers);
+	public List<AXmlNode> getProviders() {
+		return this.providers == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.providers);
 	}
 
 	/**
@@ -229,8 +228,8 @@ public class ProcessManifest implements Closeable {
 	 * 
 	 * @return list with all services
 	 */
-	public ArrayList<AXmlNode> getServices() {
-		return new ArrayList<AXmlNode>(this.services);
+	public List<AXmlNode> getServices() {
+		return this.services == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.services);
 	}
 
 	/**
@@ -290,8 +289,8 @@ public class ProcessManifest implements Closeable {
 	 * 
 	 * @param name
 	 *            The Android component name to check
-	 * @return True if the given name is a valid Android component name,
-	 *         otherwise false
+	 * @return True if the given name is a valid Android component name, otherwise
+	 *         false
 	 */
 	private boolean isValidComponentName(String name) {
 		if (name.isEmpty())
@@ -337,8 +336,8 @@ public class ProcessManifest implements Closeable {
 	 * 
 	 * @return list with all activities
 	 */
-	public ArrayList<AXmlNode> getActivities() {
-		return new ArrayList<AXmlNode>(this.activities);
+	public List<AXmlNode> getActivities() {
+		return this.activities == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.activities);
 	}
 
 	/**
@@ -346,8 +345,8 @@ public class ProcessManifest implements Closeable {
 	 * 
 	 * @return list with all receivers
 	 */
-	public ArrayList<AXmlNode> getReceivers() {
-		return new ArrayList<AXmlNode>(this.receivers);
+	public List<AXmlNode> getReceivers() {
+		return this.receivers == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.receivers);
 	}
 
 	/**
@@ -416,8 +415,8 @@ public class ProcessManifest implements Closeable {
 
 	/**
 	 * Returns the Manifest as a compressed android xml byte array. This will
-	 * consider all changes made to the manifest and application nodes
-	 * respectively to their child nodes.
+	 * consider all changes made to the manifest and application nodes respectively
+	 * to their child nodes.
 	 * 
 	 * @return byte compressed AppManifest
 	 * @see AXmlHandler#toByteArray()
@@ -486,8 +485,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Gets the minimum SDK version on which this application is supposed to run
 	 * 
-	 * @return The minimum SDK version on which this application is supposed to
-	 *         run
+	 * @return The minimum SDK version on which this application is supposed to run
 	 */
 	public int getMinSdkVersion() {
 		List<AXmlNode> usesSdk = this.manifest.getChildrenWithTag("uses-sdk");
@@ -619,8 +617,8 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Returns all activity nodes that are "launchable", i.e. that are called
-	 * when the user clicks on the button in the launcher.
+	 * Returns all activity nodes that are "launchable", i.e. that are called when
+	 * the user clicks on the button in the launcher.
 	 * 
 	 * @return
 	 */
@@ -633,13 +631,11 @@ public class ProcessManifest implements Closeable {
 					boolean actionFilter = false;
 					boolean categoryFilter = false;
 					for (AXmlNode intentFilter : activityChildren.getChildren()) {
-						if (intentFilter.getTag().equals("action")
-								&& intentFilter.getAttribute("name").getValue().toString()
-										.equals("android.intent.action.MAIN"))
+						if (intentFilter.getTag().equals("action") && intentFilter.getAttribute("name").getValue()
+								.toString().equals("android.intent.action.MAIN"))
 							actionFilter = true;
-						else if (intentFilter.getTag().equals("category")
-								&& intentFilter.getAttribute("name").getValue().toString()
-										.equals("android.intent.category.LAUNCHER"))
+						else if (intentFilter.getTag().equals("category") && intentFilter.getAttribute("name")
+								.getValue().toString().equals("android.intent.category.LAUNCHER"))
 							categoryFilter = true;
 					}
 

@@ -437,8 +437,11 @@ public class SetupApplication {
 		this.manifest = new ProcessManifest(targetAPK);
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
-		for (String className : entryPoints)
-			this.entrypoints.add(Scene.v().getSootClassUnsafe(className));
+		for (String className : entryPoints) {
+			SootClass sc = Scene.v().getSootClassUnsafe(className);
+			if (sc != null)
+				this.entrypoints.add(sc);
+		}
 
 		// Parse the resource file
 		long beforeARSC = System.nanoTime();
