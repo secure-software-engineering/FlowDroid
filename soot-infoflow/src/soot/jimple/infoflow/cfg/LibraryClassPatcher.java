@@ -68,8 +68,6 @@ public class LibraryClassPatcher {
 		// Patch the java.util.Timer implementation
 		patchTimerImplementation();
 
-		patchServiceConnection();
-
 		// Patch activity getFragmentManager()
 		patchActivityGetFragmentManager();
 
@@ -693,50 +691,6 @@ public class LibraryClassPatcher {
 		b.getLocals().add(retLocal);
 		b.getUnits().add(Jimple.v().newAssignStmt(retLocal, Jimple.v().newNewExpr(scFragmentTransaction.getType())));
 		b.getUnits().add(Jimple.v().newReturnStmt(retLocal));
-	}
-
-	private void patchServiceConnection() {
-		SootClass sc = Scene.v().getSootClassUnsafe("android.content.ServiceConnection");
-		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
-			return;
-		sc.setApplicationClass();
-
-		SootMethod smGetFM = sc
-				.getMethodUnsafe("void onServiceConnected(android.content.ComponentName,android.os.IBinder)");
-		if (smGetFM == null || smGetFM.hasActiveBody())
-			return;
-
-		smGetFM.setPhantom(false);
-
-		Body b = Jimple.v().newBody(smGetFM);
-		// smGetFM.setActiveBody(b);
-
-		Local thisLocal = Jimple.v().newLocal("this", sc.getType());
-		b.getLocals().add(thisLocal);
-		b.getUnits().add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(sc.getType())));
-
-		// Assign the parameters
-		Local firstParam = null;
-		for (int i = 0; i < smGetFM.getParameterCount(); ++i) {
-			Local paramLocal = Jimple.v().newLocal("param" + i, smGetFM.getParameterType(i));
-			b.getLocals().add(paramLocal);
-			b.getUnits().add(
-					Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(smGetFM.getParameterType(i), i)));
-			if (i == 0)
-				firstParam = paramLocal;
-		}
-
-		b.getUnits()
-				.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(thisLocal,
-						Scene.v().makeMethodRef(sc, "onServiceConnected",
-								Collections.<Type>singletonList(smGetFM.getParameterType(0)), VoidType.v(), false),
-						firstParam)));
-
-		Unit retStmt = Jimple.v().newReturnVoidStmt();
-		b.getUnits().add(retStmt);
-
-		b.validate();
-
 	}
 
 }
