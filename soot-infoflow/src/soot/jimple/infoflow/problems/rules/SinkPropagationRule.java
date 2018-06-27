@@ -94,33 +94,56 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		return null;
 	}
 
+	/**
+	 * Checks whether the given taint is visible inside the method called at the
+	 * given call site
+	 * 
+	 * @param stmt
+	 *            A call site where a sink method is called
+	 * @param source
+	 *            The taint that has arrived at the given statement
+	 * @return True if the callee has access to the tainted value, false otherwise
+	 */
+	protected boolean isTaintVisibleInCallee(Stmt stmt, Abstraction source) {
+		InvokeExpr iexpr = stmt.getInvokeExpr();
+		boolean found = false;
+
+		// Is an argument tainted?
+		for (int i = 0; i < iexpr.getArgCount(); i++) {
+			if (getAliasing().mayAlias(iexpr.getArg(i), source.getAccessPath().getPlainValue())) {
+				if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
+					return true;
+			}
+		}
+
+		// Is the base object tainted?
+		if (!found && iexpr instanceof InstanceInvokeExpr) {
+			if (((InstanceInvokeExpr) iexpr).getBase() == source.getAccessPath().getPlainValue())
+				return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		// The given access path must at least be referenced somewhere in the
-		// sink
+		// We only report leaks for active taints, not for alias queries
 		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef()) {
-			InvokeExpr iexpr = stmt.getInvokeExpr();
-			boolean found = false;
-			for (int i = 0; i < iexpr.getArgCount(); i++)
-				if (getAliasing().mayAlias(iexpr.getArg(i), source.getAccessPath().getPlainValue())) {
-					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal()) {
-						found = true;
-						break;
+			// Is the taint even visible inside the callee?
+			if (!stmt.containsInvokeExpr() || isTaintVisibleInCallee(stmt, source)) {
+				// Is this a sink?
+				if (getManager().getSourceSinkManager() != null) {
+					// Get the sink descriptor
+					SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
+							source.getAccessPath());
+
+					// If we have already seen the same taint at the dame sink, there is no need to
+					// propagate this taint any further.
+					if (sinkInfo != null
+							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
+						killState = true;
 					}
-				}
-			if (!found && iexpr instanceof InstanceInvokeExpr)
-				if (((InstanceInvokeExpr) iexpr).getBase() == source.getAccessPath().getPlainValue())
-					found = true;
-
-			// Is this a call to a sink?
-			if (found && getManager().getSourceSinkManager() != null) {
-				SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
-						source.getAccessPath());
-
-				if (sinkInfo != null
-						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
-					killState = true;
 				}
 			}
 		}

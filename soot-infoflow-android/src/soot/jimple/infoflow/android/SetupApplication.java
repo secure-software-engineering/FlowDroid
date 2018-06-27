@@ -41,6 +41,7 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
@@ -95,13 +96,14 @@ import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.options.Options;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
-public class SetupApplication {
+public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -143,7 +145,7 @@ public class SetupApplication {
 	protected TaintPropagationHandler taintPropagationHandler = null;
 	protected TaintPropagationHandler backwardsPropagationHandler = null;
 
-	protected InPlaceInfoflow infoflow = null;
+	protected IInPlaceInfoflow infoflow = null;
 
 	/**
 	 * Class for aggregating the data flow results obtained through multiple runs of
@@ -400,23 +402,12 @@ public class SetupApplication {
 		return callbackClasses;
 	}
 
-	/**
-	 * Sets the taint wrapper to be used for propagating taints over unknown
-	 * (library) callees. If this value is null, no taint wrapping is used.
-	 * 
-	 * @param taintWrapper
-	 *            The taint wrapper to use or null to disable taint wrapping
-	 */
+	@Override
 	public void setTaintWrapper(ITaintPropagationWrapper taintWrapper) {
 		this.taintWrapper = taintWrapper;
 	}
 
-	/**
-	 * Gets the taint wrapper to be used for propagating taints over unknown
-	 * (library) callees. If this value is null, no taint wrapping is used.
-	 * 
-	 * @return The taint wrapper to use or null if taint wrapping is disabled
-	 */
+	@Override
 	public ITaintPropagationWrapper getTaintWrapper() {
 		return this.taintWrapper;
 	}
@@ -760,6 +751,9 @@ public class SetupApplication {
 				if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph)
 					break;
 			}
+		} catch (Exception ex) {
+			logger.error("Could not calculate callback methods", ex);
+			throw ex;
 		} finally {
 			// Shut down the watchers
 			if (timeoutWatcher != null)
@@ -1163,13 +1157,26 @@ public class SetupApplication {
 	}
 
 	/**
+	 * Common interface for specialized versions of the {@link Infoflow} class that
+	 * allows the data flow analysis to be run inside an existing Soot instance
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	protected static interface IInPlaceInfoflow extends IInfoflow {
+
+		public void runAnalysis(final ISourceSinkManager sourcesSinks, SootMethod entryPoint);
+
+	}
+
+	/**
 	 * Specialized {@link Infoflow} class that allows the data flow analysis to be
 	 * run inside an existing Soot instance
 	 * 
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class InPlaceInfoflow extends Infoflow {
+	private static class InPlaceInfoflow extends Infoflow implements IInPlaceInfoflow {
 
 		/**
 		 * Creates a new instance of the Infoflow class for analyzing Android APK files.
@@ -1193,6 +1200,7 @@ public class SetupApplication {
 			this.additionalEntryPointMethods = additionalEntryPointMethods;
 		}
 
+		@Override
 		public void runAnalysis(final ISourceSinkManager sourcesSinks, SootMethod entryPoint) {
 			this.dummyMainMethod = entryPoint;
 			super.runAnalysis(sourcesSinks);
@@ -1219,6 +1227,9 @@ public class SetupApplication {
 			// The runInfoflow method can take a null provider as long as we
 			// don't attempt to run a data flow analysis.
 			this.runInfoflow((ISourceSinkDefinitionProvider) null);
+		} catch (RuntimeException ex) {
+			logger.error("Could not construct callgraph", ex);
+			throw ex;
 		} finally {
 			config.setTaintAnalysisEnabled(oldRunAnalysis);
 		}
@@ -1482,7 +1493,7 @@ public class SetupApplication {
 	 * 
 	 * @return A properly configured instance of the {@link Infoflow} class
 	 */
-	private InPlaceInfoflow createInfoflow() {
+	private IInPlaceInfoflow createInfoflow() {
 		// Some sanity checks
 		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			if (entryPointCreator == null)
@@ -1500,8 +1511,7 @@ public class SetupApplication {
 		}
 
 		// Initialize and configure the data flow tracker
-		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
-		InPlaceInfoflow info = new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
+		IInPlaceInfoflow info = createInfoflowInternal(lifecycleMethods);
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
@@ -1537,6 +1547,19 @@ public class SetupApplication {
 		}));
 
 		return info;
+	}
+
+	/**
+	 * Creates the data flow engine on which to run the analysis. Derived classes
+	 * can override this method to use other data flow engines.
+	 * 
+	 * @param lifecycleMethods
+	 *            The set of Android lifecycle methods to consider
+	 * @return The data flow engine
+	 */
+	protected IInPlaceInfoflow createInfoflowInternal(Collection<SootMethod> lifecycleMethods) {
+		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
+		return new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 	}
 
 	/**

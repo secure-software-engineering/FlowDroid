@@ -70,6 +70,8 @@ import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.TaintPropagationResults.OnTaintPropagationResultAdded;
+import soot.jimple.infoflow.problems.rules.DefaultPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
@@ -99,20 +101,22 @@ public class Infoflow extends AbstractInfoflow {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private InfoflowResults results = null;
-	private InfoflowManager manager;
+	protected InfoflowResults results = null;
+	protected InfoflowManager manager;
 
-	private Set<ResultsAvailableHandler> onResultsAvailable = new HashSet<>();
-	private TaintPropagationHandler taintPropagationHandler = null;
-	private TaintPropagationHandler backwardsPropagationHandler = null;
-	private IMemoryManagerFactory memoryManagerFactory = new DefaultMemoryManagerFactory();
-	private IExecutorFactory executorFactory = new DefaultExecutorFactory();
+	protected Set<ResultsAvailableHandler> onResultsAvailable = new HashSet<>();
+	protected TaintPropagationHandler taintPropagationHandler = null;
+	protected TaintPropagationHandler backwardsPropagationHandler = null;
 
-	private long maxMemoryConsumption = -1;
-	private FlowDroidMemoryWatcher memoryWatcher = null;
+	protected IMemoryManagerFactory memoryManagerFactory = new DefaultMemoryManagerFactory();
+	protected IExecutorFactory executorFactory = new DefaultExecutorFactory();
+	protected IPropagationRuleManagerFactory ruleManagerFactory = new DefaultPropagationRuleManagerFactory();
 
-	private Set<Stmt> collectedSources = null;
-	private Set<Stmt> collectedSinks = null;
+	protected long maxMemoryConsumption = -1;
+	protected FlowDroidMemoryWatcher memoryWatcher = null;
+
+	protected Set<Stmt> collectedSources = null;
+	protected Set<Stmt> collectedSinks = null;
 
 	protected SootMethod dummyMainMethod = null;
 	protected Collection<SootMethod> additionalEntryPointMethods = null;
@@ -346,7 +350,7 @@ public class Infoflow extends AbstractInfoflow {
 				manager.setAliasing(aliasing);
 
 				// Initialize the data flow problem
-				InfoflowProblem forwardProblem = new InfoflowProblem(manager, zeroValue);
+				InfoflowProblem forwardProblem = new InfoflowProblem(manager, zeroValue, ruleManagerFactory);
 
 				// We need to create the right data flow solver
 				IInfoflowSolver forwardSolver = createForwardSolver(executor, forwardProblem);
@@ -1084,103 +1088,57 @@ public class Infoflow extends AbstractInfoflow {
 		return true;
 	}
 
-	/**
-	 * Adds a handler that is called when information flow results are available
-	 * 
-	 * @param handler
-	 *            The handler to add
-	 */
+	@Override
 	public void addResultsAvailableHandler(ResultsAvailableHandler handler) {
 		this.onResultsAvailable.add(handler);
 	}
 
-	/**
-	 * Sets a handler which is invoked whenever a taint is propagated
-	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating taints
-	 */
+	@Override
 	public void setTaintPropagationHandler(TaintPropagationHandler handler) {
 		this.taintPropagationHandler = handler;
 	}
 
-	/**
-	 * Sets a handler which is invoked whenever an alias is propagated backwards
-	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating aliases
-	 */
+	@Override
 	public void setBackwardsPropagationHandler(TaintPropagationHandler handler) {
 		this.backwardsPropagationHandler = handler;
 	}
 
-	/**
-	 * Removes a handler that is called when information flow results are available
-	 * 
-	 * @param handler
-	 *            The handler to remove
-	 */
+	@Override
 	public void removeResultsAvailableHandler(ResultsAvailableHandler handler) {
 		onResultsAvailable.remove(handler);
 	}
 
-	/**
-	 * Gets the maximum memory consumption during the last analysis run
-	 * 
-	 * @return The maximum memory consumption during the last analysis run if
-	 *         available, otherwise -1
-	 */
+	@Override
 	public long getMaxMemoryConsumption() {
 		return this.maxMemoryConsumption;
 	}
 
-	/**
-	 * Gets the concrete set of sources that have been collected in preparation for
-	 * the taint analysis. This method will return null if source and sink logging
-	 * has not been enabled (see InfoflowConfiguration. setLogSourcesAndSinks()),
-	 * 
-	 * @return The set of sources collected for taint analysis
-	 */
+	@Override
 	public Set<Stmt> getCollectedSources() {
 		return this.collectedSources;
 	}
 
-	/**
-	 * Gets the concrete set of sinks that have been collected in preparation for
-	 * the taint analysis. This method will return null if source and sink logging
-	 * has not been enabled (see InfoflowConfiguration. setLogSourcesAndSinks()),
-	 * 
-	 * @return The set of sinks collected for taint analysis
-	 */
+	@Override
 	public Set<Stmt> getCollectedSinks() {
 		return this.collectedSinks;
 	}
 
-	/**
-	 * Sets the factory to be used for creating memory managers
-	 * 
-	 * @param factory
-	 *            The memory manager factory to use
-	 */
+	@Override
 	public void setMemoryManagerFactory(IMemoryManagerFactory factory) {
 		this.memoryManagerFactory = factory;
 	}
 
-	/**
-	 * Sets the factoey to be used for creating thread pool executors
-	 * 
-	 * @param executorFactory
-	 *            The executor factory to use
-	 */
+	@Override
 	public void setExecutorFactory(IExecutorFactory executorFactory) {
 		this.executorFactory = executorFactory;
 	}
 
-	/**
-	 * Aborts the data flow analysis. This is useful when the analysis controller is
-	 * running in a different thread and the main thread (e.g., a GUI) wants to
-	 * abort the analysis
-	 */
+	@Override
+	public void setPropagationRuleManagerFactory(IPropagationRuleManagerFactory ruleManagerFactory) {
+		this.ruleManagerFactory = ruleManagerFactory;
+	}
+
+	@Override
 	public void abortAnalysis() {
 		ISolverTerminationReason reason = new AbortRequestedReason();
 

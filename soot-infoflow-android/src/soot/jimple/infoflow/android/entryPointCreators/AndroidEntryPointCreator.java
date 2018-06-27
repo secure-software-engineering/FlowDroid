@@ -290,7 +290,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		if (DEBUG || Options.v().validate())
 			mainMethod.getActiveBody().validate();
 
-		logger.debug("Generated main method:\n{}", body);
 		return mainMethod;
 	}
 

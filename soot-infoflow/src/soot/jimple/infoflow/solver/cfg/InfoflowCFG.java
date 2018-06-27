@@ -56,6 +56,9 @@ import soot.util.MultiMap;
  */
 public class InfoflowCFG implements IInfoflowCFG {
 
+	private final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
+	private final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
+
 	private static enum StaticFieldUse {
 		Unknown, Unused, Read, Write, ReadWrite
 	}
@@ -247,13 +250,13 @@ public class InfoflowCFG implements IInfoflowCFG {
 	@Override
 	public boolean isStaticFieldRead(SootMethod method, SootField variable) {
 		StaticFieldUse use = checkStaticFieldUsed(method, variable);
-		return use == StaticFieldUse.Read || use == StaticFieldUse.ReadWrite;
+		return use == StaticFieldUse.Read || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
 	@Override
 	public boolean isStaticFieldUsed(SootMethod method, SootField variable) {
 		StaticFieldUse use = checkStaticFieldUsed(method, variable);
-		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite;
+		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
 	private synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
@@ -266,14 +269,20 @@ public class InfoflowCFG implements IInfoflowCFG {
 		MultiMap<SootMethod, SootMethod> methodToCallees = new HashMultiMap<>();
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
+		int processedMethods = 0;
 		while (!workList.isEmpty()) {
 			// DFS: We need to be able post-process a method once we know what all the
 			// invocations do
 			SootMethod method = workList.remove(workList.size() - 1);
+			processedMethods++;
 
 			// Without a body, we cannot say much
 			if (!method.hasActiveBody())
 				continue;
+
+			// Limit the maximum analysis depth
+			if (processedMethods > MAX_STATIC_USE_ANALYSIS_DEPTH)
+				return StaticFieldUse.Unknown;
 
 			boolean hasInvocation = false;
 			boolean reads = false, writes = false;
@@ -399,10 +408,10 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 	@Override
 	public boolean hasSideEffects(SootMethod method) {
-		return hasSideEffects(method, new HashSet<SootMethod>());
+		return hasSideEffects(method, new HashSet<SootMethod>(), 0);
 	}
 
-	private boolean hasSideEffects(SootMethod method, Set<SootMethod> runList) {
+	private boolean hasSideEffects(SootMethod method, Set<SootMethod> runList, int depth) {
 		// Without a body, we cannot say much
 		if (!method.hasActiveBody())
 			return false;
@@ -415,6 +424,10 @@ public class InfoflowCFG implements IInfoflowCFG {
 		Boolean hasSideEffects = methodSideEffects.get(method);
 		if (hasSideEffects != null)
 			return hasSideEffects;
+
+		// Limit the maximum analysis depth
+		if (depth > MAX_SIDE_EFFECT_ANALYSIS_DEPTH)
+			return true;
 
 		// Scan for references to this variable
 		for (Unit u : method.getActiveBody().getUnits()) {
@@ -430,7 +443,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 			if (((Stmt) u).containsInvokeExpr())
 				for (Iterator<Edge> edgeIt = Scene.v().getCallGraph().edgesOutOf(u); edgeIt.hasNext();) {
 					Edge e = edgeIt.next();
-					if (hasSideEffects(e.getTgt().method(), runList))
+					if (hasSideEffects(e.getTgt().method(), runList, depth++))
 						return true;
 				}
 		}

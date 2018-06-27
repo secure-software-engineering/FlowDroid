@@ -48,6 +48,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -63,14 +64,15 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 	protected final TaintPropagationResults results;
 
-	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue) {
+	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
+			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager);
 
 		if (zeroValue != null)
 			setZeroValue(zeroValue);
 
 		this.results = new TaintPropagationResults(manager);
-		this.propagationRules = new PropagationRuleManager(manager, createZeroValue(), results);
+		this.propagationRules = ruleManagerFactory.createRuleManager(manager, zeroValue, results);
 	}
 
 	@Override
