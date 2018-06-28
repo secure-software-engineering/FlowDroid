@@ -68,11 +68,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager);
 
-		if (zeroValue != null)
-			setZeroValue(zeroValue);
-
+		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
 		this.results = new TaintPropagationResults(manager);
-		this.propagationRules = ruleManagerFactory.createRuleManager(manager, zeroValue, results);
+		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public abstract class AbstractInfoflowProblem
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private Abstraction zeroValue = null;
+	protected Abstraction zeroValue = null;
 
 	protected IInfoflowSolver solver = null;
 
