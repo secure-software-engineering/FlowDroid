@@ -1099,6 +1099,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		Options.v().set_keep_offset(false);
 		Options.v().set_throw_analysis(Options.throw_analysis_dalvik);
 		Options.v().set_process_multiple_dex(config.getMergeDexFiles());
+		Options.v().set_ignore_resolution_errors(true);
 
 		// Set the Soot configuration options. Note that this will needs to be
 		// done before we compute the classpath.
