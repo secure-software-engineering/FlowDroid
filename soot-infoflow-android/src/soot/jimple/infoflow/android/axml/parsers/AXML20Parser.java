@@ -56,6 +56,11 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 				if (tname == null) {
 					try {
 						SootClass rClass = Scene.v().forceResolve("android.R$attr", SootClass.BODIES);
+						if (rClass == null) {
+							// Without a name, we cannot really carry on
+							return;
+						}
+
 						outer: for (SootField sf : rClass.getFields())
 							for (Tag t : sf.getTags())
 								if (t instanceof IntegerConstantValueTag) {
