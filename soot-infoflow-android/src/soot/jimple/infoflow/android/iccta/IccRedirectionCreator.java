@@ -69,8 +69,9 @@ public class IccRedirectionCreator {
 	private static int num = 0;
 
 	private final static Logger logger = LoggerFactory.getLogger(IccRedirectionCreator.class);
-	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
-	private static RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
+
+	private final RefType INTENT_TYPE = RefType.v("android.content.Intent");
+	private final RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
 
 	private final Map<String, SootMethod> source2RedirectMethod = new HashMap<>();
 	private final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
