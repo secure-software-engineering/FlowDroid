@@ -1380,81 +1380,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 
 		// In one-component-at-a-time, we do not have a single entry point
-		// creator
-		List<SootClass> entrypointWorklist;
+		// creator. For every entry point, run the data flow analysis.
 		if (config.getOneComponentAtATime()) {
-			entrypointWorklist = new ArrayList<>(entrypoints);
+			List<SootClass> entrypointWorklist = new ArrayList<>(entrypoints);
+			while (!entrypointWorklist.isEmpty()) {
+				SootClass entrypoint = entrypointWorklist.remove(0);
+				processEntryPoint(sourcesAndSinks, resultAggregator, entrypointWorklist.size(), entrypoint);
+			}
 		} else
-			entrypointWorklist = null;
-
-		// For every entry point (or the dummy entry point which stands for all
-		// entry points at once), run the data flow analysis
-		while (entrypointWorklist == null || !entrypointWorklist.isEmpty()) {
-			SootClass entrypoint = entrypointWorklist == null ? null : entrypointWorklist.remove(0);
-
-			// Get rid of leftovers from the last entry point
-			resultAggregator.clearLastResults();
-
-			// Perform basic app parsing
-			try {
-				if (config.getOneComponentAtATime())
-					calculateCallbacks(sourcesAndSinks, entrypoint);
-				else
-					calculateCallbacks(sourcesAndSinks);
-			} catch (IOException | XmlPullParserException e) {
-				logger.error("Callgraph construction failed: " + e.getMessage());
-				e.printStackTrace();
-				throw new RuntimeException("Callgraph construction failed", e);
-			}
-
-			final Set<SourceSinkDefinition> sources = getSources();
-			final Set<SourceSinkDefinition> sinks = getSinks();
-			final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
-			if (config.getOneComponentAtATime())
-				logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",
-						apkFileLocation, (entrypoints.size() - entrypointWorklist.size()), entrypoints.size(),
-						entrypoint, sources == null ? 0 : sources.size(), sinks == null ? 0 : sinks.size());
-			else
-				logger.info("Running data flow analysis on {} with {} sources and {} sinks...", apkFileLocation,
-						sources == null ? 0 : sources.size(), sinks == null ? 0 : sinks.size());
-
-			// Create a new entry point and compute the flows in it. If we
-			// analyze all components together, we do not need a new callgraph,
-			// but can reuse the one from the callback collection phase.
-			if (config.getOneComponentAtATime() && config.getSootIntegrationMode().needsToBuildCallgraph()) {
-				createMainMethod(entrypoint);
-				constructCallgraphInternal();
-			}
-
-			// Create and run the data flow tracker
-			infoflow = createInfoflow();
-			infoflow.addResultsAvailableHandler(resultAggregator);
-			infoflow.runAnalysis(sourceSinkManager, entryPointCreator.getGeneratedMainMethod());
-
-			// Update the statistics
-			this.maxMemoryConsumption = Math.max(this.maxMemoryConsumption, infoflow.getMaxMemoryConsumption());
-			if (config.getLogSourcesAndSinks() && infoflow.getCollectedSources() != null)
-				this.collectedSources.addAll(infoflow.getCollectedSources());
-			if (config.getLogSourcesAndSinks() && infoflow.getCollectedSinks() != null)
-				this.collectedSinks.addAll(infoflow.getCollectedSinks());
-
-			// Print out the found results
-			{
-				int resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
-				if (config.getOneComponentAtATime())
-					logger.info("Found {} leaks for component {}", resCount, entrypoint);
-				else
-					logger.info("Found {} leaks", resCount);
-			}
-
-			// We don't need the computed callbacks anymore
-			this.callbackMethods.clear();
-			this.fragmentClasses.clear();
-
-			// Notify our result handlers
-			for (ResultsAvailableHandler handler : resultsAvailableHandlers)
-				handler.onResultsAvailable(resultAggregator.getLastICFG(), resultAggregator.getLastResults());
-		}
+			processEntryPoint(sourcesAndSinks, resultAggregator, -1, null);
 
 		// Write the results to disk if requested
 		serializeResults(resultAggregator.getAggregatedResults(), resultAggregator.getLastICFG());
@@ -1463,6 +1397,85 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		this.infoflow = null;
 		resultAggregator.clearLastResults();
 		return resultAggregator.getAggregatedResults();
+	}
+
+	/**
+	 * Runs the data flow analysis on the given entry point class
+	 * 
+	 * @param sourcesAndSinks
+	 *            The sources and sinks on which to run the data flow analysis
+	 * @param resultAggregator
+	 *            An object for aggregating the results from the individual data
+	 *            flow runs
+	 * @param numEntryPoints
+	 *            The total number of runs (for logging)
+	 * @param entrypoint
+	 *            The current entry point to analyze
+	 */
+	protected void processEntryPoint(ISourceSinkDefinitionProvider sourcesAndSinks,
+			MultiRunResultAggregator resultAggregator, int numEntryPoints, SootClass entrypoint) {
+		// Get rid of leftovers from the last entry point
+		resultAggregator.clearLastResults();
+
+		// Perform basic app parsing
+		try {
+			if (config.getOneComponentAtATime())
+				calculateCallbacks(sourcesAndSinks, entrypoint);
+			else
+				calculateCallbacks(sourcesAndSinks);
+		} catch (IOException | XmlPullParserException e) {
+			logger.error("Callgraph construction failed: " + e.getMessage());
+			e.printStackTrace();
+			throw new RuntimeException("Callgraph construction failed", e);
+		}
+
+		final Set<SourceSinkDefinition> sources = getSources();
+		final Set<SourceSinkDefinition> sinks = getSinks();
+		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
+		if (config.getOneComponentAtATime())
+			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",
+					apkFileLocation, (entrypoints.size() - numEntryPoints), entrypoints.size(), entrypoint,
+					sources == null ? 0 : sources.size(), sinks == null ? 0 : sinks.size());
+		else
+			logger.info("Running data flow analysis on {} with {} sources and {} sinks...", apkFileLocation,
+					sources == null ? 0 : sources.size(), sinks == null ? 0 : sinks.size());
+
+		// Create a new entry point and compute the flows in it. If we
+		// analyze all components together, we do not need a new callgraph,
+		// but can reuse the one from the callback collection phase.
+		if (config.getOneComponentAtATime() && config.getSootIntegrationMode().needsToBuildCallgraph()) {
+			createMainMethod(entrypoint);
+			constructCallgraphInternal();
+		}
+
+		// Create and run the data flow tracker
+		infoflow = createInfoflow();
+		infoflow.addResultsAvailableHandler(resultAggregator);
+		infoflow.runAnalysis(sourceSinkManager, entryPointCreator.getGeneratedMainMethod());
+
+		// Update the statistics
+		this.maxMemoryConsumption = Math.max(this.maxMemoryConsumption, infoflow.getMaxMemoryConsumption());
+		if (config.getLogSourcesAndSinks() && infoflow.getCollectedSources() != null)
+			this.collectedSources.addAll(infoflow.getCollectedSources());
+		if (config.getLogSourcesAndSinks() && infoflow.getCollectedSinks() != null)
+			this.collectedSinks.addAll(infoflow.getCollectedSinks());
+
+		// Print out the found results
+		{
+			int resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
+			if (config.getOneComponentAtATime())
+				logger.info("Found {} leaks for component {}", resCount, entrypoint);
+			else
+				logger.info("Found {} leaks", resCount);
+		}
+
+		// We don't need the computed callbacks anymore
+		this.callbackMethods.clear();
+		this.fragmentClasses.clear();
+
+		// Notify our result handlers
+		for (ResultsAvailableHandler handler : resultsAvailableHandlers)
+			handler.onResultsAvailable(resultAggregator.getLastICFG(), resultAggregator.getLastResults());
 	}
 
 	/**
