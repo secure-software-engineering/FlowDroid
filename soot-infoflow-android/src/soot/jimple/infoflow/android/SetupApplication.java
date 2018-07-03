@@ -1367,30 +1367,30 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		try {
 			parseAppResources();
 		} catch (IOException | XmlPullParserException e) {
-			logger.error("Callgraph construction failed: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("Callgraph construction failed", e);
 			throw new RuntimeException("Callgraph construction failed", e);
 		}
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
 
+		// We need at least one entry point
+		if (entrypoints == null || entrypoints.isEmpty()) {
+			logger.warn("No entry points");
+			return null;
+		}
+
 		// In one-component-at-a-time, we do not have a single entry point
 		// creator
 		List<SootClass> entrypointWorklist;
-		if (config.getOneComponentAtATime())
+		if (config.getOneComponentAtATime()) {
 			entrypointWorklist = new ArrayList<>(entrypoints);
-		else {
-			entrypointWorklist = new ArrayList<>();
-			SootClass dummyEntrypoint = Scene.v().getSootClassUnsafe("dummy");
-			if (dummyEntrypoint == null)
-				dummyEntrypoint = Scene.v().makeSootClass("dummy");
-			entrypointWorklist.add(dummyEntrypoint);
-		}
+		} else
+			entrypointWorklist = null;
 
 		// For every entry point (or the dummy entry point which stands for all
 		// entry points at once), run the data flow analysis
-		while (!entrypointWorklist.isEmpty()) {
-			SootClass entrypoint = entrypointWorklist.remove(0);
+		while (entrypointWorklist == null || !entrypointWorklist.isEmpty()) {
+			SootClass entrypoint = entrypointWorklist == null ? null : entrypointWorklist.remove(0);
 
 			// Get rid of leftovers from the last entry point
 			resultAggregator.clearLastResults();
