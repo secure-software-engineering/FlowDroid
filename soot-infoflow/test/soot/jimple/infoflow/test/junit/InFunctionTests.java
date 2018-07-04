@@ -33,7 +33,7 @@ public class InFunctionTests extends JUnitTests {
 	private static final String SOURCE_INT_PARAMETER2 = "@parameter1: int";
 
 	private static final String SINK_STRING_RETURN = "secret";
-	private static final String SINK_STRING_RETURN_R5 = "$r5";
+	private static final String SINK_STRING_RETURN_R5 = "$stack9";
 
 	@Test(timeout = 300000)
 	public void inFunctionTest1() {
