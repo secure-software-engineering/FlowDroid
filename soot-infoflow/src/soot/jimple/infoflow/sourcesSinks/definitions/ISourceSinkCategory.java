@@ -18,4 +18,11 @@ public interface ISourceSinkCategory {
 	 */
 	public String getHumanReadableDescription();
 
+	/**
+	 * Gets a machine-readable description of the current category.
+	 *  
+	 * @return An id for this category
+	 */
+	public String getID();
+
 }

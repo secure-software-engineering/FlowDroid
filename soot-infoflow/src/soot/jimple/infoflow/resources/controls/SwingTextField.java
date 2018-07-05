@@ -38,6 +38,11 @@ public class SwingTextField extends JavaSwingLayoutControl {
 				return "Text Input";
 			}
 
+			@Override
+			public String getID() {
+				return "TEXTINPUT";
+			}
+
 		});
 	}
 
