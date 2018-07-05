@@ -55,6 +55,11 @@ public class EditTextControl extends AndroidLayoutControl {
 				return "Password Input";
 			}
 
+			@Override
+			public String getID() {
+				return "PASSWORD";
+			}
+
 		});
 		UI_ELEMENT_SOURCE_DEF.setCategory(new ISourceSinkCategory() {
 
@@ -66,6 +71,11 @@ public class EditTextControl extends AndroidLayoutControl {
 			@Override
 			public String toString() {
 				return "UI Element";
+			}
+
+			@Override
+			public String getID() {
+				return "UIELEMENT";
 			}
 
 		});

@@ -3,9 +3,9 @@ package soot.jimple.infoflow.rifl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.xml.sax.SAXException;
@@ -19,8 +19,12 @@ import soot.jimple.infoflow.rifl.RIFLDocument.JavaParameterSpec;
 import soot.jimple.infoflow.rifl.RIFLDocument.JavaReturnValueSpec;
 import soot.jimple.infoflow.rifl.RIFLDocument.SourceSinkSpec;
 import soot.jimple.infoflow.rifl.RIFLDocument.SourceSinkType;
-import soot.jimple.infoflow.sourcesSinks.definitions.*;
+import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 
 /**
@@ -33,7 +37,8 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 	private final Set<SourceSinkDefinition> sources = new HashSet<>();
 	private final Set<SourceSinkDefinition> sinks = new HashSet<>();
 	private Set<SourceSinkDefinition> allMethods = null;
-	private String lastCategory=null;
+	private String lastCategory = null;
+
 	/**
 	 * Creates a new instance of the RIFLSourceSinkDefinitionProvider class
 	 *
@@ -59,36 +64,43 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 	 */
 	private void parseRawDefinition(SourceSinkSpec element) {
 		if (element.getType() == SourceSinkType.Source) {
-			SourceSinkDefinition sourceSinkDefinition=parseDefinition(element, SourceSinkType.Source);
+			SourceSinkDefinition sourceSinkDefinition = parseDefinition(element, SourceSinkType.Source);
 			sourceSinkDefinition.setCategory(new ISourceSinkCategory() {
 				@Override
 				public String getHumanReadableDescription() {
+					return lastCategory;
+				}
+
+				@Override
+				public String getID() {
 					return lastCategory;
 				}
 			});
 			sources.add(sourceSinkDefinition);
 
-		}
-		else if (element.getType() == SourceSinkType.Sink) {
-			SourceSinkDefinition sourceSinkDefinition=parseDefinition(element, SourceSinkType.Sink);
+		} else if (element.getType() == SourceSinkType.Sink) {
+			SourceSinkDefinition sourceSinkDefinition = parseDefinition(element, SourceSinkType.Sink);
 			sourceSinkDefinition.setCategory(new ISourceSinkCategory() {
 				@Override
 				public String getHumanReadableDescription() {
 					return lastCategory;
 				}
+
+				@Override
+				public String getID() {
+					return lastCategory.toUpperCase(Locale.US);
+				}
 			});
 			sinks.add(sourceSinkDefinition);
-		}
-		else if (element.getType() == SourceSinkType.Category) {
+		} else if (element.getType() == SourceSinkType.Category) {
 			Category cat = (Category) element;
-			lastCategory=cat.getName();
-			String[] s=lastCategory.split("_");
-			lastCategory="";
-			for(int i=0;i<s.length-1;++i)
-			{
-				if(i!=0)
-					lastCategory=lastCategory+" ";
-				lastCategory+=s[i];
+			lastCategory = cat.getName();
+			String[] s = lastCategory.split("_");
+			lastCategory = "";
+			for (int i = 0; i < s.length - 1; ++i) {
+				if (i != 0)
+					lastCategory = lastCategory + " ";
+				lastCategory += s[i];
 			}
 			for (SourceSinkSpec spec : cat.getElements())
 				parseRawDefinition(spec);
@@ -115,9 +127,8 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 					.getParameterTypesFromSubSignature(javaElement.getHalfSignature()));
 
 			// Build the parameter list
-			List<String> parameterTypes =new ArrayList<>();
-			if(parameters!=null)
-			{//handle empty parameter case
+			List<String> parameterTypes = new ArrayList<>();
+			if (parameters != null) {//handle empty parameter case
 
 				for (String p : parameters)
 					parameterTypes.add(p);
@@ -125,7 +136,7 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 			if (element instanceof JavaParameterSpec) {//sink
 				JavaParameterSpec paramSpec = (JavaParameterSpec) element;
 
-				Set<AccessPathTuple> returnValue =new HashSet<>();//dummy
+				Set<AccessPathTuple> returnValue = new HashSet<>();//dummy
 
 				SootMethodAndClass am = new SootMethodAndClass(methodName, javaElement.getClassName(), "",
 						parameterTypes);
@@ -138,8 +149,7 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 
 				SootMethodAndClass am = new SootMethodAndClass(methodName, javaElement.getClassName(), "",
 						parameterTypes);
-				SourceSinkDefinition def = new MethodSourceSinkDefinition(am, null, null, null,
-						CallType.MethodCall);
+				SourceSinkDefinition def = new MethodSourceSinkDefinition(am, null, null, null, CallType.MethodCall);
 				return def;
 			}
 		} else if (element instanceof JavaFieldSpec) {

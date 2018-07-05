@@ -38,6 +38,11 @@ public class SwingPasswordField extends JavaSwingLayoutControl {
 				return "Password Input";
 			}
 
+			@Override
+			public String getID() {
+				return "PASSWORD";
+			}
+
 		});
 	}
 
