@@ -1382,7 +1382,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		// This field does not exist, so we need to create it
 		String className = fieldSig.substring(1);
 		className = className.substring(0, className.indexOf(":"));
-		SootClass sc = Scene.v().getSootClassUnsafe(className);
+		SootClass sc = Scene.v().getSootClassUnsafe(className, true);
 		if (sc.resolvingLevel() < SootClass.SIGNATURES && !sc.isPhantom()) {
 			System.err.println("WARNING: Class not loaded: " + sc);
 			return null;
