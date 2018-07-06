@@ -276,4 +276,11 @@ public class CategoryDefinition implements ISourceSinkCategory {
 		return new CategoryDefinition(systemCategory, customCategory);
 	}
 
+	@Override
+	public String getID() {
+		if (systemCategory == CATEGORY.NO_CATEGORY)
+			return customCategory;
+		return systemCategory.name();
+	}
+
 }
