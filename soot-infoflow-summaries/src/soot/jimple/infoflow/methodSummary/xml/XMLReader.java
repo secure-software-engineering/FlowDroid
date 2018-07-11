@@ -390,7 +390,10 @@ public class XMLReader {
 	}
 
 	private int paramterIdx(Map<String, String> attributes) {
-		return Integer.parseInt(attributes.get(ATTRIBUTE_PARAMTER_INDEX));
+		String strIdx = attributes.get(ATTRIBUTE_PARAMTER_INDEX);
+		if (strIdx == null || strIdx.isEmpty())
+			throw new RuntimeException("Parameter index not specified");
+		return Integer.parseInt(strIdx);
 	}
 
 	private String getBaseType(Map<String, String> attributes) {

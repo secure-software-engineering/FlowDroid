@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +128,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
 	private ISolverTerminationReason killFlag = null;
-	private int maxCalleesPerCallSite = 10;
+
+	private int maxCalleesPerCallSite = 75;
+	private int maxAbstractionPathLength = 100;
 
 	/**
 	 * Creates a solver for the given problem, which caches flow functions and edge
@@ -287,42 +290,45 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// for each possible callee
 		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(n);
 		if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
-			for (SootMethod sCalledProcN : callees) { // still line 14
-				// Early termination check
-				if (killFlag != null)
-					return;
-				if (!sCalledProcN.isConcrete())
-					continue;
+			callees.stream().filter(m -> m.isConcrete()).forEach(new Consumer<SootMethod>() {
 
-				// compute the call-flow function
-				FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
-				Set<D> res = computeCallFlowFunction(function, d1, d2);
+				@Override
+				public void accept(SootMethod sCalledProcN) {
+					// Early termination check
+					if (killFlag != null)
+						return;
 
-				if (res != null && !res.isEmpty()) {
-					Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
-					// for each result node of the call-flow function
-					for (D d3 : res) {
-						if (memoryManager != null)
-							d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
-						if (d3 == null)
-							continue;
+					// compute the call-flow function
+					FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
+					Set<D> res = computeCallFlowFunction(function, d1, d2);
 
-						// for each callee's start point(s)
-						for (N sP : startPointsOf) {
-							// create initial self-loop
-							propagate(d3, sP, d3, n, false); // line 15
+					if (res != null && !res.isEmpty()) {
+						Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
+						// for each result node of the call-flow function
+						for (D d3 : res) {
+							if (memoryManager != null)
+								d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
+							if (d3 == null)
+								continue;
+
+							// for each callee's start point(s)
+							for (N sP : startPointsOf) {
+								// create initial self-loop
+								propagate(d3, sP, d3, n, false); // line 15
+							}
+
+							// register the fact that <sp,d3> has an incoming edge from
+							// <n,d2>
+							// line 15.1 of Naeem/Lhotak/Rodriguez
+							if (!addIncoming(sCalledProcN, d3, n, d1, d2))
+								continue;
+
+							applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
 						}
-
-						// register the fact that <sp,d3> has an incoming edge from
-						// <n,d2>
-						// line 15.1 of Naeem/Lhotak/Rodriguez
-						if (!addIncoming(sCalledProcN, d3, n, d1, d2))
-							continue;
-
-						applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
 					}
 				}
-			}
+
+			});
 		}
 
 		// line 17-19 of Naeem/Lhotak/Rodriguez
@@ -630,6 +636,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			if (sourceVal == null || targetVal == null)
 				return;
 		}
+
+		// Check the path length
+		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
+			return;
 
 		final PathEdge<N, D> edge = new PathEdge<N, D>(sourceVal, target, targetVal);
 		final D existingVal = addFunction(edge);

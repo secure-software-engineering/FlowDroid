@@ -793,14 +793,17 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								if (callee.isConcrete() && callee.hasActiveBody()) {
 									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, invExpr, null, null,
 											source.getAccessPath());
-									if (calleeAPs != null)
-										for (AccessPath ap : calleeAPs)
-											if (ap != null)
+									if (calleeAPs != null) {
+										for (AccessPath ap : calleeAPs) {
+											if (ap != null) {
 												if (!interproceduralCFG().methodReadsValue(callee,
 														ap.getPlainValue())) {
 													allCalleesRead = false;
 													break outer;
 												}
+											}
+										}
+									}
 								}
 
 								// Additional check: If all callees are library

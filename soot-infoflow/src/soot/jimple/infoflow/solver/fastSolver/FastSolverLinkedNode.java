@@ -50,4 +50,11 @@ public interface FastSolverLinkedNode<D, N> extends Cloneable {
 	 */
 	public D getActiveCopy();
 
+	/**
+	 * Gets the length of the path over which this node was propagated
+	 * 
+	 * @return The length of the path over which this node was propagated
+	 */
+	public int getPathLength();
+
 }

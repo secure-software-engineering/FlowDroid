@@ -74,6 +74,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	protected boolean dependsOnCutAP = false;
 
 	protected AtomicBitSet pathFlags = null;
+	protected int propagationPathLength = 0;
 
 	public static class NeighborHashingStrategy implements HashingStrategy<Abstraction> {
 
@@ -233,6 +234,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		Abstraction abs = new Abstraction(p, this);
 		abs.predecessor = this;
 		abs.currentStmt = currentStmt;
+		abs.propagationPathLength = propagationPathLength + 1;
 
 		if (!abs.getAccessPath().isEmpty())
 			abs.postdominators = null;
@@ -388,6 +390,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		abs.neighbors = null;
 		abs.currentStmt = null;
 		abs.correspondingCallSite = null;
+		abs.propagationPathLength = propagationPathLength + 1;
 
 		assert abs.equals(this);
 		return abs;
@@ -634,6 +637,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	@Override
 	public int getNeighborCount() {
 		return neighbors == null ? 0 : neighbors.size();
+	}
+
+	@Override
+	public int getPathLength() {
+		return propagationPathLength;
 	}
 
 }

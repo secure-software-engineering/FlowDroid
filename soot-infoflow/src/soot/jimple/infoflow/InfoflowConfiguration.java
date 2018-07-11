@@ -14,8 +14,8 @@ public class InfoflowConfiguration {
 	protected final static Logger logger = LoggerFactory.getLogger(InfoflowConfiguration.class);
 
 	/**
-	 * Enumeration containing the callgraph algorithms supported for the use
-	 * with the data flow tracker
+	 * Enumeration containing the callgraph algorithms supported for the use with
+	 * the data flow tracker
 	 */
 	public static enum CallgraphAlgorithm {
 		AutomaticSelection, CHA, VTA, RTA, SPARK, GEOM, OnDemand
@@ -38,8 +38,8 @@ public class InfoflowConfiguration {
 		 */
 		None,
 		/**
-		 * Perform lazy aliasing. Propagate every taint everywhere to on-demand
-		 * check whether it aliases with any value access
+		 * Perform lazy aliasing. Propagate every taint everywhere to on-demand check
+		 * whether it aliases with any value access
 		 */
 		Lazy
 	}
@@ -54,14 +54,14 @@ public class InfoflowConfiguration {
 		 */
 		NoCodeElimination,
 		/**
-		 * Perform an inter-procedural constant propagation and folding and then
-		 * remove all code that is unreachable
+		 * Perform an inter-procedural constant propagation and folding and then remove
+		 * all code that is unreachable
 		 */
 		PropagateConstants,
 		/**
-		 * In addition to the inter-procedural constant propagation and folding,
-		 * also remove live code that cannot potentially influence the outcome
-		 * of the taint analysis
+		 * In addition to the inter-procedural constant propagation and folding, also
+		 * remove live code that cannot potentially influence the outcome of the taint
+		 * analysis
 		 */
 		RemoveSideEffectFreeCode
 	}
@@ -82,8 +82,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Enumeration containing the supported modes how the data flow analyzer
-	 * shall handle implicit flows
+	 * Enumeration containing the supported modes how the data flow analyzer shall
+	 * handle implicit flows
 	 */
 	public static enum ImplicitFlowMode {
 		/**
@@ -91,8 +91,8 @@ public class InfoflowConfiguration {
 		 */
 		NoImplicitFlows,
 		/**
-		 * Create a new taint when a non-tainted array is accessed using a
-		 * tainted index, but do not flow other control-flow dependencies
+		 * Create a new taint when a non-tainted array is accessed using a tainted
+		 * index, but do not flow other control-flow dependencies
 		 */
 		ArrayAccesses,
 		/**
@@ -101,11 +101,10 @@ public class InfoflowConfiguration {
 		AllImplicitFlows;
 
 		/**
-		 * Gets whether the current mode tracks array accesses on tainted
-		 * indices
+		 * Gets whether the current mode tracks array accesses on tainted indices
 		 * 
-		 * @return True if the current mode tracks array accesses on tainted
-		 *         indices, otherwise false
+		 * @return True if the current mode tracks array accesses on tainted indices,
+		 *         otherwise false
 		 */
 		public boolean trackArrayAccesses() {
 			return this == AllImplicitFlows || this == ArrayAccesses;
@@ -114,8 +113,8 @@ public class InfoflowConfiguration {
 		/**
 		 * Gets whether the current mode tracks control flow dependencies
 		 * 
-		 * @return True if the current mode tracks control flow dependencies,
-		 *         otherwise false
+		 * @return True if the current mode tracks control flow dependencies, otherwise
+		 *         false
 		 */
 		public boolean trackControlFlowDependencies() {
 			return this == AllImplicitFlows;
@@ -124,9 +123,9 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Supported modes for reconstructing paths between sources and sinks. This
-	 * mode does not influence the association between sources and sinks, only
-	 * the processing of the path in between.
+	 * Supported modes for reconstructing paths between sources and sinks. This mode
+	 * does not influence the association between sources and sinks, only the
+	 * processing of the path in between.
 	 */
 	public enum PathReconstructionMode {
 		/**
@@ -134,24 +133,23 @@ public class InfoflowConfiguration {
 		 */
 		NoPaths,
 		/**
-		 * Reconstruct the path between source and sink, but allow for
-		 * simplifications to improve performance
+		 * Reconstruct the path between source and sink, but allow for simplifications
+		 * to improve performance
 		 */
 		Fast,
 		/**
-		 * Reconstruct the precise path between source and sink, do not simply
-		 * anything. This is the most precise option, but may also take the
-		 * longest.
+		 * Reconstruct the precise path between source and sink, do not simply anything.
+		 * This is the most precise option, but may also take the longest.
 		 */
 		Precise;
 
 		/**
-		 * Gets whether this configuration reconstructs the data flow paths
-		 * between source and sink
+		 * Gets whether this configuration reconstructs the data flow paths between
+		 * source and sink
 		 * 
-		 * @return True if this configuration reconstructs the data flow paths
-		 *         between source and sink, otherwise (i.e., if only the
-		 *         source-to-sink mappings are reconstructed) false
+		 * @return True if this configuration reconstructs the data flow paths between
+		 *         source and sink, otherwise (i.e., if only the source-to-sink mappings
+		 *         are reconstructed) false
 		 */
 		public boolean reconstructPaths() {
 			return this != NoPaths;
@@ -163,36 +161,35 @@ public class InfoflowConfiguration {
 	 */
 	public enum PathBuildingAlgorithm {
 		/**
-		 * Simple context-insensitive, single-threaded, recursive approach to
-		 * path reconstruction. Low overhead for small examples, but does not
-		 * scale.
+		 * Simple context-insensitive, single-threaded, recursive approach to path
+		 * reconstruction. Low overhead for small examples, but does not scale.
 		 */
 		Recursive,
 		/**
-		 * Highly precise context-sensitive path reconstruction approach. For a
-		 * large number of paths or complex programs, it may be slow.
+		 * Highly precise context-sensitive path reconstruction approach. For a large
+		 * number of paths or complex programs, it may be slow.
 		 */
 		ContextSensitive,
 		/**
-		 * A context-insensitive path reconstruction algorithm. It scales well,
-		 * but may introduce false positives.
+		 * A context-insensitive path reconstruction algorithm. It scales well, but may
+		 * introduce false positives.
 		 */
 		ContextInsensitive,
 		/**
-		 * Very fast context-insensitive implementation that only finds
-		 * source-to-sink connections, but no paths.
+		 * Very fast context-insensitive implementation that only finds source-to-sink
+		 * connections, but no paths.
 		 */
 		ContextInsensitiveSourceFinder,
 		/**
-		 * An empty implementation that not reconstruct any paths and always
-		 * returns an empty set. For internal use only.
+		 * An empty implementation that not reconstruct any paths and always returns an
+		 * empty set. For internal use only.
 		 */
 		None
 	}
 
 	/**
-	 * The configuration that defines how FlowDroid shall handle between sources
-	 * and sinks
+	 * The configuration that defines how FlowDroid shall handle between sources and
+	 * sinks
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -209,8 +206,7 @@ public class InfoflowConfiguration {
 		private int pathReconstructionBatchSize = 5;
 
 		/**
-		 * Copies the settings of the given configuration into this
-		 * configuration object
+		 * Copies the settings of the given configuration into this configuration object
 		 * 
 		 * @param pathConfig
 		 *            The other configuration object
@@ -227,69 +223,67 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets whether FlowDroid shall perform sequential path reconstruction
-		 * instead of running all reconstruction tasks concurrently. This can
-		 * reduce the memory consumption, but will likely take longer when
-		 * memory is not an issue.
+		 * Gets whether FlowDroid shall perform sequential path reconstruction instead
+		 * of running all reconstruction tasks concurrently. This can reduce the memory
+		 * consumption, but will likely take longer when memory is not an issue.
 		 * 
-		 * @return True if the path reconstruction tasks shall be run
-		 *         sequentially, false for running them in parallel
+		 * @return True if the path reconstruction tasks shall be run sequentially,
+		 *         false for running them in parallel
 		 */
 		public boolean getSequentialPathProcessing() {
 			return this.sequentialPathProcessing;
 		}
 
 		/**
-		 * Sets whether FlowDroid shall perform sequential path reconstruction
-		 * instead of running all reconstruction tasks concurrently. This can
-		 * reduce the memory consumption, but will likely take longer when
-		 * memory is not an issue.
+		 * Sets whether FlowDroid shall perform sequential path reconstruction instead
+		 * of running all reconstruction tasks concurrently. This can reduce the memory
+		 * consumption, but will likely take longer when memory is not an issue.
 		 * 
 		 * @param sequentialPathProcessing
-		 *            True if the path reconstruction tasks shall be run
-		 *            sequentially, false for running them in parallel
+		 *            True if the path reconstruction tasks shall be run sequentially,
+		 *            false for running them in parallel
 		 */
 		public void setSequentialPathProcessing(boolean sequentialPathProcessing) {
 			this.sequentialPathProcessing = sequentialPathProcessing;
 		}
 
 		/**
-		 * Gets the mode that defines how the paths between sources and sinks
-		 * shall be reconstructed
+		 * Gets the mode that defines how the paths between sources and sinks shall be
+		 * reconstructed
 		 * 
-		 * @return The mode that defines how the paths between sources and sinks
-		 *         shall be reconstructed
+		 * @return The mode that defines how the paths between sources and sinks shall
+		 *         be reconstructed
 		 */
 		public PathReconstructionMode getPathReconstructionMode() {
 			return pathReconstructionMode;
 		}
 
 		/**
-		 * Sets the mode that defines how the paths between sources and sinks
-		 * shall be reconstructed
+		 * Sets the mode that defines how the paths between sources and sinks shall be
+		 * reconstructed
 		 * 
 		 * @param pathReconstructionMode
-		 *            The mode that defines how the paths between sources and
-		 *            sinks shall be reconstructed
+		 *            The mode that defines how the paths between sources and sinks
+		 *            shall be reconstructed
 		 */
 		public void setPathReconstructionMode(PathReconstructionMode pathReconstructionMode) {
 			this.pathReconstructionMode = pathReconstructionMode;
 		}
 
 		/**
-		 * Gets the algorithm that shall be used for reconstructing the
-		 * propagation paths between source and sink
+		 * Gets the algorithm that shall be used for reconstructing the propagation
+		 * paths between source and sink
 		 * 
-		 * @return The algorithm that shall be used for reconstructing the
-		 *         propagation paths between source and sink
+		 * @return The algorithm that shall be used for reconstructing the propagation
+		 *         paths between source and sink
 		 */
 		public PathBuildingAlgorithm getPathBuildingAlgorithm() {
 			return pathBuildingAlgorithm;
 		}
 
 		/**
-		 * Sets the algorithm that shall be used for reconstructing the
-		 * propagation paths between source and sink
+		 * Sets the algorithm that shall be used for reconstructing the propagation
+		 * paths between source and sink
 		 * 
 		 * @param pathBuildingAlgorithm
 		 *            The algorithm that shall be used for reconstructing the
@@ -300,9 +294,8 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the maximum call stack size. If the call stack grows longer than
-		 * this amount of entries, the respective path will no longer be
-		 * followed.
+		 * Sets the maximum call stack size. If the call stack grows longer than this
+		 * amount of entries, the respective path will no longer be followed.
 		 * 
 		 * @param maxCallStackSize
 		 *            The maximum call stack size
@@ -312,9 +305,8 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the maximum call stack size. If the call stack grows longer than
-		 * this amount of entries, the respective path will no longer be
-		 * followed.
+		 * Gets the maximum call stack size. If the call stack grows longer than this
+		 * amount of entries, the respective path will no longer be followed.
 		 * 
 		 * @return The maximum call stack size
 		 */
@@ -323,9 +315,9 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the maximum size for taint propagation paths. If a path is
-		 * growing longer than this limit, the path reconstruction is aborted
-		 * and the respective path is skipped.
+		 * Gets the maximum size for taint propagation paths. If a path is growing
+		 * longer than this limit, the path reconstruction is aborted and the respective
+		 * path is skipped.
 		 * 
 		 * @return The maximum length of a taint propagtation path3
 		 */
@@ -334,9 +326,9 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the maximum size for taint propagation paths. If a path is
-		 * growing longer than this limit, the path reconstruction is aborted
-		 * and the respective path is skipped.
+		 * Sets the maximum size for taint propagation paths. If a path is growing
+		 * longer than this limit, the path reconstruction is aborted and the respective
+		 * path is skipped.
 		 * 
 		 * @param maxPathLenfgth
 		 *            The maximum length of a taint propagtation path3
@@ -346,21 +338,18 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the maximum number of paths that shall be recorded per
-		 * abstraction. If this threshold is reached, all further paths will be
-		 * discarded.
+		 * Gets the maximum number of paths that shall be recorded per abstraction. If
+		 * this threshold is reached, all further paths will be discarded.
 		 * 
-		 * @return The maximum number of paths that shall be recorded per
-		 *         abstraction.
+		 * @return The maximum number of paths that shall be recorded per abstraction.
 		 */
 		public int getMaxPathsPerAbstraction() {
 			return maxPathsPerAbstraction;
 		}
 
 		/**
-		 * Sets the maximum number of paths that shall be recorded per
-		 * abstraction. If this threshold is reached, all further paths will be
-		 * discarded.
+		 * Sets the maximum number of paths that shall be recorded per abstraction. If
+		 * this threshold is reached, all further paths will be discarded.
 		 * 
 		 * @param maxPathsPerAbstraction
 		 *            The maximum number of paths that shall be recorded per
@@ -371,44 +360,41 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the timeout in seconds after which path reconstruction shall be
-		 * aborted. This timeout is applied after the data flow analysis has
-		 * been completed. If incremental path reconstruction is used, it is
-		 * applied for the remaining path reconstruction after the data flow
-		 * analysis has been completed. If incremental path reconstruction is
-		 * not used, the timeout is applied to the complete path reconstruction
-		 * phase, because it does not overlap with the data flow analysis phase
-		 * in this case.
+		 * Gets the timeout in seconds after which path reconstruction shall be aborted.
+		 * This timeout is applied after the data flow analysis has been completed. If
+		 * incremental path reconstruction is used, it is applied for the remaining path
+		 * reconstruction after the data flow analysis has been completed. If
+		 * incremental path reconstruction is not used, the timeout is applied to the
+		 * complete path reconstruction phase, because it does not overlap with the data
+		 * flow analysis phase in this case.
 		 * 
-		 * @return The timeout in seconds after which the path reconstruction
-		 *         shall be aborted
+		 * @return The timeout in seconds after which the path reconstruction shall be
+		 *         aborted
 		 */
 		public long getPathReconstructionTimeout() {
 			return this.pathReconstructionTimeout;
 		}
 
 		/**
-		 * Sets the timeout in seconds after which path reconstruction shall be
-		 * aborted. This timeout is applied after the data flow analysis has
-		 * been completed. If incremental path reconstruction is used, it is
-		 * applied for the remaining path reconstruction after the data flow
-		 * analysis has been completed. If incremental path reconstruction is
-		 * not used, the timeout is applied to the complete path reconstruction
-		 * phase, because it does not overlap with the data flow analysis phase
-		 * in this case.
+		 * Sets the timeout in seconds after which path reconstruction shall be aborted.
+		 * This timeout is applied after the data flow analysis has been completed. If
+		 * incremental path reconstruction is used, it is applied for the remaining path
+		 * reconstruction after the data flow analysis has been completed. If
+		 * incremental path reconstruction is not used, the timeout is applied to the
+		 * complete path reconstruction phase, because it does not overlap with the data
+		 * flow analysis phase in this case.
 		 * 
 		 * @param timeout
-		 *            The timeout in seconds after which the path reconstruction
-		 *            shall be aborted
+		 *            The timeout in seconds after which the path reconstruction shall
+		 *            be aborted
 		 */
 		public void setPathReconstructionTimeout(long timeout) {
 			this.pathReconstructionTimeout = timeout;
 		}
 
 		/**
-		 * Gets the number of paths that shall be reconstructed in one batch.
-		 * Reduce this value to lower memory pressure during path
-		 * reconstruction.
+		 * Gets the number of paths that shall be reconstructed in one batch. Reduce
+		 * this value to lower memory pressure during path reconstruction.
 		 * 
 		 * @return The number of paths that shall be reconstructed in one batch
 		 */
@@ -417,13 +403,11 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the number of paths that shall be reconstructed in one batch.
-		 * Reduce this value to lower memory pressure during path
-		 * reconstruction.
+		 * Sets the number of paths that shall be reconstructed in one batch. Reduce
+		 * this value to lower memory pressure during path reconstruction.
 		 * 
 		 * @param pathReconstructionBatchSize
-		 *            The number of paths that shall be reconstructed in one
-		 *            batch
+		 *            The number of paths that shall be reconstructed in one batch
 		 */
 		public void setPathReconstructionBatchSize(int pathReconstructionBatchSize) {
 			this.pathReconstructionBatchSize = pathReconstructionBatchSize;
@@ -488,8 +472,7 @@ public class InfoflowConfiguration {
 		private long resultSerializationTimeout = 0;
 
 		/**
-		 * Copies the settings of the given configuration into this
-		 * configuration object
+		 * Copies the settings of the given configuration into this configuration object
 		 * 
 		 * @param outputConfig
 		 *            The other configuration object
@@ -502,68 +485,65 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets whether FlowDroid shall exclude the passed values to sources and
-		 * sinks from the xml output from the analysis
+		 * Gets whether FlowDroid shall exclude the passed values to sources and sinks
+		 * from the xml output from the analysis
 		 * 
-		 * @return True if FlowDroid shall exclude the passed values to sources
-		 *         and sinks, otherwise false
+		 * @return True if FlowDroid shall exclude the passed values to sources and
+		 *         sinks, otherwise false
 		 */
 		public boolean getNoPassedValues() {
 			return this.noPassedValues;
 		}
 
 		/**
-		 * Sets whether to exclude the call graph fraction from the entry points
-		 * to the source in the xml output
+		 * Sets whether to exclude the call graph fraction from the entry points to the
+		 * source in the xml output
 		 * 
 		 * @param noCallGraphFraction
-		 *            True if the call graph fraction from the entry points to
-		 *            the source shall be excluded from the xml output
+		 *            True if the call graph fraction from the entry points to the
+		 *            source shall be excluded from the xml output
 		 */
 		public void setNoCallGraphFraction(boolean noCallGraphFraction) {
 			this.noCallGraphFraction = noCallGraphFraction;
 		}
 
 		/**
-		 * Gets whether to exclude the call graph fraction from the entry points
-		 * to the source in the xml output
+		 * Gets whether to exclude the call graph fraction from the entry points to the
+		 * source in the xml output
 		 * 
-		 * @return True if the call graph fraction from the entry points to the
-		 *         source shall be excluded from the xml output
+		 * @return True if the call graph fraction from the entry points to the source
+		 *         shall be excluded from the xml output
 		 */
 		public boolean getNoCallGraphFraction() {
 			return noCallGraphFraction;
 		}
 
 		/**
-		 * Specifies the maximum number of callers that shall be considered per
-		 * node when writing out the call graph fraction from the entry point to
-		 * the source.
+		 * Specifies the maximum number of callers that shall be considered per node
+		 * when writing out the call graph fraction from the entry point to the source.
 		 * 
 		 * @param maxCallers
-		 *            The maximum number of callers to consider when writing out
-		 *            the call graph fraction between entry point and source
+		 *            The maximum number of callers to consider when writing out the
+		 *            call graph fraction between entry point and source
 		 */
 		public void setMaxCallersInOutputFile(int maxCallers) {
 			this.maxCallersInOutputFile = maxCallers;
 		}
 
 		/**
-		 * Gets the maximum number of callers that shall be considered per node
-		 * when writing out the call graph fraction from the entry point to the
-		 * source.
+		 * Gets the maximum number of callers that shall be considered per node when
+		 * writing out the call graph fraction from the entry point to the source.
 		 * 
-		 * @return The maximum number of callers to consider when writing out
-		 *         the call graph fraction between entry point and source
+		 * @return The maximum number of callers to consider when writing out the call
+		 *         graph fraction between entry point and source
 		 */
 		public int getMaxCallersInOutputFile() {
 			return this.maxCallersInOutputFile;
 		}
 
 		/**
-		 * Sets the timeout in seconds for the result serialization process.
-		 * Writing out the results is aborted if it takes longer than the given
-		 * amount of time.
+		 * Sets the timeout in seconds for the result serialization process. Writing out
+		 * the results is aborted if it takes longer than the given amount of time.
 		 * 
 		 * @param timeout
 		 *            The maximum time for writing out the results in seconds
@@ -573,9 +553,8 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the timeout for the result serialization process in seconds.
-		 * Writing out the results is aborted if it takes longer than the given
-		 * amount of time.
+		 * Gets the timeout for the result serialization process in seconds. Writing out
+		 * the results is aborted if it takes longer than the given amount of time.
 		 * 
 		 * @result The maximum time for writing out the results in seconds
 		 */
@@ -584,12 +563,12 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the option for exclusion of the passed values to sources and
-		 * sinks in the xml output
+		 * Sets the option for exclusion of the passed values to sources and sinks in
+		 * the xml output
 		 * 
 		 * @param noPassedValues
-		 *            the boolean value whether passed values should be excluded
-		 *            from the xml output
+		 *            the boolean value whether passed values should be excluded from
+		 *            the xml output
 		 */
 		public void setNoPassedValues(boolean noPassedValues) {
 			this.noPassedValues = noPassedValues;
@@ -638,11 +617,11 @@ public class InfoflowConfiguration {
 
 		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive;
 		private int maxJoinPointAbstractions = 10;
-		private int maxCalleesPerCallSite = 10;
+		private int maxCalleesPerCallSite = 75;
+		private int maxAbstractionPathLength = 100;
 
 		/**
-		 * Copies the settings of the given configuration into this
-		 * configuration object
+		 * Copies the settings of the given configuration into this configuration object
 		 * 
 		 * @param solverConfig
 		 *            The other configuration object
@@ -651,6 +630,7 @@ public class InfoflowConfiguration {
 			this.dataFlowSolver = solverConfig.dataFlowSolver;
 			this.maxJoinPointAbstractions = solverConfig.maxJoinPointAbstractions;
 			this.maxCalleesPerCallSite = solverConfig.maxCalleesPerCallSite;
+			this.maxAbstractionPathLength = solverConfig.maxAbstractionPathLength;
 		}
 
 		/**
@@ -673,41 +653,38 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Gets the maximum number of abstractions that shall be recorded per
-		 * join point. In other words, enabling this option disables the
-		 * recording of neighbors beyond the given count. This greatly reduces
-		 * the memory requirements of the analysis. On the other hand, if data
-		 * is tainted from two different sources, only some of them will be
-		 * reported.
+		 * Gets the maximum number of abstractions that shall be recorded per join
+		 * point. In other words, enabling this option disables the recording of
+		 * neighbors beyond the given count. This greatly reduces the memory
+		 * requirements of the analysis. On the other hand, if data is tainted from two
+		 * different sources, only some of them will be reported.
 		 * 
-		 * @return The maximum number of abstractions per join point, or -1 to
-		 *         record an arbitrary number of join point abstractions
+		 * @return The maximum number of abstractions per join point, or -1 to record an
+		 *         arbitrary number of join point abstractions
 		 */
 		public int getMaxJoinPointAbstractions() {
 			return this.maxJoinPointAbstractions;
 		}
 
 		/**
-		 * Sets the maximum number of abstractions that shall be recorded per
-		 * join point. In other words, enabling this option disables the
-		 * recording of neighbors beyond the given count. This greatly reduces
-		 * the memory requirements of the analysis. On the other hand, if data
-		 * is tainted from two different sources, only some of them will be
-		 * reported.
+		 * Sets the maximum number of abstractions that shall be recorded per join
+		 * point. In other words, enabling this option disables the recording of
+		 * neighbors beyond the given count. This greatly reduces the memory
+		 * requirements of the analysis. On the other hand, if data is tainted from two
+		 * different sources, only some of them will be reported.
 		 * 
 		 * @param maxJoinPointAbstractions
-		 *            The maximum number of abstractions per join point, or -1
-		 *            to record an arbitrary number of join point abstractions
+		 *            The maximum number of abstractions per join point, or -1 to record
+		 *            an arbitrary number of join point abstractions
 		 */
 		public void setMaxJoinPointAbstractions(int maxJoinPointAbstractions) {
 			this.maxJoinPointAbstractions = maxJoinPointAbstractions;
 		}
 
 		/**
-		 * Gets the maximum number of callees permitted per call site. If a call
-		 * site has more callees than this limit, the call site is ignored
-		 * completely. Use this limit to reduce the impact of imprecise call
-		 * graphs.
+		 * Gets the maximum number of callees permitted per call site. If a call site
+		 * has more callees than this limit, the call site is ignored completely. Use
+		 * this limit to reduce the impact of imprecise call graphs.
 		 * 
 		 * @return The maximum number of callees per call site
 		 */
@@ -716,10 +693,9 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the maximum number of callees permitted per call site. If a call
-		 * site has more callees than this limit, the call site is ignored
-		 * completely. Use this limit to reduce the impact of imprecise call
-		 * graphs.
+		 * Sets the maximum number of callees permitted per call site. If a call site
+		 * has more callees than this limit, the call site is ignored completely. Use
+		 * this limit to reduce the impact of imprecise call graphs.
 		 * 
 		 * @param maxCalleesPerCallSite
 		 *            The maximum number of callees per call site
@@ -729,15 +705,35 @@ public class InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets the maximum number of join point abstractions to a single
-		 * abstraction.
+		 * Sets the maximum number of join point abstractions to a single abstraction.
 		 * 
 		 * @param singleJointAbstraction
-		 *            True to configure the solver to register only a single
-		 *            join point abstraction
+		 *            True to configure the solver to register only a single join point
+		 *            abstraction
 		 */
 		public void setSingleJoinPointAbstraction(boolean singleJointAbstraction) {
 			this.maxJoinPointAbstractions = singleJointAbstraction ? 1 : 10;
+		}
+
+		/**
+		 * Gets the maximum length over which an abstraction may be propagated before
+		 * the abstractions is dropped
+		 * 
+		 * @return The maximum length over which an abstraction may be propagated
+		 */
+		public int getMaxAbstractionPathLength() {
+			return maxAbstractionPathLength;
+		}
+
+		/**
+		 * Sets the maximum length over which an abstraction may be propagated before
+		 * the abstractions is dropped
+		 * 
+		 * @param maxAbstractionPathLength
+		 *            The maximum length over which an abstraction may be propagated
+		 */
+		public void setMaxAbstractionPathLength(int maxAbstractionPathLength) {
+			this.maxAbstractionPathLength = maxAbstractionPathLength;
 		}
 
 		@Override
@@ -747,6 +743,7 @@ public class InfoflowConfiguration {
 			result = prime * result + ((dataFlowSolver == null) ? 0 : dataFlowSolver.hashCode());
 			result = prime * result + maxCalleesPerCallSite;
 			result = prime * result + maxJoinPointAbstractions;
+			result = prime * result + maxAbstractionPathLength;
 			return result;
 		}
 
@@ -764,6 +761,8 @@ public class InfoflowConfiguration {
 			if (maxCalleesPerCallSite != other.maxCalleesPerCallSite)
 				return false;
 			if (maxJoinPointAbstractions != other.maxJoinPointAbstractions)
+				return false;
+			if (maxAbstractionPathLength != other.maxAbstractionPathLength)
 				return false;
 			return true;
 		}
@@ -856,8 +855,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets the maximum depth of the access paths. All paths will be truncated
-	 * if they exceed the given size.
+	 * Gets the maximum depth of the access paths. All paths will be truncated if
+	 * they exceed the given size.
 	 * 
 	 * @param accessPathLength
 	 *            the maximum value of an access path.
@@ -867,38 +866,38 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets the maximum depth of the access paths. All paths will be truncated
-	 * if they exceed the given size.
+	 * Sets the maximum depth of the access paths. All paths will be truncated if
+	 * they exceed the given size.
 	 * 
 	 * @param accessPathLength
-	 *            the maximum value of an access path. If it gets longer than
-	 *            this value, it is truncated and all following fields are
-	 *            assumed as tainted (which is imprecise but gains performance)
-	 *            Default value is 5.
+	 *            the maximum value of an access path. If it gets longer than this
+	 *            value, it is truncated and all following fields are assumed as
+	 *            tainted (which is imprecise but gains performance) Default value
+	 *            is 5.
 	 */
 	public void setAccessPathLength(int accessPathLength) {
 		this.accessPathLength = accessPathLength;
 	}
 
 	/**
-	 * Sets whether results (source-to-sink connections) that only differ in
-	 * their propagation paths shall be merged into a single result or not.
+	 * Sets whether results (source-to-sink connections) that only differ in their
+	 * propagation paths shall be merged into a single result or not.
 	 * 
 	 * @param pathAgnosticResults
-	 *            True if two results shall be regarded as equal if they connect
-	 *            the same source and sink, even if their propagation paths
-	 *            differ, otherwise false
+	 *            True if two results shall be regarded as equal if they connect the
+	 *            same source and sink, even if their propagation paths differ,
+	 *            otherwise false
 	 */
 	public static void setPathAgnosticResults(boolean pathAgnosticResults) {
 		InfoflowConfiguration.pathAgnosticResults = pathAgnosticResults;
 	}
 
 	/**
-	 * Gets whether results (source-to-sink connections) that only differ in
-	 * their propagation paths shall be merged into a single result or not.
+	 * Gets whether results (source-to-sink connections) that only differ in their
+	 * propagation paths shall be merged into a single result or not.
 	 * 
-	 * @return True if two results shall be regarded as equal if they connect
-	 *         the same source and sink, even if their propagation paths differ,
+	 * @return True if two results shall be regarded as equal if they connect the
+	 *         same source and sink, even if their propagation paths differ,
 	 *         otherwise false
 	 */
 	public static boolean getPathAgnosticResults() {
@@ -906,8 +905,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether different results shall be reported if they only differ in
-	 * the access path the reached the sink or left the source
+	 * Gets whether different results shall be reported if they only differ in the
+	 * access path the reached the sink or left the source
 	 * 
 	 * @return True if results shall also be distinguished based on access paths
 	 */
@@ -916,20 +915,19 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether different results shall be reported if they only differ in
-	 * the access path the reached the sink or left the source
+	 * Gets whether different results shall be reported if they only differ in the
+	 * access path the reached the sink or left the source
 	 * 
 	 * @param oneResultPerAP
-	 *            True if results shall also be distinguished based on access
-	 *            paths
+	 *            True if results shall also be distinguished based on access paths
 	 */
 	public static void setOneResultPerAccessPath(boolean oneResultPerAP) {
 		oneResultPerAccessPath = oneResultPerAP;
 	}
 
 	/**
-	 * Gets whether neighbors at the same statement shall be merged into a
-	 * single abstraction
+	 * Gets whether neighbors at the same statement shall be merged into a single
+	 * abstraction
 	 * 
 	 * @return True if equivalent neighbor shall be merged, otherwise false
 	 */
@@ -938,8 +936,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether neighbors at the same statement shall be merged into a
-	 * single abstraction
+	 * Sets whether neighbors at the same statement shall be merged into a single
+	 * abstraction
 	 * 
 	 * @param value
 	 *            True if equivalent neighbor shall be merged, otherwise false
@@ -949,8 +947,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether recursive access paths shall be reduced, e.g. whether we
-	 * shall propagate a.[next].data instead of a.next.next.data.
+	 * Gets whether recursive access paths shall be reduced, e.g. whether we shall
+	 * propagate a.[next].data instead of a.next.next.data.
 	 * 
 	 * @return True if recursive access paths shall be reduced, otherwise false
 	 */
@@ -959,12 +957,11 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether recursive access paths shall be reduced, e.g. whether we
-	 * shall propagate a.[next].data instead of a.next.next.data.
+	 * Sets whether recursive access paths shall be reduced, e.g. whether we shall
+	 * propagate a.[next].data instead of a.next.next.data.
 	 * 
 	 * @param useRecursiveAccessPaths
-	 *            True if recursive access paths shall be reduced, otherwise
-	 *            false
+	 *            True if recursive access paths shall be reduced, otherwise false
 	 */
 	public void setUseRecursiveAccessPaths(boolean useRecursiveAccessPaths) {
 		this.useRecursiveAccessPaths = useRecursiveAccessPaths;
@@ -972,8 +969,7 @@ public class InfoflowConfiguration {
 
 	/**
 	 * Gets whether access paths pointing to outer objects using this$n shall be
-	 * reduced, e.g. whether we shall propagate a.data instead of
-	 * a.this$0.a.data.
+	 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
 	 * 
 	 * @return True if access paths including outer objects shall be reduced,
 	 *         otherwise false
@@ -984,8 +980,7 @@ public class InfoflowConfiguration {
 
 	/**
 	 * Sets whether access paths pointing to outer objects using this$n shall be
-	 * reduced, e.g. whether we shall propagate a.data instead of
-	 * a.this$0.a.data.
+	 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
 	 * 
 	 * @param useThisChainReduction
 	 *            True if access paths including outer objects shall be reduced,
@@ -1015,8 +1010,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether the information flow analysis shall stop after the first
-	 * flow has been found
+	 * Sets whether the information flow analysis shall stop after the first flow
+	 * has been found
 	 * 
 	 * @param stopAfterFirstFlow
 	 *            True if the analysis shall stop after the first flow has been
@@ -1027,54 +1022,50 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether the information flow analysis shall stop after the first
-	 * flow has been found
+	 * Gets whether the information flow analysis shall stop after the first flow
+	 * has been found
 	 * 
-	 * @return True if the information flow analysis shall stop after the first
-	 *         flow has been found, otherwise false
+	 * @return True if the information flow analysis shall stop after the first flow
+	 *         has been found, otherwise false
 	 */
 	public boolean getStopAfterFirstFlow() {
 		return stopAfterFirstKFlows == 1;
 	}
 
 	/**
-	 * Sets whether the implementations of source methods shall be analyzed as
-	 * well
+	 * Sets whether the implementations of source methods shall be analyzed as well
 	 * 
 	 * @param inspect
-	 *            True if the implementations of source methods shall be
-	 *            analyzed as well, otherwise false
+	 *            True if the implementations of source methods shall be analyzed as
+	 *            well, otherwise false
 	 */
 	public void setInspectSources(boolean inspect) {
 		inspectSources = inspect;
 	}
 
 	/**
-	 * Gets whether the implementations of source methods shall be analyzed as
-	 * well
+	 * Gets whether the implementations of source methods shall be analyzed as well
 	 * 
-	 * @return True if the implementations of source methods shall be analyzed
-	 *         as well, otherwise false
+	 * @return True if the implementations of source methods shall be analyzed as
+	 *         well, otherwise false
 	 */
 	public boolean getInspectSources() {
 		return inspectSources;
 	}
 
 	/**
-	 * Sets whether the implementations of sink methods shall be analyzed as
-	 * well
+	 * Sets whether the implementations of sink methods shall be analyzed as well
 	 * 
 	 * @param inspect
-	 *            True if the implementations of sink methods shall be analyzed
-	 *            as well, otherwise false
+	 *            True if the implementations of sink methods shall be analyzed as
+	 *            well, otherwise false
 	 */
 	public void setInspectSinks(boolean inspect) {
 		inspectSinks = inspect;
 	}
 
 	/**
-	 * Sets whether the implementations of sink methods shall be analyzed as
-	 * well
+	 * Sets whether the implementations of sink methods shall be analyzed as well
 	 * 
 	 * @return True if the implementations of sink methods shall be analyzed as
 	 *         well, otherwise false
@@ -1084,8 +1075,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets the mode that defines whether and how the solver shall handle
-	 * implicit flows
+	 * Sets the mode that defines whether and how the solver shall handle implicit
+	 * flows
 	 * 
 	 * @param implicitFlowMode
 	 *            The mode that defines whether and how the solver shall handle
@@ -1096,8 +1087,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets the mode that defines whether and how the solver shall handle
-	 * implicit flows
+	 * Gets the mode that defines whether and how the solver shall handle implicit
+	 * flows
 	 * 
 	 * @return The mode that defines whether and how the solver shall handle
 	 *         implicit flows
@@ -1120,8 +1111,8 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether the solver shall trak assignments to static fields
 	 * 
-	 * @return True if the solver shall trak assignments to static fields,
-	 *         otherwise false
+	 * @return True if the solver shall trak assignments to static fields, otherwise
+	 *         false
 	 */
 	public boolean getEnableStaticFieldTracking() {
 		return enableStaticFields;
@@ -1141,8 +1132,8 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether a flow sensitive aliasing algorithm shall be used
 	 * 
-	 * @return True if a flow sensitive aliasing algorithm shall be used,
-	 *         otherwise false
+	 * @return True if a flow sensitive aliasing algorithm shall be used, otherwise
+	 *         false
 	 */
 	public boolean getFlowSensitiveAliasing() {
 		return flowSensitiveAliasing;
@@ -1152,8 +1143,8 @@ public class InfoflowConfiguration {
 	 * Sets whether the solver shall track taints of thrown exception objects
 	 * 
 	 * @param enableExceptions
-	 *            True if taints associated with exceptions shall be tracked
-	 *            over try/catch construct, otherwise false
+	 *            True if taints associated with exceptions shall be tracked over
+	 *            try/catch construct, otherwise false
 	 */
 	public void setEnableExceptionTracking(boolean enableExceptions) {
 		this.enableExceptions = enableExceptions;
@@ -1162,8 +1153,8 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether the solver shall track taints of thrown exception objects
 	 * 
-	 * @return True if the solver shall track taints of thrown exception
-	 *         objects, otherwise false
+	 * @return True if the solver shall track taints of thrown exception objects,
+	 *         otherwise false
 	 */
 	public boolean getEnableExceptionTracking() {
 		return enableExceptions;
@@ -1173,8 +1164,8 @@ public class InfoflowConfiguration {
 	 * Sets whether the solver shall track tainted arrays and array elements
 	 * 
 	 * @param enableArrays
-	 *            True if taints associated with arrays or array elements shall
-	 *            be tracked over try/catch construct, otherwise false
+	 *            True if taints associated with arrays or array elements shall be
+	 *            tracked over try/catch construct, otherwise false
 	 */
 	public void setEnableArrayTracking(boolean enableArrays) {
 		this.enableArrays = enableArrays;
@@ -1183,8 +1174,8 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether the solver shall track taints of arrays and array elements
 	 * 
-	 * @return True if the solver shall track taints of arrays and array
-	 *         elements, otherwise false
+	 * @return True if the solver shall track taints of arrays and array elements,
+	 *         otherwise false
 	 */
 	public boolean getEnableArrayTracking() {
 		return enableArrays;
@@ -1256,8 +1247,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether flows starting or ending in system packages such as
-	 * Android's support library shall be ignored.
+	 * Sets whether flows starting or ending in system packages such as Android's
+	 * support library shall be ignored.
 	 * 
 	 * @param ignoreFlowsInSystemPackages
 	 *            True if flows starting or ending in system packages shall be
@@ -1268,11 +1259,11 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether flows starting or ending in system packages such as
-	 * Android's support library shall be ignored.
+	 * Gets whether flows starting or ending in system packages such as Android's
+	 * support library shall be ignored.
 	 * 
-	 * @return True if flows starting or ending in system packages shall be
-	 *         ignored, otherwise false.
+	 * @return True if flows starting or ending in system packages shall be ignored,
+	 *         otherwise false.
 	 */
 	public boolean getIgnoreFlowsInSystemPackages() {
 		return ignoreFlowsInSystemPackages;
@@ -1280,12 +1271,12 @@ public class InfoflowConfiguration {
 
 	/**
 	 * Sets whether classes that are declared library classes in Soot shall be
-	 * excluded from the data flow analysis, i.e., no flows shall be tracked
-	 * through them
+	 * excluded from the data flow analysis, i.e., no flows shall be tracked through
+	 * them
 	 * 
 	 * @param excludeSootLibraryClasses
-	 *            True to exclude Soot library classes from the data flow
-	 *            analysis, otherwise false
+	 *            True to exclude Soot library classes from the data flow analysis,
+	 *            otherwise false
 	 */
 	public void setExcludeSootLibraryClasses(boolean excludeSootLibraryClasses) {
 		this.excludeSootLibraryClasses = excludeSootLibraryClasses;
@@ -1293,8 +1284,8 @@ public class InfoflowConfiguration {
 
 	/**
 	 * Gets whether classes that are declared library classes in Soot shall be
-	 * excluded from the data flow analysis, i.e., no flows shall be tracked
-	 * through them
+	 * excluded from the data flow analysis, i.e., no flows shall be tracked through
+	 * them
 	 * 
 	 * @return True to exclude Soot library classes from the data flow analysis,
 	 *         otherwise false
@@ -1304,56 +1295,56 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets the maximum number of threads to be used by the solver. A value of
-	 * -1 indicates an unlimited number of threads, i.e., there will be as many
-	 * threads as there are CPU cores on the machine.
+	 * Sets the maximum number of threads to be used by the solver. A value of -1
+	 * indicates an unlimited number of threads, i.e., there will be as many threads
+	 * as there are CPU cores on the machine.
 	 * 
 	 * @param threadNum
-	 *            The maximum number of threads to be used by the solver, or -1
-	 *            for an unlimited number of threads.
+	 *            The maximum number of threads to be used by the solver, or -1 for
+	 *            an unlimited number of threads.
 	 */
 	public void setMaxThreadNum(int threadNum) {
 		this.maxThreadNum = threadNum;
 	}
 
 	/**
-	 * Gets the maximum number of threads to be used by the solver. A value of
-	 * -1 indicates an unlimited number of threads, i.e., there will be as many
-	 * threads as there are CPU cores on the machine.
+	 * Gets the maximum number of threads to be used by the solver. A value of -1
+	 * indicates an unlimited number of threads, i.e., there will be as many threads
+	 * as there are CPU cores on the machine.
 	 * 
-	 * @return The maximum number of threads to be used by the solver, or -1 for
-	 *         an unlimited number of threads.
+	 * @return The maximum number of threads to be used by the solver, or -1 for an
+	 *         unlimited number of threads.
 	 */
 	public int getMaxThreadNum() {
 		return this.maxThreadNum;
 	}
 
 	/**
-	 * Gets whether FlowDroid shall write the Jimple files to disk after the
-	 * data flow analysis
+	 * Gets whether FlowDroid shall write the Jimple files to disk after the data
+	 * flow analysis
 	 * 
-	 * @return True if the Jimple files shall be written to disk after the data
-	 *         flow analysis, otherwise false
+	 * @return True if the Jimple files shall be written to disk after the data flow
+	 *         analysis, otherwise false
 	 */
 	public boolean getWriteOutputFiles() {
 		return this.writeOutputFiles;
 	}
 
 	/**
-	 * Gets whether FlowDroid shall write the Jimple files to disk after the
-	 * data flow analysis
+	 * Gets whether FlowDroid shall write the Jimple files to disk after the data
+	 * flow analysis
 	 * 
 	 * @param writeOutputFiles
-	 *            True if the Jimple files shall be written to disk after the
-	 *            data flow analysis, otherwise false
+	 *            True if the Jimple files shall be written to disk after the data
+	 *            flow analysis, otherwise false
 	 */
 	public void setWriteOutputFiles(boolean writeOutputFiles) {
 		this.writeOutputFiles = writeOutputFiles;
 	}
 
 	/**
-	 * Sets whether and how FlowDroid shall eliminate irrelevant code before
-	 * running the taint propagation
+	 * Sets whether and how FlowDroid shall eliminate irrelevant code before running
+	 * the taint propagation
 	 * 
 	 * @param Mode
 	 *            the mode of dead and irrelevant code eliminiation to be used
@@ -1363,8 +1354,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether and how FlowDroid shall eliminate irrelevant code before
-	 * running the taint propagation
+	 * Gets whether and how FlowDroid shall eliminate irrelevant code before running
+	 * the taint propagation
 	 * 
 	 * @return the mode of dead and irrelevant code elimination to be used
 	 */
@@ -1375,8 +1366,8 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether the discovered sources and sinks shall be logged
 	 * 
-	 * @return True if the discovered sources and sinks shall be logged,
-	 *         otherwise false
+	 * @return True if the discovered sources and sinks shall be logged, otherwise
+	 *         false
 	 */
 	public boolean getLogSourcesAndSinks() {
 		return logSourcesAndSinks;
@@ -1396,8 +1387,7 @@ public class InfoflowConfiguration {
 	/**
 	 * Gets whether reflective method calls shall be supported
 	 * 
-	 * @return True if reflective method calls shall be supported, otherwise
-	 *         false
+	 * @return True if reflective method calls shall be supported, otherwise false
 	 */
 	public boolean getEnableReflection() {
 		return this.enableReflection;
@@ -1415,8 +1405,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether the taint analysis is enabled. If it is disabled, FlowDroid
-	 * will initialize the Soot instance and then return immediately.
+	 * Gets whether the taint analysis is enabled. If it is disabled, FlowDroid will
+	 * initialize the Soot instance and then return immediately.
 	 * 
 	 * @return True if data flow tracking shall be performed, false otherwise
 	 */
@@ -1425,8 +1415,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether the taint analysis is enabled. If it is disabled, FlowDroid
-	 * will initialize the Soot instance and then return immediately.
+	 * Sets whether the taint analysis is enabled. If it is disabled, FlowDroid will
+	 * initialize the Soot instance and then return immediately.
 	 * 
 	 * @param taintAnalysisEnabled
 	 *            True if data flow tracking shall be performed, false otherwise
@@ -1436,21 +1426,19 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether the data flow results shall be reported incrementally
-	 * instead of being only available after the full data flow analysis has
-	 * been completed.
+	 * Gets whether the data flow results shall be reported incrementally instead of
+	 * being only available after the full data flow analysis has been completed.
 	 * 
-	 * @return True if incremental data flow results shall be available,
-	 *         otherwise false
+	 * @return True if incremental data flow results shall be available, otherwise
+	 *         false
 	 */
 	public boolean getIncrementalResultReporting() {
 		return this.incrementalResultReporting;
 	}
 
 	/**
-	 * Sets whether the data flow results shall be reported incrementally
-	 * instead of being only available after the full data flow analysis has
-	 * been completed.
+	 * Sets whether the data flow results shall be reported incrementally instead of
+	 * being only available after the full data flow analysis has been completed.
 	 * 
 	 * @param incrementalReporting
 	 *            True if incremental data flow results shall be available,
@@ -1461,9 +1449,9 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets the timeout in seconds after which the taint analysis shall be
-	 * aborted. This timeout only applies to the taint analysis itself, not to
-	 * the path reconstruction that happens afterwards.
+	 * Gets the timeout in seconds after which the taint analysis shall be aborted.
+	 * This timeout only applies to the taint analysis itself, not to the path
+	 * reconstruction that happens afterwards.
 	 * 
 	 * @return The timeout in seconds after which the analysis shall be aborted
 	 */
@@ -1472,32 +1460,31 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets the timeout in seconds after which the analysis shall be aborted.
-	 * This timeout only applies to the taint analysis itself, not to the path
+	 * Sets the timeout in seconds after which the analysis shall be aborted. This
+	 * timeout only applies to the taint analysis itself, not to the path
 	 * reconstruction that happens afterwards.
 	 * 
 	 * @param timeout
-	 *            The timeout in seconds after which the analysis shall be
-	 *            aborted
+	 *            The timeout in seconds after which the analysis shall be aborted
 	 */
 	public void setDataFlowTimeout(long timeout) {
 		this.dataFlowTimeout = timeout;
 	}
 
 	/**
-	 * Gets whether one source shall be analyzed at a time instead of all
-	 * sources together
+	 * Gets whether one source shall be analyzed at a time instead of all sources
+	 * together
 	 * 
-	 * @return True if the analysis shall be run with one analysis at a time,
-	 *         false if the analysis shall be run with all sources together
+	 * @return True if the analysis shall be run with one analysis at a time, false
+	 *         if the analysis shall be run with all sources together
 	 */
 	public boolean getOneSourceAtATime() {
 		return this.oneSourceAtATime;
 	}
 
 	/**
-	 * Sets whether one source shall be analyzed at a time instead of all
-	 * sources together
+	 * Sets whether one source shall be analyzed at a time instead of all sources
+	 * together
 	 * 
 	 * @param oneSourceAtATime
 	 *            True if the analysis shall be run with one analysis at a time,
@@ -1508,11 +1495,9 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets the configuration for dealing with the paths between source and
-	 * sinks
+	 * Gets the configuration for dealing with the paths between source and sinks
 	 * 
-	 * @return The configuration for dealing with the paths between source and
-	 *         sinks
+	 * @return The configuration for dealing with the paths between source and sinks
 	 */
 	public PathConfiguration getPathConfiguration() {
 		return pathConfiguration;

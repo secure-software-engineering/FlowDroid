@@ -217,12 +217,18 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						if (leftValue instanceof ArrayRef) {
 							ArrayRef arrayRef = (ArrayRef) leftValue;
 							newType = TypeUtils.buildArrayOrAddDimension(newType, arrayRef.getType().getArrayType());
-						} else if (defStmt.getRightOp() instanceof ArrayRef)
+							if (!manager.getTypeUtils().checkCast(newType, defStmt.getRightOp().getType()))
+								return null;
+						} else if (defStmt.getRightOp() instanceof ArrayRef) {
 							newType = ((ArrayType) newType).getElementType();
-
-						// Type check
-						if (!manager.getTypeUtils().checkCast(source.getAccessPath(), defStmt.getRightOp().getType()))
-							return null;
+							if (!manager.getTypeUtils().checkCast(newType, defStmt.getRightOp().getType()))
+								return null;
+						} else {
+							// Type check
+							if (!manager.getTypeUtils().checkCast(source.getAccessPath(),
+									defStmt.getRightOp().getType()))
+								return null;
+						}
 
 						// If the cast was realizable, we can assume that we had
 						// the type to which we cast. Do not loosen types,

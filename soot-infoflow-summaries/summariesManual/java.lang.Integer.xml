@@ -132,29 +132,26 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.String toBinaryString()">
+		<method id="java.lang.String toBinaryString(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.lang.Integer: int value]"
-						AccessPathTypes="[int]" />
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.String toHexString()">
+		<method id="java.lang.String toHexString(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.lang.Integer: int value]"
-						AccessPathTypes="[int]" />
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.String toOctalString()">
+		<method id="java.lang.String toOctalString(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.lang.Integer: int value]"
-						AccessPathTypes="[int]" />
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

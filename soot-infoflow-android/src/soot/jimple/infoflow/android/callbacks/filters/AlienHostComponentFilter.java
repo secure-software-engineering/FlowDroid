@@ -39,6 +39,14 @@ public class AlienHostComponentFilter extends AbstractCallbackFilter {
 
 	@Override
 	public boolean accepts(SootClass component, SootClass callbackHandler) {
+		// Some sanity checks
+		if (callbackHandler == null || component == null)
+			return false;
+
+		// If we haven't been initialized before, we do that now
+		if (activityClass == null || fragmentClass == null)
+			reset();
+
 		// If the callback class is a fragment, but the hosting component is not
 		// an activity, this association must be wrong.
 		if (Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.fragmentClass.getType()))
