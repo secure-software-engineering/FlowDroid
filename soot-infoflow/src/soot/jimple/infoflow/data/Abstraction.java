@@ -120,7 +120,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 			if (abs1.accessPath == null) {
 				if (abs2.accessPath != null)
 					return false;
-			} else if (!abs1.equals(abs2.accessPath))
+			} else if (!abs1.accessPath.equals(abs2.accessPath))
 				return false;
 			if (abs1.predecessor == null) {
 				if (abs2.predecessor != null)
@@ -519,15 +519,15 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	@Override
-	public void addNeighbor(Abstraction originalAbstraction) {
+	public boolean addNeighbor(Abstraction originalAbstraction) {
 		// We should not register ourselves as a neighbor
 		if (originalAbstraction == this)
-			return;
+			return false;
 
 		// We should not add identical nodes as neighbors
 		if (this.predecessor == originalAbstraction.predecessor && this.currentStmt == originalAbstraction.currentStmt
 				&& this.predecessor == originalAbstraction.predecessor)
-			return;
+			return false;
 
 		synchronized (this) {
 			if (neighbors == null)
@@ -536,15 +536,15 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 				// Check if we already have an identical neighbor
 				for (Abstraction nb : neighbors) {
 					if (nb == originalAbstraction)
-						return;
+						return false;
 					if (originalAbstraction.predecessor == nb.predecessor
 							&& originalAbstraction.currentStmt == nb.currentStmt
 							&& originalAbstraction.correspondingCallSite == nb.correspondingCallSite) {
-						return;
+						return false;
 					}
 				}
 			}
-			this.neighbors.add(originalAbstraction);
+			return this.neighbors.add(originalAbstraction);
 		}
 	}
 
