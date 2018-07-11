@@ -65,30 +65,32 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 	private void parseRawDefinition(SourceSinkSpec element) {
 		if (element.getType() == SourceSinkType.Source) {
 			SourceSinkDefinition sourceSinkDefinition = parseDefinition(element, SourceSinkType.Source);
+			final String permanentCategory=lastCategory;
 			sourceSinkDefinition.setCategory(new ISourceSinkCategory() {
 				@Override
 				public String getHumanReadableDescription() {
-					return lastCategory;
+					return permanentCategory;
 				}
 
 				@Override
 				public String getID() {
-					return lastCategory;
+					return permanentCategory;
 				}
 			});
 			sources.add(sourceSinkDefinition);
 
 		} else if (element.getType() == SourceSinkType.Sink) {
 			SourceSinkDefinition sourceSinkDefinition = parseDefinition(element, SourceSinkType.Sink);
+            final String permanentCategory=lastCategory;
 			sourceSinkDefinition.setCategory(new ISourceSinkCategory() {
 				@Override
 				public String getHumanReadableDescription() {
-					return lastCategory;
+					return permanentCategory;
 				}
 
 				@Override
 				public String getID() {
-					return lastCategory.toUpperCase(Locale.US);
+					return permanentCategory.toUpperCase(Locale.US);
 				}
 			});
 			sinks.add(sourceSinkDefinition);
