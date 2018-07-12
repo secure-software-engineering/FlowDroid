@@ -55,14 +55,11 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * A solver for an {@link IFDSTabulationProblem}. This solver is not based on
  * the IDESolver implementation in Heros for performance reasons.
  * 
- * @param <N>
- *            The type of nodes in the interprocedural control-flow graph.
- *            Typically {@link Unit}.
- * @param <D>
- *            The type of data-flow facts to be computed by the tabulation
- *            problem.
- * @param <I>
- *            The type of inter-procedural control-flow graph being used.
+ * @param <N> The type of nodes in the interprocedural control-flow graph.
+ *        Typically {@link Unit}.
+ * @param <D> The type of data-flow facts to be computed by the tabulation
+ *        problem.
+ * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
 public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiInterproceduralCFG<N, SootMethod>>
@@ -145,11 +142,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * {@link CacheBuilder}. The solver must then be started by calling
 	 * {@link #solve()}.
 	 * 
-	 * @param tabulationProblem
-	 *            The tabulation problem to solve
-	 * @param flowFunctionCacheBuilder
-	 *            A valid {@link CacheBuilder} or <code>null</code> if no caching is
-	 *            to be used for flow functions.
+	 * @param tabulationProblem        The tabulation problem to solve
+	 * @param flowFunctionCacheBuilder A valid {@link CacheBuilder} or
+	 *                                 <code>null</code> if no caching is to be used
+	 *                                 for flow functions.
 	 */
 	public IFDSSolver(IFDSTabulationProblem<N, D, SootMethod, I> tabulationProblem,
 			@SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
@@ -257,8 +253,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Dispatch the processing of a given edge. It may be executed in a different
 	 * thread.
 	 * 
-	 * @param edge
-	 *            the edge to process
+	 * @param edge the edge to process
 	 */
 	protected void scheduleEdgeProcessing(PathEdge<N, D> edge) {
 		// If the executor has been killed, there is little point
@@ -276,8 +271,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * For each possible callee, registers incoming call edges. Also propagates
 	 * call-to-return flows and summarized callee flows within the caller.
 	 * 
-	 * @param edge
-	 *            an edge whose target node resembles a method call
+	 * @param edge an edge whose target node resembles a method call
 	 */
 	private void processCall(PathEdge<N, D> edge) {
 		final D d1 = edge.factAtSource();
@@ -402,12 +396,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Computes the call flow function for the given call-site abstraction
 	 * 
-	 * @param callFlowFunction
-	 *            The call flow function to compute
-	 * @param d1
-	 *            The abstraction at the current method's start node.
-	 * @param d2
-	 *            The abstraction at the call site
+	 * @param callFlowFunction The call flow function to compute
+	 * @param d1               The abstraction at the current method's start node.
+	 * @param d2               The abstraction at the call site
 	 * @return The set of caller-side abstractions at the callee's start node
 	 */
 	protected Set<D> computeCallFlowFunction(FlowFunction<D> callFlowFunction, D d1, D d2) {
@@ -417,12 +408,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Computes the call-to-return flow function for the given call-site abstraction
 	 * 
-	 * @param callToReturnFlowFunction
-	 *            The call-to-return flow function to compute
-	 * @param d1
-	 *            The abstraction at the current method's start node.
-	 * @param d2
-	 *            The abstraction at the call site
+	 * @param callToReturnFlowFunction The call-to-return flow function to compute
+	 * @param d1                       The abstraction at the current method's start
+	 *                                 node.
+	 * @param d2                       The abstraction at the call site
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeCallToReturnFlowFunction(FlowFunction<D> callToReturnFlowFunction, D d1, D d2) {
@@ -435,8 +424,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Stores callee-side summaries. Also, at the side of the caller, propagates
 	 * intra-procedural flows to return sites using those newly computed summaries.
 	 * 
-	 * @param edge
-	 *            an edge whose target node resembles a method exits
+	 * @param edge an edge whose target node resembles a method exits
 	 */
 	protected void processExit(PathEdge<N, D> edge) {
 		final N n = edge.getTarget(); // an exit node; line 21...
@@ -544,16 +532,11 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Computes the return flow function for the given set of caller-side
 	 * abstractions.
 	 * 
-	 * @param retFunction
-	 *            The return flow function to compute
-	 * @param d1
-	 *            The abstraction at the beginning of the callee
-	 * @param d2
-	 *            The abstraction at the exit node in the callee
-	 * @param callSite
-	 *            The call site
-	 * @param callerSideDs
-	 *            The abstractions at the call site
+	 * @param retFunction  The return flow function to compute
+	 * @param d1           The abstraction at the beginning of the callee
+	 * @param d2           The abstraction at the exit node in the callee
+	 * @param callSite     The call site
+	 * @param callerSideDs The abstractions at the call site
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeReturnFlowFunction(FlowFunction<D> retFunction, D d1, D d2, N callSite,
@@ -595,12 +578,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Computes the normal flow function for the given set of start and end
 	 * abstractions.
 	 * 
-	 * @param flowFunction
-	 *            The normal flow function to compute
-	 * @param d1
-	 *            The abstraction at the method's start node
-	 * @param d2
-	 *            The abstraction at the current node
+	 * @param flowFunction The normal flow function to compute
+	 * @param d1           The abstraction at the method's start node
+	 * @param d2           The abstraction at the current node
 	 * @return The set of abstractions at the successor node
 	 */
 	protected Set<D> computeNormalFlowFunction(FlowFunction<D> flowFunction, D d1, D d2) {
@@ -610,21 +590,17 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Propagates the flow further down the exploded super graph.
 	 * 
-	 * @param sourceVal
-	 *            the source value of the propagated summary edge
-	 * @param target
-	 *            the target statement
-	 * @param targetVal
-	 *            the target value at the target statement
-	 * @param relatedCallSite
-	 *            for call and return flows the related call statement,
-	 *            <code>null</code> otherwise (this value is not used within this
-	 *            implementation but may be useful for subclasses of
-	 *            {@link IFDSSolver})
-	 * @param isUnbalancedReturn
-	 *            <code>true</code> if this edge is propagating an unbalanced return
-	 *            (this value is not used within this implementation but may be
-	 *            useful for subclasses of {@link IFDSSolver})
+	 * @param sourceVal          the source value of the propagated summary edge
+	 * @param target             the target statement
+	 * @param targetVal          the target value at the target statement
+	 * @param relatedCallSite    for call and return flows the related call
+	 *                           statement, <code>null</code> otherwise (this value
+	 *                           is not used within this implementation but may be
+	 *                           useful for subclasses of {@link IFDSSolver})
+	 * @param isUnbalancedReturn <code>true</code> if this edge is propagating an
+	 *                           unbalanced return (this value is not used within
+	 *                           this implementation but may be useful for
+	 *                           subclasses of {@link IFDSSolver})
 	 */
 	protected void propagate(D sourceVal, N target, D targetVal,
 			/* deliberately exposed to clients */ N relatedCallSite,
@@ -798,8 +774,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Sets whether abstractions on method returns shall be connected to the
 	 * respective call abstractions to shortcut paths.
 	 * 
-	 * @param mode
-	 *            The strategy to use for shortening predecessor paths
+	 * @param mode The strategy to use for shortening predecessor paths
 	 */
 	public void setPredecessorShorteningMode(PredecessorShorteningMode mode) {
 		// this.shorteningMode = mode;
@@ -810,9 +785,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * point. In other words, enabling this option disables the recording of
 	 * neighbors beyond the given count.
 	 * 
-	 * @param maxJoinPointAbstractions
-	 *            The maximum number of abstractions per join point, or -1 to record
-	 *            an arbitrary number of join point abstractions
+	 * @param maxJoinPointAbstractions The maximum number of abstractions per join
+	 *                                 point, or -1 to record an arbitrary number of
+	 *                                 join point abstractions
 	 */
 	public void setMaxJoinPointAbstractions(int maxJoinPointAbstractions) {
 		this.maxJoinPointAbstractions = maxJoinPointAbstractions;
@@ -821,8 +796,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Sets the memory manager that shall be used to manage the abstractions
 	 * 
-	 * @param memoryManager
-	 *            The memory manager that shall be used to manage the abstractions
+	 * @param memoryManager The memory manager that shall be used to manage the
+	 *                      abstractions
 	 */
 	public void setMemoryManager(IMemoryManager<D, N> memoryManager) {
 		this.memoryManager = memoryManager;

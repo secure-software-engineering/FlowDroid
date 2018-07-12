@@ -132,13 +132,13 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Creates a new instance of the Infoflow class for analyzing Android APK files.
 	 * 
-	 * @param androidPath
-	 *            If forceAndroidJar is false, this is the base directory of the
-	 *            platform files in the Android SDK. If forceAndroidJar is true,
-	 *            this is the full path of a single android.jar file.
-	 * @param forceAndroidJar
-	 *            True if a single platform JAR file shall be forced, false if Soot
-	 *            shall pick the appropriate platform version
+	 * @param androidPath     If forceAndroidJar is false, this is the base
+	 *                        directory of the platform files in the Android SDK. If
+	 *                        forceAndroidJar is true, this is the full path of a
+	 *                        single android.jar file.
+	 * @param forceAndroidJar True if a single platform JAR file shall be forced,
+	 *                        false if Soot shall pick the appropriate platform
+	 *                        version
 	 */
 	public Infoflow(String androidPath, boolean forceAndroidJar) {
 		super(null, androidPath, forceAndroidJar);
@@ -147,15 +147,15 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Creates a new instance of the Infoflow class for analyzing Android APK files.
 	 * 
-	 * @param androidPath
-	 *            If forceAndroidJar is false, this is the base directory of the
-	 *            platform files in the Android SDK. If forceAndroidJar is true,
-	 *            this is the full path of a single android.jar file.
-	 * @param forceAndroidJar
-	 *            True if a single platform JAR file shall be forced, false if Soot
-	 *            shall pick the appropriate platform version
-	 * @param icfgFactory
-	 *            The interprocedural CFG to be used by the InfoFlowProblem
+	 * @param androidPath     If forceAndroidJar is false, this is the base
+	 *                        directory of the platform files in the Android SDK. If
+	 *                        forceAndroidJar is true, this is the full path of a
+	 *                        single android.jar file.
+	 * @param forceAndroidJar True if a single platform JAR file shall be forced,
+	 *                        false if Soot shall pick the appropriate platform
+	 *                        version
+	 * @param icfgFactory     The interprocedural CFG to be used by the
+	 *                        InfoFlowProblem
 	 */
 	public Infoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
 		super(icfgFactory, androidPath, forceAndroidJar);
@@ -230,8 +230,7 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Conducts a taint analysis on an already initialized callgraph
 	 * 
-	 * @param sourcesSinks
-	 *            The sources and sinks to be used
+	 * @param sourcesSinks The sources and sinks to be used
 	 */
 	protected void runAnalysis(final ISourceSinkManager sourcesSinks) {
 		runAnalysis(sourcesSinks, null);
@@ -240,11 +239,9 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Conducts a taint analysis on an already initialized callgraph
 	 * 
-	 * @param sourcesSinks
-	 *            The sources and sinks to be used
-	 * @param additionalSeeds
-	 *            Additional seeds at which to create A ZERO fact even if they are
-	 *            not sources
+	 * @param sourcesSinks    The sources and sinks to be used
+	 * @param additionalSeeds Additional seeds at which to create A ZERO fact even
+	 *                        if they are not sources
 	 */
 	private void runAnalysis(final ISourceSinkManager sourcesSinks, final Set<String> additionalSeeds) {
 		try {
@@ -262,6 +259,9 @@ public class Infoflow extends AbstractInfoflow {
 				memoryWatcher = null;
 			}
 			memoryWatcher = new FlowDroidMemoryWatcher(results);
+
+			// Initialize the abstraction configuration
+			Abstraction.initialize(config);
 
 			// Build the callgraph
 			long beforeCallgraph = System.nanoTime();
@@ -693,11 +693,10 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Initializes the mechanism for incremental result reporting
 	 * 
-	 * @param propagationResults
-	 *            A reference to the result object of the forward data flow solver
-	 * @param builder
-	 *            The path builder to use for reconstructing the taint propagation
-	 *            paths
+	 * @param propagationResults A reference to the result object of the forward
+	 *                           data flow solver
+	 * @param builder            The path builder to use for reconstructing the
+	 *                           taint propagation paths
 	 */
 	private void initializeIncrementalResultReporting(TaintPropagationResults propagationResults,
 			final IAbstractionPathBuilder builder) {
@@ -755,8 +754,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * a.b.* and a.* arrive at the same sink, a.b.* is already covered by a.* and
 	 * can thus safely be removed.
 	 * 
-	 * @param res
-	 *            The result set from which to remove all entailed abstractions
+	 * @param res The result set from which to remove all entailed abstractions
 	 */
 	private void removeEntailedAbstractions(Set<AbstractionAtSink> res) {
 		for (Iterator<AbstractionAtSink> absAtSinkIt = res.iterator(); absAtSinkIt.hasNext();) {
@@ -775,15 +773,11 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Initializes the alias analysis
 	 * 
-	 * @param sourcesSinks
-	 *            The set of sources and sinks
-	 * @param iCfg
-	 *            The interprocedural control flow graph
-	 * @param executor
-	 *            The executor in which to run concurrent tasks
-	 * @param memoryManager
-	 *            The memory manager for rducing the memory load during IFDS
-	 *            propagation
+	 * @param sourcesSinks  The set of sources and sinks
+	 * @param iCfg          The interprocedural control flow graph
+	 * @param executor      The executor in which to run concurrent tasks
+	 * @param memoryManager The memory manager for rducing the memory load during
+	 *                      IFDS propagation
 	 * @return The alias analysis implementation to use for the data flow analysis
 	 */
 	private IAliasingStrategy createAliasAnalysis(final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
@@ -855,8 +849,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * shortening that is possible without eliminating data that is necessary for
 	 * the requested path reconstruction.
 	 * 
-	 * @param pathConfiguration
-	 *            The path reconstruction configuration
+	 * @param pathConfiguration The path reconstruction configuration
 	 * @return The computed path shortening mode
 	 */
 	private PredecessorShorteningMode pathConfigToShorteningMode(PathConfiguration pathConfiguration) {
@@ -894,10 +887,9 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Creates the IFDS solver for the forward data flow problem
 	 * 
-	 * @param executor
-	 *            The executor in which to run the tasks or propagating IFDS edges
-	 * @param forwardProblem
-	 *            The implementation of the forward problem
+	 * @param executor       The executor in which to run the tasks or propagating
+	 *                       IFDS edges
+	 * @param forwardProblem The implementation of the forward problem
 	 * @return The solver that solves the forward taint analysis problem
 	 */
 	private IInfoflowSolver createForwardSolver(InterruptableExecutor executor, InfoflowProblem forwardProblem) {
@@ -942,8 +934,7 @@ public class Infoflow extends AbstractInfoflow {
 	/**
 	 * Runs all code optimizers
 	 * 
-	 * @param sourcesSinks
-	 *            The SourceSinkManager
+	 * @param sourcesSinks The SourceSinkManager
 	 */
 	private void eliminateDeadCode(ISourceSinkManager sourcesSinks) {
 		InfoflowManager dceManager = new InfoflowManager(config, null,
@@ -1005,8 +996,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * sinks. A method is a valid seed it it (or one of its transitive callees) can
 	 * contain calls to source or sink methods.
 	 * 
-	 * @param sm
-	 *            The method to check
+	 * @param sm The method to check
 	 * @return True if this method or one of its transitive callees can contain
 	 *         sources or sinks, otherwise false
 	 */
@@ -1030,12 +1020,11 @@ public class Infoflow extends AbstractInfoflow {
 	 * Scans the given method for sources and sinks contained in it. Sinks are just
 	 * counted, sources are added to the InfoflowProblem as seeds.
 	 * 
-	 * @param sourcesSinks
-	 *            The SourceSinkManager to be used for identifying sources and sinks
-	 * @param forwardProblem
-	 *            The InfoflowProblem in which to register the sources as seeds
-	 * @param m
-	 *            The method to scan for sources and sinks
+	 * @param sourcesSinks   The SourceSinkManager to be used for identifying
+	 *                       sources and sinks
+	 * @param forwardProblem The InfoflowProblem in which to register the sources as
+	 *                       seeds
+	 * @param m              The method to scan for sources and sinks
 	 * @return The number of sinks found in this method
 	 */
 	private int scanMethodForSourcesSinks(final ISourceSinkManager sourcesSinks, InfoflowProblem forwardProblem,

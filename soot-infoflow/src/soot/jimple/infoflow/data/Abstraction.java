@@ -36,6 +36,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction, Unit> {
 
 	protected static boolean flowSensitiveAliasing = true;
+	protected static boolean keepStatements = true;
 
 	/**
 	 * the access path contains the currently tainted variable or field
@@ -98,8 +99,14 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 			result = prime * result + (abs.dependsOnCutAP ? 1231 : 1237);
 			result = prime * result + (abs.isImplicit ? 1231 : 1237);
 			result = prime * result + ((abs.predecessor == null) ? 0 : abs.predecessor.hashCode());
-			abs.hashCode = result;
 
+			if (keepStatements) {
+				result = prime * result + ((abs.currentStmt == null) ? 0 : abs.currentStmt.hashCode());
+				result = prime * result
+						+ ((abs.correspondingCallSite == null) ? 0 : abs.correspondingCallSite.hashCode());
+			}
+
+			abs.hashCode = result;
 			return result;
 		}
 
@@ -127,6 +134,19 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 					return false;
 			} else if (!abs1.predecessor.equals(abs2.predecessor))
 				return false;
+
+			if (keepStatements) {
+				if (abs1.currentStmt == null) {
+					if (abs2.currentStmt != null)
+						return false;
+				} else if (!abs1.currentStmt.equals(abs2.currentStmt))
+					return false;
+				if (abs1.correspondingCallSite == null) {
+					if (abs2.correspondingCallSite != null)
+						return false;
+				} else if (!abs1.correspondingCallSite.equals(abs2.correspondingCallSite))
+					return false;
+			}
 
 			return abs1.localEquals(abs2);
 		}
@@ -178,6 +198,16 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		accessPath = p;
 		neighbors = null;
 		currentStmt = null;
+	}
+
+	/**
+	 * Initializes the configuration for building new abstractions
+	 * 
+	 * @param config The configuration of the data flow solver
+	 */
+	public static void initialize(InfoflowConfiguration config) {
+		flowSensitiveAliasing = config.getFlowSensitiveAliasing();
+		keepStatements = config.getPathConfiguration().mustKeepStatements();
 	}
 
 	public final Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
