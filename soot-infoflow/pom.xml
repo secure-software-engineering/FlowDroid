@@ -168,7 +168,14 @@
 		    <artifactId>trove4j</artifactId>
 		    <version>3.0.3</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>25.1-jre</version>
+		</dependency>
 	</dependencies>
+
 	<repositories>
 		<repository>
 			<id>soot-snapshot</id>
