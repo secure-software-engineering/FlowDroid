@@ -110,14 +110,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			/**
 			 * Taints the left side of the given assignment
 			 * 
-			 * @param assignStmt
-			 *            The source statement from which the taint originated
-			 * @param targetValue
-			 *            The target value that shall now be tainted
-			 * @param source
-			 *            The incoming taint abstraction from the source
-			 * @param taintSet
-			 *            The taint set to which to add all newly produced taints
+			 * @param assignStmt  The source statement from which the taint originated
+			 * @param targetValue The target value that shall now be tainted
+			 * @param source      The incoming taint abstraction from the source
+			 * @param taintSet    The taint set to which to add all newly produced taints
 			 */
 			private void addTaintViaStmt(final Abstraction d1, final AssignStmt assignStmt, Abstraction source,
 					Set<Abstraction> taintSet, boolean cutFirstField, SootMethod method, Type targetType) {
@@ -178,8 +174,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * Checks whether the given call has at least one valid target, i.e. a callee
 			 * with a body.
 			 * 
-			 * @param call
-			 *            The call site to check
+			 * @param call The call site to check
 			 * @return True if there is at least one callee implementation for the given
 			 *         call, otherwise false
 			 */
@@ -890,16 +885,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			/**
 			 * Maps the given access path into the scope of the callee
 			 * 
-			 * @param callee
-			 *            The method that is being called
-			 * @param ie
-			 *            The invocation expression for the call
-			 * @param paramLocals
-			 *            The list of parameter locals in the callee
-			 * @param thisLocal
-			 *            The "this" local in the callee
-			 * @param ap
-			 *            The caller-side access path to map
+			 * @param callee      The method that is being called
+			 * @param ie          The invocation expression for the call
+			 * @param paramLocals The list of parameter locals in the callee
+			 * @param thisLocal   The "this" local in the callee
+			 * @param ap          The caller-side access path to map
 			 * @return The set of callee-side access paths corresponding to the given
 			 *         caller-side access path
 			 */

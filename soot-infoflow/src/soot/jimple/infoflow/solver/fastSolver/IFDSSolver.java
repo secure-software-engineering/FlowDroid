@@ -629,8 +629,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					isEssential = memoryManager.isEssentialJoinPoint(targetVal, relatedCallSite);
 
 				if (maxJoinPointAbstractions < 0 || existingVal.getNeighborCount() < maxJoinPointAbstractions
-						|| isEssential)
+						|| isEssential) {
 					existingVal.addNeighbor(targetVal);
+				}
 			}
 		} else {
 			// If this is an inactive abstraction and we have already processed

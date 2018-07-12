@@ -103,17 +103,14 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			/**
 			 * Computes the aliases for the given statement
 			 * 
-			 * @param def
-			 *            The definition statement from which to extract the alias
-			 *            information
-			 * @param leftValue
-			 *            The left side of def. Passed in to allow for caching, no need to
-			 *            recompute this for every abstraction being processed.
-			 * @param d1
-			 *            The abstraction at the method's start node
-			 * @param source
-			 *            The source abstraction of the alias search from before the current
-			 *            statement
+			 * @param def       The definition statement from which to extract the alias
+			 *                  information
+			 * @param leftValue The left side of def. Passed in to allow for caching, no
+			 *                  need to recompute this for every abstraction being
+			 *                  processed.
+			 * @param d1        The abstraction at the method's start node
+			 * @param source    The source abstraction of the alias search from before the
+			 *                  current statement
 			 * @return The set of abstractions after the current statement
 			 */
 			private Set<Abstraction> computeAliases(final DefinitionStmt defStmt, Value leftValue, Abstraction d1,
@@ -217,16 +214,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						if (leftValue instanceof ArrayRef) {
 							ArrayRef arrayRef = (ArrayRef) leftValue;
 							newType = TypeUtils.buildArrayOrAddDimension(newType, arrayRef.getType().getArrayType());
-							if (!manager.getTypeUtils().checkCast(newType, defStmt.getRightOp().getType()))
-								return null;
 						} else if (defStmt.getRightOp() instanceof ArrayRef) {
 							newType = ((ArrayType) newType).getElementType();
-							if (!manager.getTypeUtils().checkCast(newType, defStmt.getRightOp().getType()))
-								return null;
 						} else {
 							// Type check
-							if (!manager.getTypeUtils().checkCast(source.getAccessPath(),
-									defStmt.getRightOp().getType()))
+							if (!manager.getTypeUtils().checkCast(source.getAccessPath(), leftValue.getType()))
 								return null;
 						}
 
@@ -316,7 +308,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					} else if (leftValue == source.getAccessPath().getPlainValue()) {
 						// If this is an unrealizable cast, we can stop
 						// propagating
-						if (!manager.getTypeUtils().checkCast(source.getAccessPath(), leftValue.getType()))
+						if (!manager.getTypeUtils().checkCast(source.getAccessPath(), defStmt.getRightOp().getType()))
 							return null;
 
 						addRightValue = true;
@@ -366,8 +358,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 						// If the right side's type is not compatible with our
-						// current type,
-						// this cannot be an alias
+						// current type, this cannot be an alias
 						if (addRightValue) {
 							if (!manager.getTypeUtils().checkCast(rightValue.getType(), targetType))
 								addRightValue = false;

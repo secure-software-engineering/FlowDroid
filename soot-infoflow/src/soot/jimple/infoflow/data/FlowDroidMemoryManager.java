@@ -111,11 +111,9 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	/**
 	 * Constructs a new instance of the AccessPathManager class
 	 * 
-	 * @param tracingEnabled
-	 *            True if performance tracing data shall be recorded
-	 * @param erasePathData
-	 *            Specifies whether data for tracking paths (current statement,
-	 *            corresponding call site) shall be erased.
+	 * @param tracingEnabled True if performance tracing data shall be recorded
+	 * @param erasePathData  Specifies whether data for tracking paths (current
+	 *                       statement, corresponding call site) shall be erased.
 	 */
 	public FlowDroidMemoryManager(boolean tracingEnabled, PathDataErasureMode erasePathData) {
 		this.tracingEnabled = tracingEnabled;
@@ -131,8 +129,7 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	/**
 	 * Gets the cached equivalent of the given access path
 	 * 
-	 * @param ap
-	 *            The access path for which to get the cached equivalent
+	 * @param ap The access path for which to get the cached equivalent
 	 * @return The cached equivalent of the given access path
 	 */
 	private AccessPath getCachedAccessPath(AccessPath ap) {
@@ -150,8 +147,7 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	 * Gets a cached equivalent abstraction for the given abstraction if we have
 	 * one, otherwise returns null
 	 * 
-	 * @param abs
-	 *            The abstraction for which to perform a cache lookup
+	 * @param abs The abstraction for which to perform a cache lookup
 	 * @return The cached abstraction equivalent to the given one of it exists,
 	 *         otherwise null
 	 */
@@ -275,8 +271,8 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	/**
 	 * Sets whether the memory manager shall use the abstraction cache
 	 * 
-	 * @param useAbstractionCache
-	 *            True if the abstraction cache shall be used, otherwise false
+	 * @param useAbstractionCache True if the abstraction cache shall be used,
+	 *                            otherwise false
 	 */
 	public void setUseAbstractionCache(boolean useAbstractionCache) {
 		this.useAbstractionCache = useAbstractionCache;

@@ -60,6 +60,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 */
 	protected boolean exceptionThrown = false;
 	protected int hashCode = 0;
+	protected int neighborHashCode = 0;
 
 	/**
 	 * The postdominators we need to pass in order to leave the current conditional
@@ -84,8 +85,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 		@Override
 		public int computeHashCode(Abstraction abs) {
-			if (abs.hashCode != 0)
-				return abs.hashCode;
+			if (abs.neighborHashCode != 0)
+				return abs.neighborHashCode;
 
 			final int prime = 31;
 			int result = 1;
@@ -102,11 +103,9 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 			if (keepStatements) {
 				result = prime * result + ((abs.currentStmt == null) ? 0 : abs.currentStmt.hashCode());
-				result = prime * result
-						+ ((abs.correspondingCallSite == null) ? 0 : abs.correspondingCallSite.hashCode());
 			}
 
-			abs.hashCode = result;
+			abs.neighborHashCode = result;
 			return result;
 		}
 
@@ -119,8 +118,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 			// If we have already computed hash codes, we can use them for
 			// comparison
-			int hashCode1 = abs1.hashCode;
-			int hashCode2 = abs2.hashCode;
+			int hashCode1 = abs1.neighborHashCode;
+			int hashCode2 = abs2.neighborHashCode;
 			if (hashCode1 != 0 && hashCode2 != 0 && hashCode1 != hashCode2)
 				return false;
 
@@ -140,11 +139,6 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 					if (abs2.currentStmt != null)
 						return false;
 				} else if (!abs1.currentStmt.equals(abs2.currentStmt))
-					return false;
-				if (abs1.correspondingCallSite == null) {
-					if (abs2.correspondingCallSite != null)
-						return false;
-				} else if (!abs1.correspondingCallSite.equals(abs2.correspondingCallSite))
 					return false;
 			}
 
@@ -645,8 +639,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * For internal use by memory manager only. Setting a new access path will not
-	 * update any dependent data such as cached hashes. Handle with care!
+	 * For internal use by memory manager only
 	 */
 	void setAccessPath(AccessPath accessPath) {
 		this.accessPath = accessPath;
