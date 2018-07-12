@@ -125,7 +125,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 			if (abs1.predecessor == null) {
 				if (abs2.predecessor != null)
 					return false;
-			} else if (!abs1.equals(abs2.predecessor))
+			} else if (!abs1.predecessor.equals(abs2.predecessor))
 				return false;
 
 			return abs1.localEquals(abs2);
@@ -154,10 +154,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Creates an abstraction as a copy of an existing abstraction, only exchanging
 	 * the access path. -> only used by AbstractionWithPath
 	 * 
-	 * @param p
-	 *            The access path for the new abstraction
-	 * @param original
-	 *            The original abstraction to copy
+	 * @param p        The access path for the new abstraction
+	 * @param original The original abstraction to copy
 	 */
 	protected Abstraction(AccessPath p, Abstraction original) {
 		if (original == null) {
@@ -249,8 +247,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Derives a new abstraction that models the current local being thrown as an
 	 * exception
 	 * 
-	 * @param throwStmt
-	 *            The statement at which the exception was thrown
+	 * @param throwStmt The statement at which the exception was thrown
 	 * @return The newly derived abstraction
 	 */
 	public final Abstraction deriveNewAbstractionOnThrow(Stmt throwStmt) {
@@ -266,8 +263,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Derives a new abstraction that models the current local being caught as an
 	 * exception
 	 * 
-	 * @param ap
-	 *            The access path in which the tainted exception is stored
+	 * @param ap The access path in which the tainted exception is stored
 	 * @return The newly derived abstraction
 	 */
 	public final Abstraction deriveNewAbstractionOnCatch(AccessPath ap) {
@@ -422,8 +418,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Checks whether this object locally equals the given object, i.e. the both are
 	 * equal modulo the access path
 	 * 
-	 * @param other
-	 *            The object to compare this object with
+	 * @param other The object to compare this object with
 	 * @return True if this object is locally equal to the given one, otherwise
 	 *         false
 	 */
@@ -478,8 +473,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Checks whether this abstraction entails the given abstraction, i.e. this
 	 * taint also taints everything that is tainted by the given taint.
 	 * 
-	 * @param other
-	 *            The other taint abstraction
+	 * @param other The other taint abstraction
 	 * @return True if this object at least taints everything that is also tainted
 	 *         by the given object
 	 */
@@ -572,8 +566,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Only use this method if you really need to fake a source context and know
 	 * what you are doing.
 	 * 
-	 * @param sourceContext
-	 *            The new source context
+	 * @param sourceContext The new source context
 	 */
 	public void setSourceContext(SourceContext sourceContext) {
 		this.sourceContext = sourceContext;
@@ -583,8 +576,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Registers that a worker thread with the given ID has already processed this
 	 * abstraction
 	 * 
-	 * @param id
-	 *            The ID of the worker thread
+	 * @param id The ID of the worker thread
 	 * @return True if the worker thread with the given ID has not been registered
 	 *         before, otherwise false
 	 */
