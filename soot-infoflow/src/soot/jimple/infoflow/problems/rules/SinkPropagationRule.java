@@ -136,7 +136,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 					SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
 							source.getAccessPath());
 
-					// If we have already seen the same taint at the dame sink, there is no need to
+					// If we have already seen the same taint at the same sink, there is no need to
 					// propagate this taint any further.
 					if (sinkInfo != null
 							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
