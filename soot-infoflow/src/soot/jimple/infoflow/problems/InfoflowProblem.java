@@ -15,9 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import heros.FlowFunction;
-import heros.FlowFunctions;
-import heros.flowfunc.KillAll;
 import soot.BooleanType;
 import soot.Local;
 import soot.NullType;
@@ -54,6 +51,8 @@ import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
+import soot.jimple.infoflow.solver.ngsolver.FlowFunctions;
+import soot.jimple.infoflow.solver.ngsolver.flowFunctions.KillAll;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -68,13 +67,13 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager);
 
-		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
+		this.zeroValue = zeroValue == null ? this.zeroValue() : zeroValue;
 		this.results = new TaintPropagationResults(manager);
 		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
 	}
 
 	@Override
-	public FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
+	public FlowFunctions<Unit, Abstraction, SootMethod> flowFunctions() {
 		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
 
 			/**
@@ -83,7 +82,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * 
 			 * @author Steven Arzt
 			 */
-			abstract class NotifyingNormalFlowFunction extends SolverNormalFlowFunction {
+			abstract class NotifyingNormalFlowFunction implements SolverNormalFlowFunction<Abstraction> {
 
 				protected final Stmt stmt;
 
@@ -327,7 +326,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
+			public SolverNormalFlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
 				// Get the call site
 				if (!(src instanceof Stmt))
 					return KillAll.v();
@@ -378,7 +377,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
+			public SolverCallFlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
 				if (!dest.isConcrete()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
@@ -393,7 +392,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				return new SolverCallFlowFunction() {
+				return new SolverCallFlowFunction<Abstraction>() {
 
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
@@ -460,8 +459,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite, final SootMethod callee,
-					final Unit exitStmt, final Unit retSite) {
+			public SolverReturnFlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite,
+					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				// Get the call site
 				if (callSite != null && !(callSite instanceof Stmt))
 					return KillAll.v();
@@ -477,7 +476,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 
-				return new SolverReturnFlowFunction() {
+				return new SolverReturnFlowFunction<Abstraction>() {
 
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
@@ -696,7 +695,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call, final Unit returnSite) {
+			public SolverCallToReturnFlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call,
+					final Unit returnSite) {
 				// special treatment for native methods:
 				if (!(call instanceof Stmt))
 					return KillAll.v();
@@ -718,7 +718,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final SootMethod callee = invExpr.getMethod();
 				final boolean hasValidCallees = hasValidCallees(call);
 
-				return new SolverCallToReturnFlowFunction() {
+				return new SolverCallToReturnFlowFunction<Abstraction>() {
 
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
@@ -989,11 +989,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return res;
 			}
 		};
-	}
-
-	@Override
-	public boolean autoAddZero() {
-		return false;
 	}
 
 	/**

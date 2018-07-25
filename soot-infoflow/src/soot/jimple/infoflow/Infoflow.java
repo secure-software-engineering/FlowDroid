@@ -340,7 +340,7 @@ public class Infoflow extends AbstractInfoflow {
 
 				// Get the zero fact
 				Abstraction zeroValue = aliasingStrategy.getSolver() != null
-						? aliasingStrategy.getSolver().getTabulationProblem().createZeroValue()
+						? aliasingStrategy.getSolver().getTabulationProblem().zeroValue()
 						: null;
 
 				// Initialize the aliasing infrastructure
@@ -795,6 +795,9 @@ public class Infoflow extends AbstractInfoflow {
 			// We need to create the right data flow solver
 			SolverConfiguration solverConfig = config.getSolverConfiguration();
 			switch (solverConfig.getDataFlowSolver()) {
+			case NextGeneration:
+				backSolver = new soot.jimple.infoflow.solver.ngsolver.InfoflowSolver(backProblem, executor);
+				break;
 			case ContextFlowSensitive:
 				backSolver = new soot.jimple.infoflow.solver.fastSolver.InfoflowSolver(backProblem, executor);
 				break;
@@ -898,6 +901,9 @@ public class Infoflow extends AbstractInfoflow {
 		IInfoflowSolver forwardSolver;
 		SolverConfiguration solverConfig = config.getSolverConfiguration();
 		switch (solverConfig.getDataFlowSolver()) {
+		case NextGeneration:
+			forwardSolver = new soot.jimple.infoflow.solver.ngsolver.InfoflowSolver(forwardProblem, executor);
+			break;
 		case ContextFlowSensitive:
 			logger.info("Using context- and flow-sensitive solver");
 			forwardSolver = new soot.jimple.infoflow.solver.fastSolver.InfoflowSolver(forwardProblem, executor);

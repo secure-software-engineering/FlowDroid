@@ -70,6 +70,9 @@ public class InfoflowConfiguration {
 	 * Enumeration containing the supported data flow solvers
 	 */
 	public static enum DataFlowSolver {
+
+		NextGeneration,
+
 		/**
 		 * Use a flow- and context-sensitive solver
 		 */
@@ -198,7 +201,7 @@ public class InfoflowConfiguration {
 
 		private boolean sequentialPathProcessing = false;
 		private PathReconstructionMode pathReconstructionMode = PathReconstructionMode.NoPaths;
-		private PathBuildingAlgorithm pathBuildingAlgorithm = PathBuildingAlgorithm.ContextSensitive;
+		private PathBuildingAlgorithm pathBuildingAlgorithm = PathBuildingAlgorithm.ContextInsensitive;
 		private int maxCallStackSize = 30;
 		private int maxPathLength = 75;
 		private int maxPathsPerAbstraction = 15;
@@ -616,7 +619,7 @@ public class InfoflowConfiguration {
 	 */
 	public static class SolverConfiguration {
 
-		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive;
+		private DataFlowSolver dataFlowSolver = DataFlowSolver.NextGeneration;
 		private int maxJoinPointAbstractions = 10;
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;

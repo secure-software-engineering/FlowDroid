@@ -32,9 +32,9 @@ import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
+import soot.jimple.infoflow.solver.ngsolver.IFDSTabulationProblem;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 /**
@@ -44,7 +44,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  *
  */
 public abstract class AbstractInfoflowProblem
-		extends DefaultJimpleIFDSTabulationProblem<Abstraction, BiDiInterproceduralCFG<Unit, SootMethod>> {
+		implements IFDSTabulationProblem<Unit, Abstraction, SootMethod, BiDiInterproceduralCFG<Unit, SootMethod>> {
 
 	protected final InfoflowManager manager;
 
@@ -63,7 +63,6 @@ public abstract class AbstractInfoflowProblem
 	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Unit>>();
 
 	public AbstractInfoflowProblem(InfoflowManager manager) {
-		super(manager.getICFG());
 		this.manager = manager;
 	}
 
@@ -88,9 +87,8 @@ public abstract class AbstractInfoflowProblem
 	 * Sets the taint wrapper that shall be used for applying external library
 	 * models
 	 * 
-	 * @param wrapper
-	 *            The taint wrapper that shall be used for applying external library
-	 *            models
+	 * @param wrapper The taint wrapper that shall be used for applying external
+	 *                library models
 	 */
 	public void setTaintWrapper(ITaintPropagationWrapper wrapper) {
 		this.taintWrapper = wrapper;
@@ -100,8 +98,7 @@ public abstract class AbstractInfoflowProblem
 	 * Sets the handler class to be used for modeling the effects of native methods
 	 * on the taint state
 	 * 
-	 * @param handler
-	 *            The native call handler to use
+	 * @param handler The native call handler to use
 	 */
 	public void setNativeCallHandler(INativeCallHandler handler) {
 		this.ncHandler = handler;
@@ -111,8 +108,7 @@ public abstract class AbstractInfoflowProblem
 	 * Gets whether the given method is an entry point, i.e. one of the initial
 	 * seeds belongs to the given method
 	 * 
-	 * @param sm
-	 *            The method to check
+	 * @param sm The method to check
 	 * @return True if the given method is an entry point, otherwise false
 	 */
 	protected boolean isInitialMethod(SootMethod sm) {
@@ -125,15 +121,6 @@ public abstract class AbstractInfoflowProblem
 	@Override
 	public Map<Unit, Set<Abstraction>> initialSeeds() {
 		return initialSeeds;
-	}
-
-	/**
-	 * performance improvement: since we start directly at the sources, we do not
-	 * need to generate additional taints unconditionally
-	 */
-	@Override
-	public boolean autoAddZero() {
-		return false;
 	}
 
 	protected boolean isCallSiteActivatingTaint(Unit callSite, Unit activationUnit) {
@@ -179,16 +166,14 @@ public abstract class AbstractInfoflowProblem
 
 	@Override
 	public IInfoflowCFG interproceduralCFG() {
-		return (IInfoflowCFG) super.interproceduralCFG();
+		return manager.getICFG();
 	}
 
 	/**
 	 * Adds the given initial seeds to the information flow problem
 	 * 
-	 * @param unit
-	 *            The unit to be considered as a seed
-	 * @param seeds
-	 *            The abstractions with which to start at the given seed
+	 * @param unit  The unit to be considered as a seed
+	 * @param seeds The abstractions with which to start at the given seed
 	 */
 	public void addInitialSeeds(Unit unit, Set<Abstraction> seeds) {
 		if (this.initialSeeds.containsKey(unit))
@@ -221,15 +206,14 @@ public abstract class AbstractInfoflowProblem
 	/**
 	 * Sets a handler which is invoked whenever a taint is propagated
 	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating taints
+	 * @param handler The handler to be invoked when propagating taints
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler handler) {
 		this.taintPropagationHandler = handler;
 	}
 
 	@Override
-	public Abstraction createZeroValue() {
+	public Abstraction zeroValue() {
 		if (zeroValue == null)
 			zeroValue = Abstraction.getZeroAbstraction(manager.getConfig().getFlowSensitiveAliasing());
 		return zeroValue;
@@ -242,8 +226,7 @@ public abstract class AbstractInfoflowProblem
 	/**
 	 * Checks whether the given unit is the start of an exception handler
 	 * 
-	 * @param u
-	 *            The unit to check
+	 * @param u The unit to check
 	 * @return True if the given unit is the start of an exception handler,
 	 *         otherwise false
 	 */
@@ -259,17 +242,12 @@ public abstract class AbstractInfoflowProblem
 	 * Notifies the outbound flow handlers, if any, about the computed result
 	 * abstractions for the current flow function
 	 * 
-	 * @param d1
-	 *            The abstraction at the beginning of the method
-	 * @param stmt
-	 *            The statement that has just been processed
-	 * @param incoming
-	 *            The incoming abstraction from which the outbound ones were
-	 *            computed
-	 * @param outgoing
-	 *            The outbound abstractions to be propagated on
-	 * @param functionType
-	 *            The type of flow function that was computed
+	 * @param d1           The abstraction at the beginning of the method
+	 * @param stmt         The statement that has just been processed
+	 * @param incoming     The incoming abstraction from which the outbound ones
+	 *                     were computed
+	 * @param outgoing     The outbound abstractions to be propagated on
+	 * @param functionType The type of flow function that was computed
 	 * @return The outbound flow abstracions, potentially changed by the flow
 	 *         handlers
 	 */
@@ -280,11 +258,6 @@ public abstract class AbstractInfoflowProblem
 		return outgoing;
 	}
 
-	@Override
-	public boolean computeValues() {
-		return false;
-	}
-
 	public InfoflowManager getManager() {
 		return this.manager;
 	}
@@ -293,8 +266,7 @@ public abstract class AbstractInfoflowProblem
 	 * Checks whether the given method is excluded from the data flow analysis,
 	 * i.e., should not be analyzed
 	 * 
-	 * @param sm
-	 *            The method to check
+	 * @param sm The method to check
 	 * @return True if the method is excluded and shall not be analyzed, otherwise
 	 *         false
 	 */

@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import heros.FlowFunction;
-import heros.FlowFunctions;
 import heros.flowfunc.Identity;
 import heros.flowfunc.KillAll;
 import heros.solver.PathEdge;
@@ -56,6 +54,7 @@ import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
+import soot.jimple.infoflow.solver.ngsolver.FlowFunctions;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -75,7 +74,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 	}
 
 	@Override
-	public FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
+	public FlowFunctions<Unit, Abstraction, SootMethod> flowFunctions() {
 		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
 
 			private Abstraction checkAbstraction(Abstraction abs) {
@@ -391,7 +390,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
+			public SolverNormalFlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
 				if (src instanceof DefinitionStmt) {
 					final DefinitionStmt defStmt = (DefinitionStmt) src;
 					final Value leftValue = BaseSelector.selectBase(defStmt.getLeftOp(), true);
@@ -400,7 +399,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					final Value destLeftValue = destDefStmt == null ? null
 							: BaseSelector.selectBase(destDefStmt.getLeftOp(), true);
 
-					return new SolverNormalFlowFunction() {
+					return new SolverNormalFlowFunction<Abstraction>() {
 
 						@Override
 						public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
@@ -430,7 +429,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
+			public SolverCallFlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
 				if (!dest.isConcrete())
 					return KillAll.v();
 
@@ -458,7 +457,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 
-				return new SolverCallFlowFunction() {
+				return new SolverCallFlowFunction<Abstraction>() {
 
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
@@ -622,8 +621,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite, final SootMethod callee,
-					final Unit exitStmt, final Unit retSite) {
+			public SolverReturnFlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite,
+					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				final Value[] paramLocals = new Value[callee.getParameterCount()];
 				for (int i = 0; i < callee.getParameterCount(); i++)
 					paramLocals[i] = callee.getActiveBody().getParameterLocal(i);
@@ -641,7 +640,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
-				return new SolverReturnFlowFunction() {
+				return new SolverReturnFlowFunction<Abstraction>() {
 
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
@@ -781,7 +780,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call, final Unit returnSite) {
+			public SolverCallToReturnFlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call,
+					final Unit returnSite) {
 				final Stmt iStmt = (Stmt) call;
 				final InvokeExpr invExpr = iStmt.getInvokeExpr();
 
@@ -793,7 +793,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 				final DefinitionStmt defStmt = iStmt instanceof DefinitionStmt ? (DefinitionStmt) iStmt : null;
 
-				return new SolverCallToReturnFlowFunction() {
+				return new SolverCallToReturnFlowFunction<Abstraction>() {
+
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
 						if (source == getZeroValue())
