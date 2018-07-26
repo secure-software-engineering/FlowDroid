@@ -107,10 +107,13 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		boolean found = false;
 
 		// Is an argument tainted?
-		for (int i = 0; i < iexpr.getArgCount(); i++) {
-			if (getAliasing().mayAlias(iexpr.getArg(i), source.getAccessPath().getPlainValue())) {
-				if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
-					return true;
+		final Value apBaseValue = source.getAccessPath().getPlainValue();
+		if (apBaseValue != null) {
+			for (int i = 0; i < iexpr.getArgCount(); i++) {
+				if (getAliasing().mayAlias(iexpr.getArg(i), apBaseValue)) {
+					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
+						return true;
+				}
 			}
 		}
 

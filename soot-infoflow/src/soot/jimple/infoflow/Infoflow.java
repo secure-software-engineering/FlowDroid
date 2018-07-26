@@ -332,8 +332,7 @@ public class Infoflow extends AbstractInfoflow {
 				IMemoryManager<Abstraction, Unit> memoryManager = createMemoryManager();
 
 				// Initialize the data flow manager
-				manager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy,
-						new AccessPathFactory(config));
+				manager = initializeInfoflowManager(sourcesSinks, iCfg);
 
 				// Initialize the alias analysis
 				IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
@@ -688,6 +687,19 @@ public class Infoflow extends AbstractInfoflow {
 			results.addException(ex.getClass().getName() + ": " + ex.getMessage() + "\n" + stacktrace.toString());
 			logger.error("Excception during data flow analysis", ex);
 		}
+	}
+
+	/**
+	 * Initializes the data flow manager with which propagation rules can interact
+	 * with the data flow engine
+	 * 
+	 * @param sourcesSinks The source/sink definitions
+	 * @param iCfg         The interprocedural control flow graph
+	 * @return The data flow manager
+	 */
+	protected InfoflowManager initializeInfoflowManager(final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg) {
+		return new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy,
+				new AccessPathFactory(config));
 	}
 
 	/**

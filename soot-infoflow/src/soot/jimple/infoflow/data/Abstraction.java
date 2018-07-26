@@ -204,7 +204,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		keepStatements = config.getPathConfiguration().mustKeepStatements();
 	}
 
-	public final Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
+	public Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
 		if (!flowSensitiveAliasing) {
 			assert this.isAbstractionActive();
 			return this;
@@ -242,7 +242,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	private Abstraction deriveNewAbstractionMutable(AccessPath p, Stmt currentStmt) {
+	protected Abstraction deriveNewAbstractionMutable(AccessPath p, Stmt currentStmt) {
 		// An abstraction needs an access path
 		if (p == null)
 			return null;
@@ -274,7 +274,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * @param throwStmt The statement at which the exception was thrown
 	 * @return The newly derived abstraction
 	 */
-	public final Abstraction deriveNewAbstractionOnThrow(Stmt throwStmt) {
+	public Abstraction deriveNewAbstractionOnThrow(Stmt throwStmt) {
 		Abstraction abs = clone();
 
 		abs.currentStmt = throwStmt;
@@ -290,7 +290,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * @param ap The access path in which the tainted exception is stored
 	 * @return The newly derived abstraction
 	 */
-	public final Abstraction deriveNewAbstractionOnCatch(AccessPath ap) {
+	public Abstraction deriveNewAbstractionOnCatch(AccessPath ap) {
 		assert this.exceptionThrown;
 		Abstraction abs = deriveNewAbstractionMutable(ap, null);
 		if (abs == null)
@@ -341,7 +341,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return this.exceptionThrown;
 	}
 
-	public final Abstraction deriveConditionalAbstractionEnter(UnitContainer postdom, Stmt conditionalUnit) {
+	public Abstraction deriveConditionalAbstractionEnter(UnitContainer postdom, Stmt conditionalUnit) {
 		assert this.isAbstractionActive();
 
 		if (postdominators != null && postdominators.contains(postdom))
@@ -358,7 +358,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	public final Abstraction deriveConditionalAbstractionCall(Unit conditionalCallSite) {
+	public Abstraction deriveConditionalAbstractionCall(Unit conditionalCallSite) {
 		assert this.isAbstractionActive();
 		assert conditionalCallSite != null;
 
@@ -373,7 +373,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	public final Abstraction dropTopPostdominator() {
+	public Abstraction dropTopPostdominator() {
 		if (postdominators == null || postdominators.isEmpty())
 			return this;
 
