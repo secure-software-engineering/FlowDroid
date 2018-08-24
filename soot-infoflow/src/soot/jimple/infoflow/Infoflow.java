@@ -32,6 +32,7 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
@@ -748,10 +749,9 @@ public class Infoflow extends AbstractInfoflow {
 	 * fixes some common issues
 	 */
 	private void checkAndFixConfiguration() {
-		if (config.getEnableStaticFieldTracking() && config.getAccessPathLength() == 0)
+		final AccessPathConfiguration accessPathConfig = config.getAccessPathConfiguration();
+		if (config.getEnableStaticFieldTracking() && accessPathConfig.getAccessPathLength() == 0)
 			throw new RuntimeException("Static field tracking must be disabled " + "if the access path length is zero");
-		if (config.getAccessPathLength() < 0)
-			throw new RuntimeException("The access path length may not be negative");
 		if (config.getSolverConfiguration().getDataFlowSolver() == DataFlowSolver.FlowInsensitive) {
 			config.setFlowSensitiveAliasing(false);
 			config.setEnableTypeChecking(false);
@@ -771,14 +771,16 @@ public class Infoflow extends AbstractInfoflow {
 	private void removeEntailedAbstractions(Set<AbstractionAtSink> res) {
 		for (Iterator<AbstractionAtSink> absAtSinkIt = res.iterator(); absAtSinkIt.hasNext();) {
 			AbstractionAtSink curAbs = absAtSinkIt.next();
-			for (AbstractionAtSink checkAbs : res)
+			for (AbstractionAtSink checkAbs : res) {
 				if (checkAbs != curAbs && checkAbs.getSinkStmt() == curAbs.getSinkStmt()
 						&& checkAbs.getAbstraction().isImplicit() == curAbs.getAbstraction().isImplicit()
-						&& checkAbs.getAbstraction().getSourceContext() == curAbs.getAbstraction().getSourceContext())
+						&& checkAbs.getAbstraction().getSourceContext() == curAbs.getAbstraction().getSourceContext()) {
 					if (checkAbs.getAbstraction().getAccessPath().entails(curAbs.getAbstraction().getAccessPath())) {
 						absAtSinkIt.remove();
 						break;
 					}
+				}
+			}
 		}
 	}
 
@@ -887,6 +889,9 @@ public class Infoflow extends AbstractInfoflow {
 	 * @return The memory manager object
 	 */
 	private IMemoryManager<Abstraction, Unit> createMemoryManager() {
+		if (memoryManagerFactory == null)
+			return null;
+
 		PathDataErasureMode erasureMode = PathDataErasureMode.EraseAll;
 		if (pathBuilderFactory.isContextSensitive())
 			erasureMode = PathDataErasureMode.KeepOnlyContextData;

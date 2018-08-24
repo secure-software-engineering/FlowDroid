@@ -1509,6 +1509,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			}
 
 		});
+		info.setMemoryManagerFactory(null);
 
 		// Inject additional post-processors
 		info.setPostProcessors(Collections.singleton(new PostAnalysisHandler() {

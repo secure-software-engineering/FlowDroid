@@ -766,9 +766,126 @@ public class InfoflowConfiguration {
 
 	}
 
-	private int accessPathLength = 5;
-	private boolean useRecursiveAccessPaths = true;
-	private boolean useThisChainReduction = true;
+	/**
+	 * Class containing the configuration options for dealing with access paths
+	 * (maximum length, reduction options, etc.)
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static class AccessPathConfiguration {
+
+		private int accessPathLength = 5;
+		private boolean useRecursiveAccessPaths = true;
+		private boolean useThisChainReduction = true;
+
+		/**
+		 * Merges the given configuration options into this configuration object
+		 * 
+		 * @param config The configuration data to merge in
+		 */
+		public void merge(AccessPathConfiguration config) {
+			this.accessPathLength = config.accessPathLength;
+			this.useRecursiveAccessPaths = config.useRecursiveAccessPaths;
+			this.useThisChainReduction = config.useThisChainReduction;
+		}
+
+		/**
+		 * Gets the maximum depth of the access paths. All paths will be truncated if
+		 * they exceed the given size.
+		 * 
+		 * @param accessPathLength the maximum value of an access path.
+		 */
+		public int getAccessPathLength() {
+			return accessPathLength;
+		}
+
+		/**
+		 * Sets the maximum depth of the access paths. All paths will be truncated if
+		 * they exceed the given size.
+		 * 
+		 * @param accessPathLength the maximum value of an access path. If it gets
+		 *                         longer than this value, it is truncated and all
+		 *                         following fields are assumed as tainted (which is
+		 *                         imprecise but gains performance) Default value is 5.
+		 */
+		public void setAccessPathLength(int accessPathLength) {
+			this.accessPathLength = accessPathLength;
+		}
+
+		/**
+		 * Gets whether recursive access paths shall be reduced, e.g. whether we shall
+		 * propagate a.[next].data instead of a.next.next.data.
+		 * 
+		 * @return True if recursive access paths shall be reduced, otherwise false
+		 */
+		public boolean getUseRecursiveAccessPaths() {
+			return useRecursiveAccessPaths;
+		}
+
+		/**
+		 * Sets whether recursive access paths shall be reduced, e.g. whether we shall
+		 * propagate a.[next].data instead of a.next.next.data.
+		 * 
+		 * @param useRecursiveAccessPaths True if recursive access paths shall be
+		 *                                reduced, otherwise false
+		 */
+		public void setUseRecursiveAccessPaths(boolean useRecursiveAccessPaths) {
+			this.useRecursiveAccessPaths = useRecursiveAccessPaths;
+		}
+
+		/**
+		 * Gets whether access paths pointing to outer objects using this$n shall be
+		 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
+		 * 
+		 * @return True if access paths including outer objects shall be reduced,
+		 *         otherwise false
+		 */
+		public boolean getUseThisChainReduction() {
+			return this.useThisChainReduction;
+		}
+
+		/**
+		 * Sets whether access paths pointing to outer objects using this$n shall be
+		 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
+		 * 
+		 * @param useThisChainReduction True if access paths including outer objects
+		 *                              shall be reduced, otherwise false
+		 */
+		public void setUseThisChainReduction(boolean useThisChainReduction) {
+			this.useThisChainReduction = useThisChainReduction;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + accessPathLength;
+			result = prime * result + (useRecursiveAccessPaths ? 1231 : 1237);
+			result = prime * result + (useThisChainReduction ? 1231 : 1237);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AccessPathConfiguration other = (AccessPathConfiguration) obj;
+			if (accessPathLength != other.accessPathLength)
+				return false;
+			if (useRecursiveAccessPaths != other.useRecursiveAccessPaths)
+				return false;
+			if (useThisChainReduction != other.useThisChainReduction)
+				return false;
+			return true;
+		}
+
+	}
+
 	private static boolean pathAgnosticResults = true;
 	private static boolean oneResultPerAccessPath = false;
 	private static boolean mergeNeighbors = false;
@@ -794,6 +911,7 @@ public class InfoflowConfiguration {
 	private PathConfiguration pathConfiguration = new PathConfiguration();
 	private OutputConfiguration outputConfiguration = new OutputConfiguration();
 	private SolverConfiguration solverConfiguration = new SolverConfiguration();
+	private AccessPathConfiguration accessPathConfiguration = new AccessPathConfiguration();
 
 	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 	private AliasingAlgorithm aliasingAlgorithm = AliasingAlgorithm.FlowSensitive;
@@ -810,10 +928,6 @@ public class InfoflowConfiguration {
 	 * @param config The configuration data to merge in
 	 */
 	public void merge(InfoflowConfiguration config) {
-		this.accessPathLength = config.accessPathLength;
-		this.useRecursiveAccessPaths = config.useRecursiveAccessPaths;
-		this.useThisChainReduction = config.useThisChainReduction;
-
 		this.stopAfterFirstKFlows = config.stopAfterFirstKFlows;
 		this.implicitFlowMode = config.implicitFlowMode;
 		this.enableStaticFields = config.enableStaticFields;
@@ -832,6 +946,7 @@ public class InfoflowConfiguration {
 		this.pathConfiguration.merge(config.pathConfiguration);
 		this.outputConfiguration.merge(config.outputConfiguration);
 		this.solverConfiguration.merge(config.solverConfiguration);
+		this.accessPathConfiguration.merge(config.accessPathConfiguration);
 
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
@@ -848,29 +963,6 @@ public class InfoflowConfiguration {
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
 		this.oneSourceAtATime = config.oneSourceAtATime;
-	}
-
-	/**
-	 * Gets the maximum depth of the access paths. All paths will be truncated if
-	 * they exceed the given size.
-	 * 
-	 * @param accessPathLength the maximum value of an access path.
-	 */
-	public int getAccessPathLength() {
-		return accessPathLength;
-	}
-
-	/**
-	 * Sets the maximum depth of the access paths. All paths will be truncated if
-	 * they exceed the given size.
-	 * 
-	 * @param accessPathLength the maximum value of an access path. If it gets
-	 *                         longer than this value, it is truncated and all
-	 *                         following fields are assumed as tainted (which is
-	 *                         imprecise but gains performance) Default value is 5.
-	 */
-	public void setAccessPathLength(int accessPathLength) {
-		this.accessPathLength = accessPathLength;
 	}
 
 	/**
@@ -936,49 +1028,6 @@ public class InfoflowConfiguration {
 	 */
 	public static void setMergeNeighbors(boolean value) {
 		InfoflowConfiguration.mergeNeighbors = value;
-	}
-
-	/**
-	 * Gets whether recursive access paths shall be reduced, e.g. whether we shall
-	 * propagate a.[next].data instead of a.next.next.data.
-	 * 
-	 * @return True if recursive access paths shall be reduced, otherwise false
-	 */
-	public boolean getUseRecursiveAccessPaths() {
-		return useRecursiveAccessPaths;
-	}
-
-	/**
-	 * Sets whether recursive access paths shall be reduced, e.g. whether we shall
-	 * propagate a.[next].data instead of a.next.next.data.
-	 * 
-	 * @param useRecursiveAccessPaths True if recursive access paths shall be
-	 *                                reduced, otherwise false
-	 */
-	public void setUseRecursiveAccessPaths(boolean useRecursiveAccessPaths) {
-		this.useRecursiveAccessPaths = useRecursiveAccessPaths;
-	}
-
-	/**
-	 * Gets whether access paths pointing to outer objects using this$n shall be
-	 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
-	 * 
-	 * @return True if access paths including outer objects shall be reduced,
-	 *         otherwise false
-	 */
-	public boolean getUseThisChainReduction() {
-		return this.useThisChainReduction;
-	}
-
-	/**
-	 * Sets whether access paths pointing to outer objects using this$n shall be
-	 * reduced, e.g. whether we shall propagate a.data instead of a.this$0.a.data.
-	 * 
-	 * @param useThisChainReduction True if access paths including outer objects
-	 *                              shall be reduced, otherwise false
-	 */
-	public void setUseThisChainReduction(boolean useThisChainReduction) {
-		this.useThisChainReduction = useThisChainReduction;
 	}
 
 	/**
@@ -1496,6 +1545,16 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets the access path configuration that defines, e.g. low long access paths
+	 * may be before being truncated
+	 * 
+	 * @return The access path configuration
+	 */
+	public AccessPathConfiguration getAccessPathConfiguration() {
+		return accessPathConfiguration;
+	}
+
+	/**
 	 * Prints a summary of this data flow configuration
 	 */
 	public void printSummary() {
@@ -1518,12 +1577,12 @@ public class InfoflowConfiguration {
 			logger.info("Exceptional flow tracking is enabled");
 		else
 			logger.info("Exceptional flow tracking is NOT enabled");
-		logger.info("Running with a maximum access path length of {}", getAccessPathLength());
+		logger.info("Running with a maximum access path length of {}", accessPathConfiguration.getAccessPathLength());
 		if (pathAgnosticResults)
 			logger.info("Using path-agnostic result collection");
 		else
 			logger.info("Using path-sensitive result collection");
-		if (useRecursiveAccessPaths)
+		if (accessPathConfiguration.useRecursiveAccessPaths)
 			logger.info("Recursive access path shortening is enabled");
 		else
 			logger.info("Recursive access path shortening is NOT enabled");
@@ -1537,7 +1596,7 @@ public class InfoflowConfiguration {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + accessPathLength;
+		result = prime * result + ((accessPathConfiguration == null) ? 0 : accessPathConfiguration.hashCode());
 		result = prime * result + ((aliasingAlgorithm == null) ? 0 : aliasingAlgorithm.hashCode());
 		result = prime * result + ((callgraphAlgorithm == null) ? 0 : callgraphAlgorithm.hashCode());
 		result = prime * result + ((codeEliminationMode == null) ? 0 : codeEliminationMode.hashCode());
@@ -1558,13 +1617,11 @@ public class InfoflowConfiguration {
 		result = prime * result + (logSourcesAndSinks ? 1231 : 1237);
 		result = prime * result + maxThreadNum;
 		result = prime * result + (oneSourceAtATime ? 1231 : 1237);
-		result = prime * result + ((pathConfiguration == null) ? 0 : pathConfiguration.hashCode());
 		result = prime * result + ((outputConfiguration == null) ? 0 : outputConfiguration.hashCode());
+		result = prime * result + ((pathConfiguration == null) ? 0 : pathConfiguration.hashCode());
 		result = prime * result + ((solverConfiguration == null) ? 0 : solverConfiguration.hashCode());
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
-		result = prime * result + (useRecursiveAccessPaths ? 1231 : 1237);
-		result = prime * result + (useThisChainReduction ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
 		return result;
 	}
@@ -1578,7 +1635,10 @@ public class InfoflowConfiguration {
 		if (getClass() != obj.getClass())
 			return false;
 		InfoflowConfiguration other = (InfoflowConfiguration) obj;
-		if (accessPathLength != other.accessPathLength)
+		if (accessPathConfiguration == null) {
+			if (other.accessPathConfiguration != null)
+				return false;
+		} else if (!accessPathConfiguration.equals(other.accessPathConfiguration))
 			return false;
 		if (aliasingAlgorithm != other.aliasingAlgorithm)
 			return false;
@@ -1620,15 +1680,15 @@ public class InfoflowConfiguration {
 			return false;
 		if (oneSourceAtATime != other.oneSourceAtATime)
 			return false;
-		if (pathConfiguration == null) {
-			if (other.pathConfiguration != null)
-				return false;
-		} else if (!pathConfiguration.equals(other.pathConfiguration))
-			return false;
 		if (outputConfiguration == null) {
 			if (other.outputConfiguration != null)
 				return false;
 		} else if (!outputConfiguration.equals(other.outputConfiguration))
+			return false;
+		if (pathConfiguration == null) {
+			if (other.pathConfiguration != null)
+				return false;
+		} else if (!pathConfiguration.equals(other.pathConfiguration))
 			return false;
 		if (solverConfiguration == null) {
 			if (other.solverConfiguration != null)
@@ -1638,10 +1698,6 @@ public class InfoflowConfiguration {
 		if (stopAfterFirstKFlows != other.stopAfterFirstKFlows)
 			return false;
 		if (taintAnalysisEnabled != other.taintAnalysisEnabled)
-			return false;
-		if (useRecursiveAccessPaths != other.useRecursiveAccessPaths)
-			return false;
-		if (useThisChainReduction != other.useThisChainReduction)
 			return false;
 		if (writeOutputFiles != other.writeOutputFiles)
 			return false;

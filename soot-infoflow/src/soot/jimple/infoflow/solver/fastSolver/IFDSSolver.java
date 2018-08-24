@@ -43,6 +43,7 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
+import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
@@ -616,6 +617,13 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// Check the path length
 		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
 			return;
+
+		Abstraction targetAbs = (Abstraction) targetVal;
+		if (targetAbs.getCurrentStmt() != null && targetAbs.getCurrentStmt().toString().equals(
+				"$HttpListener_Field_httpListener = this.<com.eastmoney.android.network.net.EmHttpMsgHandler: com.eastmoney.android.network.http.HttpListener httpListener>"))
+			if (targetAbs.getCorrespondingCallSite() != null && targetAbs.getCorrespondingCallSite().toString().equals(
+					"specialinvoke this.<com.eastmoney.android.network.net.EmHttpMsgHandler: void runinSubThread()>()"))
+				System.out.println("x");
 
 		final PathEdge<N, D> edge = new PathEdge<N, D>(sourceVal, target, targetVal);
 		final D existingVal = addFunction(edge);

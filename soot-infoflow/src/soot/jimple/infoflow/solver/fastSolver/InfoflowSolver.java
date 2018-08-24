@@ -113,6 +113,8 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 		this.jumpFunctions = new MyConcurrentHashMap<PathEdge<Unit, Abstraction>, Abstraction>();
 		this.incoming.clear();
 		this.endSummary.clear();
+		if (this.ffCache != null)
+			this.ffCache.invalidate();
 	}
 
 	@Override

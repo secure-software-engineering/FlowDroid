@@ -165,8 +165,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				if (newAbs != null) {
 					taintSet.add(newAbs);
-					if (Aliasing.canHaveAliases(assignStmt, leftValue, newAbs))
-						manager.getAliasing().computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+					final Aliasing aliasing = manager.getAliasing();
+					if (aliasing != null && Aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
+						aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+					}
 				}
 			}
 
@@ -224,6 +226,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						&& Aliasing.baseMatchesStrict(rightValue, newSource) && rightValue.getType() instanceof RefType
 						&& !newSource.dependsOnCutAP();
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				boolean cutFirstField = false;
 				AccessPath mappedAP = newSource.getAccessPath();
 				Type targetType = null;
@@ -240,7 +247,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 							// Check for aliasing
-							mappedAP = manager.getAliasing().mayAlias(newSource.getAccessPath(), rightRef);
+							mappedAP = aliasing.mayAlias(newSource.getAccessPath(), rightRef);
 
 							// check if static variable is tainted (same name,
 							// same class)
@@ -266,7 +273,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									addLeftValue = true;
 									cutFirstField = (mappedAP.getFieldCount() > 0
 											&& mappedAP.getFirstField() == rightField);
-								} else if (manager.getAliasing().mayAlias(rightBase, sourceBase)
+								} else if (aliasing.mayAlias(rightBase, sourceBase)
 										&& newSource.getAccessPath().getFieldCount() == 0
 										&& newSource.getAccessPath().getTaintSubFields()) {
 									addLeftValue = true;
@@ -283,7 +290,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// y.g = x && x.f tainted --> y.g.f, x.f tainted
 						else if (rightVal instanceof Local && newSource.getAccessPath().isInstanceFieldRef()) {
 							Local base = newSource.getAccessPath().getPlainValue();
-							if (manager.getAliasing().mayAlias(rightVal, base)) {
+							if (aliasing.mayAlias(rightVal, base)) {
 								addLeftValue = true;
 								targetType = newSource.getAccessPath().getBaseType();
 							}
@@ -291,7 +298,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// generic case, is true for Locals, ArrayRefs that are
 						// equal etc..
 						// y = x && x tainted --> y, x tainted
-						else if (manager.getAliasing().mayAlias(rightVal, newSource.getAccessPath().getPlainValue())) {
+						else if (aliasing.mayAlias(rightVal, newSource.getAccessPath().getPlainValue())) {
 							if (!(assignStmt.getRightOp() instanceof NewArrayExpr)) {
 								if (manager.getConfig().getEnableArraySizeTainting()
 										|| !(rightValue instanceof NewArrayExpr)) {
@@ -393,6 +400,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				return new SolverCallFlowFunction() {
 
 					@Override
@@ -400,8 +412,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						if (res != null && !res.isEmpty()) {
 							for (Abstraction abs : res)
-								manager.getAliasing().getAliasingStrategy().injectCallingContext(abs, solver, dest, src,
-										source, d1);
+								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, src, source, d1);
 						}
 						return notifyOutFlowHandlers(stmt, d1, source, res, FlowFunctionType.CallFlowFunction);
 					}
@@ -445,7 +456,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							if (ap != null) {
 								// If the variable is never read in the callee,
 								// there is no need to propagate it through
-								if (manager.getAliasing().getAliasingStrategy().isLazyAnalysis() || source.isImplicit()
+								if (aliasing.getAliasingStrategy().isLazyAnalysis() || source.isImplicit()
 										|| interproceduralCFG().methodReadsValue(dest, ap.getPlainValue())) {
 									Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 									if (newAbs != null)
@@ -472,6 +483,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
 				final Local[] paramLocals = callee.getActiveBody().getParameterLocals().toArray(new Local[0]);
+
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
 
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
@@ -534,7 +550,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return null;
 
 						// Do we need to retain all the taints?
-						if (manager.getAliasing().getAliasingStrategy().isLazyAnalysis()
+						if (aliasing.getAliasingStrategy().isLazyAnalysis()
 								&& Aliasing.canHaveAliases(newSource.getAccessPath()))
 							res.add(newSource);
 
@@ -547,7 +563,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 								Value leftOp = defnStmt.getLeftOp();
 
-								if (manager.getAliasing().mayAlias(retLocal, newSource.getAccessPath().getPlainValue())
+								if (aliasing.mayAlias(retLocal, newSource.getAccessPath().getPlainValue())
 										&& !isExceptionHandler(retSite)) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(newSource.getAccessPath(), leftOp);
@@ -557,9 +573,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 										// Aliases of implicitly tainted variables must be mapped back into the caller's
 										// context on return when we leave the last implicitly-called method
-										if (manager.getAliasing().getAliasingStrategy().requiresAnalysisOnReturn())
+										if (aliasing.getAliasingStrategy().requiresAnalysisOnReturn())
 											for (Abstraction d1 : callerD1s)
-												manager.getAliasing().computeAliases(d1, iCallStmt, leftOp, res,
+												aliasing.computeAliases(d1, iCallStmt, leftOp, res,
 														interproceduralCFG().getMethodOf(callSite), abs);
 									}
 								}
@@ -584,7 +600,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									}
 
 									// Propagate over the parameter taint
-									if (manager.getAliasing().mayAlias(paramLocals[i], sourceBase)) {
+									if (aliasing.mayAlias(paramLocals[i], sourceBase)) {
 										parameterAliases = true;
 										originalCallArg = iCallStmt.getInvokeExpr()
 												.getArg(isReflectiveCallSite ? 1 : i);
@@ -650,7 +666,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// (then we have already fixed it)
 							if (!parameterAliases && !thisAliases && source.getAccessPath().getTaintSubFields()
 									&& iCallStmt.getInvokeExpr() instanceof InstanceInvokeExpr
-									&& manager.getAliasing().mayAlias(thisLocal, sourceBase)) {
+									&& aliasing.mayAlias(thisLocal, sourceBase)) {
 								// Type check
 								if (manager.getTypeUtils().checkCast(source.getAccessPath(), thisLocal.getType())) {
 									InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) iCallStmt.getInvokeExpr();
@@ -677,9 +693,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// mapped back into the caller's context on return
 							// when we leave the last implicitly-called method
 							if ((abs.isImplicit() && !callerD1sConditional)
-									|| manager.getAliasing().getAliasingStrategy().requiresAnalysisOnReturn()) {
+									|| aliasing.getAliasingStrategy().requiresAnalysisOnReturn()) {
 								for (Abstraction d1 : callerD1s) {
-									manager.getAliasing().computeAliases(d1, iCallStmt, null, res,
+									aliasing.computeAliases(d1, iCallStmt, null, res,
 											interproceduralCFG().getMethodOf(callSite), abs);
 								}
 							}
@@ -703,6 +719,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				final Stmt iCallStmt = (Stmt) call;
 				final InvokeExpr invExpr = iCallStmt.getInvokeExpr();
+
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
 
 				final Value[] callArgs = new Value[invExpr.getArgCount()];
 				for (int i = 0; i < invExpr.getArgCount(); i++)
@@ -810,14 +831,13 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							}
 
 							if (allCalleesRead) {
-								if (manager.getAliasing().mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
+								if (aliasing.mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
 										newSource.getAccessPath().getPlainValue())) {
 									passOn = false;
 								}
 								if (passOn)
 									for (int i = 0; i < callArgs.length; i++)
-										if (manager.getAliasing().mayAlias(callArgs[i],
-												newSource.getAccessPath().getPlainValue())) {
+										if (aliasing.mayAlias(callArgs[i], newSource.getAccessPath().getPlainValue())) {
 											passOn = false;
 											break;
 										}
@@ -863,7 +883,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										for (Abstraction abs : nativeAbs)
 											if (abs.getAccessPath().isStaticFieldRef() || Aliasing.canHaveAliases(
 													iCallStmt, abs.getAccessPath().getPlainValue(), abs))
-												manager.getAliasing().computeAliases(d1, iCallStmt,
+												aliasing.computeAliases(d1, iCallStmt,
 														abs.getAccessPath().getPlainValue(), res,
 														interproceduralCFG().getMethodOf(call), abs);
 									}
@@ -906,9 +926,14 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				Set<AccessPath> res = null;
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				// If we are performing lazy aliasing, we need to retain all
 				// taints
-				if (manager.getAliasing().getAliasingStrategy().isLazyAnalysis() && Aliasing.canHaveAliases(ap)) {
+				if (aliasing.getAliasingStrategy().isLazyAnalysis() && Aliasing.canHaveAliases(ap)) {
 					res = new HashSet<>();
 					res.add(ap);
 				}
@@ -929,7 +954,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// If we have a base local to map, we need to find the
 				// corresponding "this" local
 				if (baseLocal != null) {
-					if (manager.getAliasing().mayAlias(baseLocal, ap.getPlainValue()))
+					if (aliasing.mayAlias(baseLocal, ap.getPlainValue()))
 						if (manager.getTypeUtils().hasCompatibleTypesForCall(ap, callee.getDeclaringClass())) {
 							if (res == null)
 								res = new HashSet<AccessPath>();
@@ -945,7 +970,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// special treatment for clinit methods - no param mapping
 				// possible
 				if (isExecutorExecute) {
-					if (manager.getAliasing().mayAlias(ie.getArg(0), ap.getPlainValue())) {
+					if (aliasing.mayAlias(ie.getArg(0), ap.getPlainValue())) {
 						if (res == null)
 							res = new HashSet<AccessPath>();
 						res.add(manager.getAccessPathFactory().copyWithNewValue(ap,
@@ -956,7 +981,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 					// check if param is tainted:
 					for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-						if (manager.getAliasing().mayAlias(ie.getArg(i), ap.getPlainValue())) {
+						if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
 							if (res == null)
 								res = new HashSet<AccessPath>();
 

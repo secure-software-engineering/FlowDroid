@@ -30,11 +30,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
-	 * @param executor
-	 *            The executor in which to run the path reconstruction tasks
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
 	public ContextSensitivePathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
 		super(manager, executor);
@@ -147,10 +145,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * Checks whether the given abstraction is a source. If so, a result entry is
 	 * created.
 	 * 
-	 * @param abs
-	 *            The abstraction to check
-	 * @param scap
-	 *            The path leading up to the current abstraction
+	 * @param abs  The abstraction to check
+	 * @param scap The path leading up to the current abstraction
 	 * @return True if the current abstraction is a source, otherwise false
 	 */
 	protected boolean checkForSource(Abstraction abs, SourceContextAndPath scap) {
