@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow-android</artifactId>
 	<name>soot-infoflow-android</name>
-	<version>2.6</version>
+	<version>2.7-SNAPSHOT</version>
 	<description>Android-specific components of FlowDroid</description>
 	<properties>
 		<maven.compiler.source>1.7</maven.compiler.source>
