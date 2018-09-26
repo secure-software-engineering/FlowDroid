@@ -61,8 +61,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs
-	 *            The abstraction to put on the taint propagation path
+	 * @param abs The abstraction to put on the taint propagation path
 	 * @return The new taint propagation path If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
@@ -73,10 +72,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs
-	 *            The abstraction to put on the taint propagation path
-	 * @param pathConfig
-	 *            The configuration for constructing taint propagation paths
+	 * @param abs        The abstraction to put on the taint propagation path
+	 * @param pathConfig The configuration for constructing taint propagation paths
 	 * @return The new taint propagation path. If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
@@ -93,21 +90,6 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		final boolean trackPath = pathConfig == null ? true : pathConfig.getPathReconstructionMode().reconstructPaths();
 		if (abs.getCorrespondingCallSite() == null && !trackPath)
 			return this;
-
-		// We can only switch from data flow taints to alias taints at the point where
-		// the alias analysis as started. We cannot jump into the middle of an alias
-		// propagation for a potentially unrelated alias query.
-		if (trackPath && this.path != null) {
-			Abstraction lastAbs = path.getLast();
-			if (!abs.isAbstractionActive() && lastAbs.isAbstractionActive()) {
-				if (abs.getActivationUnit() != abs.getCurrentStmt())
-					return null;
-			}
-			if (abs.isAbstractionActive() && !lastAbs.isAbstractionActive()) {
-				if (lastAbs.getActivationUnit() != abs.getCurrentStmt())
-					return null;
-			}
-		}
 
 		SourceContextAndPath scap = null;
 		if (trackPath && abs.getCurrentStmt() != null) {

@@ -107,10 +107,13 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		boolean found = false;
 
 		// Is an argument tainted?
-		for (int i = 0; i < iexpr.getArgCount(); i++) {
-			if (getAliasing().mayAlias(iexpr.getArg(i), source.getAccessPath().getPlainValue())) {
-				if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
-					return true;
+		final Value apBaseValue = source.getAccessPath().getPlainValue();
+		if (apBaseValue != null) {
+			for (int i = 0; i < iexpr.getArgCount(); i++) {
+				if (getAliasing().mayAlias(iexpr.getArg(i), apBaseValue)) {
+					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
+						return true;
+				}
 			}
 		}
 
@@ -136,7 +139,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 					SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
 							source.getAccessPath());
 
-					// If we have already seen the same taint at the dame sink, there is no need to
+					// If we have already seen the same taint at the same sink, there is no need to
 					// propagate this taint any further.
 					if (sinkInfo != null
 							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {

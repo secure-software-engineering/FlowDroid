@@ -70,10 +70,8 @@ public class SummaryGenerator {
 	/**
 	 * Generates the summaries for the given set of classes
 	 * 
-	 * @param classpath
-	 *            The classpath from which to load the given classes
-	 * @param classNames
-	 *            The classes for which to create summaries
+	 * @param classpath  The classpath from which to load the given classes
+	 * @param classNames The classes for which to create summaries
 	 * @return The generated method summaries
 	 */
 	public ClassSummaries createMethodSummaries(String classpath, Collection<String> classNames) {
@@ -83,13 +81,10 @@ public class SummaryGenerator {
 	/**
 	 * Generates the summaries for the given set of classes
 	 * 
-	 * @param classpath
-	 *            The classpath from which to load the given classes
-	 * @param classNames
-	 *            The classes for which to create summaries
-	 * @param handler
-	 *            The handler that shall be invoked when all methods inside one
-	 *            class have been summarized
+	 * @param classpath  The classpath from which to load the given classes
+	 * @param classNames The classes for which to create summaries
+	 * @param handler    The handler that shall be invoked when all methods inside
+	 *                   one class have been summarized
 	 * @return The generated method summaries
 	 */
 	public ClassSummaries createMethodSummaries(String classpath, Collection<String> classNames,
@@ -201,12 +196,8 @@ public class SummaryGenerator {
 					curSummaries.merge(newSums);
 				}
 
-				System.out.println("Class summaries for "
-						+ entry.getKey()
-						+ " done in "
-						+ (System.nanoTime() - nanosBeforeClass) / 1E9
-						+ " seconds for "
-						+ curSummaries.getFlowCount()
+				System.out.println("Class summaries for " + entry.getKey() + " done in "
+						+ (System.nanoTime() - nanosBeforeClass) / 1E9 + " seconds for " + curSummaries.getFlowCount()
 						+ " summaries");
 			}
 
@@ -227,13 +218,11 @@ public class SummaryGenerator {
 	}
 
 	/**
-	 * Checks whether the given method is to be included in the summary
-	 * generation. If so, it is added to the set of classes to be analyzed
+	 * Checks whether the given method is to be included in the summary generation.
+	 * If so, it is added to the set of classes to be analyzed
 	 * 
-	 * @param classes
-	 *            The set of classes to be analyzed
-	 * @param className
-	 *            The class to check
+	 * @param classes   The set of classes to be analyzed
+	 * @param className The class to check
 	 */
 	private void checkAndAdd(Set<String> classes, String className) {
 		if (config.getExcludes() != null)
@@ -250,13 +239,12 @@ public class SummaryGenerator {
 	}
 
 	/**
-	 * Gets all classes that are sub-classes of the given class / implementors
-	 * of the given interface
+	 * Gets all classes that are sub-classes of the given class / implementors of
+	 * the given interface
 	 * 
-	 * @param sc
-	 *            The class or interface of which to get the implementors
-	 * @return The concrete implementors of the given interface / subclasses of
-	 *         the given parent class
+	 * @param sc The class or interface of which to get the implementors
+	 * @return The concrete implementors of the given interface / subclasses of the
+	 *         given parent class
 	 */
 	private Collection<? extends String> getImplementorsOf(SootClass sc) {
 		Set<String> classes = new HashSet<>();
@@ -284,8 +272,7 @@ public class SummaryGenerator {
 	/**
 	 * Calculates the external dependencies of the given summary set
 	 * 
-	 * @param summaries
-	 *            The summary set for which to calculate the dependencies
+	 * @param summaries The summary set for which to calculate the dependencies
 	 */
 	private void calculateDependencies(ClassSummaries summaries) {
 		for (MethodFlow flow : summaries.getAllFlows()) {
@@ -307,8 +294,7 @@ public class SummaryGenerator {
 	/**
 	 * Gets the name of the field type from a field definition
 	 * 
-	 * @param apElement
-	 *            The field definition to parse
+	 * @param apElement The field definition to parse
 	 * @return The type name in the field definition
 	 */
 	private String getTypeFromFieldDef(String apElement) {
@@ -324,17 +310,15 @@ public class SummaryGenerator {
 	/**
 	 * Creates a method summary for the method m
 	 * 
-	 * It is assumed that only the default constructor of c is executed before m
-	 * is called.
+	 * It is assumed that only the default constructor of c is executed before m is
+	 * called.
 	 * 
-	 * The result of that assumption is that some fields of c may be null. A
-	 * null field is not identified as a source and there for will not create a
-	 * Field -> X flow.
+	 * The result of that assumption is that some fields of c may be null. A null
+	 * field is not identified as a source and there for will not create a Field ->
+	 * X flow.
 	 * 
-	 * @param classpath
-	 *            The classpath containing the classes to summarize
-	 * @param methodSig
-	 *            method for which a summary will be created
+	 * @param classpath The classpath containing the classes to summarize
+	 * @param methodSig method for which a summary will be created
 	 * @return summary of method m
 	 */
 	public MethodSummaries createMethodSummary(String classpath, String methodSig) {
@@ -344,21 +328,17 @@ public class SummaryGenerator {
 	/**
 	 * Creates a method summary for the method m.
 	 * 
-	 * It is assumed that all method in mDependencies and the default
-	 * constructor of c is executed before m is executed.
+	 * It is assumed that all method in mDependencies and the default constructor of
+	 * c is executed before m is executed.
 	 * 
 	 * That allows e.g. to call a setter before a getter method is analyzed and
 	 * there for the getter field is not null.
 	 * 
-	 * @param classpath
-	 *            The classpath containing the classes to summarize
-	 * @param methodSig
-	 *            method for which a summary will be created
-	 * @param parentClass
-	 *            The parent class on which the method to be analyzed shall be
-	 *            invoked
-	 * @param gapManager
-	 *            The gap manager to be used for creating new gaps
+	 * @param classpath   The classpath containing the classes to summarize
+	 * @param methodSig   method for which a summary will be created
+	 * @param parentClass The parent class on which the method to be analyzed shall
+	 *                    be invoked
+	 * @param gapManager  The gap manager to be used for creating new gaps
 	 * @return summary of method m
 	 */
 	private MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
@@ -366,7 +346,8 @@ public class SummaryGenerator {
 		System.out.println("Computing method summary for " + methodSig);
 		long nanosBeforeMethod = System.nanoTime();
 
-		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(config.getAccessPathLength());
+		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(
+				config.getAccessPathConfiguration().getAccessPathLength());
 		final SummarySourceSinkManager sourceSinkManager = new SummarySourceSinkManager(methodSig, parentClass,
 				sourceSinkFactory);
 		final MethodSummaries summaries = new MethodSummaries();
@@ -407,11 +388,8 @@ public class SummaryGenerator {
 			throw e;
 		}
 
-		System.out.println("Method summary for "
-				+ methodSig
-				+ " done in "
-				+ (System.nanoTime() - nanosBeforeMethod) / 1E9
-				+ " seconds");
+		System.out.println("Method summary for " + methodSig + " done in "
+				+ (System.nanoTime() - nanosBeforeMethod) / 1E9 + " seconds");
 		return summaries;
 	}
 
@@ -447,13 +425,11 @@ public class SummaryGenerator {
 	}
 
 	/**
-	 * Initializes the taint wrapper to be used for constructing gaps during
-	 * summary generation
+	 * Initializes the taint wrapper to be used for constructing gaps during summary
+	 * generation
 	 * 
-	 * @param summaries
-	 *            The summary data object to receive the flows
-	 * @param gapManager
-	 *            The gap manager to be used when handling callbacks
+	 * @param summaries  The summary data object to receive the flows
+	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The taint wrapper to be used during summary generation
 	 */
 	protected SummaryGenerationTaintWrapper createTaintWrapper(MethodSummaries summaries, GapManager gapManager) {
@@ -463,10 +439,8 @@ public class SummaryGenerator {
 	/**
 	 * Initializes the data flow tracker
 	 * 
-	 * @param summaries
-	 *            The summary data object to receive the flows
-	 * @param gapManager
-	 *            The gap manager to be used when handling callbacks
+	 * @param summaries  The summary data object to receive the flows
+	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The initialized data flow engine
 	 */
 	protected Infoflow initInfoflow(MethodSummaries summaries, GapManager gapManager) {
@@ -582,8 +556,7 @@ public class SummaryGenerator {
 	/**
 	 * Sets the configuration object to be used when generating summaries
 	 * 
-	 * @param config
-	 *            The configuration object to be used when generating summaries
+	 * @param config The configuration object to be used when generating summaries
 	 */
 	public void setConfig(SummaryGeneratorConfiguration config) {
 		this.config = config;

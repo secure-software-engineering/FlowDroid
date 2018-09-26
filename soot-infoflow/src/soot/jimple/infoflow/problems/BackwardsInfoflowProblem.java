@@ -408,6 +408,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 							assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
 
+							if (src.toString().equals("y = x"))
+								System.out.println("x");
+
 							// Notify the handler if we have one
 							if (taintPropagationHandler != null)
 								taintPropagationHandler.notifyFlowIn(src, source, manager,

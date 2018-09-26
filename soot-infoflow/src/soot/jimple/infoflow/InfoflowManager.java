@@ -29,7 +29,7 @@ public class InfoflowManager {
 	private final AccessPathFactory accessPathFactory;
 	private Aliasing aliasing;
 
-	InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
 			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
 			AccessPathFactory accessPathFactory) {
 		this.config = config;
@@ -54,8 +54,7 @@ public class InfoflowManager {
 	/**
 	 * Sets the IFDS solver that propagates edges forward
 	 * 
-	 * @param solver
-	 *            The IFDS solver that propagates edges forward
+	 * @param solver The IFDS solver that propagates edges forward
 	 */
 	public void setForwardSolver(IInfoflowSolver solver) {
 		this.forwardSolver = solver;

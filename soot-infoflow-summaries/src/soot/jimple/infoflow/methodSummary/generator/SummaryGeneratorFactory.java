@@ -25,8 +25,8 @@ public class SummaryGeneratorFactory {
 	 */
 	public SummaryGenerator initSummaryGenerator() {
 		SummaryGenerator s = new SummaryGenerator();
-		s.getConfig().setAccessPathLength(accessPathLength);
-		s.getConfig().setUseRecursiveAccessPaths(useRecursiveAccessPaths);
+		s.getConfig().getAccessPathConfiguration().setAccessPathLength(accessPathLength);
+		s.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(useRecursiveAccessPaths);
 		s.getConfig().setEnableExceptionTracking(enableExceptionTracking);
 		s.getConfig().setImplicitFlowMode(
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);

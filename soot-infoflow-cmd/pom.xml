@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow-cmd</artifactId>
 	<name>FlowDroid Command Line Util</name>
-	<version>2.6-SNAPSHOT</version>
+	<version>2.7-SNAPSHOT</version>
 	<description>Command-line utility for running FlowDroid</description>
 	<properties>
 		<maven.compiler.source>1.7</maven.compiler.source>
@@ -103,47 +103,22 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-android</artifactId>
-			<version>2.6-SNAPSHOT</version>
+			<version>2.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-summaries</artifactId>
-			<version>2.6-SNAPSHOT</version>
+			<version>2.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>heros</groupId>
 			<artifactId>heros</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
 			<artifactId>soot</artifactId>
 			<version>3.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

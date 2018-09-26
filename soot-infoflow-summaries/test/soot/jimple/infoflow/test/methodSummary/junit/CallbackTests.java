@@ -213,8 +213,8 @@ public class CallbackTests extends TestHelper {
 		List<String> sub = new LinkedList<String>();
 		sub.add("java.util.ArrayList");
 		sg.setSubstitutedWith(sub);
-		sg.getConfig().setAccessPathLength(5);
-		sg.getConfig().setUseRecursiveAccessPaths(true);
+		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(5);
+		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.setSootConfig(new DefaultSummaryConfig() {
 
 			@Override

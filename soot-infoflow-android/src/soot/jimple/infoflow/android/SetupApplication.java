@@ -107,14 +107,14 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private ISourceSinkDefinitionProvider sourceSinkProvider;
-	private MultiMap<SootClass, CallbackDefinition> callbackMethods = new HashMultiMap<>();
-	private MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
+	protected ISourceSinkDefinitionProvider sourceSinkProvider;
+	protected MultiMap<SootClass, CallbackDefinition> callbackMethods = new HashMultiMap<>();
+	protected MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
 
 	protected InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
 
-	private Set<SootClass> entrypoints = null;
-	private Set<String> callbackClasses = null;
+	protected Set<SootClass> entrypoints = null;
+	protected Set<String> callbackClasses = null;
 	protected AndroidEntryPointCreator entryPointCreator = null;
 	protected IccInstrumenter iccInstrumenter = null;
 
@@ -122,7 +122,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected ProcessManifest manifest = null;
 	protected IValueProvider valueProvider = null;
 
-	private final boolean forceAndroidJar;
+	protected final boolean forceAndroidJar;
 	protected ITaintPropagationWrapper taintWrapper;
 
 	protected ISourceSinkManager sourceSinkManager = null;
@@ -130,15 +130,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected IInfoflowConfig sootConfig = new SootConfigForAndroid();
 	protected BiDirICFGFactory cfgFactory = null;
 
-	private IIPCManager ipcManager = null;
+	protected IIPCManager ipcManager = null;
 
-	private long maxMemoryConsumption = -1;
+	protected long maxMemoryConsumption = -1;
 
-	private Set<Stmt> collectedSources = null;
-	private Set<Stmt> collectedSinks = null;
+	protected Set<Stmt> collectedSources = null;
+	protected Set<Stmt> collectedSinks = null;
 
-	private String callbackFile = "AndroidCallbacks.txt";
-	private SootClass scView = null;
+	protected String callbackFile = "AndroidCallbacks.txt";
+	protected SootClass scView = null;
 
 	protected Set<PreAnalysisHandler> preprocessors = new HashSet<>();
 	protected Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
@@ -210,8 +210,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
-	 * @param config
-	 *            The data flow configuration to use
+	 * @param config The data flow configuration to use
 	 */
 	public SetupApplication(InfoflowAndroidConfiguration config) {
 		this(config, null);
@@ -220,12 +219,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
-	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot shall
-	 *            automatically select the JAR file to be used or the path to a
-	 *            single JAR file to force one.
-	 * @param apkFileLocation
-	 *            The path to the APK file to be analyzed
+	 * @param androidJar      The path to the Android SDK's "platforms" directory if
+	 *                        Soot shall automatically select the JAR file to be
+	 *                        used or the path to a single JAR file to force one.
+	 * @param apkFileLocation The path to the APK file to be analyzed
 	 */
 	public SetupApplication(String androidJar, String apkFileLocation) {
 		this(getConfig(androidJar, apkFileLocation));
@@ -234,15 +231,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
-	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot shall
-	 *            automatically select the JAR file to be used or the path to a
-	 *            single JAR file to force one.
-	 * @param apkFileLocation
-	 *            The path to the APK file to be analyzed
-	 * @param ipcManager
-	 *            The IPC manager to use for modeling inter-component and
-	 *            inter-application data flows
+	 * @param androidJar      The path to the Android SDK's "platforms" directory if
+	 *                        Soot shall automatically select the JAR file to be
+	 *                        used or the path to a single JAR file to force one.
+	 * @param apkFileLocation The path to the APK file to be analyzed
+	 * @param ipcManager      The IPC manager to use for modeling inter-component
+	 *                        and inter-application data flows
 	 */
 	public SetupApplication(String androidJar, String apkFileLocation, IIPCManager ipcManager) {
 		this(getConfig(androidJar, apkFileLocation), ipcManager);
@@ -251,12 +245,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a basic data flow configuration with only the input files set
 	 * 
-	 * @param androidJar
-	 *            The path to the Android SDK's "platforms" directory if Soot shall
-	 *            automatically select the JAR file to be used or the path to a
-	 *            single JAR file to force one.
-	 * @param apkFileLocation
-	 *            The path to the APK file to be analyzed
+	 * @param androidJar      The path to the Android SDK's "platforms" directory if
+	 *                        Soot shall automatically select the JAR file to be
+	 *                        used or the path to a single JAR file to force one.
+	 * @param apkFileLocation The path to the APK file to be analyzed
 	 * @return The new configuration
 	 */
 	private static InfoflowAndroidConfiguration getConfig(String androidJar, String apkFileLocation) {
@@ -269,11 +261,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
-	 * @param config
-	 *            The data flow configuration to use
-	 * @param ipcManager
-	 *            The IPC manager to use for modelling inter-component and
-	 *            inter-application data flows
+	 * @param config     The data flow configuration to use
+	 * @param ipcManager The IPC manager to use for modelling inter-component and
+	 *                   inter-application data flows
 	 */
 	public SetupApplication(InfoflowAndroidConfiguration config, IIPCManager ipcManager) {
 		this.config = config;
@@ -391,8 +381,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Sets the class names of callbacks. If this value is null, it automatically
 	 * loads the names from AndroidCallbacks.txt as the default behavior.
 	 * 
-	 * @param callbackClasses
-	 *            The class names of callbacks or null to use the default file.
+	 * @param callbackClasses The class names of callbacks or null to use the
+	 *                        default file.
 	 */
 	public void setCallbackClasses(Set<String> callbackClasses) {
 		this.callbackClasses = callbackClasses;
@@ -415,10 +405,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Parses common app resources such as the manifest file
 	 * 
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	protected void parseAppResources() throws IOException, XmlPullParserException {
 		final String targetAPK = config.getAnalysisFileConfig().getTargetAPKFile();
@@ -445,13 +435,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Calculates the sets of sources, sinks, entry points, and callbacks methods
 	 * for the given APK file.
 	 * 
-	 * @param sourcesAndSinks
-	 *            A provider from which the analysis can obtain the list of sources
-	 *            and sinks
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @param sourcesAndSinks A provider from which the analysis can obtain the list
+	 *                        of sources and sinks
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	private void calculateCallbacks(ISourceSinkDefinitionProvider sourcesAndSinks)
 			throws IOException, XmlPullParserException {
@@ -462,16 +451,14 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Calculates the sets of sources, sinks, entry points, and callbacks methods
 	 * for the entry point in the given APK file.
 	 * 
-	 * @param sourcesAndSinks
-	 *            A provider from which the analysis can obtain the list of sources
-	 *            and sinks
-	 * @param entryPoint
-	 *            The entry point for which to calculate the callbacks. Pass null to
-	 *            calculate callbacks for all entry points.
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @param sourcesAndSinks A provider from which the analysis can obtain the list
+	 *                        of sources and sinks
+	 * @param entryPoint      The entry point for which to calculate the callbacks.
+	 *                        Pass null to calculate callbacks for all entry points.
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	private void calculateCallbacks(ISourceSinkDefinitionProvider sourcesAndSinks, SootClass entryPoint)
 			throws IOException, XmlPullParserException {
@@ -528,10 +515,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Creates an instance of {@link ISourceSinkManager} that defines what FlowDorid
 	 * shall consider as a source or sink, respectively.
 	 * 
-	 * @param lfp
-	 *            The parser that handles the layout XML files
-	 * @param callbacks
-	 *            The callbacks that have been collected so far
+	 * @param lfp       The parser that handles the layout XML files
+	 * @param callbacks The callbacks that have been collected so far
 	 * @return The new source sink manager
 	 */
 	protected ISourceSinkManager createSourceSinkManager(LayoutFileParser lfp, Set<CallbackDefinition> callbacks) {
@@ -609,13 +594,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Calculates the set of callback methods declared in the XML resource files or
 	 * the app's source code
 	 * 
-	 * @param lfp
-	 *            The layout file parser to be used for analyzing UI controls
-	 * @param component
-	 *            The Android component for which to compute the callbacks. Pass
-	 *            null to compute callbacks for all components.
-	 * @throws IOException
-	 *             Thrown if a required configuration cannot be read
+	 * @param lfp       The layout file parser to be used for analyzing UI controls
+	 * @param component The Android component for which to compute the callbacks.
+	 *                  Pass null to compute callbacks for all components.
+	 * @throws IOException Thrown if a required configuration cannot be read
 	 */
 	private void calculateCallbackMethods(LayoutFileParser lfp, SootClass component) throws IOException {
 		final CallbackConfiguration callbackConfig = config.getCallbackConfig();
@@ -805,8 +787,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Inverts the given {@link MultiMap}. The keys become values and vice versa
 	 * 
-	 * @param original
-	 *            The map to invert
+	 * @param original The map to invert
 	 * @return An inverted copy of the given map
 	 */
 	private <K, V> MultiMap<K, V> invertMap(MultiMap<V, K> original) {
@@ -836,11 +817,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Collects the XML-based callback methods, e.g., Button.onClick() declared in
 	 * layout XML files
 	 * 
-	 * @param lfp
-	 *            The layout file parser
-	 * @param jimpleClass
-	 *            The analysis class that gives us a mapping between layout IDs and
-	 *            components
+	 * @param lfp         The layout file parser
+	 * @param jimpleClass The analysis class that gives us a mapping between layout
+	 *                    IDs and components
 	 * @return True if at least one new callback method has been added, otherwise
 	 *         false
 	 */
@@ -924,13 +903,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * the app's source code. This method prefers performance over precision and
 	 * scans the code including unreachable methods.
 	 * 
-	 * @param lfp
-	 *            The layout file parser to be used for analyzing UI controls
-	 * @param entryPoint
-	 *            The entry point for which to calculate the callbacks. Pass null to
-	 *            calculate callbacks for all entry points.
-	 * @throws IOException
-	 *             Thrown if a required configuration cannot be read
+	 * @param lfp        The layout file parser to be used for analyzing UI controls
+	 * @param entryPoint The entry point for which to calculate the callbacks. Pass
+	 *                   null to calculate callbacks for all entry points.
+	 * @throws IOException Thrown if a required configuration cannot be read
 	 */
 	private void calculateCallbackMethodsFast(LayoutFileParser lfp, SootClass component) throws IOException {
 		// Construct the current callgraph
@@ -971,11 +947,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Registers the callback methods in the given layout control so that they are
 	 * included in the dummy main method
 	 * 
-	 * @param callbackClass
-	 *            The class with which to associate the layout callbacks
-	 * @param lc
-	 *            The layout control whose callbacks are to be associated with the
-	 *            given class
+	 * @param callbackClass The class with which to associate the layout callbacks
+	 * @param lc            The layout control whose callbacks are to be associated
+	 *                      with the given class
 	 */
 	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
@@ -1019,8 +993,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Creates the main method based on the current callback information, injects it
 	 * into the Soot scene.
 	 * 
-	 * @param The
-	 *            class name of a component to create a main method containing only
+	 * @param The class name of a component to create a main method containing only
 	 *            that component, or null to create main method for all components
 	 */
 	private void createMainMethod(SootClass component) {
@@ -1177,23 +1150,24 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class InPlaceInfoflow extends Infoflow implements IInPlaceInfoflow {
+	protected static class InPlaceInfoflow extends Infoflow implements IInPlaceInfoflow {
 
 		/**
 		 * Creates a new instance of the Infoflow class for analyzing Android APK files.
 		 * 
-		 * @param androidPath
-		 *            If forceAndroidJar is false, this is the base directory of the
-		 *            platform files in the Android SDK. If forceAndroidJar is true,
-		 *            this is the full path of a single android.jar file.
-		 * @param forceAndroidJar
-		 *            True if a single platform JAR file shall be forced, false if Soot
-		 *            shall pick the appropriate platform version
-		 * @param icfgFactory
-		 *            The interprocedural CFG to be used by the InfoFlowProblem
-		 * @param additionalEntryPointMethods
-		 *            Additional methods generated by the entry point creator that are
-		 *            not directly entry ypoints on their own
+		 * @param androidPath                 If forceAndroidJar is false, this is the
+		 *                                    base directory of the platform files in
+		 *                                    the Android SDK. If forceAndroidJar is
+		 *                                    true, this is the full path of a single
+		 *                                    android.jar file.
+		 * @param forceAndroidJar             True if a single platform JAR file shall
+		 *                                    be forced, false if Soot shall pick the
+		 *                                    appropriate platform version
+		 * @param icfgFactory                 The interprocedural CFG to be used by the
+		 *                                    InfoFlowProblem
+		 * @param additionalEntryPointMethods Additional methods generated by the entry
+		 *                                    point creator that are not directly entry
+		 *                                    ypoints on their own
 		 */
 		public InPlaceInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
 				Collection<SootMethod> additionalEntryPointMethods) {
@@ -1239,14 +1213,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis.
 	 * 
-	 * @param sources
-	 *            The methods that shall be considered as sources
-	 * @param sinks
-	 *            The methods that shall be considered as sinks
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @param sources The methods that shall be considered as sources
+	 * @param sinks   The methods that shall be considered as sinks
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	public InfoflowResults runInfoflow(Set<AndroidMethod> sources, Set<AndroidMethod> sinks)
 			throws IOException, XmlPullParserException {
@@ -1286,13 +1258,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis.
 	 * 
-	 * @param sourceSinkFile
-	 *            The full path and file name of the file containing the sources and
-	 *            sinks
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @param sourceSinkFile The full path and file name of the file containing the
+	 *                       sources and sinks
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	public InfoflowResults runInfoflow(String sourceSinkFile) throws IOException, XmlPullParserException {
 		if (sourceSinkFile != null && !sourceSinkFile.isEmpty())
@@ -1304,10 +1275,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis.
 	 * 
-	 * @throws IOException
-	 *             Thrown if the given source/sink file could not be read.
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @throws IOException            Thrown if the given source/sink file could not
+	 *                                be read.
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	public InfoflowResults runInfoflow() throws IOException, XmlPullParserException {
 		// If we don't have a source/sink file by now, we cannot run the data
@@ -1339,8 +1310,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis.
 	 * 
-	 * @param sourcesAndSinks
-	 *            The sources and sinks of the data flow analysis
+	 * @param sourcesAndSinks The sources and sinks of the data flow analysis
 	 * @return The results of the data flow analysis
 	 */
 	public InfoflowResults runInfoflow(ISourceSinkDefinitionProvider sourcesAndSinks) {
@@ -1402,15 +1372,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis on the given entry point class
 	 * 
-	 * @param sourcesAndSinks
-	 *            The sources and sinks on which to run the data flow analysis
-	 * @param resultAggregator
-	 *            An object for aggregating the results from the individual data
-	 *            flow runs
-	 * @param numEntryPoints
-	 *            The total number of runs (for logging)
-	 * @param entrypoint
-	 *            The current entry point to analyze
+	 * @param sourcesAndSinks  The sources and sinks on which to run the data flow
+	 *                         analysis
+	 * @param resultAggregator An object for aggregating the results from the
+	 *                         individual data flow runs
+	 * @param numEntryPoints   The total number of runs (for logging)
+	 * @param entrypoint       The current entry point to analyze
 	 */
 	protected void processEntryPoint(ISourceSinkDefinitionProvider sourcesAndSinks,
 			MultiRunResultAggregator resultAggregator, int numEntryPoints, SootClass entrypoint) {
@@ -1481,10 +1448,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Writes the given data flow results into the configured output file
 	 * 
-	 * @param results
-	 *            The data flow results to write out
-	 * @param cfg
-	 *            The control flow graph to use for writing out the results
+	 * @param results The data flow results to write out
+	 * @param cfg     The control flow graph to use for writing out the results
 	 */
 	private void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
 		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
@@ -1544,6 +1509,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			}
 
 		});
+		info.setMemoryManagerFactory(null);
 
 		// Inject additional post-processors
 		info.setPostProcessors(Collections.singleton(new PostAnalysisHandler() {
@@ -1567,8 +1533,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Creates the data flow engine on which to run the analysis. Derived classes
 	 * can override this method to use other data flow engines.
 	 * 
-	 * @param lifecycleMethods
-	 *            The set of Android lifecycle methods to consider
+	 * @param lifecycleMethods The set of Android lifecycle methods to consider
 	 * @return The data flow engine
 	 */
 	protected IInPlaceInfoflow createInfoflowInternal(Collection<SootMethod> lifecycleMethods) {
@@ -1580,9 +1545,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Creates the {@link AndroidEntryPointCreator} instance which will later create
 	 * the dummy main method for the analysis
 	 * 
-	 * @param component
-	 *            The single component to include in the dummy main method. Pass
-	 *            null to include all components in the dummy main method.
+	 * @param component The single component to include in the dummy main method.
+	 *                  Pass null to include all components in the dummy main
+	 *                  method.
 	 * @return The {@link AndroidEntryPointCreator} responsible for generating the
 	 *         dummy main method
 	 */
@@ -1627,9 +1592,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * that only this component and the application class (if any) shall be
 	 * analyzed. Otherwise, all components are to be analyzed.
 	 * 
-	 * @param component
-	 *            A component class name to only analyze this class and the
-	 *            application class (if any), or null to analyze all classes.
+	 * @param component A component class name to only analyze this class and the
+	 *                  application class (if any), or null to analyze all classes.
 	 * @return The set of classes to analyze
 	 */
 	private Set<SootClass> getComponentsToAnalyze(SootClass component) {
@@ -1675,9 +1639,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Sets the extra Soot configuration options to be used when running the
 	 * analysis
 	 * 
-	 * @param config
-	 *            The extra Soot configuration options to be used when running the
-	 *            analysis, null if the defaults shall be used
+	 * @param config The extra Soot configuration options to be used when running
+	 *               the analysis, null if the defaults shall be used
 	 */
 	public void setSootConfig(IInfoflowConfig config) {
 		this.sootConfig = config;
@@ -1687,9 +1650,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Sets the factory class to be used for constructing interprocedural control
 	 * flow graphs
 	 * 
-	 * @param factory
-	 *            The factory to be used. If null is passed, the default factory is
-	 *            used.
+	 * @param factory The factory to be used. If null is passed, the default factory
+	 *                is used.
 	 */
 	public void setIcfgFactory(BiDirICFGFactory factory) {
 		this.cfgFactory = factory;
@@ -1721,8 +1683,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Adds custom code to be executed before the taint propagation starts
 	 * 
-	 * @param preprocessor
-	 *            The callback to invoke before starting the taint propagation
+	 * @param preprocessor The callback to invoke before starting the taint
+	 *                     propagation
 	 */
 	public void addPreprocessor(PreAnalysisHandler preprocessor) {
 		this.preprocessors.add(preprocessor);
@@ -1732,8 +1694,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Adds a new handler that shall be executed when the results of the data flow
 	 * analysis are available
 	 * 
-	 * @param handler
-	 *            The callback to invoke when the data flow results are available
+	 * @param handler The callback to invoke when the data flow results are
+	 *                available
 	 */
 	public void addResultsAvailableHandler(ResultsAvailableHandler handler) {
 		this.resultsAvailableHandlers.add(handler);
@@ -1761,9 +1723,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Sets the IPC manager for modeling inter-component and inter-application data
 	 * flows
 	 * 
-	 * @param ipcManager
-	 *            The IPC manager to use for modeling inter-component and
-	 *            inter-application data flows
+	 * @param ipcManager The IPC manager to use for modeling inter-component and
+	 *                   inter-application data flows
 	 */
 	public void setIpcManager(IIPCManager ipcManager) {
 		this.ipcManager = ipcManager;
@@ -1774,8 +1735,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * analysis processes an edge. Use this callback if you need a hook into the
 	 * low-level data flow analysis.
 	 * 
-	 * @param taintPropagationHandler
-	 *            The propagation handler to register
+	 * @param taintPropagationHandler The propagation handler to register
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler taintPropagationHandler) {
 		this.taintPropagationHandler = taintPropagationHandler;
@@ -1786,8 +1746,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * analysis processes an edge. Use this callback if you need a hook into the
 	 * low-level alias analysis.
 	 * 
-	 * @param backwardsPropagationHandler
-	 *            The propagation handler to register
+	 * @param backwardsPropagationHandler The propagation handler to register
 	 */
 	public void setBackwardsPropagationHandler(TaintPropagationHandler backwardsPropagationHandler) {
 		this.backwardsPropagationHandler = backwardsPropagationHandler;
@@ -1796,8 +1755,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Sets the value provider that extracts constants from the Jimple code
 	 * 
-	 * @param valueProvider
-	 *            The value provider for extracting constants from the code
+	 * @param valueProvider The value provider for extracting constants from the
+	 *                      code
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {
 		this.valueProvider = valueProvider;

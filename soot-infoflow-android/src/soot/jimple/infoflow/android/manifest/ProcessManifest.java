@@ -35,7 +35,7 @@ public class ProcessManifest implements Closeable {
 	 * Enumeration containing the various component types supported in Android
 	 */
 	public enum ComponentType {
-		Activity, Service, ContentProvider, BroadcastReceiver
+	Activity, Service, ContentProvider, BroadcastReceiver
 	}
 
 	/**
@@ -63,12 +63,9 @@ public class ProcessManifest implements Closeable {
 	 * Processes an AppManifest which is within the file identified by the given
 	 * path.
 	 *
-	 * @param apkPath
-	 *            file path to an APK.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws XmlPullParserException
-	 *             can occur due to a malformed manifest.
+	 * @param apkPath file path to an APK.
+	 * @throws IOException            if an I/O error occurs.
+	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 */
 	public ProcessManifest(String apkPath) throws IOException, XmlPullParserException {
 		this(new File(apkPath));
@@ -77,12 +74,9 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Processes an AppManifest which is within the given {@link File}.
 	 *
-	 * @param apkFile
-	 *            the AppManifest within the given APK will be parsed.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws XmlPullParserException
-	 *             can occur due to a malformed manifest.
+	 * @param apkFile the AppManifest within the given APK will be parsed.
+	 * @throws IOException            if an I/O error occurs.
+	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 * @see {@link ProcessManifest#ProcessManifest(InputStream)}
 	 */
 	public ProcessManifest(File apkFile) throws IOException, XmlPullParserException {
@@ -107,12 +101,9 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Processes an AppManifest which is provided by the given {@link InputStream}.
 	 *
-	 * @param manifestIS
-	 *            InputStream for an AppManifest.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws XmlPullParserException
-	 *             can occur due to a malformed manifest.
+	 * @param manifestIS InputStream for an AppManifest.
+	 * @throws IOException            if an I/O error occurs.
+	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 */
 	public ProcessManifest(InputStream manifestIS) throws IOException, XmlPullParserException {
 		this.handle(manifestIS);
@@ -122,12 +113,9 @@ public class ProcessManifest implements Closeable {
 	 * Initialises the {@link ProcessManifest} by parsing the manifest provided by
 	 * the given {@link InputStream}.
 	 *
-	 * @param manifestIS
-	 *            InputStream for an AppManifest.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws XmlPullParserException
-	 *             can occur due to a malformed manifest.
+	 * @param manifestIS InputStream for an AppManifest.
+	 * @throws IOException            if an I/O error occurs.
+	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 */
 	protected void handle(InputStream manifestIS) throws IOException, XmlPullParserException {
 		this.axml = new AXmlHandler(manifestIS);
@@ -160,8 +148,7 @@ public class ProcessManifest implements Closeable {
 	 * Generates a full class name from a short class name by appending the
 	 * globally-defined package when necessary
 	 *
-	 * @param className
-	 *            The class name to expand
+	 * @param className The class name to expand
 	 * @return The expanded class name for the given short name
 	 */
 	private String expandClassName(String className) {
@@ -269,15 +256,21 @@ public class ProcessManifest implements Closeable {
 			} else {
 				// This component does not have a name, so this might be
 				// obfuscated malware. We apply a heuristic.
-				for (Entry<String, AXmlAttribute<?>> a : node.getAttributes().entrySet())
-					if (a.getValue().getName().isEmpty() && a.getValue().getType() == AxmlVisitor.TYPE_STRING) {
-						String name = (String) a.getValue().getValue();
-						if (isValidComponentName(name)) {
-							String expandedName = expandClassName(name);
-							if (!SystemClassHandler.isClassInSystemPackage(expandedName))
-								entryPoints.add(expandedName);
+				for (Entry<String, AXmlAttribute<?>> a : node.getAttributes().entrySet()) {
+					AXmlAttribute<?> attrValue = a.getValue();
+					if (attrValue != null) {
+						String attrValueName = attrValue.getName();
+						if ((attrValueName == null || attrValueName.isEmpty())
+								&& attrValue.getType() == AxmlVisitor.TYPE_STRING) {
+							String name = (String) attrValue.getValue();
+							if (isValidComponentName(name)) {
+								String expandedName = expandClassName(name);
+								if (!SystemClassHandler.isClassInSystemPackage(expandedName))
+									entryPoints.add(expandedName);
+							}
 						}
 					}
+				}
 			}
 		}
 	}
@@ -285,13 +278,12 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Checks if the specified name is a valid Android component name
 	 *
-	 * @param name
-	 *            The Android component name to check
+	 * @param name The Android component name to check
 	 * @return True if the given name is a valid Android component name, otherwise
 	 *         false
 	 */
 	private boolean isValidComponentName(String name) {
-		if (name.isEmpty())
+		if (name == null || name.isEmpty())
 			return false;
 		if (name.equals("true") || name.equals("false"))
 			return false;
@@ -308,8 +300,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Gets the type of the component identified by the given class name
 	 *
-	 * @param className
-	 *            The class name for which to get the component type
+	 * @param className The class name for which to get the component type
 	 * @return The component type of the given class if this class has been
 	 *         registered as a component in the manifest file, otherwise null
 	 */
@@ -361,6 +352,8 @@ public class ProcessManifest implements Closeable {
 	 *
 	 * @param name
 	 *            the provider's name
+	 *
+	 * @param name the provider's name
 	 * @return provider with <code>name</code>
 	 */
 	public AXmlNode getProvider(String name) {
@@ -370,8 +363,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Returns the <code>service</code> which has the given <code>name</code>.
 	 *
-	 * @param name
-	 *            the service's name
+	 * @param name the service's name
 	 * @return service with <code>name</code>
 	 */
 	public AXmlNode getService(String name) {
@@ -381,8 +373,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Returns the <code>activity</code> which has the given <code>name</code>.
 	 *
-	 * @param name
-	 *            the activitie's name
+	 * @param name the activitie's name
 	 * @return activitiy with <code>name</code>
 	 */
 	public AXmlNode getActivity(String name) {
@@ -403,8 +394,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Returns the <code>receiver</code> which has the given <code>name</code>.
 	 *
-	 * @param name
-	 *            the receiver's name
+	 * @param name the receiver's name
 	 * @return receiver with <code>name</code>
 	 */
 	public AXmlNode getReceiver(String name) {
@@ -415,10 +405,8 @@ public class ProcessManifest implements Closeable {
 	 * Iterates over <code>list</code> and checks which node has the given
 	 * <code>name</code>.
 	 *
-	 * @param list
-	 *            contains nodes.
-	 * @param name
-	 *            the node's name.
+	 * @param list contains nodes.
+	 * @param name the node's name.
 	 * @return node with <code>name</code>.
 	 */
 	protected AXmlNode getNodeWithName(List<AXmlNode> list, String name) {
@@ -600,8 +588,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Adds a new permission to the manifest.
 	 *
-	 * @param complete
-	 *            permission name e.g. "android.permission.INTERNET"
+	 * @param complete permission name e.g. "android.permission.INTERNET"
 	 */
 	public void addPermission(String permissionName) {
 		AXmlNode permission = new AXmlNode("uses-permission", null, manifest);
@@ -613,8 +600,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Adds a new provider to the manifest
 	 *
-	 * @param node
-	 *            provider represented as an AXmlNode
+	 * @param node provider represented as an AXmlNode
 	 */
 	public void addProvider(AXmlNode node) {
 		if (providers.isEmpty())
@@ -625,8 +611,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Adds a new receiver to the manifest
 	 *
-	 * @param node
-	 *            receiver represented as an AXmlNode
+	 * @param node receiver represented as an AXmlNode
 	 */
 	public void addReceiver(AXmlNode node) {
 		if (receivers.isEmpty())
@@ -637,8 +622,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Adds a new activity to the manifest
 	 *
-	 * @param node
-	 *            activity represented as an AXmlNode
+	 * @param node activity represented as an AXmlNode
 	 */
 	public void addActivity(AXmlNode node) {
 		if (activities.isEmpty())
@@ -649,8 +633,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Adds a new service to the manifest
 	 *
-	 * @param node
-	 *            service represented as an AXmlNode
+	 * @param node service represented as an AXmlNode
 	 */
 	public void addService(AXmlNode node) {
 		if (services.isEmpty())

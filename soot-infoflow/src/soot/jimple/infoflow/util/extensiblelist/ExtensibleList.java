@@ -14,8 +14,7 @@ import java.util.ListIterator;
  * and operations requiring accessing the head will be slower.
  * 
  * @author Marc Miltenberger
- * @param <T>
- *            the type to save in this list
+ * @param <T> the type to save in this list
  */
 public class ExtensibleList<T> {
 	// private List<T> check;
@@ -86,8 +85,7 @@ public class ExtensibleList<T> {
 	 * Creates a new extensible list. The given parameter is the prepended to this
 	 * list.
 	 * 
-	 * @param original
-	 *            the prepended list
+	 * @param original the prepended list
 	 */
 	public ExtensibleList(ExtensibleList<T> original) {
 		// Someone else might be doing the same right now, which means that "original"
@@ -102,6 +100,9 @@ public class ExtensibleList<T> {
 				original.lastLocked = Math.min(original.lastLocked, original.actualList.size());
 				if (original.lastLocked == -1)
 					original.lastLocked = original.actualList.size();
+			} else if (original.previous != null) {
+				previousLockedAt = original.previousLockedAt;
+				previous = original.previous;
 			} else
 				previousLockedAt = 0;
 
@@ -157,8 +158,7 @@ public class ExtensibleList<T> {
 	 * In case this list is locked, a new one is created and returned. So, always
 	 * use the returned list!
 	 * 
-	 * @param add
-	 *            the object to add
+	 * @param add the object to add
 	 * @return the new list
 	 */
 	public ExtensibleList<T> add(T add) {
@@ -265,8 +265,7 @@ public class ExtensibleList<T> {
 	 * This method returns the last element and also removes it when the given
 	 * boolean parameter is true
 	 * 
-	 * @param remove
-	 *            whether to remove the last element
+	 * @param remove whether to remove the last element
 	 * @return the last element (or null)
 	 */
 	private Object getOrRemoveLast(boolean remove) {
@@ -412,8 +411,7 @@ public class ExtensibleList<T> {
 	 * this list, but returns a new list! This method should not be used in normal
 	 * path reconstruction.
 	 * 
-	 * @param toAdd
-	 *            the element to add
+	 * @param toAdd the element to add
 	 * @return the new list
 	 */
 	public ExtensibleList<T> addFirstSlow(T toAdd) {
@@ -439,4 +437,9 @@ public class ExtensibleList<T> {
 		Collections.reverse(res);
 		return res.toString();
 	}
+
+	public List<T> getActualList() {
+		return actualList;
+	}
+
 }

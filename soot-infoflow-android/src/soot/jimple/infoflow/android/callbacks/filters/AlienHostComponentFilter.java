@@ -30,8 +30,7 @@ public class AlienHostComponentFilter extends AbstractCallbackFilter {
 	/**
 	 * Creates a new instance of the {@link AlienHostComponentFilter} class
 	 * 
-	 * @param components
-	 *            The set of components in the Android app
+	 * @param components The set of components in the Android app
 	 */
 	public AlienHostComponentFilter(Set<SootClass> components) {
 		this.components = components;
@@ -49,9 +48,12 @@ public class AlienHostComponentFilter extends AbstractCallbackFilter {
 
 		// If the callback class is a fragment, but the hosting component is not
 		// an activity, this association must be wrong.
-		if (Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.fragmentClass.getType()))
-			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(component.getType(), this.activityClass.getType()))
-				return false;
+		if (fragmentClass != null && activityClass != null) {
+			if (Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
+					this.fragmentClass.getType()))
+				if (!Scene.v().getOrMakeFastHierarchy().canStoreType(component.getType(), this.activityClass.getType()))
+					return false;
+		}
 
 		// If the callback handler is an inner class, we only accept it if its
 		// outer class matches the component

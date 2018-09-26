@@ -11,7 +11,16 @@
 <android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()> android.permission.READ_PHONE_STATE -> _SOURCE_
 <android.telephony.TelephonyManager: java.lang.String getLine1Number()> android.permission.READ_PHONE_STATE -> _SOURCE_
 
-<java.net.URLConnection: java.io.OutputStream getOutputStream()> -> _SOURCE_
+<java.net.URLConnection: void connect()> -> _SINK_
+<java.net.URLConnection: java.io.InputStream getInputStream()> -> _BOTH_
+<java.net.URLConnection: java.io.OutputStream getOutputStream()> -> _SINK_
+
+<java.net.URL: java.io.InputStream openStream()> -> _BOTH_
+<java.net.URL: java.lang.Object getContent()> -> _BOTH_
+<java.net.URL: java.lang.Object getContent(java.lang.Class[])> -> _BOTH_
+
+<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String)> -> _SINK_
+<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)> -> _SINK_
 
 <org.apache.http.HttpResponse: org.apache.http.HttpEntity getEntity()> -> _SOURCE_
 
@@ -149,10 +158,6 @@
 <android.os.Bundle: void putStringArrayList(java.lang.String,java.util.ArrayList)> -> _SINK_
 <android.os.Bundle: void putAll(android.os.Bundle)> -> _SINK_
 
-<android.app.PendingIntent: android.app.PendingIntent getActivity(android.content.Context,int,android.content.Intent,int)> -> _SOURCE_
-<android.app.PendingIntent: android.app.PendingIntent getActivity(android.content.Context,int,android.content.Intent,int,android.os.Bundle)> -> _SOURCE_
-<android.app.PendingIntent: android.app.PendingIntent getBroadcast(android.content.Context,int,android.content.Intent,int)> -> _SOURCE_
-<android.app.PendingIntent: android.app.PendingIntent getService(android.content.Context,int,android.content.Intent,int)> -> _SOURCE_
 <android.media.AudioRecord: int read(short[],int,int)> -> _SOURCE_
 <android.media.AudioRecord: int read(byte[],int,int)> -> _SOURCE_
 <android.media.AudioRecord: int read(java.nio.ByteBuffer,int)> -> _SOURCE_
@@ -162,12 +167,6 @@
 <android.content.pm.PackageManager: java.util.List queryIntentServices(android.content.Intent,int)> -> _SOURCE_
 <android.content.pm.PackageManager: java.util.List queryBroadcastReceivers(android.content.Intent,int)> -> _SOURCE_
 <android.content.pm.PackageManager: java.util.List queryContentProviders(java.lang.String,int,int)> -> _SOURCE_
-
-<android.os.Handler: android.os.Message obtainMessage()> -> _SOURCE_
-<android.os.Handler: android.os.Message obtainMessage(int,int,int)> -> _SOURCE_
-<android.os.Handler: android.os.Message obtainMessage(int,int,int,java.lang.Object)> -> _SOURCE_
-<android.os.Handler: android.os.Message obtainMessage(int)> -> _SOURCE_
-<android.os.Handler: android.os.Message obtainMessage(int,java.lang.Object)> -> _SOURCE_
 
 <android.util.Log: int d(java.lang.String,java.lang.String)> -> _SINK_
 <android.util.Log: int d(java.lang.String,java.lang.String,java.lang.Throwable)> -> _SINK_
@@ -201,10 +200,6 @@
 
 <java.io.OutputStreamWriter: java.io.Writer append(java.lang.CharSequence)> -> _SINK_
 
-<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String)> -> _SINK_
-<java.net.URL: void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)> -> _SINK_
-
-<java.net.URLConnection: void setRequestProperty(java.lang.String,java.lang.String)> -> _SINK_
 <android.content.Intent: android.content.Intent setAction(java.lang.String)> -> _SINK_
 <android.content.Intent: android.content.Intent setClassName(android.content.Context,java.lang.Class)> -> _SINK_
 <android.content.Intent: android.content.Intent setClassName(android.content.Context,java.lang.String)> -> _SINK_
@@ -275,9 +270,6 @@
 <java.util.Calendar: java.util.TimeZone getTimeZone()> -> _SOURCE_
 <android.provider.Browser: android.database.Cursor getAllBookmarks()> -> _SOURCE_
 <android.provider.Browser: android.database.Cursor getAllVisitedUrls()> -> _SOURCE_
-
-<java.net.URL: java.net.URLConnection openConnection()> -> _SOURCE_
-<java.net.URL: java.net.URLConnection openConnection()> -> _SINK_
 
 <org.apache.http.impl.client.DefaultHttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> -> _SINK_
 <org.apache.http.client.HttpClient: org.apache.http.HttpResponse execute(org.apache.http.client.methods.HttpUriRequest)> -> _SINK_

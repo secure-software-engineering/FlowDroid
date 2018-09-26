@@ -177,7 +177,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void multiAliasNoRecusiveAPTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void multiAliasTest()>");
@@ -188,7 +188,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void overwriteAliasTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void overwriteAliasTest()>");
@@ -282,7 +282,7 @@ public class HeapTests extends JUnitTests {
 	public void threeLevelShortAPTest() {
 		IInfoflow infoflow = initInfoflow();
 
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setInspectSinks(false);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void threeLevelTest()>");
@@ -383,7 +383,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void aliasesTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(5);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(5);
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
 
@@ -466,7 +466,7 @@ public class HeapTests extends JUnitTests {
 
 		});
 
-		infoflow.getConfig().setAccessPathLength(3);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
 
@@ -479,7 +479,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void negativeAliasesTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(4);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(4);
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
 
@@ -492,7 +492,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void aliasPerformanceTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(3);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
 
@@ -505,7 +505,7 @@ public class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void aliasPerformanceTestFIS() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(3);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
 		infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);
@@ -666,8 +666,8 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
-		infoflow.getConfig().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerClassTest()>");
@@ -680,8 +680,8 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
-		infoflow.getConfig().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerClassTest2()>");
@@ -694,8 +694,8 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
-		infoflow.getConfig().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerClassTest3()>");
@@ -720,8 +720,8 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
-		infoflow.getConfig().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerClassTest5()>");
@@ -734,8 +734,8 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
-		infoflow.getConfig().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerClassTest6()>");
@@ -761,7 +761,7 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setUseRecursiveAccessPaths(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void datastructureTest2()>");

@@ -90,7 +90,7 @@ public class ImplicitFlowTests extends JUnitTests {
 		System.out.println("Starting convertTest...");
 
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setInspectSinks(false);
 		infoflow.getConfig().setEnableStaticFieldTracking(false);
 
@@ -306,7 +306,7 @@ public class ImplicitFlowTests extends JUnitTests {
 		System.out.println("Starting stringClassTest...");
 
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setInspectSinks(false);
 		infoflow.getConfig().setEnableStaticFieldTracking(false);
 
