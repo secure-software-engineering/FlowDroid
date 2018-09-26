@@ -681,26 +681,4 @@ public class ProcessManifest implements Closeable {
 
 		return allLaunchableActivities;
 	}
-
-	public void test() {
-		this.axml.getDocument().setRootNode(manifest);
-		byte[] axmlBA = this.axml.toByteArray();
-		try {
-			FileOutputStream fileOuputStream = new FileOutputStream("./AndroidManifest.xml");
-			fileOuputStream.write(axmlBA);
-			fileOuputStream.close();
-			List<File> fileList = new ArrayList<File>();
-
-			File newManifest = new File("./AndroidManifest.xml");
-
-			fileList.add(newManifest);
-
-			this.apk.addFilesToApk(fileList);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
 }
