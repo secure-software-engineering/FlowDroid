@@ -675,7 +675,7 @@ public class LibraryClassPatcher {
 		SootClass sc = Scene.v().getSootClassUnsafe("android.app.Activity");
 		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
 			return;
-		sc.setApplicationClass();
+		sc.setLibraryClass();
 		SootMethod smGetFM = sc.getMethodUnsafe("android.app.FragmentManager getFragmentManager()");
 		if (smGetFM == null || smGetFM.hasActiveBody())
 			return;
