@@ -73,6 +73,21 @@ issues, you can use our default file "SourcesAndSinks.txt" in the "soot-infoflow
 For finding out about the other options of the command-line tool, you can run the tool with the "--help" option or have a look at
 the MainClass.initializeCommandLineOptions()" method in the source code (module soot-infoflow-cmd).
 
+### Configuring FlowDroid for Performance
+
+For some apps, FlowDroid will take very long for large apps. There are various options with which you can configure a tradeoff between performance, precision and recall.
+
+* ```-ns``` Do not track taints on static fields and disregard static initializers.
+* ```-ne``` Do not track exceptional flows.
+
+You can also define timeouts:
+
+* ```-dt N``` Aborts the data flow analysis after N seconds and returns the results obtained so far.
+* ```-ct N``` Aborts the callback collection during callgraph construction after N seconds and continues with the (incomplete) callgraph constructed so far.
+* ```-rt N``` Aborts the result collection after N seconds and returns the results obtained so far.
+
+Note that timeouts are additive. All three stages must complete or run into a timeout for the tool to return and deliver results.
+
 ### Using FlowDroid as a library
 
 If you want to include FlowDroid as a library into your own solution, you can directly reference the respective JAR files. If you
