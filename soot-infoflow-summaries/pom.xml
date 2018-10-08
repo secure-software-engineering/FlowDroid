@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow-summaries</artifactId>
 	<name>StubDroid</name>
-	<version>2.6</version>
+	<version>2.6.1</version>
 	<description>Data Flow Summaries for FlowDroid</description>
 	<packaging>jar</packaging>
 	
@@ -116,7 +116,7 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow</artifactId>
-			<version>2.6</version>
+			<version>2.6.1</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 
@@ -134,7 +134,7 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow</artifactId>
-			<version>2.6</version>
+			<version>2.6.1</version>
 
 			<exclusions>
 				<exclusion>
