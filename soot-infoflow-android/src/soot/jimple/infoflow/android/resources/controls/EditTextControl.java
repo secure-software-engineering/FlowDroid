@@ -1,11 +1,13 @@
 package soot.jimple.infoflow.android.resources.controls;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
 import pxb.android.axml.AxmlVisitor;
 import soot.SootClass;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
+import soot.jimple.infoflow.android.axml.flags.InputType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
@@ -20,14 +22,6 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  *
  */
 public class EditTextControl extends AndroidLayoutControl {
-
-	public final static int TYPE_CLASS_TEXT = 0x00000001;
-	public final static int TYPE_CLASS_NUMBER = 0x00000002;
-	public final static int TYPE_NUMBER_VARIATION_PASSWORD = 0x00000010;
-	public final static int TYPE_TEXT_VARIATION_PASSWORD = 0x00000080;
-	public final static int TYPE_TEXT_VARIATION_VISIBLE_PASSWORD = 0x00000090;
-	public final static int TYPE_TEXT_VARIATION_WEB_PASSWORD = 0x000000e0;
-
 	protected final static SourceSinkDefinition UI_PASSWORD_SOURCE_DEF;
 	protected final static SourceSinkDefinition UI_ELEMENT_SOURCE_DEF;
 
@@ -84,6 +78,7 @@ public class EditTextControl extends AndroidLayoutControl {
 	private int inputType;
 	private boolean isPassword;
 	private String text;
+	private Collection<Integer> inputTypeFlags;
 
 	EditTextControl(SootClass viewClass) {
 		super(viewClass);
@@ -105,6 +100,8 @@ public class EditTextControl extends AndroidLayoutControl {
 	 */
 	void setInputType(int inputType) {
 		this.inputType = inputType;
+		this.inputTypeFlags = InputType.getFlags(inputType);
+
 	}
 
 	/**
@@ -114,6 +111,21 @@ public class EditTextControl extends AndroidLayoutControl {
 	 */
 	public int getInputType() {
 		return inputType;
+	}
+
+	/**
+	 * Returns true if the input satiesfies all specified types
+	 * @see InputType
+	 * @param type the types to check
+	 */
+	public boolean satisfiesInputType(int... type) {
+		if (inputTypeFlags == null)
+			return false;
+
+		for (int i : type)
+			if (!inputTypeFlags.contains(i))
+				return false;
+		return true;
 	}
 
 	/**
@@ -131,7 +143,7 @@ public class EditTextControl extends AndroidLayoutControl {
 		final int type = attribute.getType();
 
 		if (attrName.equals("inputType") && type == AxmlVisitor.TYPE_INT_HEX) {
-			inputType = (Integer) attribute.getValue();
+			setInputType((Integer) attribute.getValue());
 		} else if (attrName.equals("password")) {
 			if (type == AxmlVisitor.TYPE_INT_HEX)
 				isPassword = ((Integer) attribute.getValue()) != 0; // -1 for
@@ -152,14 +164,15 @@ public class EditTextControl extends AndroidLayoutControl {
 		if (isPassword)
 			return true;
 
-		if ((inputType & TYPE_CLASS_NUMBER) == TYPE_CLASS_NUMBER)
-			return ((inputType & TYPE_NUMBER_VARIATION_PASSWORD) == TYPE_NUMBER_VARIATION_PASSWORD);
+		if (satisfiesInputType(InputType.numberPassword))
+			return true;
+		if (satisfiesInputType(InputType.textVisiblePassword))
+			return true;
+		if (satisfiesInputType(InputType.textWebPassword))
+			return true;
+		if (satisfiesInputType(InputType.textPassword))
+			return true;
 
-		if ((inputType & TYPE_CLASS_TEXT) == TYPE_CLASS_TEXT) {
-			return ((inputType & TYPE_TEXT_VARIATION_PASSWORD) == TYPE_TEXT_VARIATION_PASSWORD)
-					|| ((inputType & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-					|| ((inputType & TYPE_TEXT_VARIATION_WEB_PASSWORD) == TYPE_TEXT_VARIATION_WEB_PASSWORD);
-		}
 		return false;
 	}
 
