@@ -1,4 +1,4 @@
-[![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid/)
+[![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_MASTER/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_MASTER/)
 
 # FlowDroid Data Flow Analysis Tool
 
