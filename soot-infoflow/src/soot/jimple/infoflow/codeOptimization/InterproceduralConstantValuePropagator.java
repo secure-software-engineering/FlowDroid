@@ -467,7 +467,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 				if (thrower == null) {
 					if (exceptionClass == null) {
 						exceptionClass = Scene.v().makeSootClass("FLOWDROID_EXCEPTIONS", Modifier.PUBLIC);
-            exceptionClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+            					exceptionClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
 
 						Scene.v().addClass(exceptionClass);
 					}
@@ -490,7 +490,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 									IntConstant.v(conditionCounter));
 							body.getUnits().add(assignStmt);
 
-              Stmt afterEx = Jimple.v().newReturnVoidStmt();
+              						Stmt afterEx = Jimple.v().newReturnVoidStmt();
 							IfStmt ifStmt = Jimple.v().newIfStmt(
 									Jimple.v().newEqExpr(intCounter, IntConstant.v(conditionCounter)), afterEx);
 							body.getUnits().add(ifStmt);
@@ -501,7 +501,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 									Jimple.v().newNewExpr(t.getException().getType()));
 							body.getUnits().add(assignNewEx);
 
-              InvokeStmt consNewEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(lcEx,
+              						InvokeStmt consNewEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(lcEx,
 									Scene.v().makeConstructorRef(exceptionClass, Collections.<Type>emptyList())));
 							body.getUnits().add(consNewEx);
 
