@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.solver.gc;
 
 import soot.SootMethod;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
+import soot.jimple.infoflow.solver.FastSolverLinkedNode;
 
 public class GCContext<N, D extends FastSolverLinkedNode<D, N>> {
 

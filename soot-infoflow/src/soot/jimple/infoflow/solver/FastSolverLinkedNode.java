@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.solver.fastSolver;
+package soot.jimple.infoflow.solver;
 
 /**
  * Common interface for all abstractions processed by the IFDS solver

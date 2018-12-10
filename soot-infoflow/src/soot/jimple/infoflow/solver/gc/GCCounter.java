@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import soot.jimple.infoflow.collect.ConcurrentIdentityHashMap;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
+import soot.jimple.infoflow.solver.FastSolverLinkedNode;
 
 class GCCounter<N, D extends FastSolverLinkedNode<D, N>> {
 

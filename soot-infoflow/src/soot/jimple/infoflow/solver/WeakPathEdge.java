@@ -8,7 +8,7 @@
  * Contributors:
  *     Eric Bodden - initial API and implementation
  ******************************************************************************/
-package soot.jimple.infoflow.solver.fastSolver;
+package soot.jimple.infoflow.solver;
 
 import heros.InterproceduralCFG;
 

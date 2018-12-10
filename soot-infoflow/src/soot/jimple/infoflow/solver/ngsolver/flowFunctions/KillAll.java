@@ -17,6 +17,7 @@ import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 
 /**
  * The empty function, i.e. a function which returns an empty set for all points
@@ -40,12 +41,12 @@ public class KillAll<N, D> implements SolverCallFlowFunction<N, D>, SolverReturn
 	}
 
 	@Override
-	public Set<D> computeTargets(D source, D calleeD1, Collection<D> callerD1s) {
+	public Set<D> computeTargets(SolverState<N, D> source) {
 		return null;
 	}
 
 	@Override
-	public Set<D> computeTargets(D d1, D d2) {
+	public Set<D> computeTargets(SolverState<N, D> state, Collection<D> callerD1s) {
 		return null;
 	}
 

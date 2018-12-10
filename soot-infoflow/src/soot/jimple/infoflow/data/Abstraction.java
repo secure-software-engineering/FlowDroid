@@ -22,8 +22,8 @@ import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.collect.AtomicBitSet;
+import soot.jimple.infoflow.solver.FastSolverLinkedNode;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 
 /**

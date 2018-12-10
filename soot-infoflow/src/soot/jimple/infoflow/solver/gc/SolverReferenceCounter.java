@@ -3,7 +3,7 @@ package soot.jimple.infoflow.solver.gc;
 import soot.SootMethod;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap.IValueFactory;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
+import soot.jimple.infoflow.solver.FastSolverLinkedNode;
 
 public class SolverReferenceCounter<N, D extends FastSolverLinkedNode<D, N>> {
 

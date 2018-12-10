@@ -52,6 +52,7 @@ import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
 import soot.jimple.infoflow.solver.ngsolver.FlowFunctions;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.solver.ngsolver.flowFunctions.KillAll;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
@@ -326,7 +327,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverNormalFlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
+			public SolverNormalFlowFunction<Unit, Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
 				// Get the call site
 				if (!(src instanceof Stmt))
 					return KillAll.v();
@@ -459,7 +460,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverReturnFlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite,
+			public SolverReturnFlowFunction<Unit, Abstraction> getReturnFlowFunction(final Unit callSite,
 					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				// Get the call site
 				if (callSite != null && !(callSite instanceof Stmt))
@@ -476,10 +477,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 
-				return new SolverReturnFlowFunction<Abstraction>() {
+				return new SolverReturnFlowFunction<Unit, Abstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
+					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> state,
 							Collection<Abstraction> callerD1s) {
 						Set<Abstraction> res = computeTargetsInternal(source, callerD1s);
 						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
