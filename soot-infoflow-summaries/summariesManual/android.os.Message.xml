@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void copyFrom(android.os.Message)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Bundle getData()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: android.os.Bundle data]"
+						AccessPathTypes="[android.os.Bundle]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getWhen()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: long when]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean isAsynchronous()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: boolean asynchronous]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Message obtain(android.os.Handler,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Message obtain(android.os.Message)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Message obtain(android.os.Handler,int,int,int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg1]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg2]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: java.lang.Object obj]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Message obtain(android.os.Handler,int,int,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg1]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg2]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Message obtain(android.os.Handler,int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: java.lang.Object obj]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.os.Bundle peekData()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: android.os.Bundle data]"
+						AccessPathTypes="[android.os.Bundle]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void getData(android.os.Bundle)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Message: android.os.Bundle data]"
+						AccessPathTypes="[android.os.Bundle]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg1]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg2]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: java.lang.Object obj]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int what]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg1]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: int arg2]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.os.Message: java.lang.Object obj]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

@@ -26,11 +26,11 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	private final Collection<String> methodsToCall;
 
 	/**
-	 * Creates a new instanceof the {@link SequentialEntryPointCreator} class
+	 * Creates a new instance of the {@link SequentialEntryPointCreator} class
 	 * 
-	 * @param methodsToCall
-	 *            A collection containing the methods to be called in the dummy main
-	 *            method. Entries must be valid Soot method signatures.
+	 * @param methodsToCall A collection containing the methods to be called in the
+	 *                      dummy main method. Entries must be valid Soot method
+	 *                      signatures.
 	 */
 	public SequentialEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;

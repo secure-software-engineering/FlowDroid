@@ -15,8 +15,7 @@ public interface IInfoflowSolver {
 	/**
 	 * Schedules the given edge for processing in the solver
 	 * 
-	 * @param edge
-	 *            The edge to schedule for processing
+	 * @param edge The edge to schedule for processing
 	 * @return True if the edge was scheduled, otherwise (e.g., if the edge has
 	 *         already been processed earlier) false
 	 */
@@ -25,10 +24,8 @@ public interface IInfoflowSolver {
 	/**
 	 * Gets the end summary of the given method for the given incoming abstraction
 	 * 
-	 * @param m
-	 *            The method for which to get the end summary
-	 * @param d3
-	 *            The incoming fact (context) for which to get the end summary
+	 * @param m  The method for which to get the end summary
+	 * @param d3 The incoming fact (context) for which to get the end summary
 	 * @return The end summary of the given method for the given incoming
 	 *         abstraction
 	 */
@@ -47,17 +44,16 @@ public interface IInfoflowSolver {
 	 * Sets a handler that will be called when a followReturnsPastSeeds case
 	 * happens, i.e., a taint leaves a method for which we have not seen any callers
 	 * 
-	 * @param handler
-	 *            The handler to be called when a followReturnsPastSeeds case
-	 *            happens
+	 * @param handler The handler to be called when a followReturnsPastSeeds case
+	 *                happens
 	 */
 	public void setFollowReturnsPastSeedsHandler(IFollowReturnsPastSeedsHandler handler);
 
 	/**
 	 * Sets the memory manager that shall be used to manage the abstractions
 	 * 
-	 * @param memoryManager
-	 *            The memory manager that shall be used to manage the abstractions
+	 * @param memoryManager The memory manager that shall be used to manage the
+	 *                      abstractions
 	 */
 	public void setMemoryManager(IMemoryManager<Abstraction, Unit> memoryManager);
 
@@ -72,8 +68,7 @@ public interface IInfoflowSolver {
 	 * Sets whether abstractions on method returns shall be connected to the
 	 * respective call abstractions to shortcut paths.
 	 * 
-	 * @param mode
-	 *            The strategy to use for shortening predecessor paths
+	 * @param mode The strategy to use for shortening predecessor paths
 	 */
 	public void setPredecessorShorteningMode(PredecessorShorteningMode mode);
 
@@ -103,9 +98,9 @@ public interface IInfoflowSolver {
 	 * point. In other words, enabling this option disables the recording of
 	 * neighbors beyond the given count.
 	 * 
-	 * @param maxJoinPointAbstractions
-	 *            The maximum number of abstractions per join point, or -1 to record
-	 *            an arbitrary number of join point abstractions
+	 * @param maxJoinPointAbstractions The maximum number of abstractions per join
+	 *                                 point, or -1 to record an arbitrary number of
+	 *                                 join point abstractions
 	 */
 	public void setMaxJoinPointAbstractions(int maxJoinPointAbstractions);
 
@@ -114,9 +109,17 @@ public interface IInfoflowSolver {
 	 * site has more than this number of callees, the call site is skipped and none
 	 * of the callees are processed.
 	 * 
-	 * @param maxCalleesPerCallSite
-	 *            The maximum number of callees per call site
+	 * @param maxCalleesPerCallSite The maximum number of callees per call site
 	 */
 	public void setMaxCalleesPerCallSite(int maxCalleesPerCallSite);
+
+	/**
+	 * Sets the maximum length of a taint propagation path. Abstractions that run
+	 * beyond this limit are dropped.
+	 * 
+	 * @param maxAbstractionPathLength The maximum number of abstractions on a
+	 *                                 propagation path
+	 */
+	public void setMaxAbstractionPathLength(int maxAbstractionPathLength);
 
 }

@@ -29,11 +29,17 @@ import soot.jimple.infoflow.data.Abstraction;
  * 
  * @author Steven Arzt
  */
-public class TaintWrapperList implements ITaintPropagationWrapper {
+public class TaintWrapperList implements IReversibleTaintWrapper {
 
 	private List<ITaintPropagationWrapper> wrappers = new ArrayList<>();
 	private AtomicInteger hits = new AtomicInteger();
 	private AtomicInteger misses = new AtomicInteger();
+
+	public TaintWrapperList(ITaintPropagationWrapper... wrappers) {
+		for (ITaintPropagationWrapper w : wrappers)
+			if (w != null)
+				addWrapper(w);
+	}
 
 	@Override
 	public void initialize(InfoflowManager manager) {
@@ -44,8 +50,7 @@ public class TaintWrapperList implements ITaintPropagationWrapper {
 	/**
 	 * Adds the given wrapper to the chain of wrappers.
 	 * 
-	 * @param wrapper
-	 *            The wrapper to add to the chain.
+	 * @param wrapper The wrapper to add to the chain.
 	 */
 	public void addWrapper(ITaintPropagationWrapper wrapper) {
 		this.wrappers.add(wrapper);
@@ -106,6 +111,19 @@ public class TaintWrapperList implements ITaintPropagationWrapper {
 			Set<Abstraction> curAbsSet = w.getAliasesForMethod(stmt, d1, taintedPath);
 			if (curAbsSet != null && !curAbsSet.isEmpty())
 				return curAbsSet;
+		}
+		return null;
+	}
+
+	@Override
+	public Set<Abstraction> getInverseTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+		for (ITaintPropagationWrapper w : this.wrappers) {
+			if (w instanceof IReversibleTaintWrapper) {
+				Set<Abstraction> curAbsSet = ((IReversibleTaintWrapper) w).getInverseTaintsForMethod(stmt, d1,
+						taintedPath);
+				if (curAbsSet != null && !curAbsSet.isEmpty())
+					return curAbsSet;
+			}
 		}
 		return null;
 	}

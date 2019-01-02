@@ -26,22 +26,17 @@ public class MethodFlow extends AbstractMethodSummary {
 	/**
 	 * Creates a new instance of the MethodFlow class
 	 * 
-	 * @param methodSig
-	 *            The signature of the method containing the flow
-	 * @param from
-	 *            The start of the data flow (source)
-	 * @param to
-	 *            The end of the data flow (sink)
-	 * @param isAlias
-	 *            True if the source and the sink alias, false if this is not the
-	 *            case.
-	 * @param typeChecking
-	 *            True if type checking shall be performed before applying this data
-	 *            flow, otherwise false
-	 * @param cutSubFields
-	 *            True if no sub fields shall be copied from the source to the sink.
-	 *            If "a.b" is tainted and the source is "a", the field "b" will not
-	 *            appended to the sink if this option is enabled.
+	 * @param methodSig    The signature of the method containing the flow
+	 * @param from         The start of the data flow (source)
+	 * @param to           The end of the data flow (sink)
+	 * @param isAlias      True if the source and the sink alias, false if this is
+	 *                     not the case.
+	 * @param typeChecking True if type checking shall be performed before applying
+	 *                     this data flow, otherwise false
+	 * @param cutSubFields True if no sub fields shall be copied from the source to
+	 *                     the sink. If "a.b" is tainted and the source is "a", the
+	 *                     field "b" will not appended to the sink if this option is
+	 *                     enabled.
 	 */
 	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, boolean typeChecking,
 			boolean cutSubFields) {
@@ -75,8 +70,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * Checks whether the current flow is coarser than the given flow, i.e., if all
 	 * elements referenced by the given flow are also referenced by this flow
 	 * 
-	 * @param flow
-	 *            The flow with which to compare the current flow
+	 * @param flow The flow with which to compare the current flow
 	 * @return True if the current flow is coarser than the given flow, otherwise
 	 *         false
 	 */
@@ -93,12 +87,25 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * @return The reverse of the current flow
 	 */
 	public MethodFlow reverse() {
-		FlowSource reverseSource = new FlowSource(to.getType(), to.getParameterIndex(), to.getBaseType(),
+		// Special case: If the source is a gap base object, we have to correct the
+		// specification format
+		boolean taintSubFields = to.taintSubFields();
+		SourceSinkType fromType = to.getType();
+		SourceSinkType toType = from.getType();
+		if (from.getType() == SourceSinkType.Field && !from.hasAccessPath() && from.hasGap()) {
+			toType = SourceSinkType.GapBaseObject;
+			taintSubFields = false;
+		}
+		if (to.isGapBaseObject()) {
+			fromType = SourceSinkType.Field;
+			taintSubFields = true;
+		}
+
+		FlowSource reverseSource = new FlowSource(fromType, to.getParameterIndex(), to.getBaseType(),
 				to.getAccessPath(), to.getAccessPathTypes(), to.getGap(), to.isMatchStrict());
-		FlowSink reverseSink = new FlowSink(from.getType(), from.getParameterIndex(), from.getBaseType(),
-				from.getAccessPath(), from.getAccessPathTypes(), to.taintSubFields(), from.getGap(),
-				from.isMatchStrict());
-		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, typeChecking);
+		FlowSink reverseSink = new FlowSink(toType, from.getParameterIndex(), from.getBaseType(), from.getAccessPath(),
+				from.getAccessPathTypes(), taintSubFields, from.getGap(), from.isMatchStrict());
+		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, cutSubFields);
 	}
 
 	/**

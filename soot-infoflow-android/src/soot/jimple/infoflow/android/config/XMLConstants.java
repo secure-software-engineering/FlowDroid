@@ -42,7 +42,7 @@ class XMLConstants {
 	public static final String TAG_MAX_JOIN_POINT_ABSTRACTIONS = "maxJoinPointAbstractions";
 	public static final String TAG_MAX_CALLEES_PER_CALL_SITE = "maxCalleesPerCallSite";
 	public static final String TAG_IMPLICIT_FLOW_MODE = "implicitFlowMode";
-	public static final String TAG_ENABLE_STATIC_FIELDS = "enableStaticFields";
+	public static final String TAG_STATIC_FIELD_TRACKING_MODE = "staticFieldTrackingMode";
 	public static final String TAG_ENABLE_EXCEPTIONS = "enableExceptions";
 	public static final String TAG_ENABLE_ARRAYS = "enableArrays";
 	public static final String TAG_ENABLE_REFLECTION = "enableReflection";

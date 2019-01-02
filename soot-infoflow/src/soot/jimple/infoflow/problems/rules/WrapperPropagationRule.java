@@ -9,6 +9,7 @@ import soot.SootMethod;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -39,13 +40,10 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 	/**
 	 * Computes the taints produced by a taint wrapper object
 	 * 
-	 * @param d1
-	 *            The context (abstraction at the method's start node)
-	 * @param iStmt
-	 *            The call statement the taint wrapper shall check for well- known
-	 *            methods that introduce black-box taint propagation
-	 * @param source
-	 *            The taint source
+	 * @param d1     The context (abstraction at the method's start node)
+	 * @param iStmt  The call statement the taint wrapper shall check for well-
+	 *               known methods that introduce black-box taint propagation
+	 * @param source The taint source
 	 * @return The taints computed by the wrapper
 	 */
 	private Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source) {
@@ -105,7 +103,8 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 					boolean taintsObjectValue = val.getBaseType() instanceof RefType
 							&& abs.getAccessPath().getBaseType() instanceof RefType
 							&& (!TypeUtils.isStringType(val.getBaseType()) || val.getCanHaveImmutableAliases());
-					boolean taintsStaticField = getManager().getConfig().getEnableStaticFieldTracking()
+					boolean taintsStaticField = getManager().getConfig()
+							.getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 							&& abs.getAccessPath().isStaticFieldRef();
 
 					// If the tainted value gets overwritten, it cannot have aliases afterwards

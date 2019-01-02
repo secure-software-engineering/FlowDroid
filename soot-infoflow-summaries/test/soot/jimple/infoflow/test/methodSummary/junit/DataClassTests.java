@@ -28,12 +28,8 @@ public class DataClassTests extends TestHelper {
 		assertTrue(containsFlow(flow, SourceSinkType.Field, -1, new String[] { NEXT_FIELD }, "",
 				SourceSinkType.GapBaseObject, -1, new String[] {},
 				"<soot.jimple.infoflow.test.methodSummary.Data: void switchData()>"));
-		// Flow from gap base object back to "next" field
-		assertTrue(containsFlow(flow, SourceSinkType.Field, -1, new String[] {},
-				"<soot.jimple.infoflow.test.methodSummary.Data: void switchData()>", SourceSinkType.Field, -1,
-				new String[] { NEXT_FIELD }, ""));
 
-		assertEquals(2, flow.size());
+		assertEquals(1, flow.size());
 	}
 
 	@Override

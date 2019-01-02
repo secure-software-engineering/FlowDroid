@@ -238,16 +238,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Builds a new invocation statement that invokes the given method
 	 * 
-	 * @param methodToCall
-	 *            The method to call
-	 * @param body
-	 *            The body in which to create the invocation statement
-	 * @param classLocal
-	 *            The local containing an instance of the class on which to invoke
-	 *            the method
-	 * @param gen
-	 *            The local generator to be used for generating locals that hold any
-	 *            additional values required for the call parameters
+	 * @param methodToCall The method to call
+	 * @param body         The body in which to create the invocation statement
+	 * @param classLocal   The local containing an instance of the class on which to
+	 *                     invoke the method
+	 * @param gen          The local generator to be used for generating locals that
+	 *                     hold any additional values required for the call
+	 *                     parameters
 	 * @return The newly created invocation statement
 	 */
 	protected Stmt buildMethodCall(SootMethod methodToCall, Body body, Local classLocal, LocalGenerator gen) {
@@ -257,19 +254,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Builds a new invocation statement that invokes the given method
 	 * 
-	 * @param methodToCall
-	 *            The method to call
-	 * @param body
-	 *            The body in which to create the invocation statement
-	 * @param classLocal
-	 *            The local containing an instance of the class on which to invoke
-	 *            the method
-	 * @param gen
-	 *            The local generator to be used for generating locals that hold any
-	 *            additional values required for the call parameters
-	 * @param parentClasses
-	 *            The classes for which we already have instances that shall be
-	 *            reused
+	 * @param methodToCall  The method to call
+	 * @param body          The body in which to create the invocation statement
+	 * @param classLocal    The local containing an instance of the class on which
+	 *                      to invoke the method
+	 * @param gen           The local generator to be used for generating locals
+	 *                      that hold any additional values required for the call
+	 *                      parameters
+	 * @param parentClasses The classes for which we already have instances that
+	 *                      shall be reused
 	 * @return The newly created invocation statement
 	 */
 	protected Stmt buildMethodCall(SootMethod methodToCall, Body body, Local classLocal, LocalGenerator gen,
@@ -343,21 +336,17 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param body
-	 *            The body in which to create the value
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type for which to get a value
-	 * @param constructionStack
-	 *            The set of classes we're currently constructing. Attempts to
-	 *            create a parameter of one of these classes will trigger the
-	 *            constructor loop check and the respective parameter will be
-	 *            substituted by null.
-	 * @param parentClasses
-	 *            If the given type is compatible with one of the types in this
-	 *            list, the already-created object is used instead of creating a new
-	 *            one.
+	 * @param body              The body in which to create the value
+	 * @param gen               The local generator
+	 * @param tp                The type for which to get a value
+	 * @param constructionStack The set of classes we're currently constructing.
+	 *                          Attempts to create a parameter of one of these
+	 *                          classes will trigger the constructor loop check and
+	 *                          the respective parameter will be substituted by
+	 *                          null.
+	 * @param parentClasses     If the given type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
 	 * @return The generated value, or null if no value could be generated
 	 */
 	private Value getValueForType(Body body, LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
@@ -369,24 +358,19 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param body
-	 *            The body in which to create the value
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type for which to get a value
-	 * @param constructionStack
-	 *            The set of classes we're currently constructing. Attempts to
-	 *            create a parameter of one of these classes will trigger the
-	 *            constructor loop check and the respective parameter will be
-	 *            substituted by null.
-	 * @param parentClasses
-	 *            If the given type is compatible with one of the types in this
-	 *            list, the already-created object is used instead of creating a new
-	 *            one.
-	 * @param generatedLocals
-	 *            The set that receives all (temporary) locals created to provide a
-	 *            value of the requested type
+	 * @param body              The body in which to create the value
+	 * @param gen               The local generator
+	 * @param tp                The type for which to get a value
+	 * @param constructionStack The set of classes we're currently constructing.
+	 *                          Attempts to create a parameter of one of these
+	 *                          classes will trigger the constructor loop check and
+	 *                          the respective parameter will be substituted by
+	 *                          null.
+	 * @param parentClasses     If the given type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
+	 * @param generatedLocals   The set that receives all (temporary) locals created
+	 *                          to provide a value of the requested type
 	 * @return The generated value, or null if no value could be generated
 	 */
 	private Value getValueForType(Body body, LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
@@ -446,21 +430,16 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Constructs an array of the given type with a single element of this type in
 	 * the given method
 	 * 
-	 * @param body
-	 *            The body of the method in which to create the array
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type of which to create the array
-	 * @param constructionStack
-	 *            Set of classes currently being built to avoid constructor loops
-	 * @param parentClasses
-	 *            If a requested type is compatible with one of the types in this
-	 *            list, the already-created object is used instead of creating a new
-	 *            one.
-	 * @param generatedLocals
-	 *            A set that receives the (temporary) locals that were generated to
-	 *            create the requested array
+	 * @param body              The body of the method in which to create the array
+	 * @param gen               The local generator
+	 * @param tp                The type of which to create the array
+	 * @param constructionStack Set of classes currently being built to avoid
+	 *                          constructor loops
+	 * @param parentClasses     If a requested type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
+	 * @param generatedLocals   A set that receives the (temporary) locals that were
+	 *                          generated to create the requested array
 	 * @return The local referencing the newly created array, or null if the array
 	 *         generation failed
 	 */
@@ -484,11 +463,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
+	 * @param createdClass The class of which to create an instance
+	 * @param body         The body to which to add the new statements ("new"
+	 *                     statement, constructor call, etc.)
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -500,15 +477,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the already-created
-	 *            object is used instead of creating a new one.
+	 * @param createdClass  The class of which to create an instance
+	 * @param body          The body to which to add the new statements ("new"
+	 *                      statement, constructor call, etc.)
+	 * @param parentClasses If a constructor call requires an object of a type which
+	 *                      is compatible with one of the types in this list, the
+	 *                      already-created object is used instead of creating a new
+	 *                      one.
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -519,23 +494,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
-	 * @param constructionStack
-	 *            The stack of classes currently under construction. This is used to
-	 *            detect constructor loops. If a constructor requires a parameter of
-	 *            a type that is already on the stack, this value is substituted by
-	 *            null.
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the already-created
-	 *            object is used instead of creating a new one.
-	 * @param tempLocals
-	 *            The set that receives all generated temporary locals that were
-	 *            necessary for calling the constructor of the requested class
+	 * @param createdClass      The class of which to create an instance
+	 * @param body              The body to which to add the new statements ("new"
+	 *                          statement, constructor call, etc.)
+	 * @param constructionStack The stack of classes currently under construction.
+	 *                          This is used to detect constructor loops. If a
+	 *                          constructor requires a parameter of a type that is
+	 *                          already on the stack, this value is substituted by
+	 *                          null.
+	 * @param parentClasses     If a constructor call requires an object of a type
+	 *                          which is compatible with one of the types in this
+	 *                          list, the already-created object is used instead of
+	 *                          creating a new one.
+	 * @param tempLocals        The set that receives all generated temporary locals
+	 *                          that were necessary for calling the constructor of
+	 *                          the requested class
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -676,17 +649,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Generates a call to a constructor for a an interface or an abstract class
 	 * that is substituted with an actual implementation
 	 * 
-	 * @param createdClass
-	 *            The class for which to create a constructor call
-	 * @param body
-	 *            The body of the dummy main method to which to add the call
-	 *            statement
-	 * @param constructionStack
-	 *            The stack for making sure that we do not run into loops
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the already-created
-	 *            object is used instead of creating a new one.
+	 * @param createdClass      The class for which to create a constructor call
+	 * @param body              The body of the dummy main method to which to add
+	 *                          the call statement
+	 * @param constructionStack The stack for making sure that we do not run into
+	 *                          loops
+	 * @param parentClasses     If a constructor call requires an object of a type
+	 *                          which is compatible with one of the types in this
+	 *                          list, the already-created object is used instead of
+	 *                          creating a new one.
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -789,10 +760,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Finds a method with the given signature in the given class or one of its
 	 * super classes
 	 * 
-	 * @param currentClass
-	 *            The current class in which to start the search
-	 * @param subsignature
-	 *            The subsignature of the method to find
+	 * @param currentClass The current class in which to start the search
+	 * @param subsignature The subsignature of the method to find
 	 * @return The method with the given signature if it has been found, otherwise
 	 *         null
 	 */
@@ -811,10 +780,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Checks whether an object of type "actual" can be inserted where an object of
 	 * type "expected" is required.
 	 * 
-	 * @param actual
-	 *            The actual type (the substitution candidate)
-	 * @param expected
-	 *            The requested type
+	 * @param actual   The actual type (the substitution candidate)
+	 * @param expected The requested type
 	 * @return True if the two types are compatible and "actual" can be used as a
 	 *         substitute for "expected", otherwise false
 	 */
@@ -825,8 +792,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Eliminates all loops of length 0 (if a goto <if a>)
 	 * 
-	 * @param body
-	 *            The body from which to eliminate the self-loops
+	 * @param body The body from which to eliminate the self-loops
 	 */
 	protected void eliminateSelfLoops(Body body) {
 		// Get rid of self-loops
@@ -844,8 +810,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Sets the name that shall be used for the new class containing the dummy main
 	 * method
 	 * 
-	 * @param dummyMethodName
-	 *            The name for the new class containing the dummy main method
+	 * @param dummyMethodName The name for the new class containing the dummy main
+	 *                        method
 	 */
 	public void setDummyClassName(String dummyClassName) {
 		this.dummyClassName = dummyClassName;
@@ -854,8 +820,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Sets the name that shall be used for the new dummy main method
 	 * 
-	 * @param dummyMethodName
-	 *            The name for the new dummy main method
+	 * @param dummyMethodName The name for the new dummy main method
 	 */
 	public void setDummyMethodName(String dummyMethodName) {
 		this.dummyMethodName = dummyMethodName;
@@ -866,9 +831,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * parameter. If this is not allowed, other type-compatible class instances are
 	 * taken. If they don't exist, null is used.
 	 * 
-	 * @param value
-	 *            True if method calls may receive instances of their containing
-	 *            class as parameter values, otherwise false
+	 * @param value True if method calls may receive instances of their containing
+	 *              class as parameter values, otherwise false
 	 */
 	public void setAllowSelfReferences(boolean value) {
 		this.allowSelfReferences = value;
@@ -882,8 +846,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * values on the first level are replaced with default values (e.g., null for
 	 * objects).
 	 * 
-	 * @param shallowMode
-	 *            True if shallow mode shall be used, otherwise false
+	 * @param shallowMode True if shallow mode shall be used, otherwise false
 	 */
 	public void setShallowMode(boolean shallowMode) {
 		this.shallowMode = shallowMode;
@@ -904,7 +867,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Sets whether the entry point crearor shall always pass "null" if a method
+	 * Sets whether the entry point creator shall always pass "null" if a method
 	 * expects an object of a system class.
 	 * 
 	 * @param ignoreSystemClassParams
@@ -918,10 +881,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * If this flag is set to "false", a new, non-conflicting method and class name
 	 * is chosen.
 	 * 
-	 * @param reuseDummyMainValue
-	 *            True if existing methods that conflict with the entry point to be
-	 *            created shall be overwritten, false to automatically chose a new,
-	 *            non-conflicting name.
+	 * @param reuseDummyMainValue True if existing methods that conflict with the
+	 *                            entry point to be created shall be overwritten,
+	 *                            false to automatically chose a new,
+	 *                            non-conflicting name.
 	 */
 	public void setOverwriteDummyMainMethod(boolean overwriteDummyMainValue) {
 		this.overwriteDummyMainMethod = overwriteDummyMainValue;
@@ -945,9 +908,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * cannot be generated because the analysis ran into a loop when trying to
 	 * generate parameter values.
 	 * 
-	 * @param warnOnConstructorLoop
-	 *            True if a warning shall be written to the log when a constructor
-	 *            generation loop is encountered, otherwise false
+	 * @param warnOnConstructorLoop True if a warning shall be written to the log
+	 *                              when a constructor generation loop is
+	 *                              encountered, otherwise false
 	 */
 	public void setWarnOnConstructorLoop(boolean warnOnConstructorLoop) {
 		this.warnOnConstructorLoop = warnOnConstructorLoop;
@@ -979,8 +942,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Creates an opaque predicate that jumps to the given target
 	 * 
-	 * @param target
-	 *            The target to which the opaque predicate shall jump
+	 * @param target The target to which the opaque predicate shall jump
 	 */
 	protected void createIfStmt(Unit target) {
 		if (target == null) {

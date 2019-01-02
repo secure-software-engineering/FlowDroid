@@ -1,0 +1,634 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="102">
+    <hierarchy superClass="java.lang.Object">
+        <interface name="android.os.Parcelable"></interface>
+    </hierarchy>
+    <methods>
+        <method id="android.graphics.Bitmap copy(android.graphics.Bitmap$Config,boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.graphics.Bitmap,int,int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(int[],int,int,int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.graphics.Bitmap,int,int,int,int,android.graphics.Matrix,boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.util.DisplayMetrics,int,int,android.graphics.Bitmap$Config,boolean,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="5" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: android.graphics.ColorSpace mColorSpace&gt;]"
+                        AccessPathTypes="[android.graphics.ColorSpace]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.util.DisplayMetrics,int[],int,int,int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="5" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.util.DisplayMetrics,int[],int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.util.DisplayMetrics,int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(int[],int,int,int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.graphics.Picture,int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(int,int,android.graphics.Bitmap$Config,boolean,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: android.graphics.ColorSpace mColorSpace&gt;]"
+                        AccessPathTypes="[android.graphics.ColorSpace]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(android.util.DisplayMetrics,int,int,android.graphics.Bitmap$Config,boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="4" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createBitmap(int,int,android.graphics.Bitmap$Config,boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap createScaledBitmap(android.graphics.Bitmap,int,int,boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap extractAlpha()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Bitmap extractAlpha(android.graphics.Paint,int[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.ColorSpace getColorSpace()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: android.graphics.ColorSpace mColorSpace&gt;]"
+                        AccessPathTypes="[android.graphics.ColorSpace]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getDensity()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mDensity&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getHeight()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int[] getLayoutBounds()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int[] mLayoutBounds&gt;]"
+                        AccessPathTypes="[int[]]" />
+                    <to sourceSinkType="Return" BaseType="int[]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="byte[] getNinePatchChunk()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: byte[] mNinePatchChunk&gt;]"
+                        AccessPathTypes="[byte[]]" />
+                    <to sourceSinkType="Return" BaseType="byte[]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getPixel(int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void getPixels(int[],int,int,int,int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Parameter" ParameterIndex="0" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getRowBytes()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledHeight(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledHeight(android.graphics.Canvas)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledHeight(android.util.DisplayMetrics)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledWidth(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledWidth(android.util.DisplayMetrics)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getScaledWidth(android.graphics.Canvas)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int getWidth()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean hasAlpha()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean hasMipMap()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasMipMap&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean isPremultiplied()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mPremultiplied&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void reconfigure(int,int,android.graphics.Bitmap$Config)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setDensity(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mDensity&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setHasAlpha(boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setHasMipMap(boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasMipMap&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setHeight(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setLayoutBounds(int[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int[]" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int[] mLayoutBounds&gt;]"
+                        AccessPathTypes="[int[]]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setNinePatchChunk(byte[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="byte[]" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: byte[] mNinePatchChunk&gt;]"
+                        AccessPathTypes="[byte[]]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setPixel(int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setPixels(int[],int,int,int,int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setPremultiplied(boolean)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mPremultiplied&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setWidth(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+                </flow>
+            </flows>
+        </method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+    </methods>
+</summary>

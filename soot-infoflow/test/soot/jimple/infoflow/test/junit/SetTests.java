@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 
 /**
  * test taint propagation in sets
@@ -43,7 +44,7 @@ public class SetTests extends JUnitTests {
 		System.out.println("Running test case containsTest...");
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setImplicitFlowMode(ImplicitFlowMode.AllImplicitFlows);
-		infoflow.getConfig().setEnableStaticFieldTracking(false);
+		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 

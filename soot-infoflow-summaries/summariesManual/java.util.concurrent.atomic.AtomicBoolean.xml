@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean compareAndSet(boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean get()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getAndSet(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void lazySet(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void set(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean weakCompareAndSet(boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

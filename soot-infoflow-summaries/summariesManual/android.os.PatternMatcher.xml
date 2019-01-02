@@ -1,0 +1,59 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.os.PatternMatcher"
+						AccessPath="[android.os.PatternMatcher: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.os.PatternMatcher"
+						AccessPath="[android.os.PatternMatcher: int type]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getPath()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.os.PatternMatcher"
+						AccessPath="[android.os.PatternMatcher: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getType()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.os.PatternMatcher"
+						AccessPath="[android.os.PatternMatcher: int type]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

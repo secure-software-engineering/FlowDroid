@@ -32,8 +32,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param fileConfig
-		 *            The other configuration object
+		 * @param fileConfig The other configuration object
 		 */
 		public void merge(AnalysisFileConfiguration fileConfig) {
 			this.targetAPKFile = fileConfig.targetAPKFile;
@@ -67,9 +66,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Sets the target APK file on which the data flow analysis shall be conducted
 		 * 
-		 * @param targetAPKFile
-		 *            The target APK file on which the data flow analysis shall be
-		 *            conducted
+		 * @param targetAPKFile The target APK file on which the data flow analysis
+		 *                      shall be conducted
 		 */
 		public void setTargetAPKFile(String targetAPKFile) {
 			this.targetAPKFile = targetAPKFile;
@@ -87,8 +85,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Sets the directory in which the Android platform JARs are located
 		 * 
-		 * @param androidPlatformDir
-		 *            The directory in which the Android platform JARs are located
+		 * @param androidPlatformDir The directory in which the Android platform JARs
+		 *                           are located
 		 */
 		public void setAndroidPlatformDir(String androidPlatformDir) {
 			this.androidPlatformDir = androidPlatformDir;
@@ -106,8 +104,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Sets the source and sink file
 		 * 
-		 * @param sourceSinkFile
-		 *            The source and sink file
+		 * @param sourceSinkFile The source and sink file
 		 */
 		public void setSourceSinkFile(String sourceSinkFile) {
 			this.sourceSinkFile = sourceSinkFile;
@@ -150,9 +147,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets the file into which the results of the data flow analysis shall be
 		 * written
 		 * 
-		 * @param outputFile
-		 *            The target file into which the results of the data flow analysis
-		 *            shall be written
+		 * @param outputFile The target file into which the results of the data flow
+		 *                   analysis shall be written
 		 */
 		public void setOutputFile(String outputFile) {
 			this.outputFile = outputFile;
@@ -224,8 +220,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param iccConfig
-		 *            The other configuration object
+		 * @param iccConfig The other configuration object
 		 */
 		public void merge(IccConfiguration iccConfig) {
 			this.iccEnabled = iccConfig.iccEnabled;
@@ -325,8 +320,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param iccConfig
-		 *            The other configuration object
+		 * @param iccConfig The other configuration object
 		 */
 		public void merge(CallbackConfiguration cbConfig) {
 			this.enableCallbacks = cbConfig.enableCallbacks;
@@ -340,8 +334,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Sets whether the taint analysis shall consider callbacks
 		 * 
-		 * @param enableCallbacks
-		 *            True if taints shall be tracked through callbacks, otherwise false
+		 * @param enableCallbacks True if taints shall be tracked through callbacks,
+		 *                        otherwise false
 		 */
 		public void setEnableCallbacks(boolean enableCallbacks) {
 			this.enableCallbacks = enableCallbacks;
@@ -359,8 +353,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Sets the callback analyzer to be used in preparation for the taint analysis
 		 * 
-		 * @param callbackAnalyzer
-		 *            The callback analyzer to be used
+		 * @param callbackAnalyzer The callback analyzer to be used
 		 */
 		public void setCallbackAnalyzer(CallbackAnalyzer callbackAnalyzer) {
 			this.callbackAnalyzer = callbackAnalyzer;
@@ -383,8 +376,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * will be missed. If it is enabled, context-insensitive callgraph algorithms
 		 * can lead to a high number of false positives for the callback analyzer.
 		 * 
-		 * @param filterThreadCallbacks
-		 *            True to discover callbacks registered in threads, otherwise false
+		 * @param filterThreadCallbacks True to discover callbacks registered in
+		 *                              threads, otherwise false
 		 */
 		public void setFilterThreadCallbacks(boolean filterThreadCallbacks) {
 			this.filterThreadCallbacks = filterThreadCallbacks;
@@ -420,8 +413,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * will assume that precision has degraded too much and will analyze this
 		 * component without callbacks.
 		 * 
-		 * @param maxCallbacksPerComponent
-		 *            The maximum number of callbacks per component
+		 * @param maxCallbacksPerComponent The maximum number of callbacks per component
 		 */
 		public void setMaxCallbacksPerComponent(int maxCallbacksPerComponent) {
 			this.maxCallbacksPerComponent = maxCallbacksPerComponent;
@@ -443,8 +435,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * stopped. After the timeout, the data flow analysis will continue with those
 		 * callbacks that have been found so far.
 		 * 
-		 * @param callbackAnalysisTimeout
-		 *            The callback analysis timeout in seconds
+		 * @param callbackAnalysisTimeout The callback analysis timeout in seconds
 		 */
 		public void setCallbackAnalysisTimeout(int callbackAnalysisTimeout) {
 			this.callbackAnalysisTimeout = callbackAnalysisTimeout;
@@ -467,9 +458,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * chains of callbacks registering other callbacks. A value equal to or smaller
 		 * than zero indicates an infinite maximum depth.
 		 * 
-		 * @param maxCallbackAnalysisDepth
-		 *            The maximum depth up to which to look into callback registration
-		 *            chains.
+		 * @param maxCallbackAnalysisDepth The maximum depth up to which to look into
+		 *                                 callback registration chains.
 		 */
 		public void setMaxAnalysisCallbackDepth(int maxCallbackAnalysisDepth) {
 			this.maxCallbackAnalysisDepth = maxCallbackAnalysisDepth;
@@ -576,8 +566,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param iccConfig
-		 *            The other configuration object
+		 * @param iccConfig The other configuration object
 		 */
 		public void merge(SourceSinkConfiguration ssConfig) {
 			this.callbackSourceMode = ssConfig.callbackSourceMode;
@@ -595,9 +584,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets under which circumstances the parameters of callback methods shall be
 		 * treated as sources.
 		 * 
-		 * @param callbackSourceMode
-		 *            The strategy for deciding whether a certain callback parameter is
-		 *            a data flow source or not
+		 * @param callbackSourceMode The strategy for deciding whether a certain
+		 *                           callback parameter is a data flow source or not
 		 */
 		public void setCallbackSourceMode(CallbackSourceMode callbackSourceMode) {
 			this.callbackSourceMode = callbackSourceMode;
@@ -618,9 +606,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets whether the parameters of lifecycle methods shall be considered as
 		 * sources
 		 * 
-		 * @param enableLifecycleSoures
-		 *            True if the parameters of lifecycle methods shall be considered as
-		 *            sources, otherwise false
+		 * @param enableLifecycleSoures True if the parameters of lifecycle methods
+		 *                              shall be considered as sources, otherwise false
 		 */
 		public void setEnableLifecycleSources(boolean enableLifecycleSources) {
 			this.enableLifecycleSources = enableLifecycleSources;
@@ -641,8 +628,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets the mode to be used when deciding whether a UI control is a source or
 		 * not
 		 * 
-		 * @param mode
-		 *            The mode to be used for classifying UI controls as sources
+		 * @param mode The mode to be used for classifying UI controls as sources
 		 */
 		public void setLayoutMatchingMode(LayoutMatchingMode mode) {
 			this.layoutMatchingMode = mode;
@@ -673,9 +659,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets the default mode for handling sources that have not been configured
 		 * explicitly
 		 * 
-		 * @param sourceFilterMode
-		 *            The default mode for handling sources that have not been
-		 *            configured explicitly
+		 * @param sourceFilterMode The default mode for handling sources that have not
+		 *                         been configured explicitly
 		 */
 		public void setSourceFilterMode(SourceSinkFilterMode sourceFilterMode) {
 			this.sourceFilterMode = sourceFilterMode;
@@ -696,9 +681,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * Sets the default mode for handling sinks that have not been configured
 		 * explicitly
 		 * 
-		 * @param sourceFilterMode
-		 *            The default mode for handling sinks that have not been configured
-		 *            explicitly
+		 * @param sourceFilterMode The default mode for handling sinks that have not
+		 *                         been configured explicitly
 		 */
 		public void setSinkFilterMode(SourceSinkFilterMode sinkFilterMode) {
 			this.sinkFilterMode = sinkFilterMode;
@@ -749,11 +733,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Adds a source category definition to this configuration
 		 * 
-		 * @param category
-		 *            The category definition
-		 * @param mode
-		 *            The mode that defines whether this category shall be included or
-		 *            excluded
+		 * @param category The category definition
+		 * @param mode     The mode that defines whether this category shall be included
+		 *                 or excluded
 		 */
 		public void addSourceCategory(CategoryDefinition category, CategoryMode mode) {
 			this.sourceCategories.put(category, mode);
@@ -762,11 +744,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Adds a sink category definition to this configuration
 		 * 
-		 * @param category
-		 *            The category definition
-		 * @param mode
-		 *            The mode that defines whether this category shall be included or
-		 *            excluded
+		 * @param category The category definition
+		 * @param mode     The mode that defines whether this category shall be included
+		 *                 or excluded
 		 */
 		public void addSinkCategory(CategoryDefinition category, CategoryMode mode) {
 			this.sinkCategories.put(category, mode);
@@ -995,9 +975,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	 * Sets whether FlowDroid shall analyze one component at a time instead of
 	 * generating one big dummy main method containing all components
 	 * 
-	 * @param oneComponentAtATime
-	 *            True if FlowDroid shall analyze one component at a time, otherwise
-	 *            false
+	 * @param oneComponentAtATime True if FlowDroid shall analyze one component at a
+	 *                            time, otherwise false
 	 */
 	public void setOneComponentAtATime(boolean oneComponentAtATime) {
 		this.oneComponentAtATime = oneComponentAtATime;
@@ -1019,8 +998,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	 * FlowDroid can either set up Soot on its own, or work with an existing
 	 * instance.
 	 * 
-	 * @param sootIntegrationMode
-	 *            The integration mode that FlowDroid shall use
+	 * @param sootIntegrationMode The integration mode that FlowDroid shall use
 	 */
 	public void setSootIntegrationMode(SootIntegrationMode sootIntegrationMode) {
 		this.sootIntegrationMode = sootIntegrationMode;
@@ -1052,9 +1030,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	 * Sets whether FlowDroid shall merge all dex files in the APK to get a full
 	 * picture of the app
 	 * 
-	 * @param mergeDexFiles
-	 *            True if FlowDroid shall merge all dex files in the APK, otherwise
-	 *            false
+	 * @param mergeDexFiles True if FlowDroid shall merge all dex files in the APK,
+	 *                      otherwise false
 	 */
 	public void setMergeDexFiles(boolean mergeDexFiles) {
 		this.mergeDexFiles = mergeDexFiles;

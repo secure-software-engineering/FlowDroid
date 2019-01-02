@@ -72,7 +72,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		// Generate a method name
 		String componentPart = component.getName();
 		if (componentPart.contains("."))
-			componentPart = componentPart.substring(componentPart.lastIndexOf(".") + 1);
+			componentPart = componentPart.replace("_", "__").replace(".", "_");
 		final String baseMethodName = dummyMethodName + "_" + componentPart;
 
 		// Get the target method

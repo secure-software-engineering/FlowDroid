@@ -73,6 +73,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		super.collectCallbackMethods();
 
 		Transform transform = new Transform("wjtp.ajc", new SceneTransformer() {
+			@Override
 			protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
 				// Notify the listeners that the solver has been started
 				for (IMemoryBoundedSolverStatusNotification listener : notificationListeners)

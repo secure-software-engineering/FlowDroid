@@ -46,6 +46,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.UnopExpr;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
@@ -200,7 +201,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									leftValue, source.getAccessPath().getFirstFieldType(), true);
 							newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
 						}
-					} else if (manager.getConfig().getEnableStaticFieldTracking()
+					} else if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 							&& rightValue instanceof StaticFieldRef) {
 						StaticFieldRef ref = (StaticFieldRef) rightValue;
 						if (source.getAccessPath().isStaticFieldRef()
@@ -366,22 +367,27 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Make sure to only track static fields if it has been
 						// enabled
-						if (addRightValue)
-							if (!manager.getConfig().getEnableStaticFieldTracking()
-									&& rightValue instanceof StaticFieldRef)
-								addRightValue = false;
+						if (addRightValue && rightValue instanceof StaticFieldRef
+								&& manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None)
+							addRightValue = false;
 
 						if (addRightValue) {
 							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 									rightValue, targetType, cutFirstField);
 							Abstraction newAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
 							if (newAbs != null && !newAbs.getAccessPath().equals(source.getAccessPath())) {
-								res.add(newAbs);
+								// Do we treat static fields outside of IFDS?
+								if (rightValue instanceof StaticFieldRef && manager.getConfig()
+										.getStaticFieldTrackingMode() == StaticFieldTrackingMode.ContextFlowInsensitive) {
+									manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
+								} else {
+									res.add(newAbs);
 
-								// Inject the new alias into the forward solver
-								for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-									manager.getForwardSolver()
-											.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newAbs));
+									// Inject the new alias into the forward solver
+									for (Unit u : interproceduralCFG().getPredsOf(defStmt))
+										manager.getForwardSolver()
+												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newAbs));
+								}
 							}
 						}
 					}
@@ -407,9 +413,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							if (source == getZeroValue())
 								return null;
 							assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
-
-							if (src.toString().equals("y = x"))
-								System.out.println("x");
 
 							// Notify the handler if we have one
 							if (taintPropagationHandler != null)
@@ -488,7 +491,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Do not analyze static initializers if static field
 						// tracking is disabled
-						if (!manager.getConfig().getEnableStaticFieldTracking() && dest.isStaticInitializer())
+						if (manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+								&& dest.isStaticInitializer())
 							return null;
 
 						// taint is propagated in CallToReturnFunction, so we do
@@ -504,10 +508,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Only propagate the taint if the target field is
 						// actually read
-						if (manager.getConfig().getEnableStaticFieldTracking()
-								&& source.getAccessPath().isStaticFieldRef())
+						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+								&& source.getAccessPath().isStaticFieldRef()) {
 							if (!interproceduralCFG().isStaticFieldRead(dest, source.getAccessPath().getFirstField()))
 								return null;
+						}
 
 						Set<Abstraction> res = new HashSet<Abstraction>();
 
@@ -537,7 +542,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// easy: static
-						if (manager.getConfig().getEnableStaticFieldTracking()
+						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
 							Abstraction abs = checkAbstraction(
 									source.deriveNewAbstraction(source.getAccessPath(), stmt));
@@ -664,7 +669,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									FlowFunctionType.ReturnFlowFunction);
 
 						// easy: static
-						if (manager.getConfig().getEnableStaticFieldTracking()
+						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
 							registerActivationCallSite(callSite, callee, source);
 							return notifyOutFlowHandlers(exitStmt, d1, source, Collections.singleton(source),
@@ -828,29 +833,28 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							}
 						}
 
-						// Additional check: If all callees are library
-						// classes, we pass it on as well
+						// Additional check: If all callees are library classes, we pass it on as well
 						boolean mustPropagate = isExcluded(callee);
 
-						// If the callee does not read the given value, we also
-						// need to pass it on
-						// since we do not propagate it into the callee.
-						if (!mustPropagate && manager.getConfig().getEnableStaticFieldTracking()
+						// If we don't know what we're calling, we just keep the original taint alive
+						mustPropagate |= interproceduralCFG().getCalleesOfCallAt(call).isEmpty();
+
+						// If the callee does not read the given value, we also need to pass it on since
+						// we do not propagate it into the callee.
+						if (!mustPropagate
+								&& manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
 							if (interproceduralCFG().isStaticFieldUsed(callee, source.getAccessPath().getFirstField()))
 								return null;
 						}
 
-						// We may not pass on a taint if it is overwritten by
-						// this call
+						// We may not pass on a taint if it is overwritten by this call
 						if (iStmt instanceof DefinitionStmt
 								&& ((DefinitionStmt) iStmt).getLeftOp() == source.getAccessPath().getPlainValue()) {
 							return null;
 						}
 
-						// If the base local of the invocation is tainted, we do
-						// not
-						// pass on the taint
+						// If the base local of the invocation is tainted, we do not pass on the taint
 						if (!mustPropagate && iStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 							InstanceInvokeExpr iinv = (InstanceInvokeExpr) iStmt.getInvokeExpr();
 							if (iinv.getBase() == source.getAccessPath().getPlainValue()
@@ -858,8 +862,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 						}
 
-						// We do not pass taints on parameters over the
-						// call-to-return edge
+						// We do not pass taints on parameters over the call-to-return edge
 						if (!mustPropagate) {
 							for (int i = 0; i < callArgs.length; i++)
 								if (callArgs[i] == source.getAccessPath().getPlainValue())

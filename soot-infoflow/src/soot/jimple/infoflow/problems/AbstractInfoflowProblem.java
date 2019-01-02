@@ -88,9 +88,8 @@ public abstract class AbstractInfoflowProblem
 	 * Sets the taint wrapper that shall be used for applying external library
 	 * models
 	 * 
-	 * @param wrapper
-	 *            The taint wrapper that shall be used for applying external library
-	 *            models
+	 * @param wrapper The taint wrapper that shall be used for applying external
+	 *                library models
 	 */
 	public void setTaintWrapper(ITaintPropagationWrapper wrapper) {
 		this.taintWrapper = wrapper;
@@ -100,8 +99,7 @@ public abstract class AbstractInfoflowProblem
 	 * Sets the handler class to be used for modeling the effects of native methods
 	 * on the taint state
 	 * 
-	 * @param handler
-	 *            The native call handler to use
+	 * @param handler The native call handler to use
 	 */
 	public void setNativeCallHandler(INativeCallHandler handler) {
 		this.ncHandler = handler;
@@ -111,8 +109,7 @@ public abstract class AbstractInfoflowProblem
 	 * Gets whether the given method is an entry point, i.e. one of the initial
 	 * seeds belongs to the given method
 	 * 
-	 * @param sm
-	 *            The method to check
+	 * @param sm The method to check
 	 * @return True if the given method is an entry point, otherwise false
 	 */
 	protected boolean isInitialMethod(SootMethod sm) {
@@ -185,10 +182,8 @@ public abstract class AbstractInfoflowProblem
 	/**
 	 * Adds the given initial seeds to the information flow problem
 	 * 
-	 * @param unit
-	 *            The unit to be considered as a seed
-	 * @param seeds
-	 *            The abstractions with which to start at the given seed
+	 * @param unit  The unit to be considered as a seed
+	 * @param seeds The abstractions with which to start at the given seed
 	 */
 	public void addInitialSeeds(Unit unit, Set<Abstraction> seeds) {
 		if (this.initialSeeds.containsKey(unit))
@@ -221,8 +216,7 @@ public abstract class AbstractInfoflowProblem
 	/**
 	 * Sets a handler which is invoked whenever a taint is propagated
 	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating taints
+	 * @param handler The handler to be invoked when propagating taints
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler handler) {
 		this.taintPropagationHandler = handler;
@@ -242,8 +236,7 @@ public abstract class AbstractInfoflowProblem
 	/**
 	 * Checks whether the given unit is the start of an exception handler
 	 * 
-	 * @param u
-	 *            The unit to check
+	 * @param u The unit to check
 	 * @return True if the given unit is the start of an exception handler,
 	 *         otherwise false
 	 */
@@ -259,17 +252,12 @@ public abstract class AbstractInfoflowProblem
 	 * Notifies the outbound flow handlers, if any, about the computed result
 	 * abstractions for the current flow function
 	 * 
-	 * @param d1
-	 *            The abstraction at the beginning of the method
-	 * @param stmt
-	 *            The statement that has just been processed
-	 * @param incoming
-	 *            The incoming abstraction from which the outbound ones were
-	 *            computed
-	 * @param outgoing
-	 *            The outbound abstractions to be propagated on
-	 * @param functionType
-	 *            The type of flow function that was computed
+	 * @param d1           The abstraction at the beginning of the method
+	 * @param stmt         The statement that has just been processed
+	 * @param incoming     The incoming abstraction from which the outbound ones
+	 *                     were computed
+	 * @param outgoing     The outbound abstractions to be propagated on
+	 * @param functionType The type of flow function that was computed
 	 * @return The outbound flow abstracions, potentially changed by the flow
 	 *         handlers
 	 */
@@ -293,8 +281,7 @@ public abstract class AbstractInfoflowProblem
 	 * Checks whether the given method is excluded from the data flow analysis,
 	 * i.e., should not be analyzed
 	 * 
-	 * @param sm
-	 *            The method to check
+	 * @param sm The method to check
 	 * @return True if the method is excluded and shall not be analyzed, otherwise
 	 *         false
 	 */

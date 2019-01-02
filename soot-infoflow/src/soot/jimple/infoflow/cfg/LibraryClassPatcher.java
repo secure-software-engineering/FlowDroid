@@ -265,7 +265,7 @@ public class LibraryClassPatcher {
 		SootClass scApplicationHolder = createOrGetApplicationHolder();
 
 		SootClass sc = Scene.v().getSootClassUnsafe("android.app.Activity");
-		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
+		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES || scApplicationHolder == null)
 			return;
 		sc.setLibraryClass();
 
@@ -303,6 +303,8 @@ public class LibraryClassPatcher {
 	public static SootClass createOrGetApplicationHolder() {
 		SootClass scApplication = Scene.v().getSootClassUnsafe("android.app.Application");
 
+		if (scApplication == null || scApplication.resolvingLevel() < SootClass.SIGNATURES)
+			return null;
 		String applicationHolderClassName = "il.ac.tau.MyApplicationHolder";
 		SootClass scApplicationHolder;
 		if (!Scene.v().containsClass(applicationHolderClassName)) {
@@ -459,8 +461,9 @@ public class LibraryClassPatcher {
 			smPost.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostAtFrontOfQueue != null && (!smPostAtFrontOfQueue.hasActiveBody()
-				|| isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
+		if (smPostAtFrontOfQueue != null
+				&& (!smPostAtFrontOfQueue.hasActiveBody()
+						|| isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtFrontOfQueue, runnable);
 			smPostAtFrontOfQueue.addTag(new FlowDroidEssentialMethodTag());
 		}
@@ -471,8 +474,9 @@ public class LibraryClassPatcher {
 			smPostAtTime.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostAtTimeWithToken != null && (!smPostAtTimeWithToken.hasActiveBody()
-				|| isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
+		if (smPostAtTimeWithToken != null
+				&& (!smPostAtTimeWithToken.hasActiveBody()
+						|| isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtTimeWithToken, runnable);
 			smPostAtTimeWithToken.addTag(new FlowDroidEssentialMethodTag());
 		}

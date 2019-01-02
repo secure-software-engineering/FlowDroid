@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter$AuthorityEntry"
+						AccessPath="[android.content.IntentFilter$AuthorityEntry: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter$AuthorityEntry"
+						AccessPath="[android.content.IntentFilter$AuthorityEntry: int port]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHost()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter$AuthorityEntry"
+						AccessPath="[android.content.IntentFilter$AuthorityEntry: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getPort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter$AuthorityEntry"
+						AccessPath="[android.content.IntentFilter$AuthorityEntry: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

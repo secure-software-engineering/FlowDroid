@@ -58,16 +58,20 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
 					// Process the predecessor
-					if (processPredecessor(scap, pred))
+					if (processPredecessor(scap, pred)) {
 						// Schedule the predecessor
 						scheduleDependentTask(new SourceFindingTask(pred));
+					}
 
 					// Process the predecessor's neighbors
-					if (pred.getNeighbors() != null)
-						for (Abstraction neighbor : pred.getNeighbors())
-							if (processPredecessor(scap, neighbor))
+					if (pred.getNeighbors() != null) {
+						for (Abstraction neighbor : pred.getNeighbors()) {
+							if (processPredecessor(scap, neighbor)) {
 								// Schedule the predecessor
 								scheduleDependentTask(new SourceFindingTask(neighbor));
+							}
+						}
+					}
 				}
 			}
 		}

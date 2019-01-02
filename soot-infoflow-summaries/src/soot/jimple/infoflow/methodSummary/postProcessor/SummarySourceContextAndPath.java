@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import heros.solver.Pair;
 import soot.Local;
@@ -30,6 +34,8 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFactory.BasePair;
 import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
+import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
+import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
 
@@ -41,29 +47,34 @@ import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
  */
 class SummarySourceContextAndPath extends SourceContextAndPath {
 
+	private final static Logger logger = LoggerFactory.getLogger(SummarySourceContextAndPath.class);
+
 	private final InfoflowManager manager;
 	private boolean isAlias;
 	private AccessPath curAP;
 	private int depth;
 	private final List<SootMethod> callees;
+	private final SummaryPathBuilderContext context;
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, boolean isAlias,
-			AccessPath curAP, List<SootMethod> callees) {
+			AccessPath curAP, List<SootMethod> callees, SummaryPathBuilderContext context) {
 		super(null, value, stmt);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;
 		this.callees = callees;
+		this.context = context;
 	}
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, AccessPath curAP,
-			boolean isAlias, int depth, List<SootMethod> callees, Object userData) {
+			boolean isAlias, int depth, List<SootMethod> callees, Object userData, SummaryPathBuilderContext context) {
 		super(null, value, stmt, userData);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;
 		this.callees = new ArrayList<SootMethod>(callees);
 		this.depth = depth;
+		this.context = context;
 	}
 
 	@Override
@@ -84,7 +95,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				scap.callStack = new ExtensibleList<Stmt>();
 			else if (!scap.callStack.isEmpty() && scap.callStack.getFirstSlow() == abs.getCorrespondingCallSite())
 				return null;
-			scap.callStack = scap.callStack.addFirstSlow(abs.getCorrespondingCallSite());
+			scap.callStack = scap.callStack.add(abs.getCorrespondingCallSite());
 		}
 
 		// Compute the next access path
@@ -96,6 +107,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// the access path
 		if (stmt == null && abs.getSourceContext() != null) {
 			scap.curAP = abs.getSourceContext().getAccessPath();
+			scap.validate();
 			return scap;
 		}
 
@@ -112,9 +124,27 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 					if (topCallStackItem != abs.getCurrentStmt())
 						return null;
 				}
+			} else if (context != null) {
+				// We might have applied a pre-existing summary here. In that case, we need to
+				// reverse the effect of that summary to find the access path we were previously
+				// looking for.
+				ITaintPropagationWrapper taintWrapper = context.getTaintWrapper();
+				if (taintWrapper != null && taintWrapper instanceof IReversibleTaintWrapper) {
+					IReversibleTaintWrapper reversibleWrapper = (IReversibleTaintWrapper) taintWrapper;
+					Set<Abstraction> previousAbstractions = reversibleWrapper.getInverseTaintsForMethod(stmt, null,
+							abs);
+					if (previousAbstractions != null && !previousAbstractions.isEmpty()) {
+						for (Abstraction prevAbs : previousAbstractions) {
+							if (prevAbs != abs) {
+								scap.curAP = prevAbs.getAccessPath();
+								matched = true;
+							}
+						}
+					}
+				}
 			}
 
-			if (callSite == stmt) {
+			if (!matched && callSite == stmt) {
 				// only change base local
 				Value newBase = abs.getPredecessor() != null ? abs.getPredecessor().getAccessPath().getPlainValue()
 						: abs.getAccessPath().getPlainValue();
@@ -122,33 +152,37 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				// The statement must reference the local in question
 				boolean found = false;
 				try {
-					for (ValueBox vb : stmt.getUseAndDefBoxes())
+					for (ValueBox vb : stmt.getUseAndDefBoxes()) {
 						if (vb.getValue() == scap.curAP.getPlainValue()) {
 							found = true;
 							break;
 						}
+					}
 				} catch (ConcurrentModificationException ex) {
-					System.err.println("Found a glitch in Soot: " + ex.getMessage() + " for statement " + stmt);
-					ex.printStackTrace();
+					logger.error(String.format("Found a glitch in Soot for statement %s", stmt), ex);
 					throw ex;
 				}
 
-				// If the incoming value is a primitive, we reset the field
-				// list
+				// If the incoming value is a primitive, we reset the field list
 				if (found) {
+					AccessPath newAP = null;
 					if (newBase.getType() instanceof PrimType || curAP.getBaseType() instanceof PrimType)
-						scap.curAP = manager.getAccessPathFactory().createAccessPath(newBase, true);
+						newAP = manager.getAccessPathFactory().createAccessPath(newBase, true);
 					else
-						scap.curAP = manager.getAccessPathFactory().copyWithNewValue(scap.curAP, newBase);
-					matched = true;
-
-					scap.depth--;
+						newAP = manager.getAccessPathFactory().copyWithNewValue(scap.curAP, newBase);
+					if (newAP != null) {
+						scap.curAP = newAP;
+						scap.depth--;
+						matched = true;
+					}
 				}
 			}
 		}
 
-		if (matched)
+		if (matched) {
+			scap.validate();
 			return scap;
+		}
 
 		// Our call stack may run empty if we have a follow-returns-past-seeds
 		// case
@@ -179,8 +213,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 			// methods at the return site when we have a corresponding call
 			// site.
 			SootMethod callee = manager.getICFG().getMethodOf(stmt);
-			if (scap.callees.isEmpty() || callee != scap.callees.get(0))
-				scap.callees.add(0, callee);
+			scap.callees.add(0, callee);
 
 			// Map the access path into the scope of the callee
 			AccessPath newAP = mapAccessPathIntoCallee(scap.curAP, stmt, callSite, callee, !abs.isAbstractionActive());
@@ -212,29 +245,36 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 						}
 				}
 
+				AccessPath newAP = null;
 				if (assignStmt.getRightOp() instanceof NewArrayExpr)
-					scap.curAP = manager.getAccessPathFactory().createAccessPath(rop, false);
+					newAP = manager.getAccessPathFactory().createAccessPath(rop, false);
 				else
-					scap.curAP = manager.getAccessPathFactory().copyWithNewValue(scap.curAP, rop, null, false);
-				matched = true;
+					newAP = manager.getAccessPathFactory().copyWithNewValue(scap.curAP, rop, null, false);
+				if (newAP != null) {
+					scap.curAP = newAP;
+					matched = true;
+				}
 			} else if (assignStmt.getLeftOp() instanceof InstanceFieldRef) {
 				InstanceFieldRef ifref = (InstanceFieldRef) assignStmt.getLeftOp();
 				AccessPath matchedAP = matchAccessPath(scap.curAP, ifref.getBase(), ifref.getField());
 				if (matchedAP != null) {
-					scap.curAP = manager.getAccessPathFactory().copyWithNewValue(matchedAP, assignStmt.getRightOp(),
-							matchedAP.getFirstFieldType(), true);
-					matched = true;
+					AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(matchedAP,
+							assignStmt.getRightOp(), matchedAP.getFirstFieldType(), true);
+					if (newAP != null) {
+						scap.curAP = newAP;
+						matched = true;
+					}
 				}
 			}
 
-			if (matched || abs.isAbstractionActive())
+			if (matched) {
+				scap.validate();
 				return scap;
+			} else if (abs.isAbstractionActive())
+				return null;
 
-			// For aliasing relationships, we also need to check the right
-			// side
-			if (rightOp instanceof Local
-					&& rightOp == scap.curAP.getPlainValue()
-					&& !assignStmt.containsInvokeExpr()
+			// For aliasing relationships, we also need to check the right side
+			if (rightOp instanceof Local && rightOp == scap.curAP.getPlainValue() && !assignStmt.containsInvokeExpr()
 					&& !(assignStmt.getRightOp() instanceof LengthExpr)) {
 				// Get the next value from the right side of the assignment
 				final Value[] leftOps = BaseSelector.selectBaseList(assignStmt.getLeftOp(), false);
@@ -266,7 +306,20 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Strings and primitives do not alias
 		scap.isAlias &= AliasUtils.canAccessPathHaveAliases(scap.curAP);
 
-		return matched ? scap : null;
+		if (matched) {
+			scap.validate();
+			return scap;
+		}
+		return null;
+	}
+
+	/**
+	 * Validates this data object and throws an exception in case it cannot be
+	 * processed any further because of missing or inconsistent data
+	 */
+	private void validate() {
+		if (curAP == null)
+			throw new InvalidPathBuilderStateException("No current access path");
 	}
 
 	private AccessPath matchAccessPath(AccessPath curAP, Value base, SootField field) {
@@ -319,14 +372,10 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	/**
 	 * Maps an access path from a call site into the respective callee
 	 * 
-	 * @param curAP
-	 *            The current access path in the scope of the caller
-	 * @param stmt
-	 *            The statement entering the callee
-	 * @param callSite
-	 *            The call site corresponding to the callee
-	 * @param callee
-	 *            The callee to enter
+	 * @param curAP    The current access path in the scope of the caller
+	 * @param stmt     The statement entering the callee
+	 * @param callSite The call site corresponding to the callee
+	 * @param callee   The callee to enter
 	 * @return The new callee-side access path if it exists, otherwise null if the
 	 *         given access path has no corresponding AP in the scope of the callee.
 	 */
@@ -380,12 +429,9 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 * Matches an access path from the scope of the callee back into the scope of
 	 * the caller
 	 * 
-	 * @param curAP
-	 *            The access path to map
-	 * @param stmt
-	 *            The call statement
-	 * @param callee
-	 *            The callee from which we return
+	 * @param curAP  The access path to map
+	 * @param stmt   The call statement
+	 * @param callee The callee from which we return
 	 * @return The new access path in the scope of the caller if applicable, null if
 	 *         there is no corresponding access path in the caller.
 	 */
@@ -423,17 +469,24 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				// We cannot map back to a constant expression at the call site
 				if (stmt.getInvokeExpr().getArg(i) instanceof Constant)
 					return null;
-				curAP = manager.getAccessPathFactory().copyWithNewValue(curAP, stmt.getInvokeExpr().getArg(i));
-				matched = true;
+				AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(curAP,
+						stmt.getInvokeExpr().getArg(i));
+				if (newAP != null) {
+					curAP = newAP;
+					matched = true;
+				}
 			}
 		}
 
 		// Map the "this" local back into the caller
 		if (!callee.isStatic() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 			if (thisLocal == curAP.getPlainValue()) {
-				curAP = manager.getAccessPathFactory().copyWithNewValue(curAP,
+				AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(curAP,
 						((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
-				matched = true;
+				if (newAP != null) {
+					curAP = newAP;
+					matched = true;
+				}
 			}
 		}
 
@@ -449,8 +502,11 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				if (u instanceof ReturnStmt) {
 					ReturnStmt rStmt = (ReturnStmt) u;
 					if (rStmt.getOp() == curAP.getPlainValue()) {
-						curAP = manager.getAccessPathFactory().copyWithNewValue(curAP, assign.getLeftOp());
-						matched = true;
+						AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(curAP, assign.getLeftOp());
+						if (newAP != null) {
+							curAP = newAP;
+							matched = true;
+						}
 					}
 				}
 			}
@@ -463,10 +519,8 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 * Simplistic check to see whether the given formal callee and actual callee can
 	 * be in a thread-start relationship
 	 * 
-	 * @param callSite
-	 *            The method at the call site
-	 * @param callee
-	 *            The actual callee
+	 * @param callSite The method at the call site
+	 * @param callee   The actual callee
 	 * @return True if this can be a thread-start call edge, otherwise false
 	 */
 	private boolean isThreadCall(SootMethod callSite, SootMethod callee) {
@@ -476,7 +530,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	@Override
 	public synchronized SummarySourceContextAndPath clone() {
 		final SummarySourceContextAndPath scap = new SummarySourceContextAndPath(manager, getAccessPath(), getStmt(),
-				curAP, isAlias, depth, new ArrayList<>(callees), getUserData());
+				curAP, isAlias, depth, new ArrayList<>(callees), getUserData(), context);
 		if (callStack != null)
 			scap.callStack = new ExtensibleList<Stmt>(callStack);
 		if (path != null)

@@ -5,14 +5,26 @@
 	<xs:complexType>
 		<xs:sequence minOccurs="1" maxOccurs="unbounded">
 			<xs:choice>
-				<xs:element name="methods" minOccurs="1" maxOccurs="1">
+				<xs:element name="hierarchy" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="superClass" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="methods" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="method" type="methodType" minOccurs="1" maxOccurs="unbounded" />
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="gaps" minOccurs="1" maxOccurs="1">
+				<xs:element name="gaps" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="gap" type="gapType" minOccurs="0" maxOccurs="unbounded" />

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.activation.UnsupportedDataTypeException;
 import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
@@ -72,6 +71,7 @@ import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.android.results.xml.InfoflowResultsSerializer;
 import soot.jimple.infoflow.android.source.AccessPathBasedSourceSinkManager;
 import soot.jimple.infoflow.android.source.ConfigurationBasedCategoryFilter;
+import soot.jimple.infoflow.android.source.UnsupportedSourceSinkFormatException;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
@@ -86,6 +86,7 @@ import soot.jimple.infoflow.ipc.IIPCManager;
 import soot.jimple.infoflow.memory.FlowDroidMemoryWatcher;
 import soot.jimple.infoflow.memory.FlowDroidTimeoutWatcher;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
+import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
@@ -131,8 +132,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected BiDirICFGFactory cfgFactory = null;
 
 	protected IIPCManager ipcManager = null;
-
-	protected long maxMemoryConsumption = -1;
 
 	protected Set<Stmt> collectedSources = null;
 	protected Set<Stmt> collectedSinks = null;
@@ -635,7 +634,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		FlowDroidMemoryWatcher memoryWatcher = null;
 		FlowDroidTimeoutWatcher timeoutWatcher = null;
 		if (jimpleClass instanceof IMemoryBoundedSolver) {
-			memoryWatcher = new FlowDroidMemoryWatcher();
+			memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
 			memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
 
 			// Make sure that we don't spend too much time in the callback
@@ -1299,7 +1298,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			else if (fileExtension.equals(".rifl"))
 				parser = new RIFLSourceSinkDefinitionProvider(sourceSinkFile);
 			else
-				throw new UnsupportedDataTypeException("The Inputfile isn't a .txt or .xml file.");
+				throw new UnsupportedSourceSinkFormatException("The Inputfile isn't a .txt or .xml file.");
 		} catch (SAXException ex) {
 			throw new IOException("Could not read XML file", ex);
 		}
@@ -1317,7 +1316,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Reset our object state
 		this.collectedSources = config.getLogSourcesAndSinks() ? new HashSet<Stmt>() : null;
 		this.collectedSinks = config.getLogSourcesAndSinks() ? new HashSet<Stmt>() : null;
-		this.maxMemoryConsumption = 0;
 		this.sourceSinkProvider = sourcesAndSinks;
 		this.infoflow = null;
 
@@ -1381,20 +1379,25 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	protected void processEntryPoint(ISourceSinkDefinitionProvider sourcesAndSinks,
 			MultiRunResultAggregator resultAggregator, int numEntryPoints, SootClass entrypoint) {
+		long beforeEntryPoint = System.nanoTime();
+
 		// Get rid of leftovers from the last entry point
 		resultAggregator.clearLastResults();
 
 		// Perform basic app parsing
+		long callbackDuration = System.nanoTime();
 		try {
 			if (config.getOneComponentAtATime())
 				calculateCallbacks(sourcesAndSinks, entrypoint);
 			else
 				calculateCallbacks(sourcesAndSinks);
 		} catch (IOException | XmlPullParserException e) {
-			logger.error("Callgraph construction failed: " + e.getMessage());
-			e.printStackTrace();
+			logger.error("Callgraph construction failed: " + e.getMessage(), e);
 			throw new RuntimeException("Callgraph construction failed", e);
 		}
+		callbackDuration = Math.round((System.nanoTime() - callbackDuration) / 1E9);
+		logger.info(
+				String.format("Collecting callbacks and building a callgraph took %d seconds", (int) callbackDuration));
 
 		final Set<SourceSinkDefinition> sources = getSources();
 		final Set<SourceSinkDefinition> sinks = getSinks();
@@ -1421,7 +1424,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		infoflow.runAnalysis(sourceSinkManager, entryPointCreator.getGeneratedMainMethod());
 
 		// Update the statistics
-		this.maxMemoryConsumption = Math.max(this.maxMemoryConsumption, infoflow.getMaxMemoryConsumption());
 		if (config.getLogSourcesAndSinks() && infoflow.getCollectedSources() != null)
 			this.collectedSources.addAll(infoflow.getCollectedSources());
 		if (config.getLogSourcesAndSinks() && infoflow.getCollectedSinks() != null)
@@ -1434,6 +1436,16 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				logger.info("Found {} leaks for component {}", resCount, entrypoint);
 			else
 				logger.info("Found {} leaks", resCount);
+		}
+
+		// Update the performance object with the real data
+		{
+			InfoflowResults lastResults = resultAggregator.getLastResults();
+			if (lastResults != null) {
+				InfoflowPerformanceData perfData = lastResults.getPerformanceData();
+				perfData.setCallgraphConstructionSeconds((int) callbackDuration);
+				perfData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeEntryPoint) / 1E9));
+			}
 		}
 
 		// We don't need the computed callbacks anymore
@@ -1655,16 +1667,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	public void setIcfgFactory(BiDirICFGFactory factory) {
 		this.cfgFactory = factory;
-	}
-
-	/**
-	 * Gets the maximum memory consumption during the last analysis run
-	 * 
-	 * @return The maximum memory consumption during the last analysis run if
-	 *         available, otherwise -1
-	 */
-	public long getMaxMemoryConsumption() {
-		return this.maxMemoryConsumption;
 	}
 
 	/**

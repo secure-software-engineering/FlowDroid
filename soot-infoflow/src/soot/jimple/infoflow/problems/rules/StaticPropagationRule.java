@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
@@ -33,17 +34,15 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	@Override
 	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
 			ByReferenceBoolean killAll) {
+		final StaticFieldTrackingMode staticFieldMode = getManager().getConfig().getStaticFieldTrackingMode();
+
 		// Do not analyze static initializers if static field tracking is
 		// disabled
-		if (!getManager().getConfig().getEnableStaticFieldTracking() && dest.isStaticInitializer()) {
-			killAll.value = true;
-			return null;
-		}
-
-		// Do not propagate static taints if static field tracking is disabled
-		if (source.getAccessPath().isStaticFieldRef() && !getManager().getConfig().getEnableStaticFieldTracking()) {
-			killAll.value = true;
-			return null;
+		if (staticFieldMode == StaticFieldTrackingMode.None) {
+			if (dest.isStaticInitializer() || source.getAccessPath().isStaticFieldRef()) {
+				killAll.value = true;
+				return null;
+			}
 		}
 
 		final AccessPath ap = source.getAccessPath();
@@ -64,6 +63,13 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+		// Static field tracking can be disabled
+		if (getManager().getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+				&& source.getAccessPath().isStaticFieldRef()) {
+			killAll.value = true;
+			return null;
+		}
+
 		// nothing to do here
 		return null;
 	}
@@ -76,7 +82,8 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 			return null;
 
 		// Static field tracking can be disabled
-		if (!getManager().getConfig().getEnableStaticFieldTracking() && source.getAccessPath().isStaticFieldRef()) {
+		if (getManager().getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+				&& source.getAccessPath().isStaticFieldRef()) {
 			killAll.value = true;
 			return null;
 		}

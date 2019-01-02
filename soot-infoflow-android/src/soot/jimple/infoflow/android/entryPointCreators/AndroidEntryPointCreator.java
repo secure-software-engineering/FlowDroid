@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.Body;
 import soot.Local;
 import soot.Modifier;
@@ -68,6 +71,8 @@ import soot.util.MultiMap;
  */
 public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator implements IEntryPointCreator {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private static final boolean DEBUG = false;
 
 	protected MultiMap<SootClass, SootMethod> callbackFunctions = new HashMultiMap<>();;
@@ -105,6 +110,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// Make sure that we don't have any leftover state
 		// from previous runs
 		reset();
+
+		logger.info(String.format("Creating Android entry point for %d components...", components.size()));
 
 		// For some weird reason unknown to anyone except the flying spaghetti
 		// monster, the onCreate() methods of content providers run even before

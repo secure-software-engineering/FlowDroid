@@ -63,6 +63,14 @@
 				<clear sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
 			</clears>
 		</method>
+        <method id="java.lang.Object clone()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
 		<method id="void copyInto(java.lang.Object[])">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -200,10 +208,8 @@
 		<method id="java.util.List subList(int,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]" />
-					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]" />
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>

@@ -46,6 +46,10 @@ public abstract class AbstractFlowSinkSource {
 		this.gap = gap;
 		this.userData = userData;
 		this.matchStrict = matchStrict;
+
+		// Sanity check
+		if (accessPath != null && accessPathTypes != null && accessPath.length != accessPathTypes.length)
+			throw new RuntimeException("Access path arrayand type array must be of equal length");
 	}
 
 	/**
@@ -53,8 +57,7 @@ public abstract class AbstractFlowSinkSource {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src
-	 *            The source or sink with which to compare the current one
+	 * @param src The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -75,20 +78,16 @@ public abstract class AbstractFlowSinkSource {
 		return true;
 	}
 
-	public SourceSinkType type() {
-		return type;
-	}
-
 	public boolean isParameter() {
-		return type().equals(SourceSinkType.Parameter);
+		return type == SourceSinkType.Parameter;
 	}
 
 	public boolean isThis() {
-		return type().equals(SourceSinkType.Field) && !hasAccessPath();
+		return type == SourceSinkType.Field && !hasAccessPath();
 	}
 
 	public boolean isCustom() {
-		return type().equals(SourceSinkType.Custom);
+		return type == SourceSinkType.Custom;
 	}
 
 	public int getParameterIndex() {
@@ -106,7 +105,7 @@ public abstract class AbstractFlowSinkSource {
 	 * @return True if this taint references a base field, false otherwise
 	 */
 	public boolean isField() {
-		return type().equals(SourceSinkType.Field);
+		return type == SourceSinkType.Field;
 	}
 
 	public String[] getAccessPath() {
@@ -118,11 +117,11 @@ public abstract class AbstractFlowSinkSource {
 	}
 
 	public boolean isReturn() {
-		return type().equals(SourceSinkType.Return);
+		return type == SourceSinkType.Return;
 	}
 
 	public boolean isGapBaseObject() {
-		return type().equals(SourceSinkType.GapBaseObject);
+		return type == SourceSinkType.GapBaseObject;
 	}
 
 	public boolean hasAccessPath() {
@@ -141,6 +140,10 @@ public abstract class AbstractFlowSinkSource {
 
 	public GapDefinition getGap() {
 		return this.gap;
+	}
+
+	public boolean hasGap() {
+		return this.gap != null;
 	}
 
 	public String getLastFieldType() {
@@ -254,8 +257,7 @@ public abstract class AbstractFlowSinkSource {
 	/**
 	 * Replaces the gaps in this definition according to the given map
 	 * 
-	 * @param replacementMap
-	 *            A mapping from gap id to new gap data object
+	 * @param replacementMap A mapping from gap id to new gap data object
 	 * @return A copy of this definition in which the gaps that also occur in the
 	 *         given map have been replaced with the values from the map
 	 */

@@ -1,8 +1,12 @@
 package soot.jimple.infoflow.cmd;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
@@ -11,6 +15,8 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
@@ -20,6 +26,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
@@ -27,6 +34,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingM
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.config.XMLConfigurationParser;
 import soot.jimple.infoflow.methodSummary.data.provider.LazySummaryProvider;
+import soot.jimple.infoflow.methodSummary.taintWrappers.ReportMissingSummaryWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -43,8 +51,13 @@ import soot.util.MultiMap;
  */
 public class MainClass {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private final Options options = new Options();
 	private SetupApplication analyzer = null;
+	private ReportMissingSummaryWrapper reportMissingSummaryWrapper;
+
+	private Set<String> filesToSkip = new HashSet<>();
 
 	// Files
 	private static final String OPTION_CONFIG_FILE = "c";
@@ -52,6 +65,8 @@ public class MainClass {
 	private static final String OPTION_PLATFORMS_DIR = "p";
 	private static final String OPTION_SOURCES_SINKS_FILE = "s";
 	private static final String OPTION_OUTPUT_FILE = "o";
+	private static final String OPTION_ADDITIONAL_CLASSPATH = "ac";
+	private static final String OPTION_SKIP_APK_FILE = "si";
 
 	// Timeouts
 	private static final String OPTION_TIMEOUT = "dt";
@@ -64,6 +79,7 @@ public class MainClass {
 	private static final String OPTION_NO_EXCEPTIONAL_FLOWS = "ne";
 	private static final String OPTION_NO_TYPE_CHECKING = "nt";
 	private static final String OPTION_REFLECTION = "r";
+	private static final String OPTION_MISSING_SUMMARIES_FILE = "ms";
 
 	// Taint wrapper
 	private static final String OPTION_TAINT_WRAPPER = "tw";
@@ -71,6 +87,7 @@ public class MainClass {
 
 	// Individual settings
 	private static final String OPTION_ACCESS_PATH_LENGTH = "al";
+	private static final String OPTION_NO_THIS_CHAIN_REDUCTION = "nr";
 	private static final String OPTION_FLOW_INSENSITIVE_ALIASING = "af";
 	private static final String OPTION_COMPUTE_PATHS = "cp";
 	private static final String OPTION_ONE_SOURCE = "os";
@@ -98,6 +115,10 @@ public class MainClass {
 	private static final String OPTION_CALLBACK_SOURCE_MODE = "cs";
 	private static final String OPTION_PATH_RECONSTRUCTION_MODE = "pr";
 	private static final String OPTION_IMPLICIT_FLOW_MODE = "i";
+	private static final String OPTION_STATIC_FLOW_TRACKING_MODE = "sf";
+
+	// Evaluation-specific options
+	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
 
 	private MainClass() {
 		initializeCommandLineOptions();
@@ -116,6 +137,10 @@ public class MainClass {
 				"Path to the platforms directory from the Android SDK");
 		options.addOption(OPTION_SOURCES_SINKS_FILE, "sourcessinksfile", true, "Definition file for sources and sinks");
 		options.addOption(OPTION_OUTPUT_FILE, "outputfile", true, "Output XML file for the discovered data flows");
+		options.addOption(OPTION_ADDITIONAL_CLASSPATH, "additionalclasspath", true,
+				"Additional JAR file that shal be put on the classpath");
+		options.addOption(OPTION_SKIP_APK_FILE, "skipapkfile", true,
+				"APK file to skip when processing a directory of input files");
 
 		// Timeouts
 		options.addOption(OPTION_TIMEOUT, "timeout", true, "Timeout for the main data flow analysis");
@@ -131,6 +156,8 @@ public class MainClass {
 		options.addOption(OPTION_NO_TYPE_CHECKING, "notypechecking", false,
 				"Disable type checking during taint propagation");
 		options.addOption(OPTION_REFLECTION, "enablereflection", false, "Enable support for reflective method calls");
+		options.addOption(OPTION_MISSING_SUMMARIES_FILE, "missingsummariesoutputfile", true,
+				"Outputs a file with information about which summaries are missing");
 
 		// Taint wrapper
 		options.addOption(OPTION_TAINT_WRAPPER, "taintwrapper", true,
@@ -139,6 +166,8 @@ public class MainClass {
 
 		// Individual settings
 		options.addOption(OPTION_ACCESS_PATH_LENGTH, "aplength", true, "Maximum access path length");
+		options.addOption(OPTION_NO_THIS_CHAIN_REDUCTION, "nothischainreduction", false,
+				"Disable reduction of inner class chains");
 		options.addOption(OPTION_FLOW_INSENSITIVE_ALIASING, "aliasflowins", false,
 				"Use a flow-insensitive alias analysis");
 		options.addOption(OPTION_COMPUTE_PATHS, "paths", false,
@@ -189,6 +218,12 @@ public class MainClass {
 				"Use the specified mode for reconstructing taint propagation paths (NONE, FAST, PRECISE).");
 		options.addOption(OPTION_IMPLICIT_FLOW_MODE, "implicit", true,
 				"Use the specified mode when processing implicit data flows (NONE, ARRAYONLY, ALL)");
+		options.addOption(OPTION_STATIC_FLOW_TRACKING_MODE, "staticmode", true,
+				"Use the specified mode when tracking static data flows (CONTEXTFLOWSENSITIVE, CONTEXTFLOWINSENSITIVE, NONE)");
+
+		// Evaluation-specific options
+		options.addOption(OPTION_ANALYZE_FRAMEWORKS, "analyzeframeworks", false,
+				"Analyze the full frameworks together with the app without any optimizations");
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -226,15 +261,80 @@ public class MainClass {
 			// Parse the other options
 			parseCommandLineOptions(cmd, config);
 
-			// Create the data flow analyzer
-			analyzer = new SetupApplication(config);
+			// We can analyze whole directories of apps. In that case, we must gather the
+			// target APKs.
+			File targetFile = new File(config.getAnalysisFileConfig().getTargetAPKFile());
+			if (!targetFile.exists()) {
+				System.err.println(String.format("Target APK file %s does not exist", targetFile.getCanonicalPath()));
+				return;
+			}
+			List<File> apksToAnalyze;
+			if (targetFile.isDirectory()) {
+				apksToAnalyze = Arrays.asList(targetFile.listFiles(new FilenameFilter() {
 
-			// Initialize the taint wrapper
+					@Override
+					public boolean accept(File dir, String name) {
+						return name.toLowerCase().endsWith(".apk");
+					}
+
+				}));
+			} else
+				apksToAnalyze = Collections.singletonList(targetFile);
+
+			// In case we analyze multiple APKs, we want to have one file per app for the
+			// results
+			String outputFileStr = config.getAnalysisFileConfig().getOutputFile();
+			File outputFile = null;
+			if (outputFileStr != null && !outputFileStr.isEmpty()) {
+				outputFile = new File(outputFileStr);
+				if (outputFile.exists()) {
+					if (apksToAnalyze.size() > 1 && outputFile.isFile()) {
+						System.err.println("The output file must be a directory when analyzing multiple APKs");
+						return;
+					}
+				} else if (apksToAnalyze.size() > 1)
+					outputFile.mkdirs();
+			}
+
+			// Initialize the taint wrapper. We only do this once for all apps to cache
+			// summaries that we have already loaded.
 			ITaintPropagationWrapper taintWrapper = initializeTaintWrapper(cmd);
-			analyzer.setTaintWrapper(taintWrapper);
 
-			// Start the data flow analysis
-			analyzer.runInfoflow();
+			int curAppIdx = 1;
+			for (File apkFile : apksToAnalyze) {
+				if (filesToSkip.contains(apkFile.getName())) {
+					logger.info(String.format("Skipping app %s (%d of %d)...", apkFile.getCanonicalPath(), curAppIdx++,
+							apksToAnalyze.size()));
+					continue;
+				}
+				logger.info(String.format("Analyzing app %s (%d of %d)...", apkFile.getCanonicalPath(), curAppIdx++,
+						apksToAnalyze.size()));
+
+				// Configure the analyzer for the current APK file
+				config.getAnalysisFileConfig().setTargetAPKFile(apkFile.getCanonicalPath());
+				if (apksToAnalyze.size() > 1 || (outputFile.exists() && outputFile.isDirectory())) {
+					String outputFileName = apkFile.getName().replace(".apk", ".xml");
+					File curOutputFile = new File(outputFile, outputFileName);
+					config.getAnalysisFileConfig().setOutputFile(curOutputFile.getCanonicalPath());
+
+					// If we have already analyzed this APK and we have the results, there is no
+					// need to do it again
+					if (curOutputFile.exists())
+						continue;
+				}
+
+				// Create the data flow analyzer
+				analyzer = new SetupApplication(config);
+				analyzer.setTaintWrapper(taintWrapper);
+
+				// Start the data flow analysis
+				analyzer.runInfoflow();
+
+				if (reportMissingSummaryWrapper != null) {
+					String file = cmd.getOptionValue(OPTION_MISSING_SUMMARIES_FILE);
+					reportMissingSummaryWrapper.writeResults(new File(file));
+				}
+			}
 		} catch (AbortAnalysisException e) {
 			// Silently return
 		} catch (ParseException e) {
@@ -254,12 +354,16 @@ public class MainClass {
 	 *         no taint wrapper shall be used
 	 */
 	private ITaintPropagationWrapper initializeTaintWrapper(CommandLine cmd) throws Exception {
+		// If we want to analyze the full framework together with the app, we do not
+		// want any shortcuts
+		if (cmd.hasOption(OPTION_ANALYZE_FRAMEWORKS))
+			return null;
+
 		// Get the definition file(s) for the taint wrapper
 		String[] definitionFiles = cmd.getOptionValues(OPTION_TAINT_WRAPPER_FILE);
 
 		// If the user did not specify a taint wrapper, but definition files, we
-		// use the most
-		// permissive option
+		// use the most permissive option
 		String taintWrapper = cmd.getOptionValue(OPTION_TAINT_WRAPPER);
 		if (taintWrapper == null || taintWrapper.isEmpty()) {
 			if (definitionFiles != null && definitionFiles.length > 0)
@@ -271,16 +375,24 @@ public class MainClass {
 			}
 		}
 
+		ITaintPropagationWrapper result = null;
 		// Create the respective taint wrapper object
 		switch (taintWrapper.toLowerCase()) {
 		case "default":
 			// We use StubDroid, but with the summaries from inside the JAR
 			// files
-			SummaryTaintWrapper summaryWrapper = new SummaryTaintWrapper(new LazySummaryProvider("summariesManual"));
+			result = createSummaryTaintWrapper(cmd, new LazySummaryProvider("summariesManual"));
+			break;
+		case "defaultfallback":
+			// We use StubDroid, but with the summaries from inside the JAR
+			// files
+			SummaryTaintWrapper summaryWrapper = createSummaryTaintWrapper(cmd,
+					new LazySummaryProvider("summariesManual"));
 			summaryWrapper.setFallbackTaintWrapper(new EasyTaintWrapper());
-			return summaryWrapper;
+			result = summaryWrapper;
+			break;
 		case "none":
-			return null;
+			break;
 		case "easy":
 			// If the user has not specified a definition file for the easy
 			// taint wrapper, we try to locate a default file
@@ -303,13 +415,15 @@ public class MainClass {
 				throw new AbortAnalysisException();
 			} else
 				defFile = definitionFiles[0];
-			return new EasyTaintWrapper(defFile);
+			result = new EasyTaintWrapper(defFile);
+			break;
 		case "stubdroid":
 			if (definitionFiles == null || definitionFiles.length == 0) {
 				System.err.println("Must specify at least one definition file for StubDroid");
 				throw new AbortAnalysisException();
 			}
-			return TaintWrapperFactory.createTaintWrapper(Arrays.asList(definitionFiles));
+			result = TaintWrapperFactory.createTaintWrapper(Arrays.asList(definitionFiles));
+			break;
 		case "multi":
 			// We need explicit definition files
 			if (definitionFiles == null || definitionFiles.length == 0) {
@@ -351,11 +465,22 @@ public class MainClass {
 				else
 					stubDroidWrapper.setFallbackTaintWrapper(easyWrapper);
 			}
-			return wrapperSet;
+			result = wrapperSet;
+			break;
+		default:
+			System.err.println("Invalid taint propagation wrapper specified, ignoring.");
+			throw new AbortAnalysisException();
 		}
+		return result;
 
-		System.err.println("Invalid taint propagation wrapper specified, ignoring.");
-		throw new AbortAnalysisException();
+	}
+
+	private SummaryTaintWrapper createSummaryTaintWrapper(CommandLine cmd, LazySummaryProvider lazySummaryProvider) {
+		if (cmd.hasOption(OPTION_MISSING_SUMMARIES_FILE)) {
+			reportMissingSummaryWrapper = new ReportMissingSummaryWrapper(lazySummaryProvider);
+			return reportMissingSummaryWrapper;
+		} else
+			return new SummaryTaintWrapper(lazySummaryProvider);
 	}
 
 	private static CallgraphAlgorithm parseCallgraphAlgorithm(String algo) {
@@ -492,6 +617,19 @@ public class MainClass {
 		}
 	}
 
+	private static StaticFieldTrackingMode parseStaticFlowMode(String staticFlowMode) {
+		if (staticFlowMode.equalsIgnoreCase("NONE"))
+			return StaticFieldTrackingMode.None;
+		else if (staticFlowMode.equalsIgnoreCase("CONTEXTFLOWSENSITIVE"))
+			return StaticFieldTrackingMode.ContextFlowSensitive;
+		else if (staticFlowMode.equalsIgnoreCase("CONTEXTFLOWINSENSITIVE"))
+			return StaticFieldTrackingMode.ContextFlowInsensitive;
+		else {
+			System.err.println(String.format("Invalid static flow tracking mode: %s", staticFlowMode));
+			throw new AbortAnalysisException();
+		}
+	}
+
 	/**
 	 * Parses the given command-line options and fills the given configuration
 	 * object accordingly
@@ -521,6 +659,11 @@ public class MainClass {
 			if (outputFile != null && !outputFile.isEmpty())
 				config.getAnalysisFileConfig().setOutputFile(outputFile);
 		}
+		{
+			String additionalClasspath = cmd.getOptionValue(OPTION_ADDITIONAL_CLASSPATH);
+			if (additionalClasspath != null && !additionalClasspath.isEmpty())
+				config.getAnalysisFileConfig().setAdditionalClasspath(additionalClasspath);
+		}
 
 		// Timeouts
 		{
@@ -541,7 +684,7 @@ public class MainClass {
 
 		// Optional features
 		if (cmd.hasOption(OPTION_NO_STATIC_FLOWS))
-			config.setEnableStaticFieldTracking(false);
+			config.setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		if (cmd.hasOption(OPTION_NO_CALLBACK_ANALYSIS))
 			config.getCallbackConfig().setEnableCallbacks(false);
 		if (cmd.hasOption(OPTION_NO_EXCEPTIONAL_FLOWS))
@@ -550,13 +693,14 @@ public class MainClass {
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
 			config.setEnableReflection(true);
-
 		// Individual settings
 		{
 			Integer aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);
 			if (aplength != null)
 				config.getAccessPathConfiguration().setAccessPathLength(aplength);
 		}
+		if (cmd.hasOption(OPTION_NO_THIS_CHAIN_REDUCTION))
+			config.getAccessPathConfiguration().setUseThisChainReduction(false);
 		if (cmd.hasOption(OPTION_FLOW_INSENSITIVE_ALIASING))
 			config.setFlowSensitiveAliasing(false);
 		if (cmd.hasOption(OPTION_COMPUTE_PATHS))
@@ -645,6 +789,26 @@ public class MainClass {
 			String implicitMode = cmd.getOptionValue(OPTION_IMPLICIT_FLOW_MODE);
 			if (implicitMode != null && !implicitMode.isEmpty())
 				config.setImplicitFlowMode(parseImplicitFlowMode(implicitMode));
+		}
+		{
+			String staticFlowMode = cmd.getOptionValue(OPTION_STATIC_FLOW_TRACKING_MODE);
+			if (staticFlowMode != null && !staticFlowMode.isEmpty())
+				config.setStaticFieldTrackingMode(parseStaticFlowMode(staticFlowMode));
+		}
+
+		{
+			String[] toSkip = cmd.getOptionValues(OPTION_SKIP_APK_FILE);
+			if (toSkip != null && toSkip.length > 0) {
+				for (String skipAPK : toSkip)
+					filesToSkip.add(skipAPK);
+			}
+		}
+
+		// We have some options to quickly configure FlowDroid for a certain mode or use
+		// case
+		if (cmd.hasOption(OPTION_ANALYZE_FRAMEWORKS)) {
+			config.setExcludeSootLibraryClasses(false);
+			config.setIgnoreFlowsInSystemPackages(false);
 		}
 	}
 

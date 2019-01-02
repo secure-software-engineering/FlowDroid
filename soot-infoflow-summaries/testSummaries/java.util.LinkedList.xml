@@ -1,1 +1,714 @@
-<?xml version="1.0" ?><summary fileFormatVersion="101"><methods><method id="java.lang.Object getFirst()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="boolean add(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="void addLast(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="java.util.Iterator descendingIterator()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, java.util.LinkedList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: int nextIndex&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, int]" taintSubFields="true"></to></flow></flows></method><method id="java.util.List subList(int,int)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow></flows></method><method id="int lastIndexOf(java.lang.Object)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow></flows></method><method id="boolean addAll(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object[] toArray()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow></flows></method><method id="boolean equals(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.List" gap="0"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.List" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="4"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="0"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="0"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="1"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="4"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="1"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="3"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="3"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="1"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="4"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="3"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="4" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object pop()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object element()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object get(int)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="void &lt;init&gt;(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object getLast()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="boolean removeLastOccurrence(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="boolean offerFirst(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object set(int,java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="void removeRange(int,int)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="void add(int,java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="boolean offer(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object remove(int)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="boolean removeAll(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="6"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="6"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="6"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="6" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="6"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="boolean retainAll(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="7"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="7"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="7"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="7"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="7" taintSubFields="true"></to></flow></flows></method><method id="boolean offerLast(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object removeLast()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object peekFirst()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.util.ListIterator listIterator(int)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int nextIndex&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="void addFirst(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="int hashCode()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.util.ListIterator listIterator()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="int size()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object peekLast()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.String toString()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;, &lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object, char[]]"></from><to sourceSinkType="Return" BaseType="java.lang.String" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" taintSubFields="true"></to></flow></flows></method><method id="java.util.Iterator iterator()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object[] toArray(java.lang.Object[])"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow></flows></method><method id="boolean removeFirstOccurrence(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="void push(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object pollLast()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object remove()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="boolean addAll(int,java.util.Collection)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="boolean remove(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object clone()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object pollFirst()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object peek()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="boolean containsAll(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="5"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="5" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="5"></from><to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="5"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.lang.Object" gap="5"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object removeFirst()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object poll()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow></flows></method></methods><gaps><gap num="6" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap><gap num="5" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap><gap num="0" id="&lt;java.util.List: java.util.ListIterator listIterator()&gt;"></gap><gap num="7" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap><gap num="1" id="&lt;java.util.ListIterator: boolean hasNext()&gt;"></gap><gap num="3" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="4" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap></gaps></summary>
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+    <methods>
+        <method id="java.lang.Object getFirst()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean add(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void addLast(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.Iterator descendingIterator()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, java.util.LinkedList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$DescendingIterator" AccessPath="[&lt;java.util.LinkedList$DescendingIterator: java.util.LinkedList$ListItr itr&gt;, &lt;java.util.LinkedList$ListItr: int nextIndex&gt;]" AccessPathTypes="[java.util.LinkedList$ListItr, int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.List subList(int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int lastIndexOf(java.lang.Object)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean addAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object[] toArray()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean equals(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.List" gap="0"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.List" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="4"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="0"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="0"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="1"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="4"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="1"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="3"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="3"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="1"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="4"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="3"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="4" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object pop()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object element()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object get(int)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void &lt;init&gt;(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object getLast()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean removeLastOccurrence(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean offerFirst(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object set(int,java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void removeRange(int,int)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void add(int,java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean offer(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object remove(int)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean removeAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="6"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="6"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="6"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="6" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="6"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean retainAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="7"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="7"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="7"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="7"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="7" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean offerLast(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object removeLast()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object peekFirst()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.ListIterator listIterator(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int nextIndex&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void addFirst(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int hashCode()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.ListIterator listIterator()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int size()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object peekLast()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.String toString()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;, &lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object, char[]]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.String" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.Iterator iterator()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: int expectedModCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList this$0&gt;]" AccessPathTypes="[java.util.LinkedList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList$ListItr" AccessPath="[&lt;java.util.LinkedList$ListItr: java.util.LinkedList$Node next&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object[] toArray(java.lang.Object[])">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean removeFirstOccurrence(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void push(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object pollLast()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object remove()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean addAll(int,java.util.Collection)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean remove(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object clone()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object pollFirst()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object peek()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean containsAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="5"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="5" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" gap="5"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="5"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.lang.Object" gap="5"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;]" AccessPathTypes="[java.util.LinkedList$Node]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node last&gt;]" AccessPathTypes="[java.util.LinkedList$Node]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object removeFirst()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object poll()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.LinkedList" AccessPath="[&lt;java.util.LinkedList: java.util.LinkedList$Node first&gt;, &lt;java.util.LinkedList$Node: java.lang.Object item&gt;]" AccessPathTypes="[java.util.LinkedList$Node, java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+    </methods>
+    <gaps>
+        <gap num="6" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap>
+        <gap num="5" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap>
+        <gap num="0" id="&lt;java.util.List: java.util.ListIterator listIterator()&gt;"></gap>
+        <gap num="7" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap>
+        <gap num="1" id="&lt;java.util.ListIterator: boolean hasNext()&gt;"></gap>
+        <gap num="3" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="4" id="&lt;java.lang.Object: boolean equals(java.lang.Object)&gt;"></gap>
+    </gaps>
+</summary>

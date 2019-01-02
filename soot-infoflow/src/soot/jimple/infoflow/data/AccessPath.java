@@ -40,7 +40,8 @@ public class AccessPath implements Cloneable {
 	 */
 	private final Local value;
 	/**
-	 * list of fields, either they are based on a concrete @value or they indicate a static field
+	 * list of fields, either they are based on a concrete @value or they indicate a
+	 * static field
 	 */
 	private final SootField[] fields;
 
@@ -57,9 +58,9 @@ public class AccessPath implements Cloneable {
 
 	/**
 	 * The empty access path denotes a code region depending on a tainted
-	 * conditional. If a function is called inside the region, there is no
-	 * tainted value inside the callee, but there is taint - modeled by
-	 * the empty access path.
+	 * conditional. If a function is called inside the region, there is no tainted
+	 * value inside the callee, but there is taint - modeled by the empty access
+	 * path.
 	 */
 	private static final AccessPath emptyAccessPath = new AccessPath();
 
@@ -87,19 +88,16 @@ public class AccessPath implements Cloneable {
 	}
 
 	/**
-	 * Checks whether the given value can be the base value value of an access
-	 * path
+	 * Checks whether the given value can be the base value value of an access path
+	 * 
 	 * @param val The value to check
-	 * @return True if the given value can be the base value value of an access
-	 * path
+	 * @return True if the given value can be the base value value of an access path
 	 */
 	public static boolean canContainValue(Value val) {
 		if (val == null)
 			return false;
 
-		return val instanceof Local
-				|| val instanceof InstanceFieldRef
-				|| val instanceof StaticFieldRef
+		return val instanceof Local || val instanceof InstanceFieldRef || val instanceof StaticFieldRef
 				|| val instanceof ArrayRef;
 	}
 
@@ -126,11 +124,11 @@ public class AccessPath implements Cloneable {
 	}
 
 	/**
-	 * Checks whether the first field of this access path matches the given
-	 * field
+	 * Checks whether the first field of this access path matches the given field
+	 * 
 	 * @param field The field to check against
 	 * @return True if this access path has a non-empty field list and the first
-	 * field matches the given one, otherwise false
+	 *         field matches the given one, otherwise false
 	 */
 	public boolean firstFieldMatches(SootField field) {
 		if (fields == null || fields.length == 0)
@@ -165,15 +163,22 @@ public class AccessPath implements Cloneable {
 
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((fields == null) ? 0 : Arrays.hashCode(fields));
-		result = prime * result + ((fieldTypes == null) ? 0 : Arrays.hashCode(fieldTypes));
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
+
+		result = prime * result + ((fields == null) ? 0 : Arrays.hashCode(fields));
+		result = prime * result + ((fieldTypes == null) ? 0 : Arrays.hashCode(fieldTypes));
+
 		result = prime * result + (this.taintSubFields ? 1 : 0);
 		result = prime * result + this.arrayTaintType.hashCode();
+		result = prime * result + (this.canHaveImmutableAliases ? 1 : 0);
 		this.hashCode = result;
 
 		return this.hashCode;
+	}
+
+	public int getHashCode() {
+		return hashCode;
 	}
 
 	@Override
@@ -185,17 +190,13 @@ public class AccessPath implements Cloneable {
 
 		AccessPath other = (AccessPath) obj;
 
+		if (this.hashCode != 0 && other.hashCode != 0 && this.hashCode != other.hashCode)
+			return false;
+
 		if (value == null) {
 			if (other.value != null)
 				return false;
 		} else if (!value.equals(other.value))
-			return false;
-		if (!Arrays.equals(fields, other.fields))
-			return false;
-		if (!Arrays.equals(fieldTypes, other.fieldTypes))
-			return false;
-
-		if (this.taintSubFields != other.taintSubFields)
 			return false;
 		if (baseType == null) {
 			if (other.baseType != null)
@@ -203,6 +204,13 @@ public class AccessPath implements Cloneable {
 		} else if (!baseType.equals(other.baseType))
 			return false;
 
+		if (!Arrays.equals(fields, other.fields))
+			return false;
+		if (!Arrays.equals(fieldTypes, other.fieldTypes))
+			return false;
+
+		if (this.taintSubFields != other.taintSubFields)
+			return false;
 		if (this.arrayTaintType != other.arrayTaintType)
 			return false;
 
@@ -275,9 +283,10 @@ public class AccessPath implements Cloneable {
 	/**
 	 * Checks whether this access path entails the given one, i.e. refers to all
 	 * objects the other access path also refers to.
+	 * 
 	 * @param a2 The other access path
-	 * @return True if this access path refers to all objects the other access
-	 * path also refers to
+	 * @return True if this access path refers to all objects the other access path
+	 *         also refers to
 	 */
 	public boolean entails(AccessPath a2) {
 		if (this.isEmpty() || a2.isEmpty())
@@ -307,8 +316,9 @@ public class AccessPath implements Cloneable {
 	}
 
 	/**
-	 * Gets a copy of this access path, but drops the last field. If this
-	 * access path has no fields, the identity is returned.
+	 * Gets a copy of this access path, but drops the last field. If this access
+	 * path has no fields, the identity is returned.
+	 * 
 	 * @return A copy of this access path with the last field being dropped.
 	 */
 	public AccessPath dropLastField() {
@@ -333,6 +343,7 @@ public class AccessPath implements Cloneable {
 
 	/**
 	 * Gets the type of the base value
+	 * 
 	 * @return The type of the base value
 	 */
 	public Type getBaseType() {
@@ -340,19 +351,21 @@ public class AccessPath implements Cloneable {
 	}
 
 	/**
-	 * Gets whether sub-fields shall be tainted. If this access path is e.g.
-	 * a.b.*, the result is true, whereas it is false for a.b.
-	 * @return True if this access path includes all objects rechable through
-	 * it, otherwise false
+	 * Gets whether sub-fields shall be tainted. If this access path is e.g. a.b.*,
+	 * the result is true, whereas it is false for a.b.
+	 * 
+	 * @return True if this access path includes all objects rechable through it,
+	 *         otherwise false
 	 */
 	public boolean getTaintSubFields() {
 		return this.taintSubFields;
 	}
 
 	/**
-	 * Gets whether this access path has been (transitively) constructed from
-	 * one which was cut off by the access path length limitation. If this is
-	 * the case, this AP might not be precise.
+	 * Gets whether this access path has been (transitively) constructed from one
+	 * which was cut off by the access path length limitation. If this is the case,
+	 * this AP might not be precise.
+	 * 
 	 * @return True if this access path was constructed from a cut-off one.
 	 */
 	public boolean isCutOffApproximation() {
@@ -362,8 +375,9 @@ public class AccessPath implements Cloneable {
 	/**
 	 * Gets whether this access path references only the length of the array to
 	 * which it points, not the contents of that array
+	 * 
 	 * @return True if this access paths points refers to the length of an array
-	 * instead of to its contents
+	 *         instead of to its contents
 	 */
 	public ArrayTaintType getArrayTaintType() {
 		return this.arrayTaintType;
@@ -371,9 +385,10 @@ public class AccessPath implements Cloneable {
 
 	/**
 	 * Checks whether this access path starts with the given value
+	 * 
 	 * @param val The value that is a potential prefix of the current access path
-	 * @return True if this access paths with the given value (i.e., the given
-	 * value is a prefix of this access path), otherwise false
+	 * @return True if this access paths with the given value (i.e., the given value
+	 *         is a prefix of this access path), otherwise false
 	 */
 	public boolean startsWith(Value val) {
 		// Filter out constants, etc.
@@ -384,15 +399,11 @@ public class AccessPath implements Cloneable {
 		if (val instanceof Local && this.value == val)
 			return true;
 		else if (val instanceof StaticFieldRef)
-			return this.value == null
-					&& this.fields != null
-					&& this.fields.length > 0
+			return this.value == null && this.fields != null && this.fields.length > 0
 					&& this.fields[0] == ((StaticFieldRef) val).getField();
 		else if (val instanceof InstanceFieldRef) {
 			InstanceFieldRef iref = (InstanceFieldRef) val;
-			return this.value == iref.getBase()
-					&& this.fields != null
-					&& this.fields.length > 0
+			return this.value == iref.getBase() && this.fields != null && this.fields.length > 0
 					&& this.fields[0] == iref.getField();
 		} else
 			// Some unsupported value type
@@ -401,6 +412,7 @@ public class AccessPath implements Cloneable {
 
 	/**
 	 * Returns whether the tainted object can have immutable aliases.
+	 * 
 	 * @return true if the tainted object can have immutable aliases.
 	 */
 	public boolean getCanHaveImmutableAliases() {
@@ -409,6 +421,7 @@ public class AccessPath implements Cloneable {
 
 	/**
 	 * Creates the access path that is used in the zero abstraction
+	 * 
 	 * @return The access path that is used in the zero abstraction
 	 */
 	static AccessPath getZeroAccessPath() {

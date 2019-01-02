@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(android.content.IntentFilter)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator actionsIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addAction(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addCategory(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] categories]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDataAuthority(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.content.IntentFilter$AuthorityEntry[] autorities,android.content.IntentFilter$AuthorityEntry: java.lang.String host]"
+						AccessPathTypes="[android.content.IntentFilter$AuthorityEntry[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.content.IntentFilter$AuthorityEntry[] autorities,android.content.IntentFilter$AuthorityEntry: int port]"
+						AccessPathTypes="[android.content.IntentFilter$AuthorityEntry[],int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDataPath(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] dataPaths,android.os.PatternMatcher: java.lang.String path]"
+						AccessPathTypes="[android.os.PatternMatcher[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] dataPaths,android.os.PatternMatcher: int type]"
+						AccessPathTypes="[android.os.PatternMatcher[],int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDataScheme(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataSchemes]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDataSchemeSpecificPart(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] ssps,android.os.PatternMatcher: java.lang.String path]"
+						AccessPathTypes="[android.os.PatternMatcher[],java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] ssps,android.os.PatternMatcher: int type]"
+						AccessPathTypes="[android.os.PatternMatcher[],int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDataType(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator authoritiesIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] hosts]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: int[] ports]"
+						AccessPathTypes="[int[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator categoriesIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] categories]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.content.IntentFilter create(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getAction(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getCategory(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] categories]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.content.IntentFilter$AuthorityEntry getDataAuthority(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.content.IntentFilter$AuthorityEntry[] autorities]"
+						AccessPathTypes="[android.content.IntentFilter$AuthorityEntry[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.content.IntentFilter$AuthorityEntry getDataAuthority(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] dataPaths]"
+						AccessPathTypes="[android.os.PatternMatcher[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getDataScheme(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataSchemes]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getDataSchemeSpecificPart(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] ssps]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getDataType(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getPriority()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: int priority]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator pathsIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] dataPaths]"
+						AccessPathTypes="[android.os.PatternMatcher[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator schemeSpecificPartsIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] ssps]"
+						AccessPathTypes="[android.os.PatternMatcher[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator schemesIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataSchemes]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void getPriority(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.content.IntentFilter"
+						AccessPath="[android.content.IntentFilter: int priority]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator typesIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
+						AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" BaseType="java.util.Iterator"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void writeToParcel(android.os.Parcel,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

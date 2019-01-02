@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.lang.StringBuilder: char[] innerArray]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.StringBuilder: char[] innerArray]"
 						AccessPathTypes="[char[]]" />
 				</flow>
 			</flows>
@@ -13,7 +14,9 @@
 		<method id="void &lt;init&gt;(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Field" AccessPath="[java.lang.StringBuilder: char[] innerArray]"
 						AccessPathTypes="[char[]]" />
 				</flow>
@@ -152,7 +155,9 @@
 		<method id="java.lang.StringBuilder append(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Field" AccessPath="[java.lang.StringBuilder: char[] innerArray]"
 						AccessPathTypes="[char[]]" />
 				</flow>
@@ -334,7 +339,9 @@
 		<method id="java.lang.StringBuilder insert(int,java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<from sourceSinkType="Parameter" ParameterIndex="1"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Field" AccessPath="[java.lang.StringBuilder: char[] innerArray]"
 						AccessPathTypes="[char[]]" />
 				</flow>
@@ -360,7 +367,9 @@
 		<method id="java.lang.StringBuilder replace(int,int,java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<from sourceSinkType="Parameter" ParameterIndex="2"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Field" AccessPath="[java.lang.StringBuilder: char[] innerArray]"
 						AccessPathTypes="[char[]]" />
 				</flow>

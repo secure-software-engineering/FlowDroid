@@ -188,6 +188,29 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Enumeration containing the supported techniques for handling taints on static
+	 * fields
+	 */
+	public enum StaticFieldTrackingMode {
+		/**
+		 * Track taints on static fields as normal taint abstraction. This approach is
+		 * context- and flow-sensitive, but also very costly (time and memory).
+		 */
+		ContextFlowSensitive,
+
+		/**
+		 * Track taints on static fields as field-based annotations. This approach is
+		 * neither context-, nor flow-sensitive, but very efficient.
+		 */
+		ContextFlowInsensitive,
+
+		/**
+		 * Do not track any taints on static fields
+		 */
+		None
+	}
+
+	/**
 	 * The configuration that defines how FlowDroid shall handle between sources and
 	 * sinks
 	 * 
@@ -778,6 +801,7 @@ public class InfoflowConfiguration {
 		private int accessPathLength = 5;
 		private boolean useRecursiveAccessPaths = true;
 		private boolean useThisChainReduction = true;
+		private boolean useSameFieldReduction = true;
 
 		/**
 		 * Merges the given configuration options into this configuration object
@@ -788,6 +812,7 @@ public class InfoflowConfiguration {
 			this.accessPathLength = config.accessPathLength;
 			this.useRecursiveAccessPaths = config.useRecursiveAccessPaths;
 			this.useThisChainReduction = config.useThisChainReduction;
+			this.useSameFieldReduction = config.useSameFieldReduction;
 		}
 
 		/**
@@ -856,12 +881,35 @@ public class InfoflowConfiguration {
 			this.useThisChainReduction = useThisChainReduction;
 		}
 
+		/**
+		 * Gets whether access paths that repeat the same field shall be reduced, i.e.,
+		 * whether a.next.obj shall be propagated instead of a.next.next.obj.
+		 * 
+		 * @return True if access paths with repeating fields shall be reduced to the
+		 *         last occurrence of that field
+		 */
+		public boolean getUseSameFieldReduction() {
+			return useSameFieldReduction;
+		}
+
+		/**
+		 * Sets whether access paths that repeat the same field shall be reduced, i.e.,
+		 * whether a.next.obj shall be propagated instead of a.next.next.obj.
+		 * 
+		 * @param useSameFieldReduction True if access paths with repeating fields shall
+		 *                              be reduced to the last occurrence of that field
+		 */
+		public void setUseSameFieldReduction(boolean useSameFieldReduction) {
+			this.useSameFieldReduction = useSameFieldReduction;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + accessPathLength;
 			result = prime * result + (useRecursiveAccessPaths ? 1231 : 1237);
+			result = prime * result + (useSameFieldReduction ? 1231 : 1237);
 			result = prime * result + (useThisChainReduction ? 1231 : 1237);
 			return result;
 		}
@@ -879,6 +927,8 @@ public class InfoflowConfiguration {
 				return false;
 			if (useRecursiveAccessPaths != other.useRecursiveAccessPaths)
 				return false;
+			if (useSameFieldReduction != other.useSameFieldReduction)
+				return false;
 			if (useThisChainReduction != other.useThisChainReduction)
 				return false;
 			return true;
@@ -892,7 +942,6 @@ public class InfoflowConfiguration {
 
 	private int stopAfterFirstKFlows = 0;
 	private ImplicitFlowMode implicitFlowMode = ImplicitFlowMode.NoImplicitFlows;
-	private boolean enableStaticFields = true;
 	private boolean enableExceptions = true;
 	private boolean enableArrays = true;
 	private boolean enableArraySizeTainting = true;
@@ -916,10 +965,12 @@ public class InfoflowConfiguration {
 	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 	private AliasingAlgorithm aliasingAlgorithm = AliasingAlgorithm.FlowSensitive;
 	private CodeEliminationMode codeEliminationMode = CodeEliminationMode.PropagateConstants;
+	private StaticFieldTrackingMode staticFieldTrackingMode = StaticFieldTrackingMode.ContextFlowSensitive;
 
 	private boolean taintAnalysisEnabled = true;
 	private boolean incrementalResultReporting = false;
 	private long dataFlowTimeout = 0;
+	private double memoryThreshold = 0.9d;
 	private boolean oneSourceAtATime = false;
 
 	/**
@@ -930,7 +981,6 @@ public class InfoflowConfiguration {
 	public void merge(InfoflowConfiguration config) {
 		this.stopAfterFirstKFlows = config.stopAfterFirstKFlows;
 		this.implicitFlowMode = config.implicitFlowMode;
-		this.enableStaticFields = config.enableStaticFields;
 		this.enableExceptions = config.enableExceptions;
 		this.enableArrays = config.enableArrays;
 		this.enableArraySizeTainting = config.enableArraySizeTainting;
@@ -958,10 +1008,12 @@ public class InfoflowConfiguration {
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
 		this.codeEliminationMode = config.codeEliminationMode;
+		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 
 		this.taintAnalysisEnabled = config.writeOutputFiles;
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
+		this.memoryThreshold = config.memoryThreshold;
 		this.oneSourceAtATime = config.oneSourceAtATime;
 	}
 
@@ -1133,23 +1185,24 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether the solver shall consider assignments to static fields
+	 * Sets how the data flow solver shall treat assignments to static fields
 	 * 
-	 * @param enableStaticFields True if assignments to static fields shall be
-	 *                           considered, otherwise false
+	 * @param staticFieldTrackingMode The mode that specifies the precision with
+	 *                                which assignments to static fields shall be
+	 *                                handled
 	 */
-	public void setEnableStaticFieldTracking(boolean enableStaticFields) {
-		this.enableStaticFields = enableStaticFields;
+	public void setStaticFieldTrackingMode(StaticFieldTrackingMode staticFieldTrackingMode) {
+		this.staticFieldTrackingMode = staticFieldTrackingMode;
 	}
 
 	/**
-	 * Gets whether the solver shall trak assignments to static fields
+	 * Gets how the data flow solver shall treat assignments to static fields
 	 * 
-	 * @return True if the solver shall trak assignments to static fields, otherwise
-	 *         false
+	 * @return The mode that specifies the precision with which assignments to
+	 *         static fields shall be handled
 	 */
-	public boolean getEnableStaticFieldTracking() {
-		return enableStaticFields;
+	public StaticFieldTrackingMode getStaticFieldTrackingMode() {
+		return staticFieldTrackingMode;
 	}
 
 	/**
@@ -1495,6 +1548,28 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets the threshold at which the data flow analysis shall be terminated. If
+	 * the JVM consumes more than this fraction of the heap, no more data flow edges
+	 * are propagated, and the results obtained so far are returned.
+	 * 
+	 * @return The threshold at which to abort the workers
+	 */
+	public double getMemoryThreshold() {
+		return memoryThreshold;
+	}
+
+	/**
+	 * Sets the threshold at which the data flow analysis shall be terminated. If
+	 * the JVM consumes more than this fraction of the heap, no more data flow edges
+	 * are propagated, and the results obtained so far are returned.
+	 * 
+	 * @param memoryThreshold The threshold at which to abort the workers
+	 */
+	public void setMemoryThreshold(double memoryThreshold) {
+		this.memoryThreshold = memoryThreshold;
+	}
+
+	/**
 	 * Gets whether one source shall be analyzed at a time instead of all sources
 	 * together
 	 * 
@@ -1558,7 +1633,7 @@ public class InfoflowConfiguration {
 	 * Prints a summary of this data flow configuration
 	 */
 	public void printSummary() {
-		if (!enableStaticFields)
+		if (staticFieldTrackingMode == StaticFieldTrackingMode.None)
 			logger.warn("Static field tracking is disabled, results may be incomplete");
 		if (!flowSensitiveAliasing)
 			logger.warn("Using flow-insensitive alias tracking, results may be imprecise");
@@ -1605,7 +1680,6 @@ public class InfoflowConfiguration {
 		result = prime * result + (enableArrays ? 1231 : 1237);
 		result = prime * result + (enableExceptions ? 1231 : 1237);
 		result = prime * result + (enableReflection ? 1231 : 1237);
-		result = prime * result + (enableStaticFields ? 1231 : 1237);
 		result = prime * result + (enableTypeChecking ? 1231 : 1237);
 		result = prime * result + (excludeSootLibraryClasses ? 1231 : 1237);
 		result = prime * result + (flowSensitiveAliasing ? 1231 : 1237);
@@ -1616,10 +1690,14 @@ public class InfoflowConfiguration {
 		result = prime * result + (inspectSources ? 1231 : 1237);
 		result = prime * result + (logSourcesAndSinks ? 1231 : 1237);
 		result = prime * result + maxThreadNum;
+		long temp;
+		temp = Double.doubleToLongBits(memoryThreshold);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + (oneSourceAtATime ? 1231 : 1237);
 		result = prime * result + ((outputConfiguration == null) ? 0 : outputConfiguration.hashCode());
 		result = prime * result + ((pathConfiguration == null) ? 0 : pathConfiguration.hashCode());
 		result = prime * result + ((solverConfiguration == null) ? 0 : solverConfiguration.hashCode());
+		result = prime * result + ((staticFieldTrackingMode == null) ? 0 : staticFieldTrackingMode.hashCode());
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
@@ -1656,8 +1734,6 @@ public class InfoflowConfiguration {
 			return false;
 		if (enableReflection != other.enableReflection)
 			return false;
-		if (enableStaticFields != other.enableStaticFields)
-			return false;
 		if (enableTypeChecking != other.enableTypeChecking)
 			return false;
 		if (excludeSootLibraryClasses != other.excludeSootLibraryClasses)
@@ -1678,6 +1754,8 @@ public class InfoflowConfiguration {
 			return false;
 		if (maxThreadNum != other.maxThreadNum)
 			return false;
+		if (Double.doubleToLongBits(memoryThreshold) != Double.doubleToLongBits(other.memoryThreshold))
+			return false;
 		if (oneSourceAtATime != other.oneSourceAtATime)
 			return false;
 		if (outputConfiguration == null) {
@@ -1694,6 +1772,8 @@ public class InfoflowConfiguration {
 			if (other.solverConfiguration != null)
 				return false;
 		} else if (!solverConfiguration.equals(other.solverConfiguration))
+			return false;
+		if (staticFieldTrackingMode != other.staticFieldTrackingMode)
 			return false;
 		if (stopAfterFirstKFlows != other.stopAfterFirstKFlows)
 			return false;

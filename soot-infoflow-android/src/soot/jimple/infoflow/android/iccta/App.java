@@ -293,13 +293,16 @@ class Intent {
 		/*
 		 * if (null != action && !action.isEmpty()) { return true; }
 		 */
-		if (component != null && !component.isEmpty() && !component.contains("*")
+		if (component != null
+				&& !component.isEmpty()
+				&& !component.contains("*")
 				&& !component.contains("NULL-CONSTANT"))
 			return false;
 
 		return true;
 	}
 
+	@Override
 	public Intent clone() {
 		Intent intent = new Intent(app, point);
 		intent.component = component;
@@ -330,10 +333,28 @@ class Intent {
 
 	@Override
 	public String toString() {
-		return "Intent [component=" + component + ", componentPackage=" + componentPackage + ", componentClass="
-				+ componentClass + ", action=" + action + ", categories=" + categories
-				/* + ", extras=" + extras */ + ", dataScheme=" + dataScheme + ", dataHost=" + dataHost + ", dataPort="
-				+ dataPort + ", dataPath=" + dataPath + ", data=" + data + "]";
+		return "Intent [component="
+				+ component
+				+ ", componentPackage="
+				+ componentPackage
+				+ ", componentClass="
+				+ componentClass
+				+ ", action="
+				+ action
+				+ ", categories="
+				+ categories
+				/* + ", extras=" + extras */
+				+ ", dataScheme="
+				+ dataScheme
+				+ ", dataHost="
+				+ dataHost
+				+ ", dataPort="
+				+ dataPort
+				+ ", dataPath="
+				+ dataPath
+				+ ", data="
+				+ data
+				+ "]";
 	}
 
 	@Override
@@ -737,10 +758,18 @@ class Intent {
 
 					// An intent that contains neither a URI nor a MIME type passes the test only if
 					// the filter does not specify any URIs or MIME types.
-					if (getType() == null && getAuthority() == null && getDataScheme() == null && getDataPort() == -1
-							&& getDataPath() == null && getDataHost() == null) {
-						passedData = ports.isEmpty() && paths.isEmpty() && hosts.isEmpty() && authorities.isEmpty()
-								&& schemes.isEmpty() && types.isEmpty();
+					if (getType() == null
+							&& getAuthority() == null
+							&& getDataScheme() == null
+							&& getDataPort() == -1
+							&& getDataPath() == null
+							&& getDataHost() == null) {
+						passedData = ports.isEmpty()
+								&& paths.isEmpty()
+								&& hosts.isEmpty()
+								&& authorities.isEmpty()
+								&& schemes.isEmpty()
+								&& types.isEmpty();
 					}
 
 					// An intent that contains a URI but no MIME type (neither explicit nor
@@ -772,8 +801,9 @@ class Intent {
 						boolean mimetype = types.contains(getType());
 						boolean urlpart = matchesURI;
 						if (getDataScheme() != null)
-							urlpart = urlpart || ((getDataScheme().equals("content") || getDataScheme().equals("file"))
-									&& !intentFilterSpecifiesURI);
+							urlpart = urlpart
+									|| ((getDataScheme().equals("content") || getDataScheme().equals("file"))
+											&& !intentFilterSpecifiesURI);
 
 						passedData = mimetype && urlpart;
 					}

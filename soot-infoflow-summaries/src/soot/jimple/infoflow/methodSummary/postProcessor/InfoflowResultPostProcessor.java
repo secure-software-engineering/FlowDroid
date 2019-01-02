@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import soot.Value;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
@@ -57,9 +59,19 @@ public class InfoflowResultPostProcessor {
 		this.config = (SummaryGeneratorConfiguration) manager.getConfig();
 	}
 
+	public InfoflowResultPostProcessor(MultiMap<Abstraction, Stmt> collectedAbstractions, InfoflowConfiguration config,
+			String m, SourceSinkFactory sourceSinkFactory, GapManager gapManager) {
+		this.collectedAbstractions = collectedAbstractions;
+		this.manager = new FakeInfoflowManager(config);
+		this.method = m;
+		this.sourceSinkFactory = sourceSinkFactory;
+		this.gapManager = gapManager;
+		this.config = (SummaryGeneratorConfiguration) config;
+	}
+
 	/**
-	 * Post process the information collected during a Infoflow analysis.
-	 * Extract all summary flow from collectedAbstractions.
+	 * Post process the information collected during a Infoflow analysis. Extract
+	 * all summary flow from collectedAbstractions.
 	 * 
 	 * @return The generated method summaries
 	 */
@@ -70,89 +82,120 @@ public class InfoflowResultPostProcessor {
 	}
 
 	/**
-	 * Post process the information collected during a Infoflow analysis.
-	 * Extract all summary flow from collectedAbstractions.
+	 * Fake implementation of the data flow manager for cases in which we haven't
+	 * really run the data flow analysis
 	 * 
-	 * @param flos
-	 *            The method summary object in which to store the detected flows
+	 * @author Steven Arzt
+	 */
+	private static class FakeInfoflowManager extends InfoflowManager {
+
+		protected FakeInfoflowManager(InfoflowConfiguration config) {
+			super(config, null, null, null, null, null, null, null);
+		}
+
+	}
+
+	/**
+	 * Post process the information collected during a Infoflow analysis. Extract
+	 * all summary flow from collectedAbstractions.
+	 * 
+	 * @param flows The method summary object in which to store the detected flows
 	 */
 	public MethodSummaries postProcess(MethodSummaries flows) {
 		logger.info("start processing {} infoflow abstractions for method {}", collectedAbstractions.size(), method);
-		final SootMethod m = Scene.v().getMethod(method);
-
-		// Create a context-sensitive path builder. Without context-sensitivity,
-		// we get quite some false positives here.
-		InterruptableExecutor executor = new InterruptableExecutor(Runtime.getRuntime().availableProcessors(),
-				Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-		SummaryPathBuilder pathBuilder = new SummaryPathBuilder(manager, executor);
+		final SootMethod m = Scene.v().grabMethod(method);
+		if (m == null)
+			return MethodSummaries.EMPTY_SUMMARIES;
 
 		int analyzedPaths = 0;
 		int abstractionCount = 0;
-		for (Abstraction a : collectedAbstractions.keySet()) {
-			// If this abstraction is directly the source abstraction, we do not
-			// need to construct paths
-			if (a.getSourceContext() != null) {
-				for (Stmt stmt : collectedAbstractions.get(a)) {
-					processFlowSource(flows, m, a.getAccessPath(), stmt,
-							pathBuilder.new SummarySourceInfo(a.getAccessPath(), a.getCurrentStmt(),
-									a.getSourceContext().getUserData(),
-									a.getAccessPath(), isAliasedField(a.getAccessPath(),
-											a.getSourceContext().getAccessPath(), a.getSourceContext().getStmt()),
-									false));
+
+		// Do we have anything to analyze at all?
+		if (collectedAbstractions != null && !collectedAbstractions.isEmpty()) {
+			// Create a context-sensitive path builder. Without context-sensitivity,
+			// we get quite some false positives here.
+			InterruptableExecutor executor = new InterruptableExecutor(Runtime.getRuntime().availableProcessors(),
+					Runtime.getRuntime().availableProcessors(), 30, TimeUnit.SECONDS,
+					new LinkedBlockingQueue<Runnable>());
+			executor.setThreadFactory(new ThreadFactory() {
+
+				@Override
+				public Thread newThread(Runnable r) {
+					Thread thr = new Thread(r);
+					thr.setDaemon(true);
+					thr.setName("Post processing");
+					return thr;
 				}
-			} else {
-				// Get the source info and process the flow
-				pathBuilder.clear();
-				pathBuilder
-						.computeTaintPaths(Collections.singleton(new AbstractionAtSink(null, a, a.getCurrentStmt())));
+			});
+			SummaryPathBuilder pathBuilder = new SummaryPathBuilder(manager, executor);
 
-				// Wait for the executor to complete all of its tasks
-				try {
-					executor.awaitCompletion();
-				} catch (InterruptedException e) {
-					logger.error("Could not wait for executor termination", e);
-				}
+			for (Abstraction a : collectedAbstractions.keySet()) {
+				// If this abstraction is directly the source abstraction, we do not
+				// need to construct paths
+				if (a.getSourceContext() != null) {
+					for (Stmt stmt : collectedAbstractions.get(a)) {
+						processFlowSource(flows, m, a.getAccessPath(), stmt,
+								new SummarySourceInfo(
+										a.getAccessPath(), a.getCurrentStmt(), a.getSourceContext().getUserData(),
+										a.getAccessPath(), isAliasedField(a.getAccessPath(),
+												a.getSourceContext().getAccessPath(), a.getSourceContext().getStmt()),
+										false));
+					}
+				} else {
+					// Get the source info and process the flow
+					pathBuilder.clear();
+					pathBuilder.reset();
+					pathBuilder.computeTaintPaths(
+							Collections.singleton(new AbstractionAtSink(null, a, a.getCurrentStmt())));
 
-				logger.info("Obtained {} source-to-sink connections.", pathBuilder.getResultInfos().size());
-
-				// Reconstruct the sources
-				for (Stmt stmt : collectedAbstractions.get(a)) {
-					abstractionCount++;
-
-					// If this abstraction is directly the source abstraction,
-					// we do not
-					// need to construct paths
-					if (a.getSourceContext() != null) {
-						continue;
+					// Wait for the executor to complete all of its tasks
+					try {
+						executor.awaitCompletion();
+					} catch (InterruptedException e) {
+						logger.error("Could not wait for executor termination", e);
 					}
 
-					for (SummaryResultInfo si : pathBuilder.getResultInfos()) {
-						final AccessPath sourceAP = si.getSourceInfo().getAccessPath();
-						final AccessPath sinkAP = si.getSinkInfo().getAccessPath();
-						final Stmt sourceStmt = si.getSourceInfo().getStmt();
+					logger.info("Obtained {} source-to-sink connections.", pathBuilder.getResultInfos().size());
 
-						// Check that we don't get any weird results
-						if (sourceAP == null || sinkAP == null)
-							throw new RuntimeException("Invalid access path");
+					// Reconstruct the sources
+					for (Stmt stmt : collectedAbstractions.get(a)) {
+						abstractionCount++;
 
-						// We only take flows which are not identity flows.
-						// If we have a flow from a gap parameter to the
-						// original
-						// method parameter, the access paths are equal, but
-						// that's
-						// ok in the case of aliasing.
-						boolean isAliasedField = gapManager.getGapForCall(sourceStmt) != null
-								&& isAliasedField(sinkAP, sourceAP, sourceStmt) && si.getSourceInfo().getIsAlias();
-						if (!sinkAP.equals(sourceAP) || isAliasedField) {
-							// Process the flow from this source
-							processFlowSource(flows, m, sinkAP, stmt, si.getSourceInfo());
-							analyzedPaths++;
+						// If this abstraction is directly the source abstraction,
+						// we do not
+						// need to construct paths
+						if (a.getSourceContext() != null) {
+							continue;
+						}
+
+						for (SummaryResultInfo si : pathBuilder.getResultInfos()) {
+							final AccessPath sourceAP = si.getSourceInfo().getAccessPath();
+							final AccessPath sinkAP = si.getSinkInfo().getAccessPath();
+							final Stmt sourceStmt = si.getSourceInfo().getStmt();
+
+							// Check that we don't get any weird results
+							if (sourceAP == null || sinkAP == null)
+								throw new RuntimeException("Invalid access path");
+
+							// We only take flows which are not identity flows.
+							// If we have a flow from a gap parameter to the
+							// original
+							// method parameter, the access paths are equal, but
+							// that's
+							// ok in the case of aliasing.
+							boolean isAliasedField = gapManager.getGapForCall(sourceStmt) != null
+									&& isAliasedField(sinkAP, sourceAP, sourceStmt) && si.getSourceInfo().getIsAlias();
+							if (!sinkAP.equals(sourceAP) || isAliasedField) {
+								// Process the flow from this source
+								processFlowSource(flows, m, sinkAP, stmt, si.getSourceInfo());
+								analyzedPaths++;
+							}
 						}
 					}
-				}
 
-				// Free some memory
-				pathBuilder.clear();
+					// Free some memory
+					pathBuilder.clear();
+				}
 			}
 		}
 
@@ -170,17 +213,13 @@ public class InfoflowResultPostProcessor {
 	}
 
 	/**
-	 * Checks whether the two given access paths may alias at the given
-	 * statement
+	 * Checks whether the two given access paths may alias at the given statement
 	 * 
-	 * @param apAtSink
-	 *            The first access path
-	 * @param apAtSource
-	 *            The second access path
-	 * @param sourceStmt
-	 *            The statement at which to check for may-alias
-	 * @return True if the two given access paths may alias at the given
-	 *         statement, otherwise false
+	 * @param apAtSink   The first access path
+	 * @param apAtSource The second access path
+	 * @param sourceStmt The statement at which to check for may-alias
+	 * @return True if the two given access paths may alias at the given statement,
+	 *         otherwise false
 	 */
 	private boolean isAliasedField(AccessPath apAtSink, AccessPath apAtSource, Stmt sourceStmt) {
 		// Strings and primitives do not alias
@@ -191,19 +230,13 @@ public class InfoflowResultPostProcessor {
 	}
 
 	/**
-	 * Processes data from a given flow source that has arrived at a given
-	 * statement
+	 * Processes data from a given flow source that has arrived at a given statement
 	 * 
-	 * @param flows
-	 *            The flows object to which to add the newly found flow
-	 * @param ap
-	 *            The access path that has reached the given statement
-	 * @param m
-	 *            The method in which the flow has been found
-	 * @param stmt
-	 *            The statement at which the flow has arrived
-	 * @param source
-	 *            The source from which the flow originated
+	 * @param flows  The flows object to which to add the newly found flow
+	 * @param ap     The access path that has reached the given statement
+	 * @param m      The method in which the flow has been found
+	 * @param stmt   The statement at which the flow has arrived
+	 * @param source The source from which the flow originated
 	 */
 	private void processFlowSource(MethodSummaries flows, final SootMethod m, AccessPath ap, Stmt stmt,
 			SummarySourceInfo sourceInfo) {
@@ -243,18 +276,12 @@ public class InfoflowResultPostProcessor {
 	 * Processes an abstraction at a method call. This is a partial summary that
 	 * ends at a gap which can for instance be a callback into unknown code.
 	 * 
-	 * @param flows
-	 *            The flows object to which to add the newly found flow
-	 * @param apAtCall
-	 *            The access path that has reached the method call
-	 * @param source
-	 *            The source at which the data flow started
-	 * @param stmt
-	 *            The statement at which the call happened
-	 * @param sourceAP
-	 *            The access path of the flow source
-	 * @param isAlias
-	 *            True if source and sink alias, otherwise false
+	 * @param flows    The flows object to which to add the newly found flow
+	 * @param apAtCall The access path that has reached the method call
+	 * @param source   The source at which the data flow started
+	 * @param stmt     The statement at which the call happened
+	 * @param sourceAP The access path of the flow source
+	 * @param isAlias  True if source and sink alias, otherwise false
 	 */
 	protected void processAbstractionAtCall(MethodSummaries flows, AccessPath apAtCall, FlowSource source, Stmt stmt,
 			AccessPath sourceAP, boolean isAlias) {
@@ -272,12 +299,9 @@ public class InfoflowResultPostProcessor {
 	/**
 	 * Creates a flow sink at the given call site
 	 * 
-	 * @param apAtCall
-	 *            The access path that arives at the given call site
-	 * @param gd
-	 *            The gap created at the given call site
-	 * @param stmt
-	 *            The statement containing the call site
+	 * @param apAtCall The access path that arives at the given call site
+	 * @param gd       The gap created at the given call site
+	 * @param stmt     The statement containing the call site
 	 * @return The flow sink created for the given access path at the given
 	 *         statement if it matches, otherwise false
 	 */
@@ -313,27 +337,19 @@ public class InfoflowResultPostProcessor {
 	}
 
 	/**
-	 * Processes an abstraction at the end of a method. This gives full
-	 * summaries for the whole method
+	 * Processes an abstraction at the end of a method. This gives full summaries
+	 * for the whole method
 	 * 
-	 * @param flows
-	 *            The flows object to which to add the newly found flow
-	 * @param apAtReturn
-	 *            The access path that has reached the end of the method
-	 * @param m
-	 *            The method in which the flow has been found
-	 * @param source
-	 *            The source at which the data flow started
-	 * @param stmt
-	 *            The statement at which the flow left the method
-	 * @param sourceAP
-	 *            The access path of the flow source
-	 * @param isAlias
-	 *            True if source and sink alias, otherwise false
-	 * @param isInCallee
-	 *            True if the abstraction was recorded in a callee, false if it
-	 *            was recorded in the original method without any recursive
-	 *            calls or the like
+	 * @param flows      The flows object to which to add the newly found flow
+	 * @param apAtReturn The access path that has reached the end of the method
+	 * @param m          The method in which the flow has been found
+	 * @param source     The source at which the data flow started
+	 * @param stmt       The statement at which the flow left the method
+	 * @param sourceAP   The access path of the flow source
+	 * @param isAlias    True if source and sink alias, otherwise false
+	 * @param isInCallee True if the abstraction was recorded in a callee, false if
+	 *                   it was recorded in the original method without any
+	 *                   recursive calls or the like
 	 */
 	protected void processAbstractionAtReturn(MethodSummaries flows, AccessPath apAtReturn, SootMethod m,
 			FlowSource source, Stmt stmt, AccessPath sourceAP, boolean isAlias, boolean isInCallee) {
@@ -387,10 +403,8 @@ public class InfoflowResultPostProcessor {
 	 * Checks whether this flow has equal sources and sinks, i.e. is propagated
 	 * through the method as-is.
 	 * 
-	 * @param source
-	 *            The source to check
-	 * @param sink
-	 *            The sink to check
+	 * @param source The source to check
+	 * @param sink   The sink to check
 	 * @return True if the source is equivalent to the sink, otherwise false
 	 */
 	private boolean isIdentityFlow(FlowSource source, FlowSink sink) {
@@ -428,14 +442,10 @@ public class InfoflowResultPostProcessor {
 	 * Adds a flow from the given source to the given sink to the given method
 	 * summary
 	 * 
-	 * @param source
-	 *            The source at which the data flow starts
-	 * @param sink
-	 *            The sink at which the data flow ends
-	 * @param isAlias
-	 *            True if the source and sink alias, otherwise false
-	 * @param summaries
-	 *            The method summary to which to add the data flow
+	 * @param source    The source at which the data flow starts
+	 * @param sink      The sink at which the data flow ends
+	 * @param isAlias   True if the source and sink alias, otherwise false
+	 * @param summaries The method summary to which to add the data flow
 	 */
 	protected void addFlow(FlowSource source, FlowSink sink, boolean isAlias, MethodSummaries summaries) {
 		// Convert the method signature into a subsignature

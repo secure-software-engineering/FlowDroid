@@ -1,0 +1,284 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="org.xmlpull.v1.XmlSerializer attribute(java.lang.String,java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void cdsect(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void comment(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void docdecl(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="org.xmlpull.v1.XmlSerializer endTag(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void entityRef(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getName()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.String tag]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getNamespace()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.String namespace]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object getProperty(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.Object[] propertyValues]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setOutput(java.io.OutputStream,java.lang.String)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setOutput(java.io.Writer)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setProperty(java.lang.String,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.String[] propertyKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.Object[] propertyValues]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="org.xmlpull.v1.XmlSerializer startTag(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.String namespace]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.lang.String tag]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void text(char[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void text(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.OutputStream outputStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.OutputStream,byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.xmlpull.v1.XmlSerializer: java.io.Writer writer,java.io.Writer: java.io.OutputStream innerStream,java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.Writer,java.io.OutputStream,byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

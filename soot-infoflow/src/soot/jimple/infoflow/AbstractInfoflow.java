@@ -265,14 +265,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		// do not merge variables (causes problems with PointsToSets)
 		Options.v().setPhaseOption("jb.ulp", "off");
 
-		if (!this.androidPath.isEmpty()) {
-			Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
-			if (this.forceAndroidJar)
-				soot.options.Options.v().set_force_android_jar(this.androidPath);
-			else
-				soot.options.Options.v().set_android_jars(this.androidPath);
-		} else
-			Options.v().set_src_prec(Options.src_prec_java);
+		setSourcePrec();
 
 		// at the end of setting: load user settings:
 		if (sootConfig != null)
@@ -297,6 +290,17 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			logger.error("Only phantom classes loaded, skipping analysis...");
 			return;
 		}
+	}
+
+	protected void setSourcePrec() {
+		if (!this.androidPath.isEmpty()) {
+			Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
+			if (this.forceAndroidJar)
+				soot.options.Options.v().set_force_android_jar(this.androidPath);
+			else
+				soot.options.Options.v().set_android_jars(this.androidPath);
+		} else
+			Options.v().set_src_prec(Options.src_prec_java);
 	}
 
 	private void setChaOptions() {

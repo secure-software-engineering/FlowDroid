@@ -54,10 +54,10 @@ public class WrapperListTests extends JUnitTests {
 	@Test
 	public void listTest() {
 		Infoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.methodSummary.ListTestCode: void writeReadTest()>");
-    	infoflow.setTaintWrapper(wrapper);
-    	infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.methodSummary.ListTestCode: void writeReadTest()>");
+		infoflow.setTaintWrapper(wrapper);
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
 
@@ -85,7 +85,8 @@ public class WrapperListTests extends JUnitTests {
 	public void concreteLinkedListNegativeTest() {
 		Infoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<soot.jimple.infoflow.test.methodSummary.ListTestCode: void linkedListConcreteWriteReadNegativeTest()>");
+		epoints.add(
+				"<soot.jimple.infoflow.test.methodSummary.ListTestCode: void linkedListConcreteWriteReadNegativeTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		infoflow.setTaintWrapper(wrapper);
 		negativeCheckInfoflow(infoflow);
@@ -165,22 +166,25 @@ public class WrapperListTests extends JUnitTests {
 	public void stackNegativeTest() {
 		Infoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<soot.jimple.infoflow.test.methodSummary.ListTestCode: void concreteWriteReadStackNegativeTest()>");
+		epoints.add(
+				"<soot.jimple.infoflow.test.methodSummary.ListTestCode: void concreteWriteReadStackNegativeTest()>");
 		infoflow.setTaintWrapper(wrapper);
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}
-	
-    protected Infoflow initInfoflow(){
-    	return initInfoflow(false);
-    }
-    
-    protected Infoflow initInfoflow(boolean useTaintWrapper){
-    	Infoflow result = new Infoflow();
-    	WrapperListTestConfig testConfig = new WrapperListTestConfig();
-    	result.setSootConfig(testConfig);
-    	result.setTaintWrapper(wrapper);
-    	return result;
-    }
+
+	@Override
+	protected Infoflow initInfoflow() {
+		return initInfoflow(false);
+	}
+
+	@Override
+	protected Infoflow initInfoflow(boolean useTaintWrapper) {
+		Infoflow result = new Infoflow();
+		WrapperListTestConfig testConfig = new WrapperListTestConfig();
+		result.setSootConfig(testConfig);
+		result.setTaintWrapper(wrapper);
+		return result;
+	}
 
 }

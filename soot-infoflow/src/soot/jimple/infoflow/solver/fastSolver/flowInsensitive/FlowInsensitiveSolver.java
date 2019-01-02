@@ -54,14 +54,11 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * A solver for an {@link IFDSTabulationProblem}. This solver is not based on
  * the IDESolver implementation in Heros for performance reasons.
  * 
- * @param <N>
- *            The type of nodes in the interprocedural control-flow graph.
- *            Typically {@link Unit}.
- * @param <D>
- *            The type of data-flow facts to be computed by the tabulation
- *            problem.
- * @param <I>
- *            The type of inter-procedural control-flow graph being used.
+ * @param <N> The type of nodes in the interprocedural control-flow graph.
+ *        Typically {@link Unit}.
+ * @param <D> The type of data-flow facts to be computed by the tabulation
+ *        problem.
+ * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
 public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNode<D, N>, I extends BiDiInterproceduralCFG<Unit, SootMethod>>
@@ -127,7 +124,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
 	private ISolverTerminationReason killFlag = null;
+
 	private int maxCalleesPerCallSite = 10;
+	private int maxAbstractionPathLength = 100;
 
 	/**
 	 * Creates a solver for the given problem, which caches flow functions and edge
@@ -142,11 +141,10 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * {@link CacheBuilder}. The solver must then be started by calling
 	 * {@link #solve()}.
 	 * 
-	 * @param tabulationProblem
-	 *            The tabulation problem to solve
-	 * @param flowFunctionCacheBuilder
-	 *            A valid {@link CacheBuilder} or <code>null</code> if no caching is
-	 *            to be used for flow functions.
+	 * @param tabulationProblem        The tabulation problem to solve
+	 * @param flowFunctionCacheBuilder A valid {@link CacheBuilder} or
+	 *                                 <code>null</code> if no caching is to be used
+	 *                                 for flow functions.
 	 */
 	public FlowInsensitiveSolver(IFDSTabulationProblem<Unit, D, SootMethod, I> tabulationProblem,
 			@SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
@@ -265,8 +263,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Dispatch the processing of a given edge. It may be executed in a different
 	 * thread.
 	 * 
-	 * @param edge
-	 *            the edge to process
+	 * @param edge the edge to process
 	 */
 	protected void scheduleEdgeProcessing(PathEdge<SootMethod, D> edge) {
 		// If the executor has been killed, there is little point
@@ -284,8 +281,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * For each possible callee, registers incoming call edges. Also propagates
 	 * call-to-return flows and summarized callee flows within the caller.
 	 * 
-	 * @param edge
-	 *            an edge whose target node resembles a method call
+	 * @param edge an edge whose target node resembles a method call
 	 */
 	private void processCall(D d1, Unit n, D d2) {
 		Collection<Unit> returnSiteNs = icfg.getReturnSitesOfCallAt(n);
@@ -400,12 +396,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	/**
 	 * Computes the call flow function for the given call-site abstraction
 	 * 
-	 * @param callFlowFunction
-	 *            The call flow function to compute
-	 * @param d1
-	 *            The abstraction at the current method's start node.
-	 * @param d2
-	 *            The abstraction at the call site
+	 * @param callFlowFunction The call flow function to compute
+	 * @param d1               The abstraction at the current method's start node.
+	 * @param d2               The abstraction at the call site
 	 * @return The set of caller-side abstractions at the callee's start node
 	 */
 	protected Set<D> computeCallFlowFunction(FlowFunction<D> callFlowFunction, D d1, D d2) {
@@ -415,12 +408,10 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	/**
 	 * Computes the call-to-return flow function for the given call-site abstraction
 	 * 
-	 * @param callToReturnFlowFunction
-	 *            The call-to-return flow function to compute
-	 * @param d1
-	 *            The abstraction at the current method's start node.
-	 * @param d2
-	 *            The abstraction at the call site
+	 * @param callToReturnFlowFunction The call-to-return flow function to compute
+	 * @param d1                       The abstraction at the current method's start
+	 *                                 node.
+	 * @param d2                       The abstraction at the call site
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeCallToReturnFlowFunction(FlowFunction<D> callToReturnFlowFunction, D d1, D d2) {
@@ -433,8 +424,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Stores callee-side summaries. Also, at the side of the caller, propagates
 	 * intra-procedural flows to return sites using those newly computed summaries.
 	 * 
-	 * @param edge
-	 *            an edge whose target node resembles a method exits
+	 * @param edge an edge whose target node resembles a method exits
 	 */
 	protected void processExit(D d1, Unit n, D d2) {
 		SootMethod methodThatNeedsSummary = icfg.getMethodOf(n);
@@ -543,16 +533,11 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Computes the return flow function for the given set of caller-side
 	 * abstractions.
 	 * 
-	 * @param retFunction
-	 *            The return flow function to compute
-	 * @param d1
-	 *            The abstraction at the beginning of the callee
-	 * @param d2
-	 *            The abstraction at the exit node in the callee
-	 * @param callSite
-	 *            The call site
-	 * @param callerSideDs
-	 *            The abstractions at the call site
+	 * @param retFunction  The return flow function to compute
+	 * @param d1           The abstraction at the beginning of the callee
+	 * @param d2           The abstraction at the exit node in the callee
+	 * @param callSite     The call site
+	 * @param callerSideDs The abstractions at the call site
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeReturnFlowFunction(FlowFunction<D> retFunction, D d1, D d2, Unit callSite,
@@ -603,12 +588,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Computes the normal flow function for the given set of start and end
 	 * abstractions.
 	 * 
-	 * @param flowFunction
-	 *            The normal flow function to compute
-	 * @param d1
-	 *            The abstraction at the method's start node
-	 * @param d2
-	 *            The abstraction at the current node
+	 * @param flowFunction The normal flow function to compute
+	 * @param d1           The abstraction at the method's start node
+	 * @param d2           The abstraction at the current node
 	 * @return The set of abstractions at the successor node
 	 */
 	protected Set<D> computeNormalFlowFunction(FlowFunction<D> flowFunction, D d1, D d2) {
@@ -618,21 +600,18 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	/**
 	 * Propagates the flow further down the exploded super graph.
 	 * 
-	 * @param sourceVal
-	 *            the source value of the propagated summary edge
-	 * @param target
-	 *            the target statement
-	 * @param targetVal
-	 *            the target value at the target statement
-	 * @param relatedCallSite
-	 *            for call and return flows the related call statement,
-	 *            <code>null</code> otherwise (this value is not used within this
-	 *            implementation but may be useful for subclasses of
-	 *            {@link FlowInsensitiveSolver})
-	 * @param isUnbalancedReturn
-	 *            <code>true</code> if this edge is propagating an unbalanced return
-	 *            (this value is not used within this implementation but may be
-	 *            useful for subclasses of {@link FlowInsensitiveSolver})
+	 * @param sourceVal          the source value of the propagated summary edge
+	 * @param target             the target statement
+	 * @param targetVal          the target value at the target statement
+	 * @param relatedCallSite    for call and return flows the related call
+	 *                           statement, <code>null</code> otherwise (this value
+	 *                           is not used within this implementation but may be
+	 *                           useful for subclasses of
+	 *                           {@link FlowInsensitiveSolver})
+	 * @param isUnbalancedReturn <code>true</code> if this edge is propagating an
+	 *                           unbalanced return (this value is not used within
+	 *                           this implementation but may be useful for
+	 *                           subclasses of {@link FlowInsensitiveSolver})
 	 */
 	protected void propagate(D sourceVal, SootMethod target, D targetVal,
 			/* deliberately exposed to clients */ Unit relatedCallSite,
@@ -643,25 +622,21 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	/**
 	 * Propagates the flow further down the exploded super graph.
 	 * 
-	 * @param sourceVal
-	 *            the source value of the propagated summary edge
-	 * @param target
-	 *            the target statement
-	 * @param targetVal
-	 *            the target value at the target statement
-	 * @param relatedCallSite
-	 *            for call and return flows the related call statement,
-	 *            <code>null</code> otherwise (this value is not used within this
-	 *            implementation but may be useful for subclasses of
-	 *            {@link FlowInsensitiveSolver})
-	 * @param isUnbalancedReturn
-	 *            <code>true</code> if this edge is propagating an unbalanced return
-	 *            (this value is not used within this implementation but may be
-	 *            useful for subclasses of {@link FlowInsensitiveSolver})
-	 * @param forceRegister
-	 *            True if the jump function must always be registered with jumpFn .
-	 *            This can happen when externally injecting edges that don't come
-	 *            out of this solver.
+	 * @param sourceVal          the source value of the propagated summary edge
+	 * @param target             the target statement
+	 * @param targetVal          the target value at the target statement
+	 * @param relatedCallSite    for call and return flows the related call
+	 *                           statement, <code>null</code> otherwise (this value
+	 *                           is not used within this implementation but may be
+	 *                           useful for subclasses of
+	 *                           {@link FlowInsensitiveSolver})
+	 * @param isUnbalancedReturn <code>true</code> if this edge is propagating an
+	 *                           unbalanced return (this value is not used within
+	 *                           this implementation but may be useful for
+	 *                           subclasses of {@link FlowInsensitiveSolver})
+	 * @param forceRegister      True if the jump function must always be registered
+	 *                           with jumpFn . This can happen when externally
+	 *                           injecting edges that don't come out of this solver.
 	 */
 	@SuppressWarnings("unchecked")
 	protected void propagate(D sourceVal, SootMethod target, D targetVal,
@@ -674,6 +649,10 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 			if (sourceVal == null || targetVal == null)
 				return;
 		}
+
+		// Check the path length
+		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
+			return;
 
 		final PathEdge<SootMethod, D> edge = new PathEdge<>(sourceVal, target, targetVal);
 		final D existingVal = addFunction(edge);
@@ -782,6 +761,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
+			@SuppressWarnings("unchecked")
 			PathEdgeProcessingTask other = (PathEdgeProcessingTask) obj;
 			if (edge == null) {
 				if (other.edge != null)
@@ -804,8 +784,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Sets whether abstractions on method returns shall be connected to the
 	 * respective call abstractions to shortcut paths.
 	 * 
-	 * @param mode
-	 *            The strategy to use for shortening predecessor paths
+	 * @param mode The strategy to use for shortening predecessor paths
 	 */
 	public void setPredecessorShorteningMode(PredecessorShorteningMode mode) {
 		this.shorteningMode = mode;
@@ -816,9 +795,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * point. In other words, enabling this option disables the recording of
 	 * neighbors beyond the given count.
 	 * 
-	 * @param maxJoinPointAbstractions
-	 *            The maximum number of abstractions per join point, or -1 to record
-	 *            an arbitrary number of join point abstractions
+	 * @param maxJoinPointAbstractions The maximum number of abstractions per join
+	 *                                 point, or -1 to record an arbitrary number of
+	 *                                 join point abstractions
 	 */
 	public void setMaxJoinPointAbstractions(int maxJoinPointAbstractions) {
 		this.maxJoinPointAbstractions = maxJoinPointAbstractions;
@@ -827,8 +806,8 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	/**
 	 * Sets the memory manager that shall be used to manage the abstractions
 	 * 
-	 * @param memoryManager
-	 *            The memory manager that shall be used to manage the abstractions
+	 * @param memoryManager The memory manager that shall be used to manage the
+	 *                      abstractions
 	 */
 	public void setMemoryManager(IMemoryManager<D, N> memoryManager) {
 		this.memoryManager = memoryManager;
@@ -877,6 +856,10 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 
 	public void setMaxCalleesPerCallSite(int maxCalleesPerCallSite) {
 		this.maxCalleesPerCallSite = maxCalleesPerCallSite;
+	}
+
+	public void setMaxAbstractionPathLength(int maxAbstractionPathLength) {
+		this.maxAbstractionPathLength = maxAbstractionPathLength;
 	}
 
 }

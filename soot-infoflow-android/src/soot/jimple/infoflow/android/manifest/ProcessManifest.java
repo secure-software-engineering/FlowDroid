@@ -1,6 +1,10 @@
 package soot.jimple.infoflow.android.manifest;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -350,8 +354,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Returns the <code>provider</code> which has the given <code>name</code>.
 	 *
-	 * @param name
-	 *            the provider's name
+	 * @param name the provider's name
 	 *
 	 * @param name the provider's name
 	 * @return provider with <code>name</code>
@@ -390,7 +393,6 @@ public class ProcessManifest implements Closeable {
 		return this.getNodeWithName(this.aliasActivities, name);
 	}
 
-
 	/**
 	 * Returns the <code>receiver</code> which has the given <code>name</code>.
 	 *
@@ -412,7 +414,7 @@ public class ProcessManifest implements Closeable {
 	protected AXmlNode getNodeWithName(List<AXmlNode> list, String name) {
 		for (AXmlNode node : list) {
 			Object attr = node.getAttributes().get("name");
-			if (attr != null && ((AXmlAttribute) attr).getValue().equals(name))
+			if (attr != null && ((AXmlAttribute<?>) attr).getValue().equals(name))
 				return node;
 		}
 
@@ -420,14 +422,15 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Returns the target activity specified in the <code>targetActivity</code> attribute of the alias activity
+	 * Returns the target activity specified in the <code>targetActivity</code>
+	 * attribute of the alias activity
 	 *
 	 * @param aliasActivity
 	 * @return activity
 	 */
 	public AXmlNode getAliasActivityTarget(AXmlNode aliasActivity) {
 		if (ProcessManifest.isAliasActivity(aliasActivity)) {
-			AXmlAttribute targetActivityAttribute = aliasActivity.getAttribute("targetActivity");
+			AXmlAttribute<?> targetActivityAttribute = aliasActivity.getAttribute("targetActivity");
 			if (targetActivityAttribute != null) {
 				return this.getActivity((String) targetActivityAttribute.getValue());
 			}
@@ -644,6 +647,7 @@ public class ProcessManifest implements Closeable {
 	/**
 	 * Closes this apk file and all resources associated with it
 	 */
+	@Override
 	public void close() {
 		if (this.apk != null)
 			this.apk.close();
@@ -664,11 +668,13 @@ public class ProcessManifest implements Closeable {
 					boolean actionFilter = false;
 					boolean categoryFilter = false;
 					for (AXmlNode intentFilter : activityChildren.getChildren()) {
-						if (intentFilter.getTag().equals("action") && intentFilter.getAttribute("name").getValue()
-								.toString().equals("android.intent.action.MAIN"))
+						if (intentFilter.getTag().equals("action")
+								&& intentFilter.getAttribute("name").getValue().toString()
+										.equals("android.intent.action.MAIN"))
 							actionFilter = true;
-						else if (intentFilter.getTag().equals("category") && intentFilter.getAttribute("name")
-								.getValue().toString().equals("android.intent.category.LAUNCHER"))
+						else if (intentFilter.getTag().equals("category")
+								&& intentFilter.getAttribute("name").getValue().toString()
+										.equals("android.intent.category.LAUNCHER"))
 							categoryFilter = true;
 					}
 

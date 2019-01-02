@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="summaryMetaData">
+	<xs:complexType>
+		<xs:sequence minOccurs="1" maxOccurs="1">
+			<xs:choice>
+				<xs:element name="exclusiveModels" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="exclusiveModel" type="exclusiveModelType" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="fileFormatVersion" type="xs:int" />
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="exclusiveModelType">
+	<xs:attribute name="type" type="modelEnumType" use="required" />
+	<xs:attribute name="name" type="xs:string" use="required" />
+</xs:complexType>
+
+<xs:simpleType name="modelEnumType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="class" />
+		<xs:enumeration value="package" />
+	</xs:restriction>
+</xs:simpleType>
+
+</xs:schema>

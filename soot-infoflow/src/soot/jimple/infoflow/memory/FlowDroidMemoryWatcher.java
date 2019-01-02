@@ -34,10 +34,28 @@ public class FlowDroidMemoryWatcher {
 	/**
 	 * Creates a new instance of the {@link FlowDroidMemoryWatcher} class
 	 * 
-	 * @param res
-	 *            The result object in which to register any abortions
+	 * @param threshold The threshold at which to abort the workers
+	 */
+	public FlowDroidMemoryWatcher(double threshold) {
+		this(null, threshold);
+	}
+
+	/**
+	 * Creates a new instance of the {@link FlowDroidMemoryWatcher} class
+	 * 
+	 * @param res The result object in which to register any abortions
 	 */
 	public FlowDroidMemoryWatcher(InfoflowResults res) {
+		this(res, 0.9d);
+	}
+
+	/**
+	 * Creates a new instance of the {@link FlowDroidMemoryWatcher} class
+	 * 
+	 * @param res       The result object in which to register any abortions
+	 * @param threshold The threshold at which to abort the workers
+	 */
+	public FlowDroidMemoryWatcher(InfoflowResults res, double threshold) {
 		// Register ourselves in the warning system
 		warningSystem.addListener(new OnMemoryThresholdReached() {
 
@@ -53,30 +71,26 @@ public class FlowDroidMemoryWatcher {
 			}
 
 		});
-		MemoryWarningSystem.setWarningThreshold(0.9d);
+		MemoryWarningSystem.setWarningThreshold(threshold);
 		this.results = res;
 	}
 
 	/**
-	 * Adds a solver that shall be terminated when the memory threshold is
-	 * reached
+	 * Adds a solver that shall be terminated when the memory threshold is reached
 	 * 
-	 * @param solver
-	 *            A solver that shall be terminated when the memory threshold is
-	 *            reached
+	 * @param solver A solver that shall be terminated when the memory threshold is
+	 *               reached
 	 */
 	public void addSolver(IMemoryBoundedSolver solver) {
 		this.solvers.add(solver);
 	}
 
 	/**
-	 * Removes the given solver from the watch list. The given solver will no
-	 * longer ne notified when the memory threshold is reached.
+	 * Removes the given solver from the watch list. The given solver will no longer
+	 * ne notified when the memory threshold is reached.
 	 * 
-	 * @param solver
-	 *            The solver to remove from the watch list
-	 * @return True if the given solver was found in the watch list, otherwise
-	 *         false
+	 * @param solver The solver to remove from the watch list
+	 * @return True if the given solver was found in the watch list, otherwise false
 	 */
 	public boolean removeSolver(IMemoryBoundedSolver solver) {
 		return this.solvers.remove(solver);

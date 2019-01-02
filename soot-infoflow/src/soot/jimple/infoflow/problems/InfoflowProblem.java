@@ -42,6 +42,7 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -121,7 +122,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final Value rightValue = assignStmt.getRightOp();
 
 				// Do not taint static fields unless the option is enabled
-				if (!manager.getConfig().getEnableStaticFieldTracking() && leftValue instanceof StaticFieldRef)
+				if (leftValue instanceof StaticFieldRef
+						&& manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None)
 					return;
 
 				Abstraction newAbs = null;
@@ -164,10 +166,18 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 				if (newAbs != null) {
-					taintSet.add(newAbs);
-					final Aliasing aliasing = manager.getAliasing();
-					if (aliasing != null && Aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
-						aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+					// Do we treat this taint specially, i.e., outside of IFDS?
+					if (leftValue instanceof StaticFieldRef && manager.getConfig()
+							.getStaticFieldTrackingMode() == StaticFieldTrackingMode.ContextFlowInsensitive) {
+						// We need to add the taint to our global taint state
+						manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
+					} else {
+						// Perform a normal IFDS-style propagation for the new taint
+						taintSet.add(newAbs);
+						final Aliasing aliasing = manager.getAliasing();
+						if (aliasing != null && Aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
+							aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+						}
 					}
 				}
 			}
@@ -253,7 +263,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// same class)
 							// y = X.f && X.f tainted --> y, X.f tainted
 							if (rightVal instanceof StaticFieldRef) {
-								if (manager.getConfig().getEnableStaticFieldTracking() && mappedAP != null) {
+								if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+										&& mappedAP != null) {
 									addLeftValue = true;
 									cutFirstField = true;
 								}
@@ -755,11 +766,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(call, source, manager,
 									FlowFunctionType.CallToReturnFlowFunction);
-
-						// Static field tracking can be disabled
-						if (!manager.getConfig().getEnableStaticFieldTracking()
-								&& source.getAccessPath().isStaticFieldRef())
-							return null;
 
 						// check inactive elements:
 						final Abstraction newSource;

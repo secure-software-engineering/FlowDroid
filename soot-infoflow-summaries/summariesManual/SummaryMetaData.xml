@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<summaryMetaData fileFormatVersion="100">
+	<exclusiveModels>
+		<exclusiveModel type="package" name="ch.qos.logback" />
+		<exclusiveModel type="package" name="com.daimajia.slider.library" />
+		<exclusiveModel type="package" name="com.etsy.android.grid" />
+		<exclusiveModel type="package" name="com.flurry" />
+		<exclusiveModel type="package" name="it.sephiroth.android.library" />
+		
+		<exclusiveModel type="package" name="java.lang.reflect" />
+		
+		<exclusiveModel type="package" name="org.apache.commons.codec" />
+		<exclusiveModel type="package" name="org.apache.http" />
+		<exclusiveModel type="package" name="org.apache.logging.log4j" />
+		
+		<exclusiveModel type="package" name="org.json" />
+		<exclusiveModel type="package" name="org.slf4j" />
+		<exclusiveModel type="package" name="pl.droidsonroids.gif" />
+
+		<exclusiveModel type="class" name="java.lang.Enum" />
+		<exclusiveModel type="class" name="java.util.Currency" />
+		<exclusiveModel type="class" name="java.util.Timer" />
+		<exclusiveModel type="class" name="java.text.SimpleDateFormat" />
+	</exclusiveModels>
+</summaryMetaData>

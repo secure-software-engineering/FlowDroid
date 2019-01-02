@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.BufferedOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.BufferedOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>

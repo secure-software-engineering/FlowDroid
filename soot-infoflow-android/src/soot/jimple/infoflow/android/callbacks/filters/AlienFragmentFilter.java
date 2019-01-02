@@ -30,6 +30,9 @@ public class AlienFragmentFilter extends AbstractCallbackFilter {
 
 	@Override
 	public boolean accepts(SootClass component, SootClass callbackHandler) {
+		if (fragmentClass == null)
+			//No filtering possible
+			return true;
 		if (Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.fragmentClass.getType()))
 			if (!fragmentToActivity.get(callbackHandler).contains(component))
 				return false;

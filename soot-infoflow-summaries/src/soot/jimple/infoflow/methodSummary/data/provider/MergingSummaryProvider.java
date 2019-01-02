@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
-import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 
 /**
  * Summary provider for combining summaries from different sources
@@ -53,26 +53,44 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 	}
 
 	@Override
-	public MethodSummaries getMethodFlows(String className, String methodSignature) {
-		MethodSummaries summaries = new MethodSummaries();
-		for (IMethodSummaryProvider provider : innerProviders)
-			summaries.merge(provider.getMethodFlows(className, methodSignature));
+	public ClassMethodSummaries getMethodFlows(String className, String methodSignature) {
+		ClassMethodSummaries summaries = null;
+		for (IMethodSummaryProvider provider : innerProviders) {
+			ClassMethodSummaries providerSummaries = provider.getMethodFlows(className, methodSignature);
+			if (providerSummaries != null) {
+				if (summaries == null)
+					summaries = new ClassMethodSummaries(className);
+				summaries.merge(providerSummaries);
+			}
+		}
 		return summaries;
 	}
 
 	@Override
 	public ClassSummaries getMethodFlows(Set<String> classes, String methodSignature) {
-		ClassSummaries summaries = new ClassSummaries();
-		for (IMethodSummaryProvider provider : innerProviders)
-			summaries.merge(provider.getMethodFlows(classes, methodSignature));
+		ClassSummaries summaries = null;
+		for (IMethodSummaryProvider provider : innerProviders) {
+			ClassSummaries providerSummaries = provider.getMethodFlows(classes, methodSignature);
+			if (providerSummaries != null) {
+				if (summaries == null)
+					summaries = new ClassSummaries();
+				summaries.merge(providerSummaries);
+			}
+		}
 		return summaries;
 	}
 
 	@Override
-	public MethodSummaries getClassFlows(String clazz) {
-		MethodSummaries summaries = new MethodSummaries();
-		for (IMethodSummaryProvider provider : innerProviders)
-			summaries.merge(provider.getClassFlows(clazz));
+	public ClassMethodSummaries getClassFlows(String clazz) {
+		ClassMethodSummaries summaries = null;
+		for (IMethodSummaryProvider provider : innerProviders) {
+			ClassMethodSummaries providerSummaries = provider.getClassFlows(clazz);
+			if (providerSummaries != null) {
+				if (summaries == null)
+					summaries = new ClassMethodSummaries(clazz);
+				summaries.merge(providerSummaries);
+			}
+		}
 		return summaries;
 	}
 
@@ -93,6 +111,20 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 	 */
 	public Collection<IMethodSummaryProvider> getInnerProviders() {
 		return innerProviders;
+	}
+
+	@Override
+	public ClassSummaries getSummaries() {
+		ClassSummaries summaries = null;
+		for (IMethodSummaryProvider provider : innerProviders) {
+			ClassSummaries providerSummaries = provider.getSummaries();
+			if (providerSummaries != null) {
+				if (summaries == null)
+					summaries = new ClassSummaries();
+				summaries.merge(providerSummaries);
+			}
+		}
+		return summaries;
 	}
 
 }

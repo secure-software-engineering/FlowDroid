@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="int getDuration()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: int duration]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.view.View getView()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: android.view.View view]"
+						AccessPathTypes="[android.view.View]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.widget.Toast makeToast(android.content.Context,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.widget.Toast"
+						AccessPath="[android.widget.Toast: int duration]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.widget.Toast makeToast(android.content.Context,java.lang.CharSequence,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.widget.Toast"
+						AccessPath="[android.widget.Toast: java.lang.CharSequence text]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.widget.Toast"
+						AccessPath="[android.widget.Toast: int duration]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDuration(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: int duration]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setText(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: java.lang.CharSequence text]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setView(android.view.View)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: android.view.View view]"
+						AccessPathTypes="[android.view.View]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

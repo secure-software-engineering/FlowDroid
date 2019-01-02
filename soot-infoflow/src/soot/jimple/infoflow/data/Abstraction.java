@@ -36,7 +36,6 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction, Unit> {
 
 	protected static boolean flowSensitiveAliasing = true;
-	protected static boolean keepStatements = true;
 
 	/**
 	 * the access path contains the currently tainted variable or field
@@ -91,19 +90,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 			final int prime = 31;
 			int result = 1;
 
-			// deliberately ignore prevAbs
-			result = prime * result + ((abs.sourceContext == null) ? 0 : abs.sourceContext.hashCode());
-			result = prime * result + ((abs.accessPath == null) ? 0 : abs.accessPath.hashCode());
-			result = prime * result + ((abs.activationUnit == null) ? 0 : abs.activationUnit.hashCode());
-			result = prime * result + (abs.exceptionThrown ? 1231 : 1237);
-			result = prime * result + ((abs.postdominators == null) ? 0 : abs.postdominators.hashCode());
-			result = prime * result + (abs.dependsOnCutAP ? 1231 : 1237);
-			result = prime * result + (abs.isImplicit ? 1231 : 1237);
+			result = prime * result + abs.hashCode();
 			result = prime * result + ((abs.predecessor == null) ? 0 : abs.predecessor.hashCode());
-
-			if (keepStatements) {
-				result = prime * result + ((abs.currentStmt == null) ? 0 : abs.currentStmt.hashCode());
-			}
 
 			abs.neighborHashCode = result;
 			return result;
@@ -133,14 +121,6 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 					return false;
 			} else if (!abs1.predecessor.equals(abs2.predecessor))
 				return false;
-
-			if (keepStatements) {
-				if (abs1.currentStmt == null) {
-					if (abs2.currentStmt != null)
-						return false;
-				} else if (!abs1.currentStmt.equals(abs2.currentStmt))
-					return false;
-			}
 
 			return abs1.localEquals(abs2);
 		}
@@ -201,7 +181,6 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 */
 	public static void initialize(InfoflowConfiguration config) {
 		flowSensitiveAliasing = config.getFlowSensitiveAliasing();
-		keepStatements = config.getPathConfiguration().mustKeepStatements();
 	}
 
 	public Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
@@ -584,6 +563,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	public void setPredecessor(Abstraction predecessor) {
 		this.predecessor = predecessor;
 		assert this.predecessor != this;
+
+		this.neighborHashCode = 0;
 	}
 
 	/**
@@ -594,6 +575,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 */
 	public void setSourceContext(SourceContext sourceContext) {
 		this.sourceContext = sourceContext;
+		this.hashCode = 0;
+		this.neighborHashCode = 0;
 	}
 
 	/**
@@ -643,6 +626,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 */
 	void setAccessPath(AccessPath accessPath) {
 		this.accessPath = accessPath;
+		this.hashCode = 0;
+		this.neighborHashCode = 0;
 	}
 
 	void setCurrentStmt(Stmt currentStmt) {

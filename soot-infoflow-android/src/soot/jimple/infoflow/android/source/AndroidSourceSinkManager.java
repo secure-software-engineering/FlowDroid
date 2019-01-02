@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -30,6 +29,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import heros.solver.IDESolver;
+import heros.solver.Pair;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
@@ -81,6 +81,8 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.tagkit.IntegerConstantValueTag;
 import soot.tagkit.Tag;
+import soot.util.HashMultiMap;
+import soot.util.MultiMap;
 
 /**
  * SourceManager implementation for AndroidSources
@@ -123,8 +125,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	protected SootMethod smActivityFindViewById;
 	protected SootMethod smViewFindViewById;
 
-	protected Map<String, SourceSinkDefinition> sourceDefs;
-	protected Map<String, SourceSinkDefinition> sinkDefs;
+	protected MultiMap<String, SourceSinkDefinition> sourceDefs;
+	protected MultiMap<String, SourceSinkDefinition> sinkDefs;
 
 	protected Map<SootMethod, SourceSinkDefinition> sourceMethods;
 	protected Map<Stmt, SourceSinkDefinition> sourceStatements;
@@ -213,11 +215,11 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			Map<Integer, AndroidLayoutControl> layoutControls) {
 		this.sourceSinkConfig = config.getSourceSinkConfig();
 
-		this.sourceDefs = new HashMap<>();
+		this.sourceDefs = new HashMultiMap<>();
 		for (SourceSinkDefinition am : sources)
 			this.sourceDefs.put(getSignature(am), am);
 
-		this.sinkDefs = new HashMap<>();
+		this.sinkDefs = new HashMultiMap<>();
 		for (SourceSinkDefinition am : sinks)
 			this.sinkDefs.put(getSignature(am), am);
 
@@ -741,7 +743,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 						new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
 			}
 			if (id == null) {
-				logger.debug("Could not find assignment to local " + ((Local) ie.getArg(0)).getName() + " in method "
+				logger.debug("Could not find assignment to local "
+						+ ((Local) ie.getArg(0)).getName()
+						+ " in method "
 						+ cfg.getMethodOf(sCallSite).getSignature());
 				return null;
 			}
@@ -972,8 +976,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			sourceMethods = new HashMap<>();
 			sourceFields = new HashMap<>();
 			sourceStatements = new HashMap<>();
-			for (Entry<String, SourceSinkDefinition> entry : sourceDefs.entrySet()) {
-				SourceSinkDefinition sourceSinkDef = entry.getValue();
+			for (Pair<String, SourceSinkDefinition> entry : sourceDefs) {
+				SourceSinkDefinition sourceSinkDef = entry.getO2();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
 					SootMethodAndClass method = ((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
 					String returnType = method.getReturnType();
@@ -989,13 +993,13 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
 					} else {
-						SootMethod sm = Scene.v().grabMethod(entry.getKey());
+						SootMethod sm = Scene.v().grabMethod(entry.getO1());
 						if (sm != null)
 							sourceMethods.put(sm, sourceSinkDef);
 					}
 
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
-					SootField sf = Scene.v().grabField(entry.getKey());
+					SootField sf = Scene.v().grabField(entry.getO1());
 					if (sf != null)
 						sourceFields.put(sf, sourceSinkDef);
 				} else if (sourceSinkDef instanceof StatementSourceSinkDefinition) {
@@ -1013,8 +1017,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			sinkFields = new HashMap<>();
 			sinkReturnMethods = new HashMap<>();
 			sinkStatements = new HashMap<>();
-			for (Entry<String, SourceSinkDefinition> entry : sinkDefs.entrySet()) {
-				SourceSinkDefinition sourceSinkDef = entry.getValue();
+			for (Pair<String, SourceSinkDefinition> entry : sinkDefs) {
+				SourceSinkDefinition sourceSinkDef = entry.getO2();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition methodSourceSinkDef = ((MethodSourceSinkDefinition) sourceSinkDef);
 					if (methodSourceSinkDef.getCallType() == CallType.Return) {
@@ -1034,14 +1038,14 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 							if (sootMethod != null)
 								sinkMethods.put(sootMethod, sourceSinkDef);
 						} else {
-							SootMethod sm = Scene.v().grabMethod(entry.getKey());
+							SootMethod sm = Scene.v().grabMethod(entry.getO1());
 							if (sm != null)
-								sinkMethods.put(sm, entry.getValue());
+								sinkMethods.put(sm, entry.getO2());
 						}
 					}
 
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
-					SootField sf = Scene.v().grabField(entry.getKey());
+					SootField sf = Scene.v().grabField(entry.getO1());
 					if (sf != null)
 						sinkFields.put(sf, sourceSinkDef);
 				} else if (sourceSinkDef instanceof StatementSourceSinkDefinition) {

@@ -50,12 +50,10 @@ public class AccessPathTuple {
 	 * Simplified factory method for creating an access path that just denotes the
 	 * base object
 	 * 
-	 * @param isSource
-	 *            True if the referenced access path shall be considered a data flow
-	 *            source
-	 * @param isSink
-	 *            True if the referenced access path shall be considered a data flow
-	 *            sink
+	 * @param isSource True if the referenced access path shall be considered a data
+	 *                 flow source
+	 * @param isSink   True if the referenced access path shall be considered a data
+	 *                 flow sink
 	 * @return The newly created access path object
 	 */
 	public static AccessPathTuple create(boolean isSource, boolean isSink) {
@@ -148,8 +146,7 @@ public class AccessPathTuple {
 	/**
 	 * Sets the description of this access path
 	 * 
-	 * @param description
-	 *            The description of this access path
+	 * @param description The description of this access path
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -221,15 +218,14 @@ public class AccessPathTuple {
 	/**
 	 * Creates an access path from an access path definition object
 	 * 
-	 * @param baseVal
-	 *            The base for the new access path
-	 * @param manager
-	 *            The manager to be used for creating new access paths
-	 * @param canHaveImmutableAliases
-	 *            Specifies if the newly tainted value can have aliases that are not
-	 *            overwritten by the current operation, i.e., whether there must be
-	 *            an alias analysis from the source statement backwards through the
-	 *            code
+	 * @param baseVal                 The base for the new access path
+	 * @param manager                 The manager to be used for creating new access
+	 *                                paths
+	 * @param canHaveImmutableAliases Specifies if the newly tainted value can have
+	 *                                aliases that are not overwritten by the
+	 *                                current operation, i.e., whether there must be
+	 *                                an alias analysis from the source statement
+	 *                                backwards through the code
 	 * @return The newly created access path
 	 */
 	public AccessPath toAccessPath(Value baseVal, InfoflowManager manager, boolean canHaveImmutableAliases) {
@@ -266,6 +262,26 @@ public class AccessPathTuple {
 
 		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, baseType, null, true, false, true,
 				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if (fields != null && fields.length > 0) {
+			for (int i = 0; i < fields.length; i++) {
+				if (i > 0)
+					sb.append(".");
+				sb.append(fields[i]);
+			}
+		}
+
+		if (description != null && !description.isEmpty()) {
+			sb.append(" (");
+			sb.append(description);
+			sb.append(")");
+		}
+
+		return sb.toString();
 	}
 
 }

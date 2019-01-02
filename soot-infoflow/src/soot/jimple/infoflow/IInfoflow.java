@@ -47,8 +47,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Sets the configuration to be used for the data flow analysis
 	 * 
-	 * @param config
-	 *            The configuration to be used for the data flow analysis
+	 * @param config The configuration to be used for the data flow analysis
 	 */
 	public void setConfig(InfoflowConfiguration config);
 
@@ -56,8 +55,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * Sets the handler class to be used for modeling the effects of native methods
 	 * on the taint state
 	 * 
-	 * @param handler
-	 *            The native call handler to use
+	 * @param handler The native call handler to use
 	 */
 	public void setNativeCallHandler(INativeCallHandler handler);
 
@@ -65,8 +63,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * List of preprocessors that need to be executed in order before the
 	 * information flow.
 	 * 
-	 * @param preprocessors
-	 *            the pre-processors
+	 * @param preprocessors the pre-processors
 	 */
 	public void setPreProcessors(Collection<? extends PreAnalysisHandler> preprocessors);
 
@@ -74,8 +71,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * Sets the set of post-processors that shall be executed after the data flow
 	 * analysis has finished
 	 * 
-	 * @param postprocessors
-	 *            The post-processors to execute on the results
+	 * @param postprocessors The post-processors to execute on the results
 	 */
 	public void setPostProcessors(Collection<? extends PostAnalysisHandler> postprocessors);
 
@@ -85,19 +81,15 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * for all methods that are detected to be part of Android's application
 	 * infrastructure (e.g. android.app.Activity.onCreate)
 	 * 
-	 * @param appPath
-	 *            The path containing the client program's files
-	 * @param libPath
-	 *            The path to the main folder of the (unpacked) library class files
-	 * @param entryPointCreator
-	 *            the entry point creator to use for generating the dummy main
-	 *            method
-	 * @param sources
-	 *            list of source class+method (as string conforms to SootMethod
-	 *            representation)
-	 * @param sinks
-	 *            list of sink class+method (as string conforms to SootMethod
-	 *            representation)
+	 * @param appPath           The path containing the client program's files
+	 * @param libPath           The path to the main folder of the (unpacked)
+	 *                          library class files
+	 * @param entryPointCreator the entry point creator to use for generating the
+	 *                          dummy main method
+	 * @param sources           list of source class+method (as string conforms to
+	 *                          SootMethod representation)
+	 * @param sinks             list of sink class+method (as string conforms to
+	 *                          SootMethod representation)
 	 */
 	public void computeInfoflow(String appPath, String libPath, IEntryPointCreator entryPointCreator,
 			List<String> sources, List<String> sinks);
@@ -108,18 +100,15 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * for all methods that are detected to be part of Android's application
 	 * infrastructure (e.g. android.app.Activity.onCreate)
 	 * 
-	 * @param appPath
-	 *            The path containing the client program's files
-	 * @param libPath
-	 *            the path to the main folder of the (unpacked) library class files
-	 * @param entryPoints
-	 *            the entryPoints (string conforms to SootMethod representation)
-	 * @param sources
-	 *            list of source class+method (as string conforms to SootMethod
-	 *            representation)
-	 * @param sinks
-	 *            list of sink class+method (as string conforms to SootMethod
-	 *            representation)
+	 * @param appPath     The path containing the client program's files
+	 * @param libPath     the path to the main folder of the (unpacked) library
+	 *                    class files
+	 * @param entryPoints the entryPoints (string conforms to SootMethod
+	 *                    representation)
+	 * @param sources     list of source class+method (as string conforms to
+	 *                    SootMethod representation)
+	 * @param sinks       list of sink class+method (as string conforms to
+	 *                    SootMethod representation)
 	 */
 	public void computeInfoflow(String appPath, String libPath, Collection<String> entryPoints,
 			Collection<String> sources, Collection<String> sinks);
@@ -128,18 +117,14 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * Computes the information flow on a single method. This method is directly
 	 * taken as the entry point into the program, even if it is an instance method.
 	 * 
-	 * @param appPath
-	 *            The path containing the client program's files
-	 * @param libPath
-	 *            the path to the main folder of the (unpacked) library class files
-	 * @param entryPoint
-	 *            the main method to analyze
-	 * @param sources
-	 *            list of source class+method (as string conforms to SootMethod
-	 *            representation)
-	 * @param sinks
-	 *            list of sink class+method (as string conforms to SootMethod
-	 *            representation)
+	 * @param appPath    The path containing the client program's files
+	 * @param libPath    the path to the main folder of the (unpacked) library class
+	 *                   files
+	 * @param entryPoint the main method to analyze
+	 * @param sources    list of source class+method (as string conforms to
+	 *                   SootMethod representation)
+	 * @param sinks      list of sink class+method (as string conforms to SootMethod
+	 *                   representation)
 	 */
 	public void computeInfoflow(String appPath, String libPath, String entryPoint, Collection<String> sources,
 			Collection<String> sinks);
@@ -150,15 +135,13 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * for all methods that are detected to be part of Android's application
 	 * infrastructure (e.g. android.app.Activity.onCreate)
 	 * 
-	 * @param appPath
-	 *            The path containing the client program's files
-	 * @param libPath
-	 *            the path to the main folder of the (unpacked) library class files
-	 * @param entryPointCreator
-	 *            the entry point creator to use for generating the dummy main
-	 *            method
-	 * @param sourcesSinks
-	 *            manager class for identifying sources and sinks in the source code
+	 * @param appPath           The path containing the client program's files
+	 * @param libPath           the path to the main folder of the (unpacked)
+	 *                          library class files
+	 * @param entryPointCreator the entry point creator to use for generating the
+	 *                          dummy main method
+	 * @param sourcesSinks      manager class for identifying sources and sinks in
+	 *                          the source code
 	 */
 	public void computeInfoflow(String appPath, String libPath, IEntryPointCreator entryPointCreator,
 			ISourceSinkManager sourcesSinks);
@@ -167,14 +150,12 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * Computes the information flow on a single method. This method is directly
 	 * taken as the entry point into the program, even if it is an instance method.
 	 * 
-	 * @param appPath
-	 *            The path containing the client program's files
-	 * @param libPath
-	 *            the path to the main folder of the (unpacked) library class files
-	 * @param entryPoint
-	 *            the main method to analyze
-	 * @param sourcesSinks
-	 *            manager class for identifying sources and sinks in the source code
+	 * @param appPath      The path containing the client program's files
+	 * @param libPath      the path to the main folder of the (unpacked) library
+	 *                     class files
+	 * @param entryPoint   the main method to analyze
+	 * @param sourcesSinks manager class for identifying sources and sinks in the
+	 *                     source code
 	 */
 	public void computeInfoflow(String appPath, String libPath, String entryPoint, ISourceSinkManager sourcesSinks);
 
@@ -199,17 +180,15 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Sets the Soot configuration callback to be used for this analysis
 	 * 
-	 * @param config
-	 *            The configuration callback to be used for the analysis
+	 * @param config The configuration callback to be used for the analysis
 	 */
 	public void setSootConfig(IInfoflowConfig config);
 
 	/**
 	 * Sets the path builder factory to be used in subsequent data flow analyses
 	 * 
-	 * @param factory
-	 *            The path bilder factory to use for constructing path
-	 *            reconstruction algorithms
+	 * @param factory The path bilder factory to use for constructing path
+	 *                reconstruction algorithms
 	 */
 	public void setPathBuilderFactory(IPathBuilderFactory factory);
 
@@ -234,26 +213,16 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Adds a handler that is called when information flow results are available
 	 * 
-	 * @param handler
-	 *            The handler to add
+	 * @param handler The handler to add
 	 */
 	public void addResultsAvailableHandler(ResultsAvailableHandler handler);
 
 	/**
 	 * Removes a handler that is called when information flow results are available
 	 * 
-	 * @param handler
-	 *            The handler to remove
+	 * @param handler The handler to remove
 	 */
 	public void removeResultsAvailableHandler(ResultsAvailableHandler handler);
-
-	/**
-	 * Gets the maximum memory consumption during the last analysis run
-	 * 
-	 * @return The maximum memory consumption during the last analysis run if
-	 *         available, otherwise -1
-	 */
-	public long getMaxMemoryConsumption();
 
 	/**
 	 * Aborts the data flow analysis. This is useful when the analysis controller is
@@ -265,32 +234,28 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Sets a handler which is invoked whenever a taint is propagated
 	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating taints
+	 * @param handler The handler to be invoked when propagating taints
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler handler);
 
 	/**
 	 * Sets a handler which is invoked whenever an alias is propagated backwards
 	 * 
-	 * @param handler
-	 *            The handler to be invoked when propagating aliases
+	 * @param handler The handler to be invoked when propagating aliases
 	 */
 	public void setBackwardsPropagationHandler(TaintPropagationHandler handler);
 
 	/**
 	 * Sets the factory to be used for creating memory managers
 	 * 
-	 * @param factory
-	 *            The memory manager factory to use
+	 * @param factory The memory manager factory to use
 	 */
 	public void setMemoryManagerFactory(IMemoryManagerFactory factory);
 
 	/**
 	 * Sets the factory to be used for creating thread pool executors
 	 * 
-	 * @param executorFactory
-	 *            The executor factory to use
+	 * @param executorFactory The executor factory to use
 	 */
 	public void setExecutorFactory(IExecutorFactory executorFactory);
 
@@ -298,8 +263,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * Sets the factory to be used for creating the propagation rule manager, which
 	 * can then add features to the core data flow engine
 	 * 
-	 * @param ruleManagerFactory
-	 *            The factory class for the propagation rule manager
+	 * @param ruleManagerFactory The factory class for the propagation rule manager
 	 */
 	public void setPropagationRuleManagerFactory(IPropagationRuleManagerFactory ruleManagerFactory);
 

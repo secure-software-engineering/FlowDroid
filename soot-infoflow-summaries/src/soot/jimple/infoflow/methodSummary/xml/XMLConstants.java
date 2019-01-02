@@ -18,6 +18,8 @@ public class XMLConstants {
 	public static final String TREE_GAP = "gap";
 	public static final String TREE_CLEARS = "clears";
 	public static final String TREE_CLEAR = "clear";
+	public static final String TREE_HIERARCHY = "hierarchy";
+	public static final String TREE_INTERFACE = "interface";
 
 	public static final String ATTRIBUTE_FORMAT_VERSION = "fileFormatVersion";
 	public static final String ATTRIBUTE_ID = "num";
@@ -34,6 +36,8 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_TYPE_CHECKING = "typeChecking";
 	public static final String ATTRIBUTE_CUT_SUBFIELDS = "cutSubfields";
 	public static final String ATTRIBUTE_MATCH_STRICT = "matchStrict";
+	public static final String ATTRIBUTE_NAME = "name";
+	public static final String ATTRIBUTE_SUPERCLASS = "superClass";
 
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";

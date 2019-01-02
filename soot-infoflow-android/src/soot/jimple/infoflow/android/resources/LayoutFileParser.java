@@ -179,6 +179,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 */
 	public void parseLayoutFile(final String fileName) {
 		Transform transform = new Transform("wjtp.lfp", new SceneTransformer() {
+			@Override
 			protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
 				parseLayoutFileDirect(fileName);
 			}

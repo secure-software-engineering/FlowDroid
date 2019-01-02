@@ -103,6 +103,11 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	 * @return True if the callee has access to the tainted value, false otherwise
 	 */
 	protected boolean isTaintVisibleInCallee(Stmt stmt, Abstraction source) {
+		// If we don't have an alias analysis anymore, we probably in the shutdown phase
+		// anyway
+		if (getAliasing() == null)
+			return false;
+
 		InvokeExpr iexpr = stmt.getInvokeExpr();
 		boolean found = false;
 

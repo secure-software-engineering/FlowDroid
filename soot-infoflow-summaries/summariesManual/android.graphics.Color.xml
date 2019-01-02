@@ -1,0 +1,687 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="102">
+    <methods>
+        <method id="int HSBtoColor(float[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float[]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int HSVToColor(int,float[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="float[]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int HSBtoColor(float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="float"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" BaseType="float"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int HSVToColor(float[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float[]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int alpha(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int alpha()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float alpha(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int argb(int,int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int blue(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int blue()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float blue(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float brightness(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="float" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.ColorSpace colorSpace(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void colorToHSV(int,float[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Parameter" ParameterIndex="1" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long convert(long,android.graphics.ColorSpace$Connector)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color convert(android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long convert(int,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long convert(float,float,float,float,android.graphics.ColorSpace,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long convert(float,float,float,float,android.graphics.ColorSpace$Connector)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float getComponent(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float[] getComponents()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float green(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float green()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int green(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float hue(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="float" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float luminance(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return"/>
+                </flow>
+            </flows>
+        </method>
+        <method id="int luminance(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="long pack(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long pack(float,float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long pack(float,float,float,float,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long pack(float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="long pack()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int parseColor(java.lang.String)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float red()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="float red(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int red(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int rgb(float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int rgb(int,int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="float saturation(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="float" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int toArgb()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int toArgb(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.String toString()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(float,float,float,float)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Field" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(float[],android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(long)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="android.graphics.Color valueOf(float,float,float,float,android.graphics.ColorSpace)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float r]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float g]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float b]"
+						AccessPathTypes="[float]" />
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="3" />
+                    <to sourceSinkType="Return" BaseType="android.graphics.Color"
+						AccessPath="[android.graphics.Color: float a]"
+						AccessPathTypes="[float]" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>
