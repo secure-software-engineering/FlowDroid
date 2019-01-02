@@ -137,7 +137,7 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow</artifactId>
-			<version>2.7-SNAPSHOT</version>
+			<version>2.7</version>
 
 			<exclusions>
 				<exclusion>

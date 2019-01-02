@@ -105,12 +105,12 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-android</artifactId>
-			<version>2.7-SNAPSHOT</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-summaries</artifactId>
-			<version>2.7-SNAPSHOT</version>
+			<version>2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>heros</groupId>
