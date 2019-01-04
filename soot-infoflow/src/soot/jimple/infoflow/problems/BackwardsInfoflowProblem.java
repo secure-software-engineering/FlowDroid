@@ -119,8 +119,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				assert !source.getAccessPath().isEmpty();
 
 				// A backward analysis looks for aliases of existing taints and
-				// thus
-				// cannot create new taints out of thin air
+				// thus cannot create new taints out of thin air
 				if (source == getZeroValue())
 					return null;
 

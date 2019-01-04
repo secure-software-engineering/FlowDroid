@@ -121,6 +121,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 					return false;
 			} else if (!abs1.predecessor.equals(abs2.predecessor))
 				return false;
+			if (abs1.currentStmt == null) {
+				if (abs2.currentStmt != null)
+					return false;
+			} else if (!abs1.currentStmt.equals(abs2.currentStmt))
+				return false;
 
 			return abs1.localEquals(abs2);
 		}
