@@ -83,7 +83,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * 
 			 * @author Steven Arzt
 			 */
-			abstract class NotifyingNormalFlowFunction implements SolverNormalFlowFunction<Abstraction> {
+			abstract class NotifyingNormalFlowFunction implements SolverNormalFlowFunction<Unit, Abstraction> {
 
 				protected final Stmt stmt;
 
@@ -92,18 +92,19 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				}
 
 				@Override
-				public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
+				public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> source) {
 					// Notify the handler if we have one
 					if (taintPropagationHandler != null)
-						taintPropagationHandler.notifyFlowIn(stmt, source, manager,
+						taintPropagationHandler.notifyFlowIn(stmt, source.getTargetVal(), manager,
 								FlowFunctionType.NormalFlowFunction);
 
 					// Compute the new abstractions
-					Set<Abstraction> res = computeTargetsInternal(d1, source);
-					return notifyOutFlowHandlers(stmt, d1, source, res, FlowFunctionType.NormalFlowFunction);
+					Set<Abstraction> res = computeTargetsInternal(source);
+					return notifyOutFlowHandlers(stmt, source.getSourceVal(), source.getTargetVal(), res,
+							FlowFunctionType.NormalFlowFunction);
 				}
 
-				public abstract Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source);
+				public abstract Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> source);
 
 			}
 
@@ -335,7 +336,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return new NotifyingNormalFlowFunction((Stmt) src) {
 
 					@Override
-					public Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+					public Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> solverState) {
+						final Abstraction source = solverState.getTargetVal();
+
 						// Check whether we must activate a taint
 						final Abstraction newSource;
 						if (!source.isAbstractionActive() && src == source.getActivationUnit())
@@ -346,8 +349,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// Apply the propagation rules
 						ByReferenceBoolean killSource = new ByReferenceBoolean();
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyNormalFlowFunction(d1, newSource, stmt,
-								(Stmt) dest, killSource, killAll);
+						Set<Abstraction> res = propagationRules.applyNormalFlowFunction(solverState.getSourceVal(),
+								newSource, stmt, (Stmt) dest, killSource, killAll);
 						if (killAll.value)
 							return Collections.<Abstraction>emptySet();
 
@@ -359,8 +362,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 							// Create the new taints that may be created by this
 							// assignment
-							Set<Abstraction> resAssign = createNewTaintOnAssignment(assignStmt, rightVals, d1,
-									newSource);
+							Set<Abstraction> resAssign = createNewTaintOnAssignment(assignStmt, rightVals,
+									solverState.getSourceVal(), newSource);
 							if (resAssign != null && !resAssign.isEmpty()) {
 								if (res != null) {
 									res.addAll(resAssign);
@@ -378,7 +381,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverCallFlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
+			public SolverCallFlowFunction<Unit, Abstraction> getCallFlowFunction(final Unit src,
+					final SootMethod dest) {
 				if (!dest.isConcrete()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
@@ -393,20 +397,24 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				return new SolverCallFlowFunction<Abstraction>() {
+				return new SolverCallFlowFunction<Unit, Abstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
-						Set<Abstraction> res = computeTargetsInternal(d1, source);
+					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> source) {
+						Set<Abstraction> res = computeTargetsInternal(source);
 						if (res != null && !res.isEmpty()) {
 							for (Abstraction abs : res)
 								manager.getAliasing().getAliasingStrategy().injectCallingContext(abs, solver, dest, src,
-										source, d1);
+										source.getTargetVal(), source.getSourceVal());
 						}
-						return notifyOutFlowHandlers(stmt, d1, source, res, FlowFunctionType.CallFlowFunction);
+						return notifyOutFlowHandlers(stmt, source.getSourceVal(), source.getTargetVal(), res,
+								FlowFunctionType.CallFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> solverState) {
+						final Abstraction d1 = solverState.getSourceVal();
+						Abstraction source = solverState.getTargetVal();
+
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 						if (source == getZeroValue())
@@ -482,12 +490,15 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> state,
 							Collection<Abstraction> callerD1s) {
-						Set<Abstraction> res = computeTargetsInternal(source, callerD1s);
-						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
+						Set<Abstraction> res = computeTargetsInternal(state, callerD1s);
+						return notifyOutFlowHandlers(exitStmt, state.getSourceVal(), state.getTargetVal(), res,
+								FlowFunctionType.ReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction source,
+					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> state,
 							Collection<Abstraction> callerD1s) {
+						final Abstraction source = state.getTargetVal();
+
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 						if (source == getZeroValue())
@@ -696,7 +707,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverCallToReturnFlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call,
+			public SolverCallToReturnFlowFunction<Unit, Abstraction> getCallToReturnFlowFunction(final Unit call,
 					final Unit returnSite) {
 				// special treatment for native methods:
 				if (!(call instanceof Stmt))
@@ -719,15 +730,19 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final SootMethod callee = invExpr.getMethod();
 				final boolean hasValidCallees = hasValidCallees(call);
 
-				return new SolverCallToReturnFlowFunction<Abstraction>() {
+				return new SolverCallToReturnFlowFunction<Unit, Abstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
-						Set<Abstraction> res = computeTargetsInternal(d1, source);
-						return notifyOutFlowHandlers(call, d1, source, res, FlowFunctionType.CallToReturnFlowFunction);
+					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> state) {
+						Set<Abstraction> res = computeTargetsInternal(state);
+						return notifyOutFlowHandlers(call, state.getSourceVal(), state.getTargetVal(), res,
+								FlowFunctionType.CallToReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> state) {
+						final Abstraction d1 = state.getSourceVal();
+						final Abstraction source = state.getTargetVal();
+
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 

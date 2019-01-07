@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import heros.flowfunc.Identity;
-import heros.flowfunc.KillAll;
 import heros.solver.PathEdge;
 import soot.ArrayType;
 import soot.Local;
@@ -55,6 +54,7 @@ import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
 import soot.jimple.infoflow.solver.ngsolver.FlowFunctions;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -429,10 +429,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverCallFlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete())
-					return KillAll.v();
-
+			public SolverCallFlowFunction<Unit, Abstraction> getCallFlowFunction(final Unit src,
+					final SootMethod dest) {
 				final Stmt stmt = (Stmt) src;
 				final InvokeExpr ie = (stmt != null && stmt.containsInvokeExpr()) ? stmt.getInvokeExpr() : null;
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
@@ -457,10 +455,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 
-				return new SolverCallFlowFunction<Abstraction>() {
+				return new SolverCallFlowFunction<Unit, Abstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
+					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> solverState) {
+						final Abstraction source = solverState.getTargetVal()
+						final Abstraction d1 = solverState.getSourceVal();
+						
 						if (source == getZeroValue())
 							return null;
 						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
@@ -621,7 +622,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverReturnFlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite,
+			public SolverReturnFlowFunction<Unit, Abstraction> getReturnFlowFunction(final Unit callSite,
 					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				final Value[] paramLocals = new Value[callee.getParameterCount()];
 				for (int i = 0; i < callee.getParameterCount(); i++)
