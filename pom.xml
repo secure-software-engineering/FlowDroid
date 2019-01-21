@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.fraunhofer.sit.flowdroid</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.7</version>
+	<version>2.7.1</version>
 	<name>FlowDroid Parent Module</name>
 	<packaging>pom</packaging>
 

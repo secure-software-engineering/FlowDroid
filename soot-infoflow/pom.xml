@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow</artifactId>
 	<name>soot-infoflow</name>
-	<version>2.7</version>
+	<version>2.7.1</version>
 	<description>Soot extending data flow tracking components for Java</description>
 	<packaging>jar</packaging>
 	

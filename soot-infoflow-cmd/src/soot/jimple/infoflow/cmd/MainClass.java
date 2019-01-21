@@ -312,15 +312,17 @@ public class MainClass {
 
 				// Configure the analyzer for the current APK file
 				config.getAnalysisFileConfig().setTargetAPKFile(apkFile.getCanonicalPath());
-				if (apksToAnalyze.size() > 1 || (outputFile.exists() && outputFile.isDirectory())) {
-					String outputFileName = apkFile.getName().replace(".apk", ".xml");
-					File curOutputFile = new File(outputFile, outputFileName);
-					config.getAnalysisFileConfig().setOutputFile(curOutputFile.getCanonicalPath());
+				if (outputFile != null) {
+					if (apksToAnalyze.size() > 1 || (outputFile.exists() && outputFile.isDirectory())) {
+						String outputFileName = apkFile.getName().replace(".apk", ".xml");
+						File curOutputFile = new File(outputFile, outputFileName);
+						config.getAnalysisFileConfig().setOutputFile(curOutputFile.getCanonicalPath());
 
-					// If we have already analyzed this APK and we have the results, there is no
-					// need to do it again
-					if (curOutputFile.exists())
-						continue;
+						// If we have already analyzed this APK and we have the results, there is no
+						// need to do it again
+						if (curOutputFile.exists())
+							continue;
+					}
 				}
 
 				// Create the data flow analyzer
