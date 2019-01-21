@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 
 /**
@@ -51,7 +51,7 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 	public abstract Set<AccessPath> getTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath);
 
 	@Override
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 		if (isExclusiveInternal(stmt, taintedPath.getAccessPath())) {
 			wrapperHits.incrementAndGet();
 			return true;
@@ -63,8 +63,8 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 	}
 	
 	@Override
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1,
-			Abstraction taintedPath) {
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1,
+			TaintAbstraction taintedPath) {
 		// Compute the tainted access paths
 		Set<AccessPath> aps = getTaintsForMethodInternal(stmt,
 				taintedPath.getAccessPath());
@@ -72,7 +72,7 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 			return null;
 		
 		// Convert the access paths into full abstractions
-		Set<Abstraction> res = new HashSet<Abstraction>(aps.size());
+		Set<TaintAbstraction> res = new HashSet<TaintAbstraction>(aps.size());
 		for (AccessPath ap : aps)
 			if (ap == taintedPath.getAccessPath())
 				res.add(taintedPath);

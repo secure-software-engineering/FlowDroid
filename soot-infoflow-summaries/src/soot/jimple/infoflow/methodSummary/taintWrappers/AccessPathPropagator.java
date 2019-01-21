@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.methodSummary.taintWrappers;
 
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 
 /**
@@ -19,8 +19,8 @@ class AccessPathPropagator {
 	private final boolean inversePropagator;
 	
 	private final Stmt stmt;
-	private final Abstraction d1;
-	private final Abstraction d2;
+	private final TaintAbstraction d1;
+	private final TaintAbstraction d2;
 	
 	public AccessPathPropagator(Taint taint) {
 		this(taint, null, null);
@@ -36,8 +36,8 @@ class AccessPathPropagator {
 			GapDefinition gap,
 			AccessPathPropagator parent,
 			Stmt stmt,
-			Abstraction d1,
-			Abstraction d2) {
+			TaintAbstraction d1,
+			TaintAbstraction d2) {
 		this(taint, gap, parent, stmt, d1, d2, false);
 	}
 	
@@ -45,8 +45,8 @@ class AccessPathPropagator {
 			GapDefinition gap,
 			AccessPathPropagator parent,
 			Stmt stmt,
-			Abstraction d1,
-			Abstraction d2,
+			TaintAbstraction d1,
+			TaintAbstraction d2,
 			boolean inversePropagator) {
 		this.taint = taint;
 		this.gap = gap;
@@ -95,7 +95,7 @@ class AccessPathPropagator {
 	 * This value only exists for root-level propagators.
 	 * @return The context abstraction associated with this propagator
 	 */
-	public Abstraction getD1() {
+	public TaintAbstraction getD1() {
 		return this.d1;
 	}
 	
@@ -104,7 +104,7 @@ class AccessPathPropagator {
 	 * This value only exists for root-level propagators.
 	 * @return The abstraction for which the taint wrapper was originally called
 	 */
-	public Abstraction getD2() {
+	public TaintAbstraction getD2() {
 		return this.d2;
 	}
 	

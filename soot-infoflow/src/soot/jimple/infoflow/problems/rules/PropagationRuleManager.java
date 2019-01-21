@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Set;
 
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -21,12 +24,15 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class PropagationRuleManager {
 
+	public static int ABSTRACTION_ACTIVATED = 0x01;
+
 	protected final InfoflowManager manager;
-	protected final Abstraction zeroValue;
+	protected final TaintAbstraction zeroValue;
 	protected final TaintPropagationResults results;
 	protected final ITaintPropagationRule[] rules;
 
-	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public PropagationRuleManager(InfoflowManager manager, TaintAbstraction zeroValue,
+			TaintPropagationResults results) {
 		this.manager = manager;
 		this.zeroValue = zeroValue;
 		this.results = results;
@@ -58,53 +64,45 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the normal flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param destStmt
-	 *            The next statement to which control flow will continue after
-	 *            processing stmt
+	 * @param state    The IFDS solver state
+	 * @param destStmt The next statement to which control flow will continue after
+	 *                 processing stmt
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyNormalFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt) {
-		return applyNormalFlowFunction(d1, source, stmt, destStmt, null, null);
+	public Set<AbstractDataFlowAbstraction> applyNormalFlowFunction(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt) {
+		return applyNormalFlowFunction(state, destStmt, null, null, 0);
 	}
 
 	/**
 	 * Applies all rules to the normal flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param destStmt
-	 *            The next statement to which control flow will continue after
-	 *            processing stmt
-	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming taint
-	 *            abstraction shall be killed
-	 * @param killAll
-	 *            Outgoing value that receives whether all taints shall be killed
-	 *            and nothing shall be propagated onwards
+	 * @param state      The IFDS solver state
+	 * @param destStmt   The next statement to which control flow will continue
+	 *                   after processing stmt
+	 * @param killSource Outgoing value for the rule to indicate whether the
+	 *                   incoming taint abstraction shall be killed
+	 * @param killAll    Outgoing value that receives whether all taints shall be
+	 *                   killed and nothing shall be propagated onwards
+	 * @param flags      Optional flags that inform the rule manager about the
+	 *                   status of the given taint abstraction or the data flow
+	 *                   analysis as a whole
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyNormalFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		Set<Abstraction> res = null;
+	public Set<AbstractDataFlowAbstraction> applyNormalFlowFunction(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		Set<AbstractDataFlowAbstraction> res = null;
 		if (killSource == null)
 			killSource = new ByReferenceBoolean();
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateNormalFlow(d1, source, stmt, destStmt, killSource, killAll);
+			Collection<AbstractDataFlowAbstraction> ruleOut = rule.propagateNormalFlow(state, destStmt, killSource,
+					killAll, flags);
 			if (killAll != null && killAll.value)
 				return null;
 			if (ruleOut != null && !ruleOut.isEmpty()) {
 				if (res == null)
-					res = new HashSet<Abstraction>(ruleOut);
+					res = new HashSet<>(ruleOut);
 				else
 					res.addAll(ruleOut);
 			}
@@ -114,9 +112,9 @@ public class PropagationRuleManager {
 		if ((killAll == null || !killAll.value) && !killSource.value) {
 			if (res == null) {
 				res = new HashSet<>();
-				res.add(source);
+				res.add(state.getTargetVal());
 			} else
-				res.add(source);
+				res.add(state.getTargetVal());
 		}
 		return res;
 	}
@@ -124,29 +122,22 @@ public class PropagationRuleManager {
 	/**
 	 * Propagates a flow across a call site
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The abstraction to propagate over the statement
-	 * @param stmt
-	 *            The statement at which to propagate the abstraction
-	 * @param dest
-	 *            The destination method into which to propagate the abstraction
-	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints shall be
-	 *            killed, i.e., nothing shall be propagated
+	 * @param state   The IFDS solver state
+	 * @param dest    The destination method into which to propagate the abstraction
+	 * @param killAll Outgoing value for the rule to specify whether all taints
+	 *                shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
-	public Set<Abstraction> applyCallFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
-		Set<Abstraction> res = null;
+	public Set<AbstractDataFlowAbstraction> applyCallFlowFunction(SolverState<Unit, AbstractDataFlowAbstraction> state,
+			SootMethod dest, ByReferenceBoolean killAll) {
+		Set<AbstractDataFlowAbstraction> res = null;
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateCallFlow(d1, source, stmt, dest, killAll);
+			Collection<AbstractDataFlowAbstraction> ruleOut = rule.propagateCallFlow(state, dest, killAll);
 			if (killAll.value)
 				return null;
 			if (ruleOut != null && !ruleOut.isEmpty()) {
 				if (res == null)
-					res = new HashSet<Abstraction>(ruleOut);
+					res = new HashSet<>(ruleOut);
 				else
 					res.addAll(ruleOut);
 			}
@@ -157,42 +148,34 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the call-to-return flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
+	 * @param state The IFDS solver state
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyCallToReturnFlowFunction(Abstraction d1, Abstraction source, Stmt stmt) {
-		return applyCallToReturnFlowFunction(d1, source, stmt, new ByReferenceBoolean(), null, false);
+	public Set<AbstractDataFlowAbstraction> applyCallToReturnFlowFunction(
+			SolverState<Unit, AbstractDataFlowAbstraction> state) {
+		return applyCallToReturnFlowFunction(state, new ByReferenceBoolean(), null, false);
 	}
 
 	/**
 	 * Applies all rules to the call-to-return flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming taint
-	 *            abstraction shall be killed
+	 * @param state      The IFDS solver state
+	 * @param killSource Outgoing value for the rule to indicate whether the
+	 *                   incoming taint abstraction shall be killed
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyCallToReturnFlowFunction(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll, boolean noAddSource) {
-		Set<Abstraction> res = null;
+	public Set<AbstractDataFlowAbstraction> applyCallToReturnFlowFunction(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, boolean noAddSource) {
+		Set<AbstractDataFlowAbstraction> res = null;
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateCallToReturnFlow(d1, source, stmt, killSource, killAll);
+			Collection<AbstractDataFlowAbstraction> ruleOut = rule.propagateCallToReturnFlow(state, killSource,
+					killAll);
 			if (killAll != null && killAll.value)
 				return null;
 			if (ruleOut != null && !ruleOut.isEmpty()) {
 				if (res == null)
-					res = new HashSet<Abstraction>(ruleOut);
+					res = new HashSet<>(ruleOut);
 				else
 					res.addAll(ruleOut);
 			}
@@ -202,9 +185,9 @@ public class PropagationRuleManager {
 		if (!noAddSource && !killSource.value) {
 			if (res == null) {
 				res = new HashSet<>();
-				res.add(source);
+				res.add(state.getTargetVal());
 			} else
-				res.add(source);
+				res.add(state.getTargetVal());
 		}
 		return res;
 	}
@@ -212,33 +195,27 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the return flow function
 	 * 
-	 * @param callerD1s
-	 *            The context abstraction at the caller side
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param retSite
-	 *            The return site to which the execution returns after leaving the
-	 *            current method
-	 * @param callSite
-	 *            The call site of the call from which we return
-	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints shall be
-	 *            killed, i.e., nothing shall be propagated
+	 * @param callerD1s The context abstraction at the caller side
+	 * @param source    The incoming taint to propagate over the given statement
+	 * @param stmt      The statement to which to apply the rules
+	 * @param retSite   The return site to which the execution returns after leaving
+	 *                  the current method
+	 * @param callSite  The call site of the call from which we return
+	 * @param killAll   Outgoing value for the rule to specify whether all taints
+	 *                  shall be killed, i.e., nothing shall be propagated
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
-		Set<Abstraction> res = null;
+	public Set<AbstractDataFlowAbstraction> applyReturnFlowFunction(Collection<AbstractDataFlowAbstraction> callerD1s,
+			TaintAbstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+		Set<AbstractDataFlowAbstraction> res = null;
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateReturnFlow(callerD1s, source, stmt, retSite, callSite,
-					killAll);
+			Collection<AbstractDataFlowAbstraction> ruleOut = rule.propagateReturnFlow(callerD1s, source, stmt, retSite,
+					callSite, killAll);
 			if (killAll != null && killAll.value)
 				return null;
 			if (ruleOut != null && !ruleOut.isEmpty()) {
 				if (res == null)
-					res = new HashSet<Abstraction>(ruleOut);
+					res = new HashSet<>(ruleOut);
 				else
 					res.addAll(ruleOut);
 			}

@@ -28,7 +28,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 
@@ -38,38 +38,36 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
  * @author Steven Arzt
  */
 public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
-	
-	private final Table<SootMethod, Abstraction, Set<Abstraction>> aliases = HashBasedTable.create();
-	
+
+	private final Table<SootMethod, TaintAbstraction, Set<TaintAbstraction>> aliases = HashBasedTable.create();
+
 	public PtsBasedAliasStrategy(InfoflowManager manager) {
 		super(manager);
 	}
-	
+
 	@Override
-	public void computeAliasTaints(Abstraction d1, Stmt src, Value targetValue,
-			Set<Abstraction> taintSet, SootMethod method, Abstraction newAbs) {
+	public void computeAliasTaints(TaintAbstraction d1, Stmt src, Value targetValue, Set<TaintAbstraction> taintSet,
+			SootMethod method, TaintAbstraction newAbs) {
 		computeAliasTaintsInternal(d1, method, newAbs, Collections.<SootField>emptyList(),
 				Collections.<Type>emptyList(), newAbs.getAccessPath().getTaintSubFields(), src);
 	}
-	
-	public void computeAliasTaintsInternal(Abstraction d1, SootMethod method,
-			Abstraction newAbs, List<SootField> appendFields, List<Type> appendTypes,
-			boolean taintSubFields, Stmt actStmt) {
+
+	public void computeAliasTaintsInternal(TaintAbstraction d1, SootMethod method, TaintAbstraction newAbs,
+			List<SootField> appendFields, List<Type> appendTypes, boolean taintSubFields, Stmt actStmt) {
 		// Record the incoming abstraction
-		synchronized(aliases) {
+		synchronized (aliases) {
 			if (aliases.contains(method, newAbs)) {
-				Set<Abstraction> d1s = aliases.get(method, newAbs);
+				Set<TaintAbstraction> d1s = aliases.get(method, newAbs);
 				if (d1s.contains(d1))
 					return;
 				d1s.add(d1);
-			}
-			else {
-				Set<Abstraction> d1s = Sets.newIdentityHashSet();
+			} else {
+				Set<TaintAbstraction> d1s = Sets.newIdentityHashSet();
 				d1s.add(d1);
 				aliases.put(method, newAbs, d1s);
 			}
 		}
-		
+
 		// Also check for aliases for parts of the access path
 		final AccessPath ap = newAbs.getAccessPath();
 		if ((ap.isInstanceFieldRef() && ap.getFirstField() != null)
@@ -78,19 +76,20 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 			appendList.add(0, newAbs.getAccessPath().getLastField());
 			List<Type> typesList = new LinkedList<Type>(appendTypes);
 			typesList.add(0, newAbs.getAccessPath().getLastFieldType());
-			
-			computeAliasTaintsInternal(d1, method, newAbs.deriveNewAbstraction
-					(newAbs.getAccessPath().dropLastField(), null), appendList, typesList, taintSubFields, actStmt);
+
+			computeAliasTaintsInternal(d1, method,
+					newAbs.deriveNewAbstraction(newAbs.getAccessPath().dropLastField(), null), appendList, typesList,
+					taintSubFields, actStmt);
 		}
-		
+
 		// Do not try to compute points-to-sets on complex access paths
 		if (ap.getFieldCount() > 1)
 			return;
-		
+
 		PointsToSet ptsTaint = getPointsToSet(newAbs.getAccessPath());
 		SootField[] appendFieldsA = appendFields.toArray(new SootField[appendFields.size()]);
 		Type[] appendTypesA = appendTypes.toArray(new Type[appendTypes.size()]);
-		
+
 		// We run once per method and we are flow-insensitive anyway, so we
 		// can just say that every use of a variable aliased with a tainted
 		// one automatically taints the corresponding def set.
@@ -99,7 +98,7 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 			Stmt stmt = (Stmt) u;
 			if (stmt == actStmt)
 				beforeActUnit = false;
-			
+
 			if (stmt.containsInvokeExpr()) {
 				// If we have a call, we must check whether the base or one of
 				// the parameter aliases with the given taint
@@ -111,7 +110,7 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 					PointsToSet ptsBaseOrg = getPointsToSet(newAbs.getAccessPath().getPlainValue());
 					baseAliases = ptsBase.hasNonEmptyIntersection(ptsBaseOrg);
 				}
-				
+
 				boolean parameterAliases = false;
 				for (Value arg : invExpr.getArgs())
 					if (arg instanceof Local)
@@ -119,91 +118,86 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 							parameterAliases = true;
 							break;
 						}
-					
+
 				if (baseAliases || parameterAliases) {
-					AccessPath newAP = manager.getAccessPathFactory().appendFields
-							(newAbs.getAccessPath(), appendFieldsA, appendTypesA, taintSubFields);
-					Abstraction absCallee = newAbs.deriveNewAbstraction(newAP, stmt);
+					AccessPath newAP = manager.getAccessPathFactory().appendFields(newAbs.getAccessPath(),
+							appendFieldsA, appendTypesA, taintSubFields);
+					TaintAbstraction absCallee = newAbs.deriveNewAbstraction(newAP, stmt);
 					if (beforeActUnit)
 						absCallee = absCallee.deriveInactiveAbstraction(actStmt);
-					manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, absCallee));
+					manager.getForwardSolver().processEdge(new PathEdge<Unit, TaintAbstraction>(d1, u, absCallee));
 				}
-			}
-			else if (u instanceof DefinitionStmt) {
+			} else if (u instanceof DefinitionStmt) {
 				DefinitionStmt assign = (DefinitionStmt) u;
-				
+
 				// If we have a = b and our taint is an alias to b, we must add
 				// a taint for a.
 				if (assign.getRightOp() instanceof FieldRef || assign.getRightOp() instanceof Local
 						|| assign.getRightOp() instanceof ArrayRef) {
 					if (isAliasedAtStmt(ptsTaint, assign.getRightOp())
 							&& (appendFields != null && appendFields.size() > 0)) {
-						Abstraction aliasAbsLeft = newAbs.deriveNewAbstraction(
-								manager.getAccessPathFactory().createAccessPath(assign.getLeftOp(),
-										appendFieldsA, taintSubFields), stmt);
+						TaintAbstraction aliasAbsLeft = newAbs.deriveNewAbstraction(manager.getAccessPathFactory()
+								.createAccessPath(assign.getLeftOp(), appendFieldsA, taintSubFields), stmt);
 						if (beforeActUnit)
 							aliasAbsLeft = aliasAbsLeft.deriveInactiveAbstraction(actStmt);
-						
-						computeAliasTaints(d1, stmt, assign.getLeftOp(), Collections.<Abstraction>emptySet(),
-								method, aliasAbsLeft);
+
+						computeAliasTaints(d1, stmt, assign.getLeftOp(), Collections.<TaintAbstraction>emptySet(), method,
+								aliasAbsLeft);
 					}
 				}
 
 				// If we have a = b and our taint is an alias to a, we must add
 				// a taint for b.
-				if (assign.getLeftOp() instanceof FieldRef
-						|| assign.getLeftOp() instanceof Local
+				if (assign.getLeftOp() instanceof FieldRef || assign.getLeftOp() instanceof Local
 						|| assign.getLeftOp() instanceof ArrayRef)
-					if (assign.getRightOp() instanceof FieldRef
-							|| assign.getRightOp() instanceof Local
+					if (assign.getRightOp() instanceof FieldRef || assign.getRightOp() instanceof Local
 							|| assign.getRightOp() instanceof ArrayRef) {
 						if (isAliasedAtStmt(ptsTaint, assign.getLeftOp())) {
-							Abstraction aliasAbsRight = newAbs.deriveNewAbstraction(
-									manager.getAccessPathFactory().createAccessPath(assign.getRightOp(),
-											appendFieldsA, taintSubFields), stmt);
+							TaintAbstraction aliasAbsRight = newAbs.deriveNewAbstraction(manager.getAccessPathFactory()
+									.createAccessPath(assign.getRightOp(), appendFieldsA, taintSubFields), stmt);
 							if (beforeActUnit)
 								aliasAbsRight = aliasAbsRight.deriveInactiveAbstraction(actStmt);
-							manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, aliasAbsRight));
+							manager.getForwardSolver()
+									.processEdge(new PathEdge<Unit, TaintAbstraction>(d1, u, aliasAbsRight));
 						}
 					}
 			}
 		}
 	}
-	
+
 	private boolean isAliasedAtStmt(PointsToSet ptsTaint, Value val) {
 		PointsToSet ptsRight = getPointsToSet(val);
 		return ptsTaint.hasNonEmptyIntersection(ptsRight);
 	}
-	
+
 	/**
 	 * Gets the points-to-set for the given value
+	 * 
 	 * @param targetValue The value for which to get the points-to-set
 	 * @return The points-to-set for the given value
 	 */
 	private PointsToSet getPointsToSet(Value targetValue) {
 		PointsToAnalysis pta = Scene.v().getPointsToAnalysis();
-		synchronized (pta) {			
+		synchronized (pta) {
 			if (targetValue instanceof Local)
 				return pta.reachingObjects((Local) targetValue);
 			else if (targetValue instanceof InstanceFieldRef) {
 				InstanceFieldRef iref = (InstanceFieldRef) targetValue;
 				return pta.reachingObjects((Local) iref.getBase(), iref.getField());
-			}
-			else if (targetValue instanceof StaticFieldRef) {
+			} else if (targetValue instanceof StaticFieldRef) {
 				StaticFieldRef sref = (StaticFieldRef) targetValue;
 				return pta.reachingObjects(sref.getField());
-			}
-			else if (targetValue instanceof ArrayRef) {
+			} else if (targetValue instanceof ArrayRef) {
 				ArrayRef aref = (ArrayRef) targetValue;
 				return pta.reachingObjects((Local) aref.getBase());
-			}
-			else
+			} else
 				throw new RuntimeException("Unexpected value type for aliasing: " + targetValue.getClass());
 		}
 	}
 
 	/**
 	 * Gets the points-to-set for the given access path
+	 * 
 	 * @param accessPath The access path for which to get the points-to-set
 	 * @return The points-to-set for the given access path
 	 */
@@ -211,17 +205,18 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 		if (accessPath.isLocal())
 			return Scene.v().getPointsToAnalysis().reachingObjects(accessPath.getPlainValue());
 		else if (accessPath.isInstanceFieldRef())
-			return Scene.v().getPointsToAnalysis().reachingObjects(accessPath.getPlainValue(), accessPath.getFirstField());
+			return Scene.v().getPointsToAnalysis().reachingObjects(accessPath.getPlainValue(),
+					accessPath.getFirstField());
 		else if (accessPath.isStaticFieldRef())
 			return Scene.v().getPointsToAnalysis().reachingObjects(accessPath.getFirstField());
 		else
 			throw new RuntimeException("Unexepected access path type");
 	}
-	
+
 	@Override
-	public void injectCallingContext(Abstraction abs, IInfoflowSolver fSolver,
-			SootMethod callee, Unit callSite, Abstraction source, Abstraction d1) {
-		
+	public void injectCallingContext(TaintAbstraction abs, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
+			TaintAbstraction source, TaintAbstraction d1) {
+
 	}
 
 	@Override
@@ -238,7 +233,7 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 	public IInfoflowSolver getSolver() {
 		return null;
 	}
-	
+
 	@Override
 	public void cleanup() {
 		aliases.clear();

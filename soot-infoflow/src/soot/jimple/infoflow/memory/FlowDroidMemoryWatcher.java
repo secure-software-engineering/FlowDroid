@@ -34,8 +34,7 @@ public class FlowDroidMemoryWatcher {
 	/**
 	 * Creates a new instance of the {@link FlowDroidMemoryWatcher} class
 	 * 
-	 * @param res
-	 *            The result object in which to register any abortions
+	 * @param res The result object in which to register any abortions
 	 */
 	public FlowDroidMemoryWatcher(InfoflowResults res) {
 		// Register ourselves in the warning system
@@ -58,28 +57,26 @@ public class FlowDroidMemoryWatcher {
 	}
 
 	/**
-	 * Adds a solver that shall be terminated when the memory threshold is
-	 * reached
+	 * Adds a solver that shall be terminated when the memory threshold is reached
 	 * 
-	 * @param solver
-	 *            A solver that shall be terminated when the memory threshold is
-	 *            reached
+	 * @param solver A solver that shall be terminated when the memory threshold is
+	 *               reached
 	 */
 	public void addSolver(IMemoryBoundedSolver solver) {
 		this.solvers.add(solver);
 	}
 
 	/**
-	 * Removes the given solver from the watch list. The given solver will no
-	 * longer ne notified when the memory threshold is reached.
+	 * Removes the given solver from the watch list. The given solver will no longer
+	 * ne notified when the memory threshold is reached.
 	 * 
-	 * @param solver
-	 *            The solver to remove from the watch list
-	 * @return True if the given solver was found in the watch list, otherwise
-	 *         false
+	 * @param solver The solver to remove from the watch list
+	 * @return True if the given solver was found in the watch list, otherwise false
 	 */
 	public boolean removeSolver(IMemoryBoundedSolver solver) {
-		return this.solvers.remove(solver);
+		if (this.solvers != null && solver != null)
+			return this.solvers.remove(solver);
+		return false;
 	}
 
 	/**

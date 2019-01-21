@@ -19,7 +19,7 @@ import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
  * @author Steven Arzt
  */
 public class SourceContextAndPath extends SourceContext implements Cloneable {
-	protected ExtensibleList<Abstraction> path = null;
+	protected ExtensibleList<TaintAbstraction> path = null;
 	protected ExtensibleList<Stmt> callStack = null;
 	protected int neighborCounter = 0;
 	private int hashCode = 0;
@@ -36,9 +36,9 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (path == null)
 			return Collections.<Stmt>emptyList();
 		List<Stmt> stmtPath = new ArrayList<>(this.path.size());
-		Iterator<Abstraction> it = path.reverseIterator();
+		Iterator<TaintAbstraction> it = path.reverseIterator();
 		while (it.hasNext()) {
-			Abstraction abs = it.next();
+			TaintAbstraction abs = it.next();
 			if (abs.getCurrentStmt() != null) {
 				stmtPath.add(abs.getCurrentStmt());
 			}
@@ -46,12 +46,12 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		return stmtPath;
 	}
 
-	public List<Abstraction> getAbstractionPath() {
+	public List<TaintAbstraction> getAbstractionPath() {
 		if (path == null)
 			return null;
 
-		List<Abstraction> reversePath = new ArrayList<>(path.size());
-		Iterator<Abstraction> it = path.reverseIterator();
+		List<TaintAbstraction> reversePath = new ArrayList<>(path.size());
+		Iterator<TaintAbstraction> it = path.reverseIterator();
 		while (it.hasNext()) {
 			reversePath.add(it.next());
 		}
@@ -66,7 +66,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	 * @return The new taint propagation path If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
-	public SourceContextAndPath extendPath(Abstraction abs) {
+	public SourceContextAndPath extendPath(TaintAbstraction abs) {
 		return extendPath(abs, null);
 	}
 
@@ -80,7 +80,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	 * @return The new taint propagation path. If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(TaintAbstraction abs, PathConfiguration pathConfig) {
 		if (abs == null)
 			return this;
 
@@ -98,7 +98,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		// the alias analysis as started. We cannot jump into the middle of an alias
 		// propagation for a potentially unrelated alias query.
 		if (trackPath && this.path != null) {
-			Abstraction lastAbs = path.getLast();
+			TaintAbstraction lastAbs = path.getLast();
 			if (!abs.isAbstractionActive() && lastAbs.isAbstractionActive()) {
 				if (abs.getActivationUnit() != abs.getCurrentStmt())
 					return null;
@@ -113,9 +113,9 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (trackPath && abs.getCurrentStmt() != null) {
 			// Do not add the very same abstraction over and over again.
 			if (this.path != null) {
-				Iterator<Abstraction> it = path.reverseIterator();
+				Iterator<TaintAbstraction> it = path.reverseIterator();
 				while (it.hasNext()) {
-					Abstraction a = it.next();
+					TaintAbstraction a = it.next();
 					if (a == abs)
 						return null;
 
@@ -133,7 +133,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 				}
 
 				// We cannot leave the same method at two different sites
-				Abstraction topAbs = path.getLast();
+				TaintAbstraction topAbs = path.getLast();
 				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
 						&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
 						&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
@@ -143,7 +143,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			scap = clone();
 			// Extend the propagation path
 			if (scap.path == null)
-				scap.path = new ExtensibleList<Abstraction>();
+				scap.path = new ExtensibleList<TaintAbstraction>();
 			scap.path.add(abs);
 			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
 					&& scap.path.size() > pathConfig.getMaxPathLength())
@@ -266,7 +266,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	public SourceContextAndPath clone() {
 		final SourceContextAndPath scap = new SourceContextAndPath(definition, accessPath, stmt, userData);
 		if (path != null)
-			scap.path = new ExtensibleList<Abstraction>(this.path);
+			scap.path = new ExtensibleList<TaintAbstraction>(this.path);
 		if (callStack != null)
 			scap.callStack = new ExtensibleList<Stmt>(callStack);
 		return scap;

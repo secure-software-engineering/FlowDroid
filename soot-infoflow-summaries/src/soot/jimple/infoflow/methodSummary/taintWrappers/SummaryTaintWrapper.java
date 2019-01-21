@@ -36,7 +36,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
@@ -76,7 +76,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	private Hierarchy hierarchy;
 	private FastHierarchy fastHierarchy;
 
-	private MultiMap<Pair<Abstraction, SootMethod>, AccessPathPropagator> userCodeTaints = new ConcurrentHashMultiMap<>();
+	private MultiMap<Pair<TaintAbstraction, SootMethod>, AccessPathPropagator> userCodeTaints = new ConcurrentHashMultiMap<>();
 
 	protected final LoadingCache<SummaryQuery, SummaryResponse> methodToImplFlows = IDESolver.DEFAULT_CACHE_BUILDER
 			.build(new CacheLoader<SummaryQuery, SummaryResponse>() {
@@ -270,7 +270,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	private class SummaryFRPSHandler implements IFollowReturnsPastSeedsHandler {
 
 		@Override
-		public void handleFollowReturnsPastSeeds(Abstraction d1, Unit u, Abstraction d2) {
+		public void handleFollowReturnsPastSeeds(TaintAbstraction d1, Unit u, TaintAbstraction d2) {
 			SootMethod sm = manager.getICFG().getMethodOf(u);
 			Set<AccessPathPropagator> propagators = getUserCodeTaints(d1, sm);
 			if (propagators != null) {
@@ -306,11 +306,11 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 					if (resultAPs != null && !resultAPs.isEmpty()) {
 						AccessPathPropagator rootPropagator = getOriginalCallSite(propagator);
 						for (AccessPath ap : resultAPs) {
-							Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap,
+							TaintAbstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap,
 									rootPropagator.getStmt());
 							for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
 								manager.getForwardSolver().processEdge(
-										new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
+										new PathEdge<Unit, TaintAbstraction>(rootPropagator.getD1(), succUnit, newAbs));
 						}
 					}
 				}
@@ -639,12 +639,12 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedAbs) {
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
 
-		Set<Abstraction> resAbs = null;
+		Set<TaintAbstraction> resAbs = null;
 		Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(stmt);
 		ByReferenceBoolean killIncomingTaint = new ByReferenceBoolean(false);
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
@@ -692,7 +692,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 			if (classSupported.value || fallbackWrapper == null)
 				return Collections.singleton(taintedAbs);
 			else {
-				Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
+				Set<TaintAbstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
 				return fallbackTaints;
 			}
 		}
@@ -725,7 +725,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	 * @return The artificial taints coming from the libary model if any, otherwise
 	 *         null
 	 */
-	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs,
+	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedAbs,
 			final SootMethod method, ByReferenceBoolean killIncomingTaint, ByReferenceBoolean classSupported) {
 		wrapperHits.incrementAndGet();
 
@@ -914,7 +914,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		}
 
 		AccessPath ap = createAccessPathInMethod(propagator.getTaint(), implementor);
-		Abstraction abs = new Abstraction(null, ap, null, null, false, false);
+		TaintAbstraction abs = new TaintAbstraction(null, ap, null, null, false, false);
 
 		// We need to pop the last gap element off the stack
 		AccessPathPropagator parent = safePopParent(propagator);
@@ -922,9 +922,9 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
-		Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
+		Set<Pair<Unit, TaintAbstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
 		if (endSummary != null && !endSummary.isEmpty()) {
-			for (Pair<Unit, Abstraction> pair : endSummary) {
+			for (Pair<Unit, TaintAbstraction> pair : endSummary) {
 				if (outgoingTaints == null)
 					outgoingTaints = new HashSet<>();
 
@@ -946,7 +946,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 
 		// Create a new edge at the start point of the callee
 		for (Unit sP : manager.getICFG().getStartPointsOf(implementor)) {
-			PathEdge<Unit, Abstraction> edge = new PathEdge<>(abs, sP, abs);
+			PathEdge<Unit, TaintAbstraction> edge = new PathEdge<>(abs, sP, abs);
 			manager.getForwardSolver().processEdge(edge);
 		}
 
@@ -1031,7 +1031,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	 *         otherwise null. Note that this is a set of sets, one set per possible
 	 *         callee.
 	 */
-	private ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
+	private ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, TaintAbstraction taintedAbs,
 			ByReferenceBoolean classSupported) {
 		final String subsig = method.getSubSignature();
 		if (!flows.mayHaveSummaryForMethod(subsig))
@@ -1189,7 +1189,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 		final AccessPathPropagator parent;
 		final GapDefinition gap, taintGap;
 		final Stmt stmt;
-		final Abstraction d1, d2;
+		final TaintAbstraction d1, d2;
 		if (flowSink.getGap() != null) { // ends in gap, push on stack
 			parent = propagator;
 			gap = flowSink.getGap();
@@ -1693,7 +1693,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 		if (supportsCallee(stmt))
 			return true;
 
@@ -1749,7 +1749,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	 * @return The of taint propagators passed into the given callee with the given
 	 *         context. If no such propagators exist, null is returned.
 	 */
-	Set<AccessPathPropagator> getUserCodeTaints(Abstraction abs, SootMethod callee) {
+	Set<AccessPathPropagator> getUserCodeTaints(TaintAbstraction abs, SootMethod callee) {
 		return this.userCodeTaints.get(new Pair<>(abs, callee));
 	}
 
@@ -1764,7 +1764,7 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedAbs) {
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
@@ -1808,10 +1808,10 @@ public class SummaryTaintWrapper implements ITaintPropagationWrapper {
 			return Collections.singleton(taintedAbs);
 
 		// Create abstractions from the access paths
-		Set<Abstraction> resAbs = new HashSet<>(res.size() + 1);
+		Set<TaintAbstraction> resAbs = new HashSet<>(res.size() + 1);
 		resAbs.add(taintedAbs);
 		for (AccessPath ap : res) {
-			Abstraction newAbs = taintedAbs.deriveNewAbstraction(ap, stmt);
+			TaintAbstraction newAbs = taintedAbs.deriveNewAbstraction(ap, stmt);
 			newAbs.setCorrespondingCallSite(stmt);
 			resAbs.add(newAbs);
 		}

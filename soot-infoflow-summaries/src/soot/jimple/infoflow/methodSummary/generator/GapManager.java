@@ -13,7 +13,7 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
@@ -127,7 +127,7 @@ public class GapManager {
 	 * @param icfg The interprocedural control flow graph
 	 * @return True if we need to create a gap, otherwise false
 	 */
-	public boolean needsGapConstruction(Stmt stmt, Abstraction abs, IInfoflowCFG icfg) {
+	public boolean needsGapConstruction(Stmt stmt, TaintAbstraction abs, IInfoflowCFG icfg) {
 		SootMethod targetMethod = stmt.getInvokeExpr().getMethod();
 		
 		// Do not report inactive flows into gaps
@@ -181,7 +181,7 @@ public class GapManager {
 	 * @return True if the given value is used in the given statement, otherwise
 	 * false
 	 */
-	private boolean isValueUsedInStmt(Stmt stmt, Abstraction abs) {
+	private boolean isValueUsedInStmt(Stmt stmt, TaintAbstraction abs) {
 		if (!stmt.containsInvokeExpr())
 			return false;
 		InvokeExpr iexpr = stmt.getInvokeExpr();

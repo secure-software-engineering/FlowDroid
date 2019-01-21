@@ -88,7 +88,7 @@ public class TypeTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void callTargetTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

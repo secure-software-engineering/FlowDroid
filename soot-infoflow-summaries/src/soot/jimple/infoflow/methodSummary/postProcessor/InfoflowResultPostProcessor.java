@@ -18,7 +18,7 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.methodSummary.data.factory.SourceSinkFactory;
@@ -41,13 +41,13 @@ public class InfoflowResultPostProcessor {
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResultPostProcessor.class);
 
 	protected final InfoflowManager manager;
-	private final MultiMap<Abstraction, Stmt> collectedAbstractions;
+	private final MultiMap<TaintAbstraction, Stmt> collectedAbstractions;
 	private final String method;
 	protected final SourceSinkFactory sourceSinkFactory;
 	private final GapManager gapManager;
 	private final SummaryGeneratorConfiguration config;
 
-	public InfoflowResultPostProcessor(MultiMap<Abstraction, Stmt> collectedAbstractions, InfoflowManager manager,
+	public InfoflowResultPostProcessor(MultiMap<TaintAbstraction, Stmt> collectedAbstractions, InfoflowManager manager,
 			String m, SourceSinkFactory sourceSinkFactory, GapManager gapManager) {
 		this.collectedAbstractions = collectedAbstractions;
 		this.manager = manager;
@@ -88,7 +88,7 @@ public class InfoflowResultPostProcessor {
 
 		int analyzedPaths = 0;
 		int abstractionCount = 0;
-		for (Abstraction a : collectedAbstractions.keySet()) {
+		for (TaintAbstraction a : collectedAbstractions.keySet()) {
 			// If this abstraction is directly the source abstraction, we do not
 			// need to construct paths
 			if (a.getSourceContext() != null) {

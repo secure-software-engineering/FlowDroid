@@ -15,7 +15,7 @@ import java.util.Set;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 
 /**
  * This interface declares methods to define classes and methods which should not
@@ -53,8 +53,8 @@ public interface ITaintPropagationWrapper {
 	 * @return The list of tainted values after the invocation statement referenced in {@link Stmt}
 	 * has been executed
 	 */
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, 
-			Abstraction taintedPath);
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, 
+			TaintAbstraction taintedPath);
 	
 	/**
 	 * Gets whether the taints produced by this taint wrapper are exclusive, i.e. there are
@@ -64,7 +64,7 @@ public interface ITaintPropagationWrapper {
 	 * @param taintedPath The tainted field or value to propagate 
 	 * @return True if this taint wrapper is exclusive, otherwise false. 
 	 */
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath);
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath);
 	
 	/**
 	 * Gets the aliases that a summarized method generates for the given
@@ -77,8 +77,8 @@ public interface ITaintPropagationWrapper {
 	 * @return The set of aliases for the given abstraction or null if no such
 	 * aliases exist
 	 */
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1,
-			Abstraction taintedPath);
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1,
+			TaintAbstraction taintedPath);
 	
 	/**
 	 * Checks whether this taint wrapper can in general produce artificial taints

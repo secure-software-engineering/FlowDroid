@@ -13,7 +13,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.methodSummary.generator.GapManager;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
@@ -34,7 +34,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	private SootMethod method = null;
 	private boolean followReturnsPastSeeds = false;
 
-	private ConcurrentHashMultiMap<Abstraction, Stmt> result = new ConcurrentHashMultiMap<>();
+	private ConcurrentHashMultiMap<TaintAbstraction, Stmt> result = new ConcurrentHashMultiMap<>();
 
 	/**
 	 * Creates a new instance of the SummaryTaintPropagationHandler class
@@ -78,7 +78,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	}
 
 	@Override
-	public void notifyFlowIn(Unit stmt, Abstraction result, InfoflowManager manager, FlowFunctionType type) {
+	public void notifyFlowIn(Unit stmt, TaintAbstraction result, InfoflowManager manager, FlowFunctionType type) {
 		// Initialize the method we are interested in
 		if (method == null)
 			method = Scene.v().getMethod(methodSig);
@@ -108,7 +108,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * @param cfg
 	 *            The control flow graph
 	 */
-	protected void handleReturnFlow(Stmt stmt, Abstraction abs, IInfoflowCFG cfg) {
+	protected void handleReturnFlow(Stmt stmt, TaintAbstraction abs, IInfoflowCFG cfg) {
 		// Check whether we must register the abstraction for post-processing
 		// We ignore inactive abstractions
 		if (!abs.isAbstractionActive())
@@ -125,8 +125,8 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * to be summarized, nor referenced in gaps
 	 */
 	private void purgeResults() {
-		for (Iterator<Abstraction> absIt = result.keySet().iterator(); absIt.hasNext();) {
-			Abstraction abs = absIt.next();
+		for (Iterator<TaintAbstraction> absIt = result.keySet().iterator(); absIt.hasNext();) {
+			TaintAbstraction abs = absIt.next();
 
 			// If this a taint on a field of a gap object, we need to report it as
 			// well. Code can obtain references to library objects are store data in
@@ -159,7 +159,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * @return True if the given value is returned from inside the given callee at
 	 *         the given call site, otherwise false
 	 */
-	private boolean isValueReturnedFromCall(Unit stmt, Abstraction abs) {
+	private boolean isValueReturnedFromCall(Unit stmt, TaintAbstraction abs) {
 		// If the value is returned, we save it
 		if (stmt instanceof ReturnStmt) {
 			ReturnStmt retStmt = (ReturnStmt) stmt;
@@ -183,7 +183,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 		return (!method.isStatic() && abs.getAccessPath().getPlainValue() == method.getActiveBody().getThisLocal());
 	}
 
-	protected void handleCallToReturnFlow(Stmt stmt, Abstraction abs, IInfoflowCFG cfg) {
+	protected void handleCallToReturnFlow(Stmt stmt, TaintAbstraction abs, IInfoflowCFG cfg) {
 		// Check whether we must construct a gap
 		if (gapManager.needsGapConstruction(stmt, abs, cfg))
 			addResult(abs, stmt);
@@ -197,11 +197,11 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * @param stmt
 	 *            The statement at which the abstraction was collected
 	 */
-	protected void addResult(Abstraction abs, Stmt stmt) {
+	protected void addResult(TaintAbstraction abs, Stmt stmt) {
 		// Add the abstraction to the map. If we already have an equal
 		// abstraction, we must add the current one as a neighbor.
 		if (!this.result.put(abs, stmt)) {
-			for (Abstraction abs2 : result.keySet()) {
+			for (TaintAbstraction abs2 : result.keySet()) {
 				if (abs.equals(abs2)) {
 					abs2.addNeighbor(abs);
 					break;
@@ -211,7 +211,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit u, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public Set<TaintAbstraction> notifyFlowOut(Unit u, TaintAbstraction d1, TaintAbstraction incoming, Set<TaintAbstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		// Do not propagate through excluded methods
 		SootMethod sm = manager.getICFG().getMethodOf(u);
@@ -223,7 +223,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 		return outgoing;
 	}
 
-	public MultiMap<Abstraction, Stmt> getResult() {
+	public MultiMap<TaintAbstraction, Stmt> getResult() {
 		purgeResults();
 		return result;
 	}

@@ -13,6 +13,7 @@ package soot.jimple.infoflow.test.junit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
@@ -39,6 +40,7 @@ public class SetTests extends JUnitTests {
 	}
 
 	@Test(timeout = 600000) // implicit flow, takes ~74s
+	@Ignore
 	public void containsTest() {
 		System.out.println("Running test case containsTest...");
 		IInfoflow infoflow = initInfoflow();
@@ -83,12 +85,13 @@ public class SetTests extends JUnitTests {
 		System.out.println("Test case concreteTreeSetPos1Test done.");
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void concreteLinkedSetPos0Test() {
 		System.out.println("Running test case concreteLinkedSetPos0Test...");
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
+		infoflow.getConfig().setEnableArraySizeTainting(false);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.SetTestCode: void concreteWriteReadLinkedPos0Test()>");

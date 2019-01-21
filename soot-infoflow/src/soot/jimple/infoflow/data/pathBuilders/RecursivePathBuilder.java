@@ -10,7 +10,7 @@ import heros.solver.CountingThreadPoolExecutor;
 import heros.solver.Pair;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
@@ -58,13 +58,13 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 	 *            The current abstraction from which to start the search
 	 * @return The path from the source to the current statement
 	 */
-	private Set<SourceContextAndPath> getPaths(int taskId, Abstraction curAbs,
-			Stack<Pair<Stmt, Set<Abstraction>>> callStack) {
+	private Set<SourceContextAndPath> getPaths(int taskId, TaintAbstraction curAbs,
+			Stack<Pair<Stmt, Set<TaintAbstraction>>> callStack) {
 		Set<SourceContextAndPath> cacheData = new HashSet<SourceContextAndPath>();
 
-		Pair<Stmt, Set<Abstraction>> stackTop = callStack.isEmpty() ? null : callStack.peek();
+		Pair<Stmt, Set<TaintAbstraction>> stackTop = callStack.isEmpty() ? null : callStack.peek();
 		if (stackTop != null) {
-			Set<Abstraction> callAbs = stackTop.getO2();
+			Set<TaintAbstraction> callAbs = stackTop.getO2();
 			if (!callAbs.add(curAbs))
 				return Collections.emptySet();
 		}
@@ -82,13 +82,13 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 		} else {
 			// If we have a corresponding call site for the current return
 			// statement, we need to add it to the call stack.
-			Stack<Pair<Stmt, Set<Abstraction>>> newCallStack = new Stack<Pair<Stmt, Set<Abstraction>>>();
+			Stack<Pair<Stmt, Set<TaintAbstraction>>> newCallStack = new Stack<Pair<Stmt, Set<TaintAbstraction>>>();
 			newCallStack.addAll(callStack);
 			if (curAbs.getCorrespondingCallSite() != null/*
 															 * && curAbs. isAbstractionActive()
 															 */)
-				newCallStack.push(new Pair<Stmt, Set<Abstraction>>(curAbs.getCorrespondingCallSite(),
-						Collections.newSetFromMap(new IdentityHashMap<Abstraction, Boolean>())));
+				newCallStack.push(new Pair<Stmt, Set<TaintAbstraction>>(curAbs.getCorrespondingCallSite(),
+						Collections.newSetFromMap(new IdentityHashMap<TaintAbstraction, Boolean>())));
 
 			boolean isMethodEnter = curAbs.getCurrentStmt() != null && curAbs.getCurrentStmt().containsInvokeExpr();
 
@@ -102,7 +102,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 			boolean scanPreds = true;
 			if (isMethodEnter)
 				if (!newCallStack.isEmpty()) {
-					Pair<Stmt, Set<Abstraction>> newStackTop = newCallStack.isEmpty() ? null : newCallStack.peek();
+					Pair<Stmt, Set<TaintAbstraction>> newStackTop = newCallStack.isEmpty() ? null : newCallStack.peek();
 					if (newStackTop != null && newStackTop.getO1() != null) {
 						if (curAbs.getCurrentStmt() != newStackTop.getO1())
 							scanPreds = false;
@@ -121,7 +121,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 		}
 
 		if (curAbs.getNeighbors() != null)
-			for (Abstraction nb : curAbs.getNeighbors())
+			for (TaintAbstraction nb : curAbs.getNeighbors())
 				for (SourceContextAndPath path : getPaths(taskId, nb, callStack))
 					cacheData.add(path);
 
@@ -144,9 +144,9 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 
 				@Override
 				public void run() {
-					Stack<Pair<Stmt, Set<Abstraction>>> initialStack = new Stack<Pair<Stmt, Set<Abstraction>>>();
-					initialStack.push(new Pair<Stmt, Set<Abstraction>>(null,
-							Collections.newSetFromMap(new IdentityHashMap<Abstraction, Boolean>())));
+					Stack<Pair<Stmt, Set<TaintAbstraction>>> initialStack = new Stack<Pair<Stmt, Set<TaintAbstraction>>>();
+					initialStack.push(new Pair<Stmt, Set<TaintAbstraction>>(null,
+							Collections.newSetFromMap(new IdentityHashMap<TaintAbstraction, Boolean>())));
 					for (SourceContextAndPath context : getPaths(lastTaskId++, abs.getAbstraction(), initialStack)) {
 						results.addResult(abs.getSinkDefinition(), abs.getAbstraction().getAccessPath(),
 								abs.getSinkStmt(), context.getDefinition(), context.getAccessPath(), context.getStmt(),

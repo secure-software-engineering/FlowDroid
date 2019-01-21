@@ -5,7 +5,7 @@ import java.util.Set;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 
 /**
@@ -21,7 +21,7 @@ public class RecordingTaintWrapper extends AbstractTaintWrapper {
 	private final Set<SootMethod> targetMethods = new HashSet<>();
 
 	@Override
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
 		return null;
 	}
 

@@ -5,12 +5,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import soot.SootMethod;
+import soot.Unit;
 import soot.ValueBox;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -23,12 +26,15 @@ import soot.jimple.infoflow.util.TypeUtils;
  */
 public class SourcePropagationRule extends AbstractTaintPropagationRule {
 
-	public SourcePropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public SourcePropagationRule(InfoflowManager manager, TaintAbstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
-	private Collection<Abstraction> propagate(Abstraction d1, Abstraction source, Stmt stmt,
+	private Collection<AbstractDataFlowAbstraction> propagate(SolverState<Unit, AbstractDataFlowAbstraction> state,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		if (source == getZeroValue()) {
 			// Check whether this can be a source at all
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager() != null
@@ -40,11 +46,11 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 
 			// Is this a source?
 			if (sourceInfo != null && !sourceInfo.getAccessPaths().isEmpty()) {
-				Set<Abstraction> res = new HashSet<>();
+				Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 				for (AccessPath ap : sourceInfo.getAccessPaths()) {
 					// Create the new taint abstraction
-					Abstraction abs = new Abstraction(sourceInfo.getDefinition(), ap, stmt, sourceInfo.getUserData(),
-							false, false);
+					TaintAbstraction abs = new TaintAbstraction(sourceInfo.getDefinition(), ap, stmt,
+							sourceInfo.getUserData(), false, false);
 					res.add(abs);
 
 					// Compute the aliases. This is only relevant for variables that are not
@@ -57,14 +63,10 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 							// aliases valid (no overwrite). The startsWith()
 							// above already gets rid of constants, etc.
 							if (!TypeUtils.isStringType(vb.getValue().getType()) || ap.getCanHaveImmutableAliases())
-								getAliasing().computeAliases(d1, stmt, vb.getValue(), res,
-										getManager().getICFG().getMethodOf(stmt), abs);
+								getAliasing().computeAliases(state.derive(abs), vb.getValue(), res,
+										getManager().getICFG().getMethodOf(stmt));
 						}
 					}
-
-					// Set the corresponding call site
-					if (stmt.containsInvokeExpr())
-						abs.setCorrespondingCallSite(stmt);
 				}
 				return res;
 			}
@@ -75,26 +77,32 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		return propagate(d1, source, stmt, killSource, killAll);
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		return propagate(state, killSource, killAll);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		return propagate(d1, source, stmt, killSource, null);
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
+		return propagate(state, killSource, null);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Normally, we don't inspect source methods
 		if (!getManager().getConfig().getInspectSources() && getManager().getSourceSinkManager() != null) {
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager().getSourceInfo(stmt, getManager());

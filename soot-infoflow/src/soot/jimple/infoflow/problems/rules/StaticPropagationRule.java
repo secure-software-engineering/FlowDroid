@@ -4,11 +4,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -19,20 +22,24 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class StaticPropagationRule extends AbstractTaintPropagationRule {
 
-	public StaticPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public StaticPropagationRule(InfoflowManager manager, TaintAbstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
 		// nothing to do here
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not analyze static initializers if static field tracking is
 		// disabled
 		if (!getManager().getConfig().getEnableStaticFieldTracking() && dest.isStaticInitializer()) {
@@ -52,7 +59,7 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 			// callee
 			if (getAliasing().getAliasingStrategy().isLazyAnalysis()
 					|| manager.getICFG().isStaticFieldRead(dest, ap.getFirstField())) {
-				Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
+				TaintAbstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 				if (newAbs != null)
 					return Collections.singleton(newAbs);
 			}
@@ -62,15 +69,17 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
 		// nothing to do here
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		// We only handle taints on static variables
 		if (!source.getAccessPath().isStaticFieldRef())
 			return null;

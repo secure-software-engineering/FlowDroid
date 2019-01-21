@@ -20,7 +20,7 @@ import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -37,7 +37,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * edges containing new taint information
  * 
  */
-public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiDiInterproceduralCFG<Unit, SootMethod>>
+public class InfoflowSolver extends FlowInsensitiveSolver<Unit, TaintAbstraction, BiDiInterproceduralCFG<Unit, SootMethod>>
 		implements IInfoflowSolver {
 
 	private IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
@@ -56,14 +56,14 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	public boolean processEdge(PathEdge<Unit, Abstraction> edge) {
+	public boolean processEdge(PathEdge<Unit, TaintAbstraction> edge) {
 		propagate(edge.factAtSource(), icfg.getMethodOf(edge.getTarget()), edge.factAtTarget(), null, false);
 		return true;
 	}
 
 	@Override
-	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1) {
+	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, TaintAbstraction d3, Unit callSite,
+			TaintAbstraction d2, TaintAbstraction d1) {
 		if (!addIncoming(callee, d3, callSite, d1, d2))
 			return;
 
@@ -72,8 +72,8 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	protected Set<Abstraction> computeReturnFlowFunction(FlowFunction<Abstraction> retFunction, Abstraction d1,
-			Abstraction d2, Unit callSite, Collection<Abstraction> callerSideDs) {
+	protected Set<TaintAbstraction> computeReturnFlowFunction(FlowFunction<TaintAbstraction> retFunction, TaintAbstraction d1,
+			TaintAbstraction d2, Unit callSite, Collection<TaintAbstraction> callerSideDs) {
 		if (retFunction instanceof SolverReturnFlowFunction) {
 			// Get the d1s at the start points of the caller
 			return ((SolverReturnFlowFunction) retFunction).computeTargets(d2, d1, callerSideDs);
@@ -82,8 +82,8 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	protected Set<Abstraction> computeNormalFlowFunction(FlowFunction<Abstraction> flowFunction, Abstraction d1,
-			Abstraction d2) {
+	protected Set<TaintAbstraction> computeNormalFlowFunction(FlowFunction<TaintAbstraction> flowFunction, TaintAbstraction d1,
+			TaintAbstraction d2) {
 		if (flowFunction instanceof SolverNormalFlowFunction)
 			return ((SolverNormalFlowFunction) flowFunction).computeTargets(d1, d2);
 		else
@@ -91,8 +91,8 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	protected Set<Abstraction> computeCallToReturnFlowFunction(FlowFunction<Abstraction> flowFunction, Abstraction d1,
-			Abstraction d2) {
+	protected Set<TaintAbstraction> computeCallToReturnFlowFunction(FlowFunction<TaintAbstraction> flowFunction, TaintAbstraction d1,
+			TaintAbstraction d2) {
 		if (flowFunction instanceof SolverCallToReturnFlowFunction)
 			return ((SolverCallToReturnFlowFunction) flowFunction).computeTargets(d1, d2);
 		else
@@ -100,8 +100,8 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	protected Set<Abstraction> computeCallFlowFunction(FlowFunction<Abstraction> flowFunction, Abstraction d1,
-			Abstraction d2) {
+	protected Set<TaintAbstraction> computeCallFlowFunction(FlowFunction<TaintAbstraction> flowFunction, TaintAbstraction d1,
+			TaintAbstraction d2) {
 		if (flowFunction instanceof SolverCallFlowFunction)
 			return ((SolverCallFlowFunction) flowFunction).computeTargets(d1, d2);
 		else
@@ -110,23 +110,23 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 
 	@Override
 	public void cleanup() {
-		this.jumpFunctions = new MyConcurrentHashMap<PathEdge<SootMethod, Abstraction>, Abstraction>();
+		this.jumpFunctions = new MyConcurrentHashMap<PathEdge<SootMethod, TaintAbstraction>, TaintAbstraction>();
 		this.incoming.clear();
 		this.endSummary.clear();
 	}
 
 	@Override
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
+	public Set<Pair<Unit, TaintAbstraction>> endSummary(SootMethod m, TaintAbstraction d3) {
 		return super.endSummary(m, d3);
 	}
 
 	@Override
-	protected void processExit(Abstraction d1, Unit n, Abstraction d2) {
+	protected void processExit(TaintAbstraction d1, Unit n, TaintAbstraction d2) {
 		super.processExit(d1, n, d2);
 
 		if (followReturnsPastSeeds && followReturnsPastSeedsHandler != null) {
 			final SootMethod methodThatNeedsSummary = icfg.getMethodOf(n);
-			final Map<Unit, Map<Abstraction, Abstraction>> inc = incoming(d1, methodThatNeedsSummary);
+			final Map<Unit, Map<TaintAbstraction, TaintAbstraction>> inc = incoming(d1, methodThatNeedsSummary);
 
 			if (inc == null || inc.isEmpty())
 				followReturnsPastSeedsHandler.handleFollowReturnsPastSeeds(d1, n, d2);

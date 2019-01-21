@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 
@@ -63,9 +63,9 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	private class SourceFindingTask implements Runnable {
 		private final int taskId;
 		private final AbstractionAtSink flagAbs;
-		private final List<Abstraction> abstractionQueue = new LinkedList<Abstraction>();
+		private final List<TaintAbstraction> abstractionQueue = new LinkedList<TaintAbstraction>();
 
-		public SourceFindingTask(int taskId, AbstractionAtSink flagAbs, Abstraction abstraction) {
+		public SourceFindingTask(int taskId, AbstractionAtSink flagAbs, TaintAbstraction abstraction) {
 			this.taskId = taskId;
 			this.flagAbs = flagAbs;
 			this.abstractionQueue.add(abstraction);
@@ -81,7 +81,7 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 					return;
 				}
 
-				Abstraction abstraction = abstractionQueue.remove(0);
+				TaintAbstraction abstraction = abstractionQueue.remove(0);
 				if (abstraction.getSourceContext() != null) {
 					// Register the result
 					results.addResult(flagAbs.getSinkDefinition(), flagAbs.getAbstraction().getAccessPath(),
@@ -95,7 +95,7 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 					abstractionQueue.add(abstraction.getPredecessor());
 
 				if (abstraction.getNeighbors() != null)
-					for (Abstraction nb : abstraction.getNeighbors())
+					for (TaintAbstraction nb : abstraction.getNeighbors())
 						if (nb.registerPathFlag(taskId, numTasks))
 							abstractionQueue.add(nb);
 			}

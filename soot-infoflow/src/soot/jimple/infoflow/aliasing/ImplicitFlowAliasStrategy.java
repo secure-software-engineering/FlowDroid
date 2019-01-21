@@ -19,7 +19,7 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 
@@ -87,8 +87,8 @@ public class ImplicitFlowAliasStrategy extends AbstractBulkAliasStrategy {
 	}
 
 	@Override
-	public void computeAliasTaints(Abstraction d1, Stmt src, Value targetValue,
-			Set<Abstraction> taintSet, SootMethod method, Abstraction newAbs) {
+	public void computeAliasTaints(TaintAbstraction d1, Stmt src, Value targetValue,
+			Set<TaintAbstraction> taintSet, SootMethod method, TaintAbstraction newAbs) {
 		// Use global aliasing
 		Value baseValue = ((InstanceFieldRef) targetValue).getBase();
 		Set<AccessPath> aliases = methodToAliases.getUnchecked(method).get
@@ -96,7 +96,7 @@ public class ImplicitFlowAliasStrategy extends AbstractBulkAliasStrategy {
 		if (aliases != null)
 			for (AccessPath ap : aliases) {
 				AccessPath newAP = manager.getAccessPathFactory().merge(ap, newAbs.getAccessPath());
-				Abstraction aliasAbs = newAbs.deriveNewAbstraction(newAP, null);
+				TaintAbstraction aliasAbs = newAbs.deriveNewAbstraction(newAP, null);
 				if (taintSet.add(aliasAbs))
 					// We have found a new alias. This new base object may however yet
 					// again alias with something, so we need to check again
@@ -109,8 +109,8 @@ public class ImplicitFlowAliasStrategy extends AbstractBulkAliasStrategy {
 	}
 
 	@Override
-	public void injectCallingContext(Abstraction abs, IInfoflowSolver fSolver,
-			SootMethod callee, Unit callSite, Abstraction source, Abstraction d1) {
+	public void injectCallingContext(TaintAbstraction abs, IInfoflowSolver fSolver,
+			SootMethod callee, Unit callSite, TaintAbstraction source, TaintAbstraction d1) {
 	}
 
 	@Override

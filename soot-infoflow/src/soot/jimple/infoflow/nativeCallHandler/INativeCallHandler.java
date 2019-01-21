@@ -15,7 +15,7 @@ import java.util.Set;
 import soot.Value;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 
 /**
  * The NativeCallHandler defines the taint propagation behavior for native code,
@@ -42,7 +42,7 @@ public interface INativeCallHandler {
 	 * @param params list of arguments
 	 * @return the resulting set of taints
 	 */
-	public abstract Set<Abstraction> getTaintedValues(Stmt call, Abstraction source, Value[] params);
+	public abstract Set<TaintAbstraction> getTaintedValues(Stmt call, TaintAbstraction source, Value[] params);
 
 	/**
 	 * Checks whether this handler is able to handle the given call, i.e., has

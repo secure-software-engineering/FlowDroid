@@ -9,7 +9,7 @@ import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SourceContextAndPath;
@@ -29,8 +29,8 @@ import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 class SummaryPathBuilder extends ContextSensitivePathBuilder {
 
 	private Set<SummaryResultInfo> resultInfos = new ConcurrentHashSet<SummaryResultInfo>();
-	private Set<Abstraction> visitedAbstractions = Collections
-			.newSetFromMap(new IdentityHashMap<Abstraction, Boolean>());
+	private Set<TaintAbstraction> visitedAbstractions = Collections
+			.newSetFromMap(new IdentityHashMap<TaintAbstraction, Boolean>());
 
 	/**
 	 * Extended version of the {@link SourceInfo} class that also allows to
@@ -198,7 +198,7 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	}
 
 	@Override
-	protected boolean checkForSource(Abstraction abs, SourceContextAndPath scap) {
+	protected boolean checkForSource(TaintAbstraction abs, SourceContextAndPath scap) {
 		// Record the abstraction
 		visitedAbstractions.add(abs);
 

@@ -249,8 +249,7 @@ public class MainClass {
 	/**
 	 * Initializes the taint wrapper based on the command-line parameters
 	 * 
-	 * @param cmd
-	 *            The command-line parameters
+	 * @param cmd The command-line parameters
 	 * @return The taint wrapper to use for the data flow analysis, or null in case
 	 *         no taint wrapper shall be used
 	 */
@@ -398,6 +397,8 @@ public class MainClass {
 			return PathBuildingAlgorithm.ContextInsensitive;
 		else if (pathAlgo.equalsIgnoreCase("SOURCESONLY"))
 			return PathBuildingAlgorithm.ContextInsensitiveSourceFinder;
+		else if (pathAlgo.equalsIgnoreCase("NONE"))
+			return PathBuildingAlgorithm.None;
 		else {
 			System.err.println(String.format("Invalid path reconstruction algorithm: %s", pathAlgo));
 			throw new AbortAnalysisException();
@@ -497,10 +498,8 @@ public class MainClass {
 	 * Parses the given command-line options and fills the given configuration
 	 * object accordingly
 	 * 
-	 * @param cmd
-	 *            The command line to parse
-	 * @param config
-	 *            The configuration object to fill
+	 * @param cmd    The command line to parse
+	 * @param config The configuration object to fill
 	 */
 	private void parseCommandLineOptions(CommandLine cmd, InfoflowAndroidConfiguration config) {
 		// Files
@@ -662,9 +661,8 @@ public class MainClass {
 	/**
 	 * Loads the data flow configuration from the given file
 	 * 
-	 * @param configFile
-	 *            The configuration file from which to load the data flow
-	 *            configuration
+	 * @param configFile The configuration file from which to load the data flow
+	 *                   configuration
 	 * @return The loaded data flow configuration
 	 */
 	private InfoflowAndroidConfiguration loadConfigurationFile(String configFile) {

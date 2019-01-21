@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.solver;
 
 import soot.Unit;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 
 /**
  * Common interface for handlers that take care of follow-return-past-seeds
@@ -11,14 +11,15 @@ import soot.jimple.infoflow.data.Abstraction;
  *
  */
 public interface IFollowReturnsPastSeedsHandler {
-	
+
 	/**
 	 * This method is called when followReturnsPastSeeds is enabled and a taint
 	 * leaves a method for which we do not have any callers.
+	 * 
 	 * @param d1 The abstraction at the beginning of the callee
-	 * @param u The return site
+	 * @param u  The return site
 	 * @param d2 The abstraction at the return site
 	 */
-	public void handleFollowReturnsPastSeeds(Abstraction d1, Unit u, Abstraction d2);
-	
+	public void handleFollowReturnsPastSeeds(AbstractDataFlowAbstraction d1, Unit u, AbstractDataFlowAbstraction d2);
+
 }

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -62,7 +62,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 			// Also build paths for the neighbors of our result abstraction
 			if (triggerComputationForNeighbors() && abs.getAbstraction().getNeighbors() != null) {
-				for (Abstraction neighbor : abs.getAbstraction().getNeighbors()) {
+				for (TaintAbstraction neighbor : abs.getAbstraction().getNeighbors()) {
 					AbstractionAtSink neighborAtSink = new AbstractionAtSink(abs.getSinkDefinition(), neighbor,
 							abs.getSinkStmt());
 					task = getTaintPathTask(neighborAtSink);

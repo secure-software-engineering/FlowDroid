@@ -6,7 +6,7 @@ import soot.SootMethod;
 import soot.Value;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 
 public abstract class AbstractInteractiveAliasStrategy extends AbstractAliasStrategy {
 
@@ -16,9 +16,9 @@ public abstract class AbstractInteractiveAliasStrategy extends AbstractAliasStra
 
 	@Override
 	public void computeAliasTaints
-			(final Abstraction d1, final Stmt src,
-			final Value targetValue, Set<Abstraction> taintSet,
-			SootMethod method, Abstraction newAbs) {
+			(final TaintAbstraction d1, final Stmt src,
+			final Value targetValue, Set<TaintAbstraction> taintSet,
+			SootMethod method, TaintAbstraction newAbs) {
 		// nothing to do here
 	}
 	

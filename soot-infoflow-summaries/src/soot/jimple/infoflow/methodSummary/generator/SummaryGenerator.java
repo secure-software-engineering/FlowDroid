@@ -23,7 +23,7 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.config.IInfoflowConfig;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SequentialEntryPointCreator;
@@ -493,8 +493,8 @@ public class SummaryGenerator {
 				}
 
 				@Override
-				public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
-					Set<Abstraction> taints = taintWrapper.getTaintsForMethod(stmt, d1, taintedPath);
+				public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
+					Set<TaintAbstraction> taints = taintWrapper.getTaintsForMethod(stmt, d1, taintedPath);
 					if (taints != null && !taints.isEmpty())
 						return taints;
 
@@ -502,7 +502,7 @@ public class SummaryGenerator {
 				}
 
 				@Override
-				public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+				public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 					return taintWrapper.isExclusive(stmt, taintedPath) || summaryWrapper.isExclusive(stmt, taintedPath);
 				}
 
@@ -529,8 +529,8 @@ public class SummaryGenerator {
 				}
 
 				@Override
-				public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
-					Set<Abstraction> absSet = taintWrapper.getAliasesForMethod(stmt, d1, taintedPath);
+				public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
+					Set<TaintAbstraction> absSet = taintWrapper.getAliasesForMethod(stmt, d1, taintedPath);
 					if (absSet != null && !absSet.isEmpty())
 						return absSet;
 

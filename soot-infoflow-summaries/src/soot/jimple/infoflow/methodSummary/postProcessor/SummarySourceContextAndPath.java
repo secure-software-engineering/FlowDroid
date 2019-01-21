@@ -25,7 +25,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFactory.BasePair;
 import soot.jimple.infoflow.data.SourceContextAndPath;
@@ -67,7 +67,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	}
 
 	@Override
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(TaintAbstraction abs, PathConfiguration pathConfig) {
 		// Do we have data at all?
 		if (abs == null)
 			return this;
@@ -480,7 +480,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		if (callStack != null)
 			scap.callStack = new ExtensibleList<Stmt>(callStack);
 		if (path != null)
-			scap.path = new ExtensibleList<Abstraction>(path);
+			scap.path = new ExtensibleList<TaintAbstraction>(path);
 		return scap;
 	}
 

@@ -17,7 +17,7 @@ import java.util.Set;
 import heros.solver.Pair;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -30,7 +30,8 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * edges containing new taint information
  * 
  */
-public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproceduralCFG<Unit, SootMethod>>
+public class InfoflowSolver
+		extends IFDSSolver<Unit, AbstractDataFlowAbstraction, BiDiInterproceduralCFG<Unit, SootMethod>>
 		implements IInfoflowSolver {
 
 	private IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
@@ -49,19 +50,21 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	}
 
 	@Override
-	public boolean processEdge(SolverState<Unit, Abstraction> state) {
+	public boolean processEdge(SolverState<Unit, AbstractDataFlowAbstraction> state) {
 		propagate(state, null, false);
 		return true;
 	}
 
 	@Override
-	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1) {
-		if (!addIncoming(callee, d3, callSite, d1, d2))
+	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, AbstractDataFlowAbstraction d3,
+			SolverState<Unit, AbstractDataFlowAbstraction> state) {
+		final Unit callSite = state.getTarget();
+
+		if (addIncoming(callee, d3, callSite, state.getSourceVal(), state.getTargetVal()) == 0x0)
 			return;
 
 		Collection<Unit> returnSiteNs = icfg.getReturnSitesOfCallAt(callSite);
-		applyEndSummaryOnCall(d1, callSite, d2, returnSiteNs, callee, d3);
+		applyEndSummaryOnCall(state, returnSiteNs, callee, d3);
 	}
 
 	@Override
@@ -71,21 +74,22 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	}
 
 	@Override
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
+	public Set<Pair<Unit, AbstractDataFlowAbstraction>> endSummary(SootMethod m, AbstractDataFlowAbstraction d3) {
 		return super.endSummary(m, d3);
 	}
 
 	@Override
-	protected void processExit(SolverState<Unit, Abstraction> state) {
+	protected void processExit(SolverState<Unit, AbstractDataFlowAbstraction> state) {
 		super.processExit(state);
 
 		if (followReturnsPastSeeds && followReturnsPastSeedsHandler != null) {
-			final Abstraction d1 = state.sourceVal;
+			final AbstractDataFlowAbstraction d1 = state.sourceVal;
 			final Unit u = state.target;
-			final Abstraction d2 = state.targetVal;
+			final AbstractDataFlowAbstraction d2 = state.targetVal;
 
 			final SootMethod methodThatNeedsSummary = icfg.getMethodOf(u);
-			final Map<Unit, Map<Abstraction, Abstraction>> inc = incoming(d1, methodThatNeedsSummary);
+			final Map<Unit, Map<AbstractDataFlowAbstraction, AbstractDataFlowAbstraction>> inc = incoming(d1,
+					methodThatNeedsSummary);
 
 			if (inc == null || inc.isEmpty())
 				followReturnsPastSeedsHandler.handleFollowReturnsPastSeeds(d1, u, d2);

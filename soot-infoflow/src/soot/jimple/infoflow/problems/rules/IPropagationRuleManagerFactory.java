@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.problems.rules;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 
 /**
@@ -24,7 +24,7 @@ public interface IPropagationRuleManagerFactory {
 	 *            The container that receives all detected flows
 	 * @return The new propagation rule manager
 	 */
-	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
+	public PropagationRuleManager createRuleManager(InfoflowManager manager, TaintAbstraction zeroValue,
 			TaintPropagationResults results);
 
 }

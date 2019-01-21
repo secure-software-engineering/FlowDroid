@@ -26,13 +26,15 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.ngsolver.IFDSTabulationProblem;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
@@ -43,24 +45,24 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * which should not pollute the naturally large InfofflowProblems
  *
  */
-public abstract class AbstractInfoflowProblem
-		implements IFDSTabulationProblem<Unit, Abstraction, SootMethod, BiDiInterproceduralCFG<Unit, SootMethod>> {
+public abstract class AbstractInfoflowProblem implements
+		IFDSTabulationProblem<Unit, AbstractDataFlowAbstraction, SootMethod, BiDiInterproceduralCFG<Unit, SootMethod>> {
 
 	protected final InfoflowManager manager;
 
-	protected final Map<Unit, Set<Abstraction>> initialSeeds = new HashMap<Unit, Set<Abstraction>>();
+	protected final Map<Unit, Set<AbstractDataFlowAbstraction>> initialSeeds = new HashMap<>();
 	protected ITaintPropagationWrapper taintWrapper;
 	protected INativeCallHandler ncHandler;
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected Abstraction zeroValue = null;
+	protected TaintAbstraction zeroValue = null;
 
 	protected IInfoflowSolver solver = null;
 
 	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Unit>>();
+	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<>();
 
 	public AbstractInfoflowProblem(InfoflowManager manager) {
 		this.manager = manager;
@@ -70,7 +72,7 @@ public abstract class AbstractInfoflowProblem
 		this.solver = solver;
 	}
 
-	public void setZeroValue(Abstraction zeroValue) {
+	public void setZeroValue(TaintAbstraction zeroValue) {
 		this.zeroValue = zeroValue;
 	}
 
@@ -119,7 +121,7 @@ public abstract class AbstractInfoflowProblem
 	}
 
 	@Override
-	public Map<Unit, Set<Abstraction>> initialSeeds() {
+	public Map<Unit, Set<AbstractDataFlowAbstraction>> initialSeeds() {
 		return initialSeeds;
 	}
 
@@ -133,7 +135,7 @@ public abstract class AbstractInfoflowProblem
 		return (callSites != null && callSites.contains(callSite));
 	}
 
-	protected boolean registerActivationCallSite(Unit callSite, SootMethod callee, Abstraction activationAbs) {
+	protected boolean registerActivationCallSite(Unit callSite, SootMethod callee, TaintAbstraction activationAbs) {
 		if (!manager.getConfig().getFlowSensitiveAliasing())
 			return false;
 		Unit activationUnit = activationAbs.getActivationUnit();
@@ -175,11 +177,11 @@ public abstract class AbstractInfoflowProblem
 	 * @param unit  The unit to be considered as a seed
 	 * @param seeds The abstractions with which to start at the given seed
 	 */
-	public void addInitialSeeds(Unit unit, Set<Abstraction> seeds) {
+	public void addInitialSeeds(Unit unit, Set<TaintAbstraction> seeds) {
 		if (this.initialSeeds.containsKey(unit))
 			this.initialSeeds.get(unit).addAll(seeds);
 		else
-			this.initialSeeds.put(unit, new HashSet<Abstraction>(seeds));
+			this.initialSeeds.put(unit, new HashSet<>(seeds));
 	}
 
 	/**
@@ -199,7 +201,7 @@ public abstract class AbstractInfoflowProblem
 	 * @return The initial seeds with which this information flow problem has been
 	 *         configured.
 	 */
-	public Map<Unit, Set<Abstraction>> getInitialSeeds() {
+	public Map<Unit, Set<AbstractDataFlowAbstraction>> getInitialSeeds() {
 		return this.initialSeeds;
 	}
 
@@ -213,13 +215,13 @@ public abstract class AbstractInfoflowProblem
 	}
 
 	@Override
-	public Abstraction zeroValue() {
+	public TaintAbstraction zeroValue() {
 		if (zeroValue == null)
-			zeroValue = Abstraction.getZeroAbstraction(manager.getConfig().getFlowSensitiveAliasing());
+			zeroValue = TaintAbstraction.getZeroAbstraction(manager.getConfig().getFlowSensitiveAliasing());
 		return zeroValue;
 	}
 
-	protected Abstraction getZeroValue() {
+	protected TaintAbstraction getZeroValue() {
 		return zeroValue;
 	}
 
@@ -242,19 +244,17 @@ public abstract class AbstractInfoflowProblem
 	 * Notifies the outbound flow handlers, if any, about the computed result
 	 * abstractions for the current flow function
 	 * 
-	 * @param d1           The abstraction at the beginning of the method
-	 * @param stmt         The statement that has just been processed
-	 * @param incoming     The incoming abstraction from which the outbound ones
-	 *                     were computed
+	 * @param solverState  The IFDS solver state
 	 * @param outgoing     The outbound abstractions to be propagated on
 	 * @param functionType The type of flow function that was computed
 	 * @return The outbound flow abstracions, potentially changed by the flow
 	 *         handlers
 	 */
-	protected Set<Abstraction> notifyOutFlowHandlers(Unit stmt, Abstraction d1, Abstraction incoming,
-			Set<Abstraction> outgoing, FlowFunctionType functionType) {
+	protected Set<AbstractDataFlowAbstraction> notifyOutFlowHandlers(
+			SolverState<Unit, AbstractDataFlowAbstraction> solverState, Set<AbstractDataFlowAbstraction> outgoing,
+			FlowFunctionType functionType) {
 		if (taintPropagationHandler != null && outgoing != null && !outgoing.isEmpty())
-			outgoing = taintPropagationHandler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, functionType);
+			outgoing = taintPropagationHandler.notifyFlowOut(solverState, outgoing, manager, functionType);
 		return outgoing;
 	}
 

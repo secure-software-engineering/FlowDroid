@@ -201,7 +201,7 @@ public class InfoflowConfiguration {
 
 		private boolean sequentialPathProcessing = false;
 		private PathReconstructionMode pathReconstructionMode = PathReconstructionMode.NoPaths;
-		private PathBuildingAlgorithm pathBuildingAlgorithm = PathBuildingAlgorithm.ContextInsensitive;
+		private PathBuildingAlgorithm pathBuildingAlgorithm = PathBuildingAlgorithm.None;
 		private int maxCallStackSize = 30;
 		private int maxPathLength = 75;
 		private int maxPathsPerAbstraction = 15;

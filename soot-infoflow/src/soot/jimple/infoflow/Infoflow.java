@@ -46,10 +46,10 @@ import soot.jimple.infoflow.aliasing.PtsBasedAliasStrategy;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.codeOptimization.DeadCodeEliminator;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPathFactory;
-import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.pathBuilders.BatchPathBuilder;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.data.pathBuilders.IAbstractionPathBuilder;
@@ -83,6 +83,7 @@ import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
+import soot.jimple.infoflow.solver.ngsolver.IFDSSolver.DataFlowSolverPhase;
 import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
@@ -261,7 +262,7 @@ public class Infoflow extends AbstractInfoflow {
 			memoryWatcher = new FlowDroidMemoryWatcher(results);
 
 			// Initialize the abstraction configuration
-			Abstraction.initialize(config);
+			TaintAbstraction.initialize(config);
 
 			// Build the callgraph
 			long beforeCallgraph = System.nanoTime();
@@ -324,12 +325,13 @@ public class Infoflow extends AbstractInfoflow {
 					public Thread newThread(Runnable r) {
 						Thread thrIFDS = new Thread(r);
 						thrIFDS.setDaemon(true);
-						thrIFDS.setName("FlowDroid");
+						thrIFDS.setName("FlowDroid - Phase 1");
 						return thrIFDS;
 					}
+
 				});
 				// Initialize the memory manager
-				IMemoryManager<Abstraction, Unit> memoryManager = createMemoryManager();
+				IMemoryManager<AbstractDataFlowAbstraction, Unit> memoryManager = createMemoryManager();
 
 				// Initialize the data flow manager
 				manager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy,
@@ -339,7 +341,7 @@ public class Infoflow extends AbstractInfoflow {
 				IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
 
 				// Get the zero fact
-				Abstraction zeroValue = aliasingStrategy.getSolver() != null
+				TaintAbstraction zeroValue = aliasingStrategy.getSolver() != null
 						? aliasingStrategy.getSolver().getTabulationProblem().zeroValue()
 						: null;
 
@@ -363,7 +365,6 @@ public class Infoflow extends AbstractInfoflow {
 				memoryWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
 
 				forwardSolver.setMemoryManager(memoryManager);
-				// forwardSolver.setEnableMergePointChecking(true);
 
 				forwardProblem.setTaintPropagationHandler(taintPropagationHandler);
 				forwardProblem.setTaintWrapper(taintWrapper);
@@ -447,6 +448,7 @@ public class Infoflow extends AbstractInfoflow {
 							thrPath.setName("FlowDroid Path Reconstruction");
 							return thrPath;
 						}
+
 					});
 
 					// Create the path builder
@@ -457,6 +459,8 @@ public class Infoflow extends AbstractInfoflow {
 					// initialize it before we start the taint tracking
 					if (config.getIncrementalResultReporting())
 						initializeIncrementalResultReporting(propagationResults, builder);
+
+					TaintAbstraction.setPropagateSourceContext(false);
 
 					forwardSolver.solve();
 					maxMemoryConsumption = Math.max(maxMemoryConsumption, getUsedMemory());
@@ -523,10 +527,53 @@ public class Infoflow extends AbstractInfoflow {
 
 					if (timeoutWatcher != null)
 						timeoutWatcher.stop();
+
+					// Run the second IFDS phase to obtain the source-to-sink connections
+					executor = executorFactory.createExecutor(numThreads, true, config);
+					executor.setThreadFactory(new ThreadFactory() {
+
+						@Override
+						public Thread newThread(Runnable r) {
+							Thread thrIFDS = new Thread(r);
+							thrIFDS.setDaemon(true);
+							thrIFDS.setName("FlowDroid - Phase 1");
+							return thrIFDS;
+						}
+
+					});
+
+					TaintAbstraction.setPropagateSourceContext(true);
+
+					if (aliasingStrategy.getSolver() != null) {
+						aliasingStrategy.getSolver().resetStatistics();
+						aliasingStrategy.getSolver().setExecutor(executor);
+						aliasingStrategy.getSolver().setSolverPhase(DataFlowSolverPhase.SECOND_PHASE);
+					}
+
+					forwardProblem.getResults().clear();
+
+					forwardSolver.resetStatistics();
+					forwardSolver.setExecutor(executor);
+					forwardSolver.setSolverPhase(DataFlowSolverPhase.SECOND_PHASE);
+
+					forwardSolver.solve();
+
+					logger.info("IFDS problem with {} forward and {} backward edges solved, processing {} results...",
+							forwardSolver.getPropagationCount(), aliasingStrategy.getSolver() == null ? 0
+									: aliasingStrategy.getSolver().getPropagationCount(),
+							res == null ? 0 : res.size());
+
+					results = new InfoflowResults(forwardProblem.getResults());
+
+					// Final cleanup
 					memoryWatcher.removeSolver((IMemoryBoundedSolver) forwardSolver);
 					forwardSolver.cleanup();
 					forwardSolver = null;
 					forwardProblem = null;
+					iCfg.purge();
+
+					if (config.getIncrementalResultReporting())
+						res = null;
 
 					// Remove the alias analysis from memory
 					aliasing = null;
@@ -534,10 +581,6 @@ public class Infoflow extends AbstractInfoflow {
 						memoryWatcher.removeSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
 					aliasingStrategy.cleanup();
 					aliasingStrategy = null;
-
-					if (config.getIncrementalResultReporting())
-						res = null;
-					iCfg.purge();
 
 					// Clean up the manager. Make sure to free objects, even if
 					// the manager is still held by other objects
@@ -781,7 +824,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * @return The alias analysis implementation to use for the data flow analysis
 	 */
 	private IAliasingStrategy createAliasAnalysis(final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
-			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
+			InterruptableExecutor executor, IMemoryManager<AbstractDataFlowAbstraction, Unit> memoryManager) {
 		IAliasingStrategy aliasingStrategy;
 		IInfoflowSolver backSolver = null;
 		BackwardsInfoflowProblem backProblem = null;
@@ -812,7 +855,6 @@ public class Infoflow extends AbstractInfoflow {
 			backSolver.setMemoryManager(memoryManager);
 			backSolver.setPredecessorShorteningMode(
 					pathConfigToShorteningMode(manager.getConfig().getPathConfiguration()));
-			// backSolver.setEnableMergePointChecking(true);
 			backSolver.setMaxJoinPointAbstractions(solverConfig.getMaxJoinPointAbstractions());
 			backSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
 			backSolver.setSolverId(false);
@@ -877,14 +919,8 @@ public class Infoflow extends AbstractInfoflow {
 	 * 
 	 * @return The memory manager object
 	 */
-	private IMemoryManager<Abstraction, Unit> createMemoryManager() {
-		PathDataErasureMode erasureMode = PathDataErasureMode.EraseAll;
-		if (pathBuilderFactory.isContextSensitive())
-			erasureMode = PathDataErasureMode.KeepOnlyContextData;
-		if (pathBuilderFactory.supportsPathReconstruction())
-			erasureMode = PathDataErasureMode.EraseNothing;
-		IMemoryManager<Abstraction, Unit> memoryManager = memoryManagerFactory.getMemoryManager(false, erasureMode);
-		return memoryManager;
+	private IMemoryManager<AbstractDataFlowAbstraction, Unit> createMemoryManager() {
+		return memoryManagerFactory.getMemoryManager(false);
 	}
 
 	/**

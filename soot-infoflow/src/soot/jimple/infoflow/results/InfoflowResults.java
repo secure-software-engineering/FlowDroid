@@ -25,8 +25,10 @@ import org.slf4j.LoggerFactory;
 import heros.solver.Pair;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
+import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
@@ -51,6 +53,31 @@ public class InfoflowResults {
 	private int terminationState = TERMINATION_SUCCESS;
 
 	/**
+	 * Creates a new, empty result object
+	 */
+	public InfoflowResults() {
+
+	}
+
+	/**
+	 * Creates a new result object based upon the results of a data flow
+	 * propagation. This constructor assumes that the source context has been
+	 * propagated along with the taint abstractions.
+	 * 
+	 * @param results The results of the IFDS data flow analysis
+	 */
+	public InfoflowResults(TaintPropagationResults results) {
+		if (results != null && !results.isEmpty()) {
+			for (AbstractionAtSink sinkAbs : results.getResults()) {
+				addResult(sinkAbs.getSinkDefinition(), sinkAbs.getAbstraction().getAccessPath(), sinkAbs.getSinkStmt(),
+						sinkAbs.getAbstraction().getSourceContext().getDefinition(),
+						sinkAbs.getAbstraction().getSourceContext().getAccessPath(),
+						sinkAbs.getAbstraction().getSourceContext().getStmt());
+			}
+		}
+	}
+
+	/**
 	 * Gets the exceptions that have happened during the data flow analysis. This
 	 * collection is immutable.
 	 * 
@@ -64,8 +91,7 @@ public class InfoflowResults {
 	 * Adds an exception that has occurred during the data flow analysis to this
 	 * result object
 	 * 
-	 * @param ex
-	 *            The exception to add
+	 * @param ex The exception to add
 	 */
 	public void addException(String ex) {
 		if (exceptions == null) {
@@ -75,10 +101,6 @@ public class InfoflowResults {
 			}
 		}
 		exceptions.add(ex);
-	}
-
-	public InfoflowResults() {
-
 	}
 
 	/**
@@ -118,8 +140,7 @@ public class InfoflowResults {
 	 * Checks whether this result object contains a sink that exactly matches the
 	 * given value.
 	 * 
-	 * @param sink
-	 *            The sink to check for
+	 * @param sink The sink to check for
 	 * @return True if this result contains the given value as a sink, otherwise
 	 *         false.
 	 */
@@ -134,8 +155,7 @@ public class InfoflowResults {
 	 * Checks whether this result object contains a sink with the given method
 	 * signature
 	 * 
-	 * @param sinkSignature
-	 *            The method signature to check for
+	 * @param sinkSignature The method signature to check for
 	 * @return True if there is a sink with the given method signature in this
 	 *         result object, otherwise false.
 	 */
@@ -151,14 +171,14 @@ public class InfoflowResults {
 
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(SourceSinkDefinition sinkDefinition, AccessPath sink,
 			Stmt sinkStmt, SourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-			List<Abstraction> propagationPath) {
+			List<TaintAbstraction> propagationPath) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;
 		List<AccessPath> apPath = null;
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
 			apPath = new ArrayList<>(propagationPath.size());
-			for (Abstraction pathAbs : propagationPath) {
+			for (TaintAbstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
 					stmtPath.add(pathAbs.getCurrentStmt());
 					apPath.add(pathAbs.getAccessPath());
@@ -174,24 +194,19 @@ public class InfoflowResults {
 	/**
 	 * Adds the given result to this data structure
 	 * 
-	 * @param sinkDefinition
-	 *            The definition of the sink
-	 * @param sink
-	 *            The access path that arrived at the sink statement
-	 * @param sinkStmt
-	 *            The sink statement
-	 * @param sourceDefinition
-	 *            The definition of the source
-	 * @param source
-	 *            The access path that originated from the source statement
-	 * @param sourceStmt
-	 *            The source statement
-	 * @param userData
-	 *            Optional user data to associate with the source
-	 * @param propagationPath
-	 *            The statements over which the data flow was propagated
-	 * @param propagationAccessPath
-	 *            The access paths along the data flow propagation path
+	 * @param sinkDefinition        The definition of the sink
+	 * @param sink                  The access path that arrived at the sink
+	 *                              statement
+	 * @param sinkStmt              The sink statement
+	 * @param sourceDefinition      The definition of the source
+	 * @param source                The access path that originated from the source
+	 *                              statement
+	 * @param sourceStmt            The source statement
+	 * @param userData              Optional user data to associate with the source
+	 * @param propagationPath       The statements over which the data flow was
+	 *                              propagated
+	 * @param propagationAccessPath The access paths along the data flow propagation
+	 *                              path
 	 * @return The new data flow result
 	 */
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(SourceSinkDefinition sinkDefinition, AccessPath sink,
@@ -208,8 +223,7 @@ public class InfoflowResults {
 	/**
 	 * Adds the given data flow result to this data structure
 	 * 
-	 * @param res
-	 *            The data flow result to add
+	 * @param res The data flow result to add
 	 */
 	public void addResult(DataFlowResult res) {
 		if (res != null) {
@@ -220,10 +234,8 @@ public class InfoflowResults {
 	/**
 	 * Adds the given result to this data structure
 	 * 
-	 * @param sink
-	 *            The sink at which the taint arrived
-	 * @param source
-	 *            The source from which the taint originated
+	 * @param sink   The sink at which the taint arrived
+	 * @param source The source from which the taint originated
 	 */
 	public void addResult(ResultSinkInfo sink, ResultSourceInfo source) {
 		if (results == null) {
@@ -238,8 +250,7 @@ public class InfoflowResults {
 	/**
 	 * Adds all results from the given data structure to this one
 	 * 
-	 * @param results
-	 *            The data structure from which to copy the results
+	 * @param results The data structure from which to copy the results
 	 */
 	public void addAll(InfoflowResults results) {
 		if (results == null || results.isEmpty())
@@ -260,8 +271,7 @@ public class InfoflowResults {
 	/**
 	 * Adds the given data flow results to this result object
 	 * 
-	 * @param results
-	 *            The data flow results to add
+	 * @param results The data flow results to add
 	 */
 	public void addAll(Set<DataFlowResult> results) {
 		if (results == null || results.isEmpty())
@@ -301,10 +311,8 @@ public class InfoflowResults {
 	/**
 	 * Checks whether there is a path between the given source and sink.
 	 * 
-	 * @param sink
-	 *            The sink to which there may be a path
-	 * @param source
-	 *            The source from which there may be a path
+	 * @param sink   The sink to which there may be a path
+	 * @param source The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
 	 *         otherwise
 	 */
@@ -330,10 +338,8 @@ public class InfoflowResults {
 	/**
 	 * Checks whether there is a path between the given source and sink.
 	 * 
-	 * @param sink
-	 *            The sink to which there may be a path
-	 * @param source
-	 *            The source from which there may be a path
+	 * @param sink   The sink to which there may be a path
+	 * @param source The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
 	 *         otherwise
 	 */
@@ -355,10 +361,8 @@ public class InfoflowResults {
 	 * Checks whether there is an information flow between the two given methods
 	 * (specified by their respective Soot signatures).
 	 * 
-	 * @param sinkSignature
-	 *            The sink to which there may be a path
-	 * @param sourceSignature
-	 *            The source from which there may be a path
+	 * @param sinkSignature   The sink to which there may be a path
+	 * @param sourceSignature The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
 	 *         otherwise
 	 */
@@ -381,8 +385,7 @@ public class InfoflowResults {
 	/**
 	 * Finds the entry for a sink method with the given signature
 	 * 
-	 * @param sinkSignature
-	 *            The sink's method signature to look for
+	 * @param sinkSignature The sink's method signature to look for
 	 * @return The key of the entry with the given method signature if such an entry
 	 *         has been found, otherwise null.
 	 */
@@ -420,10 +423,8 @@ public class InfoflowResults {
 	/**
 	 * Prints all results stored in this object to the given writer
 	 * 
-	 * @param wr
-	 *            The writer to which to print the results
-	 * @throws IOException
-	 *             Thrown when data writing fails
+	 * @param wr The writer to which to print the results
+	 * @throws IOException Thrown when data writing fails
 	 */
 	public void printResults(Writer wr) throws IOException {
 		if (this.results == null)
@@ -462,8 +463,7 @@ public class InfoflowResults {
 	 * terminated normally or whether one or more phases terminated prematurely due
 	 * to a timeout or an out-of-memory condition
 	 * 
-	 * @param terminationState
-	 *            The termination state
+	 * @param terminationState The termination state
 	 */
 	public void setTerminationState(int terminationState) {
 		this.terminationState = terminationState;

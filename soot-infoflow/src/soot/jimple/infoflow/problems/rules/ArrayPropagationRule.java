@@ -8,6 +8,7 @@ import soot.ArrayType;
 import soot.IntType;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
 import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
@@ -16,10 +17,12 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -30,19 +33,23 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 
-	public ArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public ArrayPropagationRule(InfoflowManager manager, TaintAbstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Get the assignment
 		if (!(stmt instanceof AssignStmt))
 			return null;
 		AssignStmt assignStmt = (AssignStmt) stmt;
 
-		Abstraction newAbs = null;
+		TaintAbstraction newAbs = null;
 		final Value leftVal = assignStmt.getLeftOp();
 		final Value rightVal = assignStmt.getRightOp();
 
@@ -104,32 +111,34 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 		if (newAbs == null)
 			return null;
 
-		Set<Abstraction> res = new HashSet<>();
+		Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 		res.add(newAbs);
 
 		// Compute the aliases
 		if (Aliasing.canHaveAliases(assignStmt, leftVal, newAbs))
-			getAliasing().computeAliases(d1, assignStmt, leftVal, res, getManager().getICFG().getMethodOf(assignStmt),
-					newAbs);
+			getAliasing().computeAliases(state.derive(newAbs), leftVal, res,
+					getManager().getICFG().getMethodOf(assignStmt));
 
 		return res;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
+		return null;
+	}
+
+	@Override
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
 			ByReferenceBoolean killAll) {
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		return null;
-	}
-
-	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

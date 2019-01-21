@@ -4,10 +4,10 @@ import java.util.Set;
 
 import soot.SootMethod;
 import soot.Unit;
-import soot.Value;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.ngsolver.SolverState;
 
@@ -26,18 +26,24 @@ public class FlowSensitiveAliasStrategy extends AbstractBulkAliasStrategy {
 	}
 
 	@Override
-	public void computeAliasTaints(final Abstraction d1, final Stmt src, final Value targetValue,
-			Set<Abstraction> taintSet, SootMethod method, Abstraction newAbs) {
+	public void computeAliasTaints(SolverState<Unit, AbstractDataFlowAbstraction> state,
+			Set<? extends AbstractDataFlowAbstraction> taintSet, SootMethod method) {
+		final Stmt src = (Stmt) state.getTarget();
+
 		// Start the backwards solver
-		Abstraction bwAbs = newAbs.deriveInactiveAbstraction(src);
-		for (Unit predUnit : manager.getICFG().getPredsOf(src))
-			bSolver.processEdge(new SolverState<>(d1, predUnit, bwAbs));
+		AbstractDataFlowAbstraction targetVal = state.getTargetVal();
+		if (targetVal instanceof TaintAbstraction) {
+			TaintAbstraction taint = (TaintAbstraction) targetVal;
+			AbstractDataFlowAbstraction bwAbs = taint.deriveInactiveAbstraction(src);
+			for (Unit predUnit : manager.getICFG().getPredsOf(src))
+				bSolver.processEdge(state.derive(predUnit, bwAbs));
+		}
 	}
 
 	@Override
-	public void injectCallingContext(Abstraction d3, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
-			Abstraction source, Abstraction d1) {
-		bSolver.injectContext(fSolver, callee, d3, callSite, source, d1);
+	public void injectCallingContext(AbstractDataFlowAbstraction d3, IInfoflowSolver fSolver, SootMethod callee,
+			SolverState<Unit, AbstractDataFlowAbstraction> solverState) {
+		bSolver.injectContext(fSolver, callee, d3, solverState);
 	}
 
 	@Override

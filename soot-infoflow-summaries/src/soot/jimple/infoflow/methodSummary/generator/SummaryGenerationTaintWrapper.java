@@ -12,7 +12,7 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SourceContext;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
@@ -49,7 +49,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
 		// This must be a method invocation
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedPath);
@@ -71,7 +71,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 		GapDefinition gap = gapManager.getOrCreateGapForCall(summaries, stmt);
 
 		// Produce a continuation
-		Set<Abstraction> res = new HashSet<Abstraction>();
+		Set<TaintAbstraction> res = new HashSet<TaintAbstraction>();
 		if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 			AccessPath ap = manager.getAccessPathFactory()
 					.createAccessPath(((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase(), true);
@@ -103,9 +103,9 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	 * @param stmt
 	 * @return
 	 */
-	private Abstraction getContinuation(Abstraction source, AccessPath accessPath, GapDefinition gap, Stmt stmt) {
+	private TaintAbstraction getContinuation(TaintAbstraction source, AccessPath accessPath, GapDefinition gap, Stmt stmt) {
 		// Make sure that we don't break anything
-		Abstraction newOutAbs = source.clone().deriveNewAbstraction(accessPath, stmt);
+		TaintAbstraction newOutAbs = source.clone().deriveNewAbstraction(accessPath, stmt);
 
 		// Create the source information pointing to the gap. This may not be unique
 		newOutAbs.setPredecessor(null);
@@ -151,7 +151,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 		return gapManager.needsGapConstruction(stmt, taintedPath, manager.getICFG());
 	}
 
@@ -181,7 +181,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
 		// We don't need to process aliases
 		return null;
 	}

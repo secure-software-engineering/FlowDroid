@@ -6,7 +6,7 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.Value;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 
@@ -20,8 +20,8 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
 public class NullAliasStrategy implements IAliasingStrategy {
 
 	@Override
-	public void computeAliasTaints(Abstraction d1, Stmt src, Value targetValue, Set<Abstraction> taintSet,
-			SootMethod method, Abstraction newAbs) {
+	public void computeAliasTaints(TaintAbstraction d1, Stmt src, Value targetValue, Set<TaintAbstraction> taintSet,
+			SootMethod method, TaintAbstraction newAbs) {
 		//
 	}
 
@@ -36,8 +36,8 @@ public class NullAliasStrategy implements IAliasingStrategy {
 	}
 
 	@Override
-	public void injectCallingContext(Abstraction abs, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
-			Abstraction source, Abstraction d1) {
+	public void injectCallingContext(TaintAbstraction abs, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
+			TaintAbstraction source, TaintAbstraction d1) {
 		//
 	}
 

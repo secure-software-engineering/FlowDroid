@@ -5,7 +5,7 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 
@@ -61,8 +61,8 @@ public class LazyAliasingStrategy extends AbstractInteractiveAliasStrategy {
 	}
 
 	@Override
-	public void injectCallingContext(Abstraction abs, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
-			Abstraction source, Abstraction d1) {
+	public void injectCallingContext(TaintAbstraction abs, IInfoflowSolver fSolver, SootMethod callee, Unit callSite,
+			TaintAbstraction source, TaintAbstraction d1) {
 		// nothing to do here
 	}
 

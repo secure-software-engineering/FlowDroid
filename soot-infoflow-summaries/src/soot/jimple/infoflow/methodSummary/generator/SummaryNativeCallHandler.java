@@ -7,7 +7,7 @@ import soot.Value;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.nativeCallHandler.AbstractNativeCallHandler;
 import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
@@ -53,7 +53,7 @@ public class SummaryNativeCallHandler extends AbstractNativeCallHandler {
 	}
 
 	@Override
-	public Set<Abstraction> getTaintedValues(Stmt call, Abstraction source, Value[] params) {
+	public Set<TaintAbstraction> getTaintedValues(Stmt call, TaintAbstraction source, Value[] params) {
 		// Check the fallback handler first, before doing an over-approximation
 		if (fallbackHandler.supportsCall(call))
 			return fallbackHandler.getTaintedValues(call, source, params);

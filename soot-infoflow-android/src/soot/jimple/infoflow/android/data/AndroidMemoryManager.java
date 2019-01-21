@@ -5,7 +5,7 @@ import java.util.Set;
 import soot.RefType;
 import soot.SootClass;
 import soot.Type;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager;
 
 /**
@@ -34,7 +34,7 @@ public class AndroidMemoryManager extends FlowDroidMemoryManager {
 	}
 	
 	@Override
-	public Abstraction handleMemoryObject(Abstraction obj) {
+	public TaintAbstraction handleMemoryObject(TaintAbstraction obj) {
 		// We use the optimizations already present in FlowDroid
 		obj = super.handleMemoryObject(obj);
 		

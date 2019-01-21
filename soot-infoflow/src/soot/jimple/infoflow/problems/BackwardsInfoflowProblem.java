@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import heros.flowfunc.Identity;
-import heros.solver.PathEdge;
 import soot.ArrayType;
 import soot.Local;
 import soot.PrimType;
@@ -46,8 +44,9 @@ import soot.jimple.UnopExpr;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -74,10 +73,10 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 	}
 
 	@Override
-	public FlowFunctions<Unit, Abstraction, SootMethod> flowFunctions() {
-		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
+	public FlowFunctions<Unit, AbstractDataFlowAbstraction, SootMethod> flowFunctions() {
+		return new FlowFunctions<Unit, AbstractDataFlowAbstraction, SootMethod>() {
 
-			private Abstraction checkAbstraction(Abstraction abs) {
+			private TaintAbstraction checkAbstraction(TaintAbstraction abs) {
 				if (abs == null)
 					return null;
 
@@ -107,22 +106,22 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			 * @param leftValue The left side of def. Passed in to allow for caching, no
 			 *                  need to recompute this for every abstraction being
 			 *                  processed.
-			 * @param d1        The abstraction at the method's start node
-			 * @param source    The source abstraction of the alias search from before the
-			 *                  current statement
+			 * @param state     The data flow solver's state that contains the source and
+			 *                  target abstractions from IFDS
 			 * @return The set of abstractions after the current statement
 			 */
-			private Set<Abstraction> computeAliases(final DefinitionStmt defStmt, Value leftValue, Abstraction d1,
-					Abstraction source) {
+			private Set<AbstractDataFlowAbstraction> computeAliases(final DefinitionStmt defStmt, Value leftValue,
+					SolverState<Unit, AbstractDataFlowAbstraction> state) {
+				final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+
 				assert !source.getAccessPath().isEmpty();
 
 				// A backward analysis looks for aliases of existing taints and
-				// thus
-				// cannot create new taints out of thin air
+				// thus cannot create new taints out of thin air
 				if (source == getZeroValue())
 					return null;
 
-				final Set<Abstraction> res = new MutableTwoElementSet<Abstraction>();
+				final Set<AbstractDataFlowAbstraction> res = new MutableTwoElementSet<>();
 
 				// Check whether the left side of the assignment matches our
 				// current taint abstraction
@@ -136,7 +135,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					// taint, all taint propagations must be below that point,
 					// so this is the right point to turn around.
 					for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-						manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, source));
+						manager.getForwardSolver().processEdge(state.derive(u, state.getTargetVal()));
 				}
 
 				// We only handle assignments and identity statements
@@ -189,7 +188,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					// If the tainted value 'b' is assigned to variable 'a' and
 					// 'b' is a heap object, we must also look for aliases of
 					// 'a' upwards from the current statement.
-					Abstraction newLeftAbs = null;
+					TaintAbstraction newLeftAbs = null;
 					if (rightValue instanceof InstanceFieldRef) {
 						InstanceFieldRef ref = (InstanceFieldRef) rightValue;
 						if (source.getAccessPath().isInstanceFieldRef()
@@ -247,19 +246,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					if (newLeftAbs != null) {
-						// If we ran into a new abstraction that points to a
-						// primitive value, we can remove it
-						if (newLeftAbs.getAccessPath().getLastFieldType() instanceof PrimType)
-							return res;
-
 						if (!newLeftAbs.getAccessPath().equals(source.getAccessPath())) {
 							// Propagate the new alias upwards
 							res.add(newLeftAbs);
 
 							// Inject the new alias into the forward solver
 							for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-								manager.getForwardSolver()
-										.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
+								manager.getForwardSolver().processEdge(state.derive(u, newLeftAbs));
 						}
 					}
 				}
@@ -373,14 +366,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						if (addRightValue) {
 							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 									rightValue, targetType, cutFirstField);
-							Abstraction newAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
+							TaintAbstraction newAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
 							if (newAbs != null && !newAbs.getAccessPath().equals(source.getAccessPath())) {
 								res.add(newAbs);
 
 								// Inject the new alias into the forward solver
 								for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-									manager.getForwardSolver()
-											.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newAbs));
+									manager.getForwardSolver().processEdge(state.derive(u, newAbs));
 							}
 						}
 					}
@@ -390,7 +382,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverNormalFlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
+			public SolverNormalFlowFunction<Unit, AbstractDataFlowAbstraction> getNormalFlowFunction(final Unit src,
+					final Unit dest) {
 				if (src instanceof DefinitionStmt) {
 					final DefinitionStmt defStmt = (DefinitionStmt) src;
 					final Value leftValue = BaseSelector.selectBase(defStmt.getLeftOp(), true);
@@ -399,10 +392,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					final Value destLeftValue = destDefStmt == null ? null
 							: BaseSelector.selectBase(destDefStmt.getLeftOp(), true);
 
-					return new SolverNormalFlowFunction<Abstraction>() {
+					return new SolverNormalFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 						@Override
-						public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
+						public Set<AbstractDataFlowAbstraction> computeTargets(
+								SolverState<Unit, AbstractDataFlowAbstraction> state) {
+							final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+
 							if (source == getZeroValue())
 								return null;
 							assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
@@ -412,24 +408,33 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								taintPropagationHandler.notifyFlowIn(src, source, manager,
 										FlowFunctionType.NormalFlowFunction);
 
-							Set<Abstraction> res = computeAliases(defStmt, leftValue, d1, source);
+							Set<AbstractDataFlowAbstraction> res = computeAliases(defStmt, leftValue, state);
 
 							if (destDefStmt != null && res != null && !res.isEmpty()
 									&& interproceduralCFG().isExitStmt(destDefStmt)) {
-								for (Abstraction abs : res)
-									computeAliases(destDefStmt, destLeftValue, d1, abs);
+								for (AbstractDataFlowAbstraction abs : res)
+									computeAliases(destDefStmt, destLeftValue, state.derive(abs));
 							}
 
-							return notifyOutFlowHandlers(src, d1, source, res, FlowFunctionType.NormalFlowFunction);
+							return notifyOutFlowHandlers(state, res, FlowFunctionType.NormalFlowFunction);
 						}
 
 					};
 				}
-				return Identity.v();
+
+				return new SolverNormalFlowFunction<Unit, AbstractDataFlowAbstraction>() {
+
+					@Override
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> source) {
+						return Collections.singleton(source.getTargetVal());
+					}
+
+				};
 			}
 
 			@Override
-			public SolverCallFlowFunction<Unit, Abstraction> getCallFlowFunction(final Unit src,
+			public SolverCallFlowFunction<Unit, AbstractDataFlowAbstraction> getCallFlowFunction(final Unit src,
 					final SootMethod dest) {
 				final Stmt stmt = (Stmt) src;
 				final InvokeExpr ie = (stmt != null && stmt.containsInvokeExpr()) ? stmt.getInvokeExpr() : null;
@@ -455,13 +460,14 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 
-				return new SolverCallFlowFunction<Unit, Abstraction>() {
+				return new SolverCallFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> solverState) {
-						final Abstraction source = solverState.getTargetVal()
-						final Abstraction d1 = solverState.getSourceVal();
-						
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> solverState) {
+						final TaintAbstraction source = (TaintAbstraction) solverState.getTargetVal();
+						final TaintAbstraction d1 = (TaintAbstraction) solverState.getSourceVal();
+
 						if (source == getZeroValue())
 							return null;
 						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
@@ -506,7 +512,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							if (!interproceduralCFG().isStaticFieldRead(dest, source.getAccessPath().getFirstField()))
 								return null;
 
-						Set<Abstraction> res = new HashSet<Abstraction>();
+						Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 
 						// if the returned value is tainted - taint values from
 						// return statements
@@ -523,7 +529,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 													rStmt.getOp().getType())) {
 												AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 														source.getAccessPath(), rStmt.getOp(), null, false);
-												Abstraction abs = checkAbstraction(
+												TaintAbstraction abs = checkAbstraction(
 														source.deriveNewAbstraction(ap, (Stmt) src));
 												if (abs != null)
 													res.add(abs);
@@ -536,7 +542,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// easy: static
 						if (manager.getConfig().getEnableStaticFieldTracking()
 								&& source.getAccessPath().isStaticFieldRef()) {
-							Abstraction abs = checkAbstraction(
+							TaintAbstraction abs = checkAbstraction(
 									source.deriveNewAbstraction(source.getAccessPath(), stmt));
 							if (abs != null)
 								res.add(abs);
@@ -566,7 +572,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								if (!param) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), thisLocal);
-									Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, (Stmt) src));
+									TaintAbstraction abs = checkAbstraction(
+											source.deriveNewAbstraction(ap, (Stmt) src));
 									if (abs != null)
 										res.add(abs);
 								}
@@ -578,7 +585,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							if (ie.getArg(0) == source.getAccessPath().getPlainValue()) {
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 										thisLocal);
-								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
+								TaintAbstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
 								if (abs != null)
 									res.add(abs);
 							}
@@ -595,7 +602,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 										for (int j = 0; i < paramLocals.length; i++) {
 											AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 													source.getAccessPath(), paramLocals[j], null, false);
-											Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
+											TaintAbstraction abs = checkAbstraction(
+													source.deriveNewAbstraction(ap, stmt));
 											if (abs != null)
 												res.add(abs);
 										}
@@ -603,7 +611,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 										// Taint the respective parameter local
 										AccessPath ap = manager.getAccessPathFactory()
 												.copyWithNewValue(source.getAccessPath(), paramLocals[i]);
-										Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
+										TaintAbstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
 										if (abs != null)
 											res.add(abs);
 									}
@@ -613,17 +621,17 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Inject our calling context into the other solver
 						if (res != null && !res.isEmpty())
-							for (Abstraction d3 : res)
-								manager.getForwardSolver().injectContext(solver, dest, d3, src, source, d1);
+							for (AbstractDataFlowAbstraction d3 : res)
+								manager.getForwardSolver().injectContext(solver, dest, d3, solverState);
 
-						return notifyOutFlowHandlers(src, d1, source, res, FlowFunctionType.CallFlowFunction);
+						return notifyOutFlowHandlers(solverState, res, FlowFunctionType.CallFlowFunction);
 					}
 				};
 			}
 
 			@Override
-			public SolverReturnFlowFunction<Unit, Abstraction> getReturnFlowFunction(final Unit callSite,
-					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
+			public SolverReturnFlowFunction<Unit, AbstractDataFlowAbstraction> getReturnFlowFunction(
+					final Unit callSite, final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				final Value[] paramLocals = new Value[callee.getParameterCount()];
 				for (int i = 0; i < callee.getParameterCount(); i++)
 					paramLocals[i] = callee.getActiveBody().getParameterLocal(i);
@@ -641,11 +649,14 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
-				return new SolverReturnFlowFunction<Abstraction>() {
+				return new SolverReturnFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
-							Collection<Abstraction> callerD1s) {
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> state,
+							Collection<AbstractDataFlowAbstraction> callerD1s) {
+						final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+
 						if (source == getZeroValue())
 							return null;
 						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
@@ -664,12 +675,12 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						if (manager.getConfig().getEnableStaticFieldTracking()
 								&& source.getAccessPath().isStaticFieldRef()) {
 							registerActivationCallSite(callSite, callee, source);
-							return notifyOutFlowHandlers(exitStmt, d1, source, Collections.singleton(source),
+							return notifyOutFlowHandlers(state, Collections.singleton(source),
 									FlowFunctionType.ReturnFlowFunction);
 						}
 
 						final Value sourceBase = source.getAccessPath().getPlainValue();
-						Set<Abstraction> res = new HashSet<Abstraction>();
+						Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 
 						// Since we return from the top of the callee into the
 						// caller, return values cannot be propagated here. They
@@ -681,7 +692,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							if (source.getAccessPath().getPlainValue() == thisLocal) {
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 										ie.getArg(0));
-								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, (Stmt) exitStmt));
+								TaintAbstraction abs = checkAbstraction(
+										source.deriveNewAbstraction(ap, (Stmt) exitStmt));
 								if (abs != null) {
 									res.add(abs);
 									registerActivationCallSite(callSite, callee, abs);
@@ -728,7 +740,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 												source.getAccessPath(), originalCallArg,
 												isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
 												false);
-										Abstraction abs = checkAbstraction(
+										TaintAbstraction abs = checkAbstraction(
 												source.deriveNewAbstraction(ap, (Stmt) exitStmt));
 
 										if (abs != null) {
@@ -758,7 +770,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 														isReflectiveCallSite ? null
 																: source.getAccessPath().getBaseType(),
 														false);
-												Abstraction abs = checkAbstraction(
+												TaintAbstraction abs = checkAbstraction(
 														source.deriveNewAbstraction(ap, (Stmt) exitStmt));
 												if (abs != null) {
 													res.add(abs);
@@ -771,18 +783,14 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							}
 						}
 
-						for (Abstraction abs : res)
-							if (abs != source)
-								abs.setCorrespondingCallSite((Stmt) callSite);
-
-						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
+						return notifyOutFlowHandlers(state, res, FlowFunctionType.ReturnFlowFunction);
 					}
 				};
 			}
 
 			@Override
-			public SolverCallToReturnFlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call,
-					final Unit returnSite) {
+			public SolverCallToReturnFlowFunction<Unit, AbstractDataFlowAbstraction> getCallToReturnFlowFunction(
+					final Unit call, final Unit returnSite) {
 				final Stmt iStmt = (Stmt) call;
 				final InvokeExpr invExpr = iStmt.getInvokeExpr();
 
@@ -794,10 +802,14 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 				final DefinitionStmt defStmt = iStmt instanceof DefinitionStmt ? (DefinitionStmt) iStmt : null;
 
-				return new SolverCallToReturnFlowFunction<Abstraction>() {
+				return new SolverCallToReturnFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> state) {
+						final TaintAbstraction d1 = (TaintAbstraction) state.getSourceVal();
+						final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+
 						if (source == getZeroValue())
 							return null;
 						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
@@ -809,20 +821,18 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// Compute wrapper aliases
 						if (taintWrapper != null) {
-							Set<Abstraction> wrapperAliases = taintWrapper.getAliasesForMethod(iStmt, d1, source);
+							Set<TaintAbstraction> wrapperAliases = taintWrapper.getAliasesForMethod(iStmt, d1, source);
 							if (wrapperAliases != null && !wrapperAliases.isEmpty()) {
-								Set<Abstraction> passOnSet = new HashSet<>(wrapperAliases.size());
-								for (Abstraction abs : wrapperAliases) {
+								Set<AbstractDataFlowAbstraction> passOnSet = new HashSet<>(wrapperAliases.size());
+								for (TaintAbstraction abs : wrapperAliases) {
 									if (defStmt == null || defStmt.getLeftOp() != abs.getAccessPath().getPlainValue())
 										passOnSet.add(abs);
 
-									// Do not pass on this taint, but
-									// trigger the forward analysis
+									// Do not pass on this taint, but trigger the forward analysis
 									for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-										manager.getForwardSolver()
-												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
+										manager.getForwardSolver().processEdge(state.derive(u, abs));
 								}
-								return notifyOutFlowHandlers(call, d1, source, passOnSet,
+								return notifyOutFlowHandlers(state, passOnSet,
 										FlowFunctionType.CallToReturnFlowFunction);
 							}
 						}
@@ -865,7 +875,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									return null;
 						}
 
-						return notifyOutFlowHandlers(call, d1, source, Collections.singleton(source),
+						return notifyOutFlowHandlers(state, Collections.singleton(source),
 								FlowFunctionType.CallToReturnFlowFunction);
 					}
 				};

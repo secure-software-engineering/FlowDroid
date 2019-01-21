@@ -4,14 +4,17 @@ import java.util.Collection;
 import java.util.Collections;
 
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -22,13 +25,18 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class ExceptionPropagationRule extends AbstractTaintPropagationRule {
 
-	public ExceptionPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public ExceptionPropagationRule(InfoflowManager manager, TaintAbstraction zeroValue,
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -57,15 +65,17 @@ public class ExceptionPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
 		// We don't need to do anything here
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		// If we throw an exception with a tainted operand, we need to
 		// handle this specially
 		if (stmt instanceof ThrowStmt && retSite instanceof DefinitionStmt) {
@@ -81,8 +91,8 @@ public class ExceptionPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
 		return null;
 	}
 

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import soot.BooleanType;
 import soot.Local;
@@ -41,9 +42,10 @@ import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
@@ -64,7 +66,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 	protected final TaintPropagationResults results;
 
-	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
+	public InfoflowProblem(InfoflowManager manager, TaintAbstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager);
 
@@ -74,8 +76,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 	}
 
 	@Override
-	public FlowFunctions<Unit, Abstraction, SootMethod> flowFunctions() {
-		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
+	public FlowFunctions<Unit, AbstractDataFlowAbstraction, SootMethod> flowFunctions() {
+		return new FlowFunctions<Unit, AbstractDataFlowAbstraction, SootMethod>() {
 
 			/**
 			 * Abstract base class for all normal flow functions. This is to share code that
@@ -83,7 +85,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * 
 			 * @author Steven Arzt
 			 */
-			abstract class NotifyingNormalFlowFunction implements SolverNormalFlowFunction<Unit, Abstraction> {
+			abstract class NotifyingNormalFlowFunction
+					implements SolverNormalFlowFunction<Unit, AbstractDataFlowAbstraction> {
 
 				protected final Stmt stmt;
 
@@ -92,32 +95,35 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				}
 
 				@Override
-				public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> source) {
+				public Set<AbstractDataFlowAbstraction> computeTargets(
+						SolverState<Unit, AbstractDataFlowAbstraction> source) {
 					// Notify the handler if we have one
 					if (taintPropagationHandler != null)
 						taintPropagationHandler.notifyFlowIn(stmt, source.getTargetVal(), manager,
 								FlowFunctionType.NormalFlowFunction);
 
 					// Compute the new abstractions
-					Set<Abstraction> res = computeTargetsInternal(source);
-					return notifyOutFlowHandlers(stmt, source.getSourceVal(), source.getTargetVal(), res,
-							FlowFunctionType.NormalFlowFunction);
+					Set<AbstractDataFlowAbstraction> res = computeTargetsInternal(source);
+					return notifyOutFlowHandlers(source, res, FlowFunctionType.NormalFlowFunction);
 				}
 
-				public abstract Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> source);
+				public abstract Set<AbstractDataFlowAbstraction> computeTargetsInternal(
+						SolverState<Unit, AbstractDataFlowAbstraction> source);
 
 			}
 
 			/**
 			 * Taints the left side of the given assignment
 			 * 
-			 * @param assignStmt  The source statement from which the taint originated
-			 * @param targetValue The target value that shall now be tainted
-			 * @param source      The incoming taint abstraction from the source
-			 * @param taintSet    The taint set to which to add all newly produced taints
+			 * @param state    The IFDS solver state
+			 * @param taintSet The taint set to which to add all newly produced taints
 			 */
-			private void addTaintViaStmt(final Abstraction d1, final AssignStmt assignStmt, Abstraction source,
-					Set<Abstraction> taintSet, boolean cutFirstField, SootMethod method, Type targetType) {
+			private void addTaintViaStmt(SolverState<Unit, AbstractDataFlowAbstraction> state,
+					Set<AbstractDataFlowAbstraction> taintSet, boolean cutFirstField, SootMethod method,
+					Type targetType) {
+				final AssignStmt assignStmt = (AssignStmt) state.getTarget();
+				final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+
 				final Value leftValue = assignStmt.getLeftOp();
 				final Value rightValue = assignStmt.getRightOp();
 
@@ -125,7 +131,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (!manager.getConfig().getEnableStaticFieldTracking() && leftValue instanceof StaticFieldRef)
 					return;
 
-				Abstraction newAbs = null;
+				TaintAbstraction newAbs = null;
 				if (!source.getAccessPath().isEmpty()) {
 					// Special handling for array construction
 					if (leftValue instanceof ArrayRef && targetType != null) {
@@ -167,7 +173,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (newAbs != null) {
 					taintSet.add(newAbs);
 					if (Aliasing.canHaveAliases(assignStmt, leftValue, newAbs))
-						manager.getAliasing().computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+						manager.getAliasing().computeAliases(state.derive(newAbs), leftValue, taintSet, method);
 				}
 			}
 
@@ -187,8 +193,12 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return false;
 			}
 
-			private Set<Abstraction> createNewTaintOnAssignment(final AssignStmt assignStmt, final Value[] rightVals,
-					Abstraction d1, final Abstraction newSource) {
+			private Set<AbstractDataFlowAbstraction> createNewTaintOnAssignment(
+					SolverState<Unit, AbstractDataFlowAbstraction> state, final Value[] rightVals) {
+				final AssignStmt assignStmt = (AssignStmt) state.getTarget();
+				final TaintAbstraction newSource = (TaintAbstraction) state.getTargetVal();
+				final TaintAbstraction d1 = (TaintAbstraction) state.getSourceVal();
+
 				final Value leftValue = assignStmt.getLeftOp();
 				final Value rightValue = assignStmt.getRightOp();
 				boolean addLeftValue = false;
@@ -318,17 +328,18 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								&& !newSource.getAccessPath().getCanHaveImmutableAliases())))
 					return Collections.singleton(newSource);
 
-				Set<Abstraction> res = new HashSet<Abstraction>();
-				Abstraction targetAB = mappedAP.equals(newSource.getAccessPath()) ? newSource
+				Set<AbstractDataFlowAbstraction> res = new HashSet<>();
+				TaintAbstraction targetAB = mappedAP.equals(newSource.getAccessPath()) ? newSource
 						: newSource.deriveNewAbstraction(mappedAP, null);
-				addTaintViaStmt(d1, assignStmt, targetAB, res, cutFirstField,
+				addTaintViaStmt(state.derive(targetAB), res, cutFirstField,
 						interproceduralCFG().getMethodOf(assignStmt), targetType);
 				res.add(newSource);
 				return res;
 			}
 
 			@Override
-			public SolverNormalFlowFunction<Unit, Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
+			public SolverNormalFlowFunction<Unit, AbstractDataFlowAbstraction> getNormalFlowFunction(final Unit src,
+					final Unit dest) {
 				// Get the call site
 				if (!(src instanceof Stmt))
 					return KillAll.v();
@@ -336,23 +347,31 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return new NotifyingNormalFlowFunction((Stmt) src) {
 
 					@Override
-					public Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> solverState) {
-						final Abstraction source = solverState.getTargetVal();
+					public Set<AbstractDataFlowAbstraction> computeTargetsInternal(
+							SolverState<Unit, AbstractDataFlowAbstraction> solverState) {
+						// If we have a data flow abstraction that is not a normal taint, we simply
+						// propagate it as-is
+						if (!(solverState.getTargetVal() instanceof TaintAbstraction))
+							return Collections.singleton(solverState.getTargetVal());
+
+						final TaintAbstraction source = (TaintAbstraction) solverState.getTargetVal();
 
 						// Check whether we must activate a taint
-						final Abstraction newSource;
-						if (!source.isAbstractionActive() && src == source.getActivationUnit())
+						int flags = 0;
+						final TaintAbstraction newSource;
+						if (!source.isAbstractionActive() && src == source.getActivationUnit()) {
 							newSource = source.getActiveCopy();
-						else
+							flags |= PropagationRuleManager.ABSTRACTION_ACTIVATED;
+						} else
 							newSource = source;
 
 						// Apply the propagation rules
 						ByReferenceBoolean killSource = new ByReferenceBoolean();
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyNormalFlowFunction(solverState.getSourceVal(),
-								newSource, stmt, (Stmt) dest, killSource, killAll);
+						Set<AbstractDataFlowAbstraction> res = propagationRules.applyNormalFlowFunction(
+								solverState.derive(newSource), (Stmt) dest, killSource, killAll, flags);
 						if (killAll.value)
-							return Collections.<Abstraction>emptySet();
+							return Collections.<AbstractDataFlowAbstraction>emptySet();
 
 						// Propagate over an assignment
 						if (src instanceof AssignStmt) {
@@ -362,8 +381,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 							// Create the new taints that may be created by this
 							// assignment
-							Set<Abstraction> resAssign = createNewTaintOnAssignment(assignStmt, rightVals,
-									solverState.getSourceVal(), newSource);
+							Set<AbstractDataFlowAbstraction> resAssign = createNewTaintOnAssignment(
+									solverState.derive(newSource), rightVals);
 							if (resAssign != null && !resAssign.isEmpty()) {
 								if (res != null) {
 									res.addAll(resAssign);
@@ -374,14 +393,14 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// Return what we have so far
-						return res == null || res.isEmpty() ? Collections.<Abstraction>emptySet() : res;
+						return res == null || res.isEmpty() ? Collections.<AbstractDataFlowAbstraction>emptySet() : res;
 					}
 
 				};
 			}
 
 			@Override
-			public SolverCallFlowFunction<Unit, Abstraction> getCallFlowFunction(final Unit src,
+			public SolverCallFlowFunction<Unit, AbstractDataFlowAbstraction> getCallFlowFunction(final Unit src,
 					final SootMethod dest) {
 				if (!dest.isConcrete()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
@@ -397,23 +416,27 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				return new SolverCallFlowFunction<Unit, Abstraction>() {
+				return new SolverCallFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> source) {
-						Set<Abstraction> res = computeTargetsInternal(source);
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> source) {
+						// We only propagate taints into callees
+						if (!(source.getTargetVal() instanceof TaintAbstraction))
+							return Collections.emptySet();
+
+						Set<AbstractDataFlowAbstraction> res = computeTargetsInternal(source);
 						if (res != null && !res.isEmpty()) {
-							for (Abstraction abs : res)
-								manager.getAliasing().getAliasingStrategy().injectCallingContext(abs, solver, dest, src,
-										source.getTargetVal(), source.getSourceVal());
+							for (AbstractDataFlowAbstraction abs : res)
+								manager.getAliasing().getAliasingStrategy().injectCallingContext(abs, solver, dest,
+										source);
 						}
-						return notifyOutFlowHandlers(stmt, source.getSourceVal(), source.getTargetVal(), res,
-								FlowFunctionType.CallFlowFunction);
+						return notifyOutFlowHandlers(source, res, FlowFunctionType.CallFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> solverState) {
-						final Abstraction d1 = solverState.getSourceVal();
-						Abstraction source = solverState.getTargetVal();
+					private Set<AbstractDataFlowAbstraction> computeTargetsInternal(
+							SolverState<Unit, AbstractDataFlowAbstraction> solverState) {
+						TaintAbstraction source = (TaintAbstraction) solverState.getTargetVal();
 
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -435,7 +458,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							source = source.getActiveCopy();
 
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyCallFlowFunction(d1, source, stmt, dest, killAll);
+						Set<AbstractDataFlowAbstraction> res = propagationRules.applyCallFlowFunction(solverState, dest,
+								killAll);
 						if (killAll.value)
 							return null;
 
@@ -446,7 +470,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return res;
 
 						// Translate the access paths into abstractions
-						Set<Abstraction> resAbs = new HashSet<Abstraction>(resMapping.size());
+						Set<AbstractDataFlowAbstraction> resAbs = new HashSet<>(resMapping.size());
 						if (res != null && !res.isEmpty())
 							resAbs.addAll(res);
 						for (AccessPath ap : resMapping) {
@@ -455,7 +479,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								// there is no need to propagate it through
 								if (manager.getAliasing().getAliasingStrategy().isLazyAnalysis() || source.isImplicit()
 										|| interproceduralCFG().methodReadsValue(dest, ap.getPlainValue())) {
-									Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
+									TaintAbstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 									if (newAbs != null)
 										resAbs.add(newAbs);
 								}
@@ -468,8 +492,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverReturnFlowFunction<Unit, Abstraction> getReturnFlowFunction(final Unit callSite,
-					final SootMethod callee, final Unit exitStmt, final Unit retSite) {
+			public SolverReturnFlowFunction<Unit, AbstractDataFlowAbstraction> getReturnFlowFunction(
+					final Unit callSite, final SootMethod callee, final Unit exitStmt, final Unit retSite) {
 				// Get the call site
 				if (callSite != null && !(callSite instanceof Stmt))
 					return KillAll.v();
@@ -485,19 +509,24 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 
-				return new SolverReturnFlowFunction<Unit, Abstraction>() {
+				return new SolverReturnFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> state,
-							Collection<Abstraction> callerD1s) {
-						Set<Abstraction> res = computeTargetsInternal(state, callerD1s);
-						return notifyOutFlowHandlers(exitStmt, state.getSourceVal(), state.getTargetVal(), res,
-								FlowFunctionType.ReturnFlowFunction);
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> state,
+							Collection<AbstractDataFlowAbstraction> callerD1s) {
+						// We need to add leak summaries to the IFDS method summaries
+						if (!(state.getTargetVal() instanceof TaintAbstraction))
+							return Collections.singleton(state.getTargetVal());
+
+						Set<AbstractDataFlowAbstraction> res = computeTargetsInternal(state, callerD1s);
+						return notifyOutFlowHandlers(state, res, FlowFunctionType.ReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> state,
-							Collection<Abstraction> callerD1s) {
-						final Abstraction source = state.getTargetVal();
+					private Set<AbstractDataFlowAbstraction> computeTargetsInternal(
+							SolverState<Unit, AbstractDataFlowAbstraction> state,
+							Collection<AbstractDataFlowAbstraction> callerD1s) {
+						final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
 
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -509,15 +538,15 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(exitStmt, source, manager,
 									FlowFunctionType.ReturnFlowFunction);
 						boolean callerD1sConditional = false;
-						for (Abstraction d1 : callerD1s) {
-							if (d1.getAccessPath().isEmpty()) {
+						for (AbstractDataFlowAbstraction d1 : callerD1s) {
+							if (((TaintAbstraction) d1).getAccessPath().isEmpty()) {
 								callerD1sConditional = true;
 								break;
 							}
 						}
 
 						// Activate taint if necessary
-						Abstraction newSource = source;
+						TaintAbstraction newSource = source;
 						if (!source.isAbstractionActive())
 							if (callSite != null)
 								if (callSite == source.getActivationUnit()
@@ -532,8 +561,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, newSource,
-								(Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
+						Set<AbstractDataFlowAbstraction> res = propagationRules.applyReturnFlowFunction(
+								callerD1s.stream().map(v -> (TaintAbstraction) v).collect(Collectors.toSet()),
+								newSource, (Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
 						if (killAll.value)
 							return null;
 						if (res == null)
@@ -562,16 +592,18 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										&& !isExceptionHandler(retSite)) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(newSource.getAccessPath(), leftOp);
-									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
+									TaintAbstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 									if (abs != null) {
 										res.add(abs);
 
 										// Aliases of implicitly tainted variables must be mapped back into the caller's
 										// context on return when we leave the last implicitly-called method
 										if (manager.getAliasing().getAliasingStrategy().requiresAnalysisOnReturn())
-											for (Abstraction d1 : callerD1s)
-												manager.getAliasing().computeAliases(d1, iCallStmt, leftOp, res,
-														interproceduralCFG().getMethodOf(callSite), abs);
+											for (AbstractDataFlowAbstraction d1 : callerD1s)
+												manager.getAliasing().computeAliases(
+														new SolverState<Unit, AbstractDataFlowAbstraction>(d1, callSite,
+																abs),
+														leftOp, res, interproceduralCFG().getMethodOf(callSite));
 									}
 								}
 							}
@@ -637,7 +669,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 												newSource.getAccessPath(), originalCallArg,
 												isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
 												false);
-										Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
+										TaintAbstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 
 										if (abs != null) {
 											res.add(abs);
@@ -675,7 +707,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 											newSource.getAccessPath(), callerBaseLocal,
 											isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
 											false);
-									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
+									TaintAbstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 									if (abs != null) {
 										res.add(abs);
 									}
@@ -683,21 +715,21 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							}
 						}
 
-						for (Abstraction abs : res) {
-							// Aliases of implicitly tainted variables must be
-							// mapped back into the caller's context on return
-							// when we leave the last implicitly-called method
-							if ((abs.isImplicit() && !callerD1sConditional)
-									|| manager.getAliasing().getAliasingStrategy().requiresAnalysisOnReturn()) {
-								for (Abstraction d1 : callerD1s) {
-									manager.getAliasing().computeAliases(d1, iCallStmt, null, res,
-											interproceduralCFG().getMethodOf(callSite), abs);
-								}
-							}
+						for (AbstractDataFlowAbstraction abs : res) {
+							if (res instanceof TaintAbstraction) {
+								TaintAbstraction taint = (TaintAbstraction) res;
 
-							// Set the corresponding call site
-							if (abs != newSource) {
-								abs.setCorrespondingCallSite(iCallStmt);
+								// Aliases of implicitly tainted variables must be
+								// mapped back into the caller's context on return
+								// when we leave the last implicitly-called method
+								if ((taint.isImplicit() && !callerD1sConditional)
+										|| manager.getAliasing().getAliasingStrategy().requiresAnalysisOnReturn()) {
+									for (AbstractDataFlowAbstraction d1 : callerD1s) {
+										manager.getAliasing().computeAliases(
+												new SolverState<Unit, AbstractDataFlowAbstraction>(d1, callSite, abs),
+												null, res, interproceduralCFG().getMethodOf(callSite));
+									}
+								}
 							}
 						}
 						return res;
@@ -707,8 +739,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			}
 
 			@Override
-			public SolverCallToReturnFlowFunction<Unit, Abstraction> getCallToReturnFlowFunction(final Unit call,
-					final Unit returnSite) {
+			public SolverCallToReturnFlowFunction<Unit, AbstractDataFlowAbstraction> getCallToReturnFlowFunction(
+					final Unit call, final Unit returnSite) {
 				// special treatment for native methods:
 				if (!(call instanceof Stmt))
 					return KillAll.v();
@@ -730,18 +762,22 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final SootMethod callee = invExpr.getMethod();
 				final boolean hasValidCallees = hasValidCallees(call);
 
-				return new SolverCallToReturnFlowFunction<Unit, Abstraction>() {
+				return new SolverCallToReturnFlowFunction<Unit, AbstractDataFlowAbstraction>() {
 
 					@Override
-					public Set<Abstraction> computeTargets(SolverState<Unit, Abstraction> state) {
-						Set<Abstraction> res = computeTargetsInternal(state);
-						return notifyOutFlowHandlers(call, state.getSourceVal(), state.getTargetVal(), res,
-								FlowFunctionType.CallToReturnFlowFunction);
+					public Set<AbstractDataFlowAbstraction> computeTargets(
+							SolverState<Unit, AbstractDataFlowAbstraction> state) {
+						// We need to preserve leak summaries when going over callees
+						if (!(state.getTargetVal() instanceof TaintAbstraction))
+							return Collections.singleton(state.getTargetVal());
+
+						Set<AbstractDataFlowAbstraction> res = computeTargetsInternal(state);
+						return notifyOutFlowHandlers(state, res, FlowFunctionType.CallToReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(SolverState<Unit, Abstraction> state) {
-						final Abstraction d1 = state.getSourceVal();
-						final Abstraction source = state.getTargetVal();
+					private Set<AbstractDataFlowAbstraction> computeTargetsInternal(
+							SolverState<Unit, AbstractDataFlowAbstraction> state) {
+						final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
 
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -757,7 +793,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return null;
 
 						// check inactive elements:
-						final Abstraction newSource;
+						final TaintAbstraction newSource;
 						if (!source.isAbstractionActive() && (call == source.getActivationUnit()
 								|| isCallSiteActivatingTaint(call, source.getActivationUnit())))
 							newSource = source.getActiveCopy();
@@ -766,15 +802,16 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 						ByReferenceBoolean killSource = new ByReferenceBoolean();
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyCallToReturnFlowFunction(d1, newSource, iCallStmt,
-								killSource, killAll, true);
+						Set<AbstractDataFlowAbstraction> res = propagationRules
+								.applyCallToReturnFlowFunction(state.derive(newSource), killSource, killAll, true);
 						if (killAll.value)
 							return null;
 						boolean passOn = !killSource.value;
 
 						// Do not propagate zero abstractions
 						if (source == getZeroValue())
-							return res == null || res.isEmpty() ? Collections.<Abstraction>emptySet() : res;
+							return res == null || res.isEmpty() ? Collections.<AbstractDataFlowAbstraction>emptySet()
+									: res;
 
 						// Initialize the result set
 						if (res == null)
@@ -863,35 +900,33 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								res.add(newSource);
 						}
 
-						if (callee.isNative())
-							for (Value callVal : callArgs)
+						if (callee.isNative()) {
+							for (Value callVal : callArgs) {
 								if (callVal == newSource.getAccessPath().getPlainValue()) {
 									// java uses call by value, but fields of
 									// complex objects can be changed (and
 									// tainted), so use this conservative
 									// approach:
-									Set<Abstraction> nativeAbs = ncHandler.getTaintedValues(iCallStmt, newSource,
+									Set<TaintAbstraction> nativeAbs = ncHandler.getTaintedValues(iCallStmt, newSource,
 											callArgs);
 									if (nativeAbs != null) {
 										res.addAll(nativeAbs);
 
 										// Compute the aliases
-										for (Abstraction abs : nativeAbs)
+										for (TaintAbstraction abs : nativeAbs)
 											if (abs.getAccessPath().isStaticFieldRef() || Aliasing.canHaveAliases(
 													iCallStmt, abs.getAccessPath().getPlainValue(), abs))
-												manager.getAliasing().computeAliases(d1, iCallStmt,
+												manager.getAliasing().computeAliases(state.derive(abs),
 														abs.getAccessPath().getPlainValue(), res,
-														interproceduralCFG().getMethodOf(call), abs);
+														interproceduralCFG().getMethodOf(call));
 									}
 
 									// We only call the native code handler once
 									// per statement
 									break;
 								}
-
-						for (Abstraction abs : res)
-							if (abs != newSource)
-								abs.setCorrespondingCallSite(iCallStmt);
+							}
+						}
 
 						return res;
 					}

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 
 /**
  * Set of taint wrappers. It supports taint wrapping for a class if at least one
@@ -49,10 +49,10 @@ public class TaintWrapperSet implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
-		Set<Abstraction> resList = new HashSet<Abstraction>();
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
+		Set<TaintAbstraction> resList = new HashSet<TaintAbstraction>();
 		for (ITaintPropagationWrapper w : this.wrappers) {
-			Set<Abstraction> curAbsSet = w.getTaintsForMethod(stmt, d1, taintedPath);
+			Set<TaintAbstraction> curAbsSet = w.getTaintsForMethod(stmt, d1, taintedPath);
 			if (curAbsSet != null && !curAbsSet.isEmpty())
 				resList.addAll(curAbsSet);
 		}
@@ -67,7 +67,7 @@ public class TaintWrapperSet implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 		for (ITaintPropagationWrapper w : this.wrappers)
 			if (w.isExclusive(stmt, taintedPath))
 				return true;
@@ -101,10 +101,10 @@ public class TaintWrapperSet implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
-		Set<Abstraction> resList = new HashSet<Abstraction>();
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
+		Set<TaintAbstraction> resList = new HashSet<TaintAbstraction>();
 		for (ITaintPropagationWrapper w : this.wrappers) {
-			Set<Abstraction> curAbsSet = w.getAliasesForMethod(stmt, d1, taintedPath);
+			Set<TaintAbstraction> curAbsSet = w.getAliasesForMethod(stmt, d1, taintedPath);
 			if (curAbsSet != null && !curAbsSet.isEmpty())
 				resList.addAll(curAbsSet);
 		}

@@ -22,11 +22,13 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -38,15 +40,20 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 
-	private final MyConcurrentHashMap<Unit, Set<Abstraction>> implicitTargets = new MyConcurrentHashMap<Unit, Set<Abstraction>>();
+	private final MyConcurrentHashMap<Unit, Set<TaintAbstraction>> implicitTargets = new MyConcurrentHashMap<Unit, Set<TaintAbstraction>>();
 
-	public ImplicitPropagtionRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public ImplicitPropagtionRule(InfoflowManager manager, TaintAbstraction zeroValue,
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -93,7 +100,7 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 					values.add(box.getValue());
 		}
 
-		Set<Abstraction> res = null;
+		Set<AbstractDataFlowAbstraction> res = null;
 		for (Value val : values)
 			if (getAliasing().mayAlias(val, source.getAccessPath().getPlainValue())) {
 				// ok, we are now in a branch that depends on a secret value.
@@ -102,10 +109,10 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 				UnitContainer postdom = getManager().getICFG().getPostdominatorOf(stmt);
 				if (!(postdom.getMethod() == null && source.getTopPostdominator() != null && getManager().getICFG()
 						.getMethodOf(postdom.getUnit()) == source.getTopPostdominator().getMethod())) {
-					Abstraction newAbs = source.deriveConditionalAbstractionEnter(postdom, stmt);
+					TaintAbstraction newAbs = source.deriveConditionalAbstractionEnter(postdom, stmt);
 
 					if (res == null)
-						res = new HashSet<Abstraction>();
+						res = new HashSet<>();
 					res.add(newAbs);
 					break;
 				}
@@ -118,17 +125,14 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	 * Checks whether the given abstraction at the given statement leaves a
 	 * conditional branch
 	 * 
-	 * @param stmt
-	 *            The statement to check
-	 * @param source
-	 *            The abstraction arriving at the given statement
-	 * @param killAll
-	 *            The by-value boolean to receive whether all taints shall be
-	 *            removed
+	 * @param stmt    The statement to check
+	 * @param source  The abstraction arriving at the given statement
+	 * @param killAll The by-value boolean to receive whether all taints shall be
+	 *                removed
 	 * @return True if the given abstraction at the given statement leaves a
 	 *         conditional branch, otherwise false
 	 */
-	private boolean leavesConditionalBranch(Stmt stmt, Abstraction source, ByReferenceBoolean killAll) {
+	private boolean leavesConditionalBranch(Stmt stmt, TaintAbstraction source, ByReferenceBoolean killAll) {
 		// Check whether we must leave a conditional branch
 		if (source.isTopPostdominator(stmt)) {
 			source = source.dropTopPostdominator();
@@ -143,8 +147,12 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final TaintAbstraction d1 = (TaintAbstraction) state.getSourceVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -167,12 +175,12 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 		if (source.getAccessPath().isEmpty()) {
 			// Block the call site for further explicit tracking
 			if (d1 != null) {
-				Set<Abstraction> callSites = implicitTargets.putIfAbsentElseGet(stmt,
-						new ConcurrentHashSet<Abstraction>());
+				Set<TaintAbstraction> callSites = implicitTargets.putIfAbsentElseGet(stmt,
+						new ConcurrentHashSet<TaintAbstraction>());
 				callSites.add(d1);
 			}
 
-			Abstraction abs = source.deriveConditionalAbstractionCall(stmt);
+			TaintAbstraction abs = source.deriveConditionalAbstractionCall(stmt);
 			return Collections.singleton(abs);
 		}
 		// If we are already inside a conditional call, we don't need to
@@ -187,8 +195,13 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final TaintAbstraction d1 = (TaintAbstraction) state.getSourceVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -233,7 +246,7 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 				if ((d1 == null || d1.getAccessPath().isEmpty()) && !(leftVal instanceof FieldRef))
 					return null;
 
-				Abstraction abs = source.deriveNewAbstraction(
+				TaintAbstraction abs = source.deriveNewAbstraction(
 						getManager().getAccessPathFactory().createAccessPath(leftVal, true), stmt);
 				return Collections.singleton(abs);
 			}
@@ -242,12 +255,13 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source,
-			Stmt returnStmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt returnStmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		// Are we inside a conditionally-called method?
 		boolean callerD1sConditional = false;
-		for (Abstraction d1 : callerD1s)
-			if (d1.getAccessPath().isEmpty()) {
+		for (AbstractDataFlowAbstraction d1 : callerD1s)
+			if (((TaintAbstraction) d1).getAccessPath().isEmpty()) {
 				callerD1sConditional = true;
 				break;
 			}
@@ -260,17 +274,17 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 					DefinitionStmt def = (DefinitionStmt) callSite;
 					AccessPath ap = getManager().getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 							def.getLeftOp());
-					Abstraction abs = source.deriveNewAbstraction(ap, returnStmt);
+					TaintAbstraction abs = source.deriveNewAbstraction(ap, returnStmt);
 
-					Set<Abstraction> res = new HashSet<Abstraction>();
+					Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 					res.add(abs);
 
 					// If we taint a return value because it is implicit,
 					// we must trigger an alias analysis
 					if (Aliasing.canHaveAliases(def, def.getLeftOp(), abs) && !callerD1sConditional)
-						for (Abstraction d1 : callerD1s)
-							getAliasing().computeAliases(d1, returnStmt, def.getLeftOp(), res,
-									getManager().getICFG().getMethodOf(callSite), abs);
+						for (AbstractDataFlowAbstraction d1 : callerD1s)
+							getAliasing().computeAliases(new SolverState<>(d1, callSite, abs), def.getLeftOp(), res,
+									getManager().getICFG().getMethodOf(callSite));
 					return res;
 				}
 
@@ -291,17 +305,17 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 
 			if (insideConditional && leftOp instanceof FieldRef) {
 				AccessPath ap = getManager().getAccessPathFactory().copyWithNewValue(source.getAccessPath(), leftOp);
-				Abstraction abs = source.deriveNewAbstraction(ap, returnStmt);
+				TaintAbstraction abs = source.deriveNewAbstraction(ap, returnStmt);
 
 				// Aliases of implicitly tainted variables must be mapped back
 				// into the caller's context on return when we leave the last
 				// implicitly-called method
 				if (abs.isImplicit() && abs.getAccessPath().isFieldRef() && !callerD1sConditional) {
-					Set<Abstraction> res = new HashSet<>();
+					Set<AbstractDataFlowAbstraction> res = new HashSet<>();
 					res.add(abs);
-					for (Abstraction d1 : callerD1s)
-						getAliasing().computeAliases(d1, callSite, leftOp, res,
-								getManager().getICFG().getMethodOf(callSite), abs);
+					for (AbstractDataFlowAbstraction d1 : callerD1s)
+						getAliasing().computeAliases(new SolverState<>(d1, callSite, abs), leftOp, res,
+								getManager().getICFG().getMethodOf(callSite));
 				}
 
 				return Collections.singleton(abs);

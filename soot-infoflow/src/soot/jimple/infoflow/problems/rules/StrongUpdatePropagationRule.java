@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import soot.Local;
 import soot.SootMethod;
+import soot.Unit;
 import soot.ValueBox;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
@@ -11,8 +12,10 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -23,14 +26,18 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 
-	public StrongUpdatePropagationRule(InfoflowManager manager, Abstraction zeroValue,
+	public StrongUpdatePropagationRule(InfoflowManager manager, TaintAbstraction zeroValue,
 			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		if (!(stmt instanceof AssignStmt))
 			return null;
 		AssignStmt assignStmt = (AssignStmt) stmt;
@@ -50,9 +57,7 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 			return null;
 
 		// If the statement has just been activated, we do not overwrite stuff
-		if (source.getPredecessor() != null && !source.getPredecessor().isAbstractionActive()
-				&& source.isAbstractionActive() && source.getPredecessor().getActivationUnit() == stmt
-				&& source.getAccessPath().equals(source.getPredecessor().getAccessPath()))
+		if ((flags & PropagationRuleManager.ABSTRACTION_ACTIVATED) != 0)
 			return null;
 
 		if (source.getAccessPath().isInstanceFieldRef()) {
@@ -118,14 +123,18 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// Do not propagate abstractions for locals that get overwritten
 		if (stmt instanceof AssignStmt) {
 			// a = foo() with a tainted
@@ -139,8 +148,9 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

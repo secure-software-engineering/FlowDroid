@@ -7,7 +7,8 @@ import java.util.Set;
 
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 
 /**
  * Taint propagation handler that processes a sequence of inner handlers. For
@@ -30,9 +31,8 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Creates a sequence of taint propagation handlers from the given list
 	 * 
-	 * @param handlers
-	 *            A list of taint propagation handlers to which all calls shall be
-	 *            relayed
+	 * @param handlers A list of taint propagation handlers to which all calls shall
+	 *                 be relayed
 	 */
 	public SequentialTaintPropagationHandler(List<TaintPropagationHandler> handlers) {
 		this.innerHandlers = new ArrayList<>(handlers);
@@ -41,8 +41,7 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Adds a new handler to this sequence of handlers
 	 * 
-	 * @param handler
-	 *            The handler to add to the sequence
+	 * @param handler The handler to add to the sequence
 	 */
 	public void addHandler(TaintPropagationHandler handler) {
 		this.innerHandlers.add(handler);
@@ -58,17 +57,19 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	}
 
 	@Override
-	public void notifyFlowIn(Unit stmt, Abstraction taint, InfoflowManager manager, FlowFunctionType type) {
+	public void notifyFlowIn(Unit stmt, AbstractDataFlowAbstraction taint, InfoflowManager manager,
+			FlowFunctionType type) {
 		for (TaintPropagationHandler handler : innerHandlers)
 			handler.notifyFlowIn(stmt, taint, manager, type);
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
-		Set<Abstraction> resultSet = new HashSet<>();
+	public Set<AbstractDataFlowAbstraction> notifyFlowOut(SolverState<Unit, AbstractDataFlowAbstraction> solverState,
+			Set<AbstractDataFlowAbstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+		Set<AbstractDataFlowAbstraction> resultSet = new HashSet<>();
 		for (TaintPropagationHandler handler : innerHandlers) {
-			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type);
+			Set<AbstractDataFlowAbstraction> handlerResults = handler.notifyFlowOut(solverState, outgoing, manager,
+					type);
 			if (handlerResults != null && !handlerResults.isEmpty())
 				resultSet.addAll(handlerResults);
 		}

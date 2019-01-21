@@ -5,9 +5,11 @@ import java.util.Set;
 import heros.solver.Pair;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
+import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
+import soot.jimple.infoflow.solver.ngsolver.IFDSSolver.DataFlowSolverPhase;
 import soot.jimple.infoflow.solver.ngsolver.SolverState;
 
 public interface IInfoflowSolver {
@@ -19,7 +21,7 @@ public interface IInfoflowSolver {
 	 * @return True if the edge was scheduled, otherwise (e.g., if the edge has
 	 *         already been processed earlier) false
 	 */
-	public boolean processEdge(SolverState<Unit, Abstraction> state);
+	public boolean processEdge(SolverState<Unit, AbstractDataFlowAbstraction> state);
 
 	/**
 	 * Gets the end summary of the given method for the given incoming abstraction
@@ -29,10 +31,10 @@ public interface IInfoflowSolver {
 	 * @return The end summary of the given method for the given incoming
 	 *         abstraction
 	 */
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3);
+	public Set<Pair<Unit, AbstractDataFlowAbstraction>> endSummary(SootMethod m, AbstractDataFlowAbstraction d3);
 
-	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1);
+	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, AbstractDataFlowAbstraction d3,
+			SolverState<Unit, AbstractDataFlowAbstraction> state);
 
 	/**
 	 * Cleans up some unused memory. Results will still be available afterwards, but
@@ -55,14 +57,14 @@ public interface IInfoflowSolver {
 	 * @param memoryManager The memory manager that shall be used to manage the
 	 *                      abstractions
 	 */
-	public void setMemoryManager(IMemoryManager<Abstraction, Unit> memoryManager);
+	public void setMemoryManager(IMemoryManager<AbstractDataFlowAbstraction, Unit> memoryManager);
 
 	/**
 	 * Gets the memory manager used by this solver to reduce memory consumption
 	 * 
 	 * @return The memory manager registered with this solver
 	 */
-	public IMemoryManager<Abstraction, Unit> getMemoryManager();
+	public IMemoryManager<AbstractDataFlowAbstraction, Unit> getMemoryManager();
 
 	/**
 	 * Sets whether abstractions on method returns shall be connected to the
@@ -83,8 +85,6 @@ public interface IInfoflowSolver {
 	 * Solves the data flow problem
 	 */
 	public void solve();
-
-	public void setSolverId(boolean solverId);
 
 	/**
 	 * Gets the IFDS problem solved by this solver
@@ -112,5 +112,13 @@ public interface IInfoflowSolver {
 	 * @param maxCalleesPerCallSite The maximum number of callees per call site
 	 */
 	public void setMaxCalleesPerCallSite(int maxCalleesPerCallSite);
+
+	public void setSolverPhase(DataFlowSolverPhase solverPhase);
+
+	public void setSolverId(boolean solverId);
+
+	public void setExecutor(InterruptableExecutor executor);
+
+	public void resetStatistics();
 
 }

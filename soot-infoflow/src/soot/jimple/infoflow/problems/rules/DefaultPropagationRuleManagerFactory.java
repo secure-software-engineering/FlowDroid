@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.problems.rules;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 
 /**
@@ -13,7 +13,7 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 public class DefaultPropagationRuleManagerFactory implements IPropagationRuleManagerFactory {
 
 	@Override
-	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
+	public PropagationRuleManager createRuleManager(InfoflowManager manager, TaintAbstraction zeroValue,
 			TaintPropagationResults results) {
 		return new PropagationRuleManager(manager, zeroValue, results);
 	}

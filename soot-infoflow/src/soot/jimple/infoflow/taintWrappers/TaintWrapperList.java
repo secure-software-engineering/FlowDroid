@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 
 /**
  * List of taint wrappers. The wrappers at the beginning of the list are asked
@@ -52,9 +52,9 @@ public class TaintWrapperList implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+	public Set<TaintAbstraction> getTaintsForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
 		for (ITaintPropagationWrapper w : this.wrappers) {
-			Set<Abstraction> curAbsSet = w.getTaintsForMethod(stmt, d1, taintedPath);
+			Set<TaintAbstraction> curAbsSet = w.getTaintsForMethod(stmt, d1, taintedPath);
 			if (curAbsSet != null && !curAbsSet.isEmpty()) {
 				hits.incrementAndGet();
 				return curAbsSet;
@@ -67,7 +67,7 @@ public class TaintWrapperList implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
+	public boolean isExclusive(Stmt stmt, TaintAbstraction taintedPath) {
 		for (ITaintPropagationWrapper w : this.wrappers)
 			if (w.isExclusive(stmt, taintedPath))
 				return true;
@@ -101,9 +101,9 @@ public class TaintWrapperList implements ITaintPropagationWrapper {
 	}
 
 	@Override
-	public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+	public Set<TaintAbstraction> getAliasesForMethod(Stmt stmt, TaintAbstraction d1, TaintAbstraction taintedPath) {
 		for (ITaintPropagationWrapper w : this.wrappers) {
-			Set<Abstraction> curAbsSet = w.getAliasesForMethod(stmt, d1, taintedPath);
+			Set<TaintAbstraction> curAbsSet = w.getAliasesForMethod(stmt, d1, taintedPath);
 			if (curAbsSet != null && !curAbsSet.isEmpty())
 				return curAbsSet;
 		}

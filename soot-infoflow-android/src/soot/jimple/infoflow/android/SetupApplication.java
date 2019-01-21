@@ -76,7 +76,7 @@ import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
@@ -1538,7 +1538,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		info.setMemoryManagerFactory(new IMemoryManagerFactory() {
 
 			@Override
-			public IMemoryManager<Abstraction, Unit> getMemoryManager(boolean tracingEnabled,
+			public IMemoryManager<TaintAbstraction, Unit> getMemoryManager(boolean tracingEnabled,
 					PathDataErasureMode erasePathData) {
 				return new AndroidMemoryManager(tracingEnabled, erasePathData, entrypoints);
 			}

@@ -7,7 +7,7 @@ import heros.solver.Pair;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.collect.ConcurrentIdentityHashMultiMap;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.SourceContext;
 import soot.jimple.infoflow.data.SourceContextAndPath;
@@ -25,7 +25,7 @@ import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
  */
 public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilder {
 
-	protected ConcurrentIdentityHashMultiMap<Abstraction, SourceContextAndPath> pathCache = new ConcurrentIdentityHashMultiMap<>();
+	protected ConcurrentIdentityHashMultiMap<TaintAbstraction, SourceContextAndPath> pathCache = new ConcurrentIdentityHashMultiMap<>();
 
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
@@ -46,16 +46,16 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * @author Steven Arzt
 	 */
 	protected class SourceFindingTask implements Runnable {
-		private final Abstraction abstraction;
+		private final TaintAbstraction abstraction;
 
-		public SourceFindingTask(Abstraction abstraction) {
+		public SourceFindingTask(TaintAbstraction abstraction) {
 			this.abstraction = abstraction;
 		}
 
 		@Override
 		public void run() {
 			final Set<SourceContextAndPath> paths = pathCache.get(abstraction);
-			final Abstraction pred = abstraction.getPredecessor();
+			final TaintAbstraction pred = abstraction.getPredecessor();
 
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
@@ -66,7 +66,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 					// Process the predecessor's neighbors
 					if (pred.getNeighbors() != null)
-						for (Abstraction neighbor : pred.getNeighbors())
+						for (TaintAbstraction neighbor : pred.getNeighbors())
 							if (processPredecessor(scap, neighbor))
 								// Schedule the predecessor
 								scheduleDependentTask(new SourceFindingTask(neighbor));
@@ -74,7 +74,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 		}
 
-		private boolean processPredecessor(SourceContextAndPath scap, Abstraction pred) {
+		private boolean processPredecessor(SourceContextAndPath scap, TaintAbstraction pred) {
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
@@ -153,7 +153,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 *            The path leading up to the current abstraction
 	 * @return True if the current abstraction is a source, otherwise false
 	 */
-	protected boolean checkForSource(Abstraction abs, SourceContextAndPath scap) {
+	protected boolean checkForSource(TaintAbstraction abs, SourceContextAndPath scap) {
 		if (abs.getPredecessor() != null)
 			return false;
 
@@ -184,14 +184,14 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	@Override
 	public void runIncrementalPathCompuation() {
 		Set<AbstractionAtSink> incrementalAbs = new HashSet<>();
-		for (Abstraction abs : pathCache.keySet())
+		for (TaintAbstraction abs : pathCache.keySet())
 			for (SourceContextAndPath scap : pathCache.get(abs)) {
 				if (abs.getNeighbors() != null && abs.getNeighbors().size() != scap.getNeighborCounter()) {
 					// This is a path for which we have to process the new
 					// neighbors
 					scap.setNeighborCounter(abs.getNeighbors().size());
 
-					for (Abstraction neighbor : abs.getNeighbors())
+					for (TaintAbstraction neighbor : abs.getNeighbors())
 						incrementalAbs.add(new AbstractionAtSink(scap.getDefinition(), neighbor, scap.getStmt()));
 				}
 			}

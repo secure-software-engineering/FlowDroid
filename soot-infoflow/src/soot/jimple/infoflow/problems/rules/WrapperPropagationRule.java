@@ -3,17 +3,21 @@ package soot.jimple.infoflow.problems.rules;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import soot.RefType;
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
-import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractDataFlowAbstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.TaintAbstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.solver.ngsolver.SolverState;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -26,29 +30,29 @@ import soot.jimple.infoflow.util.TypeUtils;
  */
 public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 
-	public WrapperPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public WrapperPropagationRule(InfoflowManager manager, TaintAbstraction zeroValue,
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateNormalFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, Stmt destStmt, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll, int flags) {
 		return null;
 	}
 
 	/**
 	 * Computes the taints produced by a taint wrapper object
 	 * 
-	 * @param d1
-	 *            The context (abstraction at the method's start node)
-	 * @param iStmt
-	 *            The call statement the taint wrapper shall check for well- known
-	 *            methods that introduce black-box taint propagation
-	 * @param source
-	 *            The taint source
+	 * @param state The IFDS solver state
 	 * @return The taints computed by the wrapper
 	 */
-	private Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source) {
+	private Set<TaintAbstraction> computeWrapperTaints(SolverState<Unit, AbstractDataFlowAbstraction> state) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final TaintAbstraction d1 = (TaintAbstraction) state.getSourceVal();
+		final Stmt iStmt = (Stmt) state.getTarget();
+
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -91,10 +95,10 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 				return null;
 		}
 
-		Set<Abstraction> res = getManager().getTaintWrapper().getTaintsForMethod(iStmt, d1, source);
+		Set<TaintAbstraction> res = getManager().getTaintWrapper().getTaintsForMethod(iStmt, d1, source);
 		if (res != null) {
-			Set<Abstraction> resWithAliases = new HashSet<>(res);
-			for (Abstraction abs : res) {
+			Set<TaintAbstraction> resWithAliases = new HashSet<>(res);
+			for (TaintAbstraction abs : res) {
 				// The new abstraction gets activated where it was generated
 				if (!abs.equals(source)) {
 					// If the taint wrapper creates a new taint, this must be propagated
@@ -116,8 +120,8 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 					if (!taintedValueOverwritten)
 						if (taintsStaticField || (taintsObjectValue && abs.getAccessPath().getTaintSubFields())
 								|| Aliasing.canHaveAliases(iStmt, val.getPlainValue(), abs))
-							getAliasing().computeAliases(d1, iStmt, val.getPlainValue(), resWithAliases,
-									getManager().getICFG().getMethodOf(iStmt), abs);
+							getAliasing().computeAliases(state.derive(abs), val.getPlainValue(), resWithAliases,
+									getManager().getICFG().getMethodOf(iStmt));
 				}
 			}
 			res = resWithAliases;
@@ -127,33 +131,39 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallToReturnFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, ByReferenceBoolean killSource,
+			ByReferenceBoolean killAll) {
 		// Compute the taint wrapper taints
-		Collection<Abstraction> wrapperTaints = computeWrapperTaints(d1, stmt, source);
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		Collection<TaintAbstraction> wrapperTaints = computeWrapperTaints(state);
 		if (wrapperTaints != null) {
 			// If the taint wrapper generated an abstraction for
 			// the incoming access path, we assume it to be handled
 			// and do not pass on the incoming abstraction on our own
-			for (Abstraction wrapperAbs : wrapperTaints)
+			for (TaintAbstraction wrapperAbs : wrapperTaints)
 				if (wrapperAbs.getAccessPath().equals(source.getAccessPath())) {
 					if (wrapperAbs != source)
 						killSource.value = true;
 					break;
 				}
 		}
-		return wrapperTaints;
+		return wrapperTaints.stream().map(v -> (AbstractDataFlowAbstraction) v).collect(Collectors.toSet());
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateReturnFlow(
+			Collection<AbstractDataFlowAbstraction> callerD1s, TaintAbstraction source, Stmt stmt, Stmt retSite,
+			Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-			ByReferenceBoolean killAll) {
+	public Collection<AbstractDataFlowAbstraction> propagateCallFlow(
+			SolverState<Unit, AbstractDataFlowAbstraction> state, SootMethod dest, ByReferenceBoolean killAll) {
+		final TaintAbstraction source = (TaintAbstraction) state.getTargetVal();
+		final Stmt stmt = (Stmt) state.getTarget();
+
 		// If we have an exclusive taint wrapper for the target
 		// method, we do not perform an own taint propagation.
 		if (getManager().getTaintWrapper() != null && getManager().getTaintWrapper().isExclusive(stmt, source)) {
