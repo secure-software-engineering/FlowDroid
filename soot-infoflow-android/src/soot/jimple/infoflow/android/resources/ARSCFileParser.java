@@ -254,6 +254,21 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return this.types;
 		}
 
+		/**
+		 * Gets the resource with the given type
+		 * 
+		 * @param type The type string for which to look, e.g., "string"
+		 * @return The resource type with the given identifier string, or null if no
+		 *         such type exists
+		 */
+		public ResType getResourceType(String type) {
+			for (ResType resType : types) {
+				if (resType.typeName.equals(type))
+					return resType;
+			}
+			return null;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -326,8 +341,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets all resource of the current type that have the given id
 		 * 
-		 * @param resourceID
-		 *            The resource id to look for
+		 * @param resourceID The resource id to look for
 		 * @return A list containing all resources with the given id
 		 */
 		public List<AbstractResource> getAllResources(int resourceID) {
@@ -343,8 +357,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Gets the first resource with the given name or null if no such resource
 		 * exists
 		 * 
-		 * @param resourceName
-		 *            The resource name to look for
+		 * @param resourceName The resource name to look for
 		 * @return The first resource with the given name or null if no such resource
 		 *         exists
 		 */
@@ -359,8 +372,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets the first resource of the current type that has the given name
 		 * 
-		 * @param resourceName
-		 *            The resource name to look for
+		 * @param resourceName The resource name to look for
 		 * @return The resource with the given name if it exists, otherwise null
 		 */
 		public AbstractResource getFirstResource(String resourceName) {
@@ -374,8 +386,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets the first resource of the current type with the given ID
 		 * 
-		 * @param resourceID
-		 *            The resource ID to look for
+		 * @param resourceID The resource ID to look for
 		 * @return The resource with the given ID if it exists, otherwise null
 		 */
 		public AbstractResource getFirstResource(int resourceID) {
@@ -1970,10 +1981,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	/**
 	 * Parses the resource definition file in the given APK
 	 * 
-	 * @param apkFile
-	 *            The APK file in which to parse the resource definition file
-	 * @throws IOException
-	 *             Thrown if the given APK file cannot be opened
+	 * @param apkFile The APK file in which to parse the resource definition file
+	 * @throws IOException Thrown if the given APK file cannot be opened
 	 */
 	public void parse(String apkFile) throws IOException {
 		this.handleAndroidResourceFiles(apkFile, null, new IResourceHandler() {
@@ -2257,8 +2266,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Checks whether the given complex map entry is one of the well-known
 	 * attributes.
 	 * 
-	 * @param map
-	 *            The map entry to check
+	 * @param map The map entry to check
 	 * @return True if the given entry is one of the well-known attributes,
 	 *         otherwise false.
 	 */
@@ -2610,12 +2618,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Reads a chunk header from the input stream and stores the data in the given
 	 * object.
 	 * 
-	 * @param stream
-	 *            The stream from which to read the chunk header
-	 * @param nextChunkHeader
-	 *            The data object in which to put the chunk header
-	 * @throws IOException
-	 *             Thrown if an error occurs during read
+	 * @param stream          The stream from which to read the chunk header
+	 * @param nextChunkHeader The data object in which to put the chunk header
+	 * @throws IOException Thrown if an error occurs during read
 	 */
 	private void readChunkHeader(InputStream stream, ResChunk_Header nextChunkHeader) throws IOException {
 		byte[] header = new byte[8];
@@ -2627,14 +2632,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Reads a chunk header from the input stream and stores the data in the given
 	 * object.
 	 * 
-	 * @param nextChunkHeader
-	 *            The data object in which to put the chunk header
-	 * @param data
-	 *            The data array containing the structure
-	 * @param offset
-	 *            The offset from which to start reading
-	 * @throws IOException
-	 *             Thrown if an error occurs during read
+	 * @param nextChunkHeader The data object in which to put the chunk header
+	 * @param data            The data array containing the structure
+	 * @param offset          The offset from which to start reading
+	 * @throws IOException Thrown if an error occurs during read
 	 */
 	private int readChunkHeader(ResChunk_Header nextChunkHeader, byte[] data, int offset) throws IOException {
 		nextChunkHeader.type = readUInt16(data, offset);
@@ -2686,8 +2687,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Finds the resource with the given Android resource ID. This method is
 	 * configuration-agnostic and simply returns the first match it finds.
 	 * 
-	 * @param resourceId
-	 *            The Android resource ID for which to the find the resource object
+	 * @param resourceId The Android resource ID for which to the find the resource
+	 *                   object
 	 * @return The resource object with the given Android resource ID if it has been
 	 *         found, otherwise null.
 	 */
@@ -2708,8 +2709,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Finds all resources with the given Android resource ID. This method returns
 	 * all matching resources, regardless of their respective configuration.
 	 * 
-	 * @param resourceId
-	 *            The Android resource ID for which to the find the resource object
+	 * @param resourceId The Android resource ID for which to the find the resource
+	 *                   object
 	 * @return The resource object with the given Android resource ID if it has been
 	 *         found, otherwise null.
 	 */
@@ -2743,13 +2744,33 @@ public class ARSCFileParser extends AbstractResourceParser {
 	/**
 	 * Parses an Android resource ID into its components
 	 * 
-	 * @param resourceId
-	 *            The numeric resource ID to parse
+	 * @param resourceId The numeric resource ID to parse
 	 * @return The data contained in the given Android resource ID
 	 */
 	public ResourceId parseResourceId(int resourceId) {
 		return new ResourceId((resourceId & 0xFF000000) >> 24, (resourceId & 0x00FF0000) >> 16,
 				resourceId & 0x0000FFFF);
+	}
+
+	/**
+	 * Gets the resource with the given name and type
+	 * 
+	 * @param type         The type of the resource to retrieve, e.g., "string"
+	 * @param resourceName The name of the resource to retrieve
+	 * @return The resource with the given name and type if such a resource exists,
+	 *         null otherwise
+	 */
+	public AbstractResource findResourceByName(String type, String resourceName) {
+		for (ResPackage resPackage : this.packages) {
+			ResType resType = resPackage.getResourceType(type);
+			if (resType != null) {
+				for (AbstractResource res : resType.getAllResources()) {
+					if (res.resourceName.equals(resourceName))
+						return res;
+				}
+			}
+		}
+		return null;
 	}
 
 }

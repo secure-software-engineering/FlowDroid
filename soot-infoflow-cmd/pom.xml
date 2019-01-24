@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow-cmd</artifactId>
 	<name>FlowDroid Command Line Util</name>
-	<version>2.7.1</version>
+	<version>2.7.2-SNAPSHOT</version>
 	<description>Command-line utility for running FlowDroid</description>
 	
 	<properties>
@@ -105,12 +105,12 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-android</artifactId>
-			<version>2.7.1</version>
+			<version>2.7.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow-summaries</artifactId>
-			<version>2.7.1</version>
+			<version>2.7.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>heros</groupId>
