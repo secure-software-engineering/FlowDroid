@@ -531,7 +531,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Triggers the callgraph construction in Soot
 	 */
-	private void constructCallgraphInternal() {
+	protected void constructCallgraphInternal() {
 		// If we are configured to use an existing callgraph, we may not replace
 		// it. However, we must make sure that there really is one.
 		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph) {
@@ -634,16 +634,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		FlowDroidMemoryWatcher memoryWatcher = null;
 		FlowDroidTimeoutWatcher timeoutWatcher = null;
 		if (jimpleClass instanceof IMemoryBoundedSolver) {
-			memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
-			memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
-
-			// Make sure that we don't spend too much time in the callback
+			// Make sure that we don't spend too much time and memory in the callback
 			// analysis
-			if (callbackConfig.getCallbackAnalysisTimeout() > 0) {
-				timeoutWatcher = new FlowDroidTimeoutWatcher(callbackConfig.getCallbackAnalysisTimeout());
-				timeoutWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
-				timeoutWatcher.start();
-			}
+			memoryWatcher = createCallbackMemoryWatcher(jimpleClass);
+			timeoutWatcher = createCallbackTimeoutWatcher(callbackConfig, jimpleClass);
 		}
 
 		try {
@@ -784,6 +778,44 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
+	 * Creates the memory watcher for aborting the callback analysis in case it runs
+	 * out of memory. This method also starts the watchdog thread. Derived classes
+	 * can implement their own timeout handling if necessary.
+	 * 
+	 * @param callbackConfig The configuration for the callback analysis
+	 * @param analyzer       The callback analyzer
+	 * @return The memory watcher that keeps track of the amount of memory spent in
+	 *         the callback analysis
+	 */
+	protected FlowDroidMemoryWatcher createCallbackMemoryWatcher(AbstractCallbackAnalyzer jimpleClass) {
+		FlowDroidMemoryWatcher memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
+		memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
+		return memoryWatcher;
+	}
+
+	/**
+	 * Creates the timeout watcher for aborting the callback analysis in case it
+	 * runs out of time. This method also starts the watchdog thread. Derived
+	 * classes can implement their own timeout handling if necessary.
+	 * 
+	 * @param callbackConfig The configuration for the callback analysis
+	 * @param analyzer       The callback analyzer
+	 * @return The timeout watcher that keeps track of the time spent in the
+	 *         callback analysis
+	 */
+	protected FlowDroidTimeoutWatcher createCallbackTimeoutWatcher(final CallbackConfiguration callbackConfig,
+			AbstractCallbackAnalyzer analyzer) {
+		if (callbackConfig.getCallbackAnalysisTimeout() > 0) {
+			FlowDroidTimeoutWatcher timeoutWatcher = new FlowDroidTimeoutWatcher(
+					callbackConfig.getCallbackAnalysisTimeout());
+			timeoutWatcher.addSolver((IMemoryBoundedSolver) analyzer);
+			timeoutWatcher.start();
+			return timeoutWatcher;
+		}
+		return null;
+	}
+
+	/**
 	 * Inverts the given {@link MultiMap}. The keys become values and vice versa
 	 * 
 	 * @param original The map to invert
@@ -868,18 +900,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 					// Add the fragments for this class
 					Set<SootClass> fragments = lfp.getFragments().get(layoutFileName);
-					if (fragments != null)
-						for (SootClass fragment : fragments)
+					if (fragments != null) {
+						for (SootClass fragment : fragments) {
 							if (fragmentClasses.put(callbackClass, fragment))
 								hasNewCallback = true;
+						}
+					}
 
 					// For user-defined views, we need to emulate their
 					// callbacks
 					Set<AndroidLayoutControl> controls = lfp.getUserControls().get(layoutFileName);
 					if (controls != null) {
-						for (AndroidLayoutControl lc : controls)
+						for (AndroidLayoutControl lc : controls) {
 							if (!SystemClassHandler.isClassInSystemPackage(lc.getViewClass().getName()))
 								registerCallbackMethodsForView(callbackClass, lc);
+						}
 					}
 				} else
 					logger.error("Unexpected resource type for layout class");

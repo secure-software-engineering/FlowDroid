@@ -133,8 +133,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
 	 * 
-	 * @param androidCallbackFile
-	 *            The file from which to load the callback definitions
+	 * @param androidCallbackFile The file from which to load the callback
+	 *                            definitions
 	 * @return A set containing the names of the interfaces that are used to
 	 *         implement Android callback handlers
 	 */
@@ -154,8 +154,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
 	 * 
-	 * @param reader
-	 *            A file reader
+	 * @param reader A file reader
 	 * @return A set containing the names of the interfaces that are used to
 	 *         implement Android callback handlers
 	 */
@@ -187,11 +186,9 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Analyzes the given method and looks for callback registrations
 	 * 
-	 * @param lifecycleElement
-	 *            The lifecycle element (activity, etc.) with which to associate the
-	 *            found callbacks
-	 * @param method
-	 *            The method in which to look for callbacks
+	 * @param lifecycleElement The lifecycle element (activity, etc.) with which to
+	 *                         associate the found callbacks
+	 * @param method           The method in which to look for callbacks
 	 */
 	protected void analyzeMethodForCallbackRegistrations(SootClass lifecycleElement, SootMethod method) {
 		// Do not analyze system classes
@@ -210,7 +207,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 				final SootMethodRef mref = iinv.getMethodRef();
 				for (int i = 0; i < iinv.getArgCount(); i++) {
-					final Type type = mref.parameterType(i);
+					final Type type = mref.getParameterType(i);
 					if (!(type instanceof RefType))
 						continue;
 					String param = type.toString();
@@ -277,10 +274,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Checks whether all filters accept the association between the callback class
 	 * and its parent component
 	 * 
-	 * @param lifecycleElement
-	 *            The hosting component's class
-	 * @param targetClass
-	 *            The class implementing the callbacks
+	 * @param lifecycleElement The hosting component's class
+	 * @param targetClass      The class implementing the callbacks
 	 * @return True if all filters accept the given component-callback mapping,
 	 *         otherwise false
 	 */
@@ -295,10 +290,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Checks whether all filters accept the association between the callback method
 	 * and its parent component
 	 * 
-	 * @param lifecycleElement
-	 *            The hosting component's class
-	 * @param targetMethod
-	 *            The method implementing the callback
+	 * @param lifecycleElement The hosting component's class
+	 * @param targetMethod     The method implementing the callback
 	 * @return True if all filters accept the given component-callback mapping,
 	 *         otherwise false
 	 */
@@ -313,8 +306,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Checks whether the given method dynamically registers a new broadcast
 	 * receiver
 	 * 
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 */
 	protected void analyzeMethodForDynamicBroadcastReceiver(SootMethod method) {
 		// Do not analyze system classes
@@ -330,8 +322,8 @@ public abstract class AbstractCallbackAnalyzer {
 			if (stmt.containsInvokeExpr()) {
 				final InvokeExpr iexpr = stmt.getInvokeExpr();
 				final SootMethodRef methodRef = iexpr.getMethodRef();
-				if (methodRef.name().equals("registerReceiver") && iexpr.getArgCount() > 0
-						&& fastHierarchy.canStoreType(methodRef.declaringClass().getType(), contextType)) {
+				if (methodRef.getName().equals("registerReceiver") && iexpr.getArgCount() > 0
+						&& fastHierarchy.canStoreType(methodRef.getDeclaringClass().getType(), contextType)) {
 					Value br = iexpr.getArg(0);
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
@@ -347,8 +339,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Checks whether the given method dynamically registers a new service
 	 * connection
 	 * 
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 */
 	protected void analyzeMethodForServiceConnection(SootMethod method) {
 		// Do not analyze system classes
@@ -393,8 +384,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * new fragment
 	 * 
 	 * @author Goran Piskachev
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 */
 	protected void analyzeMethodForFragmentTransaction(SootClass lifecycleElement, SootMethod method) {
 		if (scFragment == null || scFragmentTransaction == null)
@@ -473,10 +463,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Gets whether the call in the given statement can end up in the respective
 	 * method inherited from one of the given classes.
 	 * 
-	 * @param stmt
-	 *            The statement containing the call sites
-	 * @param classNames
-	 *            The base classes in which the call can potentially end up
+	 * @param stmt       The statement containing the call sites
+	 * @param classNames The base classes in which the call can potentially end up
 	 * @return True if the given call can end up in a method inherited from one of
 	 *         the given classes, otherwise falae
 	 */
@@ -507,8 +495,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether this invocation calls Android's Activity.setContentView method
 	 * 
-	 * @param inv
-	 *            The invocaton to check
+	 * @param inv The invocaton to check
 	 * @return True if this invocation calls setContentView, otherwise false
 	 */
 	protected boolean invokesSetContentView(InvokeExpr inv) {
@@ -536,8 +523,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether this invocation calls Android's LayoutInflater.inflate method
 	 * 
-	 * @param inv
-	 *            The invocaton to check
+	 * @param inv The invocaton to check
 	 * @return True if this invocation calls inflate, otherwise false
 	 */
 	protected boolean invokesInflate(InvokeExpr inv) {
@@ -649,8 +635,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Gets whether the given callback interface or class represents a UI callback
 	 * 
-	 * @param i
-	 *            The callback interface or class to check
+	 * @param i The callback interface or class to check
 	 * @return True if the given callback interface or class represents a UI
 	 *         callback, otherwise false
 	 */
@@ -663,16 +648,13 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Checks whether the given Soot method comes from a system class. If not, it is
 	 * added to the list of callback methods.
 	 * 
-	 * @param method
-	 *            The method to check and add
-	 * @param parentMethod
-	 *            The original method in the Android framework that declared the
-	 *            callback. This can, for example, be the method in the interface.
-	 * @param lifecycleClass
-	 *            The base class (activity, service, etc.) to which this callback
-	 *            method belongs
-	 * @param callbackType
-	 *            The type of callback to be registered
+	 * @param method         The method to check and add
+	 * @param parentMethod   The original method in the Android framework that
+	 *                       declared the callback. This can, for example, be the
+	 *                       method in the interface.
+	 * @param lifecycleClass The base class (activity, service, etc.) to which this
+	 *                       callback method belongs
+	 * @param callbackType   The type of callback to be registered
 	 * @return True if the method is new, i.e., has not been seen before, otherwise
 	 *         false
 	 */
@@ -733,8 +715,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Adds a new filter that checks every callback before it is associated with the
 	 * respective host component
 	 * 
-	 * @param filter
-	 *            The filter to add
+	 * @param filter The filter to add
 	 */
 	public void addCallbackFilter(ICallbackFilter filter) {
 		this.callbackFilters.add(filter);
@@ -744,8 +725,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Excludes an entry point from all further processing. No more callbacks will
 	 * be collected for the given entry point
 	 * 
-	 * @param entryPoint
-	 *            The entry point to exclude
+	 * @param entryPoint The entry point to exclude
 	 */
 	public void excludeEntryPoint(SootClass entryPoint) {
 		this.excludedEntryPoints.add(entryPoint);
@@ -754,8 +734,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given class is an excluded entry point
 	 * 
-	 * @param entryPoint
-	 *            The entry point to check
+	 * @param entryPoint The entry point to check
 	 * @return True if the given class is an excluded entry point, otherwise false
 	 */
 	public boolean isExcludedEntryPoint(SootClass entryPoint) {
@@ -766,8 +745,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * Sets the provider that shall be used for obtaining constant values during the
 	 * callback analysis
 	 * 
-	 * @param valueProvider
-	 *            The value provider to use
+	 * @param valueProvider The value provider to use
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {
 		this.valueProvider = valueProvider;
