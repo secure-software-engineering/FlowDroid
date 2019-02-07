@@ -130,7 +130,7 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 
 	@Override
 	protected List<Type> getAdditionalMainMethodParams() {
-		return Collections.singletonList(RefType.v(AndroidEntryPointConstants.ACTIVITYCLASS));
+		return Collections.singletonList((Type) RefType.v(AndroidEntryPointConstants.ACTIVITYCLASS));
 	}
 
 }

@@ -134,7 +134,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	 *         common
 	 */
 	protected final List<Type> getDefaultMainMethodParams() {
-		return Collections.singletonList(RefType.v("android.content.Intent"));
+		return Collections.singletonList((Type) RefType.v("android.content.Intent"));
 	}
 
 	/**
