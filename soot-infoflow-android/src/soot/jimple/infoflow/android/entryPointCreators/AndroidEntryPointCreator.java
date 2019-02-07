@@ -41,6 +41,7 @@ import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryP
 import soot.jimple.infoflow.android.entryPointCreators.components.BroadcastReceiverEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.entryPointCreators.components.ContentProviderEntryPointCreator;
+import soot.jimple.infoflow.android.entryPointCreators.components.FragmentEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceConnectionEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointCreator;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
@@ -212,6 +213,22 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		NopStmt outerStartStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(outerStartStmt);
 
+		// We need to create methods for all fragments, because they can be used by
+		// multiple activities
+		Map<SootClass, SootMethod> fragmentToMainMethod = new HashMap<>();
+		for (SootClass parentActivity : fragmentClasses.keySet()) {
+			Set<SootClass> fragments = fragmentClasses.get(parentActivity);
+			for (SootClass fragment : fragments) {
+				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass);
+				entryPointCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
+				entryPointCreator.setCallbacks(callbackFunctions.get(fragment));
+
+				SootMethod fragmentMethod = entryPointCreator.createDummyMain();
+				fragmentToMainMethod.put(fragment, fragmentMethod);
+				componentToInfo.put(fragment, fragmentMethod);
+			}
+		}
+
 		for (SootClass currentClass : components) {
 			currentClass.setApplicationClass();
 
@@ -228,9 +245,16 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			AbstractComponentEntryPointCreator componentCreator = null;
 			switch (componentType) {
 			case Activity:
-				Set<SootClass> activityFragments = fragmentClasses == null ? null : fragmentClasses.get(currentClass);
+				Map<SootClass, SootMethod> curActivityToFragmentMethod = new HashMap<>();
+				if (fragmentClasses != null) {
+					Set<SootClass> fragments = fragmentClasses.get(currentClass);
+					if (fragments != null && !fragments.isEmpty()) {
+						for (SootClass fragment : fragments)
+							curActivityToFragmentMethod.put(fragment, fragmentToMainMethod.get(fragment));
+					}
+				}
 				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClass,
-						activityLifecycleCallbacks, activityFragments, callbackClassToField);
+						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod);
 				break;
 			case Service:
 			case GCMBaseIntentService:

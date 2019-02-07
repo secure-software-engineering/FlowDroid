@@ -91,13 +91,12 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			mainMethod = null;
 		}
 
-		final SootClass intentClass = Scene.v().getSootClassUnsafe("android.content.Intent");
-		if (intentClass == null)
-			throw new RuntimeException("Could not find Android intent class");
-
 		// Create the method
-		List<Type> argList = new ArrayList<>();
-		argList.add(RefType.v(intentClass));
+		final List<Type> defaultParams = getDefaultMainMethodParams();
+		final List<Type> additionalParams = getAdditionalMainMethodParams();
+		List<Type> argList = new ArrayList<>(defaultParams);
+		if (additionalParams != null && !additionalParams.isEmpty())
+			argList.addAll(additionalParams);
 		mainMethod = Scene.v().makeSootMethod(methodName, argList, component.getType());
 
 		// Create the body
@@ -119,7 +118,34 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		// Get the parameter locals
 		intentLocal = body.getParameterLocal(0);
-		localVarsForClasses.put(intentClass, intentLocal);
+		for (int i = 0; i < argList.size(); i++) {
+			Local lc = body.getParameterLocal(i);
+			if (lc.getType() instanceof RefType) {
+				RefType rt = (RefType) lc.getType();
+				localVarsForClasses.put(rt.getSootClass(), lc);
+			}
+		}
+	}
+
+	/**
+	 * Gets the default parameter types that every component main method shall have
+	 * 
+	 * @return The default parameter types that all component main methods have in
+	 *         common
+	 */
+	protected final List<Type> getDefaultMainMethodParams() {
+		return Collections.singletonList(RefType.v("android.content.Intent"));
+	}
+
+	/**
+	 * Derived classes can overwrite this method to add further parameters to the
+	 * dummy main method
+	 * 
+	 * @return A list with the parameter types to be added to the component's dummy
+	 *         main method, or null, if no additional parameters shall be added
+	 */
+	protected List<Type> getAdditionalMainMethodParams() {
+		return null;
 	}
 
 	@Override
@@ -198,13 +224,12 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	 * Generates invocation statements for all callback methods which need to be
 	 * invoked during the given class' run cycle.
 	 * 
-	 * @param referenceClasses
-	 *            The classes for which no new instances shall be created, but
-	 *            rather existing ones shall be used.
-	 * @param callbackSignature
-	 *            An empty string if calls to all callback methods for the given
-	 *            class shall be generated, otherwise the subsignature of the only
-	 *            callback method to generate.
+	 * @param referenceClasses  The classes for which no new instances shall be
+	 *                          created, but rather existing ones shall be used.
+	 * @param callbackSignature An empty string if calls to all callback methods for
+	 *                          the given class shall be generated, otherwise the
+	 *                          subsignature of the only callback method to
+	 *                          generate.
 	 * @return True if a matching callback has been found, otherwise false.
 	 */
 	protected boolean addCallbackMethods(Set<SootClass> referenceClasses, String callbackSignature) {
@@ -279,10 +304,9 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	/**
 	 * Gets all callback methods registered for the given class
 	 * 
-	 * @param callbackSignature
-	 *            An empty string if all callback methods for the given class shall
-	 *            be return, otherwise the subsignature of the only callback method
-	 *            to return.
+	 * @param callbackSignature An empty string if all callback methods for the
+	 *                          given class shall be return, otherwise the
+	 *                          subsignature of the only callback method to return.
 	 * @return The callback methods registered for the given class
 	 */
 	private MultiMap<SootClass, SootMethod> getCallbackMethods(String callbackSignature) {
@@ -305,15 +329,12 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	/**
 	 * Creates invocation statements for a single callback class
 	 * 
-	 * @param referenceClasses
-	 *            The classes for which no new instances shall be created, but
-	 *            rather existing ones shall be used.
-	 * @param callbackMethods
-	 *            The callback methods for which to generate invocations
-	 * @param callbackClass
-	 *            The class for which to create invocations
-	 * @param classLocal
-	 *            The base local of the respective class instance
+	 * @param referenceClasses The classes for which no new instances shall be
+	 *                         created, but rather existing ones shall be used.
+	 * @param callbackMethods  The callback methods for which to generate
+	 *                         invocations
+	 * @param callbackClass    The class for which to create invocations
+	 * @param classLocal       The base local of the respective class instance
 	 */
 	private void addSingleCallbackMethod(Set<SootClass> referenceClasses, Set<SootMethod> callbackMethods,
 			SootClass callbackClass, Local classLocal) {

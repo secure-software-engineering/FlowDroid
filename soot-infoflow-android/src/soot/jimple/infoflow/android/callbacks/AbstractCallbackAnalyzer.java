@@ -450,7 +450,7 @@ public abstract class AbstractCallbackAnalyzer {
 									addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
 											.canStoreType(rt, scSupportFragment.getType());
 									if (addFragment)
-										fragmentClasses.put(method.getDeclaringClass(), rt.getSootClass());
+										checkAndAddFragment(method.getDeclaringClass(), rt.getSootClass());
 								}
 							}
 						}
@@ -679,6 +679,17 @@ public abstract class AbstractCallbackAnalyzer {
 			return false;
 
 		return this.callbackMethods.put(lifecycleClass, new CallbackDefinition(method, parentMethod, callbackType));
+	}
+
+	/**
+	 * Registers a fragment that belongs to a given component
+	 * 
+	 * @param componentClass The component (usually an activity) to which the
+	 *                       fragment belongs
+	 * @param fragmentClass  The fragment class
+	 */
+	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
+		this.fragmentClasses.put(componentClass, fragmentClass);
 	}
 
 	private boolean isEmpty(Body activeBody) {

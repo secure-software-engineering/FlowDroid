@@ -120,7 +120,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	}
 
 	protected final static String Activity_FindViewById = "<android.app.Activity: android.view.View findViewById(int)>";
-	protected final static String View_FindViewById = "<android.app.View: android.view.View findViewById(int)>";
+	protected final static String View_FindViewById = "<android.view.View: android.view.View findViewById(int)>";
 
 	protected SootMethod smActivityFindViewById;
 	protected SootMethod smViewFindViewById;
@@ -175,12 +175,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
 	 * either strong or weak matching.
 	 *
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param config
-	 *            The configuration of the data flow analyzer
+	 * @param sources The list of source methods
+	 * @param sinks   The list of sink methods
+	 * @param config  The configuration of the data flow analyzer
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			InfoflowAndroidConfiguration config) {
@@ -192,23 +189,19 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * strong matching, i.e. the methods in the code must exactly match those in the
 	 * list.
 	 *
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param callbackMethods
-	 *            The list of callback methods whose parameters are sources through
-	 *            which the application receives data from the operating system
-	 * @param weakMatching
-	 *            True for weak matching: If an entry in the list has no return
-	 *            type, it matches arbitrary return types if the rest of the method
-	 *            signature is compatible. False for strong matching: The method
-	 *            signature in the code exactly match the one in the list.
-	 * @param config
-	 *            The configuration of the data flow analyzer
-	 * @param layoutControls
-	 *            A map from reference identifiers to the respective Android layout
-	 *            controls
+	 * @param sources         The list of source methods
+	 * @param sinks           The list of sink methods
+	 * @param callbackMethods The list of callback methods whose parameters are
+	 *                        sources through which the application receives data
+	 *                        from the operating system
+	 * @param weakMatching    True for weak matching: If an entry in the list has no
+	 *                        return type, it matches arbitrary return types if the
+	 *                        rest of the method signature is compatible. False for
+	 *                        strong matching: The method signature in the code
+	 *                        exactly match the one in the list.
+	 * @param config          The configuration of the data flow analyzer
+	 * @param layoutControls  A map from reference identifiers to the respective
+	 *                        Android layout controls
 	 */
 	public AndroidSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
@@ -236,8 +229,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Gets the field or method signature of the given source/sink definition
 	 *
-	 * @param am
-	 *            The source/sink definition for which to get a Soot signature
+	 * @param am The source/sink definition for which to get a Soot signature
 	 * @return The Soot signature associated with the given source/sink definition
 	 */
 	private String getSignature(SourceSinkDefinition am) {
@@ -257,13 +249,10 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Gets the sink definition for the given call site and tainted access path
 	 *
-	 * @param sCallSite
-	 *            The call site
-	 * @param manager
-	 *            The manager object providing access to the configuration and the
-	 *            interprocedural control flow graph
-	 * @param ap
-	 *            The incoming tainted access path
+	 * @param sCallSite The call site
+	 * @param manager   The manager object providing access to the configuration and
+	 *                  the interprocedural control flow graph
+	 * @param ap        The incoming tainted access path
 	 * @return The sink definition of the method that is called at the given call
 	 *         site if such a definition exists, otherwise null
 	 */
@@ -364,10 +353,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * implementations of the same method further up in the hierarchy for which
 	 * there is a SourceSinkDefinition in the given map
 	 *
-	 * @param callee
-	 *            The method for which to look for a SourceSinkDefinition
-	 * @param map
-	 *            A map from methods to their corresponding SourceSinkDefinitions
+	 * @param callee The method for which to look for a SourceSinkDefinition
+	 * @param map    A map from methods to their corresponding SourceSinkDefinitions
 	 * @return A SourceSinKDefinition for an implementation of the given method
 	 *         somewhere up in the class hiearchy if it exists, otherwise null.
 	 */
@@ -449,8 +436,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Checks whether the given method is registered as a source method. If so,
 	 * returns the corresponding definition, otherwise null.
 	 *
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 * @return The respective source definition if the given method is a source
 	 *         method, otherwise null
 	 */
@@ -463,8 +449,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given method is registered as a source method
 	 *
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 * @return True if the given method is a source method, otherwise false
 	 */
 	protected SourceSinkDefinition getSourceDefinition(SootMethod method) {
@@ -481,8 +466,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Checks whether the given method is registered as a callback method. If so,
 	 * the corresponding source definition is returned, otherwise null is returned.
 	 *
-	 * @param method
-	 *            The method to check
+	 * @param method The method to check
 	 * @return The source definition object if the given method is a callback
 	 *         method, otherwise null
 	 */
@@ -501,10 +485,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * information into the application. If so, the source definition is returned,
 	 * otherwise null
 	 *
-	 * @param sCallSite
-	 *            The statement to check for a source
-	 * @param cfg
-	 *            An interprocedural CFG containing the statement
+	 * @param sCallSite The statement to check for a source
+	 * @param cfg       An interprocedural CFG containing the statement
 	 * @return The definition of the discovered source if the given statement is a
 	 *         source, null otherwise
 	 */
@@ -580,10 +562,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Checks whether the given statement accesses a field that has been marked as a
 	 * source
 	 *
-	 * @param stmt
-	 *            The statement to check
-	 * @param cfg
-	 *            The interprocedural control flow graph
+	 * @param stmt The statement to check
+	 * @param cfg  The interprocedural control flow graph
 	 * @return The source and sink definition that corresponds to the detected field
 	 *         source if the given statement is a source, otherwise null
 	 */
@@ -601,10 +581,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Checks whether the given statement obtains data from a callback source
 	 *
-	 * @param sCallSite
-	 *            The statement to check
-	 * @param cfg
-	 *            The interprocedural control flow graph
+	 * @param sCallSite The statement to check
+	 * @param cfg       The interprocedural control flow graph
 	 * @return The source and sink definition that corresponds to the detected
 	 *         callback source if the given statement is a source, otherwise null
 	 */
@@ -672,11 +650,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Checks whether the given call site indicates a UI source, e.g. a password
 	 * input. If so, creates a {@link SourceSinkDefinition} for it
 	 *
-	 * @param sCallSite
-	 *            The call site that may potentially read data from a sensitive UI
-	 *            control
-	 * @param cfg
-	 *            The bidirectional control flow graph
+	 * @param sCallSite The call site that may potentially read data from a
+	 *                  sensitive UI control
+	 * @param cfg       The bidirectional control flow graph
 	 * @return The generated {@link SourceSinkDefinition} if the given call site
 	 *         reads data from a UI source, null otherwise
 	 */
@@ -743,9 +719,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 						new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
 			}
 			if (id == null) {
-				logger.debug("Could not find assignment to local "
-						+ ((Local) ie.getArg(0)).getName()
-						+ " in method "
+				logger.debug("Could not find assignment to local " + ((Local) ie.getArg(0)).getName() + " in method "
 						+ cfg.getMethodOf(sCallSite).getSignature());
 				return null;
 			}
@@ -765,10 +739,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Finds the last assignment to the given local representing a resource ID by
 	 * searching upwards from the given statement
 	 *
-	 * @param stmt
-	 *            The statement from which to look backwards
-	 * @param local
-	 *            The variable for which to look for assignments
+	 * @param stmt  The statement from which to look backwards
+	 * @param local The variable for which to look for assignments
 	 * @return The last value assigned to the given variable
 	 */
 	private Integer findLastResIDAssignment(Stmt stmt, Local local, BiDiInterproceduralCFG<Unit, SootMethod> cfg,
@@ -847,11 +819,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Finds the given resource in the given package
 	 *
-	 * @param resName
-	 *            The name of the resource to retrieve
+	 * @param resName     The name of the resource to retrieve
 	 * @param resID
-	 * @param packageName
-	 *            The name of the package in which to look for the resource
+	 * @param packageName The name of the package in which to look for the resource
 	 * @return The specified resource if available, otherwise null
 	 */
 	private AbstractResource findResource(String resName, String resID, String packageName) {
@@ -879,10 +849,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Finds the last assignment to the given String local by searching upwards from
 	 * the given statement
 	 *
-	 * @param stmt
-	 *            The statement from which to look backwards
-	 * @param local
-	 *            The variable for which to look for assignments
+	 * @param stmt  The statement from which to look backwards
+	 * @param local The variable for which to look for assignments
 	 * @return The last value assigned to the given variable
 	 */
 	private String findLastStringAssignment(Stmt stmt, Local local, BiDiInterproceduralCFG<Unit, SootMethod> cfg) {
@@ -918,8 +886,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Sets the resource packages to be used for finding sensitive layout controls
 	 * as sources
 	 *
-	 * @param resourcePackages
-	 *            The resource packages to be used for looking up layout controls
+	 * @param resourcePackages The resource packages to be used for looking up
+	 *                         layout controls
 	 */
 	public void setResourcePackages(List<ResPackage> resourcePackages) {
 		this.resourcePackages = resourcePackages;
@@ -928,8 +896,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	/**
 	 * Sets the name of the app's base package
 	 *
-	 * @param appPackageName
-	 *            The name of the app's base package
+	 * @param appPackageName The name of the app's base package
 	 */
 	public void setAppPackageName(String appPackageName) {
 		this.appPackageName = appPackageName;
@@ -939,11 +906,9 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Gets a soot method defined by class name and its sub signature from the
 	 * loaded methods in the Scene object
 	 *
-	 * @param sootClassName
-	 *            The class name of the method
-	 * @param subSignature
-	 *            The sub signature of the method which is the method name and its
-	 *            parameters
+	 * @param sootClassName The class name of the method
+	 * @param subSignature  The sub signature of the method which is the method name
+	 *                      and its parameters
 	 * @return The soot method of the given class and sub signature or null
 	 */
 	private SootMethod grabMethodWithoutReturn(String sootClassName, String subSignature) {
@@ -1131,8 +1096,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 	 * Excludes the given method from the source/sink analysis. No sources or sinks
 	 * will be detected in excluded methods.
 	 *
-	 * @param toExclude
-	 *            The method to exclude
+	 * @param toExclude The method to exclude
 	 */
 	public void excludeMethod(SootMethod toExclude) {
 		this.excludedMethods.add(toExclude);
