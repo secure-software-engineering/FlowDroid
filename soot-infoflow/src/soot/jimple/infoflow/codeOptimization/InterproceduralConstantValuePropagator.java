@@ -821,10 +821,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						final Value argVal = iiExpr.getArg(i);
 						if (argVal instanceof Constant) {
 							// If we already have a value for this argument and
-							// the
-							// new one does not agree, this parameter is not
-							// globally
-							// constant.
+							// the new one does not agree, this parameter is not
+							// globally constant.
 							if (values[i] != null && !values[i].equals(argVal))
 								isConstant[i] = false;
 							else
@@ -840,7 +838,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			// Get the constant parameters
 			List<Unit> inserted = null;
 			for (int i = 0; i < isConstant.length; i++) {
-				if (isConstant[i] && propagatedParameters.add(new Pair<>(sm, i))) {
+				if (isConstant[i] && values[i] != null && propagatedParameters.add(new Pair<>(sm, i))) {
 					// Propagate the constant into the callee
 					Local paramLocal = sm.getActiveBody().getParameterLocal(i);
 					Unit point = getFirstNonIdentityStmt(sm);
