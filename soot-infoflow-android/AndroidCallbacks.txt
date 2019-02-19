@@ -241,6 +241,12 @@ android.speech.tts.SynthesisCallback
 android.speech.tts.TextToSpeech$OnInitListener
 android.speech.tts.TextToSpeech$OnUtteranceCompletedListener
 android.speech.tts.UtteranceProgressListener
+android.support.v4.app.FragmentManager$OnBackStackChangedListener
+android.support.v4.content.Loader$OnLoadCompleteListener
+android.support.v4.view.PagerTitleStrip$PageListener
+android.support.v4.view.ViewPager$OnAdapterChangeListener
+android.support.v4.view.ViewPager$OnPageChangeListener
+android.support.v4.view.ViewPager$SimpleOnPageChangeListener
 android.telecom.Call$Callback
 android.telecom.InCallService$VideoCall$Callback
 android.telecom.RemoteConference$Callback
