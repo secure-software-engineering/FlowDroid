@@ -2773,4 +2773,20 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return null;
 	}
 
+	/**
+	 * Convenience method for loading a string resource with a given name
+	 * 
+	 * @param resourceName The name of the resource to locate
+	 * @return The string contents of the resource with the given name, if such a
+	 *         resource exists and is of type "string", null otherwise
+	 */
+	public String findStringResource(String resourceName) {
+		AbstractResource res = findResourceByName("string", resourceName);
+		if (res instanceof StringResource) {
+			StringResource stringRes = (StringResource) res;
+			return stringRes.value;
+		}
+		return null;
+	}
+
 }
