@@ -44,6 +44,7 @@ import soot.Value;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
+import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
@@ -86,6 +87,10 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final SootClass scSupportFragmentTransaction = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentTransaction");
 	protected final SootClass scSupportFragment = Scene.v().getSootClassUnsafe("android.support.v4.app.Fragment");
+
+	protected final SootClass scSupportViewPager = Scene.v().getSootClassUnsafe("android.support.v4.view.ViewPager");
+	protected final SootClass scFragmentStatePagerAdapter = Scene.v()
+			.getSootClassUnsafe("android.support.v4.app.FragmentStatePagerAdapter");
 
 	protected final InfoflowAndroidConfiguration config;
 	protected final Set<SootClass> entryPointClasses;
@@ -457,6 +462,79 @@ public abstract class AbstractCallbackAnalyzer {
 					}
 				}
 			}
+	}
+
+	/**
+	 * Check whether a method registers a FragmentStatePagerAdapter to a ViewPager.
+	 * This pattern is very common for tabbed apps.
+	 * 
+	 * @param clazz
+	 * @param method
+	 * 
+	 * @author Julius Naeumann
+	 */
+	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
+		if (scSupportViewPager == null || scFragmentStatePagerAdapter == null)
+			return;
+
+		// look for invocations of ViewPager.setAdapter
+		for (Unit u : method.getActiveBody().getUnits()) {
+			Stmt stmt = (Stmt) u;
+
+			if (!stmt.containsInvokeExpr())
+				continue;
+
+			InvokeExpr invExpr = stmt.getInvokeExpr();
+
+			if (!(invExpr instanceof InstanceInvokeExpr))
+				continue;
+
+			InstanceInvokeExpr iinvExpr = (InstanceInvokeExpr) invExpr;
+
+			// check whether class is of ViewPager type
+
+			if (!Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(), scSupportViewPager.getType()))
+				continue;
+
+			// check whether setAdapter method is called
+
+			if (!stmt.getInvokeExpr().getMethod().getName().equals("setAdapter")
+					|| stmt.getInvokeExpr().getArgCount() != 1)
+				continue;
+
+			// get argument
+			Value pa = stmt.getInvokeExpr().getArg(0);
+
+			if (!(pa.getType() instanceof RefType))
+				continue;
+
+			RefType rt = (RefType) pa.getType();
+
+			// check whether argument is of type FragmentStatePagerAdapter
+			if (!Scene.v().getFastHierarchy().canStoreType(rt, scFragmentStatePagerAdapter.getType()))
+				continue;
+
+			// now analyze getItem() to find possible Fragments
+			SootMethod getItem = rt.getSootClass().getMethodUnsafe("android.support.v4.app.Fragment getItem(int)");
+
+			if (getItem == null)
+				continue;
+
+			Body b = getItem.retrieveActiveBody();
+			if (b == null)
+				continue;
+
+			// iterate and add any returned Fragment classes
+			for (Unit getItemUnit : b.getUnits()) {
+				if (getItemUnit instanceof ReturnStmt) {
+					ReturnStmt rs = (ReturnStmt) getItemUnit;
+					Value rv = rs.getOp();
+
+					checkAndAddFragment(method.getDeclaringClass(), ((RefType) rv.getType()).getSootClass());
+
+				}
+			}
+		}
 	}
 
 	/**

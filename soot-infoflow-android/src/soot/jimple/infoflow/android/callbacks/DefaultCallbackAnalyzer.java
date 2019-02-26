@@ -232,6 +232,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			analyzeMethodForDynamicBroadcastReceiver(method);
 			analyzeMethodForServiceConnection(method);
 			analyzeMethodForFragmentTransaction(lifecycleElement, method);
+			analyzeMethodForViewPagers(lifecycleElement, method);
 		}
 	}
 
