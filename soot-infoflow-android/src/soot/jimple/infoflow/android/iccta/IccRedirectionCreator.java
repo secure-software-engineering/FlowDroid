@@ -19,6 +19,7 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
@@ -52,15 +53,13 @@ public class IccRedirectionCreator {
 	public interface IRedirectorCallInserted {
 
 		/**
-		 * Method that is called when a new invocation to a redirector statement has
-		 * been inserted
+		 * Method that is called when a new invocation to a redirector statement
+		 * has been inserted
 		 * 
-		 * @param link
-		 *            The inter-component link for which a statement has been injected
-		 * @param callStmt
-		 *            The statement that has been injected
-		 * @param redirectorMethod
-		 *            The redirector method that is being called
+		 * @param link             The inter-component link for which a
+		 *                         statement has been injected
+		 * @param callStmt         The statement that has been injected
+		 * @param redirectorMethod The redirector method that is being called
 		 */
 		public void onRedirectorCallInserted(IccLink link, Stmt callStmt, SootMethod redirectorMethod);
 
@@ -111,7 +110,8 @@ public class IccRedirectionCreator {
 	 * @return
 	 */
 	protected SootMethod getRedirectMethod(IccLink link) {
-		// If the target component is, e.g., disabled in the manifest, we do not have an
+		// If the target component is, e.g., disabled in the manifest, we do not
+		// have an
 		// entry point for it
 		SootClass instrumentedDestinationSC = link.getDestinationC();
 		if (!componentToEntryPoint.hasEntryPointForComponent(instrumentedDestinationSC))
@@ -449,25 +449,31 @@ public class IccRedirectionCreator {
 		// Please refer to AndroidIPCManager.postProcess() for this removing
 		// process.
 
-		// especially for createChooser method
-		for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-			Stmt stmt = (Stmt) iter.next();
-
-			if (stmt.toString().contains(
-					"<android.content.Intent: android.content.Intent createChooser(android.content.Intent,java.lang.CharSequence)>")) {
-				List<ValueBox> vbs = stmt.getUseAndDefBoxes();
-				Unit assignU = Jimple.v().newAssignStmt(vbs.get(0).getValue(), vbs.get(1).getValue());
-				copyTags(stmt, assignU);
-				units.insertAfter(assignU, stmt);
-				instrumentedUnits.put(body, assignU);
-				// units.remove(stmt);
+		NumberedString subsig = Scene.v().getSubSigNumberer()
+				.find("android.content.Intent createChooser(android.content.Intent,java.lang.CharSequence)");
+		SootClass clazz = Scene.v().getSootClassUnsafe("android.content.Intent");
+		if (subsig != null && clazz != null) {
+			// especially for createChooser method
+			for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+				Stmt stmt = (Stmt) iter.next();
+				if (stmt.containsInvokeExpr()) {
+					InvokeExpr expr = stmt.getInvokeExpr();
+					SootMethodRef mr = expr.getMethodRef();
+					if (mr.getDeclaringClass().equals(clazz) && mr.getSubSignature().equals(subsig)) {
+						List<ValueBox> vbs = stmt.getUseAndDefBoxes();
+						Unit assignU = Jimple.v().newAssignStmt(vbs.get(0).getValue(), vbs.get(1).getValue());
+						copyTags(stmt, assignU);
+						units.insertAfter(assignU, stmt);
+						instrumentedUnits.put(body, assignU);
+					}
+				}
 			}
 		}
 	}
 
 	/**
-	 * Copy all the tags of {from} to {to}, if {to} already contain the copied tag,
-	 * then overwrite it.
+	 * Copy all the tags of {from} to {to}, if {to} already contain the copied
+	 * tag, then overwrite it.
 	 * 
 	 * @param from
 	 * @param to
@@ -502,8 +508,8 @@ public class IccRedirectionCreator {
 	 * Sets the callback that shall be notified when a new statement has been
 	 * injected to model inter-component call relationships
 	 * 
-	 * @param instrumentationCallback
-	 *            The callback to notify of new instrumentation statements
+	 * @param instrumentationCallback The callback to notify of new
+	 *                                instrumentation statements
 	 */
 	public void setInstrumentationCallback(IRedirectorCallInserted instrumentationCallback) {
 		this.instrumentationCallback = instrumentationCallback;
