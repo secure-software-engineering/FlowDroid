@@ -2728,6 +2728,14 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return resourceList;
 	}
 
+	/**
+	 * Gets the resource type with the package and type specified in the given
+	 * resource ID
+	 * 
+	 * @param resourceId The resource ID
+	 * @return The resource type with the given type and package ID, or null if no
+	 *         such type exists
+	 */
 	public ResType findResourceType(int resourceId) {
 		ResourceId id = parseResourceId(resourceId);
 		for (ResPackage resPackage : this.packages)
@@ -2787,6 +2795,22 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return stringRes.value;
 		}
 		return null;
+	}
+
+	/**
+	 * Finds all resources that have the given type
+	 * 
+	 * @param type The resource type to look for
+	 * @return All resources of the given type
+	 */
+	public List<AbstractResource> findResourcesByType(String type) {
+		List<AbstractResource> resourceList = new ArrayList<>();
+		for (ResPackage resPackage : this.packages) {
+			ResType resType = resPackage.getResourceType(type);
+			if (resType != null)
+				resourceList.addAll(resType.getAllResources());
+		}
+		return resourceList;
 	}
 
 }
