@@ -198,7 +198,7 @@ public class InfoflowPerformanceData {
 		if (mem < 0)
 			this.maxMemoryConsumption = usedMemory;
 		else
-			this.maxMemoryConsumption = Math.min(mem, usedMemory);
+			this.maxMemoryConsumption = Math.max(mem, usedMemory);
 	}
 
 	/**
