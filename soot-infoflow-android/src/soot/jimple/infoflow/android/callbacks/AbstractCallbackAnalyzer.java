@@ -477,8 +477,13 @@ public abstract class AbstractCallbackAnalyzer {
 		if (scSupportViewPager == null || scFragmentStatePagerAdapter == null)
 			return;
 
+		if (!method.isConcrete())
+			return;
+
+		Body body = method.retrieveActiveBody();
+
 		// look for invocations of ViewPager.setAdapter
-		for (Unit u : method.getActiveBody().getUnits()) {
+		for (Unit u : body.getUnits()) {
 			Stmt stmt = (Stmt) u;
 
 			if (!stmt.containsInvokeExpr())
