@@ -18,6 +18,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.CaughtExceptionRef;
@@ -291,8 +292,11 @@ public abstract class AbstractInfoflowProblem
 			return false;
 
 		// We can exclude Soot library classes
-		if (manager.getConfig().getExcludeSootLibraryClasses() && sm.getDeclaringClass().isLibraryClass())
-			return true;
+		if (manager.getConfig().getExcludeSootLibraryClasses()) {
+			SootClass declClass = sm.getDeclaringClass();
+			if (declClass != null && declClass.isLibraryClass())
+				return true;
+		}
 
 		// We can ignore system classes according to FlowDroid's definition
 		if (manager.getConfig().getIgnoreFlowsInSystemPackages()

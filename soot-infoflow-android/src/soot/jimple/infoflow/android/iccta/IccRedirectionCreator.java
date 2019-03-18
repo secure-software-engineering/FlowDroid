@@ -36,6 +36,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointInfo;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointInfo;
+import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.tagkit.Tag;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -53,11 +54,11 @@ public class IccRedirectionCreator {
 	public interface IRedirectorCallInserted {
 
 		/**
-		 * Method that is called when a new invocation to a redirector statement
-		 * has been inserted
+		 * Method that is called when a new invocation to a redirector statement has
+		 * been inserted
 		 * 
-		 * @param link             The inter-component link for which a
-		 *                         statement has been injected
+		 * @param link             The inter-component link for which a statement has
+		 *                         been injected
 		 * @param callStmt         The statement that has been injected
 		 * @param redirectorMethod The redirector method that is being called
 		 */
@@ -91,6 +92,10 @@ public class IccRedirectionCreator {
 
 	public void redirectToDestination(IccLink link) {
 		if (link.getDestinationC().isPhantom())
+			return;
+
+		// Do not instrument code into system methods
+		if (SystemClassHandler.isClassInSystemPackage(link.getFromSM().getDeclaringClass().getName()))
 			return;
 
 		// 1) generate redirect method
@@ -472,8 +477,8 @@ public class IccRedirectionCreator {
 	}
 
 	/**
-	 * Copy all the tags of {from} to {to}, if {to} already contain the copied
-	 * tag, then overwrite it.
+	 * Copy all the tags of {from} to {to}, if {to} already contain the copied tag,
+	 * then overwrite it.
 	 * 
 	 * @param from
 	 * @param to
@@ -508,8 +513,8 @@ public class IccRedirectionCreator {
 	 * Sets the callback that shall be notified when a new statement has been
 	 * injected to model inter-component call relationships
 	 * 
-	 * @param instrumentationCallback The callback to notify of new
-	 *                                instrumentation statements
+	 * @param instrumentationCallback The callback to notify of new instrumentation
+	 *                                statements
 	 */
 	public void setInstrumentationCallback(IRedirectorCallInserted instrumentationCallback) {
 		this.instrumentationCallback = instrumentationCallback;
