@@ -639,7 +639,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				return tempLocal;
 			}
 
-			logger.warn("Could not find a suitable constructor for class {}", createdClass.getName());
 			this.failedClasses.add(createdClass);
 			return null;
 		}

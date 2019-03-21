@@ -125,10 +125,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				if (entryPointUtils.getComponentType(currentClass) == ComponentType.ContentProvider) {
 					// Create an instance of the content provider
 					Local localVal = generateClassConstructor(currentClass, body);
-					if (localVal == null) {
-						logger.warn("Constructor cannot be generated for {}", currentClass.getName());
+					if (localVal == null)
 						continue;
-					}
 					localVarsForClasses.put(currentClass, localVal);
 
 					// Conditionally call the onCreate method
@@ -154,9 +152,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			// Create the application
 			applicationLocal = generateClassConstructor(applicationClass, body);
 			localVarsForClasses.put(applicationClass, applicationLocal);
-			if (applicationLocal == null) {
-				logger.warn("Constructor cannot be generated for application class {}", applicationClass.getName());
-			} else {
+			if (applicationLocal != null) {
 				localVarsForClasses.put(applicationClass, applicationLocal);
 
 				boolean hasApplicationCallbacks = applicationCallbackClasses != null

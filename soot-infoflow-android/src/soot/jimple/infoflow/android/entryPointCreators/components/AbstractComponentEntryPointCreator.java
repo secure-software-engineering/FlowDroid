@@ -167,9 +167,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 			// Create a new instance of the component
 			thisLocal = generateClassConstructor(component, body);
-			if (thisLocal == null)
-				logger.warn("Constructor cannot be generated for {}", component.getName());
-			else {
+			if (thisLocal != null) {
 				localVarsForClasses.put(component, thisLocal);
 
 				// Store the intent
