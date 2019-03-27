@@ -1849,7 +1849,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// Check whether we directly support that class. We assume that if we
 		// have some summary for that class, we have all summaries for that
 		// class.
-		if (flows.supportsClass(method.getDeclaringClass().getName()))
+		SootClass declClass = method.getDeclaringClass();
+		if (declClass != null && flows.supportsClass(declClass.getName()))
 			return true;
 
 		return false;
