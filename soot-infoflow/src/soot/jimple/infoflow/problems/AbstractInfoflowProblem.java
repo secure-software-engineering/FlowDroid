@@ -299,9 +299,11 @@ public abstract class AbstractInfoflowProblem
 		}
 
 		// We can ignore system classes according to FlowDroid's definition
-		if (manager.getConfig().getIgnoreFlowsInSystemPackages()
-				&& SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
-			return true;
+		if (manager.getConfig().getIgnoreFlowsInSystemPackages()) {
+			SootClass declClass = sm.getDeclaringClass();
+			if (declClass != null && SystemClassHandler.isClassInSystemPackage(declClass.getName()))
+				return true;
+		}
 
 		return false;
 	}
