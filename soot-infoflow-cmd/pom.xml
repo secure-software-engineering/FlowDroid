@@ -115,12 +115,12 @@
 		<dependency>
 			<groupId>heros</groupId>
 			<artifactId>heros</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
 			<artifactId>soot</artifactId>
-			<version>3.2.0</version>
+			<version>3.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

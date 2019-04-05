@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object">
+		<interface name="org.apache.http.entity.mime.content.ContentBody" />
+		<interface name="org.apache.http.entity.mime.content.ContentDescriptor" />
+	</hierarchy>
+</summary>
