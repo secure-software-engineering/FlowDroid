@@ -632,7 +632,8 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			if (sourceSinkConfig.getCallbackSourceMode() == CallbackSourceMode.SourceListOnly
 					&& sourceSinkDef != null) {
 				// Check the parameter index
-				if (methodDef.getParameters().length > paramRef.getIndex()) {
+				Set<AccessPathTuple>[] methodParamDefs = methodDef.getParameters();
+				if (methodParamDefs != null && methodParamDefs.length > paramRef.getIndex()) {
 					Set<AccessPathTuple> apTuples = methodDef.getParameters()[paramRef.getIndex()];
 					if (apTuples != null && !apTuples.isEmpty()) {
 						for (AccessPathTuple curTuple : apTuples)
