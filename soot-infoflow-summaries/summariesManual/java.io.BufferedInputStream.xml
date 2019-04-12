@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
 						AccessPathTypes="[java.io.InputStream]" />
 				</flow>
 			</flows>
@@ -14,7 +15,8 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
 						AccessPathTypes="[java.io.InputStream]" />
 				</flow>
 			</flows>
@@ -22,8 +24,9 @@
 		<method id="int read()">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -31,8 +34,9 @@
 		<method id="int read(byte[])">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -40,8 +44,9 @@
 		<method id="int read(byte[],int,int)">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>

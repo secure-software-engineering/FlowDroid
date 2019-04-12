@@ -4,8 +4,9 @@
 		<method id="boolean get(java.lang.String,boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -13,8 +14,9 @@
 		<method id="boolean get(java.lang.String,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -22,8 +24,9 @@
 		<method id="boolean get(java.lang.String,char)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -31,8 +34,9 @@
 		<method id="boolean get(java.lang.String,double)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -40,8 +44,9 @@
 		<method id="boolean get(java.lang.String,float)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -49,8 +54,9 @@
 		<method id="boolean get(java.lang.String,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -58,8 +64,9 @@
 		<method id="boolean get(java.lang.String,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -67,8 +74,9 @@
 		<method id="boolean get(java.lang.String,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -76,8 +84,9 @@
 		<method id="boolean get(java.lang.String,short)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[java.io.InputStream,byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
