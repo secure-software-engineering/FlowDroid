@@ -148,7 +148,8 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 					break;
 				}
 		}
-		return wrapperTaints.stream().map(v -> (AbstractDataFlowAbstraction) v).collect(Collectors.toSet());
+		return wrapperTaints == null ? null
+				: wrapperTaints.stream().map(v -> (AbstractDataFlowAbstraction) v).collect(Collectors.toSet());
 	}
 
 	@Override
