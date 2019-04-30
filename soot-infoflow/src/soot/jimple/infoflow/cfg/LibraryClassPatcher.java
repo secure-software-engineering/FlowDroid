@@ -84,6 +84,11 @@ public class LibraryClassPatcher {
 			return;
 		sc.setLibraryClass();
 
+		// We sometimes seem to be missing the constructor
+		SootMethod smMessageConstructor = Scene.v().grabMethod("<android.os.Message: void <init>()>");
+		if (smMessageConstructor == null)
+			return;
+
 		// Make sure that we have all fields
 		SootField tmp = sc.getFieldUnsafe("int what");
 		if (tmp == null) {
@@ -202,10 +207,8 @@ public class LibraryClassPatcher {
 	/**
 	 * Creates a new implementation for the given method
 	 * 
-	 * @param sm
-	 *            The method for which to generate a new implementation
-	 * @param injector
-	 *            Callback to inject additional code into the new method
+	 * @param sm       The method for which to generate a new implementation
+	 * @param injector Callback to inject additional code into the new method
 	 */
 	private void generateMessageObtainMethod(SootMethod sm, IMessageObtainCodeInjector injector) {
 		// Create the method
@@ -219,6 +222,8 @@ public class LibraryClassPatcher {
 		sm.setActiveBody(body);
 		body.insertIdentityStmts();
 
+		// This method must exist, since we checked it before attempting any kind of
+		// message mocking
 		SootMethod smMessageConstructor = Scene.v().grabMethod("<android.os.Message: void <init>()>");
 
 		LocalGenerator lg = new LocalGenerator(body);
@@ -237,8 +242,7 @@ public class LibraryClassPatcher {
 	 * Checks whether the given method body is a stub implementation and can safely
 	 * be overwritten
 	 * 
-	 * @param body
-	 *            The body to check
+	 * @param body The body to check
 	 * @return True if the given method body is a stub implementation, otherwise
 	 *         false
 	 */
@@ -366,12 +370,10 @@ public class LibraryClassPatcher {
 	 * Creates a synthetic "java.lang.Thread.run()" method implementation that calls
 	 * the target previously passed in when the constructor was called
 	 * 
-	 * @param smRun
-	 *            The run() method for which to create a synthetic implementation
-	 * @param runnable
-	 *            The "java.lang.Runnable" interface
-	 * @param fldTarget
-	 *            The field containing the target object
+	 * @param smRun     The run() method for which to create a synthetic
+	 *                  implementation
+	 * @param runnable  The "java.lang.Runnable" interface
+	 * @param fldTarget The field containing the target object
 	 */
 	private void patchThreadRunMethod(SootMethod smRun, SootClass runnable, SootField fldTarget) {
 		SootClass sc = smRun.getDeclaringClass();
@@ -406,12 +408,10 @@ public class LibraryClassPatcher {
 	 * Creates a synthetic "<init>(java.lang.Runnable)" method implementation that
 	 * stores the given runnable into a field for later use
 	 * 
-	 * @param smCons
-	 *            The <init>() method for which to create a synthetic implementation
-	 * @param runnable
-	 *            The "java.lang.Runnable" interface
-	 * @param fldTarget
-	 *            The field receiving the Runnable
+	 * @param smCons    The <init>() method for which to create a synthetic
+	 *                  implementation
+	 * @param runnable  The "java.lang.Runnable" interface
+	 * @param fldTarget The field receiving the Runnable
 	 */
 	private void patchThreadConstructor(SootMethod smCons, SootClass runnable, SootField fldTarget) {
 		SootClass sc = smCons.getDeclaringClass();
@@ -461,9 +461,8 @@ public class LibraryClassPatcher {
 			smPost.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostAtFrontOfQueue != null
-				&& (!smPostAtFrontOfQueue.hasActiveBody()
-						|| isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
+		if (smPostAtFrontOfQueue != null && (!smPostAtFrontOfQueue.hasActiveBody()
+				|| isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtFrontOfQueue, runnable);
 			smPostAtFrontOfQueue.addTag(new FlowDroidEssentialMethodTag());
 		}
@@ -474,9 +473,8 @@ public class LibraryClassPatcher {
 			smPostAtTime.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostAtTimeWithToken != null
-				&& (!smPostAtTimeWithToken.hasActiveBody()
-						|| isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
+		if (smPostAtTimeWithToken != null && (!smPostAtTimeWithToken.hasActiveBody()
+				|| isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtTimeWithToken, runnable);
 			smPostAtTimeWithToken.addTag(new FlowDroidEssentialMethodTag());
 		}
@@ -498,9 +496,8 @@ public class LibraryClassPatcher {
 	 * Creates a new body for one of the dispatchMessage method in
 	 * android.os.Handler
 	 * 
-	 * @param method
-	 *            The method for which to create the implementation
-	 *            (dispatchMessage)
+	 * @param method The method for which to create the implementation
+	 *               (dispatchMessage)
 	 * @return The newly created body
 	 */
 	private Body patchHandlerDispatchBody(SootMethod method) {
@@ -544,10 +541,8 @@ public class LibraryClassPatcher {
 	/**
 	 * Creates a new body for one of the postXXX methods in android.os.Handler
 	 * 
-	 * @param method
-	 *            The method for which to create the implementation
-	 * @param runnable
-	 *            The java.lang.Runnable class
+	 * @param method   The method for which to create the implementation
+	 * @param runnable The java.lang.Runnable class
 	 * @return The newly created body
 	 */
 	private Body patchHandlerPostBody(SootMethod method, SootClass runnable) {
@@ -633,8 +628,7 @@ public class LibraryClassPatcher {
 	 * Patches the schedule() method of java.util.Timer by providing a fake
 	 * implementation
 	 * 
-	 * @param method
-	 *            The method to patch
+	 * @param method The method to patch
 	 */
 	private void patchTimerScheduleMethod(SootMethod method) {
 		SootClass sc = method.getDeclaringClass();
