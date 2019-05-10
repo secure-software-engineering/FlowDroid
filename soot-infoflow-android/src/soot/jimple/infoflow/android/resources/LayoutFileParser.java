@@ -287,7 +287,10 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 */
 	private void parseIncludeAttributes(String layoutFile, AXmlNode rootNode) {
 		for (Entry<String, AXmlAttribute<?>> entry : rootNode.getAttributes().entrySet()) {
-			String attrName = entry.getKey().trim();
+			String attrName = entry.getKey();
+			if (attrName == null || attrName.isEmpty())
+				continue;
+			attrName = attrName.trim();
 			AXmlAttribute<?> attr = entry.getValue();
 
 			if (attrName.equals("layout")) {
