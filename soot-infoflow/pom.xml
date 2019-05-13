@@ -5,14 +5,48 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow</artifactId>
 	<name>soot-infoflow</name>
-	<version>2.7.1</version>
+	<version>2.7.1.1</version>
 	<description>Soot extending data flow tracking components for Java</description>
 	<packaging>jar</packaging>
+	<url>https://github.com/secure-software-engineering/FlowDroid</url>
+    <organization>
+        <name>Fraunhofer SIT</name>
+        <url>https://www.sit.fraunhofer.de/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
+            <url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Steven Arzt</name>
+            <email>steven.arzt@sit.fraunhofer.de</email>
+            <organization>Frauenhofer SIT</organization>
+            <organizationUrl>https://www.sit.fraunhofer.de/en/</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</connection>
+        <developerConnection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</developerConnection>
+        <url>https://github.com/secure-software-engineering/FlowDroid/tree/develop</url>
+    </scm>
+
+
 	
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
+        <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
 	</properties>
 	
 	<build>
@@ -31,7 +65,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20.1</version>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<includes>
 						<include>soot/jimple/infoflow/test/junit/**</include>
@@ -39,8 +73,10 @@
 				</configuration>
 			</plugin>
       		<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -51,7 +87,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
+				<version>${maven-jar-plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -63,31 +99,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
+				<version>${maven-source-plugin.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
+				<version>${maven-javadoc-plugin.version}</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 		
@@ -102,18 +122,15 @@
 	</build>
 
 	<dependencies>
-		<!-- Built by http://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/ -->
 		<dependency>
-			<groupId>heros</groupId>
+			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>heros</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.1.0</version>
 		</dependency>
-		<!-- Uploaded to http://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/ 
-			from the nightly build server -->
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
 			<artifactId>jasmin</artifactId>
-			<version>2.5.0-SNAPSHOT</version>
+			<version>3.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
@@ -133,17 +150,17 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>java.j2ee</groupId>
-			<artifactId>j2ee</artifactId>
-			<version>1.4</version>
-			<scope>test</scope>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>3.0.1</version>
+		    <scope>test</scope>
 		</dependency>
+
 		<dependency>
 		    <groupId>net.sf.trove4j</groupId>
 		    <artifactId>trove4j</artifactId>
 		    <version>3.0.3</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 		<dependency>
 		    <groupId>com.google.guava</groupId>
 		    <artifactId>guava</artifactId>
@@ -151,16 +168,101 @@
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>soot-snapshot</id>
-			<name>Soot snapshot server</name>
-			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
-		</repository>
-		<repository>
-			<id>soot-release</id>
-			<name>Soot release server</name>
-			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-release/</url>
-		</repository>
-	</repositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+	<profiles>
+        <profile>
+            <id>deploy</id>
+            <activation>
+                <property>
+                    <name>deploy</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <gpg.executable>gpg2</gpg.executable>
+                <gpg.keyname>BA6398DCF4E2C1B6C5C7BDFC364F80C21BCC61BB</gpg.keyname>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${maven-nexus-staging-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven-gpg-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>simple-command</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
