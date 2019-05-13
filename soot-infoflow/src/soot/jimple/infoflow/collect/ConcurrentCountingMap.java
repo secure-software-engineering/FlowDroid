@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.collect;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -164,6 +165,37 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 		if (i == null)
 			return 1;
 		return i.incrementAndGet();
+	}
+
+	/**
+	 * Decrements the counter associated with the given value by one
+	 * 
+	 * @param key The key of the value for which to decrement the counter
+	 * @return The new counter value
+	 */
+	public int decrement(T key) {
+		AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
+		if (i == null)
+			return 1;
+		return i.decrementAndGet();
+	}
+
+	/**
+	 * Gets all keys that have the given value. Note that values are free to change
+	 * at any time, so the set returned by this method may contain keys that have
+	 * other values as well in case they were mutated by a different thread while
+	 * this method was running.
+	 * 
+	 * @param value The expected value
+	 * @return A set with all keys that have the given value
+	 */
+	public Set<T> getByValue(int value) {
+		Set<T> set = new HashSet<>();
+		for (java.util.Map.Entry<T, Integer> e : entrySet()) {
+			if (e.getValue() == value)
+				set.add(e.getKey());
+		}
+		return set;
 	}
 
 }
