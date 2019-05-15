@@ -10,13 +10,13 @@
  ******************************************************************************/
 package soot.jimple.infoflow.test.securibench.supportClasses;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Locale;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Locale;
 
 public class DummyHttpResponse implements HttpServletResponse {
 
@@ -27,9 +27,33 @@ public class DummyHttpResponse implements HttpServletResponse {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
+	public java.util.Collection<java.lang.String> getHeaders(String arg0) {
+		return Arrays.asList("secret1", "secret2", "secret3");
+	}
+
+	@Override
+	public String getHeader(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getStatus(){
+		return 0;
+	}
+
+
+	@Override
 	public int getBufferSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	public java.util.Collection<java.lang.String> getHeaderNames() {
+		return Arrays.asList("secret1", "secret2", "secret3");
 	}
 
 	@Override
