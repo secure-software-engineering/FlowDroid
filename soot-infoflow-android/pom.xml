@@ -96,9 +96,9 @@
 			<version>2.7.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>heros</groupId>
+			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>heros</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
@@ -118,7 +118,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>pxb.android</groupId>
+			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>axml</artifactId>
 			<version>2.0.0-SNAPSHOT</version>
 		</dependency>
