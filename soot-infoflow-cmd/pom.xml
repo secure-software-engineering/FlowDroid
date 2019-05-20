@@ -113,7 +113,7 @@
 			<version>2.7.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>heros</groupId>
+			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>heros</artifactId>
 			<version>1.1.0</version>
 		</dependency>
