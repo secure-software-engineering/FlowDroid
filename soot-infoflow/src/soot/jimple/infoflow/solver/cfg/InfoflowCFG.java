@@ -45,8 +45,6 @@ import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.util.HashMultiMap;
-import soot.util.MultiMap;
 
 /**
  * Interprocedural control-flow graph for the infoflow solver
@@ -259,14 +257,13 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
-	private synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
+	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
 		if (!smethod.isConcrete())
 			return StaticFieldUse.Unused;
 
 		List<SootMethod> workList = new ArrayList<>();
 		workList.add(smethod);
-		MultiMap<SootMethod, SootMethod> methodToCallees = new HashMultiMap<>();
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
 		int processedMethods = 0;
@@ -334,7 +331,6 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 								// Process the callee
 								workList.add(callee);
-								methodToCallees.put(method, callee);
 								hasInvocation = true;
 							} else {
 								reads |= calleeUse == StaticFieldUse.Read || calleeUse == StaticFieldUse.ReadWrite;
@@ -368,7 +364,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return outerUse == null ? StaticFieldUse.Unknown : outerUse;
 	}
 
-	private void registerStaticVariableUse(SootMethod method, SootField variable, StaticFieldUse fieldUse) {
+	protected void registerStaticVariableUse(SootMethod method, SootField variable, StaticFieldUse fieldUse) {
 		Map<SootField, StaticFieldUse> entry = staticFieldUses.get(method);
 		StaticFieldUse oldUse;
 		synchronized (staticFieldUses) {
@@ -411,7 +407,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return hasSideEffects(method, new HashSet<SootMethod>(), 0);
 	}
 
-	private boolean hasSideEffects(SootMethod method, Set<SootMethod> runList, int depth) {
+	protected boolean hasSideEffects(SootMethod method, Set<SootMethod> runList, int depth) {
 		// Without a body, we cannot say much
 		if (!method.hasActiveBody())
 			return false;
