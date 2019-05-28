@@ -116,9 +116,8 @@
 	</build>
 
 	<dependencies>
-		<!-- Built by http://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/ -->
 		<dependency>
-			<groupId>heros</groupId>
+			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>heros</artifactId>
 			<version>1.1.0</version>
 		</dependency>
