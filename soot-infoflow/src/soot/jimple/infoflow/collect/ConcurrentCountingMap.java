@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +20,25 @@ import java.util.stream.Collectors;
  */
 public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
+	public enum LockingMode {
+		/**
+		 * Perform no locking at all. The map is fully synchronous
+		 */
+		NoLocking,
+		/**
+		 * Perform fast locking. This will make the map mostly consistent across
+		 * threads.
+		 */
+		Fast,
+		/**
+		 * Always lock. This will make the map behave like a fully synchronized map.
+		 */
+		Safe
+	}
+
 	private final ConcurrentMap<T, AtomicInteger> map;
+	private final ReentrantLock lock = new ReentrantLock();
+	private LockingMode lockingMode = LockingMode.NoLocking;
 
 	public class Entry implements Map.Entry<T, Integer> {
 
@@ -42,14 +61,32 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
 		@Override
 		public Integer setValue(Integer value) {
-			AtomicInteger i = parentEntry.setValue(new AtomicInteger(value));
-			return i == null ? 0 : i.get();
+			try {
+				switch (lockingMode) {
+				case Fast:
+					if (lock.isLocked())
+						lock.lock();
+					break;
+				case Safe:
+					lock.lock();
+				}
+
+				AtomicInteger i = parentEntry.setValue(new AtomicInteger(value));
+				return i == null ? 0 : i.get();
+			} finally {
+				if (lock.isHeldByCurrentThread())
+					lock.unlock();
+			}
 		}
 
 	}
 
 	public ConcurrentCountingMap() {
 		this.map = new ConcurrentHashMap<>();
+	}
+
+	public ConcurrentCountingMap(int size) {
+		this.map = new ConcurrentHashMap<>(size);
 	}
 
 	public ConcurrentCountingMap(Map<T, AtomicInteger> map) {
@@ -88,27 +125,83 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
 	@Override
 	public Integer put(T key, Integer value) {
-		AtomicInteger old = map.put(key, value == null ? null : new AtomicInteger(value));
-		return old == null ? 0 : old.get();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			AtomicInteger old = map.put(key, value == null ? null : new AtomicInteger(value));
+			return old == null ? 0 : old.get();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
 	public Integer remove(Object key) {
-		AtomicInteger old = map.remove(key);
-		return old == null ? 0 : old.get();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			AtomicInteger old = map.remove(key);
+			return old == null ? 0 : old.get();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
 	public void putAll(Map<? extends T, ? extends Integer> m) {
-		for (T t : m.keySet()) {
-			Integer i = m.get(t);
-			map.put(t, i == null ? null : new AtomicInteger(i));
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			for (T t : m.keySet()) {
+				Integer i = m.get(t);
+				map.put(t, i == null ? null : new AtomicInteger(i));
+			}
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
 		}
 	}
 
 	@Override
 	public void clear() {
-		map.clear();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			map.clear();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
@@ -128,30 +221,86 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
 	@Override
 	public Integer putIfAbsent(T key, Integer value) {
-		AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(value));
-		return i == null ? 0 : i.get();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(value));
+			return i == null ? 0 : i.get();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
 	public boolean remove(Object key, Object value) {
-		if (value instanceof Integer)
-			return map.remove(key, new AtomicInteger((Integer) value));
-		return false;
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			if (value instanceof Integer)
+				return map.remove(key, new AtomicInteger((Integer) value));
+			return false;
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
 	public boolean replace(T key, Integer oldValue, Integer newValue) {
-		if (oldValue == null || newValue == null)
-			return false;
-		return map.replace(key, new AtomicInteger(oldValue), new AtomicInteger(newValue));
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			if (oldValue == null || newValue == null)
+				return false;
+			return map.replace(key, new AtomicInteger(oldValue), new AtomicInteger(newValue));
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	@Override
 	public Integer replace(T key, Integer value) {
-		if (value == null)
-			return null;
-		AtomicInteger i = map.replace(key, new AtomicInteger(value));
-		return i == null ? 0 : i.get();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			if (value == null)
+				return null;
+			AtomicInteger i = map.replace(key, new AtomicInteger(value));
+			return i == null ? 0 : i.get();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	/**
@@ -161,10 +310,24 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 	 * @return The new counter value
 	 */
 	public int increment(T key) {
-		AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
-		if (i == null)
-			return 1;
-		return i.incrementAndGet();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
+			if (i == null)
+				return 1;
+			return i.incrementAndGet();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	/**
@@ -174,10 +337,24 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 	 * @return The new counter value
 	 */
 	public int decrement(T key) {
-		AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
-		if (i == null)
-			return 1;
-		return i.decrementAndGet();
+		try {
+			switch (lockingMode) {
+			case Fast:
+				if (lock.isLocked())
+					lock.lock();
+				break;
+			case Safe:
+				lock.lock();
+			}
+
+			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
+			if (i == null)
+				return 1;
+			return i.decrementAndGet();
+		} finally {
+			if (lock.isHeldByCurrentThread())
+				lock.unlock();
+		}
 	}
 
 	/**
@@ -191,11 +368,61 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 	 */
 	public Set<T> getByValue(int value) {
 		Set<T> set = new HashSet<>();
-		for (java.util.Map.Entry<T, Integer> e : entrySet()) {
-			if (e.getValue() == value)
+		for (java.util.Map.Entry<T, AtomicInteger> e : map.entrySet()) {
+			AtomicInteger atomicInt = e.getValue();
+			if (atomicInt != null && atomicInt.get() == value)
 				set.add(e.getKey());
 		}
 		return set;
+	}
+
+	/**
+	 * Sets how whether and how this class shall perform locking
+	 * 
+	 * @param lockingMode The new locking mode
+	 */
+	public void setLockingMode(LockingMode lockingMode) {
+		this.lockingMode = lockingMode;
+	}
+
+	/**
+	 * Creates a snapshot of this map
+	 * 
+	 * @return A copy of the current state of this map
+	 */
+	public ConcurrentCountingMap<T> snapshot() {
+		try {
+			lock.lock();
+
+			ConcurrentCountingMap<T> snapshot = new ConcurrentCountingMap<>();
+			for (T key : map.keySet())
+				snapshot.put(key, map.get(key).get());
+			return snapshot;
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * Creates a partial snapshot of this map
+	 * 
+	 * @param subset The subset of element for which to create a partial snapshot
+	 * @return A copy of the current state of this map
+	 */
+	public ConcurrentCountingMap<T> snapshot(Collection<T> subset) {
+		try {
+			lock.lock();
+
+			ConcurrentCountingMap<T> snapshot = new ConcurrentCountingMap<>(subset.size());
+			for (T key : subset) {
+				AtomicInteger atomic = map.get(key);
+				if (atomic != null)
+					snapshot.put(key, atomic.get());
+			}
+			return snapshot;
+		} finally {
+			lock.unlock();
+		}
 	}
 
 }

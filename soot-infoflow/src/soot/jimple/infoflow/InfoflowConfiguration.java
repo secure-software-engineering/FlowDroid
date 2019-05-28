@@ -78,7 +78,12 @@ public class InfoflowConfiguration {
 		/**
 		 * Use a context-sensitive, but flow-insensitive solver
 		 */
-		FlowInsensitive
+		FlowInsensitive,
+
+		/**
+		 * Use the garbage-collecting solver
+		 */
+		GarbageCollecting
 	}
 
 	/**
@@ -639,7 +644,7 @@ public class InfoflowConfiguration {
 	 */
 	public static class SolverConfiguration {
 
-		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive;
+		private DataFlowSolver dataFlowSolver = DataFlowSolver.GarbageCollecting;
 		private int maxJoinPointAbstractions = 10;
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;

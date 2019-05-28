@@ -16,7 +16,6 @@ package soot.jimple.infoflow.solver.gcSolver;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -24,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -43,7 +41,6 @@ import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.infoflow.collect.ConcurrentCountingMap;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
@@ -87,9 +84,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	protected ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions = new ConcurrentHashMultiMap<>();
 
 	@SynchronizedBy("thread safe data structure")
-	protected ConcurrentCountingMap<SootMethod> jumpFnCounter = new ConcurrentCountingMap<>();
-	@SynchronizedBy("thread safe data structure")
 	protected ConcurrentHashSet<SootMethod> markedForGC = new ConcurrentHashSet<>();
+	protected final IGarbageCollector<N, D> garbageCollector;
 
 	@SynchronizedBy("thread safe data structure, only modified internally")
 	protected final I icfg;
@@ -140,12 +136,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	private int maxAbstractionPathLength = 100;
 
 	/**
-	 * The number of methods to collect as candidates for garbage collection, before
-	 * halting the taint propagation and actually cleaning them up
-	 */
-	private int GC_THRESHOLD = 30;
-
-	/**
 	 * Creates a solver for the given problem, which caches flow functions and edge
 	 * functions. The solver must then be started by calling {@link #solve()}.
 	 */
@@ -183,6 +173,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		this.followReturnsPastSeeds = tabulationProblem.followReturnsPastSeeds();
 		this.numThreads = Math.max(1, tabulationProblem.numThreads());
 		this.executor = getExecutor();
+
+		this.garbageCollector = new DefaultGarbageCollector<>(icfg, jumpFunctions);
 	}
 
 	public void setSolverId(boolean solverId) {
@@ -205,6 +197,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// Notify the listeners that the solver has been terminated
 		for (IMemoryBoundedSolverStatusNotification listener : notificationListeners)
 			listener.notifySolverTerminated(this);
+
+		logger.info(String.format("GC removed abstractions for %d methods", garbageCollector.getGcedMethods()));
 	}
 
 	/**
@@ -277,9 +271,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (killFlag != null || executor.isTerminating() || executor.isTerminated())
 			return;
 
-		jumpFnCounter.increment(icfg.getMethodOf(edge.getTarget()));
+		garbageCollector.notifyEdgeSchedule(edge);
 		executor.execute(new PathEdgeProcessingTask(edge, solverId));
 		propagationCount++;
+		garbageCollector.gc();
 	}
 
 	/**
@@ -660,43 +655,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					return;
 			}
 			scheduleEdgeProcessing(edge);
-			cleanupJumpFunctions();
 		}
-	}
-
-	/**
-	 * Performs garbage collection on the jump functions
-	 */
-	private void cleanupJumpFunctions() {
-		// Get the methods for which no propagation tasks are scheduled right now. This
-		// set is approximate, because other threads may add new tasks while we're
-		// collecting our GC candidates.
-		Set<SootMethod> toRemove = jumpFnCounter.getByValue(0);
-
-		// Check and add the candidates for GC to our global mark list
-		for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext(); ) {
-			if (hasActiveDependencies(it.next()))
-				it.remove();
-		}
-		// markedForGC
-
-		// Sweep over our GC candidates and remove them if they're still values
-		if (markedForGC.size() > GC_THRESHOLD) {
-			ReentrantLock
-		}
-	}
-
-	/**
-	 * Checks whether the given method has any open dependencies that prevent its
-	 * jump functions from being garbage collected
-	 * 
-	 * @param method The method to check
-	 * @return True it the method has active dependencies and thus cannot be
-	 *         garbage-collected, false otherwise
-	 */
-	private boolean hasActiveDependencies(SootMethod method) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	/**
@@ -793,7 +752,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 				if (!icfg.getSuccsOf(edge.getTarget()).isEmpty())
 					processNormalFlow(edge);
 			}
-			jumpFnCounter.decrement(icfg.getMethodOf(edge.getTarget()));
+			garbageCollector.notifyTaskProcessed(edge);
 		}
 
 		@Override

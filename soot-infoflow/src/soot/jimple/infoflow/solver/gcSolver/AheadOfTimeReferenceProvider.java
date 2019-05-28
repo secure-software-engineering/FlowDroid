@@ -1,0 +1,35 @@
+package soot.jimple.infoflow.solver.gcSolver;
+
+import java.util.Set;
+
+import soot.SootMethod;
+import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
+import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
+import soot.util.HashMultiMap;
+import soot.util.MultiMap;
+
+/**
+ * Implementation of a reference provider that computes its dependencies ahead
+ * of time, and over-approximates the possible references by considering all
+ * transitively callees of a given method as possible locations for new analysis
+ * tasks, regardless of context and taint state.
+ * 
+ * @author Steven Arzt
+ */
+public class AheadOfTimeReferenceProvider<D, N> extends AbstractReferenceProvider<D, N> {
+
+	private final MultiMap<SootMethod, SootMethod> methodToCallees = new HashMultiMap<>();
+
+	public AheadOfTimeReferenceProvider(BiDiInterproceduralCFG<N, SootMethod> icfg) {
+		super(icfg);
+
+		// Initialize the caller/callee relationships
+
+	}
+
+	@Override
+	public Set<SootMethod> getMethodReferences(SootMethod method, FastSolverLinkedNode<D, N> context) {
+		return methodToCallees.get(method);
+	}
+
+}

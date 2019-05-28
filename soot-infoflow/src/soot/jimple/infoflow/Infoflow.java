@@ -866,6 +866,8 @@ public class Infoflow extends AbstractInfoflow {
 			case FlowInsensitive:
 				backSolver = new soot.jimple.infoflow.solver.fastSolver.flowInsensitive.InfoflowSolver(backProblem,
 						executor);
+			case GarbageCollecting:
+				backSolver = new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(backProblem, executor);
 				break;
 			default:
 				throw new RuntimeException("Unsupported data flow solver");
@@ -979,6 +981,10 @@ public class Infoflow extends AbstractInfoflow {
 			logger.info("Using context-sensitive, but flow-insensitive solver");
 			forwardSolver = new soot.jimple.infoflow.solver.fastSolver.flowInsensitive.InfoflowSolver(forwardProblem,
 					executor);
+			break;
+		case GarbageCollecting:
+			logger.info("Using garbage-collecting solver");
+			forwardSolver = new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(forwardProblem, executor);
 			break;
 		default:
 			throw new RuntimeException("Unsupported data flow solver");
