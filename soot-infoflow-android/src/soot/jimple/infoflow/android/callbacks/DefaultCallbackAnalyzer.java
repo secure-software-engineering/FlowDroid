@@ -203,7 +203,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			for (String sig : methods) {
 				SootMethod sm = currentClass.getMethodUnsafe(sig);
 				if (sm != null)
-					if (!SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 						lifecycleMethods.add(sm);
 			}
 			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;
@@ -271,7 +271,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			SootMethod sm = rmIterator.next().method();
 			if (!sm.isConcrete())
 				continue;
-			if (SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 				continue;
 
 			for (Unit u : sm.retrieveActiveBody().getUnits())

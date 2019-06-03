@@ -255,7 +255,7 @@ public class ProcessManifest implements Closeable {
 			AXmlAttribute<?> attr = node.getAttribute("name");
 			if (attr != null) {
 				String className = expandClassName((String) attr.getValue());
-				if (!SystemClassHandler.isClassInSystemPackage(className))
+				if (!SystemClassHandler.v().isClassInSystemPackage(className))
 					entryPoints.add(className);
 			} else {
 				// This component does not have a name, so this might be
@@ -269,7 +269,7 @@ public class ProcessManifest implements Closeable {
 							String name = (String) attrValue.getValue();
 							if (isValidComponentName(name)) {
 								String expandedName = expandClassName(name);
-								if (!SystemClassHandler.isClassInSystemPackage(expandedName))
+								if (!SystemClassHandler.v().isClassInSystemPackage(expandedName))
 									entryPoints.add(expandedName);
 							}
 						}
@@ -668,13 +668,11 @@ public class ProcessManifest implements Closeable {
 					boolean actionFilter = false;
 					boolean categoryFilter = false;
 					for (AXmlNode intentFilter : activityChildren.getChildren()) {
-						if (intentFilter.getTag().equals("action")
-								&& intentFilter.getAttribute("name").getValue().toString()
-										.equals("android.intent.action.MAIN"))
+						if (intentFilter.getTag().equals("action") && intentFilter.getAttribute("name").getValue()
+								.toString().equals("android.intent.action.MAIN"))
 							actionFilter = true;
-						else if (intentFilter.getTag().equals("category")
-								&& intentFilter.getAttribute("name").getValue().toString()
-										.equals("android.intent.category.LAUNCHER"))
+						else if (intentFilter.getTag().equals("category") && intentFilter.getAttribute("name")
+								.getValue().toString().equals("android.intent.category.LAUNCHER"))
 							categoryFilter = true;
 					}
 

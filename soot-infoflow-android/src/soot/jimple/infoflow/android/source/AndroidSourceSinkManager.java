@@ -267,7 +267,7 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 		if (sCallSite.containsInvokeExpr()) {
 			// Check whether the taint is even visible inside the callee
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
-			if (!SystemClassHandler.isTaintVisible(ap, callee))
+			if (!SystemClassHandler.v().isTaintVisible(ap, callee))
 				return null;
 
 			// Do we have a direct hit?

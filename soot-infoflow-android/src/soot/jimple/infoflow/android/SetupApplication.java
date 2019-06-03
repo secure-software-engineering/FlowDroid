@@ -912,7 +912,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					Set<AndroidLayoutControl> controls = lfp.getUserControls().get(layoutFileName);
 					if (controls != null) {
 						for (AndroidLayoutControl lc : controls) {
-							if (!SystemClassHandler.isClassInSystemPackage(lc.getViewClass().getName()))
+							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass().getName()))
 								registerCallbackMethodsForView(callbackClass, lc);
 						}
 					}
@@ -987,7 +987,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
-		if (SystemClassHandler.isClassInSystemPackage(callbackClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass.getName()))
 			return;
 
 		// Get common Android classes

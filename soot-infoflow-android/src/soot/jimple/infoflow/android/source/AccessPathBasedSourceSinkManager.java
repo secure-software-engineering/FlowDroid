@@ -40,12 +40,9 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
 	 * either strong or weak matching.
 	 * 
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param config
-	 *            The configuration of the data flow analyzer
+	 * @param sources The list of source methods
+	 * @param sinks   The list of sink methods
+	 * @param config  The configuration of the data flow analyzer
 	 */
 	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			InfoflowAndroidConfiguration config) {
@@ -57,18 +54,14 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 * strong matching, i.e. the methods in the code must exactly match those in the
 	 * list.
 	 * 
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param callbackMethods
-	 *            The list of callback methods whose parameters are sources through
-	 *            which the application receives data from the operating system
-	 * @param config
-	 *            The configuration of the data flow analyzer
-	 * @param layoutControls
-	 *            A map from reference identifiers to the respective Android layout
-	 *            controls
+	 * @param sources         The list of source methods
+	 * @param sinks           The list of sink methods
+	 * @param callbackMethods The list of callback methods whose parameters are
+	 *                        sources through which the application receives data
+	 *                        from the operating system
+	 * @param config          The configuration of the data flow analyzer
+	 * @param layoutControls  A map from reference identifiers to the respective
+	 *                        Android layout controls
 	 */
 	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
 			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
@@ -167,7 +160,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 		// everything is tainted without looking at the access path. Only
 		// exception: separate compilation assumption
 		if (def.isEmpty() && sCallSite.containsInvokeExpr()) {
-			if (SystemClassHandler.isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
+			if (SystemClassHandler.v().isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
 				return new SinkInfo(def);
 			else
 				return null;
@@ -225,10 +218,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	/**
 	 * Checks whether the given access path matches the given definition
 	 * 
-	 * @param sourceAccessPath
-	 *            The access path to check
-	 * @param apt
-	 *            The definition against which to check the access path
+	 * @param sourceAccessPath The access path to check
+	 * @param apt              The definition against which to check the access path
 	 * @return True if the given access path matches the given definition, otherwise
 	 *         false
 	 */

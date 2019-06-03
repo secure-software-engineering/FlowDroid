@@ -47,7 +47,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 		// If this method is part of the Android framework, we don't need to
 		// call it
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return null;
 
 		assert method.isStatic() || classLocal != null : "Class local was null for non-static method "
@@ -80,8 +80,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 	/**
 	 * Creates instance of the given classes
 	 * 
-	 * @param classes
-	 *            The classes of which to create instances
+	 * @param classes The classes of which to create instances
 	 */
 	protected void createClassInstances(Collection<SootClass> classes) {
 		for (SootClass callbackClass : classes) {

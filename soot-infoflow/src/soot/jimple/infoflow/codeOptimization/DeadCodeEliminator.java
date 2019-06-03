@@ -81,7 +81,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 			if (sm.method() == null || !sm.method().hasActiveBody())
 				continue;
 			if (config.getIgnoreFlowsInSystemPackages()
-					&& SystemClassHandler.isClassInSystemPackage(sm.method().getDeclaringClass().getName()))
+					&& SystemClassHandler.v().isClassInSystemPackage(sm.method().getDeclaringClass().getName()))
 				continue;
 
 			ConditionalBranchFolder.v().transform(sm.method().getActiveBody());
@@ -101,8 +101,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	/**
 	 * Gets a list of all units that invoke other methods in the given method
 	 * 
-	 * @param method
-	 *            The method from which to get all invocations
+	 * @param method The method from which to get all invocations
 	 * @return The list of units calling other methods in the given method if there
 	 *         is at least one such unit. Otherwise null.
 	 */

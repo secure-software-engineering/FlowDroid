@@ -237,7 +237,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 			SootMethodAndClass smac = isSinkMethod(manager, sCallSite);
 			if (smac != null) {
 				// Check that the incoming taint is visible in the callee at all
-				if (SystemClassHandler.isTaintVisible(ap, iexpr.getMethod())) {
+				if (SystemClassHandler.v().isTaintVisible(ap, iexpr.getMethod())) {
 					// If we don't have an access path, we can only
 					// over-approximate
 					if (ap == null)

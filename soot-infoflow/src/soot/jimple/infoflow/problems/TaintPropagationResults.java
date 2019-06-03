@@ -28,10 +28,8 @@ public class TaintPropagationResults {
 		/**
 		 * Called when a new abstraction has reached a sink statement
 		 * 
-		 * @param abs
-		 *            The abstraction at the sink
-		 * @return True if the data flow analysis shall continue, otherwise
-		 *         false
+		 * @param abs The abstraction at the sink
+		 * @return True if the data flow analysis shall continue, otherwise false
 		 */
 		public boolean onResultAvailable(AbstractionAtSink abs);
 
@@ -45,8 +43,7 @@ public class TaintPropagationResults {
 	/**
 	 * Creates a new instance of the TaintPropagationResults class
 	 * 
-	 * @param manager
-	 *            A reference to the manager class used during taint propagation
+	 * @param manager A reference to the manager class used during taint propagation
 	 */
 	TaintPropagationResults(InfoflowManager manager) {
 		this.manager = manager;
@@ -55,13 +52,12 @@ public class TaintPropagationResults {
 	/**
 	 * Adds a new result of the data flow analysis to the collection
 	 * 
-	 * @param resultAbs
-	 *            The abstraction at the sink instruction
+	 * @param resultAbs The abstraction at the sink instruction
 	 * @return True if the data flow analysis shall continue, otherwise false
 	 */
 	public boolean addResult(AbstractionAtSink resultAbs) {
 		// Check whether we need to filter a result in a system package
-		if (manager.getConfig().getIgnoreFlowsInSystemPackages() && SystemClassHandler.isClassInSystemPackage(
+		if (manager.getConfig().getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(
 				manager.getICFG().getMethodOf(resultAbs.getSinkStmt()).getDeclaringClass().getName()))
 			return true;
 
@@ -95,8 +91,8 @@ public class TaintPropagationResults {
 	/**
 	 * Checks whether this result object is empty
 	 * 
-	 * @return True if this result object is empty, i.e., there are no results
-	 *         yet, otherwise false
+	 * @return True if this result object is empty, i.e., there are no results yet,
+	 *         otherwise false
 	 * @return
 	 */
 	public boolean isEmpty() {
@@ -113,11 +109,10 @@ public class TaintPropagationResults {
 	}
 
 	/**
-	 * Adds a new handler that is invoked when a new data flow result is added
-	 * to this data object
+	 * Adds a new handler that is invoked when a new data flow result is added to
+	 * this data object
 	 * 
-	 * @param handler
-	 *            The handler implementation to add
+	 * @param handler The handler implementation to add
 	 */
 	public void addResultAvailableHandler(OnTaintPropagationResultAdded handler) {
 		this.resultAddedHandlers.add(handler);

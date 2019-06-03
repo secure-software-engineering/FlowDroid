@@ -167,7 +167,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		// If this callee is excluded, we do not propagate out of it
 		if (excludedMethods != null && excludedMethods.contains(sm))
 			return;
-		if (excludeSystemClasses && SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+		if (excludeSystemClasses && SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 			return;
 
 		if (sm.getReturnType() != VoidType.v() || sm.getParameterCount() > 0) {
@@ -753,7 +753,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 */
 	private boolean methodIsAndroidStub(SootMethod method) {
 		if (!(Options.v().src_prec() == Options.src_prec_apk && method.getDeclaringClass().isLibraryClass()
-				&& SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName())))
+				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName())))
 			return false;
 
 		// Check whether there is only a single throw statement

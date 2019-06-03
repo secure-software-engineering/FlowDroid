@@ -197,7 +197,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void analyzeMethodForCallbackRegistrations(SootClass lifecycleElement, SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete())
 			return;
@@ -221,7 +221,8 @@ public abstract class AbstractCallbackAnalyzer {
 
 						// This call must be to a system API in order to
 						// register an OS-level callback
-						if (!SystemClassHandler.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
+						if (!SystemClassHandler.v()
+								.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
 							continue;
 
 						// We have a formal parameter type that corresponds to one of the Android
@@ -242,7 +243,7 @@ public abstract class AbstractCallbackAnalyzer {
 								}
 
 								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.isClassInSystemPackage(targetClass.getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
 									callbackClasses.add(targetClass);
 							}
 
@@ -261,7 +262,7 @@ public abstract class AbstractCallbackAnalyzer {
 								}
 
 								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.isClassInSystemPackage(targetClass.getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
 									callbackClasses.add(targetClass);
 							}
 						}
@@ -315,7 +316,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void analyzeMethodForDynamicBroadcastReceiver(SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
@@ -332,7 +333,7 @@ public abstract class AbstractCallbackAnalyzer {
 					Value br = iexpr.getArg(0);
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
-						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+						if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 							dynamicManifestComponents.add(rt.getSootClass());
 					}
 				}
@@ -348,7 +349,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void analyzeMethodForServiceConnection(SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
@@ -367,7 +368,7 @@ public abstract class AbstractCallbackAnalyzer {
 						for (Type tp : pts.possibleTypes()) {
 							if (tp instanceof RefType) {
 								RefType rt = (RefType) tp;
-								if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 									dynamicManifestComponents.add(rt.getSootClass());
 							}
 						}
@@ -376,7 +377,7 @@ public abstract class AbstractCallbackAnalyzer {
 					// Just to be sure, also add the declared type
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
-						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+						if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 							dynamicManifestComponents.add(rt.getSootClass());
 					}
 				}
@@ -636,7 +637,8 @@ public abstract class AbstractCallbackAnalyzer {
 			return;
 
 		// Do not start the search in system classes
-		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.isClassInSystemPackage(sootClass.getName()))
+		if (config.getIgnoreFlowsInSystemPackages()
+				&& SystemClassHandler.v().isClassInSystemPackage(sootClass.getName()))
 			return;
 
 		// There are also some classes that implement interesting callback
@@ -645,7 +647,7 @@ public abstract class AbstractCallbackAnalyzer {
 		// Android OS class, we treat it as a potential callback.
 		Map<String, SootMethod> systemMethods = new HashMap<>(10000);
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
-			if (SystemClassHandler.isClassInSystemPackage(parentClass.getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				for (SootMethod sm : parentClass.getMethods())
 					if (!sm.isConstructor())
 						systemMethods.put(sm.getSubSignature(), sm);
@@ -654,7 +656,7 @@ public abstract class AbstractCallbackAnalyzer {
 		// Iterate over all user-implemented methods. If they are inherited
 		// from a system class, they are callback candidates.
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSubclassesOfIncluding(sootClass)) {
-			if (SystemClassHandler.isClassInSystemPackage(parentClass.getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				continue;
 			for (SootMethod method : parentClass.getMethods()) {
 				if (!method.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
@@ -684,9 +686,9 @@ public abstract class AbstractCallbackAnalyzer {
 			return;
 
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(baseClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(baseClass.getName()))
 			return;
-		if (SystemClassHandler.isClassInSystemPackage(sootClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(sootClass.getName()))
 			return;
 
 		// Check the filters
@@ -744,7 +746,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected boolean checkAndAddMethod(SootMethod method, SootMethod parentMethod, SootClass lifecycleClass,
 			CallbackType callbackType) {
 		// Do not call system methods
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return false;
 
 		// Skip empty methods

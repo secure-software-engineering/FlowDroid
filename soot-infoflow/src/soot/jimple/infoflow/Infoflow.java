@@ -1080,7 +1080,7 @@ public class Infoflow extends AbstractInfoflow {
 
 		// Exclude system classes
 		if (config.getIgnoreFlowsInSystemPackages()
-				&& SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+				&& SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 			return false;
 
 		// Exclude library classes
