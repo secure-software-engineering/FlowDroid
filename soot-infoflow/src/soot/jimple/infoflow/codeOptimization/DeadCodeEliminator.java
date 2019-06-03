@@ -106,7 +106,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 * @param oldCallSites A list of callsites that where previously contained by the method's body and have to be
 	 *                     checked if still existent
 	 */
-	public static void removeDeadCallgraphEdges(SootMethod method, List<Unit> oldCallSites) {
+	static void removeDeadCallgraphEdges(SootMethod method, List<Unit> oldCallSites) {
 		List<Unit> newCallSites = getCallsInMethod(method);
 		if (oldCallSites != null)
 			for (Unit u : oldCallSites)
@@ -121,7 +121,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 * @return The list of units calling other methods in the given method if there
 	 *         is at least one such unit. Otherwise null.
 	 */
-	public static List<Unit> getCallsInMethod(SootMethod method) {
+	static List<Unit> getCallsInMethod(SootMethod method) {
 		List<Unit> callSites = null;
 		for (Unit u : method.getActiveBody().getUnits())
 			if (((Stmt) u).containsInvokeExpr()) {
