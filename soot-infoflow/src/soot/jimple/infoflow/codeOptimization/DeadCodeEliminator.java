@@ -81,11 +81,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 			if (method == null || !method.hasActiveBody())
 				continue;
 			if (config.getIgnoreFlowsInSystemPackages()
-<<<<<<< HEAD
 					&& SystemClassHandler.v().isClassInSystemPackage(sm.method().getDeclaringClass().getName()))
-=======
-					&& SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
->>>>>>> 7aa953e... Fix DeadCodeElimination to remove all callgraph edges for which the callsites where removed during elimination.
 				continue;
 
 			ConditionalBranchFolder.v().transform(method.getActiveBody());
