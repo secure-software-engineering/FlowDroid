@@ -208,12 +208,18 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			MethodOrMethodContext mom = rdr.next();
 			SootMethod sm = mom.method();
 			if (sm.hasActiveBody()) {
+				List<Unit> oldCallSites = DeadCodeEliminator.getCallsInMethod(sm);
+
 				Body body = sm.retrieveActiveBody();
 				ConditionalBranchFolder.v().transform(body);
 				UnconditionalBranchFolder.v().transform(body);
 				DeadAssignmentEliminator.v().transform(body);
 				UnreachableCodeEliminator.v().transform(body);
 				UnusedLocalEliminator.v().transform(body);
+
+				// We need to be careful and patch the cfg so
+				// that it does not retain edges for call statements we have deleted
+				DeadCodeEliminator.removeDeadCallgraphEdges(sm, oldCallSites);
 			}
 		}
 
