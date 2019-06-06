@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,8 @@ import soot.jimple.Stmt;
  * @author Steven Arzt
  *
  */
-public class StatementSourceSinkDefinition extends SourceSinkDefinition {
+public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
+		implements IAccessPathBasedSourceSinkDefinition {
 
 	private final Stmt stmt;
 	private final Local local;
@@ -26,7 +28,7 @@ public class StatementSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceOnlyDefinition() {
+	public StatementSourceSinkDefinition getSourceOnlyDefinition() {
 		Set<AccessPathTuple> newSet = null;
 		if (accessPaths != null) {
 			newSet = new HashSet<>(accessPaths.size());
@@ -44,7 +46,7 @@ public class StatementSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	@Override
-	public SourceSinkDefinition getSinkOnlyDefinition() {
+	public StatementSourceSinkDefinition getSinkOnlyDefinition() {
 		Set<AccessPathTuple> newSet = null;
 		if (accessPaths != null) {
 			newSet = new HashSet<>(accessPaths.size());
@@ -74,7 +76,7 @@ public class StatementSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	@Override
-	public void merge(SourceSinkDefinition other) {
+	public void merge(ISourceSinkDefinition other) {
 		if (other instanceof StatementSourceSinkDefinition) {
 			StatementSourceSinkDefinition otherStmt = (StatementSourceSinkDefinition) other;
 
@@ -96,6 +98,26 @@ public class StatementSourceSinkDefinition extends SourceSinkDefinition {
 	@Override
 	public String toString() {
 		return String.format("Local %s at %s", local, stmt);
+	}
+
+	@Override
+	public Set<AccessPathTuple> getAllAccessPaths() {
+		return accessPaths;
+	}
+
+	@Override
+	public IAccessPathBasedSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
+		// Filter the access paths
+		Set<AccessPathTuple> filteredAPs = null;
+		if (accessPaths != null && !accessPaths.isEmpty()) {
+			filteredAPs = new HashSet<>(accessPaths.size());
+			for (AccessPathTuple ap : accessPaths)
+				if (toFilter.contains(ap))
+					filteredAPs.add(ap);
+		}
+		StatementSourceSinkDefinition def = new StatementSourceSinkDefinition(stmt, local, filteredAPs);
+		def.setCategory(category);
+		return def;
 	}
 
 	@Override

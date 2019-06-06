@@ -1,6 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Abstract base class for source/sink information
@@ -10,28 +10,26 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  */
 abstract class AbstractSourceSinkInfo {
 
-	protected final SourceSinkDefinition definition;
+	protected final ISourceSinkDefinition definition;
 	protected final Object userData;
 
 	/**
-	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class
+	 * Creates a new instance of the {@link ISourceSinkInfo} class
 	 * 
-	 * @param definition
-	 *            The original definition of the source or sink
+	 * @param definition The original definition of the source or sink
 	 */
-	public AbstractSourceSinkInfo(SourceSinkDefinition definition) {
+	public AbstractSourceSinkInfo(ISourceSinkDefinition definition) {
 		this(definition, null);
 	}
 
 	/**
-	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class
+	 * Creates a new instance of the {@link ISourceSinkInfo} class
 	 * 
-	 * @param definition
-	 *            The original definition of the source or sink
-	 * @param userData
-	 *            Additional user data to be propagated with the source or sink
+	 * @param definition The original definition of the source or sink
+	 * @param userData   Additional user data to be propagated with the source or
+	 *                   sink
 	 */
-	public AbstractSourceSinkInfo(SourceSinkDefinition definition, Object userData) {
+	public AbstractSourceSinkInfo(ISourceSinkDefinition definition, Object userData) {
 		this.definition = definition;
 		this.userData = userData;
 	}
@@ -79,11 +77,10 @@ abstract class AbstractSourceSinkInfo {
 	/**
 	 * Gets the original definition of this data flow source or sink
 	 * 
-	 * @return The original definition of the source or sink. The return value
-	 *         may be null if this source is not modeled for a specific method
-	 *         or field.
+	 * @return The original definition of the source or sink. The return value may
+	 *         be null if this source is not modeled for a specific method or field.
 	 */
-	public SourceSinkDefinition getDefinition() {
+	public ISourceSinkDefinition getDefinition() {
 		return definition;
 	}
 

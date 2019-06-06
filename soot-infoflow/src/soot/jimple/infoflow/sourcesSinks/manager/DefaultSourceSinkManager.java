@@ -33,9 +33,9 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
@@ -113,7 +113,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		this.sinkDefs = new HashSet<>();
 
 		// Load the sources
-		for (SourceSinkDefinition ssd : sourceSinkProvider.getSources()) {
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSources()) {
 			if (ssd instanceof MethodSourceSinkDefinition) {
 				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
 				sourceDefs.add(mssd.getMethod().getSignature());
@@ -121,7 +121,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		}
 
 		// Load the sinks
-		for (SourceSinkDefinition ssd : sourceSinkProvider.getSinks()) {
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSinks()) {
 			if (ssd instanceof MethodSourceSinkDefinition) {
 				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
 				sinkDefs.add(mssd.getMethod().getSignature());

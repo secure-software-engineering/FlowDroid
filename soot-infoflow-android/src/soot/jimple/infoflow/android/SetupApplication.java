@@ -92,9 +92,9 @@ import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
@@ -287,7 +287,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sinks loaded into FlowDroid
 	 */
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<? extends ISourceSinkDefinition> getSinks() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSinks();
 	}
 
@@ -311,7 +311,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return;
 		}
 		logger.info("Sinks:");
-		for (SourceSinkDefinition am : getSinks()) {
+		for (ISourceSinkDefinition am : getSinks()) {
 			logger.info(String.format("- %s", am.toString()));
 		}
 		logger.info("End of Sinks");
@@ -323,7 +323,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sources loaded into FlowDroid
 	 */
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<? extends ISourceSinkDefinition> getSources() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSources();
 	}
 
@@ -347,7 +347,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return;
 		}
 		logger.info("Sources:");
-		for (SourceSinkDefinition am : getSources()) {
+		for (ISourceSinkDefinition am : getSources()) {
 			logger.info(String.format("- %s", am.toString()));
 		}
 		logger.info("End of Sources");
@@ -1256,8 +1256,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	public InfoflowResults runInfoflow(Set<AndroidMethod> sources, Set<AndroidMethod> sinks)
 			throws IOException, XmlPullParserException {
-		final Set<SourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
-		final Set<SourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
+		final Set<ISourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
+		final Set<ISourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
 
 		for (AndroidMethod am : sources)
 			sourceDefs.add(new MethodSourceSinkDefinition(am));
@@ -1267,18 +1267,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		ISourceSinkDefinitionProvider parser = new ISourceSinkDefinitionProvider() {
 
 			@Override
-			public Set<SourceSinkDefinition> getSources() {
+			public Set<ISourceSinkDefinition> getSources() {
 				return sourceDefs;
 			}
 
 			@Override
-			public Set<SourceSinkDefinition> getSinks() {
+			public Set<ISourceSinkDefinition> getSinks() {
 				return sinkDefs;
 			}
 
 			@Override
-			public Set<SourceSinkDefinition> getAllMethods() {
-				Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(sourceDefs.size() + sinkDefs.size());
+			public Set<ISourceSinkDefinition> getAllMethods() {
+				Set<ISourceSinkDefinition> sourcesSinks = new HashSet<>(sourceDefs.size() + sinkDefs.size());
 				sourcesSinks.addAll(sourceDefs);
 				sourcesSinks.addAll(sinkDefs);
 				return sourcesSinks;
@@ -1434,8 +1434,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		logger.info(
 				String.format("Collecting callbacks and building a callgraph took %d seconds", (int) callbackDuration));
 
-		final Set<SourceSinkDefinition> sources = getSources();
-		final Set<SourceSinkDefinition> sinks = getSinks();
+		final Set<? extends ISourceSinkDefinition> sources = getSources();
+		final Set<? extends ISourceSinkDefinition> sinks = getSinks();
 		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (config.getOneComponentAtATime())
 			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",

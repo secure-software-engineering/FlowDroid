@@ -28,9 +28,9 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -42,9 +42,9 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvider {
 	private static final int INITIAL_SET_SIZE = 10000;
 
-	private Set<SourceSinkDefinition> sourceList = null;
-	private Set<SourceSinkDefinition> sinkList = null;
-	private Set<SourceSinkDefinition> neitherList = null;
+	private Set<ISourceSinkDefinition> sourceList = null;
+	private Set<ISourceSinkDefinition> sinkList = null;
+	private Set<ISourceSinkDefinition> neitherList = null;
 
 	private Map<String, CategoryDefinition> categories = new HashMap<>();
 
@@ -104,9 +104,9 @@ public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvid
 	}
 
 	private void parse() {
-		sourceList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
-		sinkList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
-		neitherList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		sourceList = new HashSet<>(INITIAL_SET_SIZE);
+		sinkList = new HashSet<>(INITIAL_SET_SIZE);
+		neitherList = new HashSet<>(INITIAL_SET_SIZE);
 
 		BufferedReader rdr = readFile();
 
@@ -133,10 +133,10 @@ public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvid
 		}
 	}
 
-	private void addToList(Set<SourceSinkDefinition> sourceList, MethodSourceSinkDefinition def,
+	private void addToList(Set<ISourceSinkDefinition> sourceList, MethodSourceSinkDefinition def,
 			String currentPermission) {
 		if (!sourceList.add(def)) {
-			for (SourceSinkDefinition ssdef : sourceList) {
+			for (ISourceSinkDefinition ssdef : sourceList) {
 				if (ssdef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition mssdef = (MethodSourceSinkDefinition) ssdef;
 					SootMethodAndClass singleMethod = def.getMethod();
@@ -150,14 +150,14 @@ public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvid
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<ISourceSinkDefinition> getSources() {
 		if (sourceList == null || sinkList == null)
 			parse();
 		return this.sourceList;
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<ISourceSinkDefinition> getSinks() {
 		if (sourceList == null || sinkList == null)
 			parse();
 		return this.sinkList;
@@ -274,11 +274,11 @@ public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvid
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getAllMethods() {
+	public Set<ISourceSinkDefinition> getAllMethods() {
 		if (sourceList == null || sinkList == null)
 			parse();
 
-		Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(
+		Set<ISourceSinkDefinition> sourcesSinks = new HashSet<>(
 				sourceList.size() + sinkList.size() + neitherList.size());
 		sourcesSinks.addAll(sourceList);
 		sourcesSinks.addAll(sinkList);

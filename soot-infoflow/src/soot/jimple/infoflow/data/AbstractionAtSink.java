@@ -11,25 +11,23 @@
 package soot.jimple.infoflow.data;
 
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 public class AbstractionAtSink {
 
-	private final SourceSinkDefinition sinkDefinition;
+	private final ISourceSinkDefinition sinkDefinition;
 	private final Abstraction abstraction;
 	private final Stmt sinkStmt;
 
 	/**
 	 * Creates a new instance of the {@link AbstractionAtSink} class
 	 * 
-	 * @param sinkDefinition
-	 *            The original definition of the sink that has been reached
-	 * @param abstraction
-	 *            The abstraction with which the sink has been reached
-	 * @param sinkStmt
-	 *            The statement that triggered the sink
+	 * @param sinkDefinition The original definition of the sink that has been
+	 *                       reached
+	 * @param abstraction    The abstraction with which the sink has been reached
+	 * @param sinkStmt       The statement that triggered the sink
 	 */
-	public AbstractionAtSink(SourceSinkDefinition sinkDefinition, Abstraction abstraction, Stmt sinkStmt) {
+	public AbstractionAtSink(ISourceSinkDefinition sinkDefinition, Abstraction abstraction, Stmt sinkStmt) {
 		this.sinkDefinition = sinkDefinition;
 		this.abstraction = abstraction;
 		this.sinkStmt = sinkStmt;
@@ -40,7 +38,7 @@ public class AbstractionAtSink {
 	 * 
 	 * @return The original definition of the sink that has been reached
 	 */
-	public SourceSinkDefinition getSinkDefinition() {
+	public ISourceSinkDefinition getSinkDefinition() {
 		return sinkDefinition;
 	}
 
