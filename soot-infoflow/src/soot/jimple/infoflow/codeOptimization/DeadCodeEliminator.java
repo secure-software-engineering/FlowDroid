@@ -45,24 +45,22 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 		// inter-procedural one
 		for (QueueReader<MethodOrMethodContext> rdr = Scene.v().getReachableMethods().listener(); rdr.hasNext();) {
 			MethodOrMethodContext sm = rdr.next();
-			if (sm.method() == null || !sm.method().hasActiveBody())
+			SootMethod method = sm.method();
+
+			if (method == null || !method.hasActiveBody())
 				continue;
 
 			// Exclude the dummy main method
-			if (entryPoints.contains(sm.method()))
+			if (entryPoints.contains(method))
 				continue;
 
-			List<Unit> callSites = getCallsInMethod(sm.method());
+			List<Unit> callSites = getCallsInMethod(method);
 
-			ConstantPropagatorAndFolder.v().transform(sm.method().getActiveBody());
-			DeadAssignmentEliminator.v().transform(sm.method().getActiveBody());
+			ConstantPropagatorAndFolder.v().transform(method.getActiveBody());
+			DeadAssignmentEliminator.v().transform(method.getActiveBody());
 
 			// Remove the dead callgraph edges
-			List<Unit> newCallSites = getCallsInMethod(sm.method());
-			if (callSites != null)
-				for (Unit u : callSites)
-					if (newCallSites == null || !newCallSites.contains(u))
-						Scene.v().getCallGraph().removeAllEdgesOutOf(u);
+			removeDeadCallgraphEdges(method, callSites);
 		}
 
 		// Perform an inter-procedural constant propagation and code cleanup
@@ -78,24 +76,38 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 		for (QueueReader<MethodOrMethodContext> rdr = Scene.v().getReachableMethods().listener(); rdr.hasNext();) {
 			MethodOrMethodContext sm = rdr.next();
 
-			if (sm.method() == null || !sm.method().hasActiveBody())
+			SootMethod method = sm.method();
+
+			if (method == null || !method.hasActiveBody())
 				continue;
 			if (config.getIgnoreFlowsInSystemPackages()
 					&& SystemClassHandler.v().isClassInSystemPackage(sm.method().getDeclaringClass().getName()))
 				continue;
 
-			ConditionalBranchFolder.v().transform(sm.method().getActiveBody());
+			ConditionalBranchFolder.v().transform(method.getActiveBody());
 
 			// Delete all dead code. We need to be careful and patch the cfg so
 			// that it does not retain edges for call statements we have deleted
-			List<Unit> callSites = getCallsInMethod(sm.method());
-			UnreachableCodeEliminator.v().transform(sm.method().getActiveBody());
-			List<Unit> newCallSites = getCallsInMethod(sm.method());
-			if (callSites != null)
-				for (Unit u : callSites)
-					if (newCallSites == null || !newCallSites.contains(u))
-						Scene.v().getCallGraph().removeAllEdgesOutOf(u);
+			List<Unit> callSites = getCallsInMethod(method);
+			UnreachableCodeEliminator.v().transform(method.getActiveBody());
+			removeDeadCallgraphEdges(method, callSites);
 		}
+	}
+
+	/**
+	 * Collects all callsites of the given method and removes all edges from the callgraph that correspond to callsites
+	 * which are not in the given set of previously contained callsites.
+	 *
+	 * @param method The method which's outgoing callgraph edges should be sanitized
+	 * @param oldCallSites A list of callsites that where previously contained by the method's body and have to be
+	 *                     checked if still existent
+	 */
+	static void removeDeadCallgraphEdges(SootMethod method, List<Unit> oldCallSites) {
+		List<Unit> newCallSites = getCallsInMethod(method);
+		if (oldCallSites != null)
+			for (Unit u : oldCallSites)
+				if (newCallSites == null || !newCallSites.contains(u))
+					Scene.v().getCallGraph().removeAllEdgesOutOf(u);
 	}
 
 	/**
@@ -105,7 +117,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 * @return The list of units calling other methods in the given method if there
 	 *         is at least one such unit. Otherwise null.
 	 */
-	private List<Unit> getCallsInMethod(SootMethod method) {
+	static List<Unit> getCallsInMethod(SootMethod method) {
 		List<Unit> callSites = null;
 		for (Unit u : method.getActiveBody().getUnits())
 			if (((Stmt) u).containsInvokeExpr()) {
