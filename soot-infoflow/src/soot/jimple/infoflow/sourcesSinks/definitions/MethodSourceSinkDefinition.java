@@ -464,8 +464,10 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		if (returnValues != null && !returnValues.isEmpty())
 			aps.addAll(returnValues);
 		if (parameters != null && parameters.length > 0) {
-			for (Set<AccessPathTuple> paramAPs : parameters)
-				aps.addAll(paramAPs);
+			for (Set<AccessPathTuple> paramAPs : parameters) {
+				if (paramAPs != null && !paramAPs.isEmpty())
+					aps.addAll(paramAPs);
+			}
 		}
 		return aps;
 	}
