@@ -257,7 +257,7 @@ public class ProcessManifest implements Closeable {
 			AXmlAttribute<?> attr = node.getAttribute("name");
 			if (attr != null) {
 				String className = expandClassName((String) attr.getValue());
-				if (!SystemClassHandler.v().isClassInSystemPackage(className))
+				if (!isExcluded(className))
 					entryPoints.add(className);
 			} else {
 				// This component does not have a name, so this might be
