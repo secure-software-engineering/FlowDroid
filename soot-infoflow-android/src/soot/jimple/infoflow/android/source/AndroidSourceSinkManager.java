@@ -696,44 +696,58 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 				return MethodSourceSinkDefinition.createReturnSource(CallType.MethodCall);
 			}
 
-			// If we don't have a layout control list, we cannot perform any
-			// more specific checks
-			if (this.layoutControls == null)
-				return null;
-
-			// Perform a constant propagation inside this method exactly
-			// once
-			SootMethod uiMethod = cfg.getMethodOf(sCallSite);
-			if (analyzedLayoutMethods.add(uiMethod))
-				ConstantPropagatorAndFolder.v().transform(uiMethod.getActiveBody());
-
-			// If we match specific controls, we need to get the ID of
-			// control and look up the respective data object
-			if (ie.getArgCount() != 1) {
-				logger.error("Framework method call with unexpected number of arguments");
-				return null;
-			}
-
-			Integer id = valueProvider.getValue(uiMethod, sCallSite, ie.getArg(0), Integer.class);
-			if (id == null && ie.getArg(0) instanceof Local) {
-				id = findLastResIDAssignment(sCallSite, (Local) ie.getArg(0), cfg,
-						new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
-			}
-			if (id == null) {
-				logger.debug("Could not find assignment to local " + ((Local) ie.getArg(0)).getName() + " in method "
-						+ cfg.getMethodOf(sCallSite).getSignature());
-				return null;
-			}
-
-			AndroidLayoutControl control = this.layoutControls.get(id);
-			if (control == null)
-				return null;
+			AndroidLayoutControl control = getLayoutControl(sCallSite, cfg);
 			if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly
 					&& control.isSensitive()) {
 				return control.getSourceDefinition();
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Gets the layout control that is referenced at the given call site
+	 * 
+	 * @param sCallSite A call to <code>findViewById()</code> or a similar method
+	 * @param cfg       The bidirectional control flow graph
+	 * @return The layout control that is being accessed at the given statement, or
+	 *         <code>null</code> if no such control could be found
+	 */
+	protected AndroidLayoutControl getLayoutControl(Stmt sCallSite, IInfoflowCFG cfg) {
+		// If we don't have a layout control list, we cannot perform any
+		// more specific checks
+		if (this.layoutControls == null)
+			return null;
+
+		// Perform a constant propagation inside this method exactly
+		// once
+		SootMethod uiMethod = cfg.getMethodOf(sCallSite);
+		if (analyzedLayoutMethods.add(uiMethod))
+			ConstantPropagatorAndFolder.v().transform(uiMethod.getActiveBody());
+
+		// If we match specific controls, we need to get the ID of
+		// control and look up the respective data object
+		InvokeExpr iexpr = sCallSite.getInvokeExpr();
+		if (iexpr.getArgCount() != 1) {
+			logger.error("Framework method call with unexpected number of arguments");
+			return null;
+		}
+
+		Integer id = valueProvider.getValue(uiMethod, sCallSite, iexpr.getArg(0), Integer.class);
+		if (id == null && iexpr.getArg(0) instanceof Local) {
+			id = findLastResIDAssignment(sCallSite, (Local) iexpr.getArg(0), cfg,
+					new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
+		}
+		if (id == null) {
+			logger.debug("Could not find assignment to local " + ((Local) iexpr.getArg(0)).getName() + " in method "
+					+ cfg.getMethodOf(sCallSite).getSignature());
+			return null;
+		}
+
+		AndroidLayoutControl control = this.layoutControls.get(id);
+		if (control == null)
+			return null;
+		return control;
 	}
 
 	/**

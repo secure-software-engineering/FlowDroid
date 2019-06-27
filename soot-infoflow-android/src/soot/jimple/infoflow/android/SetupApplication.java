@@ -415,6 +415,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
 		this.manifest = new ProcessManifest(targetAPK);
+		this.manifest.setExcludeSystemComponents(config.getIgnoreFlowsInSystemPackages());
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
 		for (String className : entryPoints) {
