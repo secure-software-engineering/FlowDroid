@@ -39,7 +39,7 @@ public class ProcessManifest implements Closeable {
 	 * Enumeration containing the various component types supported in Android
 	 */
 	public enum ComponentType {
-	Activity, Service, ContentProvider, BroadcastReceiver
+		Activity, Service, ContentProvider, BroadcastReceiver
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class ProcessManifest implements Closeable {
 	 * @return True if the given component shall be excluded from the analysis,
 	 *         false otherwise
 	 */
-	protected boolean isExcluded(String className) {
+	public boolean isExcluded(String className) {
 		return excludeSystemComponents && SystemClassHandler.v().isClassInSystemPackage(className);
 	}
 
