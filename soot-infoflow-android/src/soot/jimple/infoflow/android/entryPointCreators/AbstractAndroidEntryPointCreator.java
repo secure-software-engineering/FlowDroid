@@ -10,12 +10,18 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
-import soot.jimple.infoflow.util.SystemClassHandler;
 
 public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCreator {
 
 	protected AndroidEntryPointUtils entryPointUtils = null;
+
+	protected ProcessManifest manifest;
+
+	public AbstractAndroidEntryPointCreator(ProcessManifest manifest) {
+		this.manifest = manifest;
+	}
 
 	@Override
 	public SootMethod createDummyMain() {
@@ -35,6 +41,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			return null;
 
 		SootMethod method = findMethod(currentClass, subsignature);
+
 		if (method == null) {
 			logger.warn("Could not find Android entry point method: {}", subsignature);
 			return null;
@@ -47,7 +54,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 		// If this method is part of the Android framework, we don't need to
 		// call it
-		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (this.manifest.isExcluded(method.getDeclaringClass().getName()))
 			return null;
 
 		assert method.isStatic() || classLocal != null : "Class local was null for non-static method "

@@ -90,8 +90,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private Collection<SootClass> components;
 
-	private ProcessManifest manifest;
-
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -101,7 +99,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 *                   lifecycle methods
 	 */
 	public AndroidEntryPointCreator(ProcessManifest manifest, Collection<SootClass> components) {
-		this.manifest = manifest;
+		super(manifest);
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
 	}
@@ -215,7 +213,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		for (SootClass parentActivity : fragmentClasses.keySet()) {
 			Set<SootClass> fragments = fragmentClasses.get(parentActivity);
 			for (SootClass fragment : fragments) {
-				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass);
+				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass,
+						this.manifest);
 				entryPointCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
 				entryPointCreator.setCallbacks(callbackFunctions.get(fragment));
 
@@ -250,21 +249,23 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					}
 				}
 				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClass,
-						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod);
+						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod, this.manifest);
 				break;
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
-				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			case ServiceConnection:
-				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClass,
+						this.manifest);
 				break;
 			case BroadcastReceiver:
-				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClass,
+						this.manifest);
 				break;
 			case ContentProvider:
-				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			default:
 				componentCreator = null;
