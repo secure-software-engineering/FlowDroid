@@ -15,6 +15,8 @@ public class SystemClassHandler {
 
 	private static SystemClassHandler instance;
 
+	private boolean excludeSystemComponents = true;
+
 	/**
 	 * Gets the global system class handler instance
 	 * 
@@ -43,10 +45,10 @@ public class SystemClassHandler {
 	 *         false
 	 */
 	public boolean isClassInSystemPackage(String className) {
-		return className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
+		return (className.startsWith("android.") || className.startsWith("java.") || className.startsWith("javax.")
 				|| className.startsWith("sun.") || className.startsWith("org.omg.")
 				|| className.startsWith("org.w3c.dom.") || className.startsWith("com.google.")
-				|| className.startsWith("com.android.");
+				|| className.startsWith("com.android.")) && this.excludeSystemComponents;
 	}
 
 	/**
@@ -104,6 +106,17 @@ public class SystemClassHandler {
 		// We don't have a reason to believe that this taint is invisible to the
 		// callee
 		return true;
+	}
+
+	/**
+	 * Sets whether components in system or framework-related packages shall be
+	 * excluded from the analysis
+	 *
+	 * @param excludeSystemComponents True to exclude components in system packages
+	 *                                from the analysis, false otherwise
+	 */
+	public void setExcludeSystemComponents(boolean excludeSystemComponents) {
+		this.excludeSystemComponents = excludeSystemComponents;
 	}
 
 }

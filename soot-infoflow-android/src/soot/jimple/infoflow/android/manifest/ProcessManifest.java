@@ -63,8 +63,6 @@ public class ProcessManifest implements Closeable {
 	protected List<AXmlNode> aliasActivities = null;
 	protected List<AXmlNode> receivers = null;
 
-	protected boolean excludeSystemComponents = true;
-
 	/**
 	 * Processes an AppManifest which is within the file identified by the given
 	 * path.
@@ -257,7 +255,7 @@ public class ProcessManifest implements Closeable {
 			AXmlAttribute<?> attr = node.getAttribute("name");
 			if (attr != null) {
 				String className = expandClassName((String) attr.getValue());
-				if (!isExcluded(className))
+				if (!SystemClassHandler.v().isClassInSystemPackage(className))
 					entryPoints.add(className);
 			} else {
 				// This component does not have a name, so this might be
@@ -271,7 +269,7 @@ public class ProcessManifest implements Closeable {
 							String name = (String) attrValue.getValue();
 							if (isValidComponentName(name)) {
 								String expandedName = expandClassName(name);
-								if (!isExcluded(expandedName))
+								if (!SystemClassHandler.v().isClassInSystemPackage(expandedName))
 									entryPoints.add(expandedName);
 							}
 						}
@@ -279,18 +277,6 @@ public class ProcessManifest implements Closeable {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Checks whether the given fully-qualified class name of an Android component
-	 * shall be excluded from the analysis
-	 * 
-	 * @param className The fully-qualified component class name to check
-	 * @return True if the given component shall be excluded from the analysis,
-	 *         false otherwise
-	 */
-	public boolean isExcluded(String className) {
-		return excludeSystemComponents && SystemClassHandler.v().isClassInSystemPackage(className);
 	}
 
 	/**
@@ -698,17 +684,6 @@ public class ProcessManifest implements Closeable {
 		}
 
 		return allLaunchableActivities;
-	}
-
-	/**
-	 * Sets whether components in system or framework-related packages shall be
-	 * excluded from the analysis
-	 * 
-	 * @param excludeSystemComponents True to exclude components in system packages
-	 *                                from the analysis, false otherwise
-	 */
-	public void setExcludeSystemComponents(boolean excludeSystemComponents) {
-		this.excludeSystemComponents = excludeSystemComponents;
 	}
 
 }
