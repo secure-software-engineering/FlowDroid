@@ -32,6 +32,7 @@ public class AndroidEntryPointConstants {
 	public static final String FRAGMENTCLASS = "android.app.Fragment";
 	public static final String SUPPORTFRAGMENTCLASS = "android.support.v4.app.Fragment";
 	public static final String SERVICECONNECTIONINTERFACE = "android.content.ServiceConnection";
+	public static final String MAPACTIVITYCLASS = "com.google.android.maps.MapActivity";
 
 	public static final String APPCOMPATACTIVITYCLASS_V4 = "android.support.v4.app.AppCompatActivity";
 	public static final String APPCOMPATACTIVITYCLASS_V7 = "android.support.v7.app.AppCompatActivity";
