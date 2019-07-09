@@ -697,9 +697,11 @@ public class AndroidSourceSinkManager implements ISourceSinkManager, IOneSourceA
 			}
 
 			AndroidLayoutControl control = getLayoutControl(sCallSite, cfg);
-			if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly
-					&& control.isSensitive()) {
-				return control.getSourceDefinition();
+			if (control != null) {
+				if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly
+						&& control.isSensitive()) {
+					return control.getSourceDefinition();
+				}
 			}
 		}
 		return null;
