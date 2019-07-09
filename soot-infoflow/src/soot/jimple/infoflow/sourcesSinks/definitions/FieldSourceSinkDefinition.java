@@ -90,6 +90,20 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 * @return The new source/sink definition
 	 */
 	protected FieldSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> accessPaths) {
+		return buildNewDefinition(fieldSignature, accessPaths);
+	}
+
+	/**
+	 * Factory method for creating a new field-based source/sink definition based on
+	 * the current one. This method is used when transforming the current
+	 * definition. Derived classes can override this method to create instances of
+	 * the correct class.
+	 * 
+	 * @param fieldSignature The field signature
+	 * @param accessPaths    The of access paths for the new definition
+	 * @return The new source/sink definition
+	 */
+	protected FieldSourceSinkDefinition buildNewDefinition(String fieldSignature, Set<AccessPathTuple> accessPaths) {
 		return new FieldSourceSinkDefinition(fieldSignature, accessPaths);
 	}
 
@@ -128,7 +142,7 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 				if (toFilter.contains(ap))
 					filteredAPs.add(ap);
 		}
-		FieldSourceSinkDefinition def = new FieldSourceSinkDefinition(fieldSignature, filteredAPs);
+		FieldSourceSinkDefinition def = buildNewDefinition(fieldSignature, filteredAPs);
 		def.setCategory(category);
 		return def;
 	}

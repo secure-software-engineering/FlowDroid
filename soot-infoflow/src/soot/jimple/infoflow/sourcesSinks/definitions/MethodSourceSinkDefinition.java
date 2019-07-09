@@ -278,10 +278,16 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 */
 	protected MethodSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> baseAPTs,
 			Set<AccessPathTuple>[] paramAPTs, Set<AccessPathTuple> returnAPTs) {
-		MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method, baseAPTs, paramAPTs, returnAPTs,
-				callType);
+		MethodSourceSinkDefinition def = buildNewDefinition(method, baseAPTs, paramAPTs, returnAPTs, callType);
 		def.setCategory(category);
 		return def;
+	}
+
+	protected MethodSourceSinkDefinition buildNewDefinition(SootMethodAndClass methodAndclass,
+			Set<AccessPathTuple> filteredBaseObjects, Set<AccessPathTuple>[] filteredParameters,
+			Set<AccessPathTuple> filteredReturnValues, CallType callType) {
+		return new MethodSourceSinkDefinition(methodAndclass, filteredBaseObjects, filteredParameters,
+				filteredReturnValues, callType);
 	}
 
 	@Override
@@ -324,7 +330,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 * @return The shared blank source definition that is not associated with any
 	 *         method and taints the base object
 	 */
-	public static MethodSourceSinkDefinition getBaseObjectSource() {
+	public MethodSourceSinkDefinition getBaseObjectSource() {
 		if (BASE_OBJ_SOURCE == null)
 			BASE_OBJ_SOURCE = new MethodSourceSinkDefinition(
 					Collections.singleton(AccessPathTuple.getBlankSourceTuple()), null, null, CallType.MethodCall);
@@ -338,7 +344,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 * @return The shared blank sink definition that is not associated with any
 	 *         method and taints the base object
 	 */
-	public static MethodSourceSinkDefinition getBaseObjectSink() {
+	public MethodSourceSinkDefinition getBaseObjectSink() {
 		if (BASE_OBJ_SINK == null)
 			BASE_OBJ_SINK = new MethodSourceSinkDefinition(Collections.singleton(AccessPathTuple.getBlankSinkTuple()),
 					null, null, CallType.MethodCall);
@@ -507,7 +513,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 			}
 		}
 
-		MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method, filteredBaseObjects, filteredParameters,
+		MethodSourceSinkDefinition def = buildNewDefinition(method, filteredBaseObjects, filteredParameters,
 				filteredReturnValues, callType);
 		def.setCategory(category);
 		return def;
