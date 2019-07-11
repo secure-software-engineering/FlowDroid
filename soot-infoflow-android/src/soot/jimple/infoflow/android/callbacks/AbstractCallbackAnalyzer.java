@@ -535,9 +535,10 @@ public abstract class AbstractCallbackAnalyzer {
 				if (getItemUnit instanceof ReturnStmt) {
 					ReturnStmt rs = (ReturnStmt) getItemUnit;
 					Value rv = rs.getOp();
-
-					checkAndAddFragment(method.getDeclaringClass(), ((RefType) rv.getType()).getSootClass());
-
+					Type type = rv.getType();
+					if (type instanceof RefType) {
+						checkAndAddFragment(method.getDeclaringClass(), ((RefType) type).getSootClass());
+					}
 				}
 			}
 		}
