@@ -224,7 +224,6 @@ public abstract class AbstractCallbackAnalyzer {
 						if (!SystemClassHandler.v()
 								.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
 							continue;
-
 						// We have a formal parameter type that corresponds to one of the Android
 						// callback interfaces. Look for definitions of the parameter to estimate the
 						// actual type.
@@ -706,14 +705,27 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// Do we implement one of the well-known interfaces?
 		for (SootClass i : collectAllInterfaces(sootClass)) {
-			if (androidCallbacks.contains(i.getName())) {
-				CallbackType callbackType = isUICallback(i) ? CallbackType.Widget : CallbackType.Default;
+			this.checkAndAddCallback(i, baseClass, lifecycleElement);
+		}
+		this.checkAndAddCallback(sootClass, baseClass, lifecycleElement);
+	}
 
-				for (SootMethod sm : i.getMethods()) {
-					SootMethod callbackImplementation = getMethodFromHierarchyEx(baseClass, sm.getSubSignature());
-					if (callbackImplementation != null)
-						checkAndAddMethod(callbackImplementation, sm, lifecycleElement, callbackType);
-				}
+	/**
+	 * Checks if the given class/interface appears in android Callbacks. If yes, add
+	 * callback method to the list of callback methods
+	 *
+	 * @param sc               the class/interface to check for existence in
+	 *                         AndroidCallbacks
+	 * @param baseClass        the class implementing/extending sc
+	 * @param lifecycleElement the component to which the callback method belongs
+	 */
+	private void checkAndAddCallback(SootClass sc, SootClass baseClass, SootClass lifecycleElement) {
+		if (androidCallbacks.contains(sc.getName())) {
+			CallbackType callbackType = isUICallback(sc) ? CallbackType.Widget : CallbackType.Default;
+			for (SootMethod sm : sc.getMethods()) {
+				SootMethod callbackImplementation = getMethodFromHierarchyEx(baseClass, sm.getSubSignature());
+				if (callbackImplementation != null)
+					checkAndAddMethod(callbackImplementation, sm, lifecycleElement, callbackType);
 			}
 		}
 	}
