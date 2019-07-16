@@ -707,7 +707,9 @@ public abstract class AbstractCallbackAnalyzer {
 		for (SootClass i : collectAllInterfaces(sootClass)) {
 			this.checkAndAddCallback(i, baseClass, lifecycleElement);
 		}
-		this.checkAndAddCallback(sootClass, baseClass, lifecycleElement);
+		for (SootClass c : collectAllSuperClasses(sootClass)) {
+			this.checkAndAddCallback(c, baseClass, lifecycleElement);
+		}
 	}
 
 	/**
@@ -802,6 +804,15 @@ public abstract class AbstractCallbackAnalyzer {
 		for (SootClass i : sootClass.getInterfaces())
 			interfaces.addAll(collectAllInterfaces(i));
 		return interfaces;
+	}
+
+	private Set<SootClass> collectAllSuperClasses(SootClass sootClass) {
+		Set<SootClass> classes = new HashSet<SootClass>();
+		if (sootClass.hasSuperclass()) {
+			classes.add(sootClass.getSuperclass());
+			classes.addAll(collectAllSuperClasses(sootClass.getSuperclass()));
+		}
+		return classes;
 	}
 
 	public MultiMap<SootClass, CallbackDefinition> getCallbackMethods() {
