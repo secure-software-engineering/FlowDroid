@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
@@ -64,7 +64,7 @@ import soot.util.MultiMap;
 /**
  * Analyzes the classes in the APK file to find custom implementations of the
  * well-known Android callback and handler interfaces.
- * 
+ *
  * @author Steven Arzt
  *
  */
@@ -137,7 +137,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
-	 * 
+	 *
 	 * @param androidCallbackFile The file from which to load the callback
 	 *                            definitions
 	 * @return A set containing the names of the interfaces that are used to
@@ -158,7 +158,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
-	 * 
+	 *
 	 * @param reader A file reader
 	 * @return A set containing the names of the interfaces that are used to
 	 *         implement Android callback handlers
@@ -190,7 +190,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Analyzes the given method and looks for callback registrations
-	 * 
+	 *
 	 * @param lifecycleElement The lifecycle element (activity, etc.) with which to
 	 *                         associate the found callbacks
 	 * @param method           The method in which to look for callbacks
@@ -278,7 +278,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether all filters accept the association between the callback class
 	 * and its parent component
-	 * 
+	 *
 	 * @param lifecycleElement The hosting component's class
 	 * @param targetClass      The class implementing the callbacks
 	 * @return True if all filters accept the given component-callback mapping,
@@ -294,7 +294,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether all filters accept the association between the callback method
 	 * and its parent component
-	 * 
+	 *
 	 * @param lifecycleElement The hosting component's class
 	 * @param targetMethod     The method implementing the callback
 	 * @return True if all filters accept the given component-callback mapping,
@@ -310,7 +310,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method dynamically registers a new broadcast
 	 * receiver
-	 * 
+	 *
 	 * @param method The method to check
 	 */
 	protected void analyzeMethodForDynamicBroadcastReceiver(SootMethod method) {
@@ -343,7 +343,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method dynamically registers a new service
 	 * connection
-	 * 
+	 *
 	 * @param method The method to check
 	 */
 	protected void analyzeMethodForServiceConnection(SootMethod method) {
@@ -387,7 +387,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method executes a fragment transaction that creates
 	 * new fragment
-	 * 
+	 *
 	 * @author Goran Piskachev
 	 * @param method The method to check
 	 */
@@ -467,10 +467,10 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Check whether a method registers a FragmentStatePagerAdapter to a ViewPager.
 	 * This pattern is very common for tabbed apps.
-	 * 
+	 *
 	 * @param clazz
 	 * @param method
-	 * 
+	 *
 	 * @author Julius Naeumann
 	 */
 	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
@@ -546,7 +546,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Gets whether the call in the given statement can end up in the respective
 	 * method inherited from one of the given classes.
-	 * 
+	 *
 	 * @param stmt       The statement containing the call sites
 	 * @param classNames The base classes in which the call can potentially end up
 	 * @return True if the given call can end up in a method inherited from one of
@@ -578,7 +578,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether this invocation calls Android's Activity.setContentView method
-	 * 
+	 *
 	 * @param inv The invocaton to check
 	 * @return True if this invocation calls setContentView, otherwise false
 	 */
@@ -606,7 +606,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether this invocation calls Android's LayoutInflater.inflate method
-	 * 
+	 *
 	 * @param inv The invocaton to check
 	 * @return True if this invocation calls inflate, otherwise false
 	 */
@@ -679,7 +679,7 @@ public abstract class AbstractCallbackAnalyzer {
 		return null;
 	}
 
-	private void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
+	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
 		// reason to look for interface implementations
 		if (!baseClass.isConcrete())
@@ -734,7 +734,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Gets whether the given callback interface or class represents a UI callback
-	 * 
+	 *
 	 * @param i The callback interface or class to check
 	 * @return True if the given callback interface or class represents a UI
 	 *         callback, otherwise false
@@ -747,7 +747,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given Soot method comes from a system class. If not, it is
 	 * added to the list of callback methods.
-	 * 
+	 *
 	 * @param method         The method to check and add
 	 * @param parentMethod   The original method in the Android framework that
 	 *                       declared the callback. This can, for example, be the
@@ -783,7 +783,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Registers a fragment that belongs to a given component
-	 * 
+	 *
 	 * @param componentClass The component (usually an activity) to which the
 	 *                       fragment belongs
 	 * @param fragmentClass  The fragment class
@@ -834,7 +834,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Adds a new filter that checks every callback before it is associated with the
 	 * respective host component
-	 * 
+	 *
 	 * @param filter The filter to add
 	 */
 	public void addCallbackFilter(ICallbackFilter filter) {
@@ -844,7 +844,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Excludes an entry point from all further processing. No more callbacks will
 	 * be collected for the given entry point
-	 * 
+	 *
 	 * @param entryPoint The entry point to exclude
 	 */
 	public void excludeEntryPoint(SootClass entryPoint) {
@@ -853,7 +853,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether the given class is an excluded entry point
-	 * 
+	 *
 	 * @param entryPoint The entry point to check
 	 * @return True if the given class is an excluded entry point, otherwise false
 	 */
@@ -864,7 +864,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Sets the provider that shall be used for obtaining constant values during the
 	 * callback analysis
-	 * 
+	 *
 	 * @param valueProvider The value provider to use
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {

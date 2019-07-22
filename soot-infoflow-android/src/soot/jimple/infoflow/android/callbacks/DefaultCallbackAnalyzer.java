@@ -103,6 +103,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides
 						analyzeMethodOverrideCallbacks(sc);
+						analyzeClassInterfaceCallbacks(sc, sc, sc);
 					}
 					logger.info("Callback analysis done.");
 				} else {
@@ -131,6 +132,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides. The whole class might be new.
 						analyzeMethodOverrideCallbacks(componentClass);
+						analyzeClassInterfaceCallbacks(componentClass, componentClass, componentClass);
 
 						// Collect all methods that we need to analyze
 						List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
