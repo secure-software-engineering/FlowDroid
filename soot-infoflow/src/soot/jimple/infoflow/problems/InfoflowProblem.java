@@ -175,7 +175,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// Perform a normal IFDS-style propagation for the new taint
 						taintSet.add(newAbs);
 						final Aliasing aliasing = manager.getAliasing();
-						if (aliasing != null && Aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
+						if (aliasing != null && aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
 							aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
 						}
 					}
@@ -887,7 +887,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 										// Compute the aliases
 										for (Abstraction abs : nativeAbs)
-											if (abs.getAccessPath().isStaticFieldRef() || Aliasing.canHaveAliases(
+											if (abs.getAccessPath().isStaticFieldRef() || aliasing.canHaveAliases(
 													iCallStmt, abs.getAccessPath().getPlainValue(), abs))
 												aliasing.computeAliases(d1, iCallStmt,
 														abs.getAccessPath().getPlainValue(), res,
