@@ -338,7 +338,7 @@ public class Aliasing {
 	 * @return True if the given statement is a call to a String constructor, false
 	 *         otherwise
 	 */
-	private boolean isStringConstructorCall(Stmt iStmt) {
+	public boolean isStringConstructorCall(Stmt iStmt) {
 		SootClass scString = Scene.v().getSootClassUnsafe("java.lang.String");
 		Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(iStmt);
 		if (callees != null && !callees.isEmpty()) {

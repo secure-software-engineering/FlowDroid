@@ -88,14 +88,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				if (!abs.getAccessPath().isStaticFieldRef()) {
 					if (abs.getAccessPath().getBaseType() instanceof PrimType)
 						return null;
-					if (TypeUtils.isStringType(abs.getAccessPath().getBaseType())
-							&& !abs.getAccessPath().getCanHaveImmutableAliases())
-						return null;
 				} else {
 					if (abs.getAccessPath().getFirstFieldType() instanceof PrimType)
-						return null;
-					if (TypeUtils.isStringType(abs.getAccessPath().getFirstFieldType())
-							&& !abs.getAccessPath().getCanHaveImmutableAliases())
 						return null;
 				}
 				return abs;

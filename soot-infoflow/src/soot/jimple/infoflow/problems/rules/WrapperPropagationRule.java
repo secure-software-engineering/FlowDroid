@@ -100,9 +100,10 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 					// Note that we don't only need to check for heap writes such as a.x = y,
 					// but also for base object taints ("a" in this case).
 					final AccessPath val = abs.getAccessPath();
+					boolean isBasicString = TypeUtils.isStringType(val.getBaseType())
+							&& !val.getCanHaveImmutableAliases() && !getAliasing().isStringConstructorCall(iStmt);
 					boolean taintsObjectValue = val.getBaseType() instanceof RefType
-							&& abs.getAccessPath().getBaseType() instanceof RefType
-							&& (!TypeUtils.isStringType(val.getBaseType()) || val.getCanHaveImmutableAliases());
+							&& abs.getAccessPath().getBaseType() instanceof RefType && !isBasicString;
 					boolean taintsStaticField = getManager().getConfig()
 							.getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
 							&& abs.getAccessPath().isStaticFieldRef();
@@ -112,11 +113,12 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 							? Aliasing.baseMatches(((DefinitionStmt) iStmt).getLeftOp(), abs)
 							: false;
 
-					if (!taintedValueOverwritten)
+					if (!taintedValueOverwritten) {
 						if (taintsStaticField || (taintsObjectValue && abs.getAccessPath().getTaintSubFields())
 								|| manager.getAliasing().canHaveAliases(iStmt, val.getPlainValue(), abs))
 							getAliasing().computeAliases(d1, iStmt, val.getPlainValue(), resWithAliases,
 									getManager().getICFG().getMethodOf(iStmt), abs);
+					}
 				}
 			}
 			res = resWithAliases;

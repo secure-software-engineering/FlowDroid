@@ -926,8 +926,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					return null;
 
 				// Android executor methods are handled specially.
-				// getSubSignature()
-				// is slow, so we try to avoid it whenever we can
+				// getSubSignature() is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
 				Set<AccessPath> res = null;
