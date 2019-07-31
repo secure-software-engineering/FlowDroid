@@ -356,7 +356,7 @@ public class Infoflow extends AbstractInfoflow {
 				}
 
 				// Initialize the aliasing infrastructure
-				Aliasing aliasing = new Aliasing(aliasingStrategy, manager);
+				Aliasing aliasing = createAliasController(aliasingStrategy);
 				if (dummyMainMethod != null)
 					aliasing.excludeMethodFromMustAlias(dummyMainMethod);
 				manager.setAliasing(aliasing);
@@ -727,6 +727,17 @@ public class Infoflow extends AbstractInfoflow {
 			results.addException(ex.getClass().getName() + ": " + ex.getMessage() + "\n" + stacktrace.toString());
 			logger.error("Exception during data flow analysis", ex);
 		}
+	}
+
+	/**
+	 * Creates the controller object that handles aliasing operations. Derived
+	 * classes can override this method to supply custom aliasing implementations.
+	 * 
+	 * @param aliasingStrategy The aliasing strategy to use
+	 * @return The new alias controller object
+	 */
+	protected Aliasing createAliasController(IAliasingStrategy aliasingStrategy) {
+		return new Aliasing(aliasingStrategy, manager);
 	}
 
 	/**
