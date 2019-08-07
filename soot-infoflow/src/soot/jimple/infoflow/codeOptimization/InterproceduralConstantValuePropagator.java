@@ -433,9 +433,9 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						continue;
 
 					// If the call site has multiple callees, we cannot
-					// propagate a
-					// single constant
-					if (manager.getICFG().getCalleesOfCallAt(callSite).size() > 1)
+					// propagate a single constant
+					Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(callSite);
+					if (callees != null && callees.size() > 1)
 						continue;
 
 					// If the call has no side effects, we can remove it
