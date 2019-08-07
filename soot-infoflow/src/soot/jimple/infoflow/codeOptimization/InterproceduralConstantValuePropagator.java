@@ -429,7 +429,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// Make sure that we don't access anything we have already
 					// removed
 					SootMethod caller = manager.getICFG().getMethodOf(assign);
-					if (!caller.getActiveBody().getUnits().contains(assign))
+					if (caller == null || !caller.getActiveBody().getUnits().contains(assign))
 						continue;
 
 					// If the call site has multiple callees, we cannot
