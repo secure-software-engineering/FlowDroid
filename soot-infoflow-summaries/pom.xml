@@ -14,6 +14,28 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	
+    <organization>
+        <name>Fraunhofer SIT</name>
+        <url>https://www.sit.fraunhofer.de/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
+            <url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Steven Arzt</name>
+            <email>steven.arzt@sit.fraunhofer.de</email>
+            <organization>Fraunhofer SIT</organization>
+            <organizationUrl>https://www.sit.fraunhofer.de/en/</organizationUrl>
+        </developer>
+    </developers>
+
 	<build>
 		<finalName>soot-infoflow-summaries-classes</finalName>
 		<sourceDirectory>src</sourceDirectory>
