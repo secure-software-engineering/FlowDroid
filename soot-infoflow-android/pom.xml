@@ -5,7 +5,7 @@
 	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow-android</artifactId>
 	<name>soot-infoflow-android</name>
-	<version>2.7.2-SNAPSHOT</version>
+	<version>2.7.3-SNAPSHOT</version>
 	<description>Android-specific components of FlowDroid</description>
     <url>https://github.com/secure-software-engineering/FlowDroid</url>
 
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow</artifactId>
-			<version>2.7.2-SNAPSHOT</version>
+			<version>2.7.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.upb.cs.swt</groupId>
