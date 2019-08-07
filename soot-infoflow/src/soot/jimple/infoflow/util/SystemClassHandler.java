@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.util;
 
 import soot.RefType;
+import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
@@ -35,6 +36,16 @@ public class SystemClassHandler {
 	 */
 	public static void setInstance(SystemClassHandler instance) {
 		SystemClassHandler.instance = instance;
+	}
+
+	/**
+	 * Checks whether the given class belongs to a system package
+	 * 
+	 * @param clazz The class to check
+	 * @return True if the given class belongs to a system package, otherwise false
+	 */
+	public boolean isClassInSystemPackage(SootClass clazz) {
+		return clazz != null && isClassInSystemPackage(clazz.getName());
 	}
 
 	/**
