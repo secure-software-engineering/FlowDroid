@@ -193,7 +193,6 @@ public class MultiTest extends JUnitTests {
 	@Test(timeout = 300000)
 	public void multiSinkTest1() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setStopAfterFirstKFlows(1);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.MultiTestCode: void multiSinkTest1()>");
 
