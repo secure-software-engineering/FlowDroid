@@ -42,7 +42,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 				}
 			}
 		}
-		return new StatementSourceSinkDefinition(stmt, local, newSet);
+		return buildNewDefinition(stmt, local, newSet);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 				}
 			}
 		}
-		return new StatementSourceSinkDefinition(stmt, local, newSet);
+		return buildNewDefinition(stmt, local, newSet);
 	}
 
 	public Stmt getStmt() {
@@ -115,9 +115,14 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 				if (toFilter.contains(ap))
 					filteredAPs.add(ap);
 		}
-		StatementSourceSinkDefinition def = new StatementSourceSinkDefinition(stmt, local, filteredAPs);
+		StatementSourceSinkDefinition def = buildNewDefinition(stmt, local, filteredAPs);
 		def.setCategory(category);
 		return def;
+	}
+
+	protected StatementSourceSinkDefinition buildNewDefinition(Stmt stmt, Local local,
+			Set<AccessPathTuple> accessPaths) {
+		return new StatementSourceSinkDefinition(stmt, local, accessPaths);
 	}
 
 	@Override

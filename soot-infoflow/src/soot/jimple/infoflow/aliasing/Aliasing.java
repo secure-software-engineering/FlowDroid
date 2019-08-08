@@ -15,6 +15,8 @@ import soot.ArrayType;
 import soot.Local;
 import soot.PrimType;
 import soot.RefLikeType;
+import soot.Scene;
+import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
@@ -79,7 +81,7 @@ public class Aliasing {
 	public void computeAliases(final Abstraction d1, final Stmt src, final Value targetValue, Set<Abstraction> taintSet,
 			SootMethod method, Abstraction newAbs) {
 		// Can we have aliases at all?
-		if (!canHaveAliases(newAbs.getAccessPath()))
+		if (!canHaveAliases(newAbs.getAccessPath()) && !isStringConstructorCall(src))
 			return;
 
 		// If we are not in a conditionally-called method, we run the
@@ -300,7 +302,7 @@ public class Aliasing {
 	 * @return True if the analysis must look for aliases for the newly constructed
 	 *         taint, otherwise false
 	 */
-	public static boolean canHaveAliases(Stmt stmt, Value val, Abstraction source) {
+	public boolean canHaveAliases(Stmt stmt, Value val, Abstraction source) {
 		if (stmt instanceof DefinitionStmt) {
 			DefinitionStmt defStmt = (DefinitionStmt) stmt;
 			// If the left side is overwritten completely, we do not need to
@@ -321,11 +323,31 @@ public class Aliasing {
 		if (val instanceof Constant)
 			return false;
 
-		// String cannot have aliases
-		if (TypeUtils.isStringType(val.getType()) && !source.getAccessPath().getCanHaveImmutableAliases())
+		// String cannot have aliases, unless we process a delayed constructor call
+		if (TypeUtils.isStringType(val.getType()) && !isStringConstructorCall(stmt)
+				&& !source.getAccessPath().getCanHaveImmutableAliases())
 			return false;
 
 		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType);
+	}
+
+	/**
+	 * Checks whether the given statement is a call to a String constructor
+	 * 
+	 * @param iStmt The statement to check
+	 * @return True if the given statement is a call to a String constructor, false
+	 *         otherwise
+	 */
+	public boolean isStringConstructorCall(Stmt iStmt) {
+		SootClass scString = Scene.v().getSootClassUnsafe("java.lang.String");
+		Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(iStmt);
+		if (callees != null && !callees.isEmpty()) {
+			for (SootMethod callee : callees) {
+				if (callee.getDeclaringClass() == scString && callee.isConstructor())
+					return true;
+			}
+		}
+		return false;
 	}
 
 	/**

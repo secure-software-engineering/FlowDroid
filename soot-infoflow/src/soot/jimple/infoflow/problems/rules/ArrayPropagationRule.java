@@ -15,7 +15,6 @@ import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
@@ -108,7 +107,7 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 		res.add(newAbs);
 
 		// Compute the aliases
-		if (Aliasing.canHaveAliases(assignStmt, leftVal, newAbs))
+		if (manager.getAliasing().canHaveAliases(assignStmt, leftVal, newAbs))
 			getAliasing().computeAliases(d1, assignStmt, leftVal, res, getManager().getICFG().getMethodOf(assignStmt),
 					newAbs);
 

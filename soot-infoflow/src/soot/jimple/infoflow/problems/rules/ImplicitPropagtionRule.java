@@ -19,7 +19,6 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
@@ -118,13 +117,10 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	 * Checks whether the given abstraction at the given statement leaves a
 	 * conditional branch
 	 * 
-	 * @param stmt
-	 *            The statement to check
-	 * @param source
-	 *            The abstraction arriving at the given statement
-	 * @param killAll
-	 *            The by-value boolean to receive whether all taints shall be
-	 *            removed
+	 * @param stmt    The statement to check
+	 * @param source  The abstraction arriving at the given statement
+	 * @param killAll The by-value boolean to receive whether all taints shall be
+	 *                removed
 	 * @return True if the given abstraction at the given statement leaves a
 	 *         conditional branch, otherwise false
 	 */
@@ -267,7 +263,7 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 
 					// If we taint a return value because it is implicit,
 					// we must trigger an alias analysis
-					if (Aliasing.canHaveAliases(def, def.getLeftOp(), abs) && !callerD1sConditional)
+					if (manager.getAliasing().canHaveAliases(def, def.getLeftOp(), abs) && !callerD1sConditional)
 						for (Abstraction d1 : callerD1s)
 							getAliasing().computeAliases(d1, returnStmt, def.getLeftOp(), res,
 									getManager().getICFG().getMethodOf(callSite), abs);

@@ -1499,7 +1499,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param results The data flow results to write out
 	 * @param cfg     The control flow graph to use for writing out the results
 	 */
-	private void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
+	protected void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
 		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
 		if (resultsFile != null && !resultsFile.isEmpty()) {
 			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);

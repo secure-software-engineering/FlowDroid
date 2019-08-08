@@ -167,7 +167,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		// If this callee is excluded, we do not propagate out of it
 		if (excludedMethods != null && excludedMethods.contains(sm))
 			return;
-		if (excludeSystemClasses && SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
+		if (excludeSystemClasses && SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
 			return;
 
 		if (sm.getReturnType() != VoidType.v() || sm.getParameterCount() > 0) {
@@ -429,13 +429,13 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// Make sure that we don't access anything we have already
 					// removed
 					SootMethod caller = manager.getICFG().getMethodOf(assign);
-					if (!caller.getActiveBody().getUnits().contains(assign))
+					if (caller == null || !caller.getActiveBody().getUnits().contains(assign))
 						continue;
 
 					// If the call site has multiple callees, we cannot
-					// propagate a
-					// single constant
-					if (manager.getICFG().getCalleesOfCallAt(callSite).size() > 1)
+					// propagate a single constant
+					Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(callSite);
+					if (callees != null && callees.size() > 1)
 						continue;
 
 					// If the call has no side effects, we can remove it
@@ -759,7 +759,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 */
 	private boolean methodIsAndroidStub(SootMethod method) {
 		if (!(Options.v().src_prec() == Options.src_prec_apk && method.getDeclaringClass().isLibraryClass()
-				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName())))
+				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass())))
 			return false;
 
 		// Check whether there is only a single throw statement

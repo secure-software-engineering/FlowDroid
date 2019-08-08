@@ -53,11 +53,11 @@ public class MainClass {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final Options options = new Options();
-	private SetupApplication analyzer = null;
-	private ReportMissingSummaryWrapper reportMissingSummaryWrapper;
+	protected final Options options = new Options();
+	protected SetupApplication analyzer = null;
+	protected ReportMissingSummaryWrapper reportMissingSummaryWrapper;
 
-	private Set<String> filesToSkip = new HashSet<>();
+	protected Set<String> filesToSkip = new HashSet<>();
 
 	// Files
 	private static final String OPTION_CONFIG_FILE = "c";
@@ -121,7 +121,7 @@ public class MainClass {
 	// Evaluation-specific options
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
 
-	private MainClass() {
+	protected MainClass() {
 		initializeCommandLineOptions();
 	}
 
@@ -233,7 +233,7 @@ public class MainClass {
 		main.run(args);
 	}
 
-	private void run(String[] args) throws Exception {
+	protected void run(String[] args) throws Exception {
 		// We need proper parameters
 		final HelpFormatter formatter = new HelpFormatter();
 		if (args.length == 0) {
@@ -328,7 +328,7 @@ public class MainClass {
 				}
 
 				// Create the data flow analyzer
-				analyzer = new SetupApplication(config);
+				analyzer = createFlowDroidInstance(config);
 				analyzer.setTaintWrapper(taintWrapper);
 
 				// Start the data flow analysis
@@ -348,6 +348,18 @@ public class MainClass {
 			System.err.println(String.format("The data flow analysis has failed. Error message: %s", e.getMessage()));
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Creates an instance of the FlowDroid data flow solver tool for Android.
+	 * Derived classes can override this method to inject custom variants of
+	 * FlowDroid.
+	 * 
+	 * @param config The configuration object
+	 * @return An instance of the data flow solver
+	 */
+	protected SetupApplication createFlowDroidInstance(final InfoflowAndroidConfiguration config) {
+		return new SetupApplication(config);
 	}
 
 	/**
