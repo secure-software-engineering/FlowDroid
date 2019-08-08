@@ -9,7 +9,7 @@ import heros.solver.Pair;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
 
 /**
@@ -24,11 +24,11 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	protected int neighborCounter = 0;
 	private int hashCode = 0;
 
-	public SourceContextAndPath(SourceSinkDefinition definition, AccessPath value, Stmt stmt) {
+	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt) {
 		this(definition, value, stmt, null);
 	}
 
-	public SourceContextAndPath(SourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
+	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
 		super(definition, value, stmt, userData);
 	}
 
@@ -61,8 +61,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs
-	 *            The abstraction to put on the taint propagation path
+	 * @param abs The abstraction to put on the taint propagation path
 	 * @return The new taint propagation path If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
@@ -73,10 +72,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs
-	 *            The abstraction to put on the taint propagation path
-	 * @param pathConfig
-	 *            The configuration for constructing taint propagation paths
+	 * @param abs        The abstraction to put on the taint propagation path
+	 * @param pathConfig The configuration for constructing taint propagation paths
 	 * @return The new taint propagation path. If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
@@ -113,15 +110,13 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 					// seen before, we skip it. Otherwise, we would run through
 					// loops infinitely.
 					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
-							&& a.equals(abs))
+							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite() && a.equals(abs))
 						return null;
 				}
 
 				// We cannot leave the same method at two different sites
 				Abstraction topAbs = path.getLast();
-				if (topAbs.equals(abs)
-						&& topAbs.getCorrespondingCallSite() != null
+				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
 						&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
 						&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
 					return null;
@@ -132,8 +127,8 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();
 			scap.path.add(abs);
-			if (pathConfig != null
-					&& pathConfig.getMaxPathLength() > 0
+
+			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
 					&& scap.path.size() > pathConfig.getMaxPathLength())
 				return null;
 		}
@@ -144,8 +139,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 				scap = this.clone();
 			if (scap.callStack == null)
 				scap.callStack = new ExtensibleList<Stmt>();
-			else if (pathConfig != null
-					&& pathConfig.getMaxCallStackSize() > 0
+			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
 					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
 				return null;
 			scap.callStack.add(abs.getCorrespondingCallSite());
@@ -167,13 +161,17 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			return null;
 
 		SourceContextAndPath scap = clone();
+		Stmt lastStmt = null;
 		Object c = scap.callStack.removeLast();
 		if (c instanceof ExtensibleList) {
-			Stmt last = scap.callStack.getLast();
+			lastStmt = scap.callStack.getLast();
 			scap.callStack = (ExtensibleList<Stmt>) c;
-			return new Pair<>(scap, last);
 		} else
-			return new Pair<>(scap, (Stmt) c);
+			lastStmt = (Stmt) c;
+
+		if (scap.callStack.isEmpty())
+			scap.callStack = null;
+		return new Pair<>(scap, lastStmt);
 	}
 
 	/**
@@ -205,8 +203,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.hashCode != 0 && scap.hashCode != 0 && this.hashCode != scap.hashCode)
 			return false;
 
-		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults()
-				&& path != null
+		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults() && path != null
 				&& scap.path != null;
 		if (mergeDifferentPaths) {
 			if (path.size() != scap.path.size()) {
@@ -215,11 +212,11 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			}
 		}
 
-		if (this.callStack == null) {
-			if (scap.callStack != null)
+		if (this.callStack == null || this.callStack.isEmpty()) {
+			if (scap.callStack != null && !scap.callStack.isEmpty())
 				return false;
 		} else {
-			if (scap.callStack == null && !callStack.isEmpty())
+			if (scap.callStack == null || scap.callStack.isEmpty())
 				return false;
 
 			if (callStack.size() != scap.callStack.size() || !this.callStack.equals(scap.callStack))

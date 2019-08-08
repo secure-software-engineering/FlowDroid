@@ -25,18 +25,18 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	 *
 	 */
 	private enum SolverState {
-		/**
-		 * The solver has not been started yet
-		 */
-		IDLE,
-		/**
-		 * The solver is running
-		 */
-		RUNNING,
-		/**
-		 * The solver has completed its work
-		 */
-		DONE
+	/**
+	 * The solver has not been started yet
+	 */
+	IDLE,
+	/**
+	 * The solver is running
+	 */
+	RUNNING,
+	/**
+	 * The solver has completed its work
+	 */
+	DONE
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -45,13 +45,13 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	private final InfoflowResults results;
 	private final Map<IMemoryBoundedSolver, SolverState> solvers = new ConcurrentHashMap<>();
 	private boolean stopped = false;
+	private ISolversTerminatedCallback terminationCallback = null;
 
 	/**
 	 * Creates a new instance of the {@link FlowDroidTimeoutWatcher} class
 	 * 
-	 * @param timeout
-	 *            The timeout in seconds after which the solvers shall be
-	 *            stopped
+	 * @param timeout The timeout in seconds after which the solvers shall be
+	 *                stopped
 	 */
 	public FlowDroidTimeoutWatcher(long timeout) {
 		this.timeout = timeout;
@@ -61,11 +61,9 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	/**
 	 * Creates a new instance of the {@link FlowDroidTimeoutWatcher} class
 	 * 
-	 * @param timeout
-	 *            The timeout in seconds after which the solvers shall be
-	 *            stopped
-	 * @param res
-	 *            The InfoflowResults object
+	 * @param timeout The timeout in seconds after which the solvers shall be
+	 *                stopped
+	 * @param res     The InfoflowResults object
 	 */
 	public FlowDroidTimeoutWatcher(long timeout, InfoflowResults res) {
 		this.timeout = timeout;
@@ -84,8 +82,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	/**
 	 * Adds a solver that shall be terminated when the timeout is reached
 	 * 
-	 * @param solver
-	 *            A solver that shall be terminated when the timeout is reached
+	 * @param solver A solver that shall be terminated when the timeout is reached
 	 */
 	public void addSolver(IMemoryBoundedSolver solver) {
 		this.solvers.put(solver, SolverState.IDLE);
@@ -105,18 +102,11 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 			@Override
 			public void run() {
 				// Sleep until we have reached the timeout
-				boolean allTerminated = true;
+				boolean allTerminated = isTerminated();
 				long timeElapsed = 0;
+
 				while (!stopped && ((timeElapsed = System.currentTimeMillis() - startTime) < 1000 * timeout)) {
-					// Check whether all solvers in our watchlist have finished
-					// their work
-					allTerminated = true;
-					for (IMemoryBoundedSolver solver : solvers.keySet()) {
-						if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated()) {
-							allTerminated = false;
-							break;
-						}
-					}
+					allTerminated = isTerminated();
 					if (allTerminated)
 						break;
 
@@ -138,9 +128,26 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 					TimeoutReason reason = new TimeoutReason(timeElapsed / 1000, timeout);
 					for (IMemoryBoundedSolver solver : solvers.keySet())
 						solver.forceTerminate(reason);
+
+					if (terminationCallback != null)
+						terminationCallback.onSolversTerminated();
 				}
 
 				logger.info("FlowDroid timeout watcher terminated");
+			}
+
+			private boolean isTerminated() {
+				boolean allTerminated;
+				// Check whether all solvers in our watchlist have finished
+				// their work
+				allTerminated = true;
+				for (IMemoryBoundedSolver solver : solvers.keySet()) {
+					if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated()) {
+						allTerminated = false;
+						break;
+					}
+				}
+				return allTerminated;
 			}
 
 		}, "FlowDroid Timeout Watcher").start();
@@ -155,8 +162,8 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	}
 
 	/**
-	 * Resets the internal state of the watcher so that it can be used again
-	 * after being stopped
+	 * Resets the internal state of the watcher so that it can be used again after
+	 * being stopped
 	 */
 	public void reset() {
 		this.stopped = false;
@@ -172,6 +179,17 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	@Override
 	public void notifySolverTerminated(IMemoryBoundedSolver solver) {
 		solvers.put(solver, SolverState.DONE);
+	}
+
+	/**
+	 * Sets a callback that shall be invoked when the solvers have been terminated
+	 * due to a timeout
+	 * 
+	 * @param terminationCallback The callback to invoke when the solvers have been
+	 *                            terminated due to a timeout
+	 */
+	public void setTerminationCallback(ISolversTerminatedCallback terminationCallback) {
+		this.terminationCallback = terminationCallback;
 	}
 
 }

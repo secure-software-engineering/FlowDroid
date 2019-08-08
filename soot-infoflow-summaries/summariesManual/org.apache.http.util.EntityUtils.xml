@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="byte[] toByteArray(org.apache.http.HttpEntity)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[org.apache.http.HttpEntity: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString(org.apache.http.HttpEntity)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[org.apache.http.HttpEntity: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString(org.apache.http.HttpEntity,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[org.apache.http.HttpEntity: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString(org.apache.http.HttpEntity,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[org.apache.http.HttpEntity: byte[] data]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

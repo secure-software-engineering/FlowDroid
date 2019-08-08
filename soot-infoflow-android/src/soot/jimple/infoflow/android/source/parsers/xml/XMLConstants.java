@@ -7,7 +7,7 @@ package soot.jimple.infoflow.android.source.parsers.xml;
  * @author Steven Arzt
  *
  */
-class XMLConstants {
+public class XMLConstants {
 
 	public static final String CATEGORY_TAG = "category";
 	public static final String METHOD_TAG = "method";

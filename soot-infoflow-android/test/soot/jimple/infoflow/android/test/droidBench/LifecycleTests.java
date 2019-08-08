@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 public class LifecycleTests extends JUnitTests {
@@ -81,6 +82,7 @@ public class LifecycleTests extends JUnitTests {
 					@Override
 					public void configureAnalyzer(InfoflowAndroidConfiguration config) {
 						config.getSourceSinkConfig().setEnableLifecycleSources(true);
+						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
 					}
 
 				});
@@ -193,7 +195,15 @@ public class LifecycleTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestSharedPreferenceChanged1() throws IOException, XmlPullParserException {
-		InfoflowResults res = analyzeAPKFile("Lifecycle/SharedPreferenceChanged1.apk");
+		InfoflowResults res = analyzeAPKFile("Lifecycle/SharedPreferenceChanged1.apk", null,
+				new AnalysisConfigurationCallback() {
+
+					@Override
+					public void configureAnalyzer(InfoflowAndroidConfiguration config) {
+						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
+					}
+
+				});
 		Assert.assertNotNull(res);
 		Assert.assertEquals(2, res.size()); // write to shared preference + leak
 											// from there as individual leaks

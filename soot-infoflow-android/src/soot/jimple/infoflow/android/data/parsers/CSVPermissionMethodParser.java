@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -38,9 +38,9 @@ public class CSVPermissionMethodParser implements ISourceSinkDefinitionProvider 
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private Set<SourceSinkDefinition> sourceList = null;
-	private Set<SourceSinkDefinition> sinkList = null;
-	private Set<SourceSinkDefinition> neitherList = null;
+	private Set<ISourceSinkDefinition> sourceList = null;
+	private Set<ISourceSinkDefinition> sinkList = null;
+	private Set<ISourceSinkDefinition> neitherList = null;
 
 	private static final int INITIAL_SET_SIZE = 10000;
 
@@ -51,9 +51,9 @@ public class CSVPermissionMethodParser implements ISourceSinkDefinitionProvider 
 	}
 
 	public void parse() {
-		sourceList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
-		sinkList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
-		neitherList = new HashSet<SourceSinkDefinition>(INITIAL_SET_SIZE);
+		sourceList = new HashSet<>(INITIAL_SET_SIZE);
+		sinkList = new HashSet<>(INITIAL_SET_SIZE);
+		neitherList = new HashSet<>(INITIAL_SET_SIZE);
 
 		BufferedReader rdr = null;
 		try {
@@ -130,25 +130,25 @@ public class CSVPermissionMethodParser implements ISourceSinkDefinitionProvider 
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<ISourceSinkDefinition> getSources() {
 		if (sourceList == null || sinkList == null)
 			parse();
 		return this.sourceList;
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<ISourceSinkDefinition> getSinks() {
 		if (sourceList == null || sinkList == null)
 			parse();
 		return this.sinkList;
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getAllMethods() {
+	public Set<ISourceSinkDefinition> getAllMethods() {
 		if (sourceList == null || sinkList == null)
 			parse();
 
-		Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(
+		Set<ISourceSinkDefinition> sourcesSinks = new HashSet<>(
 				sourceList.size() + sinkList.size() + neitherList.size());
 		sourcesSinks.addAll(sourceList);
 		sourcesSinks.addAll(sinkList);

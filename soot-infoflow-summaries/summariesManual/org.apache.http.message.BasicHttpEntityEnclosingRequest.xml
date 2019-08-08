@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="org.apache.http.message.BasicHttpRequest">
+		<interface name="org.apache.http.HttpEntityEnclosingRequest" />
+		<interface name="org.apache.http.HttpMessage" />
+		<interface name="org.apache.http.HttpRequest" />
+	</hierarchy>
+</summary>

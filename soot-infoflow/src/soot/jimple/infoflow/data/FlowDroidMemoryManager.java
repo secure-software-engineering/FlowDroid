@@ -23,9 +23,8 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
-	 * Special class for encapsulating taint abstractions for a full equality
-	 * check including those fields (predecessor, etc.) that are normally left
-	 * out
+	 * Special class for encapsulating taint abstractions for a full equality check
+	 * including those fields (predecessor, etc.) that are normally left out
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -92,8 +91,8 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 		 */
 		EraseNothing,
 		/**
-		 * Keep only those path tracking items that are necessary for context-
-		 * sensitive path reconstruction.
+		 * Keep only those path tracking items that are necessary for context- sensitive
+		 * path reconstruction.
 		 */
 		KeepOnlyContextData,
 		/**
@@ -112,11 +111,9 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	/**
 	 * Constructs a new instance of the AccessPathManager class
 	 * 
-	 * @param tracingEnabled
-	 *            True if performance tracing data shall be recorded
-	 * @param erasePathData
-	 *            Specifies whether data for tracking paths (current statement,
-	 *            corresponding call site) shall be erased.
+	 * @param tracingEnabled True if performance tracing data shall be recorded
+	 * @param erasePathData  Specifies whether data for tracking paths (current
+	 *                       statement, corresponding call site) shall be erased.
 	 */
 	public FlowDroidMemoryManager(boolean tracingEnabled, PathDataErasureMode erasePathData) {
 		this.tracingEnabled = tracingEnabled;
@@ -132,8 +129,7 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	/**
 	 * Gets the cached equivalent of the given access path
 	 * 
-	 * @param ap
-	 *            The access path for which to get the cached equivalent
+	 * @param ap The access path for which to get the cached equivalent
 	 * @return The cached equivalent of the given access path
 	 */
 	private AccessPath getCachedAccessPath(AccessPath ap) {
@@ -151,8 +147,7 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 	 * Gets a cached equivalent abstraction for the given abstraction if we have
 	 * one, otherwise returns null
 	 * 
-	 * @param abs
-	 *            The abstraction for which to perform a cache lookup
+	 * @param abs The abstraction for which to perform a cache lookup
 	 * @return The cached abstraction equivalent to the given one of it exists,
 	 *         otherwise null
 	 */
@@ -175,83 +170,14 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 
 	@Override
 	public Abstraction handleMemoryObject(Abstraction obj) {
-		if (useAbstractionCache) {
-			// We check for a cached version of the complete abstraction
-			Abstraction cachedAbs = getCachedAbstraction(obj);
-			if (cachedAbs != null)
-				return cachedAbs;
-		}
-
-		// We check for a cached version of the access path
-		AccessPath newAP = getCachedAccessPath(obj.getAccessPath());
-		obj.setAccessPath(newAP);
-
-		// Erase path data if requested
-		if (erasePathData != PathDataErasureMode.EraseNothing) {
-			Abstraction curAbs = obj;
-			while (curAbs != null) {
-				// Unconditional erasure
-				if (erasePathData == PathDataErasureMode.EraseAll) {
-					curAbs.setCurrentStmt(null);
-					curAbs.setCorrespondingCallSite(null);
-				}
-				// Call-to-return edges
-				else if (erasePathData == PathDataErasureMode.KeepOnlyContextData
-						&& curAbs.getCorrespondingCallSite() == curAbs.getCurrentStmt()) {
-					curAbs.setCurrentStmt(null);
-					curAbs.setCorrespondingCallSite(null);
-				}
-				// Normal statements
-				else if (erasePathData == PathDataErasureMode.KeepOnlyContextData
-						&& curAbs.getCorrespondingCallSite() == null && curAbs.getCurrentStmt() != null) {
-					// Lock the abstraction and check again. This is to make
-					// sure that no
-					// other thread has already erased the path data in the
-					// meantime and
-					// we access null objects.
-					synchronized (curAbs) {
-						if (curAbs.getCorrespondingCallSite() == null && curAbs.getCurrentStmt() != null
-								&& !curAbs.getCurrentStmt().containsInvokeExpr()
-								&& !(curAbs.getCurrentStmt() instanceof ReturnStmt)
-								&& !(curAbs.getCurrentStmt() instanceof ReturnVoidStmt)) {
-							curAbs.setCurrentStmt(null);
-							curAbs.setCorrespondingCallSite(null);
-						}
-					}
-				}
-				curAbs = curAbs.getPredecessor();
-			}
-		}
-
-		// If an intermediate statement does not change any taint state, skip
-		// it.
-		// Note that we should not do this when we're reconstructing paths or we
-		// might
-		// lose statements along the way.
-		if (erasePathData != PathDataErasureMode.EraseNothing) {
-			Abstraction pred = obj.getPredecessor();
-			Abstraction curAbs = pred;
-			while (curAbs != null && curAbs.getNeighbors() == null) {
-				Abstraction predPred = curAbs.getPredecessor();
-				if (predPred != null) {
-					if (predPred.equals(obj)) {
-						pred = predPred.getPredecessor();
-						obj = predPred;
-					}
-				}
-				curAbs = predPred;
-			}
-		}
-
 		return obj;
 	}
 
 	@Override
 	public Abstraction handleGeneratedMemoryObject(Abstraction input, Abstraction output) {
 		// We we just pass the same object on, there is nothing to optimize
-		if (input == output) {
+		if (input == output)
 			return output;
-		}
 
 		// If the flow function gave us a chain of abstractions, we can
 		// compact it
@@ -274,14 +200,82 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 			}
 		}
 
+		// We check for a cached version of the access path
+		{
+			AccessPath newAP = getCachedAccessPath(output.getAccessPath());
+			output.setAccessPath(newAP);
+		}
+
+		// If an intermediate statement does not change any taint state, skip it. Note
+		// that we should not do this when we're reconstructing paths or we might lose
+		// statements along the way.
+		if (erasePathData != PathDataErasureMode.EraseNothing) {
+			Abstraction curAbs = output.getPredecessor();
+			while (curAbs != null && curAbs.getNeighbors() == null) {
+				Abstraction predPred = curAbs.getPredecessor();
+				if (predPred != null) {
+					if (predPred.equals(output))
+						output = predPred;
+				}
+				curAbs = predPred;
+			}
+		}
+
+		// Erase path data if requested. We may only change the current abstraction,
+		// because predecessors may already be recorded as neighbors.
+		erasePathData(output);
+
+		// We check for a cached version of the complete abstraction
+		if (useAbstractionCache) {
+			Abstraction cachedAbs = getCachedAbstraction(output);
+			if (cachedAbs != null)
+				return cachedAbs;
+		}
+
 		return output;
+	}
+
+	/**
+	 * Erases the statements recorded in the given abstraction if the solver has
+	 * been configured to do so
+	 * 
+	 * @param output The abstraction to optimize
+	 */
+	protected void erasePathData(Abstraction output) {
+		if (erasePathData != PathDataErasureMode.EraseNothing) {
+			// Unconditional erasure
+			if (erasePathData == PathDataErasureMode.EraseAll) {
+				output.setCurrentStmt(null);
+				output.setCorrespondingCallSite(null);
+			}
+			// Call-to-return edges
+			else if (erasePathData == PathDataErasureMode.KeepOnlyContextData
+					&& output.getCorrespondingCallSite() == output.getCurrentStmt()) {
+				output.setCurrentStmt(null);
+				output.setCorrespondingCallSite(null);
+			}
+			// Normal statements
+			else if (erasePathData == PathDataErasureMode.KeepOnlyContextData
+					&& output.getCorrespondingCallSite() == null && output.getCurrentStmt() != null) {
+				// Lock the abstraction and check again. This is to make sure that no other
+				// thread has already erased the path data in the meantime and we access null
+				// objects.
+				if (output.getCorrespondingCallSite() == null && output.getCurrentStmt() != null
+						&& !output.getCurrentStmt().containsInvokeExpr()
+						&& !(output.getCurrentStmt() instanceof ReturnStmt)
+						&& !(output.getCurrentStmt() instanceof ReturnVoidStmt)) {
+					output.setCurrentStmt(null);
+					output.setCorrespondingCallSite(null);
+				}
+			}
+		}
 	}
 
 	/**
 	 * Sets whether the memory manager shall use the abstraction cache
 	 * 
-	 * @param useAbstractionCache
-	 *            True if the abstraction cache shall be used, otherwise false
+	 * @param useAbstractionCache True if the abstraction cache shall be used,
+	 *                            otherwise false
 	 */
 	public void setUseAbstractionCache(boolean useAbstractionCache) {
 		this.useAbstractionCache = useAbstractionCache;

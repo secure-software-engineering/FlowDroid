@@ -39,12 +39,8 @@ public class CallbackTests extends TestHelper {
 		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Return, -1, null,
 				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: java.lang.String transform(java.lang.String)>",
 				SourceSinkType.Return, -1, null, ""));
-		// Gap base object back to parameter 1
-		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Field, -1, null,
-				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: java.lang.String transform(java.lang.String)>",
-				SourceSinkType.Parameter, 1, null, ""));
 
-		assertEquals(4, flow.getFlowCount());
+		assertEquals(3, flow.getFlowCount());
 	}
 
 	@Test(timeout = 100000)
@@ -64,12 +60,8 @@ public class CallbackTests extends TestHelper {
 		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Return, -1, null,
 				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: java.lang.String transform(java.lang.String)>",
 				SourceSinkType.Return, -1, null, ""));
-		// Gap base to "this" field
-		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Field, -1, null,
-				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: java.lang.String transform(java.lang.String)>",
-				SourceSinkType.Field, -1, new String[] { FIELD_CALLBACK }, ""));
 
-		assertEquals(4, flow.getFlowCount());
+		assertEquals(3, flow.getFlowCount());
 	}
 
 	@Test(timeout = 100000)
@@ -89,12 +81,8 @@ public class CallbackTests extends TestHelper {
 		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Parameter, 0, null,
 				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: void transformObject(soot.jimple.infoflow.test.methodSummary.Data)>",
 				SourceSinkType.Return, -1, null, ""));
-		// Gap base to "this" field
-		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Field, -1, null,
-				"<soot.jimple.infoflow.test.methodSummary.Callbacks$MyCallbacks: void transformObject(soot.jimple.infoflow.test.methodSummary.Data)>",
-				SourceSinkType.Field, -1, new String[] { FIELD_CALLBACK }, ""));
 
-		assertEquals(4, flow.getFlowCount());
+		assertEquals(3, flow.getFlowCount());
 	}
 
 	@Test(timeout = 100000)
@@ -114,12 +102,8 @@ public class CallbackTests extends TestHelper {
 		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Return, -1, null,
 				"<soot.jimple.infoflow.test.methodSummary.IGapClass: java.lang.String callTheGap(java.lang.String)>",
 				SourceSinkType.Return, -1, null, ""));
-		// Gap base object back to parameter 0
-		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Field, -1, null,
-				"<soot.jimple.infoflow.test.methodSummary.IGapClass: java.lang.String callTheGap(java.lang.String)>",
-				SourceSinkType.Parameter, 0, null, ""));
 
-		assertEquals(4, flow.getFlowCount());
+		assertEquals(3, flow.getFlowCount());
 	}
 
 	@Test(timeout = 100000)
@@ -139,12 +123,8 @@ public class CallbackTests extends TestHelper {
 		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Parameter, 2, null, "", SourceSinkType.Parameter, 1,
 				null,
 				"<soot.jimple.infoflow.test.methodSummary.IGapClass: void fillDataString(java.lang.String,soot.jimple.infoflow.test.methodSummary.Data)>"));
-		// Gap base back to parameter 0
-		assertTrue(containsFlow(flow.getAllFlows(), SourceSinkType.Field, -1, null,
-				"<soot.jimple.infoflow.test.methodSummary.IGapClass: void fillDataString(java.lang.String,soot.jimple.infoflow.test.methodSummary.Data)>",
-				SourceSinkType.Parameter, 0, null, ""));
 
-		assertEquals(4, flow.getFlowCount());
+		assertEquals(3, flow.getFlowCount());
 	}
 
 	@Test(timeout = 100000)
@@ -213,8 +193,8 @@ public class CallbackTests extends TestHelper {
 		List<String> sub = new LinkedList<String>();
 		sub.add("java.util.ArrayList");
 		sg.setSubstitutedWith(sub);
-		sg.getConfig().setAccessPathLength(5);
-		sg.getConfig().setUseRecursiveAccessPaths(true);
+		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(5);
+		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.setSootConfig(new DefaultSummaryConfig() {
 
 			@Override

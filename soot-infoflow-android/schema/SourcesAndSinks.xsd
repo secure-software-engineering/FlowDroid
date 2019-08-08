@@ -79,6 +79,7 @@
     </xs:sequence>
     <xs:attribute name="isSource" type="xs:boolean" default="false"/>
     <xs:attribute name="isSink" type="xs:boolean" default="false"/>
+    <xs:attribute name="description" type="xs:string" use="optional" />
 </xs:complexType>
 
 <xs:complexType name="pathElementType">

@@ -10,8 +10,10 @@ public interface FastSolverLinkedNode<D, N> extends Cloneable {
 	/**
 	 * Links this node to a neighbor node, i.e., to an abstraction that would have
 	 * been merged with this one of paths were not being tracked.
+	 * 
+	 * @return True if the neighbor was added, false if it was rejected
 	 */
-	public void addNeighbor(D originalAbstraction);
+	public boolean addNeighbor(D originalAbstraction);
 
 	/**
 	 * Gets the number of neighbors already registered with this abstraction
@@ -49,5 +51,12 @@ public interface FastSolverLinkedNode<D, N> extends Cloneable {
 	 * @return The active copy if supported, otherwise the "this" reference
 	 */
 	public D getActiveCopy();
+
+	/**
+	 * Gets the length of the path over which this node was propagated
+	 * 
+	 * @return The length of the path over which this node was propagated
+	 */
+	public int getPathLength();
 
 }

@@ -8,7 +8,6 @@ import soot.SootMethod;
 import soot.ValueBox;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -24,9 +23,8 @@ import soot.jimple.infoflow.util.TypeUtils;
  */
 public class SourcePropagationRule extends AbstractTaintPropagationRule {
 
-	public SourcePropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public SourcePropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	private Collection<Abstraction> propagate(Abstraction d1, Abstraction source, Stmt stmt,
@@ -34,7 +32,8 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		if (source == getZeroValue()) {
 			// Check whether this can be a source at all
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager() != null
-					? getManager().getSourceSinkManager().getSourceInfo(stmt, getManager()) : null;
+					? getManager().getSourceSinkManager().getSourceInfo(stmt, getManager())
+					: null;
 
 			// We never propagate zero facts onwards
 			killSource.value = true;
@@ -48,8 +47,9 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 							false, false);
 					res.add(abs);
 
-					// Compute the aliases
-					for (ValueBox vb : stmt.getUseAndDefBoxes()) {
+					// Compute the aliases. This is only relevant for variables that are not
+					// entirely overwritten.
+					for (ValueBox vb : stmt.getUseBoxes()) {
 						if (ap.startsWith(vb.getValue())) {
 							// We need a relaxed "can have aliases" check here.
 							// Even if we have a local, the source/sink manager

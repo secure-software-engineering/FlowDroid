@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -14,16 +15,18 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
 		</method>
-    <method id="void write(byte[])">
+		<method id="void write(byte[])">
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -32,7 +35,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -41,34 +45,38 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
 		</method>
-    <method id="void write(java.lang.String,int,int)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void write(java.lang.String)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="java.io.PrintWriter append(char)">
+		<method id="void write(java.lang.String,int,int)">
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.PrintWriter append(char)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 				<flow isAlias="true">
@@ -81,7 +89,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 				<flow isAlias="true">
@@ -90,11 +99,13 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.io.PrintWriter append(java.lang.CharSequence,int,int)">
+		<method
+			id="java.io.PrintWriter append(java.lang.CharSequence,int,int)">
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 				<flow isAlias="true">
@@ -103,11 +114,13 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.io.PrintWriter format(java.lang.String,java.lang.Object[])">
+		<method
+			id="java.io.PrintWriter format(java.lang.String,java.lang.Object[])">
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 				<flow isAlias="true">
@@ -116,11 +129,13 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.io.PrintWriter format(java.util.Locale,java.lang.String,java.lang.Object[])">
+		<method
+			id="java.io.PrintWriter format(java.util.Locale,java.lang.String,java.lang.Object[])">
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 				<flow isAlias="true">
@@ -133,7 +148,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -142,7 +158,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -151,7 +168,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -160,7 +178,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -169,7 +188,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -178,7 +198,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -187,7 +208,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -196,7 +218,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -205,126 +228,141 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
 		</method>
-    <method id="java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="2" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-        <flow isAlias="true">
-          <from sourceSinkType="Field" />
-          <to sourceSinkType="Return" />
-        </flow>
-      </flows>
-    </method>
-    <method id="java.io.PrintWriter printf(java.lang.String,java.lang.Object[])">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="1" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-        <flow isAlias="true">
-          <from sourceSinkType="Field" />
-          <to sourceSinkType="Return" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(boolean)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(char)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(char[])">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(double)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(float)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(int)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(long)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(java.lang.Object)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="void println(java.lang.String)">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-        </flow>
-      </flows>
-    </method>
-    <method id="java.lang.String toString()">
-      <flows>
-        <flow isAlias="false">
-          <from sourceSinkType="Field" AccessPath="[java.io.PrintWriter: java.io.OutputStream innerStream]"
-          	AccessPathTypes="[java.io.OutputStream]" />
-          <to sourceSinkType="Return" />
-        </flow>
-      </flows>
-    </method>
-  </methods>
+		<method
+			id="java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method
+			id="java.io.PrintWriter printf(java.lang.String,java.lang.Object[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(boolean)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(char)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(char[])">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(double)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(float)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(int)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(long)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(java.lang.Object)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void println(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
 </summary>

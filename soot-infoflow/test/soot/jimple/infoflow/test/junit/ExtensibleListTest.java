@@ -65,6 +65,20 @@ public class ExtensibleListTest {
 		testListForward(l1, 1, 2, 3);
 	}
 
+	@Test
+	public void testRemoveLast() {
+		ExtensibleList<Integer> l1 = new ExtensibleList<>();
+		l1.addAll(1, 2, 3);
+
+		assertEquals(3, l1.removeLast());
+		assertEquals(2, l1.size());
+
+		l1.add(42);
+
+		assertEquals(42, l1.removeLast());
+		assertEquals(2, l1.size());
+	}
+
 	private void testListForward(ExtensibleList<Integer> l, int... test) {
 		assertEquals(test.length, l.size());
 		if (test.length > 0)

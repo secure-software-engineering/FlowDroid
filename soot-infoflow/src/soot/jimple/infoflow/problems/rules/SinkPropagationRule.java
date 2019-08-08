@@ -13,10 +13,11 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
+import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
@@ -30,9 +31,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 	private boolean killState = false;
 
-	public SinkPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public SinkPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	@Override
@@ -59,26 +59,24 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	/**
-	 * Checks whether the given taint abstraction at the given satement triggers
-	 * a sink. If so, a new result is recorded
+	 * Checks whether the given taint abstraction at the given satement triggers a
+	 * sink. If so, a new result is recorded
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The abstraction that has reached the given statement
-	 * @param stmt
-	 *            The statement that was reached
-	 * @param retVal
-	 *            The value to check
+	 * @param d1     The context abstraction
+	 * @param source The abstraction that has reached the given statement
+	 * @param stmt   The statement that was reached
+	 * @param retVal The value to check
 	 */
 	private void checkForSink(Abstraction d1, Abstraction source, Stmt stmt, final Value retVal) {
 		// The incoming value may be a complex expression. We have to look at
 		// every simple value contained within it.
 		for (Value val : BaseSelector.selectBaseList(retVal, false)) {
-			if (getManager().getSourceSinkManager() != null && source.isAbstractionActive()
-					&& getAliasing().mayAlias(val, source.getAccessPath().getPlainValue())) {
-				SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
-						source.getAccessPath());
+			final AccessPath ap = source.getAccessPath();
+			final ISourceSinkManager sourceSinkManager = getManager().getSourceSinkManager();
+
+			if (ap != null && sourceSinkManager != null && source.isAbstractionActive()
+					&& getAliasing().mayAlias(val, ap.getPlainValue())) {
+				SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
 				if (sinkInfo != null
 						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt)))
 					killState = true;
@@ -96,33 +94,62 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		return null;
 	}
 
+	/**
+	 * Checks whether the given taint is visible inside the method called at the
+	 * given call site
+	 * 
+	 * @param stmt   A call site where a sink method is called
+	 * @param source The taint that has arrived at the given statement
+	 * @return True if the callee has access to the tainted value, false otherwise
+	 */
+	protected boolean isTaintVisibleInCallee(Stmt stmt, Abstraction source) {
+		// If we don't have an alias analysis anymore, we probably in the shutdown phase
+		// anyway
+		if (getAliasing() == null)
+			return false;
+
+		InvokeExpr iexpr = stmt.getInvokeExpr();
+		boolean found = false;
+
+		// Is an argument tainted?
+		final Value apBaseValue = source.getAccessPath().getPlainValue();
+		if (apBaseValue != null) {
+			for (int i = 0; i < iexpr.getArgCount(); i++) {
+				if (getAliasing().mayAlias(iexpr.getArg(i), apBaseValue)) {
+					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
+						return true;
+				}
+			}
+		}
+
+		// Is the base object tainted?
+		if (!found && iexpr instanceof InstanceInvokeExpr) {
+			if (((InstanceInvokeExpr) iexpr).getBase() == source.getAccessPath().getPlainValue())
+				return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		// The given access path must at least be referenced somewhere in the
-		// sink
+		// We only report leaks for active taints, not for alias queries
 		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef()) {
-			InvokeExpr iexpr = stmt.getInvokeExpr();
-			boolean found = false;
-			for (int i = 0; i < iexpr.getArgCount(); i++)
-				if (getAliasing().mayAlias(iexpr.getArg(i), source.getAccessPath().getPlainValue())) {
-					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal()) {
-						found = true;
-						break;
+			// Is the taint even visible inside the callee?
+			if (!stmt.containsInvokeExpr() || isTaintVisibleInCallee(stmt, source)) {
+				// Is this a sink?
+				if (getManager().getSourceSinkManager() != null) {
+					// Get the sink descriptor
+					SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
+							source.getAccessPath());
+
+					// If we have already seen the same taint at the same sink, there is no need to
+					// propagate this taint any further.
+					if (sinkInfo != null
+							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
+						killState = true;
 					}
-				}
-			if (!found && iexpr instanceof InstanceInvokeExpr)
-				if (((InstanceInvokeExpr) iexpr).getBase() == source.getAccessPath().getPlainValue())
-					found = true;
-
-			// Is this a call to a sink?
-			if (found && getManager().getSourceSinkManager() != null) {
-				SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
-						source.getAccessPath());
-
-				if (sinkInfo != null
-						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
-					killState = true;
 				}
 			}
 		}

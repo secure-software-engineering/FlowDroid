@@ -42,13 +42,14 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
-import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -60,24 +61,17 @@ import soot.jimple.infoflow.util.TypeUtils;
 
 public class InfoflowProblem extends AbstractInfoflowProblem {
 
-	private final Aliasing aliasing;
-	private final IAliasingStrategy aliasingStrategy;
 	private final PropagationRuleManager propagationRules;
 
 	protected final TaintPropagationResults results;
 
-	public InfoflowProblem(InfoflowManager manager, IAliasingStrategy aliasingStrategy, Aliasing aliasing,
-			Abstraction zeroValue) {
+	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
+			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager);
 
-		if (zeroValue != null)
-			setZeroValue(zeroValue);
-
-		this.aliasingStrategy = aliasingStrategy;
-		this.aliasing = aliasing;
+		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
 		this.results = new TaintPropagationResults(manager);
-
-		this.propagationRules = new PropagationRuleManager(manager, aliasing, createZeroValue(), results);
+		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
 	}
 
 	@Override
@@ -102,7 +96,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
 					// Notify the handler if we have one
 					if (taintPropagationHandler != null)
-						taintPropagationHandler.notifyFlowIn(stmt, source, interproceduralCFG(),
+						taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 								FlowFunctionType.NormalFlowFunction);
 
 					// Compute the new abstractions
@@ -117,14 +111,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			/**
 			 * Taints the left side of the given assignment
 			 * 
-			 * @param assignStmt
-			 *            The source statement from which the taint originated
-			 * @param targetValue
-			 *            The target value that shall now be tainted
-			 * @param source
-			 *            The incoming taint abstraction from the source
-			 * @param taintSet
-			 *            The taint set to which to add all newly produced taints
+			 * @param assignStmt  The source statement from which the taint originated
+			 * @param targetValue The target value that shall now be tainted
+			 * @param source      The incoming taint abstraction from the source
+			 * @param taintSet    The taint set to which to add all newly produced taints
 			 */
 			private void addTaintViaStmt(final Abstraction d1, final AssignStmt assignStmt, Abstraction source,
 					Set<Abstraction> taintSet, boolean cutFirstField, SootMethod method, Type targetType) {
@@ -132,7 +122,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final Value rightValue = assignStmt.getRightOp();
 
 				// Do not taint static fields unless the option is enabled
-				if (!manager.getConfig().getEnableStaticFieldTracking() && leftValue instanceof StaticFieldRef)
+				if (leftValue instanceof StaticFieldRef
+						&& manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None)
 					return;
 
 				Abstraction newAbs = null;
@@ -175,9 +166,19 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 				if (newAbs != null) {
-					taintSet.add(newAbs);
-					if (Aliasing.canHaveAliases(assignStmt, leftValue, newAbs))
-						aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+					// Do we treat this taint specially, i.e., outside of IFDS?
+					if (leftValue instanceof StaticFieldRef && manager.getConfig()
+							.getStaticFieldTrackingMode() == StaticFieldTrackingMode.ContextFlowInsensitive) {
+						// We need to add the taint to our global taint state
+						manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
+					} else {
+						// Perform a normal IFDS-style propagation for the new taint
+						taintSet.add(newAbs);
+						final Aliasing aliasing = manager.getAliasing();
+						if (aliasing != null && Aliasing.canHaveAliases(assignStmt, leftValue, newAbs)) {
+							aliasing.computeAliases(d1, assignStmt, leftValue, taintSet, method, newAbs);
+						}
+					}
 				}
 			}
 
@@ -185,8 +186,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * Checks whether the given call has at least one valid target, i.e. a callee
 			 * with a body.
 			 * 
-			 * @param call
-			 *            The call site to check
+			 * @param call The call site to check
 			 * @return True if there is at least one callee implementation for the given
 			 *         call, otherwise false
 			 */
@@ -236,6 +236,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						&& Aliasing.baseMatchesStrict(rightValue, newSource) && rightValue.getType() instanceof RefType
 						&& !newSource.dependsOnCutAP();
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				boolean cutFirstField = false;
 				AccessPath mappedAP = newSource.getAccessPath();
 				Type targetType = null;
@@ -258,7 +263,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// same class)
 							// y = X.f && X.f tainted --> y, X.f tainted
 							if (rightVal instanceof StaticFieldRef) {
-								if (manager.getConfig().getEnableStaticFieldTracking() && mappedAP != null) {
+								if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+										&& mappedAP != null) {
 									addLeftValue = true;
 									cutFirstField = true;
 								}
@@ -405,6 +411,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				return new SolverCallFlowFunction() {
 
 					@Override
@@ -412,7 +423,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						if (res != null && !res.isEmpty()) {
 							for (Abstraction abs : res)
-								aliasingStrategy.injectCallingContext(abs, solver, dest, src, source, d1);
+								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, src, source, d1);
 						}
 						return notifyOutFlowHandlers(stmt, d1, source, res, FlowFunctionType.CallFlowFunction);
 					}
@@ -430,7 +441,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(stmt, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									FlowFunctionType.CallFlowFunction);
 
 						// We might need to activate the abstraction
@@ -456,7 +467,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							if (ap != null) {
 								// If the variable is never read in the callee,
 								// there is no need to propagate it through
-								if (aliasingStrategy.isLazyAnalysis() || source.isImplicit()
+								if (aliasing.getAliasingStrategy().isLazyAnalysis() || source.isImplicit()
 										|| interproceduralCFG().methodReadsValue(dest, ap.getPlainValue())) {
 									Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 									if (newAbs != null)
@@ -484,6 +495,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				final Local[] paramLocals = callee.getActiveBody().getParameterLocals().toArray(new Local[0]);
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
@@ -506,7 +522,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(exitStmt, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(exitStmt, source, manager,
 									FlowFunctionType.ReturnFlowFunction);
 						boolean callerD1sConditional = false;
 						for (Abstraction d1 : callerD1s) {
@@ -545,7 +561,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return null;
 
 						// Do we need to retain all the taints?
-						if (aliasingStrategy.isLazyAnalysis() && Aliasing.canHaveAliases(newSource.getAccessPath()))
+						if (aliasing.getAliasingStrategy().isLazyAnalysis()
+								&& Aliasing.canHaveAliases(newSource.getAccessPath()))
 							res.add(newSource);
 
 						// Static fields are handled in a rule
@@ -565,13 +582,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									if (abs != null) {
 										res.add(abs);
 
-										// Aliases of implicitly tainted
-										// variables
-										// must be mapped back into the caller's
-										// context on return when we leave the
-										// last
-										// implicitly-called method
-										if (aliasingStrategy.requiresAnalysisOnReturn())
+										// Aliases of implicitly tainted variables must be mapped back into the caller's
+										// context on return when we leave the last implicitly-called method
+										if (aliasing.getAliasingStrategy().requiresAnalysisOnReturn())
 											for (Abstraction d1 : callerD1s)
 												aliasing.computeAliases(d1, iCallStmt, leftOp, res,
 														interproceduralCFG().getMethodOf(callSite), abs);
@@ -691,7 +704,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// mapped back into the caller's context on return
 							// when we leave the last implicitly-called method
 							if ((abs.isImplicit() && !callerD1sConditional)
-									|| aliasingStrategy.requiresAnalysisOnReturn()) {
+									|| aliasing.getAliasingStrategy().requiresAnalysisOnReturn()) {
 								for (Abstraction d1 : callerD1s) {
 									aliasing.computeAliases(d1, iCallStmt, null, res,
 											interproceduralCFG().getMethodOf(callSite), abs);
@@ -717,6 +730,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				final Stmt iCallStmt = (Stmt) call;
 				final InvokeExpr invExpr = iCallStmt.getInvokeExpr();
+
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
 
 				final Value[] callArgs = new Value[invExpr.getArgCount()];
 				for (int i = 0; i < invExpr.getArgCount(); i++)
@@ -746,13 +764,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(call, source, interproceduralCFG(),
+							taintPropagationHandler.notifyFlowIn(call, source, manager,
 									FlowFunctionType.CallToReturnFlowFunction);
-
-						// Static field tracking can be disabled
-						if (!manager.getConfig().getEnableStaticFieldTracking()
-								&& source.getAccessPath().isStaticFieldRef())
-							return null;
 
 						// check inactive elements:
 						final Abstraction newSource;
@@ -802,14 +815,17 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								if (callee.isConcrete() && callee.hasActiveBody()) {
 									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, invExpr, null, null,
 											source.getAccessPath());
-									if (calleeAPs != null)
-										for (AccessPath ap : calleeAPs)
-											if (ap != null)
+									if (calleeAPs != null) {
+										for (AccessPath ap : calleeAPs) {
+											if (ap != null) {
 												if (!interproceduralCFG().methodReadsValue(callee,
 														ap.getPlainValue())) {
 													allCalleesRead = false;
 													break outer;
 												}
+											}
+										}
+									}
 								}
 
 								// Additional check: If all callees are library
@@ -895,16 +911,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			/**
 			 * Maps the given access path into the scope of the callee
 			 * 
-			 * @param callee
-			 *            The method that is being called
-			 * @param ie
-			 *            The invocation expression for the call
-			 * @param paramLocals
-			 *            The list of parameter locals in the callee
-			 * @param thisLocal
-			 *            The "this" local in the callee
-			 * @param ap
-			 *            The caller-side access path to map
+			 * @param callee      The method that is being called
+			 * @param ie          The invocation expression for the call
+			 * @param paramLocals The list of parameter locals in the callee
+			 * @param thisLocal   The "this" local in the callee
+			 * @param ap          The caller-side access path to map
 			 * @return The set of callee-side access paths corresponding to the given
 			 *         caller-side access path
 			 */
@@ -921,9 +932,14 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				Set<AccessPath> res = null;
 
+				// If we can't reason about aliases, there's little we can do here
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return null;
+
 				// If we are performing lazy aliasing, we need to retain all
 				// taints
-				if (aliasingStrategy.isLazyAnalysis() && Aliasing.canHaveAliases(ap)) {
+				if (aliasing.getAliasingStrategy().isLazyAnalysis() && Aliasing.canHaveAliases(ap)) {
 					res = new HashSet<>();
 					res.add(ap);
 				}
@@ -1016,6 +1032,16 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 	 */
 	public TaintPropagationResults getResults() {
 		return this.results;
+	}
+
+	/**
+	 * Gets the rules that FlowDroid uses internally to conduct specific analysis
+	 * tasks such as handling sources or sinks
+	 * 
+	 * @return The propagation rule manager
+	 */
+	public PropagationRuleManager getPropagationRules() {
+		return propagationRules;
 	}
 
 }

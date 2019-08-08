@@ -42,8 +42,7 @@ public class XMLConfigurationWriter {
 	/**
 	 * Creates a new instance of the {@link XMLConfigurationWriter} class
 	 * 
-	 * @param config
-	 *            The FlowDroid configuration to write out
+	 * @param config The FlowDroid configuration to write out
 	 */
 	public XMLConfigurationWriter(InfoflowAndroidConfiguration config) {
 		this.config = config;
@@ -92,10 +91,8 @@ public class XMLConfigurationWriter {
 	/**
 	 * Writes out the general data flow configuration
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
 	 */
 	private void writeDataFlowConfig(Document document, Element parentElement) {
 		Element dataFlowConfigTag = document.createElement(XMLConstants.TAG_DATA_FLOW_CONFIGURATION);
@@ -110,8 +107,8 @@ public class XMLConfigurationWriter {
 				Integer.toString(solverConfig.getMaxCalleesPerCallSite()));
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_IMPLICIT_FLOW_MODE,
 				config.getImplicitFlowMode().toString());
-		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_ENABLE_STATIC_FIELDS,
-				Boolean.toString(config.getEnableStaticFieldTracking()));
+		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_STATIC_FIELD_TRACKING_MODE,
+				config.getStaticFieldTrackingMode().toString());
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_ENABLE_EXCEPTIONS,
 				Boolean.toString(config.getEnableExceptionTracking()));
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_ENABLE_ARRAYS,
@@ -145,13 +142,10 @@ public class XMLConfigurationWriter {
 	}
 
 	/**
-	 * Writes out the configuration specific to inter-component data flow
-	 * analysis
+	 * Writes out the configuration specific to inter-component data flow analysis
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
 	 */
 	private void writeIccConfig(Document document, Element parentElement) {
 		Element iccConfigTag = document.createElement(XMLConstants.TAG_ICC_CONFIGURATION);
@@ -169,10 +163,8 @@ public class XMLConfigurationWriter {
 	/**
 	 * Writes out the Android-specific configuration for the data flow analysis
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
 	 */
 	private void writeAndroidConfig(Document document, Element parentElement) {
 		Element androidConfigTag = document.createElement(XMLConstants.TAG_ANDROID_CONFIGURATION);
@@ -202,10 +194,8 @@ public class XMLConfigurationWriter {
 	/**
 	 * Writes out the source/sink configuration for the data flow analysis
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
 	 */
 	private void writeSourceSinkConfig(Document document, Element parentElement) {
 		Element sourceSpecTag = document.createElement(XMLConstants.TAG_SOURCE_SPEC);
@@ -230,15 +220,12 @@ public class XMLConfigurationWriter {
 	}
 
 	/**
-	 * Writes out the source / sink categories explicitly configured for the
-	 * data flow analysis
+	 * Writes out the source / sink categories explicitly configured for the data
+	 * flow analysis
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
-	 * @param categorySpec
-	 *            The category specification to write out
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
+	 * @param categorySpec  The category specification to write out
 	 */
 	private void writeCategoryConfig(Document document, Element parentElement,
 			Map<CategoryDefinition, CategoryMode> categorySpec) {
@@ -264,13 +251,10 @@ public class XMLConfigurationWriter {
 	}
 
 	/**
-	 * Writes out the configuration on the files required for the data flow
-	 * analysis
+	 * Writes out the configuration on the files required for the data flow analysis
 	 * 
-	 * @param document
-	 *            The XML document into which to write the configuration
-	 * @param parentElement
-	 *            The root element under which to place the configuration
+	 * @param document      The XML document into which to write the configuration
+	 * @param parentElement The root element under which to place the configuration
 	 */
 	private void writeAnalysisFileConfig(Document document, Element parentElement) {
 		Element inputFileTag = document.createElement(XMLConstants.TAG_INPUT_FILES);
@@ -289,12 +273,9 @@ public class XMLConfigurationWriter {
 	/**
 	 * Creates a new element with a simple string as contents
 	 * 
-	 * @param document
-	 *            The XML document into which to write the new element
-	 * @param parentElement
-	 *            The parent element under which to place the new element
-	 * @param tagName
-	 *            The name of the new element
+	 * @param document      The XML document into which to write the new element
+	 * @param parentElement The parent element under which to place the new element
+	 * @param tagName       The name of the new element
 	 */
 	private void appendSimpleTag(Document document, Element parentElement, String tagName, String contents) {
 		Element newElement = document.createElement(tagName);
@@ -305,10 +286,8 @@ public class XMLConfigurationWriter {
 	/**
 	 * Writes the FlowDroid configuration into a file
 	 * 
-	 * @param fileName
-	 *            The full path and file name of the target file
-	 * @throws IOException
-	 *             Thrown if there is an error while writing the file
+	 * @param fileName The full path and file name of the target file
+	 * @throws IOException Thrown if there is an error while writing the file
 	 */
 	public void write(String fileName) throws IOException {
 		String xmlData = write();

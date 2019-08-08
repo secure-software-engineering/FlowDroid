@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,16 +10,16 @@ import java.util.Set;
  * @author Steven Arzt
  *
  */
-public class FieldSourceSinkDefinition extends SourceSinkDefinition {
+public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
+		implements IAccessPathBasedSourceSinkDefinition {
 
-	private final String fieldSignature;
-	private Set<AccessPathTuple> accessPaths;
+	protected final String fieldSignature;
+	protected Set<AccessPathTuple> accessPaths;
 
 	/**
 	 * Creates a new instance of the {@link FieldSourceSinkDefinition} class
 	 * 
-	 * @param fieldSignature
-	 *            The Soot signature of the target field
+	 * @param fieldSignature The Soot signature of the target field
 	 */
 	public FieldSourceSinkDefinition(String fieldSignature) {
 		this(fieldSignature, null);
@@ -27,11 +28,9 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Creates a new instance of the {@link FieldSourceSinkDefinition} class
 	 * 
-	 * @param fieldSignature
-	 *            The Soot signature of the target field
-	 * @param accessPaths
-	 *            The access paths on the field that have been defined as
-	 *            sources or sinks
+	 * @param fieldSignature The Soot signature of the target field
+	 * @param accessPaths    The access paths on the field that have been defined as
+	 *                       sources or sinks
 	 */
 	public FieldSourceSinkDefinition(String fieldSignature, Set<AccessPathTuple> accessPaths) {
 		this.fieldSignature = fieldSignature;
@@ -48,18 +47,17 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the access paths on the field that have been defined as sources or
-	 * sinks
+	 * Gets the access paths on the field that have been defined as sources or sinks
 	 * 
-	 * @return The access paths on the field that have been defined as sources
-	 *         or sinks
+	 * @return The access paths on the field that have been defined as sources or
+	 *         sinks
 	 */
 	public Set<AccessPathTuple> getAccessPaths() {
 		return accessPaths;
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceOnlyDefinition() {
+	public FieldSourceSinkDefinition getSourceOnlyDefinition() {
 		Set<AccessPathTuple> sources = null;
 		if (accessPaths != null) {
 			sources = new HashSet<>(accessPaths.size());
@@ -67,11 +65,11 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 				if (apt.getSourceSinkType().isSource())
 					sources.add(apt);
 		}
-		return new FieldSourceSinkDefinition(fieldSignature, sources);
+		return buildNewDefinition(sources);
 	}
 
 	@Override
-	public SourceSinkDefinition getSinkOnlyDefinition() {
+	public FieldSourceSinkDefinition getSinkOnlyDefinition() {
 		Set<AccessPathTuple> sinks = null;
 		if (accessPaths != null) {
 			sinks = new HashSet<>(accessPaths.size());
@@ -79,11 +77,24 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 				if (apt.getSourceSinkType().isSink())
 					sinks.add(apt);
 		}
-		return new FieldSourceSinkDefinition(fieldSignature, sinks);
+		return buildNewDefinition(sinks);
+	}
+
+	/**
+	 * Factory method for creating a new field-based source/sink definition based on
+	 * the current one. This method is used when transforming the current
+	 * definition. Derived classes can override this method to create instances of
+	 * the correct class.
+	 * 
+	 * @param accessPaths The of access paths for the new definition
+	 * @return The new source/sink definition
+	 */
+	protected FieldSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> accessPaths) {
+		return new FieldSourceSinkDefinition(fieldSignature, accessPaths);
 	}
 
 	@Override
-	public void merge(SourceSinkDefinition other) {
+	public void merge(ISourceSinkDefinition other) {
 		if (other instanceof FieldSourceSinkDefinition) {
 			FieldSourceSinkDefinition otherField = (FieldSourceSinkDefinition) other;
 
@@ -100,6 +111,26 @@ public class FieldSourceSinkDefinition extends SourceSinkDefinition {
 	@Override
 	public boolean isEmpty() {
 		return accessPaths == null || accessPaths.isEmpty();
+	}
+
+	@Override
+	public Set<AccessPathTuple> getAllAccessPaths() {
+		return accessPaths;
+	}
+
+	@Override
+	public IAccessPathBasedSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
+		// Filter the access paths
+		Set<AccessPathTuple> filteredAPs = null;
+		if (accessPaths != null && !accessPaths.isEmpty()) {
+			filteredAPs = new HashSet<>(accessPaths.size());
+			for (AccessPathTuple ap : accessPaths)
+				if (toFilter.contains(ap))
+					filteredAPs.add(ap);
+		}
+		FieldSourceSinkDefinition def = new FieldSourceSinkDefinition(fieldSignature, filteredAPs);
+		def.setCategory(category);
+		return def;
 	}
 
 	@Override

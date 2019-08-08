@@ -1,7 +1,9 @@
 package soot.jimple.infoflow;
 
 import soot.FastHierarchy;
+import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.AccessPathFactory;
+import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
@@ -26,10 +28,12 @@ public class InfoflowManager {
 	private final TypeUtils typeUtils;
 	private final FastHierarchy hierarchy;
 	private final AccessPathFactory accessPathFactory;
+	private final GlobalTaintManager globalTaintManager;
+	private Aliasing aliasing;
 
-	InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
 			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			AccessPathFactory accessPathFactory) {
+			AccessPathFactory accessPathFactory, GlobalTaintManager globalTaintManager) {
 		this.config = config;
 		this.forwardSolver = forwardSolver;
 		this.icfg = icfg;
@@ -38,6 +42,7 @@ public class InfoflowManager {
 		this.typeUtils = new TypeUtils(this);
 		this.hierarchy = hierarchy;
 		this.accessPathFactory = accessPathFactory;
+		this.globalTaintManager = globalTaintManager;
 	}
 
 	/**
@@ -52,8 +57,7 @@ public class InfoflowManager {
 	/**
 	 * Sets the IFDS solver that propagates edges forward
 	 * 
-	 * @param solver
-	 *            The IFDS solver that propagates edges forward
+	 * @param solver The IFDS solver that propagates edges forward
 	 */
 	public void setForwardSolver(IInfoflowSolver solver) {
 		this.forwardSolver = solver;
@@ -141,6 +145,25 @@ public class InfoflowManager {
 	 */
 	public void cleanup() {
 		forwardSolver = null;
+		aliasing = null;
+	}
+
+	public void setAliasing(Aliasing aliasing) {
+		this.aliasing = aliasing;
+	}
+
+	public Aliasing getAliasing() {
+		return aliasing;
+	}
+
+	/**
+	 * Gets the manager object for handling global taints outside of the IFDS solver
+	 * 
+	 * @return The manager object for handling global taints outside of the IFDS
+	 *         solver
+	 */
+	public GlobalTaintManager getGlobalTaintManager() {
+		return globalTaintManager;
 	}
 
 }

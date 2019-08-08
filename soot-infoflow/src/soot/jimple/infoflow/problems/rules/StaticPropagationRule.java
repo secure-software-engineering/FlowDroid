@@ -5,8 +5,8 @@ import java.util.Collections;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -20,9 +20,8 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class StaticPropagationRule extends AbstractTaintPropagationRule {
 
-	public StaticPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public StaticPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	@Override
@@ -35,24 +34,22 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	@Override
 	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
 			ByReferenceBoolean killAll) {
+		final StaticFieldTrackingMode staticFieldMode = getManager().getConfig().getStaticFieldTrackingMode();
+
 		// Do not analyze static initializers if static field tracking is
 		// disabled
-		if (!getManager().getConfig().getEnableStaticFieldTracking() && dest.isStaticInitializer()) {
-			killAll.value = true;
-			return null;
-		}
-
-		// Do not propagate static taints if static field tracking is disabled
-		if (source.getAccessPath().isStaticFieldRef() && !getManager().getConfig().getEnableStaticFieldTracking()) {
-			killAll.value = true;
-			return null;
+		if (staticFieldMode == StaticFieldTrackingMode.None) {
+			if (dest.isStaticInitializer() || source.getAccessPath().isStaticFieldRef()) {
+				killAll.value = true;
+				return null;
+			}
 		}
 
 		final AccessPath ap = source.getAccessPath();
 		if (ap.isStaticFieldRef()) {
 			// Do not propagate static fields that are not read inside the
 			// callee
-			if (aliasing.getAliasingStrategy().isLazyAnalysis()
+			if (getAliasing().getAliasingStrategy().isLazyAnalysis()
 					|| manager.getICFG().isStaticFieldRead(dest, ap.getFirstField())) {
 				Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 				if (newAbs != null)
@@ -66,6 +63,13 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+		// Static field tracking can be disabled
+		if (getManager().getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+				&& source.getAccessPath().isStaticFieldRef()) {
+			killAll.value = true;
+			return null;
+		}
+
 		// nothing to do here
 		return null;
 	}
@@ -78,7 +82,8 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 			return null;
 
 		// Static field tracking can be disabled
-		if (!getManager().getConfig().getEnableStaticFieldTracking() && source.getAccessPath().isStaticFieldRef()) {
+		if (getManager().getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+				&& source.getAccessPath().isStaticFieldRef()) {
 			killAll.value = true;
 			return null;
 		}

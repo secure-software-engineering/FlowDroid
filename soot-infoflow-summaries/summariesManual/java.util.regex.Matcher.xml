@@ -1,0 +1,241 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.lang.String group()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String group(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String group(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Pattern pattern()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String quoteReplacement(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher region(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int regionEnd()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int regionStart()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String replaceAll(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String replaceFirst(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher reset()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher reset(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher useAnchoringBounds(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher usePattern(java.util.regex.Pattern)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.lang.String str]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
+						AccessPathTypes="[java.util.regex.Pattern]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionStart]"
+						AccessPathTypes="[int]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.regex.Matcher: int regionEnd]"
+						AccessPathTypes="[int]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.Matcher useTransparentBounds(boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+  </methods>
+</summary>

@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
@@ -39,6 +42,8 @@ import soot.toolkits.graph.UnitGraph;
  */
 public class Aliasing {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private final IAliasingStrategy aliasingStrategy;
 	private final IAliasingStrategy implicitFlowAliasingStrategy;
 	private final InfoflowManager manager;
@@ -62,18 +67,12 @@ public class Aliasing {
 	/**
 	 * Computes the taints for the aliases of a given tainted variable
 	 * 
-	 * @param d1
-	 *            The context in which the variable has been tainted
-	 * @param src
-	 *            The statement that tainted the variable
-	 * @param targetValue
-	 *            The target value which has been tainted
-	 * @param taintSet
-	 *            The set to which all generated alias taints shall be added
-	 * @param method
-	 *            The method containing src
-	 * @param newAbs
-	 *            The newly generated abstraction for the variable taint
+	 * @param d1          The context in which the variable has been tainted
+	 * @param src         The statement that tainted the variable
+	 * @param targetValue The target value which has been tainted
+	 * @param taintSet    The set to which all generated alias taints shall be added
+	 * @param method      The method containing src
+	 * @param newAbs      The newly generated abstraction for the variable taint
 	 * @return The set of immediately available alias abstractions. If no such
 	 *         abstractions exist, null is returned
 	 */
@@ -96,10 +95,8 @@ public class Aliasing {
 	/**
 	 * Matches the given access path against the given array of fields
 	 * 
-	 * @param taintedAP
-	 *            The tainted access paths
-	 * @param referencedFields
-	 *            The array of referenced access paths
+	 * @param taintedAP        The tainted access paths
+	 * @param referencedFields The array of referenced access paths
 	 * @return The actually matched access path if a matching was possible,
 	 *         otherwise null
 	 */
@@ -161,10 +158,8 @@ public class Aliasing {
 	/**
 	 * Gets whether two values may potentially point to the same runtime object
 	 * 
-	 * @param val1
-	 *            The first value
-	 * @param val2
-	 *            The second value
+	 * @param val1 The first value
+	 * @param val2 The second value
 	 * @return True if the two values may potentially point to the same runtime
 	 *         object, otherwise false
 	 */
@@ -193,15 +188,13 @@ public class Aliasing {
 	 * Gets whether a value and an access path may potentially point to the same
 	 * runtime object
 	 * 
-	 * @param ap
-	 *            The access path
-	 * @param val
-	 *            The value
-	 * @return The access path that actually matched if the given value and
-	 *         access path alias. In the simplest case, this is the given access
-	 *         path. When using recursive access paths, it can however also be a
-	 *         base expansion. If the given access path and value do not alias,
-	 *         null is returned.
+	 * @param ap  The access path
+	 * @param val The value
+	 * @return The access path that actually matched if the given value and access
+	 *         path alias. In the simplest case, this is the given access path. When
+	 *         using recursive access paths, it can however also be a base
+	 *         expansion. If the given access path and value do not alias, null is
+	 *         returned.
 	 */
 	public AccessPath mayAlias(AccessPath ap, Value val) {
 		// What cannot be represented in an access path cannot alias
@@ -251,12 +244,10 @@ public class Aliasing {
 	/**
 	 * Gets whether the two fields must always point to the same runtime object
 	 * 
-	 * @param field1
-	 *            The first field
-	 * @param field2
-	 *            The second field
-	 * @return True if the two fields must always point to the same runtime
-	 *         object, otherwise false
+	 * @param field1 The first field
+	 * @param field2 The second field
+	 * @return True if the two fields must always point to the same runtime object,
+	 *         otherwise false
 	 */
 	public boolean mustAlias(SootField field1, SootField field2) {
 		return field1 == field2;
@@ -265,14 +256,11 @@ public class Aliasing {
 	/**
 	 * Gets whether the two values must always point to the same runtime object
 	 * 
-	 * @param field1
-	 *            The first value
-	 * @param field2
-	 *            The second value
-	 * @param position
-	 *            The statement at which to check for an aliasing relationship
-	 * @return True if the two values must always point to the same runtime
-	 *         object, otherwise false
+	 * @param field1   The first value
+	 * @param field2   The second value
+	 * @param position The statement at which to check for an aliasing relationship
+	 * @return True if the two values must always point to the same runtime object,
+	 *         otherwise false
 	 */
 	public boolean mustAlias(Local val1, Local val2, Stmt position) {
 		if (val1 == val2)
@@ -291,21 +279,26 @@ public class Aliasing {
 			return false;
 
 		// Query the must-alias analysis
-		LocalMustAliasAnalysis lmaa = strongAliasAnalysis.getUnchecked(method);
-		return lmaa.mustAlias(val1, position, val2, position);
+		try {
+			LocalMustAliasAnalysis lmaa = strongAliasAnalysis.getUnchecked(method);
+			return lmaa.mustAlias(val1, position, val2, position);
+		} catch (Exception ex) {
+			// The analysis in Soot is somewhat buggy. In that case, just resort to no alias
+			// analysis for the respective method.
+			logger.error("Error in local must alias analysis", ex);
+			return false;
+		}
 	}
 
 	/**
-	 * Checks whether the given newly created taint can have an alias at the
-	 * given statement. Assume a statement a.x = source(). This will check
-	 * whether tainting a.<?> can induce new aliases or not.
+	 * Checks whether the given newly created taint can have an alias at the given
+	 * statement. Assume a statement a.x = source(). This will check whether
+	 * tainting a.<?> can induce new aliases or not.
 	 * 
-	 * @param val
-	 *            The value which gets tainted
-	 * @param source
-	 *            The source from which the taints comes from
-	 * @return True if the analysis must look for aliases for the newly
-	 *         constructed taint, otherwise false
+	 * @param val    The value which gets tainted
+	 * @param source The source from which the taints comes from
+	 * @return True if the analysis must look for aliases for the newly constructed
+	 *         taint, otherwise false
 	 */
 	public static boolean canHaveAliases(Stmt stmt, Value val, Abstraction source) {
 		if (stmt instanceof DefinitionStmt) {
@@ -338,8 +331,7 @@ public class Aliasing {
 	/**
 	 * Gets whether the given access path can have aliases
 	 * 
-	 * @param ap
-	 *            The access path to check
+	 * @param ap The access path to check
 	 * @return True if the given access path can have aliases, otherwise false
 	 */
 	public static boolean canHaveAliases(AccessPath ap) {
@@ -361,12 +353,10 @@ public class Aliasing {
 	 * Checks whether the given base value matches the base of the given taint
 	 * abstraction
 	 * 
-	 * @param baseValue
-	 *            The value to check
-	 * @param source
-	 *            The taint abstraction to check
-	 * @return True if the given value has the same base value as the given
-	 *         taint abstraction, otherwise false
+	 * @param baseValue The value to check
+	 * @param source    The taint abstraction to check
+	 * @return True if the given value has the same base value as the given taint
+	 *         abstraction, otherwise false
 	 */
 	public static boolean baseMatches(final Value baseValue, Abstraction source) {
 		if (baseValue instanceof Local) {
@@ -390,12 +380,10 @@ public class Aliasing {
 	 * abstraction and ends there. So a will match a, but not a.x. Not that this
 	 * function will still match a to a.*.
 	 * 
-	 * @param baseValue
-	 *            The value to check
-	 * @param source
-	 *            The taint abstraction to check
-	 * @return True if the given value has the same base value as the given
-	 *         taint abstraction and no further elements, otherwise false
+	 * @param baseValue The value to check
+	 * @param source    The taint abstraction to check
+	 * @return True if the given value has the same base value as the given taint
+	 *         abstraction and no further elements, otherwise false
 	 */
 	public static boolean baseMatchesStrict(final Value baseValue, Abstraction source) {
 		if (!baseMatches(baseValue, source))
@@ -412,8 +400,7 @@ public class Aliasing {
 	/**
 	 * Adds a new method to be excluded from the must-alias analysis
 	 * 
-	 * @param method
-	 *            The method to be excluded
+	 * @param method The method to be excluded
 	 */
 	public void excludeMethodFromMustAlias(SootMethod method) {
 		this.excludedFromMustAliasAnalysis.add(method);

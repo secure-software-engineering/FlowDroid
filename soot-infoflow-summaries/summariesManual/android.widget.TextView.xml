@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void append(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void append(java.lang.CharSequence,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.text.Editable getEditableText()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.CharSequence getError()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence error]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.CharSequence getHint()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence hint]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.CharSequence getText()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setError(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence error]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setHint(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence hint]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setText(java.lang.CharSequence)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setText(java.lang.CharSequence,android.widget.TextView$BufferType)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setText(char[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+  </methods>
+</summary>

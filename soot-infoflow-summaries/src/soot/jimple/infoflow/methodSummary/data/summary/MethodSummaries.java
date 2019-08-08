@@ -25,9 +25,9 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 
 	public static final MethodSummaries EMPTY_SUMMARIES = new ImmutableMethodSummaries();
 
-	private MultiMap<String, MethodFlow> flows;
-	private MultiMap<String, MethodClear> clears;
-	private Map<Integer, GapDefinition> gaps;
+	private volatile MultiMap<String, MethodFlow> flows;
+	private volatile MultiMap<String, MethodClear> clears;
+	private volatile Map<Integer, GapDefinition> gaps;
 
 	public MethodSummaries() {
 		this(new ConcurrentHashMultiMap<String, MethodFlow>());
@@ -56,8 +56,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 * Converts a flat set of method flows into a map from method signature to set
 	 * of flows inside the respective method
 	 * 
-	 * @param flows
-	 *            The flat set of method flows
+	 * @param flows The flat set of method flows
 	 * @return The signature-to-flow set map
 	 */
 	private static MultiMap<String, MethodFlow> flowSetToFlowMap(Set<MethodFlow> flows) {
@@ -72,8 +71,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given flows into the this method summary object
 	 * 
-	 * @param newFlows
-	 *            The new flows to be merged
+	 * @param newFlows The new flows to be merged
 	 */
 	public void mergeFlows(Collection<MethodFlow> newFlows) {
 		if (newFlows != null && !newFlows.isEmpty()) {
@@ -86,8 +84,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given clears (kill flows) into the this method summary object
 	 * 
-	 * @param newFlows
-	 *            The new clears (kill flows) to be merged
+	 * @param newFlows The new clears (kill flows) to be merged
 	 */
 	public void mergeClears(Collection<MethodClear> newClears) {
 		if (newClears != null && !newClears.isEmpty()) {
@@ -100,8 +97,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given flows into the this method summary object
 	 * 
-	 * @param newSummaries
-	 *            The new summaries to be merged
+	 * @param newSummaries The new summaries to be merged
 	 */
 	public void mergeSummaries(Collection<MethodSummaries> newSummaries) {
 		if (newSummaries != null && !newSummaries.isEmpty()) {
@@ -114,8 +110,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given flows into the this method summary object
 	 * 
-	 * @param newFlows
-	 *            The new flows to be merged
+	 * @param newFlows The new flows to be merged
 	 */
 	public void merge(MultiMap<String, MethodFlow> newFlows) {
 		if (newFlows != null && !newFlows.isEmpty())
@@ -125,12 +120,13 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given flows into the this method summary object
 	 * 
-	 * @param newFlows
-	 *            The new flows to be merged
+	 * @param newFlows The new flows to be merged
+	 * @return True if new data was added to this summary data object during the
+	 *         merge, false otherwise
 	 */
-	public void merge(MethodSummaries newFlows) {
+	public boolean merge(MethodSummaries newFlows) {
 		if (newFlows == null || newFlows.isEmpty())
-			return;
+			return false;
 
 		// If some of the gaps have the same IDs as the old ones, we need to
 		// renumber the new ones or we'll overwrite data.
@@ -142,7 +138,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 				GapDefinition newGap = newFlows.gaps.get(newGapId);
 
 				// We might already have a gap with this id
-				GapDefinition oldGap = gaps.get(newGap.getID());
+				GapDefinition oldGap = gaps == null ? null : gaps.get(newGap.getID());
 				if (oldGap == null)
 					continue;
 
@@ -161,12 +157,16 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			}
 		}
 
+		boolean newData = false;
+
 		// Merge the flows. Keep in mind to exchange the gaps where necessary
 		if (newFlows.flows != null && !newFlows.flows.isEmpty()) {
 			for (String key : newFlows.flows.keySet()) {
 				for (MethodFlow flow : newFlows.flows.get(key)) {
 					MethodFlow replacedFlow = flow.replaceGaps(renumberedGaps);
-					flows.put(key, replacedFlow);
+					ensureFlows();
+					if (flows.put(key, replacedFlow))
+						newData = true;
 				}
 			}
 		}
@@ -176,7 +176,9 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			for (String key : newFlows.clears.keySet()) {
 				for (MethodClear clear : newFlows.clears.get(key)) {
 					MethodClear replacedFlow = clear.replaceGaps(renumberedGaps);
-					clears.put(key, replacedFlow);
+					ensureClears();
+					if (clears.put(key, replacedFlow))
+						newData = true;
 				}
 			}
 		}
@@ -188,16 +190,20 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 				GapDefinition replacedGap = renumberedGaps.get(newGapId);
 				if (replacedGap == null)
 					replacedGap = newFlows.gaps.get(newGapId);
+				ensureGaps();
 				gaps.put(replacedGap.getID(), replacedGap);
+				newData = true;
 			}
 		}
+
+		return newData;
 	}
 
 	/**
 	 * Gets all flows for the method with the given signature
 	 * 
-	 * @param methodSig
-	 *            The signature of the method for which to retrieve the data flows
+	 * @param methodSig The signature of the method for which to retrieve the data
+	 *                  flows
 	 * @return The set of data flows for the method with the given signature
 	 */
 	public Set<MethodFlow> getFlowsForMethod(String methodSig) {
@@ -208,8 +214,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 * Returns a filter this object that contains only flows for the given method
 	 * signature
 	 * 
-	 * @param signature
-	 *            The method for which to filter the flows
+	 * @param signature The method for which to filter the flows
 	 * @return An object containing only flows for the given method
 	 */
 	public MethodSummaries filterForMethod(String signature) {
@@ -241,8 +246,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Adds a new flow for a method to this summary object
 	 * 
-	 * @param flow
-	 *            The flow to add
+	 * @param flow The flow to add
 	 */
 	public boolean addFlow(MethodFlow flow) {
 		ensureFlows();
@@ -252,8 +256,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Adds a new kill flow / taint clearing to this summary object
 	 * 
-	 * @param clear
-	 *            The taint clearing to add
+	 * @param clear The taint clearing to add
 	 */
 	public boolean addClear(MethodClear clear) {
 		ensureClears();
@@ -274,8 +277,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 * Gets the gap definition with the given id. If no such gap definition exists,
 	 * null is returned
 	 * 
-	 * @param id
-	 *            The id for which to retrieve the gap definition
+	 * @param id The id for which to retrieve the gap definition
 	 * @return The gap with the given id if it exists, otherwise null
 	 */
 	public GapDefinition getGap(int id) {
@@ -336,6 +338,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	public Iterator<MethodFlow> iterator() {
 		return new Iterator<MethodFlow>() {
 
+			private Pair<String, MethodFlow> curPair = null;
 			private Iterator<Pair<String, MethodFlow>> flowIt = flows.iterator();
 
 			@Override
@@ -345,12 +348,13 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 
 			@Override
 			public MethodFlow next() {
-				return flowIt.next().getO2();
+				curPair = flowIt.next();
+				return curPair.getO2();
 			}
 
 			@Override
 			public void remove() {
-				flowIt.remove();
+				flows.remove(curPair.getO1(), curPair.getO2());
 			}
 
 		};
@@ -360,10 +364,8 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 * Retrieves the gap definition with the given ID if it exists, otherwise
 	 * creates a new gap definition with this ID
 	 * 
-	 * @param gapID
-	 *            The unique ID of the gap
-	 * @param signature
-	 *            The signature of the callee
+	 * @param gapID     The unique ID of the gap
+	 * @param signature The signature of the callee
 	 * @return The gap definition with the given ID
 	 */
 	public GapDefinition getOrCreateGap(int gapID, String signature) {
@@ -388,8 +390,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 * Creates a temporary, underspecified gap with the given ID. This method is
 	 * intended for incrementally loading elements from XML.
 	 * 
-	 * @param gapID
-	 *            The unique ID of the gap
+	 * @param gapID The unique ID of the gap
 	 * @return The gap definition with the given ID
 	 */
 	public GapDefinition createTemporaryGap(int gapID) {
@@ -405,8 +406,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Removes the given gap definition from this method summary object
 	 * 
-	 * @param gap
-	 *            The gap definition to remove
+	 * @param gap The gap definition to remove
 	 * @return True if the gap was contained in this method summary object before,
 	 *         otherwise false
 	 */
@@ -527,8 +527,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Gets all flows into the given gap
 	 * 
-	 * @param gd
-	 *            The gap for which to get the incoming flows
+	 * @param gd The gap for which to get the incoming flows
 	 * @return The set of flows into the given gap
 	 */
 	public Set<MethodFlow> getInFlowsForGap(GapDefinition gd) {
@@ -544,8 +543,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Gets all flows out of the given gap
 	 * 
-	 * @param gd
-	 *            The gap for which to get the outgoing flows
+	 * @param gd The gap for which to get the outgoing flows
 	 * @return The set of flows out of the given gap
 	 */
 	public Set<MethodFlow> getOutFlowsForGap(GapDefinition gd) {
@@ -554,6 +552,11 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			for (MethodFlow flow : getFlows().get(methodName)) {
 				if (flow.source().getGap() == gd)
 					res.add(flow);
+				else if (flow.isAlias()) {
+					MethodFlow reverseFlow = flow.reverse();
+					if (reverseFlow.source().getGap() == gd)
+						res.add(reverseFlow);
+				}
 			}
 		return res;
 	}
@@ -561,8 +564,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Removes the given flow summary from this set
 	 * 
-	 * @param toRemove
-	 *            The flow summary to remove
+	 * @param toRemove The flow summary to remove
 	 */
 	public void remove(MethodFlow toRemove) {
 		Set<MethodFlow> flowsForMethod = flows.get(toRemove.methodSig());
@@ -576,8 +578,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Removes all of the given flows from this flow set
 	 * 
-	 * @param toRemove
-	 *            The collection of flows to remove
+	 * @param toRemove The collection of flows to remove
 	 */
 	public void removeAll(Collection<MethodFlow> toRemove) {
 		for (Iterator<MethodFlow> flowIt = this.iterator(); flowIt.hasNext();) {
@@ -645,6 +646,16 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	}
 
 	/**
+	 * Gets whether there are any gaps inside this summary object
+	 * 
+	 * @return True if there are any gaps inside this summary object, otherwise
+	 *         false
+	 */
+	public boolean hasGaps() {
+		return this.gaps != null && !this.gaps.isEmpty();
+	}
+
+	/**
 	 * Gets whether there are any clears (kill taints) inside this summary object
 	 * 
 	 * @return True if there are any clears (kill taints) inside this summary
@@ -652,6 +663,57 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	 */
 	public boolean hasClears() {
 		return this.clears != null && !this.clears.isEmpty();
+	}
+
+	/**
+	 * Reverses all data flows in this data object
+	 * 
+	 * @return A new data object with all flows reversed
+	 */
+	public MethodSummaries reverse() {
+		MultiMap<String, MethodFlow> reversedFlows = new HashMultiMap<>(flows.size());
+		for (String className : flows.keySet()) {
+			for (MethodFlow flow : flows.get(className))
+				reversedFlows.put(className, flow.reverse());
+		}
+		return new MethodSummaries(reversedFlows, clears, gaps);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((clears == null) ? 0 : clears.hashCode());
+		result = prime * result + ((flows == null) ? 0 : flows.hashCode());
+		result = prime * result + ((gaps == null) ? 0 : gaps.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MethodSummaries other = (MethodSummaries) obj;
+		if (clears == null) {
+			if (other.clears != null)
+				return false;
+		} else if (!clears.equals(other.clears))
+			return false;
+		if (flows == null) {
+			if (other.flows != null)
+				return false;
+		} else if (!flows.equals(other.flows))
+			return false;
+		if (gaps == null) {
+			if (other.gaps != null)
+				return false;
+		} else if (!gaps.equals(other.gaps))
+			return false;
+		return true;
 	}
 
 }

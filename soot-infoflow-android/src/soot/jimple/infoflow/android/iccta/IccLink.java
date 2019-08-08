@@ -1,96 +1,33 @@
 package soot.jimple.infoflow.android.iccta;
 
-import java.util.Iterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import soot.Body;
-import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.Stmt;
-import soot.util.Chain;
 
 public class IccLink {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	String fromSMString;
-	String iccMethod;
-	SootMethod fromSM;
-	Unit fromU;
-	int instruction;
-	String exit_kind;
-	String destinationC;
+	protected final SootMethod fromSM;
+	protected final Unit fromU;
+	protected final SootClass destinationC;
+	protected String exit_kind;
 
-	Chain<Unit> units = null;
-
-	public IccLink() {
+	public IccLink(SootMethod fromSm, Unit fromU, SootClass destinationC) {
+		this.fromSM = fromSm;
+		this.fromU = fromU;
+		this.destinationC = destinationC;
 	}
 
-	public void linkWithTarget() {
-		if (fromSM == null) {
-			try {
-				fromSM = Scene.v().getMethod(fromSMString);
-				Body body = fromSM.retrieveActiveBody();
-				units = body.getUnits();
-
-				int i = 0;
-
-				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-					Stmt stmt = (Stmt) iter.next();
-
-					if (i == instruction) {
-						if (!iccMethod.contains(stmt.getInvokeExpr().getMethod().getName())) {
-							throw new RuntimeException("The reached point is not an ICC method.");
-						} else {
-							fromU = stmt;
-						}
-					}
-
-					i++;
-				}
-
-			} catch (Exception ex) {
-				logger.warn("Linking the target: " + fromSMString + " is ignored.", ex);
-			}
-		}
-	}
-
+	@Override
 	public String toString() {
-		return fromSMString + " [" + instruction + ":" + iccMethod + "] " + destinationC;
-	}
-
-	public String getFromSMString() {
-		return fromSMString;
-	}
-
-	public void setFromSMString(String fromSMString) {
-		this.fromSMString = fromSMString;
+		return fromSM + " [" + fromU + "] " + destinationC;
 	}
 
 	public SootMethod getFromSM() {
 		return fromSM;
 	}
 
-	public void setFromSM(SootMethod fromSM) {
-		this.fromSM = fromSM;
-	}
-
 	public Unit getFromU() {
 		return fromU;
-	}
-
-	public void setFromU(Unit fromU) {
-		this.fromU = fromU;
-	}
-
-	public int getInstruction() {
-		return instruction;
-	}
-
-	public void setInstruction(int instruction) {
-		this.instruction = instruction;
 	}
 
 	public String getExit_kind() {
@@ -101,27 +38,51 @@ public class IccLink {
 		this.exit_kind = exit_kind;
 	}
 
-	public String getDestinationC() {
+	public SootClass getDestinationC() {
 		return destinationC;
 	}
 
-	public void setDestinationC(String destinationC) {
-		this.destinationC = destinationC;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((destinationC == null) ? 0 : destinationC.hashCode());
+		result = prime * result + ((exit_kind == null) ? 0 : exit_kind.hashCode());
+		result = prime * result + ((fromSM == null) ? 0 : fromSM.hashCode());
+		result = prime * result + ((fromU == null) ? 0 : fromU.hashCode());
+		return result;
 	}
 
-	public Chain<Unit> getUnits() {
-		return units;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IccLink other = (IccLink) obj;
+		if (destinationC == null) {
+			if (other.destinationC != null)
+				return false;
+		} else if (!destinationC.equals(other.destinationC))
+			return false;
+		if (exit_kind == null) {
+			if (other.exit_kind != null)
+				return false;
+		} else if (!exit_kind.equals(other.exit_kind))
+			return false;
+		if (fromSM == null) {
+			if (other.fromSM != null)
+				return false;
+		} else if (!fromSM.equals(other.fromSM))
+			return false;
+		if (fromU == null) {
+			if (other.fromU != null)
+				return false;
+		} else if (!fromU.equals(other.fromU))
+			return false;
+		return true;
 	}
 
-	public void setUnits(Chain<Unit> units) {
-		this.units = units;
-	}
-
-	public String getIccMethod() {
-		return iccMethod;
-	}
-
-	public void setIccMethod(String iccMethod) {
-		this.iccMethod = iccMethod;
-	}
 }

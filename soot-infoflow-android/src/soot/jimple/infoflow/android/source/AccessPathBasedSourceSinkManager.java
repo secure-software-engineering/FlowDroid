@@ -1,15 +1,10 @@
 package soot.jimple.infoflow.android.source;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import soot.PrimType;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.Type;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
@@ -21,17 +16,18 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.callbacks.CallbackDefinition;
-import soot.jimple.infoflow.android.resources.controls.LayoutControl;
+import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
+import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * SourceSinkManager for Android applications. This class uses precise access
@@ -46,60 +42,54 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
 	 * either strong or weak matching.
 	 * 
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param config
-	 *            The configuration of the data flow analyzer
+	 * @param sources The list of source methods
+	 * @param sinks   The list of sink methods
+	 * @param config  The configuration of the data flow analyzer
 	 */
-	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-			InfoflowAndroidConfiguration config) {
+	public AccessPathBasedSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
+			Set<? extends ISourceSinkDefinition> sinks, InfoflowAndroidConfiguration config) {
 		super(sources, sinks, config);
 	}
 
 	/**
 	 * Creates a new instance of the {@link AndroidSourceSinkManager} class with
-	 * strong matching, i.e. the methods in the code must exactly match those in
-	 * the list.
+	 * strong matching, i.e. the methods in the code must exactly match those in the
+	 * list.
 	 * 
-	 * @param sources
-	 *            The list of source methods
-	 * @param sinks
-	 *            The list of sink methods
-	 * @param callbackMethods
-	 *            The list of callback methods whose parameters are sources
-	 *            through which the application receives data from the operating
-	 *            system
-	 * @param weakMatching
-	 *            True for weak matching: If an entry in the list has no return
-	 *            type, it matches arbitrary return types if the rest of the
-	 *            method signature is compatible. False for strong matching: The
-	 *            method signature in the code exactly match the one in the
-	 *            list.
-	 * @param config
-	 *            The configuration of the data flow analyzer
-	 * @param layoutControls
-	 *            A map from reference identifiers to the respective Android
-	 *            layout controls
+	 * @param sources         The list of source methods
+	 * @param sinks           The list of sink methods
+	 * @param callbackMethods The list of callback methods whose parameters are
+	 *                        sources through which the application receives data
+	 *                        from the operating system
+	 * @param config          The configuration of the data flow analyzer
+	 * @param layoutControls  A map from reference identifiers to the respective
+	 *                        Android layout controls
 	 */
-	public AccessPathBasedSourceSinkManager(Set<SourceSinkDefinition> sources, Set<SourceSinkDefinition> sinks,
-			Set<CallbackDefinition> callbackMethods, InfoflowAndroidConfiguration config,
-			Map<Integer, LayoutControl> layoutControls) {
+	public AccessPathBasedSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
+			Set<? extends ISourceSinkDefinition> sinks, Set<CallbackDefinition> callbackMethods,
+			InfoflowAndroidConfiguration config, Map<Integer, AndroidLayoutControl> layoutControls) {
 		super(sources, sinks, callbackMethods, config, layoutControls);
 	}
 
 	@Override
-	protected SourceInfo createSourceInfo(Stmt sCallSite, InfoflowManager manager, SourceSinkDefinition def) {
+	protected SourceInfo createSourceInfo(Stmt sCallSite, InfoflowManager manager, ISourceSinkDefinition def) {
 		// Do we have data at all?
 		if (null == def)
 			return null;
-		if (def.isEmpty())
+
+		// We need to have access path data inside the source/sink definition
+		if (!(def instanceof IAccessPathBasedSourceSinkDefinition))
+			return super.createSourceInfo(sCallSite, manager, def);
+		IAccessPathBasedSourceSinkDefinition apDef = (IAccessPathBasedSourceSinkDefinition) def;
+
+		// If we don't have concrete access paths, we use the default implementation
+		if (apDef.isEmpty())
 			return super.createSourceInfo(sCallSite, manager, def);
 
 		// We have real access path definitions, so we can construct precise
 		// source information objects
 		Set<AccessPath> aps = new HashSet<>();
+		Set<AccessPathTuple> apTuples = new HashSet<>();
 
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
@@ -111,9 +101,13 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 					IdentityStmt is = (IdentityStmt) sCallSite;
 					if (is.getRightOp() instanceof ParameterRef) {
 						ParameterRef paramRef = (ParameterRef) is.getRightOp();
-						if (methodDef.getParameters() != null && methodDef.getParameters().length > paramRef.getIndex())
-							for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()])
-								aps.add(getAccessPathFromDef(is.getLeftOp(), apt, manager, false));
+						if (methodDef.getParameters() != null
+								&& methodDef.getParameters().length > paramRef.getIndex()) {
+							for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()]) {
+								aps.add(apt.toAccessPath(is.getLeftOp(), manager, false));
+								apTuples.add(apt);
+							}
+						}
 					}
 				}
 				break;
@@ -122,28 +116,38 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
 						&& methodDef.getBaseObjects() != null) {
 					Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
-					for (AccessPathTuple apt : methodDef.getBaseObjects())
-						if (apt.getSourceSinkType().isSource())
-							aps.add(getAccessPathFromDef(baseVal, apt, manager, true));
+					for (AccessPathTuple apt : methodDef.getBaseObjects()) {
+						if (apt.getSourceSinkType().isSource()) {
+							aps.add(apt.toAccessPath(baseVal, manager, true));
+							apTuples.add(apt);
+						}
+					}
 				}
 
 				// Check whether we need to taint the return object
 				if (sCallSite instanceof DefinitionStmt && methodDef.getReturnValues() != null) {
 					Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
-					for (AccessPathTuple apt : methodDef.getReturnValues())
-						if (apt.getSourceSinkType().isSource())
-							aps.add(getAccessPathFromDef(returnVal, apt, manager, false));
+					for (AccessPathTuple apt : methodDef.getReturnValues()) {
+						if (apt.getSourceSinkType().isSource()) {
+							aps.add(apt.toAccessPath(returnVal, manager, false));
+							apTuples.add(apt);
+						}
+					}
 				}
 
 				// Check whether we need to taint parameters
 				if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
 						&& methodDef.getParameters().length > 0)
-					for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++)
-						if (methodDef.getParameters().length > i)
-							for (AccessPathTuple apt : methodDef.getParameters()[i])
-								if (apt.getSourceSinkType().isSource())
-									aps.add(getAccessPathFromDef(sCallSite.getInvokeExpr().getArg(i), apt, manager,
-											true));
+					for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++) {
+						if (methodDef.getParameters().length > i) {
+							for (AccessPathTuple apt : methodDef.getParameters()[i]) {
+								if (apt.getSourceSinkType().isSource()) {
+									aps.add(apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true));
+									apTuples.add(apt);
+								}
+							}
+						}
+					}
 				break;
 			default:
 				return null;
@@ -153,9 +157,20 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			FieldSourceSinkDefinition fieldDef = (FieldSourceSinkDefinition) def;
 			if (sCallSite instanceof AssignStmt && fieldDef.getAccessPaths() != null) {
 				AssignStmt assignStmt = (AssignStmt) sCallSite;
-				for (AccessPathTuple apt : fieldDef.getAccessPaths())
-					if (apt.getSourceSinkType().isSource())
-						aps.add(getAccessPathFromDef(assignStmt.getLeftOp(), apt, manager, false));
+				for (AccessPathTuple apt : fieldDef.getAccessPaths()) {
+					if (apt.getSourceSinkType().isSource()) {
+						aps.add(apt.toAccessPath(assignStmt.getLeftOp(), manager, false));
+						apTuples.add(apt);
+					}
+				}
+			}
+		} else if (def instanceof StatementSourceSinkDefinition) {
+			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
+			for (AccessPathTuple apt : ssdef.getAccessPaths()) {
+				if (apt.getSourceSinkType().isSource()) {
+					aps.add(apt.toAccessPath(ssdef.getLocal(), manager, true));
+					apTuples.add(apt);
+				}
 			}
 		}
 
@@ -163,70 +178,25 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 		if (aps.isEmpty())
 			return null;
 
-		return new SourceInfo(def, aps);
-	}
-
-	/**
-	 * Creates an access path from an access path definition object
-	 * 
-	 * @param baseVal
-	 *            The base for the new access path
-	 * @param apt
-	 *            The definition from which to create the new access path
-	 * @param manager
-	 *            The manager to be used for creating new access paths
-	 * @param canHaveImmutableAliases
-	 *            Specifies if the newly tainted value can have aliases that are
-	 *            not overwritten by the current operation, i.e., whether there
-	 *            must be an alias analysis from the source statement backwards
-	 *            through the code
-	 * @return The newly created access path
-	 */
-	private AccessPath getAccessPathFromDef(Value baseVal, AccessPathTuple apt, InfoflowManager manager,
-			boolean canHaveImmutableAliases) {
-		if (baseVal.getType() instanceof PrimType || apt.getFields() == null || apt.getFields().length == 0)
-			// no immutable aliases, we overwrite the return values as a whole
-			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
-					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
-
-		SootClass baseClass = ((RefType) baseVal.getType()).getSootClass();
-		SootField[] fields = new SootField[apt.getFields().length];
-		for (int i = 0; i < fields.length; i++) {
-			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(apt.getFieldTypes()[i - 1]);
-			Type fieldType = TypeUtils.getTypeFromString(apt.getFieldTypes()[i]);
-			String fieldName = apt.getFields()[i];
-			SootField fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
-			if (fld == null) {
-				synchronized (lastFieldClass) {
-					fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
-					if (fld == null) {
-						// Create the phantom field
-						SootField f = Scene.v().makeSootField(fieldName, fieldType, 0);
-						f.setPhantom(true);
-						lastFieldClass.addField(f);
-					}
-				}
-			}
-			if (fld == null)
-				return null;
-			fields[i] = fld;
-		}
-
-		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, null, null, true, false, true,
-				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
+		return new SourceInfo(apDef.filter(apTuples), aps);
 	}
 
 	@Override
 	public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath sourceAccessPath) {
-		SourceSinkDefinition def = getSinkDefinition(sCallSite, manager, sourceAccessPath);
+		ISourceSinkDefinition def = getSinkDefinition(sCallSite, manager, sourceAccessPath);
 		if (def == null)
 			return null;
+
+		// We need the access paths
+		if (!(def instanceof IAccessPathBasedSourceSinkDefinition))
+			return super.getSinkInfo(sCallSite, manager, sourceAccessPath);
+		IAccessPathBasedSourceSinkDefinition apDef = (IAccessPathBasedSourceSinkDefinition) def;
 
 		// If we have no precise information, we conservatively assume that
 		// everything is tainted without looking at the access path. Only
 		// exception: separate compilation assumption
-		if (def.isEmpty()) {
-			if (SystemClassHandler.isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
+		if (apDef.isEmpty() && sCallSite.containsInvokeExpr()) {
+			if (SystemClassHandler.v().isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
 				return new SinkInfo(def);
 			else
 				return null;
@@ -239,12 +209,14 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
+			if (methodDef.getCallType() == CallType.Return)
+				return new SinkInfo(def);
 
 			// Check whether the base object matches our definition
 			if (sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
 				for (AccessPathTuple apt : methodDef.getBaseObjects())
 					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-						return new SinkInfo(def);
+						return new SinkInfo(apDef.filter(Collections.singleton(apt)));
 			}
 
 			// Check whether a parameter matches our definition
@@ -256,7 +228,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 						if (methodDef.getParameters().length > i)
 							for (AccessPathTuple apt : methodDef.getParameters()[i])
 								if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-									return new SinkInfo(def);
+									return new SinkInfo(apDef.filter(Collections.singleton(apt)));
 					}
 			}
 		} else if (def instanceof FieldSourceSinkDefinition) {
@@ -266,8 +238,13 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			if (sCallSite instanceof AssignStmt && fieldDef.getAccessPaths() != null) {
 				for (AccessPathTuple apt : fieldDef.getAccessPaths())
 					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-						return new SinkInfo(def);
+						return new SinkInfo(apDef.filter(Collections.singleton(apt)));
 			}
+		} else if (def instanceof StatementSourceSinkDefinition) {
+			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
+			for (AccessPathTuple apt : ssdef.getAccessPaths())
+				if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
+					return new SinkInfo(apDef.filter(Collections.singleton(apt)));
 		}
 
 		// No matching access path found
@@ -277,12 +254,10 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	/**
 	 * Checks whether the given access path matches the given definition
 	 * 
-	 * @param sourceAccessPath
-	 *            The access path to check
-	 * @param apt
-	 *            The definition against which to check the access path
-	 * @return True if the given access path matches the given definition,
-	 *         otherwise false
+	 * @param sourceAccessPath The access path to check
+	 * @param apt              The definition against which to check the access path
+	 * @return True if the given access path matches the given definition, otherwise
+	 *         false
 	 */
 	private boolean accessPathMatches(AccessPath sourceAccessPath, AccessPathTuple apt) {
 		// If the source or sink definitions does not specify any fields, it

@@ -2,3 +2,5 @@ soot-infoflow-summaries/build/
 soot-infoflow-summaries/target/
 /.metadata
 /.recommenders
+.idea/
+*.iml

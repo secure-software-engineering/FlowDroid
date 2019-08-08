@@ -25,14 +25,15 @@ public class SourceSinkFactory {
 	/**
 	 * Cuts the given array of fields to the maximum access path length
 	 * 
-	 * @param fields
-	 *            The array of fields to cut
+	 * @param fields The array of fields to cut
 	 * @return The cut array of fields
 	 */
 	private SootField[] cutAPLength(SootField[] fields) {
 		if (fields == null || fields.length == 0)
 			return null;
 		if (fields.length <= summaryAPLength)
+			return fields;
+		if (summaryAPLength < 0)
 			return fields;
 
 		SootField f[] = new SootField[summaryAPLength];
@@ -43,14 +44,15 @@ public class SourceSinkFactory {
 	/**
 	 * Cuts the given array of types to the maximum access path length
 	 * 
-	 * @param fields
-	 *            The array of types to cut
+	 * @param fields The array of types to cut
 	 * @return The cut array of types
 	 */
 	private Type[] cutAPLength(Type[] fields) {
 		if (fields == null || fields.length == 0)
 			return null;
 		if (fields.length <= summaryAPLength)
+			return fields;
+		if (summaryAPLength < 0)
 			return fields;
 
 		Type f[] = new Type[summaryAPLength];
@@ -69,16 +71,12 @@ public class SourceSinkFactory {
 	/**
 	 * Creates a new source model based on the given information
 	 * 
-	 * @param type
-	 *            The type of data flow source
-	 * @param parameterIdx
-	 *            The index of the method parameter through which the source value
-	 *            was obtained
-	 * @param accessPath
-	 *            The access path describing the exact source object
-	 * @param gap
-	 *            The gap from which this flow originated. Null if this flow did not
-	 *            originate from a gap.
+	 * @param type         The type of data flow source
+	 * @param parameterIdx The index of the method parameter through which the
+	 *                     source value was obtained
+	 * @param accessPath   The access path describing the exact source object
+	 * @param gap          The gap from which this flow originated. Null if this
+	 *                     flow did not originate from a gap.
 	 * @return The newly created source object
 	 */
 	public FlowSource createSource(SourceSinkType type, int parameterIdx, AccessPath accessPath, GapDefinition gap) {
@@ -91,10 +89,9 @@ public class SourceSinkFactory {
 	 * Creates a sink that models a value assigned to a field reachable through a
 	 * parameter value
 	 * 
-	 * @param paraIdx
-	 *            The index of the parameter
-	 * @param accessPath
-	 *            The access path modeling the field inside the parameter value
+	 * @param paraIdx    The index of the parameter
+	 * @param accessPath The access path modeling the field inside the parameter
+	 *                   value
 	 * @return The sink object
 	 */
 	public FlowSink createParameterSink(int paraIdx, AccessPath accessPath) {
@@ -105,12 +102,10 @@ public class SourceSinkFactory {
 	 * Creates a sink that models a value assigned to a field reachable through a
 	 * parameter value
 	 * 
-	 * @param paraIdx
-	 *            The index of the parameter
-	 * @param accessPath
-	 *            The access path modeling the field inside the parameter value
-	 * @param gap
-	 *            The gap in whose parameter the flow ends
+	 * @param paraIdx    The index of the parameter
+	 * @param accessPath The access path modeling the field inside the parameter
+	 *                   value
+	 * @param gap        The gap in whose parameter the flow ends
 	 * @return The sink object
 	 */
 	public FlowSink createParameterSink(int paraIdx, AccessPath accessPath, GapDefinition gap) {
@@ -123,11 +118,11 @@ public class SourceSinkFactory {
 		} else if (accessPath.getFieldCount() < summaryAPLength)
 			return new FlowSink(SourceSinkType.Parameter, paraIdx, accessPath.getBaseType().toString(),
 					sootFieldsToString(accessPath.getFields()), sootTypesToString(accessPath.getFieldTypes()),
-					accessPath.getTaintSubFields(), gap);
+					accessPath.getTaintSubFields(), gap, false);
 		else
 			return new FlowSink(SourceSinkType.Parameter, paraIdx, accessPath.getBaseType().toString(),
 					sootFieldsToString(cutAPLength(accessPath.getFields())),
-					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap);
+					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap, false);
 	}
 
 	/**
@@ -135,8 +130,7 @@ public class SourceSinkFactory {
 	 * used to identify the object on which the gap method is invoked, so no access
 	 * path is needed.
 	 * 
-	 * @param gap
-	 *            The gap in whose base object the flow ends
+	 * @param gap The gap in whose base object the flow ends
 	 * @return The sink object
 	 */
 	public FlowSink createGapBaseObjectSink(GapDefinition gap, Type baseType) {
@@ -147,8 +141,7 @@ public class SourceSinkFactory {
 	 * Creates a sink that models the value returned by the method or a field
 	 * reachable through the return value.
 	 * 
-	 * @param accessPath
-	 *            The access path modeling the returned value
+	 * @param accessPath The access path modeling the returned value
 	 * @return The sink object
 	 */
 	public FlowSink createReturnSink(AccessPath accessPath) {
@@ -159,10 +152,8 @@ public class SourceSinkFactory {
 	 * Creates a sink that models the value returned by the method or a field
 	 * reachable through the return value.
 	 * 
-	 * @param accessPath
-	 *            The access path modeling the returned value
-	 * @param gap
-	 *            The gap to whose return value the data flows
+	 * @param accessPath The access path modeling the returned value
+	 * @param gap        The gap to whose return value the data flows
 	 * @return The sink object
 	 */
 	public FlowSink createReturnSink(AccessPath accessPath, GapDefinition gap) {
@@ -172,18 +163,17 @@ public class SourceSinkFactory {
 		else if (accessPath.getFieldCount() < summaryAPLength)
 			return new FlowSink(SourceSinkType.Return, -1, accessPath.getBaseType().toString(),
 					sootFieldsToString(accessPath.getFields()), sootTypesToString(accessPath.getFieldTypes()),
-					accessPath.getTaintSubFields(), gap);
+					accessPath.getTaintSubFields(), gap, false);
 		else
 			return new FlowSink(SourceSinkType.Return, -1, accessPath.getBaseType().toString(),
 					sootFieldsToString(cutAPLength(accessPath.getFields())),
-					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap);
+					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap, false);
 	}
 
 	/**
 	 * Creates a sink that models a value assigned to a field
 	 * 
-	 * @param accessPath
-	 *            The access path modeling the field
+	 * @param accessPath The access path modeling the field
 	 * @return The sink object
 	 */
 	public FlowSink createFieldSink(AccessPath accessPath) {
@@ -193,10 +183,8 @@ public class SourceSinkFactory {
 	/**
 	 * Creates a sink that models a value assigned to a field
 	 * 
-	 * @param accessPath
-	 *            The access path modeling the field
-	 * @param gap
-	 *            The gap in which this field taint ends
+	 * @param accessPath The access path modeling the field
+	 * @param gap        The gap in which this field taint ends
 	 * @return The sink object
 	 */
 	public FlowSink createFieldSink(AccessPath accessPath, GapDefinition gap) {
@@ -206,18 +194,17 @@ public class SourceSinkFactory {
 		else if (accessPath.getFieldCount() < summaryAPLength)
 			return new FlowSink(SourceSinkType.Field, -1, accessPath.getBaseType().toString(),
 					sootFieldsToString(accessPath.getFields()), sootTypesToString(accessPath.getFieldTypes()),
-					accessPath.getTaintSubFields(), gap);
+					accessPath.getTaintSubFields(), gap, false);
 		else
 			return new FlowSink(SourceSinkType.Field, -1, accessPath.getBaseType().toString(),
 					sootFieldsToString(cutAPLength(accessPath.getFields())),
-					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap);
+					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap, false);
 	}
 
 	/**
 	 * Converts an array of Soot fields into a string representation
 	 * 
-	 * @param fields
-	 *            The array of Soot fields to convert
+	 * @param fields The array of Soot fields to convert
 	 * @return The string representation of the given Soot fields
 	 */
 	private String[] sootFieldsToString(SootField[] fields) {
@@ -233,8 +220,7 @@ public class SourceSinkFactory {
 	/**
 	 * Converts an array of Soot types into a string representation
 	 * 
-	 * @param fields
-	 *            The array of Soot types to convert
+	 * @param fields The array of Soot types to convert
 	 * @return The string representation of the given Soot types
 	 */
 	private String[] sootTypesToString(Type[] types) {
@@ -251,10 +237,9 @@ public class SourceSinkFactory {
 	 * Creates a sink that models a value assigned to a field reachable through a
 	 * parameter value. This variant models a gap inside the method to be summarized
 	 * 
-	 * @param paraIdx
-	 *            The index of the parameter
-	 * @param accessPath
-	 *            The access path modeling the field inside the parameter value
+	 * @param paraIdx    The index of the parameter
+	 * @param accessPath The access path modeling the field inside the parameter
+	 *                   value
 	 * @return The sink object
 	 */
 	public FlowSink createParameterSinkAtGap(int paraIdx, AccessPath accessPath, String gapSignature) {
@@ -278,14 +263,11 @@ public class SourceSinkFactory {
 	 * Creates a custom. The semantics must be defined by the code that uses the
 	 * sink
 	 * 
-	 * @param paraIdx
-	 *            The index of the parameter
-	 * @param accessPath
-	 *            The access path modeling the field inside the parameter value
-	 * @param gap
-	 *            The gap in whose parameter the flow ends
-	 * @param userData
-	 *            Additional user data to be associated with the sink
+	 * @param paraIdx    The index of the parameter
+	 * @param accessPath The access path modeling the field inside the parameter
+	 *                   value
+	 * @param gap        The gap in whose parameter the flow ends
+	 * @param userData   Additional user data to be associated with the sink
 	 * @return The sink object
 	 */
 	public FlowSink createCustomSink(int paraIdx, AccessPath accessPath, GapDefinition gap, Object userData) {
@@ -298,11 +280,11 @@ public class SourceSinkFactory {
 		} else if (accessPath.getFieldCount() < summaryAPLength)
 			return new FlowSink(SourceSinkType.Custom, paraIdx, accessPath.getBaseType().toString(),
 					sootFieldsToString(accessPath.getFields()), sootTypesToString(accessPath.getFieldTypes()),
-					accessPath.getTaintSubFields(), gap, userData);
+					accessPath.getTaintSubFields(), gap, userData, false);
 		else
 			return new FlowSink(SourceSinkType.Custom, paraIdx, accessPath.getBaseType().toString(),
 					sootFieldsToString(cutAPLength(accessPath.getFields())),
-					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap, userData);
+					sootTypesToString(cutAPLength(accessPath.getFieldTypes())), true, gap, userData, false);
 	}
 
 }

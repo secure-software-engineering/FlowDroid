@@ -16,6 +16,7 @@ import java.util.List;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 
 /**
  * contain tests which check taint propagation for static variables
@@ -25,6 +26,7 @@ public class StaticTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void staticTest() {
 		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().getPathConfiguration().setPathBuildingAlgorithm(PathBuildingAlgorithm.ContextInsensitive);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.StaticTestCode: void staticTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);

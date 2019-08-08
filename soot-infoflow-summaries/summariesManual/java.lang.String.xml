@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.lang.String: char[] content]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.String: char[] content]"
 						AccessPathTypes="[char[]]" />
 				</flow>
 			</flows>

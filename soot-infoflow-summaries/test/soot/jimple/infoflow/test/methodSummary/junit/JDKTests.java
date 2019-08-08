@@ -171,8 +171,8 @@ public class JDKTests extends TestHelper {
 	@Override
 	protected SummaryGenerator getSummary() {
 		SummaryGenerator sg = new SummaryGenerator();
-		sg.getConfig().setAccessPathLength(4);
-		sg.getConfig().setUseRecursiveAccessPaths(true);
+		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(4);
+		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.getConfig().setLoadFullJAR(false);
 		sg.getConfig().setEnableExceptionTracking(true);
 		return sg;

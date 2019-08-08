@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,21 +15,22 @@ import soot.jimple.infoflow.data.SootMethodAndClass;
  * @author Steven Arzt
  *
  */
-public class MethodSourceSinkDefinition extends SourceSinkDefinition {
+public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
+		implements IAccessPathBasedSourceSinkDefinition {
 
 	private static MethodSourceSinkDefinition BASE_OBJ_SOURCE;
 	private static MethodSourceSinkDefinition BASE_OBJ_SINK;
 	private static MethodSourceSinkDefinition[] PARAM_OBJ_SOURCE = new MethodSourceSinkDefinition[5];
 
-	private final SootMethodAndClass method;
-	private final CallType callType;
-	private Set<AccessPathTuple> baseObjects;
-	private Set<AccessPathTuple>[] parameters;
-	private Set<AccessPathTuple> returnValues;
+	protected final SootMethodAndClass method;
+	protected final CallType callType;
+	protected Set<AccessPathTuple> baseObjects;
+	protected Set<AccessPathTuple>[] parameters;
+	protected Set<AccessPathTuple> returnValues;
 
 	/**
-	 * Enumeration containing the different types of method invocations that can
-	 * be defined as sources or sinks
+	 * Enumeration containing the different types of method invocations that can be
+	 * defined as sources or sinks
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -38,17 +40,22 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 		 * The app calls the method
 		 */
 		MethodCall,
+
 		/**
-		 * The method is a callback that is invoked by the Android operating
-		 * system
+		 * The method is a callback that is invoked by the Android operating system
 		 */
-		Callback
+		Callback,
+
+		/**
+		 * All return values in the method are considered (only supported as sink)
+		 */
+		Return
 	}
 
 	/**
-	 * Creates a new instance of the {@link SourceSinkDefinition} class without
-	 * a method. This constructor is intended to be used for sources that arise
-	 * from UI elements or other programming constructs that are not directly
+	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
+	 * without a method. This constructor is intended to be used for sources that
+	 * arise from UI elements or other programming constructs that are not directly
 	 * associated with a single method being called.
 	 */
 	public MethodSourceSinkDefinition(Set<AccessPathTuple> baseObjects, Set<AccessPathTuple>[] parameters,
@@ -57,7 +64,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Creates a new instance of the {@link SourceSinkDefinition} class
+	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am) {
 		this(am, null, null, null, CallType.MethodCall);
@@ -66,19 +73,15 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Creates a new instance of the MethodSourceSinkDefinition class
 	 * 
-	 * @param am
-	 *            The method for which this object defines sources and sinks
-	 * @param baseObjects
-	 *            The source and sink definitions for the base object on which a
-	 *            method of this class is invoked
-	 * @param parameters
-	 *            The source and sink definitions for parameters of the current
-	 *            method
-	 * @param callType
-	 *            The type of calls to define as sources or sinks
-	 * @param returnValues
-	 *            The source definitions for the return value of the current
-	 *            method
+	 * @param am           The method for which this object defines sources and
+	 *                     sinks
+	 * @param baseObjects  The source and sink definitions for the base object on
+	 *                     which a method of this class is invoked
+	 * @param parameters   The source and sink definitions for parameters of the
+	 *                     current method
+	 * @param callType     The type of calls to define as sources or sinks
+	 * @param returnValues The source definitions for the return value of the
+	 *                     current method
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
 			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType) {
@@ -99,8 +102,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the type of method invocations that are denoted by this source or
-	 * sink
+	 * Gets the type of method invocations that are denoted by this source or sink
 	 * 
 	 * @return The type of method invocations that are denoted by this source or
 	 *         sink
@@ -110,8 +112,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the source and sink definitions for the base object on which a
-	 * method of this class is invoked
+	 * Gets the source and sink definitions for the base object on which a method of
+	 * this class is invoked
 	 * 
 	 * @return The source and sink definitions for the base object
 	 */
@@ -120,8 +122,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the number of access paths defined as sources or sinks on base
-	 * objects
+	 * Gets the number of access paths defined as sources or sinks on base objects
 	 * 
 	 * @return The number of access paths defined as sources or sinks on base
 	 *         objects
@@ -142,8 +143,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Gets the number of access paths defined as sources or sinks on parameters
 	 * 
-	 * @return The number of access paths defined as sources or sinks on
-	 *         parameters
+	 * @return The number of access paths defined as sources or sinks on parameters
 	 */
 	public int getParameterCount() {
 		if (this.parameters == null || this.parameters.length == 0)
@@ -165,8 +165,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the number of access paths defined as sources or sinks on return
-	 * values
+	 * Gets the number of access paths defined as sources or sinks on return values
 	 * 
 	 * @return The number of access paths defined as sources or sinks on return
 	 *         values
@@ -195,7 +194,7 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceOnlyDefinition() {
+	public MethodSourceSinkDefinition getSourceOnlyDefinition() {
 		// Collect all base sources
 		Set<AccessPathTuple> baseSources = null;
 		if (baseObjects != null) {
@@ -226,14 +225,12 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					returnSources.add(apt);
 		}
 
-		MethodSourceSinkDefinition mssd = new MethodSourceSinkDefinition(method, baseSources, paramSources,
-				returnSources, callType);
-		mssd.setCategory(category);
+		MethodSourceSinkDefinition mssd = buildNewDefinition(baseSources, paramSources, returnSources);
 		return mssd;
 	}
 
 	@Override
-	public SourceSinkDefinition getSinkOnlyDefinition() {
+	public MethodSourceSinkDefinition getSinkOnlyDefinition() {
 		// Collect all base sinks
 		Set<AccessPathTuple> baseSinks = null;
 		if (baseObjects != null) {
@@ -264,15 +261,32 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 					returnSinks.add(apt);
 		}
 
-		MethodSourceSinkDefinition mssd = new MethodSourceSinkDefinition(method, baseSinks, paramSinks, returnSinks,
-				callType);
-		mssd.setCategory(category);
+		MethodSourceSinkDefinition mssd = buildNewDefinition(baseSinks, paramSinks, returnSinks);
 		return mssd;
+	}
+
+	/**
+	 * Factory method for creating a new method-based source/sink definition based
+	 * on the current one. This method is used when transforming the current
+	 * definition. Derived classes can override this method to create instances of
+	 * the correct class.
+	 * 
+	 * @param baseAPTs   The access paths rooted in the base object
+	 * @param paramAPTs  The access paths rooted in the method's parameters
+	 * @param returnAPTs The access paths rooted in the return value
+	 * @return The new source/sink definition object
+	 */
+	protected MethodSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> baseAPTs,
+			Set<AccessPathTuple>[] paramAPTs, Set<AccessPathTuple> returnAPTs) {
+		MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method, baseAPTs, paramAPTs, returnAPTs,
+				callType);
+		def.setCategory(category);
+		return def;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void merge(SourceSinkDefinition other) {
+	public void merge(ISourceSinkDefinition other) {
 		if (other instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition otherMethod = (MethodSourceSinkDefinition) other;
 
@@ -304,11 +318,11 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the shared source definition that is not associated with any method
-	 * and taints the base object
+	 * Gets the shared source definition that is not associated with any method and
+	 * taints the base object
 	 * 
-	 * @return The shared blank source definition that is not associated with
-	 *         any method and taints the base object
+	 * @return The shared blank source definition that is not associated with any
+	 *         method and taints the base object
 	 */
 	public static MethodSourceSinkDefinition getBaseObjectSource() {
 		if (BASE_OBJ_SOURCE == null)
@@ -318,8 +332,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	}
 
 	/**
-	 * Gets the shared sink definition that is not associated with any method
-	 * and taints the base object
+	 * Gets the shared sink definition that is not associated with any method and
+	 * taints the base object
 	 * 
 	 * @return The shared blank sink definition that is not associated with any
 	 *         method and taints the base object
@@ -383,10 +397,8 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Creates a source definition that considers a parameter as tainted
 	 * 
-	 * @param index
-	 *            The index of the parameter to consider as tainted
-	 * @param callType
-	 *            The type of call
+	 * @param index    The index of the parameter to consider as tainted
+	 * @param callType The type of call
 	 * @return The newly created source definition
 	 */
 	@SuppressWarnings("unchecked")
@@ -410,22 +422,21 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 	/**
 	 * Creates a source definition that considers the return value as tainted
 	 * 
-	 * @param callType
-	 *            The type of call
+	 * @param callType The type of call
 	 * @return The newly created source definition
 	 */
-	public static SourceSinkDefinition createReturnSource(CallType callType) {
+	public static MethodSourceSinkDefinition createReturnSource(CallType callType) {
 		return new MethodSourceSinkDefinition(null, null, Collections.singleton(AccessPathTuple.getBlankSourceTuple()),
 				callType);
 	}
 
 	/**
-	 * Checks whether this definition is equivalent to one of the simple
-	 * predefined ones. If so, it returns the shared predefined object.
-	 * Otherwise, it returns this object.
+	 * Checks whether this definition is equivalent to one of the simple predefined
+	 * ones. If so, it returns the shared predefined object. Otherwise, it returns
+	 * this object.
 	 * 
-	 * @return A shared object that is equal to this one if possible, otherwise
-	 *         this object
+	 * @return A shared object that is equal to this one if possible, otherwise this
+	 *         object
 	 */
 	public MethodSourceSinkDefinition simplify() {
 		MethodSourceSinkDefinition baseObjSource = getBaseObjectSource();
@@ -443,6 +454,63 @@ public class MethodSourceSinkDefinition extends SourceSinkDefinition {
 			}
 			return this;
 		}
+	}
+
+	@Override
+	public Set<AccessPathTuple> getAllAccessPaths() {
+		Set<AccessPathTuple> aps = new HashSet<>();
+		if (baseObjects != null && !baseObjects.isEmpty())
+			aps.addAll(baseObjects);
+		if (returnValues != null && !returnValues.isEmpty())
+			aps.addAll(returnValues);
+		if (parameters != null && parameters.length > 0) {
+			for (Set<AccessPathTuple> paramAPs : parameters) {
+				if (paramAPs != null && !paramAPs.isEmpty())
+					aps.addAll(paramAPs);
+			}
+		}
+		return aps;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public MethodSourceSinkDefinition filter(Collection<AccessPathTuple> accessPaths) {
+		// Filter the base objects
+		Set<AccessPathTuple> filteredBaseObjects = null;
+		if (baseObjects != null && !baseObjects.isEmpty()) {
+			filteredBaseObjects = new HashSet<>(baseObjects.size());
+			for (AccessPathTuple ap : baseObjects)
+				if (accessPaths.contains(ap))
+					filteredBaseObjects.add(ap);
+		}
+
+		// Filter the return values
+		Set<AccessPathTuple> filteredReturnValues = null;
+		if (returnValues != null && !returnValues.isEmpty()) {
+			filteredReturnValues = new HashSet<>(returnValues.size());
+			for (AccessPathTuple ap : returnValues)
+				if (accessPaths.contains(ap))
+					filteredReturnValues.add(ap);
+		}
+
+		// Filter the parameters
+		Set<AccessPathTuple>[] filteredParameters = null;
+		if (parameters != null && parameters.length > 0) {
+			filteredParameters = new Set[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				if (parameters[i] != null && !parameters[i].isEmpty()) {
+					filteredParameters[i] = new HashSet<>();
+					for (AccessPathTuple ap : parameters[i])
+						if (accessPaths.contains(ap))
+							filteredParameters[i].add(ap);
+				}
+			}
+		}
+
+		MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method, filteredBaseObjects, filteredParameters,
+				filteredReturnValues, callType);
+		def.setCategory(category);
+		return def;
 	}
 
 }

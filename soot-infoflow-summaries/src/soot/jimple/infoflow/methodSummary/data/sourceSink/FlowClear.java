@@ -14,41 +14,41 @@ import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 public class FlowClear extends AbstractFlowSinkSource implements Cloneable {
 
 	public FlowClear(SourceSinkType type, String baseType) {
-		super(type, -1, baseType, null, null);
+		super(type, -1, baseType, null, null, false);
 	}
 
 	public FlowClear(SourceSinkType type, String baseType, GapDefinition gap) {
-		super(type, -1, baseType, null, null, gap);
+		super(type, -1, baseType, null, null, gap, false);
 	}
 
 	public FlowClear(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, -1, baseType, fields, fieldTypes);
+		super(type, -1, baseType, fields, fieldTypes, false);
 	}
 
 	public FlowClear(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes, GapDefinition gap) {
-		super(type, -1, baseType, fields, fieldTypes, gap);
+		super(type, -1, baseType, fields, fieldTypes, gap, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType) {
-		super(type, parameterIdx, baseType, null, null);
+		super(type, parameterIdx, baseType, null, null, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, GapDefinition gap) {
-		super(type, parameterIdx, baseType, null, null, gap);
+		super(type, parameterIdx, baseType, null, null, gap, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, parameterIdx, baseType, fields, fieldTypes);
+		super(type, parameterIdx, baseType, fields, fieldTypes, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
 			GapDefinition gap) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap);
+		super(type, parameterIdx, baseType, fields, fieldTypes, gap, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
 			GapDefinition gap, Object userData) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap, userData);
+		super(type, parameterIdx, baseType, fields, fieldTypes, gap, userData, false);
 	}
 
 	@Override

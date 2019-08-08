@@ -33,6 +33,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -65,8 +67,9 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 						set.add(i);
 						set.addAll(interfacesOf.getUnchecked(i));
 					}
-					if (sc.hasSuperclass())
-						set.addAll(interfacesOf.getUnchecked(sc.getSuperclass()));
+					SootClass superClass = sc.getSuperclassUnsafe();
+					if (superClass != null)
+						set.addAll(interfacesOf.getUnchecked(superClass));
 					return set;
 				}
 
@@ -75,10 +78,8 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link DefaultSourceSinkManager} class
 	 * 
-	 * @param sources
-	 *            The list of methods to be treated as sources
-	 * @param sinks
-	 *            The list of methods to be treated as sins
+	 * @param sources The list of methods to be treated as sources
+	 * @param sinks   The list of methods to be treated as sins
 	 */
 	public DefaultSourceSinkManager(Collection<String> sources, Collection<String> sinks) {
 		this(sources, sinks, null, null);
@@ -87,16 +88,12 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link DefaultSourceSinkManager} class
 	 * 
-	 * @param sources
-	 *            The list of methods to be treated as sources
-	 * @param sinks
-	 *            The list of methods to be treated as sinks
-	 * @param parameterTaintMethods
-	 *            The list of methods whose parameters shall be regarded as
-	 *            sources
-	 * @param returnTaintMethods
-	 *            The list of methods whose return values shall be regarded as
-	 *            sinks
+	 * @param sources               The list of methods to be treated as sources
+	 * @param sinks                 The list of methods to be treated as sinks
+	 * @param parameterTaintMethods The list of methods whose parameters shall be
+	 *                              regarded as sources
+	 * @param returnTaintMethods    The list of methods whose return values shall be
+	 *                              regarded as sinks
 	 */
 	public DefaultSourceSinkManager(Collection<String> sources, Collection<String> sinks,
 			Collection<String> parameterTaintMethods, Collection<String> returnTaintMethods) {
@@ -107,10 +104,35 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	}
 
 	/**
+	 * Creates a new instance of the {@link DefaultSourceSinkManager} class
+	 * 
+	 * @param sourceSinkProvider The provider that defines source and sink methods
+	 */
+	public DefaultSourceSinkManager(ISourceSinkDefinitionProvider sourceSinkProvider) {
+		this.sourceDefs = new HashSet<>();
+		this.sinkDefs = new HashSet<>();
+
+		// Load the sources
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSources()) {
+			if (ssd instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
+				sourceDefs.add(mssd.getMethod().getSignature());
+			}
+		}
+
+		// Load the sinks
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSinks()) {
+			if (ssd instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
+				sinkDefs.add(mssd.getMethod().getSignature());
+			}
+		}
+	}
+
+	/**
 	 * Sets the list of methods to be treated as sources
 	 * 
-	 * @param sources
-	 *            The list of methods to be treated as sources
+	 * @param sources The list of methods to be treated as sources
 	 */
 	public void setSources(List<String> sources) {
 		this.sourceDefs = sources;
@@ -119,8 +141,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Sets the list of methods to be treated as sinks
 	 * 
-	 * @param sinks
-	 *            The list of methods to be treated as sinks
+	 * @param sinks The list of methods to be treated as sinks
 	 */
 	public void setSinks(List<String> sinks) {
 		this.sinkDefs = sinks;
@@ -148,7 +169,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 			if (istmt.getRightOp() instanceof ParameterRef) {
 				ParameterRef pref = (ParameterRef) istmt.getRightOp();
 				SootMethod currentMethod = manager.getICFG().getMethodOf(istmt);
-				if (parameterTaintMethods.contains(currentMethod))
+				if (parameterTaintMethods != null && parameterTaintMethods.contains(currentMethod))
 					targetAP = manager.getAccessPathFactory()
 							.createAccessPath(currentMethod.getActiveBody().getParameterLocal(pref.getIndex()), true);
 			}
@@ -165,13 +186,10 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Checks whether the given call sites invokes a source method
 	 * 
-	 * @param manager
-	 *            The manager object providing access to the configuration and
-	 *            the interprocedural control flow graph
-	 * @param sCallSite
-	 *            The call site to check
-	 * @return True if the given call site invoked a source method, otherwise
-	 *         false
+	 * @param manager   The manager object providing access to the configuration and
+	 *                  the interprocedural control flow graph
+	 * @param sCallSite The call site to check
+	 * @return True if the given call site invoked a source method, otherwise false
 	 */
 	private boolean isSourceMethod(InfoflowManager manager, Stmt sCallSite) {
 		// We only support method calls
@@ -186,10 +204,9 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		// Check whether we have any of the interfaces on the list
 		String subSig = callee.getSubSignature();
 		for (SootClass i : interfacesOf.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
-			if (i.declaresMethod(subSig)) {
-				if (this.sources.contains(subSig))
-					return true;
-			}
+			SootMethod sm = i.getMethodUnsafe(subSig);
+			if (sm != null && this.sources.contains(sm))
+				return true;
 		}
 
 		// Ask the CFG in case we don't know any better
@@ -208,19 +225,19 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		// considered as sinks
 		if (this.returnTaintMethods != null && sCallSite instanceof ReturnStmt) {
 			SootMethod sm = manager.getICFG().getMethodOf(sCallSite);
-			if (this.returnTaintMethods.contains(sm))
+			if (this.returnTaintMethods != null && this.returnTaintMethods.contains(sm))
 				return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(sm)));
 		}
 
 		// Check whether the callee is a sink
-		if (this.sinks != null && sCallSite.containsInvokeExpr()) {
+		if (this.sinks != null && !sinks.isEmpty() && sCallSite.containsInvokeExpr()) {
 			InvokeExpr iexpr = sCallSite.getInvokeExpr();
 
 			// Is this method on the list?
 			SootMethodAndClass smac = isSinkMethod(manager, sCallSite);
 			if (smac != null) {
 				// Check that the incoming taint is visible in the callee at all
-				if (SystemClassHandler.isTaintVisible(ap, iexpr.getMethod())) {
+				if (SystemClassHandler.v().isTaintVisible(ap, iexpr.getMethod())) {
 					// If we don't have an access path, we can only
 					// over-approximate
 					if (ap == null)
@@ -248,13 +265,11 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Checks whether the given call sites invokes a sink method
 	 * 
-	 * @param manager
-	 *            The manager object providing access to the configuration and
-	 *            the interprocedural control flow graph
-	 * @param sCallSite
-	 *            The call site to check
-	 * @return The method that was discovered as a sink, or null if no sink
-	 *         could be found
+	 * @param manager   The manager object providing access to the configuration and
+	 *                  the interprocedural control flow graph
+	 * @param sCallSite The call site to check
+	 * @return The method that was discovered as a sink, or null if no sink could be
+	 *         found
 	 */
 	private SootMethodAndClass isSinkMethod(InfoflowManager manager, Stmt sCallSite) {
 		// Is the method directly in the sink set?
@@ -281,24 +296,20 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	}
 
 	/**
-	 * Sets the list of methods whose parameters shall be regarded as taint
-	 * sources
+	 * Sets the list of methods whose parameters shall be regarded as taint sources
 	 * 
-	 * @param parameterTaintMethods
-	 *            The list of methods whose parameters shall be regarded as
-	 *            taint sources
+	 * @param parameterTaintMethods The list of methods whose parameters shall be
+	 *                              regarded as taint sources
 	 */
 	public void setParameterTaintMethods(List<String> parameterTaintMethods) {
 		this.parameterTaintMethodDefs = parameterTaintMethods;
 	}
 
 	/**
-	 * Sets the list of methods whose return values shall be regarded as taint
-	 * sinks
+	 * Sets the list of methods whose return values shall be regarded as taint sinks
 	 * 
-	 * @param returnTaintMethods
-	 *            The list of methods whose return values shall be regarded as
-	 *            taint sinks
+	 * @param returnTaintMethods The list of methods whose return values shall be
+	 *                           regarded as taint sinks
 	 */
 	public void setReturnTaintMethods(List<String> returnTaintMethods) {
 		this.returnTaintMethodDefs = returnTaintMethods;

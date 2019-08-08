@@ -40,9 +40,8 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 
 	private final MyConcurrentHashMap<Unit, Set<Abstraction>> implicitTargets = new MyConcurrentHashMap<Unit, Set<Abstraction>>();
 
-	public ImplicitPropagtionRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public ImplicitPropagtionRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	@Override

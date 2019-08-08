@@ -214,8 +214,10 @@ public class ArbitraryAccessPathTests extends TestHelper {
 		List<String> sub = new LinkedList<String>();
 		sub.add("java.util.ArrayList");
 		sg.setSubstitutedWith(sub);
-		sg.getConfig().setUseRecursiveAccessPaths(false);
-		sg.getConfig().setAccessPathLength(6);
+		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+		sg.getConfig().getAccessPathConfiguration().setUseSameFieldReduction(false);
+		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(6);
 		return sg;
 	}
+
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Data class encapsulating all method summaries for a certain class
@@ -16,8 +17,9 @@ public class ClassSummaries {
 
 	public static final ClassSummaries EMPTY_SUMMARIES = new ImmutableClassSummaries();
 
-	private final Map<String, MethodSummaries> summaries = new HashMap<>();
+	private final Map<String, ClassMethodSummaries> summaries = new HashMap<>();
 	private final Set<String> dependencies = new HashSet<>();
+	private SummaryMetaData metaData = null;
 
 	/**
 	 * Creates a new instance of the ClassSummaries class
@@ -31,8 +33,21 @@ public class ClassSummaries {
 	 * 
 	 * @return The flow summaries for the given class
 	 */
-	public MethodSummaries getClassSummaries(String className) {
+	public ClassMethodSummaries getClassSummaries(String className) {
 		return summaries.get(className);
+	}
+
+	/**
+	 * Gets the flow summaries for the methods in the given class
+	 * 
+	 * @return The flow summaries for the methods in the given class
+	 */
+	public MethodSummaries getMethodSummaries(String className) {
+		ClassMethodSummaries cms = summaries.get(className);
+		if (cms == null)
+			return null;
+
+		return cms.getMethodSummaries();
 	}
 
 	/**
@@ -40,23 +55,37 @@ public class ClassSummaries {
 	 * 
 	 * @return A set containing all method summaries in this data object
 	 */
-	public Collection<MethodSummaries> getAllSummaries() {
+	public Collection<ClassMethodSummaries> getAllSummaries() {
 		return this.summaries.values();
+	}
+
+	/**
+	 * Gets all method summaries for all classes in this data object
+	 * 
+	 * @return A set containing all method summaries in this data object
+	 */
+	public Collection<MethodSummaries> getAllMethodSummaries() {
+		return this.summaries.values().stream().map(v -> v.getMethodSummaries()).collect(Collectors.toSet());
 	}
 
 	/**
 	 * Gets all flows for the method with the given signature, regardless of the
 	 * class for which they are defined
 	 * 
-	 * @param signature
-	 *            The signature of the method for which to get the flows
+	 * @param signature The signature of the method for which to get the flows
 	 * @return The union of all flows in methods with the given signature over all
 	 *         classes
 	 */
 	public Set<MethodFlow> getAllFlowsForMethod(String signature) {
 		Set<MethodFlow> flows = new HashSet<>();
-		for (String className : this.summaries.keySet())
-			flows.addAll(this.summaries.get(className).getFlowsForMethod(signature));
+		for (String className : this.summaries.keySet()) {
+			ClassMethodSummaries classSummaries = this.summaries.get(className);
+			if (classSummaries != null) {
+				Set<MethodFlow> methodFlows = classSummaries.getMethodSummaries().getFlowsForMethod(signature);
+				if (methodFlows != null && !methodFlows.isEmpty())
+					flows.addAll(methodFlows);
+			}
+		}
 		return flows;
 	}
 
@@ -64,15 +93,18 @@ public class ClassSummaries {
 	 * Gets all summaries for the method with the given signature, regardless of the
 	 * class for which they are defined
 	 * 
-	 * @param signature
-	 *            The signature of the method for which to get the flows
+	 * @param signature The signature of the method for which to get the flows
 	 * @return The union of all flows in methods with the given signature over all
 	 *         classes
 	 */
 	public MethodSummaries getAllSummariesForMethod(String signature) {
 		MethodSummaries summaries = new MethodSummaries();
-		for (String className : this.summaries.keySet())
-			summaries.merge(this.summaries.get(className));
+		for (String className : this.summaries.keySet()) {
+			ClassMethodSummaries classSummaries = this.summaries.get(className);
+			if (classSummaries != null) {
+				summaries.merge(classSummaries.getMethodSummaries().filterForMethod(signature));
+			}
+		}
 		return summaries;
 	}
 
@@ -82,18 +114,15 @@ public class ClassSummaries {
 	 * @return All flows registered in this data object
 	 */
 	public Set<MethodFlow> getAllFlows() {
-		Set<MethodFlow> flows = new HashSet<>();
-		for (MethodSummaries methodSum : summaries.values())
-			flows.addAll(methodSum.getAllFlows());
-		return flows;
+		return summaries.values().stream().flatMap(cs -> cs.getMethodSummaries().getAllFlows().stream())
+				.collect(Collectors.toSet());
 	}
 
 	/**
 	 * Returns a filter this object that contains only flows for the given method
 	 * signature
 	 * 
-	 * @param signature
-	 *            The method for which to filter the flows
+	 * @param signature The method for which to filter the flows
 	 * @return An object containing only flows for the given method
 	 */
 	public ClassSummaries filterForMethod(String signature) {
@@ -104,18 +133,16 @@ public class ClassSummaries {
 	 * Returns a filter this object that contains only flows for the given method
 	 * signature in only the given set of classes
 	 * 
-	 * @param classes
-	 *            The classes in which to look for method summaries
-	 * @param signature
-	 *            The method for which to filter the flows
+	 * @param classes   The classes in which to look for method summaries
+	 * @param signature The method for which to filter the flows
 	 * @return An object containing only flows for the given method
 	 */
 	public ClassSummaries filterForMethod(Set<String> classes, String signature) {
 		ClassSummaries newSummaries = new ClassSummaries();
 		for (String className : classes) {
-			MethodSummaries methodSummaries = this.summaries.get(className);
+			ClassMethodSummaries methodSummaries = this.summaries.get(className);
 			if (methodSummaries != null && !methodSummaries.isEmpty())
-				newSummaries.merge(className, methodSummaries.filterForMethod(signature));
+				newSummaries.merge(methodSummaries.filterForMethod(signature));
 		}
 		return newSummaries;
 	}
@@ -123,18 +150,16 @@ public class ClassSummaries {
 	/**
 	 * Merges the given flows into the existing flow definitions for the given class
 	 * 
-	 * @param className
-	 *            The name of the class for which to store the given flows
-	 * @param newSums
-	 *            The flows to merge into this data store
+	 * @param className The name of the class for which to store the given flows
+	 * @param newSums   The flows to merge into this data store
 	 */
 	public void merge(String className, MethodSummaries newSums) {
 		if (newSums == null || newSums.isEmpty())
 			return;
 
-		MethodSummaries methodSummaries = summaries.get(className);
+		ClassMethodSummaries methodSummaries = summaries.get(className);
 		if (methodSummaries == null)
-			summaries.put(className, newSums);
+			summaries.put(className, new ClassMethodSummaries(className, newSums));
 		else
 			methodSummaries.merge(newSums);
 	}
@@ -142,35 +167,58 @@ public class ClassSummaries {
 	/**
 	 * Merges the given flows into the existing flow definitions for the given class
 	 * 
-	 * @param className
-	 *            The name of the class for which to store the given flows
-	 * @param newSums
-	 *            The flows to merge into this data store
+	 * @param className The name of the class for which to store the given flows
+	 * @param newSums   The flows to merge into this data store
 	 */
 	public void merge(String className, Set<MethodFlow> newSums) {
 		if (newSums == null || newSums.isEmpty())
 			return;
 
-		MethodSummaries methodSummaries = summaries.get(className);
+		ClassMethodSummaries methodSummaries = summaries.get(className);
+		MethodSummaries ms = new MethodSummaries(newSums);
 		if (methodSummaries == null) {
-			methodSummaries = new MethodSummaries(newSums);
+			methodSummaries = new ClassMethodSummaries(className, ms);
 			summaries.put(className, methodSummaries);
 		} else
-			methodSummaries.mergeFlows(newSums);
+			methodSummaries.merge(ms);
 	}
 
 	/**
 	 * Merges the given flows into the existing flow definitions for the given class
 	 * 
-	 * @param summaries
-	 *            The existing method summaries
+	 * @param summaries The existing method summaries
 	 */
 	public void merge(ClassSummaries summaries) {
 		if (summaries == null || summaries.isEmpty())
 			return;
 
 		for (String className : summaries.getClasses())
-			merge(className, summaries.getClassSummaries(className));
+			merge(summaries.getClassSummaries(className));
+
+		// Merge the meta data if required, otherwise simply copy it
+		if (metaData != null)
+			metaData.merge(summaries.metaData);
+		else
+			metaData = new SummaryMetaData(summaries.metaData);
+	}
+
+	/**
+	 * Merges the given flows into the existing flow definitions
+	 * 
+	 * @param summaries The summaries to merge
+	 * @return True if new data was added to this summary data object during the
+	 *         merge, false otherwise
+	 */
+	public boolean merge(ClassMethodSummaries summaries) {
+		if (summaries == null || summaries.isEmpty())
+			return false;
+
+		ClassMethodSummaries existingSummaries = this.summaries.get(summaries.getClassName());
+		if (existingSummaries == null) {
+			this.summaries.put(summaries.getClassName(), summaries);
+			return true;
+		} else
+			return existingSummaries.merge(summaries);
 	}
 
 	/**
@@ -196,9 +244,8 @@ public class ClassSummaries {
 	/**
 	 * Gets whether this data object contains method summaries for the given class
 	 * 
-	 * @param className
-	 *            True if this data object contains method summaries for the given
-	 *            class, otherwise false
+	 * @param className True if this data object contains method summaries for the
+	 *                  given class, otherwise false
 	 * @return
 	 */
 	public boolean hasSummariesForClass(String className) {
@@ -208,8 +255,7 @@ public class ClassSummaries {
 	/**
 	 * Adds a dependency to this flow set
 	 * 
-	 * @param className
-	 *            The name of the dependency clsas
+	 * @param className The name of the dependency clsas
 	 * @return True if this dependency class has been added, otherwise (dependency
 	 *         already registered or summaries loaded for this class) false
 	 */
@@ -222,8 +268,7 @@ public class ClassSummaries {
 	/**
 	 * Checks whether the given type name denotes a primitive
 	 * 
-	 * @param typeName
-	 *            The type name to check
+	 * @param typeName The type name to check
 	 * @return True if the given type name denotes a primitive, otherwise false
 	 */
 	private boolean isPrimitiveType(String typeName) {
@@ -241,6 +286,24 @@ public class ClassSummaries {
 	 */
 	public Set<String> getDependencies() {
 		return this.dependencies;
+	}
+
+	/**
+	 * Gets the meta data for this collection of summaries
+	 * 
+	 * @return The meta data for these summaries
+	 */
+	public SummaryMetaData getMetaData() {
+		return metaData;
+	}
+
+	/**
+	 * Sets the meta data for this collection of summaries
+	 * 
+	 * @param metaData The meta data for these summaries
+	 */
+	public void setMetaData(SummaryMetaData metaData) {
+		this.metaData = metaData;
 	}
 
 	/**
@@ -262,10 +325,29 @@ public class ClassSummaries {
 	}
 
 	@Override
+	public String toString() {
+		if (summaries == null || summaries.isEmpty())
+			return "<no class summaries>";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Summaries for ");
+
+		boolean isFirst = true;
+		for (String className : summaries.keySet()) {
+			if (!isFirst)
+				sb.append(", ");
+			sb.append(className);
+			isFirst = false;
+		}
+		return sb.toString();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((dependencies == null) ? 0 : dependencies.hashCode());
+		result = prime * result + ((metaData == null) ? 0 : metaData.hashCode());
 		result = prime * result + ((summaries == null) ? 0 : summaries.hashCode());
 		return result;
 	}
@@ -283,6 +365,11 @@ public class ClassSummaries {
 			if (other.dependencies != null)
 				return false;
 		} else if (!dependencies.equals(other.dependencies))
+			return false;
+		if (metaData == null) {
+			if (other.metaData != null)
+				return false;
+		} else if (!metaData.equals(other.metaData))
 			return false;
 		if (summaries == null) {
 			if (other.summaries != null)

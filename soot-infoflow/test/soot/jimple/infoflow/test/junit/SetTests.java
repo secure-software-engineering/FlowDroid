@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 
 /**
  * test taint propagation in sets
@@ -27,7 +28,7 @@ public class SetTests extends JUnitTests {
 	public void concreteHashSetTest() {
 		System.out.println("Running test case concreteHashSetTest...");
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 
 		List<String> epoints = new ArrayList<String>();
@@ -43,9 +44,9 @@ public class SetTests extends JUnitTests {
 		System.out.println("Running test case containsTest...");
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setImplicitFlowMode(ImplicitFlowMode.AllImplicitFlows);
-		infoflow.getConfig().setEnableStaticFieldTracking(false);
+		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.SetTestCode: void containsTest()>");
@@ -87,7 +88,7 @@ public class SetTests extends JUnitTests {
 	public void concreteLinkedSetPos0Test() {
 		System.out.println("Running test case concreteLinkedSetPos0Test...");
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 
 		List<String> epoints = new ArrayList<String>();
@@ -102,7 +103,7 @@ public class SetTests extends JUnitTests {
 	public void concreteLinkedSetPos1Test() {
 		System.out.println("Running test case concreteLinkedSetPos1Test...");
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 
 		List<String> epoints = new ArrayList<String>();
@@ -118,7 +119,7 @@ public class SetTests extends JUnitTests {
 		System.out.println("Running test case setTest...");
 		IInfoflow infoflow = initInfoflow();
 
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 
 		List<String> epoints = new ArrayList<String>();
@@ -134,7 +135,7 @@ public class SetTests extends JUnitTests {
 		System.out.println("Running test case setIteratorTest...");
 		IInfoflow infoflow = initInfoflow();
 
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 
 		List<String> epoints = new ArrayList<String>();

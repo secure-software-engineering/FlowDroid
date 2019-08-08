@@ -1,0 +1,291 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.nio.ByteBuffer asByteBuffer()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String base64()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String base64Url()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString decodeBase64(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString decodeHex(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString encodeString(java.lang.String,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString encodeUtf8(java.lang.String,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte getByte(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String hex(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.lang.String: char[] content]"
+						AccessPathTypes="[char[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString hmacSha1(okio.ByteString)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString hmacSha256(okio.ByteString)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString hmacSha512(okio.ByteString)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString md5()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString of(byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString of(byte[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString of(java.nio.ByteBuffer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString read(java.io.InputStream,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString sha1()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString sha256()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okio.ByteString sha512()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String string(java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String substring(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String substring(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toAsciiLowercase()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toAsciiUppercase()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte[] toByteArray()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String utf8()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void write(java.io.OutputStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okio.ByteString: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

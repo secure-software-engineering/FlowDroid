@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="boolean add(java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean addAll(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void clear()">
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+			</clears>
+		</method>
+		<method id="java.util.Iterator iterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object[] toArray()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object[] toArray(java.lang.Object[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

@@ -28,14 +28,13 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	 * concrete path building algorithm does not want to handle the given
 	 * abstraction, it can return null to not execute anything.
 	 * 
-	 * @param abs
-	 *            The abstraction for which to compute the result paths
+	 * @param abs The abstraction for which to compute the result paths
 	 */
 	protected abstract Runnable getTaintPathTask(AbstractionAtSink abs);
 
 	@Override
 	public void computeTaintPaths(final Set<AbstractionAtSink> res) {
-		if (res.isEmpty())
+		if (res == null || res.isEmpty())
 			return;
 
 		logger.info("Obtainted {} connections between sources and sinks", res.size());
@@ -47,6 +46,9 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 		// Start the propagation tasks
 		int curResIdx = 0;
 		for (final AbstractionAtSink abs : res) {
+			// We need to reset the executor before we can submit new jobs
+			executor.reset();
+
 			// The solver may already have been killed
 			if (killFlag != null) {
 				// Reduce the memory pressure
@@ -73,13 +75,12 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 			// If we do sequential path processing, we wait for the current
 			// sink abstraction to be processed before working on the next
-			if (manager.getConfig().getPathConfiguration().getSequentialPathProcessing()) {
+			if (pathConfig.getSequentialPathProcessing()) {
 				try {
 					executor.awaitCompletion();
 					executor.reset();
 				} catch (InterruptedException ex) {
-					logger.error("Could not wait for path executor completion: {0}", ex.getMessage());
-					ex.printStackTrace();
+					logger.error("Could not wait for path executor completion", ex);
 				}
 			}
 		}
@@ -114,8 +115,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	/**
 	 * Schedules the given task for execution
 	 * 
-	 * @param task
-	 *            The task to execute
+	 * @param task The task to execute
 	 */
 	protected void scheduleDependentTask(Runnable task) {
 		if (!isKilled())

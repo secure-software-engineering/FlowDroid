@@ -1,0 +1,245 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean add(java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean add(int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean addAll(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean addAll(int,java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addElement(java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void clear()">
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+			</clears>
+		</method>
+        <method id="java.lang.Object clone()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+		<method id="void copyInto(java.lang.Object[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object elementAt(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Enumeration elements()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Enumeration: java.util.Collection innerCollection,java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.util.Collection,java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object firstElement()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object get(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void insertElementAt(java.lang.Object,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Iterator iterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object lastElement()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.ListIterator listIterator()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" AccessPath="[java.util.ListIterator: java.util.List innerList]"
+						AccessPathTypes="[java.util.List]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.ListIterator listIterator(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" AccessPath="[java.util.ListIterator: java.util.List innerList]"
+						AccessPathTypes="[java.util.List]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object remove(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void removeAllElements()">
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+			</clears>
+		</method>
+		<method id="void set(int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setElementAt(java.lang.Object,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List subList(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object[] toArray()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object[] toArray(java.lang.Object[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

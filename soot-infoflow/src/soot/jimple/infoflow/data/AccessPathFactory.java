@@ -4,8 +4,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.ArrayType;
 import soot.Local;
+import soot.PrimType;
 import soot.RefLikeType;
 import soot.RefType;
 import soot.SootField;
@@ -16,12 +20,15 @@ import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.util.TypeUtils;
 
 public class AccessPathFactory {
+
+	protected final static Logger logger = LoggerFactory.getLogger(AccessPathFactory.class);
 
 	private final InfoflowConfiguration config;
 
@@ -92,8 +99,7 @@ public class AccessPathFactory {
 	/**
 	 * Creates a new instance of the {@link AccessPathFactory} class
 	 * 
-	 * @param config
-	 *            The FlowDroid configuration object
+	 * @param config The FlowDroid configuration object
 	 */
 	public AccessPathFactory(InfoflowConfiguration config) {
 		this.config = config;
@@ -127,6 +133,7 @@ public class AccessPathFactory {
 		// Make sure that the base object is valid
 		assert (val == null && appendingFields != null && appendingFields.length > 0)
 				|| AccessPath.canContainValue(val);
+		final AccessPathConfiguration accessPathConfig = config.getAccessPathConfiguration();
 
 		// Do we track types?
 		if (!config.getEnableTypeChecking()) {
@@ -176,19 +183,23 @@ public class AccessPathFactory {
 			value = (Local) ref.getBase();
 			baseType = valType == null ? value.getType() : valType;
 
-			fields = appendingFields;
-			fieldTypes = appendingFieldTypes;
+			// Copy the arrays to not destroy other APs
+			fields = appendingFields == null ? null : Arrays.copyOf(appendingFields, appendingFields.length);
+			fieldTypes = appendingFieldTypes == null ? null
+					: Arrays.copyOf(appendingFieldTypes, appendingFieldTypes.length);
 		} else {
 			value = (Local) val;
 			baseType = valType == null ? (value == null ? null : value.getType()) : valType;
 
-			fields = appendingFields;
-			fieldTypes = appendingFieldTypes;
+			// Copy the arrays to not destroy other APs
+			fields = appendingFields == null ? null : Arrays.copyOf(appendingFields, appendingFields.length);
+			fieldTypes = appendingFieldTypes == null ? null
+					: Arrays.copyOf(appendingFieldTypes, appendingFieldTypes.length);
 		}
 
 		// If we don't want to track fields at all, we can cut the field
 		// processing short
-		if (config.getAccessPathLength() == 0) {
+		if (accessPathConfig.getAccessPathLength() == 0) {
 			fields = null;
 			fieldTypes = null;
 		}
@@ -204,13 +215,12 @@ public class AccessPathFactory {
 		}
 
 		// If we have a chain of fields that reduces to itself, we can throw
-		// away the
-		// recursion. Example:
+		// away the recursion. Example:
 		// <java.lang.Thread: java.lang.ThreadGroup group>
 		// <java.lang.ThreadGroup: java.lang.Thread[] threads>
 		// <java.lang.Thread: java.lang.ThreadGroup group>
 		// <java.lang.ThreadGroup: java.lang.Thread[] threads> *
-		if (fields != null && fields.length > 1) {
+		if (config.getAccessPathConfiguration().getUseSameFieldReduction() && fields != null && fields.length > 1) {
 			for (int bucketStart = fields.length - 2; bucketStart >= 0; bucketStart--) {
 				// Check if we have a repeating field
 				int repeatPos = -1;
@@ -287,7 +297,7 @@ public class AccessPathFactory {
 
 		// We can always merge a.inner.this$0.c to a.c. We do this first so that
 		// we don't create recursive bases for stuff we don't need anyway.
-		if (config.getUseThisChainReduction() && reduceBases && fields != null) {
+		if (accessPathConfig.getUseThisChainReduction() && reduceBases && fields != null) {
 			for (int i = 0; i < fields.length; i++) {
 				// Is this a reference to an outer class?
 				if (fields[i].getName().startsWith("this$")) {
@@ -328,24 +338,19 @@ public class AccessPathFactory {
 		}
 
 		// Check for recursive data structures. If a last field maps back to
-		// something we
-		// already know, we build a repeatable component from it
+		// something we already know, we build a repeatable component from it
 		boolean recursiveCutOff = false;
-		if (config.getUseRecursiveAccessPaths() && reduceBases && fields != null) {
-			// f0...fi references an object of type T
-			// look for an extension f0...fi...fj that also references an object
-			// of type T
+		if (accessPathConfig.getUseRecursiveAccessPaths() && reduceBases && fields != null) {
+			// f0...fi references an object of type T, look for an extension f0...fi...fj
+			// that also references an object of type T
 			int ei = val instanceof StaticFieldRef ? 1 : 0;
 			while (ei < fields.length) {
 				final Type eiType = ei == 0 ? baseType : fieldTypes[ei - 1];
 				int ej = ei;
 				while (ej < fields.length) {
 					if (fieldTypes[ej] == eiType || fields[ej].getType() == eiType) {
-						// The types match, f0...fi...fj maps back to an object
-						// of the
-						// same type as f0...fi. We must thus convert the access
-						// path
-						// to f0...fi-1[...fj]fj+1
+						// The types match, f0...fi...fj maps back to an object of the same type as
+						// f0...fi. We must thus convert the access path to f0...fi-1[...fj]fj+1
 						SootField[] newFields = new SootField[fields.length - (ej - ei) - 1];
 						Type[] newTypes = new Type[newFields.length];
 
@@ -377,27 +382,31 @@ public class AccessPathFactory {
 		// Cut the fields at the maximum access path length. If this happens,
 		// we must always add a star
 		if (fields != null) {
-			int fieldNum = Math.min(config.getAccessPathLength(), fields.length);
-			if (fields.length > fieldNum) {
-				taintSubFields = true;
-				cutOffApproximation = true;
-			} else {
-				cutOffApproximation = false || recursiveCutOff;
-			}
+			final int maxAccessPathLength = accessPathConfig.getAccessPathLength();
+			if (maxAccessPathLength >= 0) {
+				int fieldNum = Math.min(maxAccessPathLength, fields.length);
+				if (fields.length > fieldNum) {
+					taintSubFields = true;
+					cutOffApproximation = true;
+				} else {
+					cutOffApproximation = recursiveCutOff;
+				}
 
-			if (fieldNum == 0) {
-				fields = null;
-				fieldTypes = null;
-			} else {
-				SootField[] newFields = new SootField[fieldNum];
-				Type[] newFieldTypes = new Type[fieldNum];
+				if (fieldNum == 0) {
+					fields = null;
+					fieldTypes = null;
+				} else {
+					SootField[] newFields = new SootField[fieldNum];
+					Type[] newFieldTypes = new Type[fieldNum];
 
-				System.arraycopy(fields, 0, newFields, 0, fieldNum);
-				System.arraycopy(fieldTypes, 0, newFieldTypes, 0, fieldNum);
+					System.arraycopy(fields, 0, newFields, 0, fieldNum);
+					System.arraycopy(fieldTypes, 0, newFieldTypes, 0, fieldNum);
 
-				fields = newFields;
-				fieldTypes = newFieldTypes;
-			}
+					fields = newFields;
+					fieldTypes = newFieldTypes;
+				}
+			} else
+				cutOffApproximation = recursiveCutOff;
 		} else {
 			cutOffApproximation = false;
 			fields = null;
@@ -410,6 +419,26 @@ public class AccessPathFactory {
 		assert value == null || !(baseType instanceof ArrayType && !(value.getType() instanceof ArrayType)
 				&& !TypeUtils.isObjectLikeType(value.getType())) : "Type mismatch. Type was " + baseType
 						+ ", value was: " + (value == null ? null : value.getType());
+
+		if ((fields == null && fieldTypes != null) || (fields != null && fieldTypes == null))
+			throw new RuntimeException("When there are fields, there must be field types and vice versa");
+		if (fields != null && fields.length != fieldTypes.length)
+			throw new RuntimeException("Field and field type arrays must be of equal length");
+
+		// Sanity check
+		if (baseType instanceof PrimType) {
+			if (fields != null) {
+				logger.warn("Primitive types cannot have fields");
+				return null;
+			}
+		}
+		if (fields != null) {
+			for (int i = 0; i < fields.length - 2; i++)
+				if (fields[i].getType() instanceof PrimType) {
+					logger.warn("Primitive types cannot have fields");
+					return null;
+				}
+		}
 
 		return new AccessPath(value, fields, baseType, fieldTypes, taintSubFields, cutOffApproximation, arrayTaintType,
 				canHaveImmutableAliases);
@@ -440,13 +469,10 @@ public class AccessPathFactory {
 	}
 
 	/**
-	 * Copies the given access path with a new base value, but retains the base
-	 * type
+	 * Copies the given access path with a new base value, but retains the base type
 	 * 
-	 * @param original
-	 *            The original access path
-	 * @param val
-	 *            The new value
+	 * @param original The original access path
+	 * @param val      The new value
 	 * @return The new access path with the exchanged value
 	 */
 	public AccessPath copyWithNewValue(AccessPath original, Value val) {
@@ -456,12 +482,10 @@ public class AccessPathFactory {
 	/**
 	 * value val gets new base, fields are preserved.
 	 * 
-	 * @param original
-	 *            The original access path
-	 * @param val
-	 *            The new base value
-	 * @return This access path with the base replaced by the value given in the
-	 *         val parameter
+	 * @param original The original access path
+	 * @param val      The new base value
+	 * @return This access path with the base replaced by the value given in the val
+	 *         parameter
 	 */
 	public AccessPath copyWithNewValue(AccessPath original, Value val, Type newType, boolean cutFirstField) {
 		return copyWithNewValue(original, val, newType, cutFirstField, true);
@@ -470,14 +494,11 @@ public class AccessPathFactory {
 	/**
 	 * value val gets new base, fields are preserved.
 	 * 
-	 * @param original
-	 *            The original access path
-	 * @param val
-	 *            The new base value
-	 * @param reduceBases
-	 *            True if circular types shall be reduced to bases
-	 * @return This access path with the base replaced by the value given in the
-	 *         val parameter
+	 * @param original    The original access path
+	 * @param val         The new base value
+	 * @param reduceBases True if circular types shall be reduced to bases
+	 * @return This access path with the base replaced by the value given in the val
+	 *         parameter
 	 */
 	public AccessPath copyWithNewValue(AccessPath original, Value val, Type newType, boolean cutFirstField,
 			boolean reduceBases) {
@@ -487,16 +508,12 @@ public class AccessPathFactory {
 	/**
 	 * value val gets new base, fields are preserved.
 	 * 
-	 * @param original
-	 *            The original access path
-	 * @param val
-	 *            The new base value
-	 * @param reduceBases
-	 *            True if circular types shall be reduced to bases
-	 * @param arrayTaintType
-	 *            The way a tainted array shall be handled
-	 * @return This access path with the base replaced by the value given in the
-	 *         val parameter
+	 * @param original       The original access path
+	 * @param val            The new base value
+	 * @param reduceBases    True if circular types shall be reduced to bases
+	 * @param arrayTaintType The way a tainted array shall be handled
+	 * @return This access path with the base replaced by the value given in the val
+	 *         parameter
 	 */
 	public AccessPath copyWithNewValue(AccessPath original, Value val, Type newType, boolean cutFirstField,
 			boolean reduceBases, ArrayTaintType arrayTaintType) {
@@ -522,10 +539,8 @@ public class AccessPathFactory {
 	/**
 	 * Merges the two given access paths , i.e., adds the fields of ap2 to ap1.
 	 * 
-	 * @param ap1
-	 *            The access path to which to append the fields
-	 * @param ap2
-	 *            The access path whose fields to append to ap1
+	 * @param ap1 The access path to which to append the fields
+	 * @param ap2 The access path whose fields to append to ap1
 	 * @return The new access path
 	 */
 	public AccessPath merge(AccessPath ap1, AccessPath ap2) {
@@ -535,16 +550,12 @@ public class AccessPathFactory {
 	/**
 	 * Appends additional fields to the given access path
 	 * 
-	 * @param original
-	 *            The original access path to which to append the fields
-	 * @param apFields
-	 *            The fields to append
-	 * @param apFieldTypes
-	 *            The types of the fields to append
-	 * @param taintSubFields
-	 *            True if the new access path shall taint all objects reachable
-	 *            through it, false if it shall only point to precisely one
-	 *            object
+	 * @param original       The original access path to which to append the fields
+	 * @param apFields       The fields to append
+	 * @param apFieldTypes   The types of the fields to append
+	 * @param taintSubFields True if the new access path shall taint all objects
+	 *                       reachable through it, false if it shall only point to
+	 *                       precisely one object
 	 * @return The new access path
 	 */
 	public AccessPath appendFields(AccessPath original, SootField[] apFields, Type[] apFieldTypes,

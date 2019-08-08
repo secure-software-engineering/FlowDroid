@@ -5,26 +5,28 @@ import java.util.Set;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.infoflow.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 
 /**
- * A callback filter that restricts application callbacks to ComponentCallbacks and
- * ActivityLifecycleCallsbacks.
+ * A callback filter that restricts application callbacks to ComponentCallbacks
+ * and ActivityLifecycleCallsbacks.
  * 
  * @author Steven Arzt
  *
  */
-public class ApplicationCallbackFilter implements ICallbackFilter {
-	
+public class ApplicationCallbackFilter extends AbstractCallbackFilter {
+
 	private final String applicationClass;
-	
+
 	private SootClass activityLifecycleCallbacks;
 	private SootClass provideAssistDataListener;
 	private SootClass componentCallbacks;
-	
+
 	/**
 	 * Creates a new instance of the {@link ApplicationCallbackFilter} class
-	 * @param entrypoints The set of entry points into the app
+	 * 
+	 * @param entrypoints
+	 *            The set of entry points into the app
 	 */
 	public ApplicationCallbackFilter(Set<SootClass> entrypoints) {
 		this(getApplicationClass(entrypoints));
@@ -32,7 +34,9 @@ public class ApplicationCallbackFilter implements ICallbackFilter {
 
 	/**
 	 * Scans through the list of entry points and finds the application class
-	 * @param entrypoints A set containing all entry points in the current app
+	 * 
+	 * @param entrypoints
+	 *            A set containing all entry points in the current app
 	 * @return The name of the application class if one exists, otherwise null
 	 */
 	private static String getApplicationClass(Set<SootClass> entrypoints) {
@@ -44,10 +48,12 @@ public class ApplicationCallbackFilter implements ICallbackFilter {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Creates a new instance of the {@link ApplicationCallbackFilter} class
-	 * @param applicationClass The class extending android.app.Application
+	 * 
+	 * @param applicationClass
+	 *            The class extending android.app.Application
 	 */
 	public ApplicationCallbackFilter(String applicationClass) {
 		super();
@@ -59,22 +65,26 @@ public class ApplicationCallbackFilter implements ICallbackFilter {
 	public boolean accepts(SootClass component, SootClass callbackHandler) {
 		// Special handling for callbacks registered for the application, but
 		// not implemented there
-		if (this.applicationClass != null
-				&& component.getName().equals(this.applicationClass)
+		if (this.applicationClass != null && component.getName().equals(this.applicationClass)
 				&& !callbackHandler.getName().equals(applicationClass)) {
-			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.activityLifecycleCallbacks.getType())
-					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.provideAssistDataListener.getType())
-					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.componentCallbacks.getType()))
+			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
+					this.activityLifecycleCallbacks.getType())
+					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
+							this.provideAssistDataListener.getType())
+					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
+							this.componentCallbacks.getType()))
 				return false;
 		}
-		
+
 		return true;
 	}
 
 	@Override
 	public void reset() {
-		this.activityLifecycleCallbacks = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACKSINTERFACE);
-		this.provideAssistDataListener = Scene.v().getSootClassUnsafe("android.app.Application$OnProvideAssistDataListener");
+		this.activityLifecycleCallbacks = Scene.v()
+				.getSootClassUnsafe(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACKSINTERFACE);
+		this.provideAssistDataListener = Scene.v()
+				.getSootClassUnsafe("android.app.Application$OnProvideAssistDataListener");
 		this.componentCallbacks = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.COMPONENTCALLBACKSINTERFACE);
 	}
 

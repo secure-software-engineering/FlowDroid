@@ -15,8 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
+import gnu.trove.set.hash.TCustomHashSet;
+import gnu.trove.strategy.HashingStrategy;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
@@ -24,7 +24,7 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.collect.AtomicBitSet;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * The abstraction class contains all information that is necessary to track the
@@ -35,48 +35,104 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  */
 public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction, Unit> {
 
-	private static boolean flowSensitiveAliasing = true;
+	protected static boolean flowSensitiveAliasing = true;
 
 	/**
 	 * the access path contains the currently tainted variable or field
 	 */
-	private AccessPath accessPath;
+	protected AccessPath accessPath;
 
-	private Abstraction predecessor = null;
-	private Set<Abstraction> neighbors = null;
-	private Stmt currentStmt = null;
-	private Stmt correspondingCallSite = null;
+	protected Abstraction predecessor = null;
+	protected Set<Abstraction> neighbors = null;
+	protected Stmt currentStmt = null;
+	protected Stmt correspondingCallSite = null;
 
-	private SourceContext sourceContext = null;
+	protected SourceContext sourceContext = null;
 
 	/**
 	 * Unit/Stmt which activates the taint when the abstraction passes it
 	 */
-	private Unit activationUnit = null;
+	protected Unit activationUnit = null;
 	/**
 	 * taint is thrown by an exception (is set to false when it reaches the
 	 * catch-Stmt)
 	 */
-	private boolean exceptionThrown = false;
-	private int hashCode = 0;
+	protected boolean exceptionThrown = false;
+	protected int hashCode = 0;
+	protected int neighborHashCode = 0;
 
 	/**
-	 * The postdominators we need to pass in order to leave the current
-	 * conditional branch. Do not use the synchronized Stack class here to avoid
-	 * deadlocks.
+	 * The postdominators we need to pass in order to leave the current conditional
+	 * branch. Do not use the synchronized Stack class here to avoid deadlocks.
 	 */
-	private List<UnitContainer> postdominators = null;
-	private boolean isImplicit = false;
+	protected List<UnitContainer> postdominators = null;
+	protected boolean isImplicit = false;
 
 	/**
-	 * Only valid for inactive abstractions. Specifies whether an access paths
-	 * has been cut during alias analysis.
+	 * Only valid for inactive abstractions. Specifies whether an access paths has
+	 * been cut during alias analysis.
 	 */
-	private boolean dependsOnCutAP = false;
+	protected boolean dependsOnCutAP = false;
 
-	private AtomicBitSet pathFlags = null;
+	protected AtomicBitSet pathFlags = null;
+	protected int propagationPathLength = 0;
 
-	public Abstraction(SourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
+	public static class NeighborHashingStrategy implements HashingStrategy<Abstraction> {
+
+		private static final long serialVersionUID = 4836518478381414909L;
+		private static final NeighborHashingStrategy INSTANCE = new NeighborHashingStrategy();
+
+		@Override
+		public int computeHashCode(Abstraction abs) {
+			if (abs.neighborHashCode != 0)
+				return abs.neighborHashCode;
+
+			final int prime = 31;
+			int result = 1;
+
+			result = prime * result + abs.hashCode();
+			result = prime * result + ((abs.predecessor == null) ? 0 : abs.predecessor.hashCode());
+
+			abs.neighborHashCode = result;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Abstraction abs1, Abstraction abs2) {
+			if (abs1 == abs2)
+				return true;
+			if (abs1 == null || abs2 == null || abs1.getClass() != abs2.getClass())
+				return false;
+
+			// If we have already computed hash codes, we can use them for
+			// comparison
+			int hashCode1 = abs1.neighborHashCode;
+			int hashCode2 = abs2.neighborHashCode;
+			if (hashCode1 != 0 && hashCode2 != 0 && hashCode1 != hashCode2)
+				return false;
+
+			if (abs1.accessPath == null) {
+				if (abs2.accessPath != null)
+					return false;
+			} else if (!abs1.accessPath.equals(abs2.accessPath))
+				return false;
+			if (abs1.predecessor == null) {
+				if (abs2.predecessor != null)
+					return false;
+			} else if (!abs1.predecessor.equals(abs2.predecessor))
+				return false;
+			if (abs1.currentStmt == null) {
+				if (abs2.currentStmt != null)
+					return false;
+			} else if (!abs1.currentStmt.equals(abs2.currentStmt))
+				return false;
+
+			return abs1.localEquals(abs2);
+		}
+
+	}
+
+	public Abstraction(ISourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
 			boolean exceptionThrown, boolean isImplicit) {
 		this(sourceVal, new SourceContext(definition, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
 	}
@@ -94,13 +150,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Creates an abstraction as a copy of an existing abstraction, only
-	 * exchanging the access path. -> only used by AbstractionWithPath
+	 * Creates an abstraction as a copy of an existing abstraction, only exchanging
+	 * the access path. -> only used by AbstractionWithPath
 	 * 
-	 * @param p
-	 *            The access path for the new abstraction
-	 * @param original
-	 *            The original abstraction to copy
+	 * @param p        The access path for the new abstraction
+	 * @param original The original abstraction to copy
 	 */
 	protected Abstraction(AccessPath p, Abstraction original) {
 		if (original == null) {
@@ -125,7 +179,16 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		currentStmt = null;
 	}
 
-	public final Abstraction deriveInactiveAbstraction(Unit activationUnit) {
+	/**
+	 * Initializes the configuration for building new abstractions
+	 * 
+	 * @param config The configuration of the data flow solver
+	 */
+	public static void initialize(InfoflowConfiguration config) {
+		flowSensitiveAliasing = config.getFlowSensitiveAliasing();
+	}
+
+	public Abstraction deriveInactiveAbstraction(Stmt activationUnit) {
 		if (!flowSensitiveAliasing) {
 			assert this.isAbstractionActive();
 			return this;
@@ -163,7 +226,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	private Abstraction deriveNewAbstractionMutable(AccessPath p, Stmt currentStmt) {
+	protected Abstraction deriveNewAbstractionMutable(AccessPath p, Stmt currentStmt) {
 		// An abstraction needs an access path
 		if (p == null)
 			return null;
@@ -177,6 +240,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		Abstraction abs = new Abstraction(p, this);
 		abs.predecessor = this;
 		abs.currentStmt = currentStmt;
+		abs.propagationPathLength = propagationPathLength + 1;
 
 		if (!abs.getAccessPath().isEmpty())
 			abs.postdominators = null;
@@ -188,14 +252,13 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Derives a new abstraction that models the current local being thrown as
-	 * an exception
+	 * Derives a new abstraction that models the current local being thrown as an
+	 * exception
 	 * 
-	 * @param throwStmt
-	 *            The statement at which the exception was thrown
+	 * @param throwStmt The statement at which the exception was thrown
 	 * @return The newly derived abstraction
 	 */
-	public final Abstraction deriveNewAbstractionOnThrow(Stmt throwStmt) {
+	public Abstraction deriveNewAbstractionOnThrow(Stmt throwStmt) {
 		Abstraction abs = clone();
 
 		abs.currentStmt = throwStmt;
@@ -205,14 +268,13 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Derives a new abstraction that models the current local being caught as
-	 * an exception
+	 * Derives a new abstraction that models the current local being caught as an
+	 * exception
 	 * 
-	 * @param ap
-	 *            The access path in which the tainted exception is stored
+	 * @param ap The access path in which the tainted exception is stored
 	 * @return The newly derived abstraction
 	 */
-	public final Abstraction deriveNewAbstractionOnCatch(AccessPath ap) {
+	public Abstraction deriveNewAbstractionOnCatch(AccessPath ap) {
 		assert this.exceptionThrown;
 		Abstraction abs = deriveNewAbstractionMutable(ap, null);
 		if (abs == null)
@@ -257,14 +319,13 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	/**
 	 * Gets whether this value has been thrown as an exception
 	 * 
-	 * @return True if this value has been thrown as an exception, otherwise
-	 *         false
+	 * @return True if this value has been thrown as an exception, otherwise false
 	 */
 	public boolean getExceptionThrown() {
 		return this.exceptionThrown;
 	}
 
-	public final Abstraction deriveConditionalAbstractionEnter(UnitContainer postdom, Stmt conditionalUnit) {
+	public Abstraction deriveConditionalAbstractionEnter(UnitContainer postdom, Stmt conditionalUnit) {
 		assert this.isAbstractionActive();
 
 		if (postdominators != null && postdominators.contains(postdom))
@@ -281,7 +342,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	public final Abstraction deriveConditionalAbstractionCall(Unit conditionalCallSite) {
+	public Abstraction deriveConditionalAbstractionCall(Unit conditionalCallSite) {
 		assert this.isAbstractionActive();
 		assert conditionalCallSite != null;
 
@@ -296,7 +357,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return abs;
 	}
 
-	public final Abstraction dropTopPostdominator() {
+	public Abstraction dropTopPostdominator() {
 		if (postdominators == null || postdominators.isEmpty())
 			return this;
 
@@ -333,6 +394,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		abs.neighbors = null;
 		abs.currentStmt = null;
 		abs.correspondingCallSite = null;
+		abs.propagationPathLength = propagationPathLength + 1;
 
 		assert abs.equals(this);
 		return abs;
@@ -361,11 +423,10 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * Checks whether this object locally equals the given object, i.e. the both
-	 * are equal modulo the access path
+	 * Checks whether this object locally equals the given object, i.e. the both are
+	 * equal modulo the access path
 	 * 
-	 * @param other
-	 *            The object to compare this object with
+	 * @param other The object to compare this object with
 	 * @return True if this object is locally equal to the given one, otherwise
 	 *         false
 	 */
@@ -420,10 +481,9 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * Checks whether this abstraction entails the given abstraction, i.e. this
 	 * taint also taints everything that is tainted by the given taint.
 	 * 
-	 * @param other
-	 *            The other taint abstraction
-	 * @return True if this object at least taints everything that is also
-	 *         tainted by the given object
+	 * @param other The other taint abstraction
+	 * @return True if this object at least taints everything that is also tainted
+	 *         by the given object
 	 */
 	public boolean entails(Abstraction other) {
 		if (accessPath == null) {
@@ -461,32 +521,32 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	@Override
-	public void addNeighbor(Abstraction originalAbstraction) {
+	public boolean addNeighbor(Abstraction originalAbstraction) {
 		// We should not register ourselves as a neighbor
 		if (originalAbstraction == this)
-			return;
+			return false;
 
 		// We should not add identical nodes as neighbors
 		if (this.predecessor == originalAbstraction.predecessor && this.currentStmt == originalAbstraction.currentStmt
 				&& this.predecessor == originalAbstraction.predecessor)
-			return;
+			return false;
 
 		synchronized (this) {
 			if (neighbors == null)
-				neighbors = Sets.newIdentityHashSet();
+				neighbors = new TCustomHashSet<Abstraction>(NeighborHashingStrategy.INSTANCE);
 			else if (InfoflowConfiguration.getMergeNeighbors()) {
 				// Check if we already have an identical neighbor
 				for (Abstraction nb : neighbors) {
 					if (nb == originalAbstraction)
-						return;
+						return false;
 					if (originalAbstraction.predecessor == nb.predecessor
 							&& originalAbstraction.currentStmt == nb.currentStmt
 							&& originalAbstraction.correspondingCallSite == nb.correspondingCallSite) {
-						return;
+						return false;
 					}
 				}
 			}
-			this.neighbors.add(originalAbstraction);
+			return this.neighbors.add(originalAbstraction);
 		}
 	}
 
@@ -508,27 +568,29 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	public void setPredecessor(Abstraction predecessor) {
 		this.predecessor = predecessor;
 		assert this.predecessor != this;
+
+		this.neighborHashCode = 0;
 	}
 
 	/**
 	 * Only use this method if you really need to fake a source context and know
 	 * what you are doing.
 	 * 
-	 * @param sourceContext
-	 *            The new source context
+	 * @param sourceContext The new source context
 	 */
 	public void setSourceContext(SourceContext sourceContext) {
 		this.sourceContext = sourceContext;
+		this.hashCode = 0;
+		this.neighborHashCode = 0;
 	}
 
 	/**
-	 * Registers that a worker thread with the given ID has already processed
-	 * this abstraction
+	 * Registers that a worker thread with the given ID has already processed this
+	 * abstraction
 	 * 
-	 * @param id
-	 *            The ID of the worker thread
-	 * @return True if the worker thread with the given ID has not been
-	 *         registered before, otherwise false
+	 * @param id The ID of the worker thread
+	 * @return True if the worker thread with the given ID has not been registered
+	 *         before, otherwise false
 	 */
 	public boolean registerPathFlag(int id, int maxSize) {
 		if (pathFlags == null || pathFlags.size() < maxSize) {
@@ -565,11 +627,12 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	/**
-	 * For internal use by memory manager only. Setting a new access path will
-	 * not update any dependent data such as cached hashes. Handle with care!
+	 * For internal use by memory manager only
 	 */
 	void setAccessPath(AccessPath accessPath) {
 		this.accessPath = accessPath;
+		this.hashCode = 0;
+		this.neighborHashCode = 0;
 	}
 
 	void setCurrentStmt(Stmt currentStmt) {
@@ -579,6 +642,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	@Override
 	public int getNeighborCount() {
 		return neighbors == null ? 0 : neighbors.size();
+	}
+
+	@Override
+	public int getPathLength() {
+		return propagationPathLength;
 	}
 
 }

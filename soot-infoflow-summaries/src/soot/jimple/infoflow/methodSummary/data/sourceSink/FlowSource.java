@@ -14,41 +14,55 @@ import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 
 	public FlowSource(SourceSinkType type, String baseType) {
-		super(type, -1, baseType, null, null);
+		super(type, -1, baseType, null, null, false);
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap) {
-		super(type, -1, baseType, null, null, gap);
+		super(type, -1, baseType, null, null, gap, false);
+	}
+
+	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap, boolean matchStrict) {
+		super(type, -1, baseType, null, null, gap, matchStrict);
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, -1, baseType, fields, fieldTypes);
+		super(type, -1, baseType, fields, fieldTypes, false);
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes, GapDefinition gap) {
-		super(type, -1, baseType, fields, fieldTypes, gap);
+		super(type, -1, baseType, fields, fieldTypes, gap, false);
+	}
+
+	public FlowSource(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes, GapDefinition gap,
+			boolean matchStrict) {
+		super(type, -1, baseType, fields, fieldTypes, gap, matchStrict);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType) {
-		super(type, parameterIdx, baseType, null, null);
+		super(type, parameterIdx, baseType, null, null, false);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, GapDefinition gap) {
-		super(type, parameterIdx, baseType, null, null, gap);
+		super(type, parameterIdx, baseType, null, null, gap, false);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, parameterIdx, baseType, fields, fieldTypes);
+		super(type, parameterIdx, baseType, fields, fieldTypes, false);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
 			GapDefinition gap) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap);
+		super(type, parameterIdx, baseType, fields, fieldTypes, gap, false);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
-			GapDefinition gap, Object userData) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap, userData);
+			GapDefinition gap, boolean matchStrict) {
+		super(type, parameterIdx, baseType, fields, fieldTypes, gap, matchStrict);
+	}
+
+	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
+			GapDefinition gap, Object userData, boolean matchStrict) {
+		super(type, parameterIdx, baseType, fields, fieldTypes, gap, userData, matchStrict);
 	}
 
 	@Override
@@ -94,12 +108,12 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 		GapDefinition newGap = replacementMap.get(gap.getID());
 		if (newGap == null)
 			return this;
-		return new FlowSource(type, parameterIdx, baseType, accessPath, accessPathTypes, newGap);
+		return new FlowSource(type, parameterIdx, baseType, accessPath, accessPathTypes, newGap, matchStrict);
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new FlowSource(type, parameterIdx, baseType, accessPath, accessPathTypes, gap, userData);
+		return new FlowSource(type, parameterIdx, baseType, accessPath, accessPathTypes, gap, userData, matchStrict);
 	}
 
 }

@@ -19,19 +19,19 @@ public class LayoutControlFactory {
 	private boolean loadAdditionalAttributes = false;
 	private SootClass scEditText = null;
 
-	public LayoutControl createLayoutControl(String layoutFile, SootClass layoutClass, AXmlNode node) {
+	public AndroidLayoutControl createLayoutControl(String layoutFile, SootClass layoutClass, AXmlNode node) {
 		// Initialize the required classes
 		if (scEditText == null)
 			scEditText = Scene.v().getSootClassUnsafe("android.widget.EditText");
 
 		// Create the layout control
-		LayoutControl lc = createLayoutControl(layoutClass);
+		AndroidLayoutControl lc = createLayoutControl(layoutClass);
 
 		applyAttributes(node, lc);
 		return lc;
 	}
 
-	protected void applyAttributes(AXmlNode node, LayoutControl lc) {
+	protected void applyAttributes(AXmlNode node, AndroidLayoutControl lc) {
 		Map<String, AXmlAttribute<?>> attributes = node.getAttributes();
 		for (Entry<String, AXmlAttribute<?>> entry : attributes.entrySet()) {
 			if (entry.getKey() == null)
@@ -59,7 +59,7 @@ public class LayoutControlFactory {
 	 *            The layout class in Android that implements the control
 	 * @return The newly created layout control
 	 */
-	protected LayoutControl createLayoutControl(SootClass layoutClass) {
+	protected AndroidLayoutControl createLayoutControl(SootClass layoutClass) {
 		if (scEditText != null
 				&& Scene.v().getFastHierarchy().canStoreType(layoutClass.getType(), scEditText.getType()))
 			return new EditTextControl(layoutClass);

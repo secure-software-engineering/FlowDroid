@@ -1,3 +1,5 @@
+[![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/)
+
 # FlowDroid Data Flow Analysis Tool
 
 This repository hosts the FlowDroid data flow analysis tool. FlowDroid statically computes data flows in Android apps and Java programs.
@@ -31,7 +33,7 @@ to build the tool and run all unit tests. The Android JAR folder is the "platfor
 folder. The DroidBench folder is the location of DroidBench, our micro-benchmark suite. These two environment variables are only
 required for running the unit tests.
 
-If you do want DroidBench, or are in a hurry and just want to build the tool without the tests (they can take
+If you do not want DroidBench, or are in a hurry and just want to build the tool without the tests (they can take
 quite some time to complete, we have more than 400 of them), try
 
 ```
@@ -72,6 +74,21 @@ issues, you can use our default file "SourcesAndSinks.txt" in the "soot-infoflow
 
 For finding out about the other options of the command-line tool, you can run the tool with the "--help" option or have a look at
 the MainClass.initializeCommandLineOptions()" method in the source code (module soot-infoflow-cmd).
+
+### Configuring FlowDroid for Performance
+
+For some apps, FlowDroid will take very long for large apps. There are various options with which you can configure a tradeoff between performance, precision and recall.
+
+* ```-ns``` Do not track taints on static fields and disregard static initializers.
+* ```-ne``` Do not track exceptional flows.
+
+You can also define timeouts:
+
+* ```-dt N``` Aborts the data flow analysis after N seconds and returns the results obtained so far.
+* ```-ct N``` Aborts the callback collection during callgraph construction after N seconds and continues with the (incomplete) callgraph constructed so far.
+* ```-rt N``` Aborts the result collection after N seconds and returns the results obtained so far.
+
+Note that timeouts are additive. All three stages must complete or run into a timeout for the tool to return and deliver results.
 
 ### Using FlowDroid as a library
 

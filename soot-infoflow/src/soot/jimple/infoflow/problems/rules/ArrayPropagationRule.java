@@ -30,9 +30,8 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 
-	public ArrayPropagationRule(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, aliasing, zeroValue, results);
+	public ArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+		super(manager, zeroValue, results);
 	}
 
 	@Override

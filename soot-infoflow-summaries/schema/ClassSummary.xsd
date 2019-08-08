@@ -3,14 +3,35 @@
 
 <xs:element name="summary">
 	<xs:complexType>
-		<xs:sequence>
-			<xs:element name="methods">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="method" type="methodType" minOccurs="1" maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element name="hierarchy" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="superClass" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="methods" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="method" type="methodType" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="gaps" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gap" type="gapType" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="fileFormatVersion" type="xs:int" />
 	</xs:complexType>
@@ -76,6 +97,17 @@
 	<xs:attribute name="AccessPath" type="xs:string" />
 	<xs:attribute name="AccessPathTypes" type="xs:string" />
 	<xs:attribute name="gap" type="xs:int" />
+
+	<!-- 
+	True if the resulting access path shall be a.* instead of a.
+	-->
+	<xs:attribute name="taintSubFields" type="xs:boolean" use="optional" default="false" />
+
+	<!-- 
+	True if the access path shall only match if all fields match. In strict mode,
+	a.* will not match a summary for a.foo. False to allow for wildcard matching.
+	-->
+	<xs:attribute name="matchStrict" type="xs:boolean" use="optional" default="false" />
 </xs:complexType>
 
 <xs:simpleType name="sourceSinkType">
@@ -87,5 +119,10 @@
 		<xs:enumeration value="Return" />
 	</xs:restriction>
 </xs:simpleType>
+
+<xs:complexType name="gapType">
+	<xs:attribute name="num" type="xs:int" />
+	<xs:attribute name="id" type="xs:string" />
+</xs:complexType>
 
 </xs:schema>

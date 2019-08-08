@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.Throwable)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.Throwable cause]"
+						AccessPathTypes="[java.lang.Throwable]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.lang.Throwable,boolean,boolean)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.Throwable cause]"
+						AccessPathTypes="[java.lang.Throwable]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.Throwable)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.Throwable cause]"
+						AccessPathTypes="[java.lang.Throwable]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Throwable getCause()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.Throwable cause]"
+						AccessPathTypes="[java.lang.Throwable]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getLocalizedMessage()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String localizedMessage]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getMessage()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.StackTraceElement[] getStackTrace()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.StackTraceElement[] stackTrace]"
+						AccessPathTypes="[java.lang.StackTraceElement[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Throwable initCause(java.lang.Throwable)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.Throwable cause]"
+						AccessPathTypes="[java.lang.Throwable]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void printStackTrace(java.io.PrintStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.StackTraceElement[] stackTrace]"
+						AccessPathTypes="[java.lang.StackTraceElement[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void printStackTrace(java.io.PrintWriter)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.StackTraceElement[] stackTrace]"
+						AccessPathTypes="[java.lang.StackTraceElement[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setStackTrace(java.lang.StackTraceElement[])">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.StackTraceElement[] stackTrace]"
+						AccessPathTypes="[java.lang.StackTraceElement[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String localizedMessage]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.lang.Throwable: java.lang.String message]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

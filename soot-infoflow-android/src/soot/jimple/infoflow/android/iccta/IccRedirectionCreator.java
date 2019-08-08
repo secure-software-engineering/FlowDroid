@@ -1,137 +1,161 @@
 package soot.jimple.infoflow.android.iccta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.Body;
-import soot.IntType;
 import soot.Local;
 import soot.Modifier;
 import soot.NullType;
+import soot.PatchingChain;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.ValueBox;
 import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.internal.JSpecialInvokeExpr;
-import soot.jimple.internal.JVirtualInvokeExpr;
+import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointInfo;
+import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
+import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointInfo;
+import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.tagkit.Tag;
+import soot.util.HashMultiMap;
+import soot.util.MultiMap;
+import soot.util.NumberedString;
 
 public class IccRedirectionCreator {
 
-	private static int num = 0;
+	/**
+	 * Interface to notify external code that a new invocation statement for a
+	 * redirector method has been inserted
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public interface IRedirectorCallInserted {
 
-	private static SootClass ipcSC = null;
-	private static String ipcSCClassName = "IpcSC";
-	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
-	private static RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
+		/**
+		 * Method that is called when a new invocation to a redirector statement has
+		 * been inserted
+		 * 
+		 * @param link             The inter-component link for which a statement has
+		 *                         been injected
+		 * @param callStmt         The statement that has been injected
+		 * @param redirectorMethod The redirector method that is being called
+		 */
+		public void onRedirectorCallInserted(IccLink link, Stmt callStmt, SootMethod redirectorMethod);
 
-	// dest to SootMethod is not good since one dest can have multiple redirect
-	// method
-	// private Map<String, SootMethod> destinations2SootMethod = new
-	// HashMap<String, SootMethod>();
-	private Map<String, SootMethod> source2RedirectMethod = new HashMap<String, SootMethod>();
-	private Map<String, SootClass> destination2sootClass = new HashMap<String, SootClass>();
-
-	private static IccRedirectionCreator s = null;
-
-	private IccRedirectionCreator() {
 	}
 
-	public static IccRedirectionCreator v() {
-		if (s == null) {
-			s = new IccRedirectionCreator();
-			ipcSC = new SootClass(ipcSCClassName);
-			ipcSC.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+	private static int num = 0;
 
-			ipcSC.setApplicationClass();
-			ipcSC.setInScene(true);
+	private final static Logger logger = LoggerFactory.getLogger(IccRedirectionCreator.class);
 
-			// Scene.v().addClass(ipcSC);
-		}
-		return s;
+	private final RefType INTENT_TYPE = RefType.v("android.content.Intent");
+	private final RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
+
+	private final Map<String, SootMethod> source2RedirectMethod = new HashMap<>();
+	private final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
+
+	protected final SootClass dummyMainClass;
+	protected final ComponentEntryPointCollection componentToEntryPoint;
+	protected final NumberedString subsigStartActivityForResult;
+
+	protected IRedirectorCallInserted instrumentationCallback = null;
+
+	public IccRedirectionCreator(SootClass dummyMainClass, ComponentEntryPointCollection componentToEntryPoint) {
+		this.componentToEntryPoint = componentToEntryPoint;
+		this.dummyMainClass = dummyMainClass;
+
+		subsigStartActivityForResult = Scene.v().getSubSigNumberer()
+				.findOrAdd("void startActivityForResult(android.content.Intent,int)");
 	}
 
 	public void redirectToDestination(IccLink link) {
-		if (Scene.v().getSootClass(link.getDestinationC()).isPhantom()) {
+		if (link.getDestinationC().isPhantom())
 			return;
-		}
+
+		// Do not instrument code into system methods
+		if (SystemClassHandler.v().isClassInSystemPackage(link.getFromSM().getDeclaringClass().getName()))
+			return;
 
 		// 1) generate redirect method
-		SootMethod redirectSM = IccRedirectionCreator.v().getRedirectMethod(link);
+		SootMethod redirectSM = getRedirectMethod(link);
+		if (redirectSM == null)
+			return;
 
 		// 2) instrument the source to call the generated redirect method after
 		// ICC methods
-		IccInstrumentSource.v().instrumentSource(link, redirectSM);
+		insertRedirectMethodCallAfterIccMethod(link, redirectSM);
 	}
 
 	/**
 	 * Redirect ICC call at unit in sm to the right component
 	 * 
-	 * 
-	 * 
 	 * @param link
 	 * @return
 	 */
-	public SootMethod getRedirectMethod(IccLink link) {
-		if (!destination2sootClass.keySet().contains(link.getDestinationC())) {
-			SootClass destinationSC = null;
+	protected SootMethod getRedirectMethod(IccLink link) {
+		// If the target component is, e.g., disabled in the manifest, we do not
+		// have an
+		// entry point for it
+		SootClass instrumentedDestinationSC = link.getDestinationC();
+		if (!componentToEntryPoint.hasEntryPointForComponent(instrumentedDestinationSC))
+			return null;
 
-			// if
-			// (link.getExit_kind().equals(IccTAConstants.ContentProviderExitKind))
-			// {
-			// destinationSC =
-			// IccInstrumentDestination.v().instrumentDestinationForContentProvider(link.getDestinationC());
-			// }
-			// else
-			// {
-			destinationSC = IccInstrumentDestination.v().instrumentDestination(link);
-			// }
-
-			// build up destination2sootClass map
-			destination2sootClass.put(link.getDestinationC(), destinationSC);
-		}
-
-		SootClass instrumentedDestinationSC = destination2sootClass.get(link.getDestinationC());
-
-		if (!source2RedirectMethod.containsKey(link.toString())) {
+		// Get the redirection method and create it if it doesn't exist
+		SootMethod redirectMethod = source2RedirectMethod.get(link.toString());
+		if (redirectMethod == null) {
 			// build up source2RedirectMethod map
 			String source = link.toString();
-			SootMethod redirectMethod = null;
 			Stmt stmt = (Stmt) link.getFromU();
 
 			if (stmt.containsInvokeExpr()) {
 				if (stmt.getInvokeExpr().getMethod().getName().equals("startActivityForResult")) {
 					Value expr = stmt.getInvokeExprBox().getValue();
-					String clsName = "";
-					if (expr instanceof JVirtualInvokeExpr) {
-						JVirtualInvokeExpr jviExpr = (JVirtualInvokeExpr) expr;
-						clsName = jviExpr.getBase().getType().toString();
-					} else if (expr instanceof JSpecialInvokeExpr) {
-						JSpecialInvokeExpr jsiExpr = (JSpecialInvokeExpr) expr;
-						clsName = jsiExpr.getBase().getType().toString();
+					if (expr instanceof InstanceInvokeExpr) {
+						InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) expr;
+						Type tp = iiexpr.getBase().getType();
+						if (tp instanceof RefType) {
+							RefType rt = (RefType) tp;
+							redirectMethod = generateRedirectMethodForStartActivityForResult(rt.getSootClass(),
+									instrumentedDestinationSC);
+							if (redirectMethod == null)
+								return null;
+						}
 					}
-
-					SootClass sc = Scene.v().getSootClass(clsName);
-					redirectMethod = generateRedirectMethodForStartActivityForResult(sc, instrumentedDestinationSC);
 				} else if (stmt.getInvokeExpr().getMethod().getName().equals("bindService")) {
 					Value v = stmt.getInvokeExpr().getArg(1);
-
-					SootClass sc = Scene.v().getSootClass(v.getType().toString());
-					redirectMethod = generateRedirectMethodForBindService(sc, instrumentedDestinationSC);
+					if (v.getType() instanceof RefType) {
+						RefType rt = (RefType) v.getType();
+						redirectMethod = generateRedirectMethodForBindService(rt.getSootClass(),
+								instrumentedDestinationSC);
+						if (redirectMethod == null)
+							return null;
+					}
 				} else {
 					redirectMethod = generateRedirectMethod(instrumentedDestinationSC);
+					if (redirectMethod == null)
+						return null;
 				}
 			}
 
@@ -142,21 +166,20 @@ public class IccRedirectionCreator {
 			source2RedirectMethod.put(source, redirectMethod);
 		}
 
-		return source2RedirectMethod.get(link.toString());
+		return redirectMethod;
 	}
 
-	public SootMethod generateRedirectMethodForStartActivityForResult(SootClass originActivity, SootClass destComp) {
+	protected SootMethod generateRedirectMethodForStartActivityForResult(SootClass originActivity, SootClass destComp) {
 		String newSM_name = "redirector" + num++;
 
-		List<Type> newSM_parameters = new ArrayList<Type>();
+		List<Type> newSM_parameters = new ArrayList<>();
 		newSM_parameters.add(originActivity.getType());
 		newSM_parameters.add(INTENT_TYPE);
-		Type newSM_return_type = VoidType.v();
-		int modifiers = Modifier.STATIC | Modifier.PUBLIC;
 
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, newSM_return_type, modifiers);
-		ipcSC.addMethod(newSM);
-		JimpleBody b = Jimple.v().newBody(newSM);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, newSM_parameters, VoidType.v(),
+				Modifier.STATIC | Modifier.PUBLIC);
+		dummyMainClass.addMethod(newSM);
+		final JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
 		LocalGenerator lg = new LocalGenerator(b);
@@ -164,79 +187,55 @@ public class IccRedirectionCreator {
 		Local originActivityParameterLocal = lg.generateLocal(originActivity.getType());
 		Unit originActivityParameterU = Jimple.v().newIdentityStmt(originActivityParameterLocal,
 				Jimple.v().newParameterRef(originActivity.getType(), 0));
+		b.getUnits().add(originActivityParameterU);
 
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
-		Unit intentParameterU = Jimple.v().newIdentityStmt(intentParameterLocal,
-				Jimple.v().newParameterRef(INTENT_TYPE, 1));
-
-		// new dest component
-		Local destCompLocal = lg.generateLocal(destComp.getType());
-		Unit newU = Jimple.v().newAssignStmt(destCompLocal, Jimple.v().newNewExpr(destComp.getType()));
-
-		// call <init> method
-		List<Type> parameters = new ArrayList<Type>();
-		parameters.add(INTENT_TYPE);
-		SootMethod method = destComp.getMethod("<init>", parameters, VoidType.v());
-		List<Value> args = new ArrayList<Value>();
-		args.add(intentParameterLocal);
-		Unit initU = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(destCompLocal, method.makeRef(), args));
+		b.getUnits().add(Jimple.v().newIdentityStmt(intentParameterLocal, Jimple.v().newParameterRef(INTENT_TYPE, 1)));
 
 		// call onCreate
-		method = destComp.getMethodByName(IccDummyMainCreator.DUMMY_MAIN_METHOD);
-		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(destCompLocal, method.makeRef());
-		Unit callU = Jimple.v().newInvokeStmt(invoke);
+		Local componentLocal = lg.generateLocal(destComp.getType());
+		ActivityEntryPointInfo entryPointInfo = (ActivityEntryPointInfo) componentToEntryPoint.get(destComp);
+		{
+			SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(destComp);
+			if (targetDummyMain == null)
+				throw new RuntimeException(
+						String.format("Destination component %s has no dummy main method", destComp.getName()));
+			b.getUnits().add(Jimple.v().newAssignStmt(componentLocal, Jimple.v()
+					.newStaticInvokeExpr(targetDummyMain.makeRef(), Collections.singletonList(intentParameterLocal))));
+		}
 
-		// call sc.getIntentForActivityResult
+		// Get the activity result
 		Local arIntentLocal = lg.generateLocal(INTENT_TYPE);
-		Unit nullarIntentLocalParamU = Jimple.v().newAssignStmt(arIntentLocal, NullConstant.v());
-		method = destComp.getMethodByName("getIntentForActivityResult");
-		invoke = Jimple.v().newVirtualInvokeExpr(destCompLocal, method.makeRef());
-		Unit destCompCallU = Jimple.v().newAssignStmt(arIntentLocal, invoke);
+		b.getUnits().add(Jimple.v().newAssignStmt(arIntentLocal,
+				Jimple.v().newInstanceFieldRef(componentLocal, entryPointInfo.getResultIntentField().makeRef())));
 
 		// some apps do not have an onActivityResult method even they use
 		// startActivityForResult to communicate with other components.
-		try {
-			method = originActivity.getMethodByName("onActivityResult");
-		} catch (Exception ex) {
-			method = generateFakeOnActivityResult(originActivity);
+		SootMethod method = originActivity.getMethodUnsafe("void onActivityResult(int,int,android.content.Intent)");
+		if (method != null) {
+			List<Value> args = new ArrayList<>();
+			args.add(IntConstant.v(-1));
+			args.add(IntConstant.v(-1));
+			args.add(arIntentLocal);
+			b.getUnits().add(Jimple.v().newInvokeStmt(
+					Jimple.v().newVirtualInvokeExpr(originActivityParameterLocal, method.makeRef(), args)));
 		}
 
-		Local iLocal1 = lg.generateLocal(IntType.v());
-		Local iLocal2 = lg.generateLocal(IntType.v());
-		Unit defaultValueParamU1 = Jimple.v().newAssignStmt(iLocal1, IntConstant.v(-1));
-		Unit defaultValueParamU2 = Jimple.v().newAssignStmt(iLocal2, IntConstant.v(-1));
-		args = new ArrayList<Value>();
-		args.add(iLocal1);
-		args.add(iLocal2);
-		args.add(arIntentLocal);
-		invoke = Jimple.v().newVirtualInvokeExpr(originActivityParameterLocal, method.makeRef(), args);
-		Unit onActivityResultCall = Jimple.v().newInvokeStmt(invoke);
-
-		b.getUnits().add(originActivityParameterU);
-		b.getUnits().add(intentParameterU);
-		b.getUnits().add(newU);
-		b.getUnits().add(initU);
-		// b.getUnits().add(nullParamU);
-		b.getUnits().add(callU);
-		b.getUnits().add(nullarIntentLocalParamU);
-		b.getUnits().add(destCompCallU);
-		b.getUnits().add(defaultValueParamU1);
-		b.getUnits().add(defaultValueParamU2);
-		b.getUnits().add(onActivityResultCall);
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
-
 		return newSM;
 	}
 
-	public SootMethod generateRedirectMethod(SootClass wrapper) {
-		String newSM_name = "redirector" + num++;
-		List<Type> newSM_parameters = new ArrayList<Type>();
-		newSM_parameters.add(INTENT_TYPE);
-		Type newSM_return_type = VoidType.v();
-		int modifiers = Modifier.STATIC | Modifier.PUBLIC;
+	protected SootMethod generateRedirectMethod(SootClass wrapper) {
+		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			return null;
+		}
 
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, newSM_return_type, modifiers);
-		ipcSC.addMethod(newSM);
+		String newSM_name = "redirector" + num++;
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
+				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
+		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
@@ -244,50 +243,30 @@ public class IccRedirectionCreator {
 
 		// identity
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
-		Unit intentParameterU = Jimple.v().newIdentityStmt(intentParameterLocal,
-				Jimple.v().newParameterRef(INTENT_TYPE, 0));
-
-		// new
-		Local al = lg.generateLocal(wrapper.getType());
-		Unit newU = Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(wrapper.getType()));
-		// init
-		List<Type> parameters = new ArrayList<Type>();
-		parameters.add(INTENT_TYPE);
-		SootMethod method = wrapper.getMethod("<init>", parameters, VoidType.v());
-		List<Value> args = new ArrayList<Value>();
-		args.add(intentParameterLocal);
-		Unit initU = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args));
+		b.getUnits().add(Jimple.v().newIdentityStmt(intentParameterLocal, Jimple.v().newParameterRef(INTENT_TYPE, 0)));
 
 		// call dummyMainMethod
-		method = wrapper.getMethodByName(IccDummyMainCreator.DUMMY_MAIN_METHOD);
-		// args = new ArrayList<Value>();
-		// Local pLocal = lg.generateLocal(RefType.v("android.os.Bundle"));
-		// Unit nullParamU = Jimple.v().newAssignStmt(pLocal,
-		// NullConstant.v());
-		// args.add(pLocal);
-		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(al, method.makeRef());
-		Unit callU = Jimple.v().newInvokeStmt(invoke);
+		{
+			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(targetDummyMain.makeRef(),
+					Collections.singletonList(intentParameterLocal))));
 
-		b.getUnits().add(intentParameterU);
-		b.getUnits().add(newU);
-		b.getUnits().add(initU);
-		// b.getUnits().add(nullParamU);
-		b.getUnits().add(callU);
+		}
+
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
-
 		return newSM;
 
 	}
 
-	public SootMethod generateRedirectMethodForStartActivity(SootClass wrapper) {
+	protected SootMethod generateRedirectMethodForStartActivity(SootClass wrapper) {
+		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			return null;
+		}
 		String newSM_name = "redirector" + num++;
-		List<Type> newSM_parameters = new ArrayList<Type>();
-		newSM_parameters.add(INTENT_TYPE);
-		Type newSM_return_type = VoidType.v();
-		int modifiers = Modifier.STATIC | Modifier.PUBLIC;
-
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, newSM_return_type, modifiers);
-		ipcSC.addMethod(newSM);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
+				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
+		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
@@ -295,249 +274,250 @@ public class IccRedirectionCreator {
 
 		// identity
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
-		Unit intentParameterU = Jimple.v().newIdentityStmt(intentParameterLocal,
-				Jimple.v().newParameterRef(INTENT_TYPE, 0));
-
-		// new
-		Local al = lg.generateLocal(wrapper.getType());
-		Unit newU = Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(wrapper.getType()));
-		// init
-		List<Type> parameters = new ArrayList<Type>();
-		parameters.add(INTENT_TYPE);
-		SootMethod method = wrapper.getMethod("<init>", parameters, VoidType.v());
-		List<Value> args = new ArrayList<Value>();
-		args.add(intentParameterLocal);
-		Unit initU = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args));
+		b.getUnits().add(Jimple.v().newIdentityStmt(intentParameterLocal, Jimple.v().newParameterRef(INTENT_TYPE, 0)));
 
 		// call dummyMainMethod
-		// method =
-		// wrapper.getMethodByName(ICCDummyMainCreator.DUMMY_MAIN_METHOD);
-		method = wrapper.getMethodByName("onCreate");
-		args = new ArrayList<Value>();
-		Local pLocal = lg.generateLocal(RefType.v("android.os.Bundle"));
-		Unit nullParamU = Jimple.v().newAssignStmt(pLocal, NullConstant.v());
-		args.add(pLocal);
-		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(al, method.makeRef(), args);
-		Unit callU = Jimple.v().newInvokeStmt(invoke);
+		{
+			b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(targetDummyMain.makeRef(),
+					Collections.singletonList(intentParameterLocal))));
 
-		b.getUnits().add(intentParameterU);
-		b.getUnits().add(newU);
-		b.getUnits().add(initU);
-		b.getUnits().add(nullParamU);
-		b.getUnits().add(callU);
+		}
+
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
-
 		return newSM;
 
 	}
 
-	public SootMethod generateRedirectMethodForBindService(SootClass serviceConnection, SootClass destComp) {
+	protected SootMethod generateRedirectMethodForBindService(SootClass serviceConnection, SootClass destComp) {
+		ServiceEntryPointInfo entryPointInfo = (ServiceEntryPointInfo) componentToEntryPoint.get(destComp);
+		if (entryPointInfo == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			return null;
+		}
+		SootMethod targetDummyMain = entryPointInfo.getEntryPoint();
+		if (targetDummyMain == null) {
+			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			return null;
+		}
 		String newSM_name = "redirector" + num++;
 
-		List<Type> newSM_parameters = new ArrayList<Type>();
+		List<Type> newSM_parameters = new ArrayList<>();
 		newSM_parameters.add(serviceConnection.getType());
 		newSM_parameters.add(INTENT_TYPE);
-		Type newSM_return_type = VoidType.v();
-		int modifiers = Modifier.STATIC | Modifier.PUBLIC;
 
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, newSM_return_type, modifiers);
-		ipcSC.addMethod(newSM);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, newSM_parameters, VoidType.v(),
+				Modifier.STATIC | Modifier.PUBLIC);
+		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
 		LocalGenerator lg = new LocalGenerator(b);
 
 		Local originActivityParameterLocal = lg.generateLocal(serviceConnection.getType());
-		Unit originActivityParameterU = Jimple.v().newIdentityStmt(originActivityParameterLocal,
-				Jimple.v().newParameterRef(serviceConnection.getType(), 0));
+		b.getUnits().add(Jimple.v().newIdentityStmt(originActivityParameterLocal,
+				Jimple.v().newParameterRef(serviceConnection.getType(), 0)));
 
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
-		Unit intentParameterU = Jimple.v().newIdentityStmt(intentParameterLocal,
-				Jimple.v().newParameterRef(INTENT_TYPE, 1));
-
-		// new dest component
-		Local destCompLocal = lg.generateLocal(destComp.getType());
-		Unit newU = Jimple.v().newAssignStmt(destCompLocal, Jimple.v().newNewExpr(destComp.getType()));
-
-		// call <init> method
-		List<Type> parameters = new ArrayList<Type>();
-		parameters.add(INTENT_TYPE);
-		SootMethod method = destComp.getMethod("<init>", parameters, VoidType.v());
-		List<Value> args = new ArrayList<Value>();
-		args.add(intentParameterLocal);
-		Unit initU = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(destCompLocal, method.makeRef(), args));
+		b.getUnits().add(Jimple.v().newIdentityStmt(intentParameterLocal, Jimple.v().newParameterRef(INTENT_TYPE, 1)));
 
 		// call dummy main method
-		method = destComp.getMethodByName(IccDummyMainCreator.DUMMY_MAIN_METHOD);
-		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(destCompLocal, method.makeRef());
-		Unit callU = Jimple.v().newInvokeStmt(invoke);
+		Local componentLocal = lg.generateLocal(destComp.getType());
+		{
+			b.getUnits().add(Jimple.v().newAssignStmt(componentLocal, Jimple.v()
+					.newStaticInvokeExpr(targetDummyMain.makeRef(), Collections.singletonList(intentParameterLocal))));
 
-		// call dest.getIBinderForIpc
+		}
 
-		method = destComp.getMethodByName("getIBinderForIpc");
-		Type binderType = method.getReturnType();
-		Local ibinderLocal = lg.generateLocal(binderType);
-		Unit nullarIntentLocalParamU = Jimple.v().newAssignStmt(ibinderLocal, NullConstant.v());
-		invoke = Jimple.v().newVirtualInvokeExpr(destCompLocal, method.makeRef());
-		Unit destCompCallU = Jimple.v().newAssignStmt(ibinderLocal, invoke);
+		// get IBinder
+		Local ibinderLocal = lg.generateLocal(IBINDER_TYPE);
+		b.getUnits().add(Jimple.v().newAssignStmt(ibinderLocal,
+				Jimple.v().newInstanceFieldRef(componentLocal, entryPointInfo.getBinderField().makeRef())));
 
 		// anonymous inner class problem, cannot get correct stmt
 		List<Type> paramTypes = new ArrayList<Type>();
 		paramTypes.add(RefType.v("android.content.ComponentName"));
 		paramTypes.add(RefType.v("android.os.IBinder"));
-		method = serviceConnection.getMethod("onServiceConnected", paramTypes);
-
-		changeParameterType(method, IBINDER_TYPE, binderType);
+		SootMethod method = serviceConnection.getMethod("onServiceConnected", paramTypes);
 
 		Local iLocal1 = lg.generateLocal(NullType.v());
-		Unit defaultValueParamU1 = Jimple.v().newAssignStmt(iLocal1, NullConstant.v());
-		args = new ArrayList<Value>();
+		b.getUnits().add(Jimple.v().newAssignStmt(iLocal1, NullConstant.v()));
+
+		List<Value> args = new ArrayList<Value>();
 		args.add(iLocal1);
 		args.add(ibinderLocal);
-
 		SootClass sc = Scene.v().getSootClass(originActivityParameterLocal.getType().toString());
+		InvokeExpr invoke;
 		if (sc.isInterface()) {
 			invoke = Jimple.v().newInterfaceInvokeExpr(originActivityParameterLocal, method.makeRef(), args);
 		} else {
 			invoke = Jimple.v().newVirtualInvokeExpr(originActivityParameterLocal, method.makeRef(), args);
 		}
+		b.getUnits().add(Jimple.v().newInvokeStmt(invoke));
 
-		Unit onActivityResultCall = Jimple.v().newInvokeStmt(invoke);
-
-		b.getUnits().add(originActivityParameterU);
-		b.getUnits().add(intentParameterU);
-		b.getUnits().add(newU);
-		b.getUnits().add(initU);
-		// b.getUnits().add(nullParamU);
-		b.getUnits().add(callU);
-		b.getUnits().add(nullarIntentLocalParamU);
-		b.getUnits().add(destCompCallU);
-		b.getUnits().add(defaultValueParamU1);
-		b.getUnits().add(onActivityResultCall);
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
-
 		return newSM;
 	}
 
-	public void changeParameterType(SootMethod sm, Type originalType, Type newType) {
-		List<Type> newTypes = new ArrayList<Type>();
-		List<Type> types = sm.getParameterTypes();
-		for (int i = 0; i < types.size(); i++) {
-			Type t = types.get(i);
-			if (t.equals(originalType)) {
-				newTypes.add(newType);
-			} else {
-				newTypes.add(t);
-			}
-		}
-
-		sm.setParameterTypes(newTypes);
-	}
-
-	public SootMethod generateFakeOnActivityResult(SootClass sootClass) {
-		List<Type> parameters = new ArrayList<Type>();
-		parameters.add(IntType.v());
-		parameters.add(IntType.v());
-		parameters.add(INTENT_TYPE);
-		SootMethod newOnActivityResult = new SootMethod("onActivityResult", parameters, VoidType.v(), Modifier.PUBLIC);
-		sootClass.addMethod(newOnActivityResult);
-
-		Body b = Jimple.v().newBody(newOnActivityResult);
-
-		// generate identityStmt
-		LocalGenerator lg = new LocalGenerator(b);
-
-		// this
-		Local thisLocal = lg.generateLocal(sootClass.getType());
-		Unit thisU = Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(sootClass.getType()));
-
-		// parameter1
-		Local int1ParameterLocal = lg.generateLocal(IntType.v());
-		Unit int1ParameterU = Jimple.v().newIdentityStmt(int1ParameterLocal,
-				Jimple.v().newParameterRef(IntType.v(), 0));
-
-		// parameter2
-		Local int2ParameterLocal = lg.generateLocal(IntType.v());
-		Unit int2ParameterU = Jimple.v().newIdentityStmt(int2ParameterLocal,
-				Jimple.v().newParameterRef(IntType.v(), 1));
-
-		// parameter
-		Type intentType = RefType.v("android.content.Intent");
-		Local intentParameterLocal = lg.generateLocal(intentType);
-		Unit intentParameterU = Jimple.v().newIdentityStmt(intentParameterLocal,
-				Jimple.v().newParameterRef(intentType, 2));
-
-		// return
-		Unit returnU = Jimple.v().newReturnVoidStmt();
-
-		b.getUnits().add(thisU);
-		b.getUnits().add(int1ParameterU);
-		b.getUnits().add(int2ParameterU);
-		b.getUnits().add(intentParameterU);
-		b.getUnits().add(returnU);
-
-		newOnActivityResult.setActiveBody(b);
-		return newOnActivityResult;
-	}
-
-	public SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootClass destProvider) {
+	protected SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootClass destProvider) {
 		SootMethod iccMethod = iccStmt.getInvokeExpr().getMethod();
-
 		String newSM_name = "redirector" + num++;
-		List<Type> newSM_parameters = iccMethod.getParameterTypes();
-		Type newSM_return_type = iccMethod.getReturnType();
-		int modifiers = Modifier.STATIC | Modifier.PUBLIC;
-
-		SootMethod newSM = new SootMethod(newSM_name, newSM_parameters, newSM_return_type, modifiers);
-		ipcSC.addMethod(newSM);
+		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, iccMethod.getParameterTypes(),
+				iccMethod.getReturnType(), Modifier.STATIC | Modifier.PUBLIC);
+		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
 		LocalGenerator lg = new LocalGenerator(b);
 
 		// all parameters
-		List<Unit> units = new ArrayList<Unit>();
-		List<Local> locals = new ArrayList<Local>();
-		for (int i = 0; i < newSM_parameters.size(); i++) {
-			Type type = newSM_parameters.get(i);
+		List<Local> locals = new ArrayList<>();
+		for (int i = 0; i < iccMethod.getParameterCount(); i++) {
+			Type type = iccMethod.getParameterType(i);
 			Local local = lg.generateLocal(type);
-			Unit localU = Jimple.v().newIdentityStmt(local, Jimple.v().newParameterRef(type, i));
-
 			locals.add(local);
-			units.add(localU);
+			b.getUnits().add(Jimple.v().newIdentityStmt(local, Jimple.v().newParameterRef(type, i)));
 		}
 
 		// new
 		Local al = lg.generateLocal(destProvider.getType());
-		Unit newU = Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destProvider.getType()));
+		b.getUnits().add(Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destProvider.getType())));
 
 		// init
 		List<Type> parameters = new ArrayList<Type>();
 		List<Value> args = new ArrayList<Value>();
 		SootMethod method = destProvider.getMethod("<init>", parameters, VoidType.v());
-		Unit initU = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args));
+		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args)));
 
-		Local rtLocal = lg.generateLocal(newSM_return_type);
+		Local rtLocal = lg.generateLocal(iccMethod.getReturnType());
 
 		// call related method and assign the result to return local, may
 		// optimize it to dummyMain method as well
 		parameters = iccMethod.getParameterTypes();
 		method = destProvider.getMethodByName(iccMethod.getName());
 		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(al, method.makeRef(), locals);
-		Unit assignU = Jimple.v().newAssignStmt(rtLocal, invoke);
+		b.getUnits().add(Jimple.v().newAssignStmt(rtLocal, invoke));
 
 		// return statement
-		Unit returnU = Jimple.v().newReturnStmt(rtLocal);
-
-		for (Unit unit : units) {
-			b.getUnits().add(unit);
-		}
-		b.getUnits().add(newU);
-		b.getUnits().add(initU);
-		b.getUnits().add(assignU);
-		b.getUnits().add(returnU);
-
+		b.getUnits().add(Jimple.v().newReturnStmt(rtLocal));
 		return newSM;
 
 	}
+
+	/**
+	 * We have the intent in a register at this point, create a new statement to
+	 * call the static method with the intent as parameter
+	 * 
+	 * @param link
+	 * @param redirectMethod
+	 */
+	protected void insertRedirectMethodCallAfterIccMethod(IccLink link, SootMethod redirectMethod) {
+		Stmt fromStmt = (Stmt) link.getFromU();
+		if (fromStmt == null || !fromStmt.containsInvokeExpr())
+			return;
+
+		SootMethod callee = fromStmt.getInvokeExpr().getMethod();
+
+		// specially deal with startActivityForResult since they have two
+		// parameters
+		List<Value> args = new ArrayList<Value>();
+		if (callee.getNumberedSubSignature().equals(subsigStartActivityForResult)) {
+			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) fromStmt.getInvokeExpr();
+			args.add(iiexpr.getBase());
+			args.add(iiexpr.getArg(0));
+		} else if (fromStmt.toString().contains("bindService")) {
+			Value arg0 = fromStmt.getInvokeExpr().getArg(0); // intent
+			Value arg1 = fromStmt.getInvokeExpr().getArg(1); // serviceConnection
+			args.add(arg1);
+			args.add(arg0);
+		} else {
+			Value arg0 = fromStmt.getInvokeExpr().getArg(0);
+			args.add(arg0);
+		}
+
+		if (redirectMethod == null) {
+			return;
+		}
+
+		Stmt redirectCallU = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
+
+		final Body body = link.getFromSM().retrieveActiveBody();
+		final PatchingChain<Unit> units = body.getUnits();
+
+		copyTags(link.getFromU(), redirectCallU);
+		units.insertAfter(redirectCallU, link.getFromU());
+		instrumentedUnits.put(body, redirectCallU);
+		if (instrumentationCallback != null)
+			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
+
+		// remove the real ICC methods call stmt
+		// link.getFromSM().retrieveActiveBody().getUnits().remove(link.getFromU());
+		// Please refer to AndroidIPCManager.postProcess() for this removing
+		// process.
+
+		NumberedString subsig = Scene.v().getSubSigNumberer()
+				.find("android.content.Intent createChooser(android.content.Intent,java.lang.CharSequence)");
+		SootClass clazz = Scene.v().getSootClassUnsafe("android.content.Intent");
+		if (subsig != null && clazz != null) {
+			// especially for createChooser method
+			for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+				Stmt stmt = (Stmt) iter.next();
+				if (stmt.containsInvokeExpr()) {
+					InvokeExpr expr = stmt.getInvokeExpr();
+					SootMethodRef mr = expr.getMethodRef();
+					if (mr.getDeclaringClass().equals(clazz) && mr.getSubSignature().equals(subsig)) {
+						List<ValueBox> vbs = stmt.getUseAndDefBoxes();
+						Unit assignU = Jimple.v().newAssignStmt(vbs.get(0).getValue(), vbs.get(1).getValue());
+						copyTags(stmt, assignU);
+						units.insertAfter(assignU, stmt);
+						instrumentedUnits.put(body, assignU);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Copy all the tags of {from} to {to}, if {to} already contain the copied tag,
+	 * then overwrite it.
+	 * 
+	 * @param from
+	 * @param to
+	 */
+	protected static void copyTags(Unit from, Unit to) {
+		List<Tag> tags = from.getTags();
+
+		for (Tag tag : tags) {
+			to.removeTag(tag.getName()); // exception??
+			to.addTag(tag);
+		}
+	}
+
+	/**
+	 * Removes all units that have previously been created by the instrumenter
+	 */
+	public void undoInstrumentation() {
+		// Remove the redirection methods
+		for (SootMethod sm : source2RedirectMethod.values())
+			sm.getDeclaringClass().removeMethod(sm);
+
+		for (Body body : instrumentedUnits.keySet()) {
+			for (Unit u : instrumentedUnits.get(body)) {
+				body.getUnits().remove(u);
+			}
+		}
+		instrumentedUnits.clear();
+		source2RedirectMethod.clear();
+	}
+
+	/**
+	 * Sets the callback that shall be notified when a new statement has been
+	 * injected to model inter-component call relationships
+	 * 
+	 * @param instrumentationCallback The callback to notify of new instrumentation
+	 *                                statements
+	 */
+	public void setInstrumentationCallback(IRedirectorCallInserted instrumentationCallback) {
+		this.instrumentationCallback = instrumentationCallback;
+	}
+
 }

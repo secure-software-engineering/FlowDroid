@@ -20,23 +20,24 @@ public abstract class AbstractFlowSinkSource {
 	protected final String[] accessPathTypes;
 	protected final GapDefinition gap;
 	protected final Object userData;
+	protected final boolean matchStrict;
 
-	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType) {
-		this(type, parameterIdx, baseType, null, null);
+	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, boolean matchStrict) {
+		this(type, parameterIdx, baseType, null, null, matchStrict);
 	}
 
 	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, String[] accessPath,
-			String[] accessPathTypes) {
-		this(type, parameterIdx, baseType, accessPath, accessPathTypes, null);
+			String[] accessPathTypes, boolean matchStrict) {
+		this(type, parameterIdx, baseType, accessPath, accessPathTypes, null, matchStrict);
 	}
 
 	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, String[] accessPath,
-			String[] accessPathTypes, GapDefinition gap) {
-		this(type, parameterIdx, baseType, accessPath, accessPathTypes, gap, null);
+			String[] accessPathTypes, GapDefinition gap, boolean matchStrict) {
+		this(type, parameterIdx, baseType, accessPath, accessPathTypes, gap, null, matchStrict);
 	}
 
 	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, String[] accessPath,
-			String[] accessPathTypes, GapDefinition gap, Object userData) {
+			String[] accessPathTypes, GapDefinition gap, Object userData, boolean matchStrict) {
 		this.type = type;
 		this.parameterIdx = parameterIdx;
 		this.baseType = baseType;
@@ -44,6 +45,11 @@ public abstract class AbstractFlowSinkSource {
 		this.accessPathTypes = accessPathTypes;
 		this.gap = gap;
 		this.userData = userData;
+		this.matchStrict = matchStrict;
+
+		// Sanity check
+		if (accessPath != null && accessPathTypes != null && accessPath.length != accessPathTypes.length)
+			throw new RuntimeException("Access path arrayand type array must be of equal length");
 	}
 
 	/**
@@ -51,8 +57,7 @@ public abstract class AbstractFlowSinkSource {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src
-	 *            The source or sink with which to compare the current one
+	 * @param src The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -73,20 +78,16 @@ public abstract class AbstractFlowSinkSource {
 		return true;
 	}
 
-	public SourceSinkType type() {
-		return type;
-	}
-
 	public boolean isParameter() {
-		return type().equals(SourceSinkType.Parameter);
+		return type == SourceSinkType.Parameter;
 	}
 
 	public boolean isThis() {
-		return type().equals(SourceSinkType.Field) && !hasAccessPath();
+		return type == SourceSinkType.Field && !hasAccessPath();
 	}
 
 	public boolean isCustom() {
-		return type().equals(SourceSinkType.Custom);
+		return type == SourceSinkType.Custom;
 	}
 
 	public int getParameterIndex() {
@@ -98,23 +99,13 @@ public abstract class AbstractFlowSinkSource {
 	}
 
 	/**
-	 * Gets whether this taint is on a *base* field. Note that this does not
-	 * include fields starting on parameters or return values.
+	 * Gets whether this taint is on a *base* field. Note that this does not include
+	 * fields starting on parameters or return values.
 	 * 
 	 * @return True if this taint references a base field, false otherwise
 	 */
 	public boolean isField() {
-		return type().equals(SourceSinkType.Field);
-	}
-
-	/**
-	 * Gets the number of fields in this access path. If this taint has no
-	 * access path, zero is returned.
-	 * 
-	 * @return The number of fields in this access path
-	 */
-	public int getFieldCount() {
-		return accessPath == null ? 0 : accessPath.length;
+		return type == SourceSinkType.Field;
 	}
 
 	public String[] getAccessPath() {
@@ -126,11 +117,11 @@ public abstract class AbstractFlowSinkSource {
 	}
 
 	public boolean isReturn() {
-		return type().equals(SourceSinkType.Return);
+		return type == SourceSinkType.Return;
 	}
 
 	public boolean isGapBaseObject() {
-		return type().equals(SourceSinkType.GapBaseObject);
+		return type == SourceSinkType.GapBaseObject;
 	}
 
 	public boolean hasAccessPath() {
@@ -151,21 +142,38 @@ public abstract class AbstractFlowSinkSource {
 		return this.gap;
 	}
 
+	public boolean hasGap() {
+		return this.gap != null;
+	}
+
 	public String getLastFieldType() {
 		if (accessPathTypes == null || accessPathTypes.length == 0)
 			return baseType;
 		return accessPathTypes[accessPathTypes.length - 1];
 	}
 
+	/**
+	 * Gets whether strict access path matching shall be applied to this source
+	 * definition. Strict matching means that a taint on a.* does NOT match a source
+	 * defined for a.foo.
+	 * 
+	 * @return True if strict access path matching shall be applied, otherwise false
+	 */
+	public boolean isMatchStrict() {
+		return matchStrict;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((accessPath == null) ? 0 : Arrays.hashCode(accessPath));
-		result = prime * result + parameterIdx;
-		result = prime * result + (baseType == null ? 0 : baseType.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + Arrays.hashCode(accessPath);
+		result = prime * result + Arrays.hashCode(accessPathTypes);
+		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
 		result = prime * result + ((gap == null) ? 0 : gap.hashCode());
+		result = prime * result + (matchStrict ? 1231 : 1237);
+		result = prime * result + parameterIdx;
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((userData == null) ? 0 : userData.hashCode());
 		return result;
 	}
@@ -179,24 +187,25 @@ public abstract class AbstractFlowSinkSource {
 		if (getClass() != obj.getClass())
 			return false;
 		AbstractFlowSinkSource other = (AbstractFlowSinkSource) obj;
-		if (accessPath == null) {
-			if (other.accessPath != null)
-				return false;
-		} else if (!Arrays.equals(accessPath, other.accessPath))
+		if (!Arrays.equals(accessPath, other.accessPath))
 			return false;
-		if (parameterIdx != other.parameterIdx)
+		if (!Arrays.equals(accessPathTypes, other.accessPathTypes))
 			return false;
 		if (baseType == null) {
 			if (other.baseType != null)
 				return false;
 		} else if (!baseType.equals(other.baseType))
 			return false;
-		if (type != other.type)
-			return false;
 		if (gap == null) {
 			if (other.gap != null)
 				return false;
 		} else if (!gap.equals(other.gap))
+			return false;
+		if (matchStrict != other.matchStrict)
+			return false;
+		if (parameterIdx != other.parameterIdx)
+			return false;
+		if (type != other.type)
 			return false;
 		if (userData == null) {
 			if (other.userData != null)
@@ -248,10 +257,9 @@ public abstract class AbstractFlowSinkSource {
 	/**
 	 * Replaces the gaps in this definition according to the given map
 	 * 
-	 * @param replacementMap
-	 *            A mapping from gap id to new gap data object
-	 * @return A copy of this definition in which the gaps that also occur in
-	 *         the given map have been replaced with the values from the map
+	 * @param replacementMap A mapping from gap id to new gap data object
+	 * @return A copy of this definition in which the gaps that also occur in the
+	 *         given map have been replaced with the values from the map
 	 */
 	public abstract AbstractFlowSinkSource replaceGaps(Map<Integer, GapDefinition> replacementMap);
 

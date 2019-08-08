@@ -8,6 +8,7 @@ import soot.Body;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
@@ -25,11 +26,11 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	private final Collection<String> methodsToCall;
 
 	/**
-	 * Creates a new instanceof the {@link SequentialEntryPointCreator} class
+	 * Creates a new instance of the {@link SequentialEntryPointCreator} class
 	 * 
-	 * @param methodsToCall
-	 *            A collection containing the methods to be called in the dummy
-	 *            main method. Entries must be valid Soot method signatures.
+	 * @param methodsToCall A collection containing the methods to be called in the
+	 *                      dummy main method. Entries must be valid Soot method
+	 *                      signatures.
 	 */
 	public SequentialEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
@@ -41,7 +42,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	}
 
 	@Override
-	protected SootMethod createDummyMainInternal(SootMethod mainMethod) {
+	protected SootMethod createDummyMainInternal() {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
@@ -78,6 +79,16 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 		body.getUnits().add(Jimple.v().newReturnVoidStmt());
 
 		return mainMethod;
+	}
+
+	@Override
+	public Collection<SootMethod> getAdditionalMethods() {
+		return null;
+	}
+
+	@Override
+	public Collection<SootField> getAdditionalFields() {
+		return null;
 	}
 
 }

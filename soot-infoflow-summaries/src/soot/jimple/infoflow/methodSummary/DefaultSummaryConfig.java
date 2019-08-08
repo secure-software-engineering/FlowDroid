@@ -5,12 +5,15 @@ import java.util.List;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
+import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration;
 import soot.options.Options;
 
 public class DefaultSummaryConfig implements IInfoflowConfig {
 
 	@Override
 	public void setSootOptions(Options options, InfoflowConfiguration config) {
+		final SummaryGeneratorConfiguration summaryConfig = (SummaryGeneratorConfiguration) config;
+
 		// explicitly include packages for shorter runtime:
 		List<String> includeList = new LinkedList<String>();
 		includeList.add("java.lang.*");
@@ -40,6 +43,11 @@ public class DefaultSummaryConfig implements IInfoflowConfig {
 		options.set_output_format(Options.output_format_none);
 		options.setPhaseOption("jb", "use-original-names:true");
 		options.set_ignore_classpath_errors(true);
+
+		// We can also create summaries for classes from APK files
+		options.set_process_multiple_dex(true);
+		if (summaryConfig.getAndroidPlatformDir() != null)
+			options.set_android_jars(summaryConfig.getAndroidPlatformDir());
 	}
 
 }

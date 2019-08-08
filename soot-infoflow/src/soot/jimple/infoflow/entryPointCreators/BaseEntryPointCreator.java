@@ -49,6 +49,7 @@ import soot.dava.internal.javaRep.DIntConstant;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
+import soot.jimple.EqExpr;
 import soot.jimple.FloatConstant;
 import soot.jimple.IfStmt;
 import soot.jimple.IntConstant;
@@ -71,8 +72,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected Map<String, Local> localVarsForClasses = new HashMap<String, Local>();
-	private final Set<SootClass> failedClasses = new HashSet<SootClass>();
+	protected Map<SootClass, Local> localVarsForClasses = new HashMap<>();
+	private final Set<SootClass> failedClasses = new HashSet<>();
 
 	private boolean substituteCallParams = false;
 	private List<String> substituteClasses;
@@ -81,12 +82,25 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	private final Set<SootMethod> failedMethods = new HashSet<>();
 
+	/**
+	 * Default name of the class containing the dummy main method
+	 */
 	protected String dummyClassName = "dummyMainClass";
+	/**
+	 * Default name of the dummy main method
+	 */
 	protected String dummyMethodName = "dummyMainMethod";
 
 	protected boolean shallowMode = false;
 	protected boolean overwriteDummyMainMethod = false;
 	protected boolean warnOnConstructorLoop = false;
+
+	protected Value intCounter;
+	protected int conditionCounter;
+
+	protected SootMethod mainMethod = null;
+	protected Body body = null;
+	protected LocalGenerator generator = null;
 
 	/**
 	 * Returns a copy of all classes that could not be instantiated properly
@@ -110,6 +124,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		substituteCallParams = b;
 	}
 
+	@Override
 	public void setSubstituteClasses(List<String> l) {
 		substituteClasses = l;
 	}
@@ -121,22 +136,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			for (String className : substituteClasses)
 				Scene.v().forceResolve(className, SootClass.BODIES).setApplicationClass();
 
-		return this.createDummyMainInternal();
-	}
+		// Create the empty main method
+		createAdditionalFields();
+		createAdditionalMethods();
+		createEmptyMainMethod();
+		body = mainMethod.getActiveBody();
 
-	@Override
-	public SootMethod createDummyMain(SootMethod dummyMainMethod) {
-		// Load the substitution classes
-		if (substituteCallParams)
-			for (String className : substituteClasses)
-				Scene.v().forceResolve(className, SootClass.BODIES).setApplicationClass();
+		// We provide some helper objects
+		final Body body = mainMethod.getActiveBody();
+		generator = new LocalGenerator(body);
 
-		return this.createDummyMainInternal(dummyMainMethod);
-	}
+		// Make sure that we have an opaque predicate
+		conditionCounter = 0;
+		intCounter = generator.generateLocal(IntType.v());
+		body.getUnits().add(Jimple.v().newAssignStmt(intCounter, IntConstant.v(conditionCounter)));
 
-	protected SootMethod createDummyMainInternal() {
-		SootMethod emptySootMethod = createEmptyMainMethod();
-		return createDummyMainInternal(emptySootMethod);
+		return createDummyMainInternal();
 	}
 
 	/**
@@ -145,14 +160,14 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * 
 	 * @return The generated dummy main method
 	 */
-	protected abstract SootMethod createDummyMainInternal(SootMethod emptySootMethod);
+	protected abstract SootMethod createDummyMainInternal();
 
 	/**
 	 * Creates a new, empty main method containing the given body
 	 * 
 	 * @return The newly generated main method
 	 */
-	protected SootMethod createEmptyMainMethod() {
+	protected void createEmptyMainMethod() {
 		// If we already have a main class, we need to make sure to use a fresh
 		// method name
 		final SootClass mainClass;
@@ -172,11 +187,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 
 		Body body;
-		SootMethod mainMethod = mainClass.getMethodByNameUnsafe(methodName);
+		mainMethod = mainClass.getMethodByNameUnsafe(methodName);
 
 		// Remove the existing main method if necessary. Do not clear the
-		// existing
-		// one, this would take much too long.
+		// existing one, this would take much too long.
 		if (mainMethod != null) {
 			mainClass.removeMethod(mainMethod);
 			mainMethod = null;
@@ -203,23 +217,34 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		Local paramLocal = lg.generateLocal(stringArrayType);
 		body.getUnits()
 				.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(stringArrayType, 0)));
+	}
 
-		return mainMethod;
+	/**
+	 * Creates additional fields in the entry point class that are required by the
+	 * dummy main method
+	 */
+	protected void createAdditionalFields() {
+		// empty in default implementation
+	}
+
+	/**
+	 * Creates additional methods in the entry point class that are required by the
+	 * dummy main method
+	 */
+	protected void createAdditionalMethods() {
+		// empty in default implementation
 	}
 
 	/**
 	 * Builds a new invocation statement that invokes the given method
 	 * 
-	 * @param methodToCall
-	 *            The method to call
-	 * @param body
-	 *            The body in which to create the invocation statement
-	 * @param classLocal
-	 *            The local containing an instance of the class on which to
-	 *            invoke the method
-	 * @param gen
-	 *            The local generator to be used for generating locals that hold
-	 *            any additional values required for the call parameters
+	 * @param methodToCall The method to call
+	 * @param body         The body in which to create the invocation statement
+	 * @param classLocal   The local containing an instance of the class on which to
+	 *                     invoke the method
+	 * @param gen          The local generator to be used for generating locals that
+	 *                     hold any additional values required for the call
+	 *                     parameters
 	 * @return The newly created invocation statement
 	 */
 	protected Stmt buildMethodCall(SootMethod methodToCall, Body body, Local classLocal, LocalGenerator gen) {
@@ -229,26 +254,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Builds a new invocation statement that invokes the given method
 	 * 
-	 * @param methodToCall
-	 *            The method to call
-	 * @param body
-	 *            The body in which to create the invocation statement
-	 * @param classLocal
-	 *            The local containing an instance of the class on which to
-	 *            invoke the method
-	 * @param gen
-	 *            The local generator to be used for generating locals that hold
-	 *            any additional values required for the call parameters
-	 * @param parentClasses
-	 *            The classes for which we already have instances that shall be
-	 *            reused
+	 * @param methodToCall  The method to call
+	 * @param body          The body in which to create the invocation statement
+	 * @param classLocal    The local containing an instance of the class on which
+	 *                      to invoke the method
+	 * @param gen           The local generator to be used for generating locals
+	 *                      that hold any additional values required for the call
+	 *                      parameters
+	 * @param parentClasses The classes for which we already have instances that
+	 *                      shall be reused
 	 * @return The newly created invocation statement
 	 */
 	protected Stmt buildMethodCall(SootMethod methodToCall, Body body, Local classLocal, LocalGenerator gen,
 			Set<SootClass> parentClasses) {
-		assert methodToCall != null : "Current method was null";
-		assert body != null : "Body was null";
-		assert gen != null : "Local generator was null";
+		// If we don't have a method, we cannot call it (sad but true)
+		if (methodToCall == null)
+			return null;
 
 		if (classLocal == null && !methodToCall.isStatic()) {
 			logger.warn("Cannot call method {}, because there is no local for base object: {}", methodToCall,
@@ -304,7 +325,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			if (val instanceof Local && val.getType() instanceof RefType) {
 				if (!parentClasses.contains(((RefType) val.getType()).getSootClass())) {
 					body.getUnits().add(Jimple.v().newAssignStmt(val, NullConstant.v()));
-					localVarsForClasses.remove(((RefType) val.getType()).getSootClass().getName());
+					localVarsForClasses.remove(((RefType) val.getType()).getSootClass());
 				}
 			}
 
@@ -315,21 +336,17 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param body
-	 *            The body in which to create the value
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type for which to get a value
-	 * @param constructionStack
-	 *            The set of classes we're currently constructing. Attempts to
-	 *            create a parameter of one of these classes will trigger the
-	 *            constructor loop check and the respective parameter will be
-	 *            substituted by null.
-	 * @param parentClasses
-	 *            If the given type is compatible with one of the types in this
-	 *            list, the already-created object is used instead of creating a
-	 *            new one.
+	 * @param body              The body in which to create the value
+	 * @param gen               The local generator
+	 * @param tp                The type for which to get a value
+	 * @param constructionStack The set of classes we're currently constructing.
+	 *                          Attempts to create a parameter of one of these
+	 *                          classes will trigger the constructor loop check and
+	 *                          the respective parameter will be substituted by
+	 *                          null.
+	 * @param parentClasses     If the given type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
 	 * @return The generated value, or null if no value could be generated
 	 */
 	private Value getValueForType(Body body, LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
@@ -341,24 +358,19 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param body
-	 *            The body in which to create the value
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type for which to get a value
-	 * @param constructionStack
-	 *            The set of classes we're currently constructing. Attempts to
-	 *            create a parameter of one of these classes will trigger the
-	 *            constructor loop check and the respective parameter will be
-	 *            substituted by null.
-	 * @param parentClasses
-	 *            If the given type is compatible with one of the types in this
-	 *            list, the already-created object is used instead of creating a
-	 *            new one.
-	 * @param generatedLocals
-	 *            The set that receives all (temporary) locals created to
-	 *            provide a value of the requested type
+	 * @param body              The body in which to create the value
+	 * @param gen               The local generator
+	 * @param tp                The type for which to get a value
+	 * @param constructionStack The set of classes we're currently constructing.
+	 *                          Attempts to create a parameter of one of these
+	 *                          classes will trigger the constructor loop check and
+	 *                          the respective parameter will be substituted by
+	 *                          null.
+	 * @param parentClasses     If the given type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
+	 * @param generatedLocals   The set that receives all (temporary) locals created
+	 *                          to provide a value of the requested type
 	 * @return The generated value, or null if no value could be generated
 	 */
 	private Value getValueForType(Body body, LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
@@ -375,13 +387,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				// it before we check any other option
 				for (SootClass parent : parentClasses)
 					if (isCompatible(parent, classToType)) {
-						Value val = this.localVarsForClasses.get(parent.getName());
+						Value val = this.localVarsForClasses.get(parent);
 						if (val != null)
 							return val;
 					}
 
 				// If this is a system class, we may want to skip it
-				if (ignoreSystemClassParams && SystemClassHandler.isClassInSystemPackage(classToType.getName()))
+				if (ignoreSystemClassParams && SystemClassHandler.v().isClassInSystemPackage(classToType.getName()))
 					return NullConstant.v();
 
 				// Create a new instance to plug in here
@@ -415,27 +427,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Constructs an array of the given type with a single element of this type
-	 * in the given method
+	 * Constructs an array of the given type with a single element of this type in
+	 * the given method
 	 * 
-	 * @param body
-	 *            The body of the method in which to create the array
-	 * @param gen
-	 *            The local generator
-	 * @param tp
-	 *            The type of which to create the array
-	 * @param constructionStack
-	 *            Set of classes currently being built to avoid constructor
-	 *            loops
-	 * @param parentClasses
-	 *            If a requested type is compatible with one of the types in
-	 *            this list, the already-created object is used instead of
-	 *            creating a new one.
-	 * @param generatedLocals
-	 *            A set that receives the (temporary) locals that were generated
-	 *            to create the requested array
-	 * @return The local referencing the newly created array, or null if the
-	 *         array generation failed
+	 * @param body              The body of the method in which to create the array
+	 * @param gen               The local generator
+	 * @param tp                The type of which to create the array
+	 * @param constructionStack Set of classes currently being built to avoid
+	 *                          constructor loops
+	 * @param parentClasses     If a requested type is compatible with one of the
+	 *                          types in this list, the already-created object is
+	 *                          used instead of creating a new one.
+	 * @param generatedLocals   A set that receives the (temporary) locals that were
+	 *                          generated to create the requested array
+	 * @return The local referencing the newly created array, or null if the array
+	 *         generation failed
 	 */
 	private Value buildArrayOfType(Body body, LocalGenerator gen, ArrayType tp, Set<SootClass> constructionStack,
 			Set<SootClass> parentClasses, Set<Local> generatedLocals) {
@@ -457,11 +463,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
+	 * @param createdClass The class of which to create an instance
+	 * @param body         The body to which to add the new statements ("new"
+	 *                     statement, constructor call, etc.)
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -473,15 +477,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the
-	 *            already-created object is used instead of creating a new one.
+	 * @param createdClass  The class of which to create an instance
+	 * @param body          The body to which to add the new statements ("new"
+	 *                      statement, constructor call, etc.)
+	 * @param parentClasses If a constructor call requires an object of a type which
+	 *                      is compatible with one of the types in this list, the
+	 *                      already-created object is used instead of creating a new
+	 *                      one.
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -492,23 +494,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
-	 * @param createdClass
-	 *            The class of which to create an instance
-	 * @param body
-	 *            The body to which to add the new statements ("new" statement,
-	 *            constructor call, etc.)
-	 * @param constructionStack
-	 *            The stack of classes currently under construction. This is
-	 *            used to detect constructor loops. If a constructor requires a
-	 *            parameter of a type that is already on the stack, this value
-	 *            is substituted by null.
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the
-	 *            already-created object is used instead of creating a new one.
-	 * @param tempLocals
-	 *            The set that receives all generated temporary locals that were
-	 *            necessary for calling the constructor of the requested class
+	 * @param createdClass      The class of which to create an instance
+	 * @param body              The body to which to add the new statements ("new"
+	 *                          statement, constructor call, etc.)
+	 * @param constructionStack The stack of classes currently under construction.
+	 *                          This is used to detect constructor loops. If a
+	 *                          constructor requires a parameter of a type that is
+	 *                          already on the stack, this value is substituted by
+	 *                          null.
+	 * @param parentClasses     If a constructor call requires an object of a type
+	 *                          which is compatible with one of the types in this
+	 *                          list, the already-created object is used instead of
+	 *                          creating a new one.
+	 * @param tempLocals        The set that receives all generated temporary locals
+	 *                          that were necessary for calling the constructor of
+	 *                          the requested class
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -518,7 +518,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			return null;
 
 		// If we already have a class local of that type, we re-use it
-		Local existingLocal = localVarsForClasses.get(createdClass.getName());
+		Local existingLocal = localVarsForClasses.get(createdClass);
 		if (existingLocal != null)
 			return existingLocal;
 
@@ -542,8 +542,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		}
 
 		boolean isInnerClass = createdClass.getName().contains("$");
-		String outerClass = isInnerClass ? createdClass.getName().substring(0, createdClass.getName().lastIndexOf("$"))
-				: "";
+		SootClass outerClass = isInnerClass
+				? Scene.v().getSootClassUnsafe(
+						createdClass.getName().substring(0, createdClass.getName().lastIndexOf("$")))
+				: null;
 
 		// Make sure that we don't run into loops
 		if (!constructionStack.add(createdClass)) {
@@ -595,19 +597,17 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				List<Value> params = new LinkedList<Value>();
 				for (Type type : currentMethod.getParameterTypes()) {
 					// We need to reset the construction stack. Just because we
-					// already created
-					// a class instance for parameter 1, there is no reason for
-					// not being able
-					// to create the same class instance again for parameter 2.
+					// already created a class instance for parameter 1, there is no reason for
+					// not being able to create the same class instance again for parameter 2.
 					Set<SootClass> newStack = new HashSet<>(constructionStack);
 
 					// We need to check whether we have a reference to the
 					// outer class. In this case, we do not generate a new
 					// instance, but use the one we already have.
-					String typeName = type.toString().replaceAll("\\[\\]]", "");
-					if (type instanceof RefType && isInnerClass && typeName.equals(outerClass)
-							&& this.localVarsForClasses.containsKey(typeName))
-						params.add(this.localVarsForClasses.get(typeName));
+					SootClass typeClass = type instanceof RefType ? ((RefType) type).getSootClass() : null;
+					if (typeClass != null && isInnerClass && typeClass == outerClass
+							&& this.localVarsForClasses.containsKey(outerClass))
+						params.add(this.localVarsForClasses.get(outerClass));
 					else if (shallowMode) {
 						if (isSimpleType(type.toString()))
 							params.add(getSimpleDefaultValue(type));
@@ -639,7 +639,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				return tempLocal;
 			}
 
-			logger.warn("Could not find a suitable constructor for class {}", createdClass.getName());
 			this.failedClasses.add(createdClass);
 			return null;
 		}
@@ -649,17 +648,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Generates a call to a constructor for a an interface or an abstract class
 	 * that is substituted with an actual implementation
 	 * 
-	 * @param createdClass
-	 *            The class for which to create a constructor call
-	 * @param body
-	 *            The body of the dummy main method to which to add the call
-	 *            statement
-	 * @param constructionStack
-	 *            The stack for making sure that we do not run into loops
-	 * @param parentClasses
-	 *            If a constructor call requires an object of a type which is
-	 *            compatible with one of the types in this list, the
-	 *            already-created object is used instead of creating a new one.
+	 * @param createdClass      The class for which to create a constructor call
+	 * @param body              The body of the dummy main method to which to add
+	 *                          the call statement
+	 * @param constructionStack The stack for making sure that we do not run into
+	 *                          loops
+	 * @param parentClasses     If a constructor call requires an object of a type
+	 *                          which is compatible with one of the types in this
+	 *                          list, the already-created object is used instead of
+	 *                          creating a new one.
 	 * @return The local containing the new object instance if the operation
 	 *         completed successfully, otherwise null.
 	 */
@@ -762,16 +759,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Finds a method with the given signature in the given class or one of its
 	 * super classes
 	 * 
-	 * @param currentClass
-	 *            The current class in which to start the search
-	 * @param subsignature
-	 *            The subsignature of the method to find
-	 * @return The method with the given signature if it has been found,
-	 *         otherwise null
+	 * @param currentClass The current class in which to start the search
+	 * @param subsignature The subsignature of the method to find
+	 * @return The method with the given signature if it has been found, otherwise
+	 *         null
 	 */
 	protected SootMethod findMethod(SootClass currentClass, String subsignature) {
-		if (currentClass.declaresMethod(subsignature)) {
-			return currentClass.getMethod(subsignature);
+		SootMethod m = currentClass.getMethodUnsafe(subsignature);
+		if (m != null) {
+			return m;
 		}
 		if (currentClass.hasSuperclass()) {
 			return findMethod(currentClass.getSuperclass(), subsignature);
@@ -780,15 +776,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Checks whether an object of type "actual" can be inserted where an object
-	 * of type "expected" is required.
+	 * Checks whether an object of type "actual" can be inserted where an object of
+	 * type "expected" is required.
 	 * 
-	 * @param actual
-	 *            The actual type (the substitution candidate)
-	 * @param expected
-	 *            The requested type
-	 * @return True if the two types are compatible and "actual" can be used as
-	 *         a substitute for "expected", otherwise false
+	 * @param actual   The actual type (the substitution candidate)
+	 * @param expected The requested type
+	 * @return True if the two types are compatible and "actual" can be used as a
+	 *         substitute for "expected", otherwise false
 	 */
 	protected boolean isCompatible(SootClass actual, SootClass expected) {
 		return Scene.v().getOrMakeFastHierarchy().canStoreType(actual.getType(), expected.getType());
@@ -797,8 +791,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Eliminates all loops of length 0 (if a goto <if a>)
 	 * 
-	 * @param body
-	 *            The body from which to eliminate the self-loops
+	 * @param body The body from which to eliminate the self-loops
 	 */
 	protected void eliminateSelfLoops(Body body) {
 		// Get rid of self-loops
@@ -813,11 +806,11 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Sets the name that shall be used for the new class containing the dummy
-	 * main method
+	 * Sets the name that shall be used for the new class containing the dummy main
+	 * method
 	 * 
-	 * @param dummyMethodName
-	 *            The name for the new class containing the dummy main method
+	 * @param dummyMethodName The name for the new class containing the dummy main
+	 *                        method
 	 */
 	public void setDummyClassName(String dummyClassName) {
 		this.dummyClassName = dummyClassName;
@@ -826,8 +819,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	/**
 	 * Sets the name that shall be used for the new dummy main method
 	 * 
-	 * @param dummyMethodName
-	 *            The name for the new dummy main method
+	 * @param dummyMethodName The name for the new dummy main method
 	 */
 	public void setDummyMethodName(String dummyMethodName) {
 		this.dummyMethodName = dummyMethodName;
@@ -835,39 +827,37 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	/**
 	 * Sets whether a call to a method A.foo() may receive an instance of A as a
-	 * parameter. If this is not allowed, other type-compatible class instances
-	 * are taken. If they don't exist, null is used.
+	 * parameter. If this is not allowed, other type-compatible class instances are
+	 * taken. If they don't exist, null is used.
 	 * 
-	 * @param value
-	 *            True if method calls may receive instances of their containing
-	 *            class as parameter values, otherwise false
+	 * @param value True if method calls may receive instances of their containing
+	 *              class as parameter values, otherwise false
 	 */
 	public void setAllowSelfReferences(boolean value) {
 		this.allowSelfReferences = value;
 	}
 
 	/**
-	 * Sets whether shallow mode shall be used. Normally, if a call to a method
-	 * a() is to be created, this class first creates instances of all required
+	 * Sets whether shallow mode shall be used. Normally, if a call to a method a()
+	 * is to be created, this class first creates instances of all required
 	 * parameter objects. If these, in turn, require other objects, they are
 	 * instantiated as well. In shallow mode, this does not happen. Instead, all
-	 * values on the first level are replaced with default values (e.g., null
-	 * for objects).
+	 * values on the first level are replaced with default values (e.g., null for
+	 * objects).
 	 * 
-	 * @param shallowMode
-	 *            True if shallow mode shall be used, otherwise false
+	 * @param shallowMode True if shallow mode shall be used, otherwise false
 	 */
 	public void setShallowMode(boolean shallowMode) {
 		this.shallowMode = shallowMode;
 	}
 
 	/**
-	 * Gets whether shallow mode shall be used. Normally, if a call to a method
-	 * a() is to be created, this class first creates instances of all required
+	 * Gets whether shallow mode shall be used. Normally, if a call to a method a()
+	 * is to be created, this class first creates instances of all required
 	 * parameter objects. If these, in turn, require other objects, they are
 	 * instantiated as well. In shallow mode, this does not happen. Instead, all
-	 * values on the first level are replaced with default values (e.g., null
-	 * for objects).
+	 * values on the first level are replaced with default values (e.g., null for
+	 * objects).
 	 * 
 	 * @return True if shallow mode shall be used, otherwise false
 	 */
@@ -876,7 +866,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Sets whether the entry point crearor shall always pass "null" if a method
+	 * Sets whether the entry point creator shall always pass "null" if a method
 	 * expects an object of a system class.
 	 * 
 	 * @param ignoreSystemClassParams
@@ -886,23 +876,23 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Sets whether the dummy main method shall be overwritten if it already
-	 * exists. If this flag is set to "false", a new, non-conflicting method and
-	 * class name is chosen.
+	 * Sets whether the dummy main method shall be overwritten if it already exists.
+	 * If this flag is set to "false", a new, non-conflicting method and class name
+	 * is chosen.
 	 * 
-	 * @param reuseDummyMainValue
-	 *            True if existing methods that conflict with the entry point to
-	 *            be created shall be overwritten, false to automatically chose
-	 *            a new, non-conflicting name.
+	 * @param reuseDummyMainValue True if existing methods that conflict with the
+	 *                            entry point to be created shall be overwritten,
+	 *                            false to automatically chose a new,
+	 *                            non-conflicting name.
 	 */
 	public void setOverwriteDummyMainMethod(boolean overwriteDummyMainValue) {
 		this.overwriteDummyMainMethod = overwriteDummyMainValue;
 	}
 
 	/**
-	 * Gets whether the dummy main method shall be overwritten if it already
-	 * exists. If this flag is set to "false", a new, non-conflicting method and
-	 * class name is chosen.
+	 * Gets whether the dummy main method shall be overwritten if it already exists.
+	 * If this flag is set to "false", a new, non-conflicting method and class name
+	 * is chosen.
 	 * 
 	 * @return True if existing methods that conflict with the entry point to be
 	 *         created shall be overwritten, false to automatically chose a new,
@@ -913,22 +903,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Sets whether a warning shall be written to the log when a constructor
-	 * call cannot be generated because the analysis ran into a loop when trying
-	 * to generate parameter values.
+	 * Sets whether a warning shall be written to the log when a constructor call
+	 * cannot be generated because the analysis ran into a loop when trying to
+	 * generate parameter values.
 	 * 
-	 * @param warnOnConstructorLoop
-	 *            True if a warning shall be written to the log when a
-	 *            constructor generation loop is encountered, otherwise false
+	 * @param warnOnConstructorLoop True if a warning shall be written to the log
+	 *                              when a constructor generation loop is
+	 *                              encountered, otherwise false
 	 */
 	public void setWarnOnConstructorLoop(boolean warnOnConstructorLoop) {
 		this.warnOnConstructorLoop = warnOnConstructorLoop;
 	}
 
 	/**
-	 * Gets whether a warning shall be written to the log when a constructor
-	 * call cannot be generated because the analysis ran into a loop when trying
-	 * to generate parameter values.
+	 * Gets whether a warning shall be written to the log when a constructor call
+	 * cannot be generated because the analysis ran into a loop when trying to
+	 * generate parameter values.
 	 * 
 	 * @return True if a warning shall be written to the log when a constructor
 	 *         generation loop is encountered, otherwise false
@@ -939,12 +929,33 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	/**
 	 * Resets the internal state to make sure that the entry point creator is
-	 * re-usable. Note that this method will not reset the sets of failed
-	 * classes and methods, because it doesn't make much sense to try them again
-	 * and fail again on later re-runs.
+	 * re-usable. Note that this method will not reset the sets of failed classes
+	 * and methods, because it doesn't make much sense to try them again and fail
+	 * again on later re-runs.
 	 */
 	protected void reset() {
 		localVarsForClasses.clear();
+		conditionCounter = 0;
+	}
+
+	/**
+	 * Creates an opaque predicate that jumps to the given target
+	 * 
+	 * @param target The target to which the opaque predicate shall jump
+	 */
+	protected void createIfStmt(Unit target) {
+		if (target == null) {
+			return;
+		}
+		final Jimple jimple = Jimple.v();
+		EqExpr cond = jimple.newEqExpr(intCounter, IntConstant.v(conditionCounter++));
+		IfStmt ifStmt = jimple.newIfStmt(cond, target);
+		body.getUnits().add(ifStmt);
+	}
+
+	@Override
+	public SootMethod getGeneratedMainMethod() {
+		return mainMethod;
 	}
 
 }

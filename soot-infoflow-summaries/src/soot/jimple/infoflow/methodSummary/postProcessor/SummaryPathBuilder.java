@@ -31,14 +31,15 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	private Set<SummaryResultInfo> resultInfos = new ConcurrentHashSet<SummaryResultInfo>();
 	private Set<Abstraction> visitedAbstractions = Collections
 			.newSetFromMap(new IdentityHashMap<Abstraction, Boolean>());
+	private final SummaryPathBuilderContext context;
 
 	/**
-	 * Extended version of the {@link SourceInfo} class that also allows to
-	 * store the abstractions along the path.
+	 * Extended version of the {@link SourceInfo} class that also allows to store
+	 * the abstractions along the path.
 	 * 
 	 * @author Steven Arzt
 	 */
-	public class SummarySourceInfo extends ResultSourceInfo {
+	public static class SummarySourceInfo extends ResultSourceInfo {
 
 		private final AccessPath sourceAP;
 		private final boolean isAlias;
@@ -56,7 +57,6 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		public int hashCode() {
 			final int prime = 31;
 			int result = super.hashCode();
-			result = prime * result + getOuterType().hashCode();
 			result = prime * result + (isAlias ? 1231 : 1237);
 			result = prime * result + ((sourceAP == null) ? 0 : sourceAP.hashCode());
 			result = prime * result + (isInCallee ? 1231 : 1237);
@@ -72,8 +72,6 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 			if (getClass() != obj.getClass())
 				return false;
 			SummarySourceInfo other = (SummarySourceInfo) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
 			if (isAlias != other.isAlias)
 				return false;
 			if (sourceAP == null) {
@@ -98,10 +96,6 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 			return this.isInCallee;
 		}
 
-		private SummaryPathBuilder getOuterType() {
-			return SummaryPathBuilder.this;
-		}
-
 	}
 
 	/**
@@ -110,7 +104,7 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	 * 
 	 * @author Steven Arzt
 	 */
-	public class SummaryResultInfo {
+	public static class SummaryResultInfo {
 
 		private final SummarySourceInfo sourceInfo;
 		private final ResultSinkInfo sinkInfo;
@@ -118,10 +112,8 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		/**
 		 * Creates a new instance of the {@link SummaryResultInfo} class
 		 * 
-		 * @param sourceInfo
-		 *            The source information object
-		 * @param sinkInfo
-		 *            The sink information object
+		 * @param sourceInfo The source information object
+		 * @param sinkInfo   The sink information object
 		 */
 		public SummaryResultInfo(SummarySourceInfo sourceInfo, ResultSinkInfo sinkInfo) {
 			this.sourceInfo = sourceInfo;
@@ -187,14 +179,13 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	/**
 	 * Creates a new instance of the SummaryPathBuilder class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
-	 * @param executor
-	 *            The executor in which to run the path reconstruction tasks
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
 	public SummaryPathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
 		super(manager, executor);
+		this.context = new SummaryPathBuilderContext(manager.getTaintWrapper());
 	}
 
 	@Override
@@ -230,8 +221,8 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	/**
 	 * Gets the source information and the reconstructed paths
 	 * 
-	 * @return The found source-to-sink connections and the respective
-	 *         propagation paths
+	 * @return The found source-to-sink connections and the respective propagation
+	 *         paths
 	 */
 	public Set<SummaryResultInfo> getResultInfos() {
 		return this.resultInfos;
@@ -246,7 +237,7 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	protected Runnable getTaintPathTask(AbstractionAtSink abs) {
 		SourceContextAndPath scap = new SummarySourceContextAndPath(manager, abs.getAbstraction().getAccessPath(),
 				abs.getSinkStmt(), AliasUtils.canAccessPathHaveAliases(abs.getAbstraction().getAccessPath()),
-				abs.getAbstraction().getAccessPath(), new ArrayList<SootMethod>());
+				abs.getAbstraction().getAccessPath(), new ArrayList<SootMethod>(), context);
 		scap = scap.extendPath(abs.getAbstraction());
 
 		if (scap != null) {

@@ -30,10 +30,10 @@ import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -51,8 +51,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	private final static Logger logger = LoggerFactory.getLogger(XMLSourceSinkParser.class);
 
 	/**
-	 * Filter interface for excluding certain categories from the source/sink
-	 * set
+	 * Filter interface for excluding certain categories from the source/sink set
 	 * 
 	 * @author Steven Arzt
 	 *
@@ -62,8 +61,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		/**
 		 * Checks whether methods from the given category shall be parsed or not
 		 * 
-		 * @param category
-		 *            The category in which the source or sink is defined
+		 * @param category The category in which the source or sink is defined
 		 * @return True if the given category shall be parsed, otherwise false
 		 */
 		public boolean acceptsCategory(CategoryDefinition category);
@@ -71,15 +69,13 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		/**
 		 * Filters sources and sinks by category
 		 * 
-		 * @param category
-		 *            The category in which the source or sink is defined
-		 * @param sourceSinkType
-		 *            Specifies whether the category is used for sources or
-		 *            sinks
-		 * @return The acceptable use of the given category. This is a reduction
-		 *         from the given type. If the requested type, for example, is
-		 *         "Both", this method may return "Source", if the category
-		 *         shall only be used for sources, but not for sinks.
+		 * @param category       The category in which the source or sink is defined
+		 * @param sourceSinkType Specifies whether the category is used for sources or
+		 *                       sinks
+		 * @return The acceptable use of the given category. This is a reduction from
+		 *         the given type. If the requested type, for example, is "Both", this
+		 *         method may return "Source", if the category shall only be used for
+		 *         sources, but not for sinks.
 		 */
 		public SourceSinkType filter(CategoryDefinition category, SourceSinkType sourceSinkType);
 
@@ -93,36 +89,35 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	 * @author Steven Arzt
 	 *
 	 */
-	private class SAXHandler extends DefaultHandler {
+	protected class SAXHandler extends DefaultHandler {
 
 		// Holding temporary values for handling with SAX
-		private String methodSignature = null;
-		private String fieldSignature = null;
+		protected String methodSignature = null;
+		protected String fieldSignature = null;
 
-		private CategoryDefinition category;
-		private boolean isSource, isSink;
-		private List<String> pathElements;
-		private List<String> pathElementTypes;
-		private int paramIndex;
-		private List<String> paramTypes = new ArrayList<String>();
-		private CallType callType;
+		protected CategoryDefinition category;
+		protected boolean isSource, isSink;
+		protected List<String> pathElements;
+		protected List<String> pathElementTypes;
+		protected int paramIndex;
+		protected List<String> paramTypes = new ArrayList<String>();
+		protected CallType callType;
 
-		private String accessPathParentElement = "";
-		private String description = "";
+		protected String accessPathParentElement = "";
+		protected String description = "";
 
-		private Set<AccessPathTuple> baseAPs = new HashSet<>();
-		private List<Set<AccessPathTuple>> paramAPs = new ArrayList<>();
-		private Set<AccessPathTuple> returnAPs = new HashSet<>();
+		protected Set<AccessPathTuple> baseAPs = new HashSet<>();
+		protected List<Set<AccessPathTuple>> paramAPs = new ArrayList<>();
+		protected Set<AccessPathTuple> returnAPs = new HashSet<>();
 
 		/**
-		 * Event Handler for the starting element for SAX. Possible start
-		 * elements for filling AndroidMethod objects with the new data format:
-		 * - method: Setting parsingvalues to false or null and get and set the
-		 * signature and category, - accessPath: To get the information whether
-		 * the AndroidMethod is a sink or source, - and the other elements
-		 * doesn't care for creating the AndroidMethod object. At these element
-		 * we will look, if calling the method getAccessPath (using an new SAX
-		 * Handler)
+		 * Event Handler for the starting element for SAX. Possible start elements for
+		 * filling AndroidMethod objects with the new data format: - method: Setting
+		 * parsingvalues to false or null and get and set the signature and category, -
+		 * accessPath: To get the information whether the AndroidMethod is a sink or
+		 * source, - and the other elements doesn't care for creating the AndroidMethod
+		 * object. At these element we will look, if calling the method getAccessPath
+		 * (using an new SAX Handler)
 		 */
 		@Override
 		public void startElement(String uri, String localName, String qName, Attributes attributes)
@@ -185,17 +180,21 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 						if (tempStr != null && !tempStr.isEmpty())
 							isSink = tempStr.equalsIgnoreCase(XMLConstants.TRUE);
 
-						description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+						String newDesc = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+						if (newDesc != null && !newDesc.isEmpty())
+							description = newDesc;
 					}
 				}
 				break;
 
 			case XMLConstants.BASE_TAG:
 				accessPathParentElement = qNameLower;
+				description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
 				break;
 
 			case XMLConstants.RETURN_TAG:
 				accessPathParentElement = qNameLower;
+				description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
 				break;
 
 			case XMLConstants.PARAM_TAG:
@@ -209,6 +208,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 						paramTypes.add(tempStr.trim());
 				}
 				accessPathParentElement = qNameLower;
+				description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
 				break;
 
 			case XMLConstants.PATHELEMENT_TAG:
@@ -230,8 +230,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		/**
 		 * Reads the method or field signature from the given attribute map
 		 * 
-		 * @param attributes
-		 *            The attribute map from which to read the signature
+		 * @param attributes The attribute map from which to read the signature
 		 * @return The signature that identifies a Soot method or field
 		 */
 		private String parseSignature(Attributes attributes) {
@@ -246,18 +245,17 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		}
 
 		/**
-		 * PathElement is the only element having values inside -> nothing to do
-		 * here. Doesn't care at the current state of parsing.
+		 * PathElement is the only element having values inside, so nothing to do here.
+		 * Doesn't care at the current state of parsing.
 		 **/
 		@Override
 		public void characters(char[] ch, int start, int length) throws SAXException {
 		}
 
 		/**
-		 * EventHandler for the End of an element. -> Putting the values into
-		 * the objects. For additional information: startElement description.
-		 * Starting with the innerst elements and switching up to the outer
-		 * elements
+		 * EventHandler for the End of an element. Putting the values into the objects.
+		 * For additional information: startElement description. Starting with the
+		 * innerst elements and switching up to the outer elements
 		 * 
 		 * - pathElement -> means field sensitive, adding SootFields
 		 */
@@ -279,7 +277,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 					AndroidMethod tempMeth = AndroidMethod.createFromSignature(methodSignature);
 
 					@SuppressWarnings("unchecked")
-					SourceSinkDefinition ssd = new MethodSourceSinkDefinition(tempMeth, baseAPs,
+					IAccessPathBasedSourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
 							paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType);
 					ssd.setCategory(category);
 					addSourceSinkDefinition(methodSignature, ssd);
@@ -291,18 +289,20 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				baseAPs = new HashSet<>();
 				paramAPs = new ArrayList<>();
 				returnAPs = new HashSet<>();
+				description = null;
 				break;
 
 			case XMLConstants.FIELD_TAG:
 				// Create the field source
 				if (!baseAPs.isEmpty()) {
-					SourceSinkDefinition ssd = new FieldSourceSinkDefinition(fieldSignature, baseAPs);
+					IAccessPathBasedSourceSinkDefinition ssd = createFieldSourceSinkDefinition(fieldSignature, baseAPs);
 					addSourceSinkDefinition(fieldSignature, ssd);
 				}
 
 				// Start a new field and discard our old data
 				methodSignature = null;
 				fieldSignature = null;
+				description = null;
 				break;
 
 			case XMLConstants.ACCESSPATH_TAG:
@@ -360,6 +360,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				isSink = false;
 				pathElements = null;
 				pathElementTypes = null;
+
+				description = null;
 				break;
 
 			case XMLConstants.BASE_TAG:
@@ -381,35 +383,19 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 			}
 		}
 
-		/**
-		 * Adds a new source or sink definition
-		 * 
-		 * @param signature
-		 *            The signature of the method or field that is considered a
-		 *            source or a sink
-		 * @param ssd
-		 *            The source or sink definition
-		 */
-		private void addSourceSinkDefinition(String signature, SourceSinkDefinition ssd) {
-			if (sourcesAndSinks.containsKey(signature))
-				sourcesAndSinks.get(signature).merge(ssd);
-			else
-				sourcesAndSinks.put(signature, ssd);
-		}
-
 	}
 
-	private Map<String, SourceSinkDefinition> sourcesAndSinks;
+	protected Map<String, IAccessPathBasedSourceSinkDefinition> sourcesAndSinks;
 
-	private Set<SourceSinkDefinition> sources = new HashSet<>();
-	private Set<SourceSinkDefinition> sinks = new HashSet<>();
-	private ICategoryFilter categoryFilter = null;
+	protected Set<IAccessPathBasedSourceSinkDefinition> sources = new HashSet<>();
+	protected Set<IAccessPathBasedSourceSinkDefinition> sinks = new HashSet<>();
+	protected ICategoryFilter categoryFilter = null;
 
-	private final Map<CategoryDefinition, CategoryDefinition> categories = new HashMap<>();
+	protected final Map<CategoryDefinition, CategoryDefinition> categories = new HashMap<>();
 
 	// XML stuff incl. Verification against XSD
-	private static final String XSD_FILE_PATH = "schema/SourcesAndSinks.xsd";
-	private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+	protected static final String XSD_FILE_PATH = "schema/SourcesAndSinks.xsd";
+	protected static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
 	public static XMLSourceSinkParser fromFile(String fileName) throws IOException {
 		return fromFile(fileName, null);
@@ -427,7 +413,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		}
 	}
 
-	private static InputStream getStream(String fileName) throws IOException {
+	protected static InputStream getStream(String fileName) throws IOException {
 		File f = new File(fileName);
 		if (f.exists())
 			return new FileInputStream(f);
@@ -441,31 +427,30 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 	public static XMLSourceSinkParser fromStream(InputStream inputStream, ICategoryFilter categoryFilter)
 			throws IOException {
-		XMLSourceSinkParser pmp = new XMLSourceSinkParser(inputStream, categoryFilter);
+		XMLSourceSinkParser pmp = new XMLSourceSinkParser(categoryFilter);
+		pmp.parseInputStream(inputStream);
 		return pmp;
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<IAccessPathBasedSourceSinkDefinition> getSources() {
 		return sources;
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<IAccessPathBasedSourceSinkDefinition> getSinks() {
 		return sinks;
 	}
 
 	/**
 	 * gets the category for the given values. If this is the first time such a
-	 * category is requested, the respective definition is created. Otherwise,
-	 * the existing one is returned.
+	 * category is requested, the respective definition is created. Otherwise, the
+	 * existing one is returned.
 	 * 
-	 * @param systemCategory
-	 *            The system-defined category name
-	 * @param customCategory
-	 *            The user-defined category name
-	 * @param customDescription
-	 *            The human-readable description for the custom category
+	 * @param systemCategory    The system-defined category name
+	 * @param customCategory    The user-defined category name
+	 * @param customDescription The human-readable description for the custom
+	 *                          category
 	 * @return The category definition object for the given category names
 	 */
 	private CategoryDefinition getOrMakeCategory(CATEGORY systemCategory, String customCategory,
@@ -481,18 +466,21 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	}
 
 	/**
-	 * Creates a new instance of the {@link XMLSourceSinkParser} class and reads
-	 * the source and sink definitions from the given stream
+	 * Creates a new instance of the {@link XMLSourceSinkParser} class
 	 * 
-	 * @param stream
-	 *            The stream from which to read the sources and sinks
-	 * @param filter
-	 *            A filter for excluding certain categories of sources and sinks
+	 * @param filter A filter for excluding certain categories of sources and sinks
 	 */
-	private XMLSourceSinkParser(InputStream stream, ICategoryFilter categoryFilter) {
-		// Parse the data
+	protected XMLSourceSinkParser(ICategoryFilter categoryFilter) {
 		this.sourcesAndSinks = new HashMap<>();
 		this.categoryFilter = categoryFilter;
+	}
+
+	/**
+	 * Parses the given input stream to obtain the source/sink definitions
+	 * 
+	 * @param stream The stream whose data to parse
+	 */
+	protected void parseInputStream(InputStream stream) {
 		SAXParserFactory pf = SAXParserFactory.newInstance();
 		try {
 			SAXParser parser = pf.newSAXParser();
@@ -506,9 +494,16 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		}
 
 		// Build the source and sink lists
-		for (SourceSinkDefinition def : sourcesAndSinks.values()) {
-			SourceSinkDefinition sourceDef = def.getSourceOnlyDefinition();
-			if (!sourceDef.isEmpty()) {
+		buildSourceSinkLists();
+	}
+
+	/**
+	 * Builds the lists of sources and sinks from the data that we have parsed
+	 */
+	protected void buildSourceSinkLists() {
+		for (IAccessPathBasedSourceSinkDefinition def : sourcesAndSinks.values()) {
+			IAccessPathBasedSourceSinkDefinition sourceDef = def.getSourceOnlyDefinition();
+			if (sourceDef != null && !sourceDef.isEmpty()) {
 				if (sourceDef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition methodSrc = (MethodSourceSinkDefinition) sourceDef;
 					if (methodSrc.getMethod() instanceof AndroidMethod) {
@@ -519,8 +514,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				sources.add(sourceDef);
 			}
 
-			SourceSinkDefinition sinkDef = def.getSinkOnlyDefinition();
-			if (!sinkDef.isEmpty()) {
+			IAccessPathBasedSourceSinkDefinition sinkDef = def.getSinkOnlyDefinition();
+			if (sinkDef != null && !sinkDef.isEmpty()) {
 				if (sourceDef instanceof MethodSourceSinkDefinition) {
 					MethodSourceSinkDefinition methodSink = (MethodSourceSinkDefinition) sourceDef;
 					if (methodSink.getMethod() instanceof AndroidMethod) {
@@ -538,8 +533,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	 * Checks whether the given XML is valid against the XSD for the new data
 	 * format.
 	 * 
-	 * @param fileName
-	 *            of the XML
+	 * @param fileName of the XML
 	 * @throws IOException
 	 */
 	private static void verifyXML(InputStream inp) throws IOException {
@@ -566,11 +560,59 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getAllMethods() {
-		Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(sources.size() + sinks.size());
+	public Set<IAccessPathBasedSourceSinkDefinition> getAllMethods() {
+		Set<IAccessPathBasedSourceSinkDefinition> sourcesSinks = new HashSet<>(sources.size() + sinks.size());
 		sourcesSinks.addAll(sources);
 		sourcesSinks.addAll(sinks);
 		return sourcesSinks;
+	}
+
+	/**
+	 * Adds a new source or sink definition
+	 * 
+	 * @param signature The signature of the method or field that is considered a
+	 *                  source or a sink
+	 * @param ssd       The source or sink definition
+	 */
+	protected void addSourceSinkDefinition(String signature, IAccessPathBasedSourceSinkDefinition ssd) {
+		if (sourcesAndSinks.containsKey(signature))
+			sourcesAndSinks.get(signature).merge(ssd);
+		else
+			sourcesAndSinks.put(signature, ssd);
+	}
+
+	/**
+	 * Factory method for {@link MethodSourceSinkDefinition} instances
+	 * 
+	 * @param method    The method that is to be defined as a source or sink
+	 * @param baseAPs   The access paths rooted in the base object that shall be
+	 *                  considered as sources or sinks
+	 * @param paramAPs  The access paths rooted in parameters that shall be
+	 *                  considered as sources or sinks. The index in the set
+	 *                  corresponds to the index of the formal parameter to which
+	 *                  the respective set of access paths belongs.
+	 * @param returnAPs The access paths rooted in the return object that shall be
+	 *                  considered as sources or sinks
+	 * @param callType  The type of call (normal call, callback, etc.)
+	 * @return The newly created {@link MethodSourceSinkDefinition} instance
+	 */
+	protected IAccessPathBasedSourceSinkDefinition createMethodSourceSinkDefinition(AndroidMethod method,
+			Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
+			CallType callType) {
+		return new MethodSourceSinkDefinition(method, baseAPs, paramAPs, returnAPs, callType);
+	}
+
+	/**
+	 * Factory method for {@link FieldSourceSinkDefinition} instances
+	 * 
+	 * @param signature The signature of the target field
+	 * @param baseAPs   The access paths that shall be considered as sources or
+	 *                  sinks
+	 * @return The newly created {@link FieldSourceSinkDefinition} instance
+	 */
+	protected IAccessPathBasedSourceSinkDefinition createFieldSourceSinkDefinition(String signature,
+			Set<AccessPathTuple> baseAPs) {
+		return new FieldSourceSinkDefinition(signature, baseAPs);
 	}
 
 }

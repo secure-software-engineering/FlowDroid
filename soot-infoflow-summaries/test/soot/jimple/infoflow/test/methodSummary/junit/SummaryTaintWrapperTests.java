@@ -125,7 +125,7 @@ public class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void apl3Flow()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test // (timeout = 30000)
 	public void gapFlow1() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void gapFlow1()>");
 	}
@@ -173,7 +173,7 @@ public class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void storeAliasInGapClass2()>");
 	}
 
-	@Test // (timeout = 30000)
+	@Test(timeout = 30000)
 	public void storeAliasInSummaryClass() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void storeAliasInSummaryClass()>");
 	}
@@ -223,7 +223,7 @@ public class SummaryTaintWrapperTests {
 		Infoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
-			iFlow.getConfig().setAccessPathLength(3);
+			iFlow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 			iFlow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(Collections.singletonList(m)),
 					Arrays.asList(source), Collections.singletonList(sink));
 		} catch (Exception e) {
@@ -253,8 +253,7 @@ public class SummaryTaintWrapperTests {
 			InfoflowResults map = infoflow.getResults();
 
 			assertTrue(map.containsSinkMethod(sink));
-			assertTrue(map.isPathBetweenMethods(sink, source[0])
-					|| map.isPathBetweenMethods(sink, source[1])
+			assertTrue(map.isPathBetweenMethods(sink, source[0]) || map.isPathBetweenMethods(sink, source[1])
 					|| map.isPathBetweenMethods(sink, source[2]));
 			assertEquals(resultCount, map.size());
 		} else {
@@ -264,7 +263,7 @@ public class SummaryTaintWrapperTests {
 
 	protected Infoflow initInfoflow() throws FileNotFoundException, XMLStreamException {
 		Infoflow result = new Infoflow();
-		result.getConfig().setUseRecursiveAccessPaths(false);
+		result.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 		IInfoflowConfig testConfig = new IInfoflowConfig() {
 
 			@Override
@@ -311,13 +310,8 @@ public class SummaryTaintWrapperTests {
 			fail("Test aborted - none of the test sources are available");
 		}
 
-		appPath = testSrc1.getCanonicalPath()
-				+ sep
-				+ testSrc2.getCanonicalPath()
-				+ sep
-				+ testSrc3.getCanonicalPath()
-				+ sep
-				+ testSrc4.getCanonicalPath();
+		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath()
+				+ sep + testSrc4.getCanonicalPath();
 		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
 	}
 

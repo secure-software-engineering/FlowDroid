@@ -3,6 +3,7 @@ package soot.jimple.infoflow.data.pathBuilders;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AbstractionAtSink;
@@ -57,7 +58,13 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 				ConcurrentAbstractionPathBuilder concurrentBuilder = (ConcurrentAbstractionPathBuilder) innerBuilder;
 				final InterruptableExecutor resultExecutor = concurrentBuilder.getExecutor();
 				try {
-					resultExecutor.awaitCompletion();
+					// The path reconstruction should stop on time anyway. In case it doesn't, we
+					// make sure that we don't get stuck.
+					long pathTimeout = manager.getConfig().getPathConfiguration().getPathReconstructionTimeout();
+					if (pathTimeout > 0)
+						resultExecutor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
+					else
+						resultExecutor.awaitCompletion();
 				} catch (InterruptedException e) {
 					logger.error("Could not wait for executor termination", e);
 				}

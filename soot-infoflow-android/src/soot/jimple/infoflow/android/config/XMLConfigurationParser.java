@@ -23,6 +23,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.AnalysisFileConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
@@ -201,14 +202,14 @@ public class XMLConfigurationParser {
 						solverConfig.setMaxCalleesPerCallSite(Integer.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_IMPLICIT_FLOW_MODE))
 						config.setImplicitFlowMode(ImplicitFlowMode.valueOf(data));
-					else if (currentElement.equals(XMLConstants.TAG_ENABLE_STATIC_FIELDS))
-						config.setEnableStaticFieldTracking(Boolean.valueOf(data));
+					else if (currentElement.equals(XMLConstants.TAG_STATIC_FIELD_TRACKING_MODE))
+						config.setStaticFieldTrackingMode(StaticFieldTrackingMode.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_EXCEPTIONS))
 						config.setEnableExceptionTracking(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_ARRAYS))
 						config.setEnableArrayTracking(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_REFLECTION))
-						config.setEnableRefection(Boolean.valueOf(data));
+						config.setEnableReflection(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_FLOW_SENSITIVE_ALIASING))
 						config.setFlowSensitiveAliasing(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_LOG_SOURCES_AND_SINKS))
@@ -250,14 +251,11 @@ public class XMLConfigurationParser {
 	}
 
 	/**
-	 * Creates a new {@link XMLConfigurationParser} from an XML configuration
-	 * file
+	 * Creates a new {@link XMLConfigurationParser} from an XML configuration file
 	 * 
-	 * @param fileName
-	 *            The full path and file name of the configuration file to read
+	 * @param fileName The full path and file name of the configuration file to read
 	 * @return The parser that was initialized with the given XML file
-	 * @throws IOException
-	 *             Thrown if the given file could not be read
+	 * @throws IOException Thrown if the given file could not be read
 	 */
 	public static XMLConfigurationParser fromFile(String fileName) throws IOException {
 		if (!verifyXML(fileName)) {
@@ -270,11 +268,9 @@ public class XMLConfigurationParser {
 	/**
 	 * Creates a new {@link XMLConfigurationParser} from an input stream
 	 * 
-	 * @param inputStream
-	 *            The stream that contains the XML data to read
+	 * @param inputStream The stream that contains the XML data to read
 	 * @return The parser that was initialized with the given XML file
-	 * @throws IOException
-	 *             Thrown if the given file could not be read
+	 * @throws IOException Thrown if the given file could not be read
 	 */
 	public static XMLConfigurationParser fromStream(InputStream inputStream) throws IOException {
 		XMLConfigurationParser pmp = new XMLConfigurationParser(inputStream);
@@ -284,8 +280,7 @@ public class XMLConfigurationParser {
 	/**
 	 * Creates a new instance of the {@link XMLConfigurationParser} class
 	 * 
-	 * @param stream
-	 *            The stream from which to read the XML data
+	 * @param stream The stream from which to read the XML data
 	 */
 	private XMLConfigurationParser(InputStream stream) {
 		this.xmlStream = stream;
@@ -295,8 +290,7 @@ public class XMLConfigurationParser {
 	 * Checks whether the given XML is valid against the XSD for the new data
 	 * format.
 	 * 
-	 * @param fileName
-	 *            of the XML
+	 * @param fileName of the XML
 	 * @return true = valid XML false = invalid XML
 	 * @throws IOException
 	 */
@@ -331,9 +325,8 @@ public class XMLConfigurationParser {
 	/**
 	 * Parses the configuration file and fills the data into the given object
 	 * 
-	 * @param config
-	 *            The configuration object to fill with the data read from the
-	 *            XML file
+	 * @param config The configuration object to fill with the data read from the
+	 *               XML file
 	 */
 	public void parse(InfoflowAndroidConfiguration config) {
 		// Parse the data

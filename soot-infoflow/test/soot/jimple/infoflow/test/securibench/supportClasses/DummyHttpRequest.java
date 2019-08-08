@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
@@ -20,23 +20,70 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 public class DummyHttpRequest implements HttpServletRequest {
-	enum count {ONE, TWO};
+	enum count {
+		ONE, TWO
+	}
+
+	;
+
 	@Override
 	public Object getAttribute(String arg0) {
 		return "";
 	}
 
 	@Override
+	public AsyncContext getAsyncContext() {
+		return null;
+	}
+
+	@Override
+	public ServletContext getServletContext() {
+		return null;
+	}
+
+	@Override
+	public AsyncContext startAsync() {
+		return null;
+	}
+
+	@Override
+	public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
+		return null;
+	}
+
+	@Override
+	public boolean isAsyncSupported() {
+		return true;
+	}
+
+	@Override
+	public boolean isAsyncStarted() {
+		return true;
+	}
+
+	@Override
+	public boolean authenticate(HttpServletResponse response) {
+		return true;
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Enumeration getAttributeNames() {
-		
+
 		return new StringTokenizer("one two");
 	}
 
@@ -91,6 +138,26 @@ public class DummyHttpRequest implements HttpServletRequest {
 	}
 
 	@Override
+	public Part getPart(String name) {
+		return null;
+	}
+
+	@Override
+	public java.util.Collection<Part> getParts() {
+		return null;
+	}
+
+	@Override
+	public void logout() {
+
+	}
+
+	@Override
+	public void login(String user, String pwd) {
+
+	}
+
+	@Override
 	@SuppressWarnings("rawtypes")
 	public Enumeration getParameterNames() {
 		// TODO Auto-generated method stub
@@ -100,13 +167,18 @@ public class DummyHttpRequest implements HttpServletRequest {
 	@Override
 	public String[] getParameterValues(String arg0) {
 		// TODO Auto-generated method stub
-		return new String[]{arg0};
+		return new String[] { arg0 };
 	}
 
 	@Override
 	public String getProtocol() {
 		// TODO Auto-generated method stub
 		return "";
+	}
+
+	@Override
+	public DispatcherType getDispatcherType() {
+		return null;
 	}
 
 	@Override
@@ -166,19 +238,19 @@ public class DummyHttpRequest implements HttpServletRequest {
 	@Override
 	public void removeAttribute(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setAttribute(String arg0, Object arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -196,7 +268,7 @@ public class DummyHttpRequest implements HttpServletRequest {
 	@Override
 	public Cookie[] getCookies() {
 		Cookie c = new Cookie("", "");
-		return new Cookie[]{c};
+		return new Cookie[] { c };
 	}
 
 	@Override
@@ -355,4 +427,3 @@ public class DummyHttpRequest implements HttpServletRequest {
 	}
 
 }
-

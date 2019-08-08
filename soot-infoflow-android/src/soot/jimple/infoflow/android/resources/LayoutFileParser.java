@@ -28,7 +28,7 @@ import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.axml.parsers.AXML20Parser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.StringResource;
-import soot.jimple.infoflow.android.resources.controls.LayoutControl;
+import soot.jimple.infoflow.android.resources.controls.AndroidLayoutControl;
 import soot.jimple.infoflow.android.resources.controls.LayoutControlFactory;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -41,13 +41,13 @@ import soot.util.MultiMap;
  */
 public class LayoutFileParser extends AbstractResourceParser {
 
-	private final MultiMap<String, LayoutControl> userControls = new HashMultiMap<>();
-	private final MultiMap<String, String> callbackMethods = new HashMultiMap<>();
-	private final MultiMap<String, String> includeDependencies = new HashMultiMap<>();
-	private final MultiMap<String, SootClass> fragments = new HashMultiMap<>();
+	protected final MultiMap<String, AndroidLayoutControl> userControls = new HashMultiMap<>();
+	protected final MultiMap<String, String> callbackMethods = new HashMultiMap<>();
+	protected final MultiMap<String, String> includeDependencies = new HashMultiMap<>();
+	protected final MultiMap<String, SootClass> fragments = new HashMultiMap<>();
 
-	private final String packageName;
-	private final ARSCFileParser resParser;
+	protected final String packageName;
+	protected final ARSCFileParser resParser;
 
 	private boolean loadOnlySensitiveControls = false;
 	private SootClass scViewGroup = null;
@@ -86,18 +86,16 @@ public class LayoutFileParser extends AbstractResourceParser {
 			sc = Scene.v().forceResolve("android.widget." + className, SootClass.BODIES);
 		if (!isRealClass(sc))
 			sc = Scene.v().forceResolve("android.webkit." + className, SootClass.BODIES);
-		if (!isRealClass(sc)) {
-			logger.warn(String.format("Could not find layout class %s", className));
+		if (!isRealClass(sc))
 			return null;
-		}
+
 		return sc;
 	}
 
 	/**
 	 * Checks whether the given class is a layout class
 	 * 
-	 * @param theClass
-	 *            The class to check
+	 * @param theClass The class to check
 	 * @return True if the given class is a layout class, otherwise false
 	 */
 	private boolean isLayoutClass(SootClass theClass) {
@@ -108,8 +106,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Checks whether the given class is a view class
 	 * 
-	 * @param theClass
-	 *            The class tocheck
+	 * @param theClass The class tocheck
 	 * @return True if the given class is a view class, otherwise false
 	 */
 	private boolean isViewClass(SootClass theClass) {
@@ -123,17 +120,15 @@ public class LayoutFileParser extends AbstractResourceParser {
 		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scWebView.getType()))
 			return true;
 
-		logger.warn("Layout class %s is not derived from android.view.View", theClass.getName());
+		logger.warn(String.format("Layout class %s is not derived from android.view.View", theClass.getName()));
 		return false;
 	}
 
 	/**
 	 * Adds a callback method found in an XML file to the result set
 	 * 
-	 * @param layoutFile
-	 *            The XML file in which the callback has been found
-	 * @param callback
-	 *            The callback found in the given XML file
+	 * @param layoutFile The XML file in which the callback has been found
+	 * @param callback   The callback found in the given XML file
 	 */
 	private void addCallbackMethod(String layoutFile, String callback) {
 		layoutFile = layoutFile.replace("/layout-large/", "/layout/");
@@ -149,10 +144,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Adds a fragment found in an XML file to the result set
 	 * 
-	 * @param layoutFile
-	 *            The XML file in which the fragment has been found
-	 * @param fragment
-	 *            The fragment found in the given XML file
+	 * @param layoutFile The XML file in which the fragment has been found
+	 * @param fragment   The fragment found in the given XML file
 	 */
 	private void addFragment(String layoutFile, SootClass fragment) {
 		// Do not add null fragments
@@ -174,11 +167,11 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * user controls in it. This method only registers a Soot phase that is run when
 	 * the Soot packs are next run
 	 * 
-	 * @param fileName
-	 *            The APK file in which to look for user controls
+	 * @param fileName The APK file in which to look for user controls
 	 */
 	public void parseLayoutFile(final String fileName) {
 		Transform transform = new Transform("wjtp.lfp", new SceneTransformer() {
+			@Override
 			protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
 				parseLayoutFileDirect(fileName);
 			}
@@ -190,10 +183,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Parses all layout XML files in the given APK file and loads the IDs of the
 	 * user controls in it. This method directly executes the analyses witout
-	 * registering any Soot phases.<
+	 * registering any Soot phases.
 	 * 
-	 * @param fileName
-	 *            The APK file in which to look for user controls
+	 * @param fileName The APK file in which to look for user controls
 	 */
 	public void parseLayoutFileDirect(final String fileName) {
 		handleAndroidResourceFiles(fileName, /* classes, */ null, new IResourceHandler() {
@@ -243,10 +235,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Parses the layout file with the given root node
 	 * 
-	 * @param layoutFile
-	 *            The full path and file name of the file being parsed
-	 * @param rootNode
-	 *            The root node from where to start parsing
+	 * @param layoutFile The full path and file name of the file being parsed
+	 * @param rootNode   The root node from where to start parsing
 	 */
 	private void parseLayoutNode(String layoutFile, AXmlNode rootNode) {
 		if (rootNode.getTag() == null || rootNode.getTag().isEmpty()) {
@@ -292,14 +282,15 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Parses the attributes required for a layout file inclusion
 	 * 
-	 * @param layoutFile
-	 *            The full path and file name of the file being parsed
-	 * @param rootNode
-	 *            The AXml node containing the attributes
+	 * @param layoutFile The full path and file name of the file being parsed
+	 * @param rootNode   The AXml node containing the attributes
 	 */
 	private void parseIncludeAttributes(String layoutFile, AXmlNode rootNode) {
 		for (Entry<String, AXmlAttribute<?>> entry : rootNode.getAttributes().entrySet()) {
-			String attrName = entry.getKey().trim();
+			String attrName = entry.getKey();
+			if (attrName == null || attrName.isEmpty())
+				continue;
+			attrName = attrName.trim();
 			AXmlAttribute<?> attr = entry.getValue();
 
 			if (attrName.equals("layout")) {
@@ -336,16 +327,13 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Parses the layout attributes in the given AXml node
 	 * 
-	 * @param layoutFile
-	 *            The full path and file name of the file being parsed
-	 * @param layoutClass
-	 *            The class for the attributes are parsed
-	 * @param rootNode
-	 *            The AXml node containing the attributes
+	 * @param layoutFile  The full path and file name of the file being parsed
+	 * @param layoutClass The class for the attributes are parsed
+	 * @param rootNode    The AXml node containing the attributes
 	 */
 	private void parseLayoutAttributes(String layoutFile, SootClass layoutClass, AXmlNode rootNode) {
 		// Create the new user control
-		LayoutControl lc = controlFactory.createLayoutControl(layoutFile, layoutClass, rootNode);
+		AndroidLayoutControl lc = controlFactory.createLayoutControl(layoutFile, layoutClass, rootNode);
 
 		// Check for a button click listener
 		if (lc.getClickListener() != null)
@@ -362,10 +350,12 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * 
 	 * @return The layout controls found in the XML file.
 	 */
-	public Map<Integer, LayoutControl> getUserControlsByID() {
-		Map<Integer, LayoutControl> res = new HashMap<Integer, LayoutControl>();
-		for (LayoutControl lc : this.userControls.values())
-			res.put(lc.getID(), lc);
+	public Map<Integer, AndroidLayoutControl> getUserControlsByID() {
+		Map<Integer, AndroidLayoutControl> res = new HashMap<>();
+		for (AndroidLayoutControl lc : this.userControls.values()) {
+			if (lc.getID() != -1)
+				res.put(lc.getID(), lc);
+		}
 		return res;
 	}
 
@@ -376,7 +366,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * 
 	 * @return The layout controls found in the XML file.
 	 */
-	public MultiMap<String, LayoutControl> getUserControls() {
+	public MultiMap<String, AndroidLayoutControl> getUserControls() {
 		return this.userControls;
 	}
 
@@ -414,8 +404,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	/**
 	 * Sets the layout control factory to use for creating new layout controls
 	 * 
-	 * @param controlFactory
-	 *            The layout control factory
+	 * @param controlFactory The layout control factory
 	 */
 	public void setControlFactory(LayoutControlFactory controlFactory) {
 		this.controlFactory = controlFactory;

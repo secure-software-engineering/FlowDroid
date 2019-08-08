@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void &lt;init&gt;(int)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="java.util.concurrent.CountDownLatch"
+						AccessPath="[java.util.concurrent.CountDownLatch: long value]"
+						AccessPathTypes="[long]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long getCount()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.util.concurrent.CountDownLatch"
+						AccessPath="[java.util.concurrent.CountDownLatch: long value]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.util.concurrent.CountDownLatch"
+						AccessPath="[java.util.concurrent.CountDownLatch: long value]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

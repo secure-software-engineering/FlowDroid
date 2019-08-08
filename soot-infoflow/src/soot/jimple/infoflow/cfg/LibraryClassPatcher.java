@@ -3,8 +3,10 @@ package soot.jimple.infoflow.cfg;
 import java.util.Collections;
 
 import soot.Body;
+import soot.IntType;
 import soot.Local;
 import soot.Modifier;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -13,10 +15,12 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.VoidType;
+import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Constant;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
@@ -31,6 +35,18 @@ import soot.jimple.StringConstant;
 public class LibraryClassPatcher {
 
 	private final Constant stubConst = StringConstant.v("Stub!");
+
+	/**
+	 * Helper interface to inject code into the Message.obtain() overloads
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	private static interface IMessageObtainCodeInjector {
+
+		public void injectCode(Body body, Local messageLocal);
+
+	}
 
 	public LibraryClassPatcher() {
 
@@ -52,18 +68,181 @@ public class LibraryClassPatcher {
 		// Patch the java.util.Timer implementation
 		patchTimerImplementation();
 
-		patchServiceConnection();
-
 		// Patch activity getFragmentManager()
 		patchActivityGetFragmentManager();
+
+		// Patch the various overloads of Message.obtain()
+		patchMessageObtainImplementation();
+	}
+
+	/**
+	 * Patches the implementations of the various overloads of Message.obtain()
+	 */
+	private void patchMessageObtainImplementation() {
+		SootClass sc = Scene.v().getSootClassUnsafe("android.os.Message");
+		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
+			return;
+		sc.setLibraryClass();
+
+		// We sometimes seem to be missing the constructor
+		SootMethod smMessageConstructor = Scene.v().grabMethod("<android.os.Message: void <init>()>");
+		if (smMessageConstructor == null)
+			return;
+
+		// Make sure that we have all fields
+		SootField tmp = sc.getFieldUnsafe("int what");
+		if (tmp == null) {
+			tmp = Scene.v().makeSootField("what", IntType.v());
+			sc.addField(tmp);
+		}
+		final SootField fldWhat = tmp;
+
+		tmp = sc.getFieldUnsafe("int arg1");
+		if (tmp == null) {
+			tmp = Scene.v().makeSootField("arg1", IntType.v());
+			sc.addField(tmp);
+		}
+		final SootField fldArg1 = tmp;
+
+		tmp = sc.getFieldUnsafe("int arg2");
+		if (tmp == null) {
+			tmp = Scene.v().makeSootField("arg2", IntType.v());
+			sc.addField(tmp);
+		}
+		final SootField fldArg2 = tmp;
+
+		tmp = sc.getFieldUnsafe("java.lang.Object obj");
+		if (tmp == null) {
+			tmp = Scene.v().makeSootField("obj", Scene.v().getObjectType());
+			sc.addField(tmp);
+		}
+		final SootField fldObj = tmp;
+
+		// Method obtain(Handler,int)
+		SootMethod smObtain1 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int)");
+		if (smObtain1 != null && (!smObtain1.hasActiveBody() || isStubImplementation(smObtain1.getActiveBody()))) {
+			generateMessageObtainMethod(smObtain1, new IMessageObtainCodeInjector() {
+
+				@Override
+				public void injectCode(Body body, Local messageLocal) {
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldWhat.makeRef()),
+									body.getParameterLocal(1)));
+				}
+
+			});
+		}
+
+		// Method obtain(Handler,int,int,int,Object)
+		SootMethod smObtain2 = sc
+				.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,int,int,java.lang.Object)");
+		if (smObtain2 != null && (!smObtain2.hasActiveBody() || isStubImplementation(smObtain2.getActiveBody()))) {
+			generateMessageObtainMethod(smObtain2, new IMessageObtainCodeInjector() {
+
+				@Override
+				public void injectCode(Body body, Local messageLocal) {
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldWhat.makeRef()),
+									body.getParameterLocal(1)));
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldArg1.makeRef()),
+									body.getParameterLocal(2)));
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldArg2.makeRef()),
+									body.getParameterLocal(3)));
+					body.getUnits().add(Jimple.v().newAssignStmt(
+							Jimple.v().newInstanceFieldRef(messageLocal, fldObj.makeRef()), body.getParameterLocal(4)));
+				}
+
+			});
+		}
+
+		// Method obtain(Handler,int,int,int)
+		SootMethod smObtain3 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,int,int)");
+		if (smObtain3 != null && (!smObtain3.hasActiveBody() || isStubImplementation(smObtain3.getActiveBody()))) {
+			generateMessageObtainMethod(smObtain3, new IMessageObtainCodeInjector() {
+
+				@Override
+				public void injectCode(Body body, Local messageLocal) {
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldWhat.makeRef()),
+									body.getParameterLocal(1)));
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldArg1.makeRef()),
+									body.getParameterLocal(2)));
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldArg2.makeRef()),
+									body.getParameterLocal(3)));
+				}
+
+			});
+		}
+
+		// Method obtain(Handler,int,Object)
+		SootMethod smObtain4 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,java.lang.Object)");
+		if (smObtain4 != null && (!smObtain4.hasActiveBody() || isStubImplementation(smObtain4.getActiveBody()))) {
+			generateMessageObtainMethod(smObtain4, new IMessageObtainCodeInjector() {
+
+				@Override
+				public void injectCode(Body body, Local messageLocal) {
+					body.getUnits()
+							.add(Jimple.v().newAssignStmt(
+									Jimple.v().newInstanceFieldRef(messageLocal, fldWhat.makeRef()),
+									body.getParameterLocal(1)));
+					body.getUnits().add(Jimple.v().newAssignStmt(
+							Jimple.v().newInstanceFieldRef(messageLocal, fldObj.makeRef()), body.getParameterLocal(2)));
+				}
+
+			});
+		}
+	}
+
+	/**
+	 * Creates a new implementation for the given method
+	 * 
+	 * @param sm       The method for which to generate a new implementation
+	 * @param injector Callback to inject additional code into the new method
+	 */
+	private void generateMessageObtainMethod(SootMethod sm, IMessageObtainCodeInjector injector) {
+		// Create the method
+		RefType tpMessage = RefType.v("android.os.Message");
+		sm.getDeclaringClass().setLibraryClass();
+		sm.setPhantom(false);
+		sm.addTag(new FlowDroidEssentialMethodTag());
+
+		// Create a body for the method
+		JimpleBody body = Jimple.v().newBody(sm);
+		sm.setActiveBody(body);
+		body.insertIdentityStmts();
+
+		// This method must exist, since we checked it before attempting any kind of
+		// message mocking
+		SootMethod smMessageConstructor = Scene.v().grabMethod("<android.os.Message: void <init>()>");
+
+		LocalGenerator lg = new LocalGenerator(body);
+		Local messageLocal = lg.generateLocal(tpMessage);
+		body.getUnits().add(Jimple.v().newAssignStmt(messageLocal, Jimple.v().newNewExpr(tpMessage)));
+		body.getUnits().add(Jimple.v()
+				.newInvokeStmt(Jimple.v().newSpecialInvokeExpr(messageLocal, smMessageConstructor.makeRef())));
+
+		if (injector != null)
+			injector.injectCode(body, messageLocal);
+
+		body.getUnits().add(Jimple.v().newReturnStmt(messageLocal));
 	}
 
 	/**
 	 * Checks whether the given method body is a stub implementation and can safely
 	 * be overwritten
 	 * 
-	 * @param body
-	 *            The body to check
+	 * @param body The body to check
 	 * @return True if the given method body is a stub implementation, otherwise
 	 *         false
 	 */
@@ -90,7 +269,7 @@ public class LibraryClassPatcher {
 		SootClass scApplicationHolder = createOrGetApplicationHolder();
 
 		SootClass sc = Scene.v().getSootClassUnsafe("android.app.Activity");
-		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
+		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES || scApplicationHolder == null)
 			return;
 		sc.setLibraryClass();
 
@@ -128,6 +307,8 @@ public class LibraryClassPatcher {
 	public static SootClass createOrGetApplicationHolder() {
 		SootClass scApplication = Scene.v().getSootClassUnsafe("android.app.Application");
 
+		if (scApplication == null || scApplication.resolvingLevel() < SootClass.SIGNATURES)
+			return null;
 		String applicationHolderClassName = "il.ac.tau.MyApplicationHolder";
 		SootClass scApplicationHolder;
 		if (!Scene.v().containsClass(applicationHolderClassName)) {
@@ -189,12 +370,10 @@ public class LibraryClassPatcher {
 	 * Creates a synthetic "java.lang.Thread.run()" method implementation that calls
 	 * the target previously passed in when the constructor was called
 	 * 
-	 * @param smRun
-	 *            The run() method for which to create a synthetic implementation
-	 * @param runnable
-	 *            The "java.lang.Runnable" interface
-	 * @param fldTarget
-	 *            The field containing the target object
+	 * @param smRun     The run() method for which to create a synthetic
+	 *                  implementation
+	 * @param runnable  The "java.lang.Runnable" interface
+	 * @param fldTarget The field containing the target object
 	 */
 	private void patchThreadRunMethod(SootMethod smRun, SootClass runnable, SootField fldTarget) {
 		SootClass sc = smRun.getDeclaringClass();
@@ -229,12 +408,10 @@ public class LibraryClassPatcher {
 	 * Creates a synthetic "<init>(java.lang.Runnable)" method implementation that
 	 * stores the given runnable into a field for later use
 	 * 
-	 * @param smCons
-	 *            The <init>() method for which to create a synthetic implementation
-	 * @param runnable
-	 *            The "java.lang.Runnable" interface
-	 * @param fldTarget
-	 *            The field receiving the Runnable
+	 * @param smCons    The <init>() method for which to create a synthetic
+	 *                  implementation
+	 * @param runnable  The "java.lang.Runnable" interface
+	 * @param fldTarget The field receiving the Runnable
 	 */
 	private void patchThreadConstructor(SootMethod smCons, SootClass runnable, SootField fldTarget) {
 		SootClass sc = smCons.getDeclaringClass();
@@ -319,9 +496,8 @@ public class LibraryClassPatcher {
 	 * Creates a new body for one of the dispatchMessage method in
 	 * android.os.Handler
 	 * 
-	 * @param method
-	 *            The method for which to create the implementation
-	 *            (dispatchMessage)
+	 * @param method The method for which to create the implementation
+	 *               (dispatchMessage)
 	 * @return The newly created body
 	 */
 	private Body patchHandlerDispatchBody(SootMethod method) {
@@ -365,10 +541,8 @@ public class LibraryClassPatcher {
 	/**
 	 * Creates a new body for one of the postXXX methods in android.os.Handler
 	 * 
-	 * @param method
-	 *            The method for which to create the implementation
-	 * @param runnable
-	 *            The java.lang.Runnable class
+	 * @param method   The method for which to create the implementation
+	 * @param runnable The java.lang.Runnable class
 	 * @return The newly created body
 	 */
 	private Body patchHandlerPostBody(SootMethod method, SootClass runnable) {
@@ -454,8 +628,7 @@ public class LibraryClassPatcher {
 	 * Patches the schedule() method of java.util.Timer by providing a fake
 	 * implementation
 	 * 
-	 * @param method
-	 *            The method to patch
+	 * @param method The method to patch
 	 */
 	private void patchTimerScheduleMethod(SootMethod method) {
 		SootClass sc = method.getDeclaringClass();
@@ -500,7 +673,7 @@ public class LibraryClassPatcher {
 		SootClass sc = Scene.v().getSootClassUnsafe("android.app.Activity");
 		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
 			return;
-		sc.setApplicationClass();
+		sc.setLibraryClass();
 		SootMethod smGetFM = sc.getMethodUnsafe("android.app.FragmentManager getFragmentManager()");
 		if (smGetFM == null || smGetFM.hasActiveBody())
 			return;
@@ -516,50 +689,6 @@ public class LibraryClassPatcher {
 		b.getLocals().add(retLocal);
 		b.getUnits().add(Jimple.v().newAssignStmt(retLocal, Jimple.v().newNewExpr(scFragmentTransaction.getType())));
 		b.getUnits().add(Jimple.v().newReturnStmt(retLocal));
-	}
-
-	private void patchServiceConnection() {
-		SootClass sc = Scene.v().getSootClassUnsafe("android.content.ServiceConnection");
-		if (sc == null || sc.resolvingLevel() < SootClass.SIGNATURES)
-			return;
-		sc.setApplicationClass();
-
-		SootMethod smGetFM = sc
-				.getMethodUnsafe("void onServiceConnected(android.content.ComponentName,android.os.IBinder)");
-		if (smGetFM == null || smGetFM.hasActiveBody())
-			return;
-
-		smGetFM.setPhantom(false);
-
-		Body b = Jimple.v().newBody(smGetFM);
-		// smGetFM.setActiveBody(b);
-
-		Local thisLocal = Jimple.v().newLocal("this", sc.getType());
-		b.getLocals().add(thisLocal);
-		b.getUnits().add(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(sc.getType())));
-
-		// Assign the parameters
-		Local firstParam = null;
-		for (int i = 0; i < smGetFM.getParameterCount(); ++i) {
-			Local paramLocal = Jimple.v().newLocal("param" + i, smGetFM.getParameterType(i));
-			b.getLocals().add(paramLocal);
-			b.getUnits().add(
-					Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(smGetFM.getParameterType(i), i)));
-			if (i == 0)
-				firstParam = paramLocal;
-		}
-
-		b.getUnits()
-				.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(thisLocal,
-						Scene.v().makeMethodRef(sc, "onServiceConnected",
-								Collections.<Type>singletonList(smGetFM.getParameterType(0)), VoidType.v(), false),
-						firstParam)));
-
-		Unit retStmt = Jimple.v().newReturnVoidStmt();
-		b.getUnits().add(retStmt);
-
-		b.validate();
-
 	}
 
 }

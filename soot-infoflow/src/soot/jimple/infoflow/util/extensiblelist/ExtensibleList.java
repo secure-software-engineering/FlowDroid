@@ -9,17 +9,18 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * This list is intended to be used to save lists, which share the same elements at the start
- * of the list.
- * The list is meant to be iterated in reverse order, and operations requiring accessing the head
- * will be slower.
+ * This list is intended to be used to save lists, which share the same elements
+ * at the start of the list. The list is meant to be iterated in reverse order,
+ * and operations requiring accessing the head will be slower.
+ * 
  * @author Marc Miltenberger
  * @param <T> the type to save in this list
  */
 public class ExtensibleList<T> {
-	//private List<T> check;
+	// private List<T> check;
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(ExtensibleList.class);
+	// private static final Logger LOGGER =
+	// LoggerFactory.getLogger(ExtensibleList.class);
 
 	private static class ExtensibleListIterator<T> implements Iterator<T> {
 
@@ -45,8 +46,10 @@ public class ExtensibleList<T> {
 					if (list.actualList == null)
 						continue;
 
-					if (l == -1)
+					if (l < 0)
 						l = list.actualList.size();
+					if (l < 0)
+						throw new RuntimeException("List has less than zero elements");
 					it = list.actualList.listIterator(l);
 					if (it.hasPrevious())
 						return true;
@@ -79,28 +82,37 @@ public class ExtensibleList<T> {
 	private int parentHashCode;
 
 	/**
-	 * Creates a new extensible list. The given parameter is the
-	 * prepended to this list.
+	 * Creates a new extensible list. The given parameter is the prepended to this
+	 * list.
+	 * 
 	 * @param original the prepended list
 	 */
 	public ExtensibleList(ExtensibleList<T> original) {
-		this.size = original.size;
-		this.previous = original;
+		// Someone else might be doing the same right now, which means that "original"
+		// can be in an unexpected state. Even worse, we could bring it into such a
+		// state by writing the lock index.
+		synchronized (original) {
+			this.size = original.size;
+			this.previous = original;
 
-		if (original.actualList != null) {
-			previousLockedAt = original.actualList.size();
-			original.lastLocked = Math.min(original.lastLocked, original.actualList.size());
-			if (original.lastLocked == -1)
-				original.lastLocked = original.actualList.size();
-		} else
-			previousLockedAt = 0;
+			if (original.actualList != null) {
+				previousLockedAt = original.actualList.size();
+				original.lastLocked = Math.min(original.lastLocked, original.actualList.size());
+				if (original.lastLocked == -1)
+					original.lastLocked = original.actualList.size();
+			} else if (original.previous != null) {
+				previousLockedAt = original.previousLockedAt;
+				previous = original.previous;
+			} else
+				previousLockedAt = 0;
 
-		/*this.check = new ArrayList<>(original.check.size());
-		for (T i : original.check)
-			check.add(i);*/
+			/*
+			 * this.check = new ArrayList<>(original.check.size()); for (T i :
+			 * original.check) check.add(i);
+			 */
 
-		parentHashCode = original.onlyElementHashCode();
-
+			parentHashCode = original.onlyElementHashCode();
+		}
 	}
 
 	@Override
@@ -109,8 +121,9 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * Returns the aggregated hash code of each element, including
-	 * the elements in the previous list
+	 * Returns the aggregated hash code of each element, including the elements in
+	 * the previous list
+	 * 
 	 * @return the hash code
 	 */
 	private int onlyElementHashCode() {
@@ -129,11 +142,12 @@ public class ExtensibleList<T> {
 	public ExtensibleList() {
 		previousLockedAt = -1;
 		parentHashCode = 0;
-		//this.check = new ArrayList<>();
+		// this.check = new ArrayList<>();
 	}
 
 	/**
 	 * Returns the size of the list
+	 * 
 	 * @return the size
 	 */
 	public int size() {
@@ -141,8 +155,9 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * In case this list is locked, a new one is created and returned.
-	 * So, always use the returned list!
+	 * In case this list is locked, a new one is created and returned. So, always
+	 * use the returned list!
+	 * 
 	 * @param add the object to add
 	 * @return the new list
 	 */
@@ -151,14 +166,13 @@ public class ExtensibleList<T> {
 			actualList = new ArrayList<T>(4);
 		actualList.add(add);
 		size++;
+		savedHashCode = Integer.MIN_VALUE;
 
-		//printStats();
-		/*if (check != null) {
-			check.add(add);
-			if (savedHashCode != Integer.MIN_VALUE)
-				savedHashCode ^= add.hashCode();
-			check();
-		}*/
+		// printStats();
+		/*
+		 * if (check != null) { check.add(add); if (savedHashCode != Integer.MIN_VALUE)
+		 * savedHashCode ^= add.hashCode(); check(); }
+		 */
 		return this;
 	}
 
@@ -174,7 +188,7 @@ public class ExtensibleList<T> {
 				min = Math.min(min, list.actualList.size());
 			list = list.previous;
 		}
-		/*LOGGER.debug*/System.out
+		/* LOGGER.debug */System.out
 				.println(String.format("%d list parts for %d elements, min: %d, max: %d", i, size, min, max));
 	}
 
@@ -185,39 +199,28 @@ public class ExtensibleList<T> {
 		return this;
 	}
 
-	/*	private void check() {
-			//Check whether size is correct
-			if (size != check.size())
-				throw new AssertionError();
-	
-			if (size >= 1)
-				if (!getFirstSlow().equals(check.get(0)))
-					throw new AssertionError();
-	
-			ExtensibleList<T> l = new ExtensibleList<>();
-			l.check = null;
-			for (T c : check) {
-				l.add(c);
-			}
-	
-			if (l.hashCode() != hashCode())
-				throw new AssertionError();
-			if (!l.equals(this))
-				throw new AssertionError();
-	
-			ExtensibleListIterator<T> it = reverseIterator();
-			for (int x = check.size() - 1; x >= 0; x--) {
-				if (!it.hasNext())
-					throw new AssertionError();
-				if (!it.next().equals(check.get(x)))
-					throw new AssertionError();
-			}
-			if (it.hasNext())
-				throw new AssertionError();
-		}*/
+	/*
+	 * private void check() { //Check whether size is correct if (size !=
+	 * check.size()) throw new AssertionError();
+	 * 
+	 * if (size >= 1) if (!getFirstSlow().equals(check.get(0))) throw new
+	 * AssertionError();
+	 * 
+	 * ExtensibleList<T> l = new ExtensibleList<>(); l.check = null; for (T c :
+	 * check) { l.add(c); }
+	 * 
+	 * if (l.hashCode() != hashCode()) throw new AssertionError(); if
+	 * (!l.equals(this)) throw new AssertionError();
+	 * 
+	 * ExtensibleListIterator<T> it = reverseIterator(); for (int x = check.size() -
+	 * 1; x >= 0; x--) { if (!it.hasNext()) throw new AssertionError(); if
+	 * (!it.next().equals(check.get(x))) throw new AssertionError(); } if
+	 * (it.hasNext()) throw new AssertionError(); }
+	 */
 
 	/**
 	 * Returns true when this list is empty
+	 * 
 	 * @return true when this list is empty
 	 */
 	public boolean isEmpty() {
@@ -225,9 +228,11 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * Removes the last element and returns it
-	 * Alternatively, it may return an extensible list, in case the original one could not be changed!
-	 * @return the last element (or null) or an extensible list in case it cannot be changed in place.
+	 * Removes the last element and returns it Alternatively, it may return an
+	 * extensible list, in case the original one could not be changed!
+	 * 
+	 * @return the last element (or null) or an extensible list in case it cannot be
+	 *         changed in place.
 	 */
 	public Object removeLast() {
 		return getOrRemoveLast(true);
@@ -235,6 +240,7 @@ public class ExtensibleList<T> {
 
 	/**
 	 * Returns an iterator, which works reverse through the list
+	 * 
 	 * @return the iterator
 	 */
 	public ExtensibleListIterator<T> reverseIterator() {
@@ -248,6 +254,7 @@ public class ExtensibleList<T> {
 
 	/**
 	 * Returns the last element
+	 * 
 	 * @return the last element or null
 	 */
 	public T getLast() {
@@ -255,8 +262,9 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * This method returns the last element and also removes it
-	 * when the given boolean parameter is true
+	 * This method returns the last element and also removes it when the given
+	 * boolean parameter is true
+	 * 
 	 * @param remove whether to remove the last element
 	 * @return the last element (or null)
 	 */
@@ -269,7 +277,7 @@ public class ExtensibleList<T> {
 		boolean updateHash = remove;
 		try {
 			while (check != null) {
-				if (check.actualList != null) {
+				if (check.actualList != null && !check.actualList.isEmpty()) {
 					int elem;
 					if (lockedAt == -1)
 						elem = check.actualList.size() - 1;
@@ -278,11 +286,12 @@ public class ExtensibleList<T> {
 
 					if (remove) {
 						if (elem < check.lastLocked) {
-							//Too bad... We cannot remove the element, since it is locked (some other list may need it).
+							// Too bad... We cannot remove the element, since it is locked (some other list
+							// may need it).
 							ExtensibleList<T> result = new ExtensibleList<>();
 							result.actualList = new ArrayList<T>(size);
 							ExtensibleListIterator<T> it = reverseIterator();
-							it.next(); //remove first element
+							it.next(); // remove first element
 							while (it.hasNext()) {
 								T n = it.next();
 								result.actualList.add(n);
@@ -295,10 +304,11 @@ public class ExtensibleList<T> {
 						T b = check.actualList.remove(elem);
 						size--;
 
-						//We need to recompute the hash code:
+						// We need to recompute the hash code:
 						savedHashCode = Integer.MIN_VALUE;
-						/*					check.check.remove(check.check.size() - 1);
-											check();*/
+						/*
+						 * check.check.remove(check.check.size() - 1); check();
+						 */
 						return b;
 					} else
 						return check.actualList.get(elem);
@@ -306,12 +316,16 @@ public class ExtensibleList<T> {
 				lockedAt = check.previousLockedAt - 1;
 				check = check.previous;
 			}
+			if (remove) {
+				throw new RuntimeException("No element found to delete");
+			}
 		} finally {
 			if (updateHash) {
-				//we have changed one list, so let's update all hashcodes from here up to
-				//this list
-				//since this list was not locked, we do not have to worry about other lists,
-				//since no other list should dependent on that list where we removed the element.
+				// we have changed one list, so let's update all hashcodes from here up to
+				// this list
+				// since this list was not locked, we do not have to worry about other lists,
+				// since no other list should dependent on that list where we removed the
+				// element.
 				ExtensibleList<T> update = this;
 				List<ExtensibleList<T>> chain = new ArrayList<ExtensibleList<T>>();
 				while (true) {
@@ -326,7 +340,7 @@ public class ExtensibleList<T> {
 				while (l.hasPrevious()) {
 					ExtensibleList<T> list = l.previous();
 					list.parentHashCode = parentHashCode;
-					//force recomputation
+					// force recomputation
 					list.savedHashCode = Integer.MIN_VALUE;
 					parentHashCode = list.onlyElementHashCode();
 				}
@@ -371,9 +385,9 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * Returns the first element.
-	 * It is relatively slow compared to getting the last element.
-	 * This method should not be used in normal path reconstruction.
+	 * Returns the first element. It is relatively slow compared to getting the last
+	 * element. This method should not be used in normal path reconstruction.
+	 * 
 	 * @return the first element or null
 	 */
 	public T getFirstSlow() {
@@ -392,11 +406,11 @@ public class ExtensibleList<T> {
 	}
 
 	/**
-	 * Adds an element to the beginning.
-	 * Since this data structure was not meant to prepend an element,
-	 * it is relatively slow, so be careful.
-	 * Does not change this list, but returns a new list!
-	 * This method should not be used in normal path reconstruction.
+	 * Adds an element to the beginning. Since this data structure was not meant to
+	 * prepend an element, it is relatively slow, so be careful. Does not change
+	 * this list, but returns a new list! This method should not be used in normal
+	 * path reconstruction.
+	 * 
 	 * @param toAdd the element to add
 	 * @return the new list
 	 */
@@ -408,8 +422,24 @@ public class ExtensibleList<T> {
 			list.actualList.add(0, it.next());
 		}
 		list.actualList.add(0, toAdd);
-		//list.check = list.actualList;
+		// list.check = list.actualList;
 		list.size = size + 1;
 		return list;
 	}
+
+	@Override
+	public String toString() {
+		List<T> res = new ArrayList<T>();
+		ExtensibleListIterator<T> it = reverseIterator();
+		while (it.hasNext()) {
+			res.add(it.next());
+		}
+		Collections.reverse(res);
+		return res.toString();
+	}
+
+	public List<T> getActualList() {
+		return actualList;
+	}
+
 }

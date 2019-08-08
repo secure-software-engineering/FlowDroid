@@ -33,7 +33,7 @@ public class ImmutableMethodSummaries extends MethodSummaries {
 	}
 
 	@Override
-	public void merge(MethodSummaries newFlows) {
+	public boolean merge(MethodSummaries newFlows) {
 		throw new RuntimeException("This object is immutable");
 	}
 

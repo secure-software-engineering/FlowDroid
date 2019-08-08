@@ -2,8 +2,9 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 
 import java.util.Set;
 
+import soot.SootClass;
+import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
-import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 
 /**
  * Common interface for all classes that can provide method summaries
@@ -33,32 +34,47 @@ public interface IMethodSummaryProvider {
 	 * Gets whether the given class is supported by this provider, i.e., whether
 	 * summaries for that class have either already been loaded or can be loaded
 	 * 
-	 * @param clazz
-	 *            The class to check
+	 * @param clazz The class to check
 	 * @return True if the given class is supported b this provider, otherwise false
 	 */
 	public boolean supportsClass(String clazz);
 
 	/**
-	 * Gets the data flows inside the given method for the given class.
+	 * Gets the data flows inside the given method for the given class. The
+	 * different overloads are functionally equivalent, but may use the different
+	 * types in order to be faster
 	 * 
-	 * @param className
-	 *            The class containing the method. If two classes B and C inherit
-	 *            from some class A, methods in A can either be evaluated in the
-	 *            context of B or C.
-	 * @param methodSignature
-	 *            The signature of the method for which to get the flow summaries.
+	 * @param sootClass          The class containing the method. If two classes B
+	 *                           and C inherit from some class A, methods in A can
+	 *                           either be evaluated in the context of B or C.
+	 * @param methodSubSignature The signature of the method for which to get the
+	 *                           flow summaries.
 	 * @return The flow summaries for the given method in the given class
 	 */
-	public MethodSummaries getMethodFlows(String className, String methodSubSignature);
+	public default ClassMethodSummaries getMethodFlows(SootClass sootClass, String methodSubSignature) {
+		return getMethodFlows(sootClass.getName(), methodSubSignature);
+	}
+
+	/**
+	 * Gets the data flows inside the given method for the given class. The
+	 * different overloads are functionally equivalent, but may use the different
+	 * types in order to be faster
+	 * 
+	 * @param sootClass       The class containing the method. If two classes B and
+	 *                        C inherit from some class A, methods in A can either
+	 *                        be evaluated in the context of B or C.
+	 * @param methodSignature The signature of the method for which to get the flow
+	 *                        summaries.
+	 * @return The flow summaries for the given method in the given class
+	 */
+	public ClassMethodSummaries getMethodFlows(String className, String methodSignature);
 
 	/**
 	 * Gets all flows for the given method signature in the given set of classes
 	 * 
-	 * @param classes
-	 *            The classes in which to look for flow summaries
-	 * @param methodSignature
-	 *            The signature of the method for which to get the flow summaries
+	 * @param classes         The classes in which to look for flow summaries
+	 * @param methodSignature The signature of the method for which to get the flow
+	 *                        summaries
 	 * @return The flow summaries for the given method in the given set of classes
 	 */
 	public ClassSummaries getMethodFlows(Set<String> classes, String methodSignature);
@@ -66,10 +82,25 @@ public interface IMethodSummaryProvider {
 	/**
 	 * Gets all summaries for all methods in the given class
 	 * 
-	 * @param clazz
-	 *            The class for which to get all method summaries
+	 * @param clazz The class for which to get all method summaries
 	 * @return All method summaries for all methods in the given class
 	 */
-	public MethodSummaries getClassFlows(String clazz);
+	public ClassMethodSummaries getClassFlows(String clazz);
+
+	/**
+	 * Returns true iff there exists a summary for a given subsignature
+	 * 
+	 * @param subsig the sub signature
+	 * @return true iff there exists a summary for a given subsignature
+	 */
+	public boolean mayHaveSummaryForMethod(String subsig);
+
+	/**
+	 * Gets all summaries that have been loaded so far. Note that this object may
+	 * not include all lazily loaded summaries yet.
+	 * 
+	 * @return The summaries that have been loaded so far
+	 */
+	public ClassSummaries getSummaries();
 
 }

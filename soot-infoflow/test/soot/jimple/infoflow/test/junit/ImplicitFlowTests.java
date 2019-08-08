@@ -22,6 +22,7 @@ import org.junit.Test;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
+import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.options.Options;
@@ -90,9 +91,9 @@ public class ImplicitFlowTests extends JUnitTests {
 		System.out.println("Starting convertTest...");
 
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setEnableStaticFieldTracking(false);
+		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.ImplicitFlowTestCode: void convertTest()>");
@@ -306,9 +307,9 @@ public class ImplicitFlowTests extends JUnitTests {
 		System.out.println("Starting stringClassTest...");
 
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setAccessPathLength(1);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setEnableStaticFieldTracking(false);
+		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.ImplicitFlowTestCode: void stringClassTest()>");
@@ -530,7 +531,7 @@ public class ImplicitFlowTests extends JUnitTests {
 	public void testStringConvert() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.getConfig().setEnableStaticFieldTracking(false);
+		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.StringTestCode: void methodStringConvert()>");

@@ -1,1 +1,890 @@
-<?xml version="1.0" ?><summary fileFormatVersion="101"><methods><method id="boolean add(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="78"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="78"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="78"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="78" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="78"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="78" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="78" taintSubFields="true"></to></flow></flows></method><method id="java.util.List subList(int,int)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList"></from><to sourceSinkType="Return" BaseType="java.util.SubList" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="int lastIndexOf(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="83"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="86"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="83" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="83"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="83"></to></flow><flow isAlias="false"><from sourceSinkType="Return" BaseType="int" gap="86"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="83" taintSubFields="true"></to></flow></flows></method><method id="boolean addAll(java.util.Collection)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="74"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.Collection"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="74" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="74"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="74"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="74"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="74"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="74"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object[] toArray()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="103" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="105"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="103"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="103"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="104"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="103"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="105"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="103"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="104"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="105"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="105"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="104"></to></flow></flows></method><method id="boolean equals(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="89"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="91"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="90"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="90" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="90"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="91"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="93"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="93"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="91"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="90"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="96"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from><to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="89"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.List" gap="89"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.List" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object get(int)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="70"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="70"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="70"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="70" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="70" taintSubFields="true"></to></flow></flows></method><method id="boolean contains(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="100"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="100"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="102"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="100" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="100"></to></flow></flows></method><method id="void removeRange(int,int)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="73" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="73"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="73" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="73" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="73" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="73"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="73"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="void add(int,java.lang.Object)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="71" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="71"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="71"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="71" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="71"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="71"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="71" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object set(int,java.lang.Object)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="69" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="69" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="69"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="69" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="69"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="69"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="69"></to></flow></flows></method><method id="java.lang.Object remove(int)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="72"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="72"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="72"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="72"></from><to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="72" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="72" taintSubFields="true"></to></flow></flows></method><method id="java.util.ListIterator listIterator(int)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="77" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="77" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="77"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="77"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: int val$index&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="77"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="77"></to></flow></flows></method><method id="boolean removeAll(java.util.Collection)"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="117"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="117"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="117" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="117" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="117"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="117"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="117"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="119"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="117"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow></flows></method><method id="boolean retainAll(java.util.Collection)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="122" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="122"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="122"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="122"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="122"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="124"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="122" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="122"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="122"></to></flow></flows></method><method id="int hashCode()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="97" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="97"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="97"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow></flows></method><method id="java.util.ListIterator listIterator()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="88"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="88"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="88"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="88" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="88"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to></flow></flows></method><method id="int size()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow></flows></method><method id="java.lang.String toString()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="127"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" gap="129"></from><to sourceSinkType="Return" BaseType="java.lang.String" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="127"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="127" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="127"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="129"></to></flow></flows></method><method id="java.util.Iterator iterator()"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="76"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="76"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="76" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="76"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="76"></from><to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to></flow></flows></method><method id="java.lang.Object[] toArray(java.lang.Object[])"><flows><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="108"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="106"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="107"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="106"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="106" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="106"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.lang.Object" gap="108"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="108"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="107"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="107"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="108"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="106"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="108"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to></flow></flows></method><method id="boolean addAll(int,java.util.Collection)"><flows><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="75"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="75"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="75" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="75"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="75" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="75"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="75" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="75"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="75"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="75" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="75"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="boolean remove(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="109"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="109"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="109" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="109"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow></flows></method><method id="int indexOf(java.lang.Object)"><flows><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="79"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="82"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="79"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="79"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="81"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="79"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="79" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Return" BaseType="int" gap="82"></from><to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to></flow></flows></method><method id="boolean containsAll(java.util.Collection)"><flows><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="113"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="113"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="113" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="113"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="113" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="113"></to></flow></flows></method><method id="void clear()"><flows><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="87" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="87" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="87"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="87"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from><to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="87" taintSubFields="true"></to></flow><flow isAlias="false"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from><to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to></flow><flow isAlias="true"><from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from><to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="87"></to></flow></flows></method></methods><gaps><gap num="124" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="96" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="75" id="&lt;java.util.AbstractList: boolean addAll(int,java.util.Collection)&gt;"></gap><gap num="103" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="89" id="&lt;java.util.List: java.util.ListIterator listIterator()&gt;"></gap><gap num="117" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="83" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="129" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="69" id="&lt;java.util.AbstractList: java.lang.Object set(int,java.lang.Object)&gt;"></gap><gap num="97" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="74" id="&lt;java.util.AbstractList: boolean addAll(int,java.util.Collection)&gt;"></gap><gap num="88" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="70" id="&lt;java.util.AbstractList: java.lang.Object get(int)&gt;"></gap><gap num="91" id="&lt;java.util.ListIterator: boolean hasNext()&gt;"></gap><gap num="81" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="102" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="119" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="73" id="&lt;java.util.AbstractList: void removeRange(int,int)&gt;"></gap><gap num="108" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="90" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="127" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="72" id="&lt;java.util.AbstractList: java.lang.Object remove(int)&gt;"></gap><gap num="109" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="82" id="&lt;java.util.ListIterator: int previousIndex()&gt;"></gap><gap num="100" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="86" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap><gap num="78" id="&lt;java.util.AbstractList: void add(int,java.lang.Object)&gt;"></gap><gap num="71" id="&lt;java.util.AbstractList: void add(int,java.lang.Object)&gt;"></gap><gap num="107" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap><gap num="106" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="93" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="79" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="105" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap><gap num="77" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="122" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="104" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap><gap num="76" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap><gap num="87" id="&lt;java.util.AbstractList: void removeRange(int,int)&gt;"></gap><gap num="113" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap></gaps></summary>
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+    <methods>
+        <method id="boolean add(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="78"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="78"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="78"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="78" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="78"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="78" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="78" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.List subList(int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int lastIndexOf(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="83"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="86"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="83" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="83"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="83"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Return" BaseType="int" gap="86"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="83" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean addAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="74"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.Collection"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="74" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="74"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="74"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="74"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="74"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="74"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="74" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object[] toArray()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="103" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="105"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="103"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="103"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="104"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="103"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="105"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="103"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="104"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="105"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="105"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="104"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean equals(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="89"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="91"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="90"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="90" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="90"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="91"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="93"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="93"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="91"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="90"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="96"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.lang.Object" gap="89"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.List" gap="89"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.List" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object get(int)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="70"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="70"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="70"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="70" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="70" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean contains(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="100"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="100"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="102"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="100" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="100"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void removeRange(int,int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="73" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="73"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="73" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="73" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="73" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="73"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="73"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void add(int,java.lang.Object)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="71" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="71"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="71"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="71" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="71"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="71"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="71" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object set(int,java.lang.Object)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="69" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="69" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" gap="69"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="69" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="69"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="69"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="69"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object remove(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="72"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="72"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="72"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="72"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="72" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="72" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.ListIterator listIterator(int)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="77" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="77" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="77"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="77"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: int val$index&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="77"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="77"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean removeAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="117"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="117"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="117" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="117" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="117"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="117"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="117"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="119"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="117"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean retainAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="122" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="122"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="122"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="122"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="122"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="124"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="122" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="122"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="122"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int hashCode()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="97" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="97"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="97"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.ListIterator listIterator()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="88"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="88"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="88"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="88" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="88"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int size()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.String toString()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="127"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" gap="129"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.String" AccessPath="[&lt;java.lang.String: char[] value&gt;]" AccessPathTypes="[char[]]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="127"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="127" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="127"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="129"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.Iterator iterator()">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="76"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;, &lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.SubList, java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="76"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.SubList this$0&gt;]" AccessPathTypes="[java.util.SubList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="76" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="76"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="76"></from>
+                    <to sourceSinkType="Return" BaseType="java.util.SubList$1" AccessPath="[&lt;java.util.SubList$1: java.util.ListIterator i&gt;]" AccessPathTypes="[java.util.ListIterator]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object[] toArray(java.lang.Object[])">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="108"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="106"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="107"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="106"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="106" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="106"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.lang.Object" gap="108"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="108"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="107"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.ListIterator" gap="107"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="108"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="106"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="108"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object[]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean addAll(int,java.util.Collection)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" gap="75"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="75"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="75" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]" gap="75"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="75" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="75"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="75" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" gap="75"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="java.util.Collection" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="75"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="75" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="75"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean remove(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="109"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="109"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="109" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="109"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="int indexOf(java.lang.Object)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="79"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="82"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="79"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Return" BaseType="java.util.ListIterator" gap="79"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.ListIterator" gap="81"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="79"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="79" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Return" BaseType="int" gap="82"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean containsAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="113"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="113"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="113" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="113"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="113" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="113"></to>
+                </flow>
+            </flows>
+        </method>
+        <method id="void clear()">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" gap="87" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int offset&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="87" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" gap="87"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.AbstractList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" gap="87"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: int size&gt;]" AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" gap="87" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;, &lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[java.util.AbstractList, int]"></from>
+                    <to sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.AbstractList: int modCount&gt;]" AccessPathTypes="[int]" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field" BaseType="java.util.SubList" AccessPath="[&lt;java.util.SubList: java.util.AbstractList l&gt;]" AccessPathTypes="[java.util.AbstractList]"></from>
+                    <to sourceSinkType="GapBaseObject" BaseType="java.util.AbstractList" gap="87"></to>
+                </flow>
+            </flows>
+        </method>
+    </methods>
+    <gaps>
+        <gap num="124" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="96" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="75" id="&lt;java.util.AbstractList: boolean addAll(int,java.util.Collection)&gt;"></gap>
+        <gap num="103" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="89" id="&lt;java.util.List: java.util.ListIterator listIterator()&gt;"></gap>
+        <gap num="117" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="83" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="129" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="69" id="&lt;java.util.AbstractList: java.lang.Object set(int,java.lang.Object)&gt;"></gap>
+        <gap num="97" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="74" id="&lt;java.util.AbstractList: boolean addAll(int,java.util.Collection)&gt;"></gap>
+        <gap num="88" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="70" id="&lt;java.util.AbstractList: java.lang.Object get(int)&gt;"></gap>
+        <gap num="91" id="&lt;java.util.ListIterator: boolean hasNext()&gt;"></gap>
+        <gap num="81" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="102" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="119" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="73" id="&lt;java.util.AbstractList: void removeRange(int,int)&gt;"></gap>
+        <gap num="108" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="90" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="127" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="72" id="&lt;java.util.AbstractList: java.lang.Object remove(int)&gt;"></gap>
+        <gap num="109" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="82" id="&lt;java.util.ListIterator: int previousIndex()&gt;"></gap>
+        <gap num="100" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="86" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap>
+        <gap num="78" id="&lt;java.util.AbstractList: void add(int,java.lang.Object)&gt;"></gap>
+        <gap num="71" id="&lt;java.util.AbstractList: void add(int,java.lang.Object)&gt;"></gap>
+        <gap num="107" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap>
+        <gap num="106" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="93" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="79" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="105" id="&lt;java.util.ListIterator: java.lang.Object next()&gt;"></gap>
+        <gap num="77" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="122" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="104" id="&lt;java.util.ListIterator: int nextIndex()&gt;"></gap>
+        <gap num="76" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+        <gap num="87" id="&lt;java.util.AbstractList: void removeRange(int,int)&gt;"></gap>
+        <gap num="113" id="&lt;java.util.AbstractList: java.util.ListIterator listIterator(int)&gt;"></gap>
+    </gaps>
+</summary>

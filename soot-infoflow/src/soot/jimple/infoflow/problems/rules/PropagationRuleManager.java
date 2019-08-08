@@ -9,7 +9,6 @@ import java.util.Set;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
@@ -23,38 +22,35 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
 public class PropagationRuleManager {
 
 	protected final InfoflowManager manager;
-	protected final Aliasing aliasing;
 	protected final Abstraction zeroValue;
 	protected final TaintPropagationResults results;
-	private final ITaintPropagationRule[] rules;
+	protected final ITaintPropagationRule[] rules;
 
-	public PropagationRuleManager(InfoflowManager manager, Aliasing aliasing, Abstraction zeroValue,
-			TaintPropagationResults results) {
+	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		this.manager = manager;
-		this.aliasing = aliasing;
 		this.zeroValue = zeroValue;
 		this.results = results;
 
 		List<ITaintPropagationRule> ruleList = new ArrayList<>();
 
-		ruleList.add(new SourcePropagationRule(manager, aliasing, zeroValue, results));
-		ruleList.add(new SinkPropagationRule(manager, aliasing, zeroValue, results));
-		ruleList.add(new StaticPropagationRule(manager, aliasing, zeroValue, results));
+		ruleList.add(new SourcePropagationRule(manager, zeroValue, results));
+		ruleList.add(new SinkPropagationRule(manager, zeroValue, results));
+		ruleList.add(new StaticPropagationRule(manager, zeroValue, results));
 
 		if (manager.getConfig().getEnableArrayTracking())
-			ruleList.add(new ArrayPropagationRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
 		if (manager.getConfig().getEnableExceptionTracking())
-			ruleList.add(new ExceptionPropagationRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new ExceptionPropagationRule(manager, zeroValue, results));
 		if (manager.getTaintWrapper() != null)
-			ruleList.add(new WrapperPropagationRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
-			ruleList.add(new ImplicitPropagtionRule(manager, aliasing, zeroValue, results));
-		ruleList.add(new StrongUpdatePropagationRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new ImplicitPropagtionRule(manager, zeroValue, results));
+		ruleList.add(new StrongUpdatePropagationRule(manager, zeroValue, results));
 		if (manager.getConfig().getEnableTypeChecking())
-			ruleList.add(new TypingPropagationRule(manager, aliasing, zeroValue, results));
-		ruleList.add(new SkipSystemClassRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new TypingPropagationRule(manager, zeroValue, results));
+		ruleList.add(new SkipSystemClassRule(manager, zeroValue, results));
 		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
-			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, aliasing, zeroValue, results));
+			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, zeroValue, results));
 
 		this.rules = ruleList.toArray(new ITaintPropagationRule[ruleList.size()]);
 	}
@@ -90,11 +86,11 @@ public class PropagationRuleManager {
 	 *            The next statement to which control flow will continue after
 	 *            processing stmt
 	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming
-	 *            taint abstraction shall be killed
+	 *            Outgoing value for the rule to indicate whether the incoming taint
+	 *            abstraction shall be killed
 	 * @param killAll
-	 *            Outgoing value that receives whether all taints shall be
-	 *            killed and nothing shall be propagated onwards
+	 *            Outgoing value that receives whether all taints shall be killed
+	 *            and nothing shall be propagated onwards
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyNormalFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -137,8 +133,8 @@ public class PropagationRuleManager {
 	 * @param dest
 	 *            The destination method into which to propagate the abstraction
 	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints
-	 *            shall be killed, i.e., nothing shall be propagated
+	 *            Outgoing value for the rule to specify whether all taints shall be
+	 *            killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Set<Abstraction> applyCallFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
@@ -183,8 +179,8 @@ public class PropagationRuleManager {
 	 * @param stmt
 	 *            The statement to which to apply the rules
 	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming
-	 *            taint abstraction shall be killed
+	 *            Outgoing value for the rule to indicate whether the incoming taint
+	 *            abstraction shall be killed
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyCallToReturnFlowFunction(Abstraction d1, Abstraction source, Stmt stmt,
@@ -223,13 +219,13 @@ public class PropagationRuleManager {
 	 * @param stmt
 	 *            The statement to which to apply the rules
 	 * @param retSite
-	 *            The return site to which the execution returns after leaving
-	 *            the current method
+	 *            The return site to which the execution returns after leaving the
+	 *            current method
 	 * @param callSite
 	 *            The call site of the call from which we return
 	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints
-	 *            shall be killed, i.e., nothing shall be propagated
+	 *            Outgoing value for the rule to specify whether all taints shall be
+	 *            killed, i.e., nothing shall be propagated
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
@@ -248,6 +244,15 @@ public class PropagationRuleManager {
 			}
 		}
 		return res;
+	}
+
+	/**
+	 * Gets the array of rules registered in this manager object
+	 * 
+	 * @return The array of rules registered in this manager object
+	 */
+	public ITaintPropagationRule[] getRules() {
+		return rules;
 	}
 
 }

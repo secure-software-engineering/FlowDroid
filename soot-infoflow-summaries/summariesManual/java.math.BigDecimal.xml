@@ -1,0 +1,881 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.math.BigDecimal valueOf(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal valueOf(long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal valueOf(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.BigInteger)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.BigInteger,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.BigInteger,int,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.BigInteger,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(char[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(char[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(char[],int,int,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(char[],java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(double,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(int,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(long,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal abs()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal abs(java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return"  />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal add(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal add(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal,int,java.math.RoundingMode)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal divide(java.math.BigDecimal,java.math.RoundingMode)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal[] divideAndRemainder(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal[] divideAndRemainder(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal[] divideToIntegralValue(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal[] divideToIntegralValue(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double doubleValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float floatValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int intValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int intValueExact()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long longValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long longValueExact()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal max(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal min(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal movePointLeft(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal movePointRight(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal multiply(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal multiply(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal negate()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal plus()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal plus(java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal pow(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal pow(int,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal remainder(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal remainder(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal round(java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal scaleByPowerOfTen(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal setScale(int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal setScale(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal setScale(int,java.math.RoundingMode)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>		
+		<method id="short shortValueExact()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+					AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal stripTrailingZeros()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal subtract(java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal subtract(java.math.BigDecimal,java.math.MathContext)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigInteger toBigInteger">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigInteger toBigIntegerExact">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigInteger: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toEngineeringString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toPlainString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.math.BigDecimal: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal ulp()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal unscaledValue()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
