@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
 			<artifactId>soot</artifactId>
-			<version>3.0.0-SNAPSHOT</version>
+			<version>3.3.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -135,7 +135,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
+			<version>1.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
