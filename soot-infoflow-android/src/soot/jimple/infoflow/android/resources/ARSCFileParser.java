@@ -326,8 +326,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets all resource of the current type that have the given id
 		 * 
-		 * @param resourceID
-		 *            The resource id to look for
+		 * @param resourceID The resource id to look for
 		 * @return A list containing all resources with the given id
 		 */
 		public List<AbstractResource> getAllResources(int resourceID) {
@@ -343,8 +342,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 * Gets the first resource with the given name or null if no such resource
 		 * exists
 		 * 
-		 * @param resourceName
-		 *            The resource name to look for
+		 * @param resourceName The resource name to look for
 		 * @return The first resource with the given name or null if no such resource
 		 *         exists
 		 */
@@ -359,8 +357,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets the first resource of the current type that has the given name
 		 * 
-		 * @param resourceName
-		 *            The resource name to look for
+		 * @param resourceName The resource name to look for
 		 * @return The resource with the given name if it exists, otherwise null
 		 */
 		public AbstractResource getFirstResource(String resourceName) {
@@ -374,8 +371,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		/**
 		 * Gets the first resource of the current type with the given ID
 		 * 
-		 * @param resourceID
-		 *            The resource ID to look for
+		 * @param resourceID The resource ID to look for
 		 * @return The resource with the given ID if it exists, otherwise null
 		 */
 		public AbstractResource getFirstResource(int resourceID) {
@@ -641,6 +637,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			return true;
 		}
+
 	}
 
 	/**
@@ -1048,7 +1045,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		private Map<String, AbstractResource> value;
 
 		public ComplexResource() {
-			this.value = new HashMap<String, AbstractResource>();
+			this.value = new HashMap<>();
 		}
 
 		public ComplexResource(Map<String, AbstractResource> value) {
@@ -1970,10 +1967,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	/**
 	 * Parses the resource definition file in the given APK
 	 * 
-	 * @param apkFile
-	 *            The APK file in which to parse the resource definition file
-	 * @throws IOException
-	 *             Thrown if the given APK file cannot be opened
+	 * @param apkFile The APK file in which to parse the resource definition file
+	 * @throws IOException Thrown if the given APK file cannot be opened
 	 */
 	public void parse(String apkFile) throws IOException {
 		this.handleAndroidResourceFiles(apkFile, null, new IResourceHandler() {
@@ -2185,43 +2180,35 @@ public class ARSCFileParser extends AbstractResourceParser {
 										// We silently ignore inconsistencies at thze moment
 										if (existingResource instanceof ArrayResource)
 											((ArrayResource) existingResource).add(value);
-									} else
+									} else {
 										cmpRes.value.put(mapName, value);
+									}
 								}
 							} else {
 								Res_Value val = new Res_Value();
 								entryOffset = readValue(val, remainingData, entryOffset);
 								res = parseValue(val);
 								if (res == null) {
-									logger.error(String.format("Could not parse resource %s of type %s, skipping entry",
-											keyStrings.get(entry.key), Integer.toHexString(val.dataType)));
+									logger.error(
+											String.format("Could not parse resource %s of type 0x%x, skipping entry",
+													keyStrings.get(entry.key), val.dataType));
 									continue;
 								}
 							}
 
-							// Create the data object. For finding the correct
-							// ID, we
-							// must check whether the entry is really new - if
-							// so, it
+							// Create the data object. For finding the correct ID, we
+							// must check whether the entry is really new - if so, it
 							// gets a new ID, otherwise, we reuse the old one
-							if (keyStrings.containsKey(entry.key))
+							if (keyStrings.containsKey(entry.key)) {
 								res.resourceName = keyStrings.get(entry.key);
-							else
+							} else {
 								res.resourceName = "<INVALID RESOURCE>";
-
-							if (res.resourceName != null && res.resourceName.length() > 0) {
-								// Some obfuscated resources do only contain an
-								// empty string as resource name
-								// -> We only need to check the name if it is
-								// really present
-								AbstractResource r = resType.getResourceByName(res.resourceName);
-								if (r != null) {
-									res.resourceID = r.resourceID;
-								}
 							}
+
 							if (res.resourceID <= 0) {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
+							logger.debug("resource added: {}", res);
 							config.resources.add(res);
 							resourceIdx++;
 						}
@@ -2230,17 +2217,16 @@ public class ARSCFileParser extends AbstractResourceParser {
 				}
 
 				// Create the data objects for the types in the package
-				if (logger.isDebugEnabled()) {
+				if (logger.isTraceEnabled()) {
 					for (ResType resType : resPackage.types) {
-						logger.debug(String.format("\t\tType %s (%d), configCount=%d, entryCount=%d", resType.typeName,
+						logger.trace("\t\tType {} ({}), configCount={}, entryCount={}", resType.typeName,
 								resType.id - 1, resType.configurations.size(),
-								resType.configurations.size() > 0 ? resType.configurations.get(0).resources.size()
-										: 0));
+								resType.configurations.size() > 0 ? resType.configurations.get(0).resources.size() : 0);
 						for (ResConfig resConfig : resType.configurations) {
-							logger.debug("\t\t\tconfig");
+							logger.trace("\t\t\tconfig");
 							for (AbstractResource res : resConfig.resources)
-								logger.debug(String.format("\t\t\t\tresource %s: %s",
-										Integer.toHexString(res.resourceID), res.resourceName));
+								logger.trace("\t\t\t\tresource {}: {}", Integer.toHexString(res.resourceID),
+										res.resourceName);
 						}
 					}
 				}
@@ -2257,8 +2243,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Checks whether the given complex map entry is one of the well-known
 	 * attributes.
 	 * 
-	 * @param map
-	 *            The map entry to check
+	 * @param map The map entry to check
 	 * @return True if the given entry is one of the well-known attributes,
 	 *         otherwise false.
 	 */
@@ -2324,6 +2309,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				res = new FractionResource(FractionType.FractionParent, data);
 			break;
 		default:
+			logger.warn(String.format("Unsupported data type: 0x%x", val.dataType));
 			return null;
 		}
 		return res;
@@ -2610,12 +2596,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Reads a chunk header from the input stream and stores the data in the given
 	 * object.
 	 * 
-	 * @param stream
-	 *            The stream from which to read the chunk header
-	 * @param nextChunkHeader
-	 *            The data object in which to put the chunk header
-	 * @throws IOException
-	 *             Thrown if an error occurs during read
+	 * @param stream          The stream from which to read the chunk header
+	 * @param nextChunkHeader The data object in which to put the chunk header
+	 * @throws IOException Thrown if an error occurs during read
 	 */
 	private void readChunkHeader(InputStream stream, ResChunk_Header nextChunkHeader) throws IOException {
 		byte[] header = new byte[8];
@@ -2627,14 +2610,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Reads a chunk header from the input stream and stores the data in the given
 	 * object.
 	 * 
-	 * @param nextChunkHeader
-	 *            The data object in which to put the chunk header
-	 * @param data
-	 *            The data array containing the structure
-	 * @param offset
-	 *            The offset from which to start reading
-	 * @throws IOException
-	 *             Thrown if an error occurs during read
+	 * @param nextChunkHeader The data object in which to put the chunk header
+	 * @param data            The data array containing the structure
+	 * @param offset          The offset from which to start reading
+	 * @throws IOException Thrown if an error occurs during read
 	 */
 	private int readChunkHeader(ResChunk_Header nextChunkHeader, byte[] data, int offset) throws IOException {
 		nextChunkHeader.type = readUInt16(data, offset);
@@ -2686,8 +2665,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Finds the resource with the given Android resource ID. This method is
 	 * configuration-agnostic and simply returns the first match it finds.
 	 * 
-	 * @param resourceId
-	 *            The Android resource ID for which to the find the resource object
+	 * @param resourceId The Android resource ID for which to the find the resource
+	 *                   object
 	 * @return The resource object with the given Android resource ID if it has been
 	 *         found, otherwise null.
 	 */
@@ -2708,8 +2687,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Finds all resources with the given Android resource ID. This method returns
 	 * all matching resources, regardless of their respective configuration.
 	 * 
-	 * @param resourceId
-	 *            The Android resource ID for which to the find the resource object
+	 * @param resourceId The Android resource ID for which to the find the resource
+	 *                   object
 	 * @return The resource object with the given Android resource ID if it has been
 	 *         found, otherwise null.
 	 */
@@ -2743,8 +2722,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	/**
 	 * Parses an Android resource ID into its components
 	 * 
-	 * @param resourceId
-	 *            The numeric resource ID to parse
+	 * @param resourceId The numeric resource ID to parse
 	 * @return The data contained in the given Android resource ID
 	 */
 	public ResourceId parseResourceId(int resourceId) {
