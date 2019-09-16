@@ -1135,13 +1135,13 @@ public class Infoflow extends AbstractInfoflow {
 					forwardProblem.addInitialSeeds(u, Collections.singleton(forwardProblem.zeroValue()));
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSources.add(s);
-					logger.debug("Source found: {}", u);
+					logger.debug("Source found: {} in {}", u, m.getSignature());
 				}
 				if (sourcesSinks.getSinkInfo(s, manager, null) != null) {
 					sinkCount++;
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSinks.add(s);
-					logger.debug("Sink found: {}", u);
+					logger.debug("Sink found: {} in {}", u, m.getSignature());
 				}
 			}
 
