@@ -45,8 +45,8 @@ import soot.jimple.infoflow.util.SystemClassHandler;
  */
 public class DefaultSourceSinkManager implements ISourceSinkManager {
 
-	private Collection<String> sourceDefs;
-	private Collection<String> sinkDefs;
+	protected Collection<String> sourceDefs;
+	protected Collection<String> sinkDefs;
 
 	private Collection<SootMethod> sources;
 	private Collection<SootMethod> sinks;
