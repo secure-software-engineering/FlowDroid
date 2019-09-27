@@ -1371,8 +1371,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		try {
 			parseAppResources();
 		} catch (IOException | XmlPullParserException e) {
-			logger.error("Callgraph construction failed", e);
-			throw new RuntimeException("Callgraph construction failed", e);
+			logger.error("Parse app resource failed", e);
+			throw new RuntimeException("Parse app resource failed", e);
 		}
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
