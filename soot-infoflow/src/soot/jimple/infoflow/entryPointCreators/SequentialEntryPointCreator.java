@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import soot.Body;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
@@ -46,14 +45,13 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
-		Body body = mainMethod.getActiveBody();
 		LocalGenerator generator = new LocalGenerator(body);
 
 		// Create the classes
 		for (String className : classMap.keySet()) {
 			SootClass createdClass = Scene.v().forceResolve(className, SootClass.BODIES);
 			createdClass.setApplicationClass();
-			Local localVal = generateClassConstructor(createdClass, body);
+			Local localVal = generateClassConstructor(createdClass);
 			if (localVal == null) {
 				logger.warn("Cannot generate constructor for class: {}", createdClass);
 				continue;
@@ -70,7 +68,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 				else if (methodToInvoke.isConcrete() && !methodToInvoke.isConstructor()) {
 					// Load the method
 					methodToInvoke.retrieveActiveBody();
-					buildMethodCall(methodToInvoke, body, localVal, generator);
+					buildMethodCall(methodToInvoke, localVal, generator);
 				}
 			}
 		}

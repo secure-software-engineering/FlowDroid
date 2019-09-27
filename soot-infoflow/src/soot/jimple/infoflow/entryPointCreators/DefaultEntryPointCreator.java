@@ -19,7 +19,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import soot.Body;
 import soot.IntType;
 import soot.Local;
 import soot.Scene;
@@ -54,10 +53,10 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 	/**
 	 * Creates a new instanceof the {@link DefaultEntryPointCreator} class
 	 * 
-	 * @param methodsToCall
-	 *            A collection containing the methods to be called in the dummy main
-	 *            method. Note that the order of the method calls is simulated to be
-	 *            arbitrary. Entries must be valid Soot method signatures.
+	 * @param methodsToCall A collection containing the methods to be called in the
+	 *                      dummy main method. Note that the order of the method
+	 *                      calls is simulated to be arbitrary. Entries must be
+	 *                      valid Soot method signatures.
 	 */
 	public DefaultEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
@@ -68,7 +67,6 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
-		Body body = mainMethod.getActiveBody();
 		LocalGenerator generator = new LocalGenerator(body);
 		HashMap<String, Local> localVarsForClasses = new HashMap<String, Local>();
 
@@ -77,7 +75,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 			SootClass createdClass = Scene.v().forceResolve(className, SootClass.BODIES);
 			createdClass.setApplicationClass();
 
-			Local localVal = generateClassConstructor(createdClass, body);
+			Local localVal = generateClassConstructor(createdClass);
 			if (localVal == null) {
 				logger.warn("Cannot generate constructor for class: {}", createdClass);
 				continue;
@@ -108,7 +106,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 				NopStmt thenStmt = jimple.newNopStmt();
 				IfStmt ifStmt = jimple.newIfStmt(cond, thenStmt);
 				body.getUnits().add(ifStmt);
-				buildMethodCall(currentMethod, body, classLocal, generator);
+				buildMethodCall(currentMethod, classLocal, generator);
 				body.getUnits().add(thenStmt);
 			}
 		}
@@ -118,7 +116,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 
 		body.getUnits().add(Jimple.v().newReturnVoidStmt());
 		NopEliminator.v().transform(body);
-		eliminateSelfLoops(body);
+		eliminateSelfLoops();
 		return mainMethod;
 	}
 

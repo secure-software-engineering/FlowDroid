@@ -169,7 +169,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			createIfStmt(endClassStmt);
 
 			// Create a new instance of the component
-			thisLocal = generateClassConstructor(component, body);
+			thisLocal = generateClassConstructor(component);
 			if (thisLocal != null) {
 				localVarsForClasses.put(component, thisLocal);
 
@@ -281,8 +281,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				// Jimple statement here
 				Set<Local> tempLocals = new HashSet<>();
 				if (classLocal == null) {
-					classLocal = generateClassConstructor(callbackClass, body, new HashSet<SootClass>(),
-							referenceClasses, tempLocals);
+					classLocal = generateClassConstructor(callbackClass, new HashSet<SootClass>(), referenceClasses,
+							tempLocals);
 					if (classLocal == null)
 						continue;
 				}
@@ -344,7 +344,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			// callback
 			NopStmt thenStmt = Jimple.v().newNopStmt();
 			createIfStmt(thenStmt);
-			buildMethodCall(callbackMethod, body, classLocal, generator, referenceClasses);
+			buildMethodCall(callbackMethod, classLocal, generator, referenceClasses);
 			body.getUnits().add(thenStmt);
 		}
 	}

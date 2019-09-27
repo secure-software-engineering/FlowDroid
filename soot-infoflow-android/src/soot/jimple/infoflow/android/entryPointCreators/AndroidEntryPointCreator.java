@@ -122,7 +122,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			for (SootClass currentClass : components) {
 				if (entryPointUtils.getComponentType(currentClass) == ComponentType.ContentProvider) {
 					// Create an instance of the content provider
-					Local localVal = generateClassConstructor(currentClass, body);
+					Local localVal = generateClassConstructor(currentClass);
 					if (localVal == null)
 						continue;
 					localVarsForClasses.put(currentClass, localVal);
@@ -148,7 +148,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// If we have an application, we need to start it in the very beginning
 		if (applicationClass != null) {
 			// Create the application
-			applicationLocal = generateClassConstructor(applicationClass, body);
+			applicationLocal = generateClassConstructor(applicationClass);
 			localVarsForClasses.put(applicationClass, applicationLocal);
 			if (applicationLocal != null) {
 				localVarsForClasses.put(applicationClass, applicationLocal);
@@ -311,7 +311,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		// Optimize and check the generated main method
 		NopEliminator.v().transform(body);
-		eliminateSelfLoops(body);
+		eliminateSelfLoops();
 		eliminateFallthroughIfs(body);
 
 		if (DEBUG || Options.v().validate())
@@ -464,7 +464,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				// Add a conditional call to the method
 				NopStmt thenStmt = Jimple.v().newNopStmt();
 				createIfStmt(thenStmt);
-				buildMethodCall(method, body, local, generator);
+				buildMethodCall(method, local, generator);
 				body.getUnits().add(thenStmt);
 			}
 	}
