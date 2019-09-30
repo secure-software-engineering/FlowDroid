@@ -26,7 +26,6 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Value;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.EqExpr;
 import soot.jimple.GotoStmt;
 import soot.jimple.IfStmt;
@@ -67,7 +66,6 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
 		// create new class:
-		LocalGenerator generator = new LocalGenerator(body);
 		HashMap<String, Local> localVarsForClasses = new HashMap<String, Local>();
 
 		// create constructors:
@@ -106,7 +104,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 				NopStmt thenStmt = jimple.newNopStmt();
 				IfStmt ifStmt = jimple.newIfStmt(cond, thenStmt);
 				body.getUnits().add(ifStmt);
-				buildMethodCall(currentMethod, classLocal, generator);
+				buildMethodCall(currentMethod, classLocal);
 				body.getUnits().add(thenStmt);
 			}
 		}

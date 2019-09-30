@@ -344,7 +344,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			// callback
 			NopStmt thenStmt = Jimple.v().newNopStmt();
 			createIfStmt(thenStmt);
-			buildMethodCall(callbackMethod, classLocal, generator, referenceClasses);
+			buildMethodCall(callbackMethod, classLocal, referenceClasses);
 			body.getUnits().add(thenStmt);
 		}
 	}

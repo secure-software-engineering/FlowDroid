@@ -464,7 +464,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				// Add a conditional call to the method
 				NopStmt thenStmt = Jimple.v().newNopStmt();
 				createIfStmt(thenStmt);
-				buildMethodCall(method, local, generator);
+				buildMethodCall(method, local);
 				body.getUnits().add(thenStmt);
 			}
 	}

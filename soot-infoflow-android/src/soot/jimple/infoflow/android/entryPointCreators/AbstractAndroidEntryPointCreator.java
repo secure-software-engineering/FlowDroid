@@ -62,7 +62,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 				+ method.getSignature();
 
 		// write Method
-		return buildMethodCall(method, classLocal, generator, parentClasses);
+		return buildMethodCall(method, classLocal, parentClasses);
 	}
 
 	protected boolean createPlainMethodCall(Local classLocal, SootMethod currentMethod) {
@@ -74,7 +74,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		NopStmt thenStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(beforeStmt);
 		createIfStmt(thenStmt);
-		buildMethodCall(currentMethod, classLocal, generator);
+		buildMethodCall(currentMethod, classLocal);
 
 		body.getUnits().add(thenStmt);
 		createIfStmt(beforeStmt);

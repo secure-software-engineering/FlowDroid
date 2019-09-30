@@ -241,13 +241,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @param methodToCall The method to call
 	 * @param classLocal   The local containing an instance of the class on which to
 	 *                     invoke the method
-	 * @param gen          The local generator to be used for generating locals that
-	 *                     hold any additional values required for the call
-	 *                     parameters
 	 * @return The newly created invocation statement
 	 */
-	protected Stmt buildMethodCall(SootMethod methodToCall, Local classLocal, LocalGenerator gen) {
-		return buildMethodCall(methodToCall, classLocal, gen, Collections.<SootClass>emptySet());
+	protected Stmt buildMethodCall(SootMethod methodToCall, Local classLocal) {
+		return buildMethodCall(methodToCall, classLocal, Collections.<SootClass>emptySet());
 	}
 
 	/**
@@ -256,15 +253,11 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @param methodToCall  The method to call
 	 * @param classLocal    The local containing an instance of the class on which
 	 *                      to invoke the method
-	 * @param gen           The local generator to be used for generating locals
-	 *                      that hold any additional values required for the call
-	 *                      parameters
 	 * @param parentClasses The classes for which we already have instances that
 	 *                      shall be reused
 	 * @return The newly created invocation statement
 	 */
-	protected Stmt buildMethodCall(SootMethod methodToCall, Local classLocal, LocalGenerator gen,
-			Set<SootClass> parentClasses) {
+	protected Stmt buildMethodCall(SootMethod methodToCall, Local classLocal, Set<SootClass> parentClasses) {
 		// If we don't have a method, we cannot call it (sad but true)
 		if (methodToCall == null)
 			return null;
@@ -283,7 +276,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				Set<SootClass> constructionStack = new HashSet<SootClass>();
 				if (!allowSelfReferences)
 					constructionStack.add(methodToCall.getDeclaringClass());
-				args.add(getValueForType(gen, tp, constructionStack, parentClasses));
+				args.add(getValueForType(tp, constructionStack, parentClasses));
 			}
 
 			if (methodToCall.isStatic())
@@ -309,7 +302,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 		Stmt stmt;
 		if (!(methodToCall.getReturnType() instanceof VoidType)) {
-			Local returnLocal = gen.generateLocal(methodToCall.getReturnType());
+			Local returnLocal = generator.generateLocal(methodToCall.getReturnType());
 			stmt = Jimple.v().newAssignStmt(returnLocal, invokeExpr);
 
 		} else {
@@ -334,7 +327,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param gen               The local generator
 	 * @param tp                The type for which to get a value
 	 * @param constructionStack The set of classes we're currently constructing.
 	 *                          Attempts to create a parameter of one of these
@@ -346,16 +338,14 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 *                          used instead of creating a new one.
 	 * @return The generated value, or null if no value could be generated
 	 */
-	protected Value getValueForType(LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
-			Set<SootClass> parentClasses) {
-		return getValueForType(gen, tp, constructionStack, parentClasses, null);
+	protected Value getValueForType(Type tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses) {
+		return getValueForType(tp, constructionStack, parentClasses, null);
 	}
 
 	/**
 	 * Creates a value of the given type to be used as a substitution in method
 	 * invocations or fields
 	 * 
-	 * @param gen               The local generator
 	 * @param tp                The type for which to get a value
 	 * @param constructionStack The set of classes we're currently constructing.
 	 *                          Attempts to create a parameter of one of these
@@ -369,8 +359,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 *                          to provide a value of the requested type
 	 * @return The generated value, or null if no value could be generated
 	 */
-	protected Value getValueForType(LocalGenerator gen, Type tp, Set<SootClass> constructionStack,
-			Set<SootClass> parentClasses, Set<Local> generatedLocals) {
+	protected Value getValueForType(Type tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses,
+			Set<Local> generatedLocals) {
 		// Depending on the parameter type, we try to find a suitable
 		// concrete substitution
 		if (isSimpleType(tp.toString()))
@@ -407,7 +397,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				return val;
 			}
 		} else if (tp instanceof ArrayType) {
-			Value arrVal = buildArrayOfType(gen, (ArrayType) tp, constructionStack, parentClasses, generatedLocals);
+			Value arrVal = buildArrayOfType((ArrayType) tp, constructionStack, parentClasses, generatedLocals);
 			if (arrVal == null) {
 				logger.warn("Array parameter substituted by null");
 				return NullConstant.v();
@@ -424,7 +414,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Constructs an array of the given type with a single element of this type in
 	 * the given method
 	 * 
-	 * @param gen               The local generator
 	 * @param tp                The type of which to create the array
 	 * @param constructionStack Set of classes currently being built to avoid
 	 *                          constructor loops
@@ -436,13 +425,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @return The local referencing the newly created array, or null if the array
 	 *         generation failed
 	 */
-	private Value buildArrayOfType(LocalGenerator gen, ArrayType tp, Set<SootClass> constructionStack,
-			Set<SootClass> parentClasses, Set<Local> generatedLocals) {
+	private Value buildArrayOfType(ArrayType tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses,
+			Set<Local> generatedLocals) {
 		// Generate a single element in the array
-		Value singleElement = getValueForType(gen, tp.getElementType(), constructionStack, parentClasses);
+		Value singleElement = getValueForType(tp.getElementType(), constructionStack, parentClasses);
 
 		// Generate a new single-element array
-		Local local = gen.generateLocal(tp);
+		Local local = generator.generateLocal(tp);
 		NewArrayExpr newArrayExpr = Jimple.v().newNewArrayExpr(tp.getElementType(), IntConstant.v(1));
 		AssignStmt assignArray = Jimple.v().newAssignStmt(local, newArrayExpr);
 		body.getUnits().add(assignArray);
@@ -516,8 +505,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			failedClasses.add(createdClass);
 			return null;
 		}
-
-		LocalGenerator generator = new LocalGenerator(body);
 
 		// if sootClass is simpleClass:
 		if (isSimpleType(createdClass.toString())) {
@@ -601,7 +588,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 						else
 							params.add(NullConstant.v());
 					} else {
-						Value val = getValueForType(generator, type, newStack, parentClasses, tempLocals);
+						Value val = getValueForType(type, newStack, parentClasses, tempLocals);
 						params.add(val);
 					}
 				}

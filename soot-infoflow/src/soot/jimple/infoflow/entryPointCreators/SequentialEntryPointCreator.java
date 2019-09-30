@@ -9,7 +9,6 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
@@ -44,9 +43,6 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	protected SootMethod createDummyMainInternal() {
 		Map<String, Set<String>> classMap = SootMethodRepresentationParser.v().parseClassNames(methodsToCall, false);
 
-		// create new class:
-		LocalGenerator generator = new LocalGenerator(body);
-
 		// Create the classes
 		for (String className : classMap.keySet()) {
 			SootClass createdClass = Scene.v().forceResolve(className, SootClass.BODIES);
@@ -68,7 +64,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 				else if (methodToInvoke.isConcrete() && !methodToInvoke.isConstructor()) {
 					// Load the method
 					methodToInvoke.retrieveActiveBody();
-					buildMethodCall(methodToInvoke, localVal, generator);
+					buildMethodCall(methodToInvoke, localVal);
 				}
 			}
 		}
