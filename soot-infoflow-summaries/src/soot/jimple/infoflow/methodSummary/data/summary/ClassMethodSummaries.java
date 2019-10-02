@@ -43,7 +43,7 @@ public class ClassMethodSummaries {
 	 *         class, false otherwise
 	 */
 	public boolean isEmpty() {
-		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces();
+		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces() && !hasSuperclass();
 	}
 
 	/**
@@ -194,6 +194,16 @@ public class ClassMethodSummaries {
 	 */
 	public boolean hasInterfaces() {
 		return interfaces != null && !interfaces.isEmpty();
+	}
+
+	/**
+	 * Gets whether this summary object contains a reference to the superclass of
+	 * the target class
+	 * 
+	 * @return True if we know the superclass of the target class, false otherwise
+	 */
+	public boolean hasSuperclass() {
+		return superClass != null && !superClass.isEmpty();
 	}
 
 	@Override
