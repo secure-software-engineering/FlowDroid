@@ -22,6 +22,7 @@ public class XMLConstants {
 	public static final String TREE_INTERFACE = "interface";
 
 	public static final String ATTRIBUTE_FORMAT_VERSION = "fileFormatVersion";
+	public static final String ATTRIBUTE_IS_INTERFACE = "isInterface";
 	public static final String ATTRIBUTE_ID = "num";
 	public static final String ATTRIBUTE_METHOD_SIG = "id";
 	public static final String ATTRIBUTE_FLOWTYPE = "sourceSinkType";

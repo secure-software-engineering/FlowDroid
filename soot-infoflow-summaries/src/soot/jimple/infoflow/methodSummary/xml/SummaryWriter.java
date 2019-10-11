@@ -34,7 +34,7 @@ import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 
 public class SummaryWriter {
 
-	private final int FILE_FORMAT_VERSION = 102;
+	private final int FILE_FORMAT_VERSION = 103;
 
 	public SummaryWriter() {
 
@@ -77,6 +77,8 @@ public class SummaryWriter {
 		writer.writeStartDocument();
 		writer.writeStartElement(XMLConstants.TREE_SUMMARY);
 		writer.writeAttribute(XMLConstants.ATTRIBUTE_FORMAT_VERSION, FILE_FORMAT_VERSION + "");
+		writer.writeAttribute(XMLConstants.ATTRIBUTE_IS_INTERFACE,
+				summary.isInterface() ? XMLConstants.VALUE_TRUE : XMLConstants.VALUE_FALSE);
 
 		MethodSummaries methodSummaries = summary.getMethodSummaries();
 
