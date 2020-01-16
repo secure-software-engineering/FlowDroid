@@ -210,6 +210,10 @@ public class XMLConfigurationParser {
 						config.setEnableArrayTracking(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_REFLECTION))
 						config.setEnableReflection(Boolean.valueOf(data));
+					else if (currentElement.equals(XMLConstants.TAG_ENABLE_LINENUMBERS))
+						config.setEnableLineNumbers(Boolean.valueOf(data));
+					else if (currentElement.equals(XMLConstants.TAG_ENABLE_ORIGINALNAMES))
+						config.setEnableOriginalNames(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_FLOW_SENSITIVE_ALIASING))
 						config.setFlowSensitiveAliasing(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_LOG_SOURCES_AND_SINKS))

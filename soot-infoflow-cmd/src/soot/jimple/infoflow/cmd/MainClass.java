@@ -80,6 +80,8 @@ public class MainClass {
 	private static final String OPTION_NO_TYPE_CHECKING = "nt";
 	private static final String OPTION_REFLECTION = "r";
 	private static final String OPTION_MISSING_SUMMARIES_FILE = "ms";
+	private static final String OPTION_OUTPUT_LINENUMBERS = "ol";
+	private static final String OPTION_ORIGINAL_NAMES = "on";
 
 	// Taint wrapper
 	private static final String OPTION_TAINT_WRAPPER = "tw";
@@ -158,6 +160,10 @@ public class MainClass {
 		options.addOption(OPTION_REFLECTION, "enablereflection", false, "Enable support for reflective method calls");
 		options.addOption(OPTION_MISSING_SUMMARIES_FILE, "missingsummariesoutputfile", true,
 				"Outputs a file with information about which summaries are missing");
+		options.addOption(OPTION_OUTPUT_LINENUMBERS, "outputlinenumbers", false,
+				"Enable the output of bytecode line numbers associated with sources and sinks in XML results");
+		options.addOption(OPTION_ORIGINAL_NAMES, "originalnames", false,
+				"Enable the usage of original variablenames if available");
 
 		// Taint wrapper
 		options.addOption(OPTION_TAINT_WRAPPER, "taintwrapper", true,
@@ -695,6 +701,10 @@ public class MainClass {
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
 			config.setEnableReflection(true);
+		if (cmd.hasOption(OPTION_OUTPUT_LINENUMBERS))
+			config.setEnableLineNumbers(true);
+		if (cmd.hasOption(OPTION_ORIGINAL_NAMES))
+			config.setEnableOriginalNames(true);
 		// Individual settings
 		{
 			Integer aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);

@@ -1067,11 +1067,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		else
 			Options.v().set_android_jars(androidJar);
 		Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
-		Options.v().set_keep_line_number(false);
 		Options.v().set_keep_offset(false);
+		Options.v().set_keep_line_number(config.getEnableLineNumbers());
 		Options.v().set_throw_analysis(Options.throw_analysis_dalvik);
 		Options.v().set_process_multiple_dex(config.getMergeDexFiles());
 		Options.v().set_ignore_resolution_errors(true);
+
+		// Set soot phase option if original names should be used
+		if (config.getEnableOriginalNames())
+			Options.v().setPhaseOption("jb", "use-original-names:true");
 
 		// Set the Soot configuration options. Note that this will needs to be
 		// done before we compute the classpath.
