@@ -4,9 +4,9 @@ import java.util.Collections;
 
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -17,7 +17,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  */
 public class SwingTextField extends JavaSwingLayoutControl {
 
-	protected final static SourceSinkDefinition UI_SOURCE_DEF;
+	protected final static ISourceSinkDefinition UI_SOURCE_DEF;
 
 	static {
 		UI_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
@@ -47,7 +47,7 @@ public class SwingTextField extends JavaSwingLayoutControl {
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceDefinition() {
+	public ISourceSinkDefinition getSourceDefinition() {
 		return UI_SOURCE_DEF;
 	}
 

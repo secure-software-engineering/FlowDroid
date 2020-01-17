@@ -2,7 +2,7 @@ package soot.jimple.infoflow.results;
 
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.tagkit.LineNumberTag;
 
 /**
@@ -13,7 +13,7 @@ import soot.tagkit.LineNumberTag;
  */
 public class ResultSinkInfo extends AbstractResultSourceSinkInfo {
 
-	public ResultSinkInfo(SourceSinkDefinition definition, AccessPath sink, Stmt context) {
+	public ResultSinkInfo(ISourceSinkDefinition definition, AccessPath sink, Stmt context) {
 		super(definition, sink, context);
 	}
 

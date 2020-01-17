@@ -356,7 +356,7 @@ public class Infoflow extends AbstractInfoflow {
 				}
 
 				// Initialize the aliasing infrastructure
-				Aliasing aliasing = new Aliasing(aliasingStrategy, manager);
+				Aliasing aliasing = createAliasController(aliasingStrategy);
 				if (dummyMainMethod != null)
 					aliasing.excludeMethodFromMustAlias(dummyMainMethod);
 				manager.setAliasing(aliasing);
@@ -730,6 +730,17 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	/**
+	 * Creates the controller object that handles aliasing operations. Derived
+	 * classes can override this method to supply custom aliasing implementations.
+	 * 
+	 * @param aliasingStrategy The aliasing strategy to use
+	 * @return The new alias controller object
+	 */
+	protected Aliasing createAliasController(IAliasingStrategy aliasingStrategy) {
+		return new Aliasing(aliasingStrategy, manager);
+	}
+
+	/**
 	 * Callback that is invoked when the main taint propagation has completed. This
 	 * method is called before memory cleanup happens.
 	 */
@@ -1080,7 +1091,7 @@ public class Infoflow extends AbstractInfoflow {
 
 		// Exclude system classes
 		if (config.getIgnoreFlowsInSystemPackages()
-				&& SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+				&& SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 			return false;
 
 		// Exclude library classes
@@ -1124,13 +1135,13 @@ public class Infoflow extends AbstractInfoflow {
 					forwardProblem.addInitialSeeds(u, Collections.singleton(forwardProblem.zeroValue()));
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSources.add(s);
-					logger.debug("Source found: {}", u);
+					logger.debug("Source found: {} in {}", u, m.getSignature());
 				}
 				if (sourcesSinks.getSinkInfo(s, manager, null) != null) {
 					sinkCount++;
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSinks.add(s);
-					logger.debug("Sink found: {}", u);
+					logger.debug("Sink found: {} in {}", u, m.getSignature());
 				}
 			}
 

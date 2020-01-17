@@ -104,8 +104,7 @@ public class AndroidMethod extends SootMethodAndClass {
 	}
 
 	/**
-	 * Gets whether this method has been annotated as a source, sink or neither
-	 * nor.
+	 * Gets whether this method has been annotated as a source, sink or neither nor.
 	 * 
 	 * @return True if there is an annotations for this method, otherwise false.
 	 */
@@ -125,8 +124,7 @@ public class AndroidMethod extends SootMethodAndClass {
 	/***
 	 * Static method to create AndroidMethod from Soot method signature
 	 * 
-	 * @param signature
-	 *            The Soot method signature
+	 * @param signature The Soot method signature
 	 * @return The new AndroidMethod object
 	 */
 	public static AndroidMethod createFromSignature(String signature) {
@@ -136,6 +134,8 @@ public class AndroidMethod extends SootMethodAndClass {
 			signature = signature + ">";
 
 		SootMethodAndClass smac = SootMethodRepresentationParser.v().parseSootMethodString(signature);
+		if (smac == null)
+			return null;
 		return new AndroidMethod(smac.getMethodName(), smac.getParameters(), smac.getReturnType(), smac.getClassName());
 	}
 

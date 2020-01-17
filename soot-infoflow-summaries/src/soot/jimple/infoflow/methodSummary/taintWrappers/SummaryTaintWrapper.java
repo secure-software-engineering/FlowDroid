@@ -30,10 +30,12 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.VoidType;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ReturnStmt;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -688,10 +690,24 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		// If the taint is on the base value, we need to taint the base local
-		if (t.isField() && stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-			return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), fields, baseType, types,
-					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+		if (t.isField() && stmt.containsInvokeExpr()) {
+			final InvokeExpr iexpr = stmt.getInvokeExpr();
+			if (iexpr instanceof InstanceInvokeExpr) {
+				InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+				return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), fields, baseType, types,
+						t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+			} else if (iexpr instanceof StaticInvokeExpr) {
+				// For a static invocation, we apply field taints to the return value
+				StaticInvokeExpr siexpr = (StaticInvokeExpr) iexpr;
+				if (!(siexpr.getMethodRef().getReturnType() instanceof VoidType)) {
+					if (stmt instanceof DefinitionStmt) {
+						DefinitionStmt defStmt = (DefinitionStmt) stmt;
+						return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), fields, baseType,
+								types, t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+					} else
+						return null;
+				}
+			}
 		}
 
 		throw new RuntimeException("Could not convert taint to access path: " + t + " at " + stmt);
@@ -807,7 +823,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	}
 
 	protected void reportMissingMethod(SootMethod method) {
-		if (reportMissingSummaries && SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (reportMissingSummaries
+				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			System.out.println("Missing summary for class " + method.getDeclaringClass());
 	}
 
@@ -1849,7 +1866,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// Check whether we directly support that class. We assume that if we
 		// have some summary for that class, we have all summaries for that
 		// class.
-		if (flows.supportsClass(method.getDeclaringClass().getName()))
+		SootClass declClass = method.getDeclaringClass();
+		if (declClass != null && flows.supportsClass(declClass.getName()))
 			return true;
 
 		return false;

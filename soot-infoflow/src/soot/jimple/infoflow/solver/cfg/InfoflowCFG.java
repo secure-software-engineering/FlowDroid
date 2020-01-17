@@ -30,6 +30,7 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Trap;
 import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
@@ -42,11 +43,11 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
+import soot.toolkits.exceptions.ThrowableSet;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraph.ExceptionDest;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.util.HashMultiMap;
-import soot.util.MultiMap;
 
 /**
  * Interprocedural control-flow graph for the infoflow solver
@@ -259,14 +260,13 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
-	private synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
+	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
 		if (!smethod.isConcrete())
 			return StaticFieldUse.Unused;
 
 		List<SootMethod> workList = new ArrayList<>();
 		workList.add(smethod);
-		MultiMap<SootMethod, SootMethod> methodToCallees = new HashMultiMap<>();
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
 		int processedMethods = 0;
@@ -334,7 +334,6 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 								// Process the callee
 								workList.add(callee);
-								methodToCallees.put(method, callee);
 								hasInvocation = true;
 							} else {
 								reads |= calleeUse == StaticFieldUse.Read || calleeUse == StaticFieldUse.ReadWrite;
@@ -368,7 +367,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return outerUse == null ? StaticFieldUse.Unknown : outerUse;
 	}
 
-	private void registerStaticVariableUse(SootMethod method, SootField variable, StaticFieldUse fieldUse) {
+	protected void registerStaticVariableUse(SootMethod method, SootField variable, StaticFieldUse fieldUse) {
 		Map<SootField, StaticFieldUse> entry = staticFieldUses.get(method);
 		StaticFieldUse oldUse;
 		synchronized (staticFieldUses) {
@@ -411,7 +410,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return hasSideEffects(method, new HashSet<SootMethod>(), 0);
 	}
 
-	private boolean hasSideEffects(SootMethod method, Set<SootMethod> runList, int depth) {
+	protected boolean hasSideEffects(SootMethod method, Set<SootMethod> runList, int depth) {
 		// Without a body, we cannot say much
 		if (!method.hasActiveBody())
 			return false;
@@ -484,7 +483,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		SootMethod m1 = getMethodOf(u1);
 		SootMethod m2 = getMethodOf(u2);
 		if (m1 != m2)
-			throw new RuntimeException("Exceptional edges are only supported " + "inside the same method");
+			throw new RuntimeException("Exceptional edges are only supported inside the same method");
 		DirectedGraph<Unit> ug1 = getOrCreateUnitGraph(m1);
 
 		// Exception tracking might be disabled
@@ -492,7 +491,33 @@ public class InfoflowCFG implements IInfoflowCFG {
 			return false;
 
 		ExceptionalUnitGraph eug = (ExceptionalUnitGraph) ug1;
-		return eug.getExceptionalSuccsOf(u1).contains(u2);
+		if (!eug.getExceptionalSuccsOf(u1).contains(u2))
+			return false;
+
+		// The ExceptionalUnitGraph has edges from the predecessors of thrower
+		// statements to the respective catch block to model that the predecessor was
+		// potentially the last statement to be fully executed before arriving at the
+		// catch block. For our purposes, we don't want that edge, because there the
+		// thrower itself is at least attempted to be executed, before we end up in the
+		// exception handler.
+		Collection<ExceptionDest> dests = eug.getExceptionDests(u1);
+		if (dests != null && !dests.isEmpty()) {
+			ThrowableSet ts = Scene.v().getDefaultThrowAnalysis().mightThrow(u1);
+			if (ts != null) {
+				boolean hasTraps = false;
+				for (ExceptionDest dest : dests) {
+					Trap trap = dest.getTrap();
+					if (trap != null) {
+						hasTraps = true;
+						if (!ts.catchableAs(trap.getException().getType()))
+							return false;
+					}
+				}
+				if (!hasTraps)
+					return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

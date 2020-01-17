@@ -92,9 +92,9 @@ import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
@@ -287,7 +287,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sinks loaded into FlowDroid
 	 */
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<? extends ISourceSinkDefinition> getSinks() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSinks();
 	}
 
@@ -311,7 +311,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return;
 		}
 		logger.info("Sinks:");
-		for (SourceSinkDefinition am : getSinks()) {
+		for (ISourceSinkDefinition am : getSinks()) {
 			logger.info(String.format("- %s", am.toString()));
 		}
 		logger.info("End of Sinks");
@@ -323,7 +323,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sources loaded into FlowDroid
 	 */
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<? extends ISourceSinkDefinition> getSources() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSources();
 	}
 
@@ -347,7 +347,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return;
 		}
 		logger.info("Sources:");
-		for (SourceSinkDefinition am : getSources()) {
+		for (ISourceSinkDefinition am : getSources()) {
 			logger.info(String.format("- %s", am.toString()));
 		}
 		logger.info("End of Sources");
@@ -415,6 +415,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
 		this.manifest = new ProcessManifest(targetAPK);
+		SystemClassHandler.v().setExcludeSystemComponents(config.getIgnoreFlowsInSystemPackages());
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
 		for (String className : entryPoints) {
@@ -531,7 +532,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Triggers the callgraph construction in Soot
 	 */
-	private void constructCallgraphInternal() {
+	protected void constructCallgraphInternal() {
 		// If we are configured to use an existing callgraph, we may not replace
 		// it. However, we must make sure that there really is one.
 		if (config.getSootIntegrationMode() == SootIntegrationMode.UseExistingCallgraph) {
@@ -634,16 +635,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		FlowDroidMemoryWatcher memoryWatcher = null;
 		FlowDroidTimeoutWatcher timeoutWatcher = null;
 		if (jimpleClass instanceof IMemoryBoundedSolver) {
-			memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
-			memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
-
-			// Make sure that we don't spend too much time in the callback
+			// Make sure that we don't spend too much time and memory in the callback
 			// analysis
-			if (callbackConfig.getCallbackAnalysisTimeout() > 0) {
-				timeoutWatcher = new FlowDroidTimeoutWatcher(callbackConfig.getCallbackAnalysisTimeout());
-				timeoutWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
-				timeoutWatcher.start();
-			}
+			memoryWatcher = createCallbackMemoryWatcher(jimpleClass);
+			timeoutWatcher = createCallbackTimeoutWatcher(callbackConfig, jimpleClass);
 		}
 
 		try {
@@ -784,6 +779,44 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
+	 * Creates the memory watcher for aborting the callback analysis in case it runs
+	 * out of memory. This method also starts the watchdog thread. Derived classes
+	 * can implement their own timeout handling if necessary.
+	 * 
+	 * @param callbackConfig The configuration for the callback analysis
+	 * @param analyzer       The callback analyzer
+	 * @return The memory watcher that keeps track of the amount of memory spent in
+	 *         the callback analysis
+	 */
+	protected FlowDroidMemoryWatcher createCallbackMemoryWatcher(AbstractCallbackAnalyzer jimpleClass) {
+		FlowDroidMemoryWatcher memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
+		memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
+		return memoryWatcher;
+	}
+
+	/**
+	 * Creates the timeout watcher for aborting the callback analysis in case it
+	 * runs out of time. This method also starts the watchdog thread. Derived
+	 * classes can implement their own timeout handling if necessary.
+	 * 
+	 * @param callbackConfig The configuration for the callback analysis
+	 * @param analyzer       The callback analyzer
+	 * @return The timeout watcher that keeps track of the time spent in the
+	 *         callback analysis
+	 */
+	protected FlowDroidTimeoutWatcher createCallbackTimeoutWatcher(final CallbackConfiguration callbackConfig,
+			AbstractCallbackAnalyzer analyzer) {
+		if (callbackConfig.getCallbackAnalysisTimeout() > 0) {
+			FlowDroidTimeoutWatcher timeoutWatcher = new FlowDroidTimeoutWatcher(
+					callbackConfig.getCallbackAnalysisTimeout());
+			timeoutWatcher.addSolver((IMemoryBoundedSolver) analyzer);
+			timeoutWatcher.start();
+			return timeoutWatcher;
+		}
+		return null;
+	}
+
+	/**
 	 * Inverts the given {@link MultiMap}. The keys become values and vice versa
 	 * 
 	 * @param original The map to invert
@@ -868,18 +901,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 					// Add the fragments for this class
 					Set<SootClass> fragments = lfp.getFragments().get(layoutFileName);
-					if (fragments != null)
-						for (SootClass fragment : fragments)
+					if (fragments != null) {
+						for (SootClass fragment : fragments) {
 							if (fragmentClasses.put(callbackClass, fragment))
 								hasNewCallback = true;
+						}
+					}
 
 					// For user-defined views, we need to emulate their
 					// callbacks
 					Set<AndroidLayoutControl> controls = lfp.getUserControls().get(layoutFileName);
 					if (controls != null) {
-						for (AndroidLayoutControl lc : controls)
-							if (!SystemClassHandler.isClassInSystemPackage(lc.getViewClass().getName()))
+						for (AndroidLayoutControl lc : controls) {
+							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass().getName()))
 								registerCallbackMethodsForView(callbackClass, lc);
+						}
 					}
 				} else
 					logger.error("Unexpected resource type for layout class");
@@ -952,7 +988,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
-		if (SystemClassHandler.isClassInSystemPackage(callbackClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass.getName()))
 			return;
 
 		// Get common Android classes
@@ -1067,11 +1103,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		else
 			Options.v().set_android_jars(androidJar);
 		Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
-		Options.v().set_keep_line_number(false);
 		Options.v().set_keep_offset(false);
+		Options.v().set_keep_line_number(config.getEnableLineNumbers());
 		Options.v().set_throw_analysis(Options.throw_analysis_dalvik);
 		Options.v().set_process_multiple_dex(config.getMergeDexFiles());
 		Options.v().set_ignore_resolution_errors(true);
+
+		// Set soot phase option if original names should be used
+		if (config.getEnableOriginalNames())
+			Options.v().setPhaseOption("jb", "use-original-names:true");
 
 		// Set the Soot configuration options. Note that this will needs to be
 		// done before we compute the classpath.
@@ -1221,8 +1261,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	public InfoflowResults runInfoflow(Set<AndroidMethod> sources, Set<AndroidMethod> sinks)
 			throws IOException, XmlPullParserException {
-		final Set<SourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
-		final Set<SourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
+		final Set<ISourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
+		final Set<ISourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
 
 		for (AndroidMethod am : sources)
 			sourceDefs.add(new MethodSourceSinkDefinition(am));
@@ -1232,18 +1272,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		ISourceSinkDefinitionProvider parser = new ISourceSinkDefinitionProvider() {
 
 			@Override
-			public Set<SourceSinkDefinition> getSources() {
+			public Set<ISourceSinkDefinition> getSources() {
 				return sourceDefs;
 			}
 
 			@Override
-			public Set<SourceSinkDefinition> getSinks() {
+			public Set<ISourceSinkDefinition> getSinks() {
 				return sinkDefs;
 			}
 
 			@Override
-			public Set<SourceSinkDefinition> getAllMethods() {
-				Set<SourceSinkDefinition> sourcesSinks = new HashSet<>(sourceDefs.size() + sinkDefs.size());
+			public Set<ISourceSinkDefinition> getAllMethods() {
+				Set<ISourceSinkDefinition> sourcesSinks = new HashSet<>(sourceDefs.size() + sinkDefs.size());
 				sourcesSinks.addAll(sourceDefs);
 				sourcesSinks.addAll(sinkDefs);
 				return sourcesSinks;
@@ -1335,8 +1375,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		try {
 			parseAppResources();
 		} catch (IOException | XmlPullParserException e) {
-			logger.error("Callgraph construction failed", e);
-			throw new RuntimeException("Callgraph construction failed", e);
+			logger.error("Parse app resource failed", e);
+			throw new RuntimeException("Parse app resource failed", e);
 		}
 
 		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
@@ -1399,8 +1439,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		logger.info(
 				String.format("Collecting callbacks and building a callgraph took %d seconds", (int) callbackDuration));
 
-		final Set<SourceSinkDefinition> sources = getSources();
-		final Set<SourceSinkDefinition> sinks = getSinks();
+		final Set<? extends ISourceSinkDefinition> sources = getSources();
+		final Set<? extends ISourceSinkDefinition> sinks = getSinks();
 		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (config.getOneComponentAtATime())
 			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",
@@ -1463,7 +1503,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param results The data flow results to write out
 	 * @param cfg     The control flow graph to use for writing out the results
 	 */
-	private void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
+	protected void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
 		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
 		if (resultsFile != null && !resultsFile.isEmpty()) {
 			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);

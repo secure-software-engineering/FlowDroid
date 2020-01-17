@@ -167,7 +167,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		// If this callee is excluded, we do not propagate out of it
 		if (excludedMethods != null && excludedMethods.contains(sm))
 			return;
-		if (excludeSystemClasses && SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+		if (excludeSystemClasses && SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
 			return;
 
 		if (sm.getReturnType() != VoidType.v() || sm.getParameterCount() > 0) {
@@ -208,12 +208,18 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			MethodOrMethodContext mom = rdr.next();
 			SootMethod sm = mom.method();
 			if (sm.hasActiveBody()) {
+				List<Unit> oldCallSites = DeadCodeEliminator.getCallsInMethod(sm);
+
 				Body body = sm.retrieveActiveBody();
 				ConditionalBranchFolder.v().transform(body);
 				UnconditionalBranchFolder.v().transform(body);
 				DeadAssignmentEliminator.v().transform(body);
 				UnreachableCodeEliminator.v().transform(body);
 				UnusedLocalEliminator.v().transform(body);
+
+				// We need to be careful and patch the cfg so
+				// that it does not retain edges for call statements we have deleted
+				DeadCodeEliminator.removeDeadCallgraphEdges(sm, oldCallSites);
 			}
 		}
 
@@ -423,13 +429,13 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// Make sure that we don't access anything we have already
 					// removed
 					SootMethod caller = manager.getICFG().getMethodOf(assign);
-					if (!caller.getActiveBody().getUnits().contains(assign))
+					if (caller == null || !caller.getActiveBody().getUnits().contains(assign))
 						continue;
 
 					// If the call site has multiple callees, we cannot
-					// propagate a
-					// single constant
-					if (manager.getICFG().getCalleesOfCallAt(callSite).size() > 1)
+					// propagate a single constant
+					Collection<SootMethod> callees = manager.getICFG().getCalleesOfCallAt(callSite);
+					if (callees != null && callees.size() > 1)
 						continue;
 
 					// If the call has no side effects, we can remove it
@@ -753,7 +759,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 */
 	private boolean methodIsAndroidStub(SootMethod method) {
 		if (!(Options.v().src_prec() == Options.src_prec_apk && method.getDeclaringClass().isLibraryClass()
-				&& SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName())))
+				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass())))
 			return false;
 
 		// Check whether there is only a single throw statement
@@ -821,10 +827,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						final Value argVal = iiExpr.getArg(i);
 						if (argVal instanceof Constant) {
 							// If we already have a value for this argument and
-							// the
-							// new one does not agree, this parameter is not
-							// globally
-							// constant.
+							// the new one does not agree, this parameter is not
+							// globally constant.
 							if (values[i] != null && !values[i].equals(argVal))
 								isConstant[i] = false;
 							else
@@ -840,7 +844,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			// Get the constant parameters
 			List<Unit> inserted = null;
 			for (int i = 0; i < isConstant.length; i++) {
-				if (isConstant[i] && propagatedParameters.add(new Pair<>(sm, i))) {
+				if (isConstant[i] && values[i] != null && propagatedParameters.add(new Pair<>(sm, i))) {
 					// Propagate the constant into the callee
 					Local paramLocal = sm.getActiveBody().getParameterLocal(i);
 					Unit point = getFirstNonIdentityStmt(sm);

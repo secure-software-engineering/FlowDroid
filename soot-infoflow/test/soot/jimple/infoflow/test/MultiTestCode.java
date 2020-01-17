@@ -10,33 +10,35 @@
  ******************************************************************************/
 package soot.jimple.infoflow.test;
 
+import java.io.ByteArrayOutputStream;
+
 import soot.jimple.infoflow.test.android.AccountManager;
 import soot.jimple.infoflow.test.android.ConnectionManager;
 import soot.jimple.infoflow.test.android.TelephonyManager;
 
 public class MultiTestCode {
-	
-	public void multiSourceCode(){
+
+	public void multiSourceCode() {
 		String tainted = TelephonyManager.getDeviceId();
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
-				
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(tainted);
 		doSomething(pwd);
 	}
-	
+
 	private void doSomething(String msg) {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(msg);
 	}
-	
+
 	private String pwd;
 
-	public void multiSourceCode2(){
+	public void multiSourceCode2() {
 		AccountManager am = new AccountManager();
 		this.pwd = am.getPassword();
-				
+
 		String tainted = TelephonyManager.getDeviceId();
 
 		ConnectionManager cm = new ConnectionManager();
@@ -49,10 +51,10 @@ public class MultiTestCode {
 		cm.publish(this.pwd);
 	}
 
-	public void ifPathTestCode1(){
+	public void ifPathTestCode1() {
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
-		
+
 		String foo = "";
 		String bar = "";
 		if (pwd.length() > 0)
@@ -64,10 +66,10 @@ public class MultiTestCode {
 		cm.publish(bar);
 	}
 
-	public void ifPathTestCode2(){
+	public void ifPathTestCode2() {
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
-		
+
 		String foo = "";
 		if (pwd.length() > 0)
 			foo = pwd;
@@ -75,10 +77,10 @@ public class MultiTestCode {
 		cm.publish(foo);
 	}
 
-	public void ifPathTestCode3(){
+	public void ifPathTestCode3() {
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
-		
+
 		String foo = pwd;
 		if (pwd.length() > 0)
 			foo = "";
@@ -86,11 +88,11 @@ public class MultiTestCode {
 		cm.publish(foo);
 	}
 
-	public void ifPathTestCode4(){
+	public void ifPathTestCode4() {
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
 		String bar = am.getPassword();
-		
+
 		String foo = pwd;
 		if (pwd.length() > 0)
 			foo = bar;
@@ -98,12 +100,12 @@ public class MultiTestCode {
 		cm.publish(foo);
 	}
 
-	public void loopPathTestCode1(){
+	public void loopPathTestCode1() {
 		AccountManager am = new AccountManager();
-		String pwd = am.getPassword();	
+		String pwd = am.getPassword();
 		sendPwd(pwd, 5);
 	}
-	
+
 	private void sendPwd(String pwd, int cnt) {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(pwd);
@@ -111,18 +113,18 @@ public class MultiTestCode {
 			sendPwd(pwd, cnt - 1);
 	}
 
-	public void overwriteTestCode1(){
+	public void overwriteTestCode1() {
 		AccountManager am = new AccountManager();
 		String pwd = am.getPassword();
 		System.out.println(pwd);
-		
+
 		pwd = new String("");
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(pwd);
 	}
-	
-	public void hashTestCode1(){
+
+	public void hashTestCode1() {
 		AccountManager am = new AccountManager();
 		int foo = am.getPassword().hashCode();
 
@@ -130,43 +132,52 @@ public class MultiTestCode {
 		cm.publish(foo);
 	}
 
-	public void shiftTestCode1(){
+	public void shiftTestCode1() {
 		AccountManager am = new AccountManager();
 		int foo = am.getPassword().hashCode();
 
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(foo << 32);
 	}
-	
+
 	public void intMultiTest() {
 		int imei = TelephonyManager.getIMEI();
 		int imsi = TelephonyManager.getIMSI();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(imei + imsi);
 	}
-	
+
 	int intField = 0;
 
 	public void intMultiTest2() {
 		int imei = TelephonyManager.getIMEI();
 		int imsi = TelephonyManager.getIMSI();
 		intField = imei + imsi;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(intField);
 	}
-	
+
 	private String id(String s) {
 		return s;
 	}
-	
+
 	public void sameSourceMultiTest1() {
 		String[] data = new String[2];
 		data[0] = id(TelephonyManager.getDeviceId());
 		data[1] = id(TelephonyManager.getDeviceId());
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(data[0]);
+	}
+
+	public void multiSinkTest1() {
+		ByteArrayOutputStream outbytes = new ByteArrayOutputStream();
+		byte[] senbytes = outbytes.toByteArray(); // source
+		String senstr = new String(senbytes);
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish("a" + new String(senbytes)); // sink1
+		cm.publish("a" + senstr); // sink2
 	}
 
 }

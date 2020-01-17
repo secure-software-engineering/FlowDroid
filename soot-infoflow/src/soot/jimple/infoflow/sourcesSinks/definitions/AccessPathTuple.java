@@ -229,10 +229,11 @@ public class AccessPathTuple {
 	 * @return The newly created access path
 	 */
 	public AccessPath toAccessPath(Value baseVal, InfoflowManager manager, boolean canHaveImmutableAliases) {
-		if (baseVal.getType() instanceof PrimType || fields == null || fields.length == 0)
+		if (baseVal.getType() instanceof PrimType || fields == null || fields.length == 0) {
 			// no immutable aliases, we overwrite the return values as a whole
 			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
 					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
+		}
 
 		// Do we have a base type?
 		RefType baseType = this.baseType == null || this.baseType.isEmpty() ? null : RefType.v(this.baseType);
@@ -241,7 +242,14 @@ public class AccessPathTuple {
 		SootField[] fields = new SootField[this.fields.length];
 		for (int i = 0; i < fields.length; i++) {
 			final String fieldName = this.fields[i];
-			SootClass lastFieldClass = i == 0 ? baseClass : Scene.v().getSootClass(fieldTypes[i - 1]);
+
+			// Get the type and class of the previous entry in the access path
+			Type lastFieldType = i == 0 ? baseClass.getType() : TypeUtils.getTypeFromString(fieldTypes[i - 1]);
+			if (!(lastFieldType instanceof RefType))
+				throw new InvalidAccessPathException(String.format("Type %s cannot have fields (requested: %s)",
+						lastFieldType.toString(), fieldName));
+			SootClass lastFieldClass = ((RefType) lastFieldType).getSootClass();
+
 			Type fieldType = TypeUtils.getTypeFromString(fieldTypes[i]);
 			SootField fld = lastFieldClass.getFieldUnsafe(fieldName, fieldType);
 			if (fld == null) {
@@ -273,7 +281,8 @@ public class AccessPathTuple {
 					sb.append(".");
 				sb.append(fields[i]);
 			}
-		}
+		} else
+			sb.append("<empty>");
 
 		if (description != null && !description.isEmpty()) {
 			sb.append(" (");

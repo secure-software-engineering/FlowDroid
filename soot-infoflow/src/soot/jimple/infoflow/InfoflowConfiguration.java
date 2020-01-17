@@ -953,6 +953,8 @@ public class InfoflowConfiguration {
 	private boolean writeOutputFiles = false;
 	private boolean logSourcesAndSinks = false;
 	private boolean enableReflection = false;
+	private boolean enableLineNumbers = false;
+	private boolean enableOriginalNames = false;
 
 	private boolean inspectSources = false;
 	private boolean inspectSinks = false;
@@ -992,6 +994,8 @@ public class InfoflowConfiguration {
 		this.writeOutputFiles = config.writeOutputFiles;
 		this.logSourcesAndSinks = config.logSourcesAndSinks;
 		this.enableReflection = config.enableReflection;
+		this.enableLineNumbers = config.enableLineNumbers;
+		this.enableOriginalNames = config.enableOriginalNames;
 
 		this.pathConfiguration.merge(config.pathConfiguration);
 		this.outputConfiguration.merge(config.outputConfiguration);
@@ -1482,6 +1486,47 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets whether line numbers associated with sources and sinks should be output
+	 * in XML results
+	 * 
+	 * @return True if line number should be output, otherwise false
+	 */
+	public boolean getEnableLineNumbers() {
+		return this.enableLineNumbers;
+	}
+
+	/**
+	 * Sets whether line numbers associated with sources and sinks should be output
+	 * in XML results
+	 * 
+	 * @param enableLineNumbers True if line numbers associated with sources and
+	 *                          sinks should be output in XML results, otherwise
+	 *                          false
+	 */
+	public void setEnableLineNumbers(boolean enableLineNumbers) {
+		this.enableLineNumbers = enableLineNumbers;
+	}
+
+	/**
+	 * Gets whether the usage of original variablenames (if available) is enabled
+	 * 
+	 * @return True if the usage is enabled, otherwise false
+	 */
+	public boolean getEnableOriginalNames() {
+		return this.enableOriginalNames;
+	}
+
+	/**
+	 * Sets whether the usage of original variablenames (if available) is enabled
+	 * 
+	 * @param enableOriginalNames True if the usage of original variablenames (if
+	 *                            available) is enabled, otherwise false
+	 */
+	public void setEnableOriginalNames(boolean enableOriginalNames) {
+		this.enableOriginalNames = enableOriginalNames;
+	}
+
+	/**
 	 * Gets whether the taint analysis is enabled. If it is disabled, FlowDroid will
 	 * initialize the Soot instance and then return immediately.
 	 * 
@@ -1680,6 +1725,8 @@ public class InfoflowConfiguration {
 		result = prime * result + (enableArrays ? 1231 : 1237);
 		result = prime * result + (enableExceptions ? 1231 : 1237);
 		result = prime * result + (enableReflection ? 1231 : 1237);
+		result = prime * result + (enableLineNumbers ? 1231 : 1237);
+		result = prime * result + (enableOriginalNames ? 1231 : 1237);
 		result = prime * result + (enableTypeChecking ? 1231 : 1237);
 		result = prime * result + (excludeSootLibraryClasses ? 1231 : 1237);
 		result = prime * result + (flowSensitiveAliasing ? 1231 : 1237);
@@ -1733,6 +1780,10 @@ public class InfoflowConfiguration {
 		if (enableExceptions != other.enableExceptions)
 			return false;
 		if (enableReflection != other.enableReflection)
+			return false;
+		if (enableLineNumbers != other.enableLineNumbers)
+			return false;
+		if (enableOriginalNames != other.enableOriginalNames)
 			return false;
 		if (enableTypeChecking != other.enableTypeChecking)
 			return false;

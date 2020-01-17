@@ -17,7 +17,8 @@ import soot.SootMethod;
 import soot.Type;
 
 /**
- * Data container which stores the string representation of a SootMethod and its corresponding class
+ * Data container which stores the string representation of a SootMethod and its
+ * corresponding class
  */
 public class SootMethodAndClass {
 	private final String methodName;
@@ -28,27 +29,36 @@ public class SootMethodAndClass {
 	private String subSignature = null;
 	private String signature = null;
 	private int hashCode = 0;
-	
-	public SootMethodAndClass
-			(String methodName,
-			String className,
-			String returnType,
-			List<String> parameters){
+
+	public SootMethodAndClass(String methodName, String className, String returnType, List<String> parameters) {
 		this.methodName = methodName;
 		this.className = className;
 		this.returnType = returnType;
 		this.parameters = parameters;
 	}
-	
+
+	public SootMethodAndClass(String methodName, String className, String returnType, String parameters) {
+		this.methodName = methodName;
+		this.className = className;
+		this.returnType = returnType;
+
+		this.parameters = new ArrayList<>();
+		if (parameters != null && !parameters.isEmpty()) {
+			String[] params = parameters.split(",");
+			for (String s : params)
+				this.parameters.add(s);
+		}
+	}
+
 	public SootMethodAndClass(SootMethod sm) {
 		this.methodName = sm.getName();
 		this.className = sm.getDeclaringClass().getName();
 		this.returnType = sm.getReturnType().toString();
 		this.parameters = new ArrayList<String>();
-		for (Type p: sm.getParameterTypes())
+		for (Type p : sm.getParameterTypes())
 			this.parameters.add(p.toString());
 	}
-	
+
 	public SootMethodAndClass(SootMethodAndClass methodAndClass) {
 		this.methodName = methodAndClass.methodName;
 		this.className = methodAndClass.className;
@@ -59,31 +69,32 @@ public class SootMethodAndClass {
 	public String getMethodName() {
 		return this.methodName;
 	}
-	
+
 	public String getClassName() {
 		return this.className;
 	}
-	
+
 	public String getReturnType() {
 		return this.returnType;
 	}
-	
+
 	public List<String> getParameters() {
 		return this.parameters;
 	}
-	
+
 	public String getSubSignature() {
 		if (subSignature != null)
 			return subSignature;
-		
-		StringBuilder sb = new StringBuilder(10 + this.returnType.length() + this.methodName.length() + (this.parameters.size() * 30));
+
+		StringBuilder sb = new StringBuilder(
+				10 + this.returnType.length() + this.methodName.length() + (this.parameters.size() * 30));
 		if (!this.returnType.isEmpty()) {
 			sb.append(this.returnType);
 			sb.append(" ");
 		}
 		sb.append(this.methodName);
 		sb.append("(");
-		
+
 		for (int i = 0; i < this.parameters.size(); i++) {
 			if (i > 0)
 				sb.append(",");
@@ -91,15 +102,16 @@ public class SootMethodAndClass {
 		}
 		sb.append(")");
 		this.subSignature = sb.toString();
-		
+
 		return this.subSignature;
 	}
 
 	public String getSignature() {
 		if (signature != null)
 			return signature;
-		
-		StringBuilder sb = new StringBuilder(10 + this.className.length() + this.returnType.length() + this.methodName.length() + (this.parameters.size() * 30));
+
+		StringBuilder sb = new StringBuilder(10 + this.className.length() + this.returnType.length()
+				+ this.methodName.length() + (this.parameters.size() * 30));
 		sb.append("<");
 		sb.append(this.className);
 		sb.append(": ");
@@ -109,7 +121,7 @@ public class SootMethodAndClass {
 		}
 		sb.append(this.methodName);
 		sb.append("(");
-		
+
 		for (int i = 0; i < this.parameters.size(); i++) {
 			if (i > 0)
 				sb.append(",");
@@ -117,7 +129,7 @@ public class SootMethodAndClass {
 		}
 		sb.append(")>");
 		this.signature = sb.toString();
-		
+
 		return this.signature;
 	}
 
@@ -128,7 +140,7 @@ public class SootMethodAndClass {
 		if (!(another instanceof SootMethodAndClass))
 			return false;
 		SootMethodAndClass otherMethod = (SootMethodAndClass) another;
-		
+
 		if (!this.methodName.equals(otherMethod.methodName))
 			return false;
 		if (!this.parameters.equals(otherMethod.parameters))
@@ -137,7 +149,7 @@ public class SootMethodAndClass {
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (this.hashCode == 0)
@@ -145,7 +157,7 @@ public class SootMethodAndClass {
 		// The parameter list is available from the outside, so we can't cache it
 		return this.hashCode + this.parameters.hashCode() * 7;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -161,6 +173,7 @@ public class SootMethodAndClass {
 			if (!isFirst)
 				sb.append(",");
 			sb.append(param);
+			isFirst = false;
 		}
 		sb.append(")>");
 		return sb.toString();

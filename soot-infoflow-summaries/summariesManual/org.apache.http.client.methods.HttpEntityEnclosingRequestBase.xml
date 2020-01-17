@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="org.apache.http.client.methods.HttpRequestBase">
+		<interface name="org.apache.http.HttpEntityEnclosingRequest" />
+		<interface name="org.apache.http.HttpMessage" />
+		<interface name="org.apache.http.HttpRequest" />
+	</hierarchy>
+	<methods>
+		<method id="org.apache.http.HttpEntity getEntity()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpEntityEnclosingRequestBase: org.apache.http.HttpEntity entity]"
+						AccessPathTypes="[org.apache.http.HttpEntity]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setEntity(org.apache.http.HttpEntity)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpEntityEnclosingRequestBase: org.apache.http.HttpEntity entity]"
+						AccessPathTypes="[org.apache.http.HttpEntity]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

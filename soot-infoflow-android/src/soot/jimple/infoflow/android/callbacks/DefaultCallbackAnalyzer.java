@@ -103,37 +103,44 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides
 						analyzeMethodOverrideCallbacks(sc);
+						analyzeClassInterfaceCallbacks(sc, sc, sc);
 					}
 					logger.info("Callback analysis done.");
 				} else {
 					// Incremental mode, only process the worklist
 					logger.info(String.format("Running incremental callback analysis for %d components...",
 							callbackWorklist.size()));
-					for (Iterator<SootClass> classIt = callbackWorklist.keySet().iterator(); classIt.hasNext();) {
+
+					MultiMap<SootClass, SootMethod> workList = new HashMultiMap<>(callbackWorklist);
+					for (Iterator<SootClass> it = workList.keySet().iterator(); it.hasNext();) {
 						// Check whether we're still running
 						if (isKilled != null)
 							break;
 
-						SootClass componentClass = classIt.next();
+						SootClass componentClass = it.next();
 						Set<SootMethod> callbacks = callbackWorklist.get(componentClass);
+						callbackWorklist.remove(componentClass);
 
 						// Check whether we're already beyond the maximum number
-						// of callbacks
-						// for the current component
+						// of callbacks for the current component
 						if (config.getCallbackConfig().getMaxCallbacksPerComponent() > 0
 								&& callbacks.size() > config.getCallbackConfig().getMaxCallbacksPerComponent()) {
 							callbackMethods.remove(componentClass);
 							entryPointClasses.remove(componentClass);
-							classIt.remove();
 							continue;
 						}
 
+						// Check for method overrides. The whole class might be new.
+						analyzeMethodOverrideCallbacks(componentClass);
+						analyzeClassInterfaceCallbacks(componentClass, componentClass, componentClass);
+
+						// Collect all methods that we need to analyze
 						List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
 						for (SootMethod sm : callbacks)
 							entryClasses.add(sm);
 
+						// Check for further callback declarations
 						analyzeRechableMethods(componentClass, entryClasses);
-						classIt.remove();
 					}
 					logger.info("Incremental callback analysis done.");
 				}
@@ -150,8 +157,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	/**
 	 * Gets all lifecycle methods in the given entry point class
 	 * 
-	 * @param sc
-	 *            The class in which to look for lifecycle methods
+	 * @param sc The class in which to look for lifecycle methods
 	 * @return The set of lifecycle methods in the given class
 	 */
 	private Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc) {
@@ -186,11 +192,10 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	 * one of its superclass overwrites the respective methods. All findings are
 	 * collected in a set and returned.
 	 * 
-	 * @param sc
-	 *            The class in which to look for lifecycle method implementations
-	 * @param methods
-	 *            The list of lifecycle method subsignatures for the type of
-	 *            component that the given class corresponds to
+	 * @param sc      The class in which to look for lifecycle method
+	 *                implementations
+	 * @param methods The list of lifecycle method subsignatures for the type of
+	 *                component that the given class corresponds to
 	 * @return The set of implemented lifecycle methods in the given class
 	 */
 	private Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc, List<String> methods) {
@@ -200,7 +205,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			for (String sig : methods) {
 				SootMethod sm = currentClass.getMethodUnsafe(sig);
 				if (sm != null)
-					if (!SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 						lifecycleMethods.add(sm);
 			}
 			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;
@@ -229,6 +234,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			analyzeMethodForDynamicBroadcastReceiver(method);
 			analyzeMethodForServiceConnection(method);
 			analyzeMethodForFragmentTransaction(lifecycleElement, method);
+			analyzeMethodForViewPagers(lifecycleElement, method);
 		}
 	}
 
@@ -245,6 +251,19 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		return false;
 	}
 
+	@Override
+	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
+		if (!this.excludedEntryPoints.contains(componentClass)) {
+			super.checkAndAddFragment(componentClass, fragmentClass);
+
+			for (SootMethod sm : fragmentClass.getMethods()) {
+				if (sm.isConstructor()
+						|| AndroidEntryPointConstants.getFragmentLifecycleMethods().contains(sm.getSubSignature()))
+					callbackWorklist.put(fragmentClass, sm);
+			}
+		}
+	}
+
 	/**
 	 * Finds the mappings between classes and their respective layout files
 	 */
@@ -254,7 +273,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			SootMethod sm = rmIterator.next().method();
 			if (!sm.isConcrete())
 				continue;
-			if (SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 				continue;
 
 			for (Unit u : sm.retrieveActiveBody().getUnits())

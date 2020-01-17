@@ -151,6 +151,8 @@
 			<xs:element name="enableExceptions" type="xs:boolean" minOccurs="0" />
 			<xs:element name="enableArrays" type="xs:boolean" minOccurs="0" />
 			<xs:element name="enableReflection" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableLineNumbers" type="xs:boolean" minOccurs="0" />
+			<xs:element name="enableOriginalNames" type="xs:boolean" minOccurs="0" />
 			<xs:element name="flowSensitiveAliasing" type="xs:boolean" minOccurs="0" />
 			<xs:element name="logSourcesAndSinks" type="xs:boolean" minOccurs="0" />
 			<xs:element name="enableArraySizeTainting" type="xs:boolean" minOccurs="0" />

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="org.apache.http.client.methods.AbstractExecutionAwareRequest">
+		<interface name="org.apache.http.HttpMessage" />
+		<interface name="org.apache.http.HttpRequest" />
+	</hierarchy>
+	<methods>
+		<method id="void setURI(java.net.URI)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpRequestBase: java.lang.String uri]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.net.URI getURI()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpRequestBase: java.lang.String uri]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpRequestBase: java.lang.String uri]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

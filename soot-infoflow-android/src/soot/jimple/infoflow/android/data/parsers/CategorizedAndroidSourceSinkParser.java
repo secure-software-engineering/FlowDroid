@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -48,8 +48,8 @@ public class CategorizedAndroidSourceSinkParser {
 		this.sourceSinkType = sourceSinkType;
 	}
 
-	public Set<SourceSinkDefinition> parse() throws IOException {
-		Set<SourceSinkDefinition> definitions = new HashSet<>();
+	public Set<ISourceSinkDefinition> parse() throws IOException {
+		Set<ISourceSinkDefinition> definitions = new HashSet<>();
 		CategoryDefinition allCats = new CategoryDefinition(CATEGORY.ALL);
 		boolean loadAllCategories = categories.contains(allCats);
 
@@ -69,7 +69,7 @@ public class CategorizedAndroidSourceSinkParser {
 				if (loadAllCategories || categories.contains(cat)) {
 					AndroidMethod method = parseMethod(m);
 					method.setSourceSinkType(sourceSinkType);
-					SourceSinkDefinition def = new MethodSourceSinkDefinition(method);
+					MethodSourceSinkDefinition def = new MethodSourceSinkDefinition(method);
 					def.setCategory(cat);
 					definitions.add(def);
 				}

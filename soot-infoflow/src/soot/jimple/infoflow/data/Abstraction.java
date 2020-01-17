@@ -24,7 +24,7 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.collect.AtomicBitSet;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * The abstraction class contains all information that is necessary to track the
@@ -132,7 +132,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 	}
 
-	public Abstraction(SourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
+	public Abstraction(ISourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
 			boolean exceptionThrown, boolean isImplicit) {
 		this(sourceVal, new SourceContext(definition, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
 	}

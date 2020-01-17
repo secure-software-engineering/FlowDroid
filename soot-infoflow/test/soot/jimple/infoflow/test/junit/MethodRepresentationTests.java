@@ -16,21 +16,38 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+
 /**
- * check the conversion of Soot's String representation into our internal data format. 
+ * check the conversion of Soot's String representation into our internal data
+ * format.
  */
 public class MethodRepresentationTests {
 
-	@Test(timeout=300000)
-	public void testParser(){
+	@Test(timeout = 300000)
+	public void testParser() {
 		String s = "<soot.jimple.infoflow.test.TestNoMain: java.lang.String function1()>";
-		
+
 		SootMethodRepresentationParser parser = SootMethodRepresentationParser.v();
 		SootMethodAndClass result = parser.parseSootMethodString(s);
-		
+
 		assertEquals("soot.jimple.infoflow.test.TestNoMain", result.getClassName());
 		assertEquals("function1", result.getMethodName());
 		assertEquals("java.lang.String", result.getReturnType());
 	}
-	
+
+	@Test(timeout = 300000)
+	public void testParser2() {
+		String s = "<soot.jimple.infoflow.test.TestNoMain: java.lang.String function1(java.lang.String,int)>";
+
+		SootMethodRepresentationParser parser = SootMethodRepresentationParser.v();
+		SootMethodAndClass result = parser.parseSootMethodString(s);
+
+		assertEquals("soot.jimple.infoflow.test.TestNoMain", result.getClassName());
+		assertEquals("function1", result.getMethodName());
+		assertEquals("java.lang.String", result.getReturnType());
+		assertEquals(2, result.getParameters().size());
+		assertEquals("java.lang.String", result.getParameters().get(0));
+		assertEquals("int", result.getParameters().get(1));
+	}
+
 }

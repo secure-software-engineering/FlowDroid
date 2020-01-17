@@ -10,12 +10,19 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCreator {
 
 	protected AndroidEntryPointUtils entryPointUtils = null;
+
+	protected ProcessManifest manifest;
+
+	public AbstractAndroidEntryPointCreator(ProcessManifest manifest) {
+		this.manifest = manifest;
+	}
 
 	@Override
 	public SootMethod createDummyMain() {
@@ -35,6 +42,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			return null;
 
 		SootMethod method = findMethod(currentClass, subsignature);
+
 		if (method == null) {
 			logger.warn("Could not find Android entry point method: {}", subsignature);
 			return null;
@@ -47,14 +55,14 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 		// If this method is part of the Android framework, we don't need to
 		// call it
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return null;
 
 		assert method.isStatic() || classLocal != null : "Class local was null for non-static method "
 				+ method.getSignature();
 
 		// write Method
-		return buildMethodCall(method, mainMethod.getActiveBody(), classLocal, generator, parentClasses);
+		return buildMethodCall(method, classLocal, parentClasses);
 	}
 
 	protected boolean createPlainMethodCall(Local classLocal, SootMethod currentMethod) {
@@ -66,7 +74,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		NopStmt thenStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(beforeStmt);
 		createIfStmt(thenStmt);
-		buildMethodCall(currentMethod, body, classLocal, generator);
+		buildMethodCall(currentMethod, classLocal);
 
 		body.getUnits().add(thenStmt);
 		createIfStmt(beforeStmt);
@@ -80,8 +88,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 	/**
 	 * Creates instance of the given classes
 	 * 
-	 * @param classes
-	 *            The classes of which to create instances
+	 * @param classes The classes of which to create instances
 	 */
 	protected void createClassInstances(Collection<SootClass> classes) {
 		for (SootClass callbackClass : classes) {
@@ -89,7 +96,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			createIfStmt(thenStmt);
 			Local l = localVarsForClasses.get(callbackClass);
 			if (l == null) {
-				l = generateClassConstructor(callbackClass, body);
+				l = generateClassConstructor(callbackClass);
 				if (l != null)
 					localVarsForClasses.put(callbackClass, l);
 			}

@@ -5,9 +5,9 @@ import java.util.Map;
 
 import soot.SootClass;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -18,7 +18,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  */
 public class GenericLayoutControl extends AndroidLayoutControl {
 
-	protected final static SourceSinkDefinition UI_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
+	protected final static ISourceSinkDefinition UI_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
 			Collections.singleton(AccessPathTuple.fromPathElements(Collections.singletonList("content"),
 					Collections.singletonList("java.lang.Object"), SourceSinkType.Source)),
 			CallType.MethodCall);
@@ -36,7 +36,7 @@ public class GenericLayoutControl extends AndroidLayoutControl {
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceDefinition() {
+	public ISourceSinkDefinition getSourceDefinition() {
 		return UI_SOURCE_DEF;
 	}
 

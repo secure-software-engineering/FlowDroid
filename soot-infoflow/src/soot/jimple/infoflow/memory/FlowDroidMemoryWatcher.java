@@ -23,6 +23,7 @@ public class FlowDroidMemoryWatcher {
 
 	private final Set<IMemoryBoundedSolver> solvers = new ConcurrentHashSet<>();
 	private final InfoflowResults results;
+	private ISolversTerminatedCallback terminationCallback = null;
 
 	/**
 	 * Creates a new instance of the {@link FlowDroidMemoryWatcher} class
@@ -68,6 +69,8 @@ public class FlowDroidMemoryWatcher {
 				// We stop the data flow analysis
 				forceTerminate();
 				logger.warn("Running out of memory, solvers terminated");
+				if (terminationCallback != null)
+					terminationCallback.onSolversTerminated();
 			}
 
 		});
@@ -126,6 +129,17 @@ public class FlowDroidMemoryWatcher {
 	public void forceTerminate(ISolverTerminationReason reason) {
 		for (IMemoryBoundedSolver solver : solvers)
 			solver.forceTerminate(reason);
+	}
+
+	/**
+	 * Sets a callback that shall be invoked when the solvers have been terminated
+	 * due to memory exhaustion
+	 * 
+	 * @param terminationCallback The callback to invoke when the solvers have been
+	 *                            terminated due to memory exhaustion
+	 */
+	public void setTerminationCallback(ISolversTerminatedCallback terminationCallback) {
+		this.terminationCallback = terminationCallback;
 	}
 
 }

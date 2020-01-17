@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.data;
 
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Class representing a source value together with the statement that created it
@@ -9,18 +9,18 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  * @author Steven Arzt
  */
 public class SourceContext implements Cloneable {
-	protected final SourceSinkDefinition definition;
+	protected final ISourceSinkDefinition definition;
 	protected final AccessPath accessPath;
 	protected final Stmt stmt;
 	protected final Object userData;
 
 	private int hashCode = 0;
 
-	public SourceContext(SourceSinkDefinition definition, AccessPath accessPath, Stmt stmt) {
+	public SourceContext(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt) {
 		this(definition, accessPath, stmt, null);
 	}
 
-	public SourceContext(SourceSinkDefinition definition, AccessPath accessPath, Stmt stmt, Object userData) {
+	public SourceContext(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt, Object userData) {
 		assert accessPath != null;
 
 		this.definition = definition;
@@ -29,7 +29,7 @@ public class SourceContext implements Cloneable {
 		this.userData = userData;
 	}
 
-	public SourceSinkDefinition getDefinition() {
+	public ISourceSinkDefinition getDefinition() {
 		return this.definition;
 	}
 

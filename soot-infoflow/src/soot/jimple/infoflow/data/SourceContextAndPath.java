@@ -9,7 +9,7 @@ import heros.solver.Pair;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
 
 /**
@@ -24,11 +24,11 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	protected int neighborCounter = 0;
 	private int hashCode = 0;
 
-	public SourceContextAndPath(SourceSinkDefinition definition, AccessPath value, Stmt stmt) {
+	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt) {
 		this(definition, value, stmt, null);
 	}
 
-	public SourceContextAndPath(SourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
+	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
 		super(definition, value, stmt, userData);
 	}
 

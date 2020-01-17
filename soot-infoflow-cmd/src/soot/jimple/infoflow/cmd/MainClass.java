@@ -53,11 +53,11 @@ public class MainClass {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final Options options = new Options();
-	private SetupApplication analyzer = null;
-	private ReportMissingSummaryWrapper reportMissingSummaryWrapper;
+	protected final Options options = new Options();
+	protected SetupApplication analyzer = null;
+	protected ReportMissingSummaryWrapper reportMissingSummaryWrapper;
 
-	private Set<String> filesToSkip = new HashSet<>();
+	protected Set<String> filesToSkip = new HashSet<>();
 
 	// Files
 	private static final String OPTION_CONFIG_FILE = "c";
@@ -67,6 +67,7 @@ public class MainClass {
 	private static final String OPTION_OUTPUT_FILE = "o";
 	private static final String OPTION_ADDITIONAL_CLASSPATH = "ac";
 	private static final String OPTION_SKIP_APK_FILE = "si";
+	private static final String OPTION_WRITE_JIMPLE_FILES = "wj";
 
 	// Timeouts
 	private static final String OPTION_TIMEOUT = "dt";
@@ -80,6 +81,8 @@ public class MainClass {
 	private static final String OPTION_NO_TYPE_CHECKING = "nt";
 	private static final String OPTION_REFLECTION = "r";
 	private static final String OPTION_MISSING_SUMMARIES_FILE = "ms";
+	private static final String OPTION_OUTPUT_LINENUMBERS = "ol";
+	private static final String OPTION_ORIGINAL_NAMES = "on";
 
 	// Taint wrapper
 	private static final String OPTION_TAINT_WRAPPER = "tw";
@@ -120,7 +123,7 @@ public class MainClass {
 	// Evaluation-specific options
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
 
-	private MainClass() {
+	protected MainClass() {
 		initializeCommandLineOptions();
 	}
 
@@ -141,6 +144,7 @@ public class MainClass {
 				"Additional JAR file that shal be put on the classpath");
 		options.addOption(OPTION_SKIP_APK_FILE, "skipapkfile", true,
 				"APK file to skip when processing a directory of input files");
+		options.addOption(OPTION_WRITE_JIMPLE_FILES, "writejimplefiles", true, "Write out the Jimple files");
 
 		// Timeouts
 		options.addOption(OPTION_TIMEOUT, "timeout", true, "Timeout for the main data flow analysis");
@@ -158,6 +162,10 @@ public class MainClass {
 		options.addOption(OPTION_REFLECTION, "enablereflection", false, "Enable support for reflective method calls");
 		options.addOption(OPTION_MISSING_SUMMARIES_FILE, "missingsummariesoutputfile", true,
 				"Outputs a file with information about which summaries are missing");
+		options.addOption(OPTION_OUTPUT_LINENUMBERS, "outputlinenumbers", false,
+				"Enable the output of bytecode line numbers associated with sources and sinks in XML results");
+		options.addOption(OPTION_ORIGINAL_NAMES, "originalnames", false,
+				"Enable the usage of original variablenames if available");
 
 		// Taint wrapper
 		options.addOption(OPTION_TAINT_WRAPPER, "taintwrapper", true,
@@ -231,7 +239,7 @@ public class MainClass {
 		main.run(args);
 	}
 
-	private void run(String[] args) throws Exception {
+	protected void run(String[] args) throws Exception {
 		// We need proper parameters
 		final HelpFormatter formatter = new HelpFormatter();
 		if (args.length == 0) {
@@ -326,7 +334,7 @@ public class MainClass {
 				}
 
 				// Create the data flow analyzer
-				analyzer = new SetupApplication(config);
+				analyzer = createFlowDroidInstance(config);
 				analyzer.setTaintWrapper(taintWrapper);
 
 				// Start the data flow analysis
@@ -346,6 +354,18 @@ public class MainClass {
 			System.err.println(String.format("The data flow analysis has failed. Error message: %s", e.getMessage()));
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Creates an instance of the FlowDroid data flow solver tool for Android.
+	 * Derived classes can override this method to inject custom variants of
+	 * FlowDroid.
+	 * 
+	 * @param config The configuration object
+	 * @return An instance of the data flow solver
+	 */
+	protected SetupApplication createFlowDroidInstance(final InfoflowAndroidConfiguration config) {
+		return new SetupApplication(config);
 	}
 
 	/**
@@ -666,6 +686,8 @@ public class MainClass {
 			if (additionalClasspath != null && !additionalClasspath.isEmpty())
 				config.getAnalysisFileConfig().setAdditionalClasspath(additionalClasspath);
 		}
+		if (cmd.hasOption(OPTION_WRITE_JIMPLE_FILES))
+			config.setWriteOutputFiles(true);
 
 		// Timeouts
 		{
@@ -695,6 +717,10 @@ public class MainClass {
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
 			config.setEnableReflection(true);
+		if (cmd.hasOption(OPTION_OUTPUT_LINENUMBERS))
+			config.setEnableLineNumbers(true);
+		if (cmd.hasOption(OPTION_ORIGINAL_NAMES))
+			config.setEnableOriginalNames(true);
 		// Individual settings
 		{
 			Integer aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);

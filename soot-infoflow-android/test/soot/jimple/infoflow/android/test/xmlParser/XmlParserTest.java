@@ -13,8 +13,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -28,8 +28,7 @@ public class XmlParserTest {
 	/**
 	 * Compares the new and the old Parser for different xml files
 	 * 
-	 * @param xmlFile
-	 *            in new format
+	 * @param xmlFile    in new format
 	 * @param oldXmlFile
 	 * @throws IOException
 	 */
@@ -39,13 +38,13 @@ public class XmlParserTest {
 
 		// The old format can't specify access paths, so we need to fix the data
 		// objects for not comparing apples and oranges
-		Set<SourceSinkDefinition> cleanedSources = new HashSet<>();
-		Set<SourceSinkDefinition> cleanedSinks = new HashSet<>();
-		for (SourceSinkDefinition def : newParser.getSources()) {
+		Set<ISourceSinkDefinition> cleanedSources = new HashSet<>();
+		Set<ISourceSinkDefinition> cleanedSinks = new HashSet<>();
+		for (ISourceSinkDefinition def : newParser.getSources()) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
 			cleanedSources.add(new MethodSourceSinkDefinition(methodDef.getMethod()));
 		}
-		for (SourceSinkDefinition def : newParser.getSinks()) {
+		for (ISourceSinkDefinition def : newParser.getSinks()) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
 			cleanedSinks.add(new MethodSourceSinkDefinition(methodDef.getMethod()));
 		}
@@ -138,8 +137,8 @@ public class XmlParserTest {
 		// parsing data from xml file
 		String xmlFile = "testXmlParser/complete.xml";
 		XMLSourceSinkParser newParser = XMLSourceSinkParser.fromFile(xmlFile);
-		Set<SourceSinkDefinition> sourceListParser = newParser.getSources();
-		Set<SourceSinkDefinition> sinkListParser = newParser.getSinks();
+		Set<? extends ISourceSinkDefinition> sourceListParser = newParser.getSources();
+		Set<? extends ISourceSinkDefinition> sinkListParser = newParser.getSinks();
 
 		// create two methods with reference data
 		String methodName = "sourceTest";
@@ -167,7 +166,7 @@ public class XmlParserTest {
 
 		// Check the loaded access paths (sinks)
 		Assert.assertEquals(2, sinkListParser.size());
-		for (SourceSinkDefinition def : sinkListParser) {
+		for (ISourceSinkDefinition def : sinkListParser) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
 			Assert.assertTrue(methodDef.getMethod().equals(am1) || methodDef.getMethod().equals(am2));
 			if (methodDef.getMethod().equals(am1)) {

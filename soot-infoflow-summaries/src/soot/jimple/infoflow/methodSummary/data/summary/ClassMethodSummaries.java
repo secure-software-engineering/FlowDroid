@@ -15,6 +15,7 @@ public class ClassMethodSummaries {
 	private final MethodSummaries methodSummaries;
 	private final Set<String> interfaces = new HashSet<>();
 	private String superClass;
+	private boolean isInterface = false;
 
 	private boolean isExclusiveForClass = true;
 
@@ -43,7 +44,7 @@ public class ClassMethodSummaries {
 	 *         class, false otherwise
 	 */
 	public boolean isEmpty() {
-		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces();
+		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces() && !hasSuperclass();
 	}
 
 	/**
@@ -196,6 +197,16 @@ public class ClassMethodSummaries {
 		return interfaces != null && !interfaces.isEmpty();
 	}
 
+	/**
+	 * Gets whether this summary object contains a reference to the superclass of
+	 * the target class
+	 * 
+	 * @return True if we know the superclass of the target class, false otherwise
+	 */
+	public boolean hasSuperclass() {
+		return superClass != null && !superClass.isEmpty();
+	}
+
 	@Override
 	public String toString() {
 		return String.format("Summaries for %s", className);
@@ -219,6 +230,26 @@ public class ClassMethodSummaries {
 		this.superClass = superClass;
 	}
 
+	/**
+	 * Gets whether this summary models an interface
+	 * 
+	 * @return True if this summary models an interface, false if it models a normal
+	 *         class
+	 */
+	public boolean isInterface() {
+		return isInterface;
+	}
+
+	/**
+	 * Sets whether this summary models an interface
+	 * 
+	 * @param isInterface True if this summary models an interface, false if it
+	 *                    models a normal class
+	 */
+	public void setInterface(boolean isInterface) {
+		this.isInterface = isInterface;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -226,6 +257,7 @@ public class ClassMethodSummaries {
 		result = prime * result + ((className == null) ? 0 : className.hashCode());
 		result = prime * result + ((interfaces == null) ? 0 : interfaces.hashCode());
 		result = prime * result + (isExclusiveForClass ? 1231 : 1237);
+		result = prime * result + (isInterface ? 1231 : 1237);
 		result = prime * result + ((methodSummaries == null) ? 0 : methodSummaries.hashCode());
 		result = prime * result + ((superClass == null) ? 0 : superClass.hashCode());
 		return result;
@@ -251,6 +283,8 @@ public class ClassMethodSummaries {
 		} else if (!interfaces.equals(other.interfaces))
 			return false;
 		if (isExclusiveForClass != other.isExclusiveForClass)
+			return false;
+		if (isInterface != other.isInterface)
 			return false;
 		if (methodSummaries == null) {
 			if (other.methodSummaries != null)
