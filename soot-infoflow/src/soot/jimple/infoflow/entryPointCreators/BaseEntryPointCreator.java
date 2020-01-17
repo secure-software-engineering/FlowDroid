@@ -491,6 +491,24 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		return this.generateClassConstructor(createdClass, body, new HashSet<SootClass>(), parentClasses, null);
 	}
 
+
+	/**
+	 * Determines whether a class is accepted for generating a constructor.
+	 * 
+	 * @param clazz      The class of which to create an instance
+	 * @return Whether the class is accepted for generating a constructor
+	 */
+	protected boolean acceptClass(SootClass clazz) {
+		// We cannot create instances of phantom classes as we do not have any
+		// constructor information for them
+		if (clazz.isPhantom() || clazz.isPhantomClass()) {
+			logger.warn("Cannot generate constructor for phantom class {}", clazz.getName());
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * Generates code which creates a new instance of the given class.
 	 * 
@@ -522,13 +540,11 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		if (existingLocal != null)
 			return existingLocal;
 
-		// We cannot create instances of phantom classes as we do not have any
-		// constructor information for them
-		if (createdClass.isPhantom() || createdClass.isPhantomClass()) {
-			logger.warn("Cannot generate constructor for phantom class {}", createdClass.getName());
+		if (!acceptClass(createdClass)) {
 			failedClasses.add(createdClass);
 			return null;
 		}
+
 
 		LocalGenerator generator = new LocalGenerator(body);
 
