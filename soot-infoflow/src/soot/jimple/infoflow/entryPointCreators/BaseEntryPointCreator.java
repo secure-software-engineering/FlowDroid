@@ -521,8 +521,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			return null;
 		}
 
-		LocalGenerator generator = new LocalGenerator(body);
-
     // if sootClass is simpleClass:
 		if (isSimpleType(createdClass.toString())) {
 			Local varLocal = generator.generateLocal(getSimpleTypeFromType(createdClass.getType()));
