@@ -17,8 +17,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
+import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 public class LifecycleTests extends JUnitTests {

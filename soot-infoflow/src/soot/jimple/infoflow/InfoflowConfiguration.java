@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class InfoflowConfiguration {
-
 	protected final static Logger logger = LoggerFactory.getLogger(InfoflowConfiguration.class);
 
 	/**
@@ -209,6 +208,267 @@ public class InfoflowConfiguration {
 		 */
 		None
 	}
+
+	/**
+	 * The default mode how the filter shall treat source or sink categories that
+	 * have not been configured explicitly
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static enum SourceSinkFilterMode {
+		/**
+		 * Include all categories that have not been excluded explicitly
+		 */
+		UseAllButExcluded,
+
+		/**
+		 * Only include those categories that have been included explicitly and ignore
+		 * all others
+		 */
+		UseOnlyIncluded
+	}
+
+	/**
+	 * The modes (included or excludes) that a category can have for the data flow
+	 * analysis
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static enum CategoryMode {
+		/**
+		 * The sources and sinks from the current category shall be included in the data
+		 * flow analysis
+		 */
+		Include,
+
+		/**
+		 * The sources and sinks from the current category shall be excluded from the
+		 * data flow analysis
+		 */
+		Exclude
+	}
+
+	/**
+	 * Methods for deciding whether a parameter of a system callback is to be
+	 * treated as a source or not
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static enum CallbackSourceMode {
+		/**
+		 * Callback parameters are never treated as sources
+		 */
+		NoParametersAsSources,
+		/**
+		 * All callback parameters are sources
+		 */
+		AllParametersAsSources,
+		/**
+		 * Only parameters from callback methods explicitly defined as sources are
+		 * treated as sources
+		 */
+		SourceListOnly
+	}
+
+	/**
+	 * Possible modes for matching layout components as data flow sources
+	 * 
+	 * @author Steven Arzt
+	 */
+	public static enum LayoutMatchingMode {
+		/**
+		 * Do not use Android layout components as sources
+		 */
+		NoMatch,
+
+		/**
+		 * Use all layout components as sources
+		 */
+		MatchAll,
+
+		/**
+		 * Only use sensitive layout components (e.g. password fields) as sources
+		 */
+		MatchSensitiveOnly
+	}
+
+	/**
+	 * The configuration for the source and sink manager
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static class SourceSinkConfiguration {
+
+		private CallbackSourceMode callbackSourceMode = CallbackSourceMode.SourceListOnly;
+		private boolean enableLifecycleSources = false;
+		private LayoutMatchingMode layoutMatchingMode = LayoutMatchingMode.MatchSensitiveOnly;
+
+		private SourceSinkFilterMode sourceFilterMode = SourceSinkFilterMode.UseAllButExcluded;
+		private SourceSinkFilterMode sinkFilterMode = SourceSinkFilterMode.UseAllButExcluded;
+
+		/**
+		 * Copies the settings of the given configuration into this configuration object
+		 * 
+		 * @param iccConfig The other configuration object
+		 */
+		public void merge(SourceSinkConfiguration ssConfig) {
+			this.callbackSourceMode = ssConfig.callbackSourceMode;
+			this.enableLifecycleSources = ssConfig.enableLifecycleSources;
+			this.layoutMatchingMode = ssConfig.layoutMatchingMode;
+
+			this.sourceFilterMode = ssConfig.sourceFilterMode;
+			this.sinkFilterMode = ssConfig.sinkFilterMode;
+		}
+
+		/**
+		 * Sets the default mode for handling sources that have not been configured
+		 * explicitly
+		 * 
+		 * @param sourceFilterMode The default mode for handling sources that have not
+		 *                         been configured explicitly
+		 */
+		public void setSourceFilterMode(SourceSinkFilterMode sourceFilterMode) {
+			this.sourceFilterMode = sourceFilterMode;
+		}
+
+		/**
+		 * Gets the default mode for handling sinks that have not been configured
+		 * explicitly
+		 * 
+		 * @return The default mode for handling sinks that have not been configured
+		 *         explicitly
+		 */
+		public SourceSinkFilterMode getSinkFilterMode() {
+			return sinkFilterMode;
+		}
+
+		/**
+		 * Sets the default mode for handling sinks that have not been configured
+		 * explicitly
+		 * 
+		 * @param sourceFilterMode The default mode for handling sinks that have not
+		 *                         been configured explicitly
+		 */
+		public void setSinkFilterMode(SourceSinkFilterMode sinkFilterMode) {
+			this.sinkFilterMode = sinkFilterMode;
+		}
+
+		/**
+		 * Sets under which circumstances the parameters of callback methods shall be
+		 * treated as sources.
+		 * 
+		 * @param callbackSourceMode The strategy for deciding whether a certain
+		 *                           callback parameter is a data flow source or not
+		 */
+		public void setCallbackSourceMode(CallbackSourceMode callbackSourceMode) {
+			this.callbackSourceMode = callbackSourceMode;
+		}
+
+		/**
+		 * Sets under which circumstances the parameters of callback methods shall be
+		 * treated as sources.
+		 * 
+		 * @return The strategy for deciding whether a certain callback parameter is a
+		 *         data flow source or not
+		 */
+		public CallbackSourceMode getCallbackSourceMode() {
+			return this.callbackSourceMode;
+		}
+
+		/**
+		 * Sets whether the parameters of lifecycle methods shall be considered as
+		 * sources
+		 * 
+		 * @param enableLifecycleSoures True if the parameters of lifecycle methods
+		 *                              shall be considered as sources, otherwise false
+		 */
+		public void setEnableLifecycleSources(boolean enableLifecycleSources) {
+			this.enableLifecycleSources = enableLifecycleSources;
+		}
+
+		/**
+		 * Gets whether the parameters of lifecycle methods shall be considered as
+		 * sources
+		 * 
+		 * @return True if the parameters of lifecycle methods shall be considered as
+		 *         sources, otherwise false
+		 */
+		public boolean getEnableLifecycleSources() {
+			return this.enableLifecycleSources;
+		}
+
+		/**
+		 * Sets the mode to be used when deciding whether a UI control is a source or
+		 * not
+		 * 
+		 * @param mode The mode to be used for classifying UI controls as sources
+		 */
+		public void setLayoutMatchingMode(LayoutMatchingMode mode) {
+			this.layoutMatchingMode = mode;
+		}
+
+		/**
+		 * Gets the mode to be used when deciding whether a UI control is a source or
+		 * not
+		 * 
+		 * @return The mode to be used for classifying UI controls as sources
+		 */
+		public LayoutMatchingMode getLayoutMatchingMode() {
+			return this.layoutMatchingMode;
+		}
+
+		/**
+		 * Gets the default mode for handling sources that have not been configured
+		 * explicitly
+		 * 
+		 * @return The default mode for handling sources that have not been configured
+		 *         explicitly
+		 */
+		public SourceSinkFilterMode getSourceFilterMode() {
+			return sourceFilterMode;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((callbackSourceMode == null) ? 0 : callbackSourceMode.hashCode());
+			result = prime * result + (enableLifecycleSources ? 1231 : 1237);
+			result = prime * result + ((layoutMatchingMode == null) ? 0 : layoutMatchingMode.hashCode());
+			result = prime * result + ((sinkFilterMode == null) ? 0 : sinkFilterMode.hashCode());
+			result = prime * result + ((sourceFilterMode == null) ? 0 : sourceFilterMode.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SourceSinkConfiguration other = (SourceSinkConfiguration) obj;
+			if (callbackSourceMode != other.callbackSourceMode)
+				return false;
+			if (enableLifecycleSources != other.enableLifecycleSources)
+				return false;
+			if (layoutMatchingMode != other.layoutMatchingMode)
+				return false;
+			if (sinkFilterMode != other.sinkFilterMode)
+				return false;
+			if (sourceFilterMode != other.sourceFilterMode)
+				return false;
+			return true;
+		}
+
+	}
+
+	private final SourceSinkConfiguration sourceSinkConfig = new SourceSinkConfiguration();
 
 	/**
 	 * The configuration that defines how FlowDroid shall handle between sources and
@@ -1833,6 +2093,15 @@ public class InfoflowConfiguration {
 		if (writeOutputFiles != other.writeOutputFiles)
 			return false;
 		return true;
+	}
+
+	/**
+	 * Gets the configuration of the source/sink manager
+	 * 
+	 * @return The configuration of the source/sink manager
+	 */
+	public SourceSinkConfiguration getSourceSinkConfig() {
+		return sourceSinkConfig;
 	}
 
 }
