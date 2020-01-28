@@ -20,17 +20,17 @@ import org.slf4j.LoggerFactory;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
+import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
+import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.config.XMLConfigurationParser;
 import soot.jimple.infoflow.methodSummary.data.provider.LazySummaryProvider;
@@ -81,6 +81,8 @@ public class MainClass {
 	private static final String OPTION_NO_TYPE_CHECKING = "nt";
 	private static final String OPTION_REFLECTION = "r";
 	private static final String OPTION_MISSING_SUMMARIES_FILE = "ms";
+	private static final String OPTION_OUTPUT_LINENUMBERS = "ol";
+	private static final String OPTION_ORIGINAL_NAMES = "on";
 
 	// Taint wrapper
 	private static final String OPTION_TAINT_WRAPPER = "tw";
@@ -160,6 +162,10 @@ public class MainClass {
 		options.addOption(OPTION_REFLECTION, "enablereflection", false, "Enable support for reflective method calls");
 		options.addOption(OPTION_MISSING_SUMMARIES_FILE, "missingsummariesoutputfile", true,
 				"Outputs a file with information about which summaries are missing");
+		options.addOption(OPTION_OUTPUT_LINENUMBERS, "outputlinenumbers", false,
+				"Enable the output of bytecode line numbers associated with sources and sinks in XML results");
+		options.addOption(OPTION_ORIGINAL_NAMES, "originalnames", false,
+				"Enable the usage of original variablenames if available");
 
 		// Taint wrapper
 		options.addOption(OPTION_TAINT_WRAPPER, "taintwrapper", true,
@@ -711,6 +717,10 @@ public class MainClass {
 			config.setEnableTypeChecking(false);
 		if (cmd.hasOption(OPTION_REFLECTION))
 			config.setEnableReflection(true);
+		if (cmd.hasOption(OPTION_OUTPUT_LINENUMBERS))
+			config.setEnableLineNumbers(true);
+		if (cmd.hasOption(OPTION_ORIGINAL_NAMES))
+			config.setEnableOriginalNames(true);
 		// Individual settings
 		{
 			Integer aplength = getIntOption(cmd, OPTION_ACCESS_PATH_LENGTH);

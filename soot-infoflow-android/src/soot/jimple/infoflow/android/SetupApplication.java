@@ -46,8 +46,8 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfigu
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.callbacks.AbstractCallbackAnalyzer;
-import soot.jimple.infoflow.android.callbacks.CallbackDefinition;
-import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
 import soot.jimple.infoflow.android.callbacks.DefaultCallbackAnalyzer;
 import soot.jimple.infoflow.android.callbacks.FastCallbackAnalyzer;
 import soot.jimple.infoflow.android.callbacks.filters.AlienFragmentFilter;
@@ -109,7 +109,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected ISourceSinkDefinitionProvider sourceSinkProvider;
-	protected MultiMap<SootClass, CallbackDefinition> callbackMethods = new HashMultiMap<>();
+	protected MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods = new HashMultiMap<>();
 	protected MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
 
 	protected InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
@@ -490,7 +490,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		if (this.sourceSinkProvider != null) {
 			// Get the callbacks for the current entry point
-			Set<CallbackDefinition> callbacks;
+			Set<AndroidCallbackDefinition> callbacks;
 			if (entryPoint == null)
 				callbacks = this.callbackMethods.values();
 			else
@@ -519,7 +519,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param callbacks The callbacks that have been collected so far
 	 * @return The new source sink manager
 	 */
-	protected ISourceSinkManager createSourceSinkManager(LayoutFileParser lfp, Set<CallbackDefinition> callbacks) {
+	protected ISourceSinkManager createSourceSinkManager(LayoutFileParser lfp,
+			Set<AndroidCallbackDefinition> callbacks) {
 		AccessPathBasedSourceSinkManager sourceSinkManager = new AccessPathBasedSourceSinkManager(
 				this.sourceSinkProvider.getSources(), this.sourceSinkProvider.getSinks(), callbacks, config,
 				lfp == null ? null : lfp.getUserControlsByID());
@@ -742,8 +743,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// the host activity
 		AlienFragmentFilter fragmentFilter = new AlienFragmentFilter(invertMap(fragmentClasses));
 		fragmentFilter.reset();
-		for (Iterator<Pair<SootClass, CallbackDefinition>> cbIt = this.callbackMethods.iterator(); cbIt.hasNext();) {
-			Pair<SootClass, CallbackDefinition> pair = cbIt.next();
+		for (Iterator<Pair<SootClass, AndroidCallbackDefinition>> cbIt = this.callbackMethods.iterator(); cbIt
+				.hasNext();) {
+			Pair<SootClass, AndroidCallbackDefinition> pair = cbIt.next();
 
 			// Check whether the filter accepts the given mapping
 			if (!fragmentFilter.accepts(pair.getO1(), pair.getO2().getTargetMethod()))
@@ -883,8 +885,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 							while (true) {
 								SootMethod callbackMethod = currentClass.getMethodUnsafe(subSig);
 								if (callbackMethod != null) {
-									if (this.callbackMethods.put(callbackClass,
-											new CallbackDefinition(callbackMethod, smViewOnClick, CallbackType.Widget)))
+									if (this.callbackMethods.put(callbackClass, new AndroidCallbackDefinition(
+											callbackMethod, smViewOnClick, CallbackType.Widget)))
 										hasNewCallback = true;
 									break;
 								}
@@ -1019,7 +1021,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				if (parentMethod != null)
 					// This is a real callback method
 					this.callbackMethods.put(callbackClass,
-							new CallbackDefinition(sm, parentMethod, CallbackType.Widget));
+							new AndroidCallbackDefinition(sm, parentMethod, CallbackType.Widget));
 			}
 		}
 	}
@@ -1103,11 +1105,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		else
 			Options.v().set_android_jars(androidJar);
 		Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
-		Options.v().set_keep_line_number(false);
 		Options.v().set_keep_offset(false);
+		Options.v().set_keep_line_number(config.getEnableLineNumbers());
 		Options.v().set_throw_analysis(Options.throw_analysis_dalvik);
 		Options.v().set_process_multiple_dex(config.getMergeDexFiles());
 		Options.v().set_ignore_resolution_errors(true);
+
+		// Set soot phase option if original names should be used
+		if (config.getEnableOriginalNames())
+			Options.v().setPhaseOption("jb", "use-original-names:true");
 
 		// Set the Soot configuration options. Note that this will needs to be
 		// done before we compute the classpath.
@@ -1128,8 +1134,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Patch the callgraph to support additional edges. We do this now,
 		// because during callback discovery, the context-insensitive callgraph
 		// algorithm would flood us with invalid edges.
-		LibraryClassPatcher patcher = new LibraryClassPatcher();
+		LibraryClassPatcher patcher = getLibraryClassPatcher();
 		patcher.patchLibraries();
+	}
+
+	protected LibraryClassPatcher getLibraryClassPatcher() {
+		return new LibraryClassPatcher();
 	}
 
 	/**
@@ -1615,17 +1625,17 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		if (component == null) {
 			// Get all callbacks for all components
 			for (SootClass sc : this.callbackMethods.keySet()) {
-				Set<CallbackDefinition> callbackDefs = this.callbackMethods.get(sc);
+				Set<AndroidCallbackDefinition> callbackDefs = this.callbackMethods.get(sc);
 				if (callbackDefs != null)
-					for (CallbackDefinition cd : callbackDefs)
+					for (AndroidCallbackDefinition cd : callbackDefs)
 						callbackMethodSigs.put(sc, cd.getTargetMethod());
 			}
 		} else {
 			// Get the callbacks for the current component only
 			for (SootClass sc : components) {
-				Set<CallbackDefinition> callbackDefs = this.callbackMethods.get(sc);
+				Set<AndroidCallbackDefinition> callbackDefs = this.callbackMethods.get(sc);
 				if (callbackDefs != null)
-					for (CallbackDefinition cd : callbackDefs)
+					for (AndroidCallbackDefinition cd : callbackDefs)
 						callbackMethodSigs.put(sc, cd.getTargetMethod());
 			}
 		}

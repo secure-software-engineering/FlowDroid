@@ -103,9 +103,18 @@ public class ClassMethodSummaries {
 			throw new RuntimeException("Class name mismatch");
 		if (otherClassName != null && !otherClassName.equals(this.className))
 			throw new RuntimeException("Class name mismatch");
+		if (hasSuperclass() && methodFlows.hasSuperclass()) {
+			if (!superClass.equals(methodFlows.getSuperClass()))
+				throw new RuntimeException("Class name mismatch");
+		}
+
+		boolean hasNewData = false;
+		if (methodFlows.hasSuperclass() && !hasSuperclass()) {
+			setSuperClass(methodFlows.getSuperClass());
+			hasNewData = true;
+		}
 
 		// Merge the summaries
-		boolean hasNewData = false;
 		if (this.methodSummaries.merge(methodFlows.getMethodSummaries()))
 			hasNewData = true;
 

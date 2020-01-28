@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingMode;
+import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -38,14 +38,13 @@ public class InsecureBankTests {
 	/**
 	 * Analyzes the given APK file for data flows
 	 * 
-	 * @param enableImplicitFlows
-	 *            True if implicit flows shall be tracked, otherwise false
+	 * @param enableImplicitFlows True if implicit flows shall be tracked, otherwise
+	 *                            false
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException
-	 *             Thrown if the given APK file or any other required file could
-	 *             not be found
-	 * @throws XmlPullParserException
-	 *             Thrown if the Android manifest file could not be read.
+	 * @throws IOException            Thrown if the given APK file or any other
+	 *                                required file could not be found
+	 * @throws XmlPullParserException Thrown if the Android manifest file could not
+	 *                                be read.
 	 */
 	private InfoflowResults analyzeAPKFile(boolean enableImplicitFlows) throws IOException, XmlPullParserException {
 		String androidJars = System.getenv("ANDROID_JARS");

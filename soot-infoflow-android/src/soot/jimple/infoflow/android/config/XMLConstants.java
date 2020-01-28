@@ -46,6 +46,8 @@ class XMLConstants {
 	public static final String TAG_ENABLE_EXCEPTIONS = "enableExceptions";
 	public static final String TAG_ENABLE_ARRAYS = "enableArrays";
 	public static final String TAG_ENABLE_REFLECTION = "enableReflection";
+	public static final String TAG_ENABLE_LINENUMBERS = "enableLineNumbers";
+	public static final String TAG_ENABLE_ORIGINALNAMES = "enableOriginalNames";
 	public static final String TAG_FLOW_SENSITIVE_ALIASING = "flowSensitiveAliasing";
 	public static final String TAG_LOG_SOURCES_AND_SINKS = "logSourcesAndSinks";
 	public static final String TAG_ENABLE_ARRAY_SIZE_TAINTING = "enableArraySizeTainting";

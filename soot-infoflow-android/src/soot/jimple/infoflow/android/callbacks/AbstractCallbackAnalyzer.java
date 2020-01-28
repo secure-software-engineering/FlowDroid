@@ -48,7 +48,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
@@ -96,7 +96,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final Set<SootClass> entryPointClasses;
 	protected final Set<String> androidCallbacks;
 
-	protected final MultiMap<SootClass, CallbackDefinition> callbackMethods = new HashMultiMap<>();
+	protected final MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods = new HashMultiMap<>();
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
@@ -778,7 +778,7 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		return this.callbackMethods.put(lifecycleClass, new CallbackDefinition(method, parentMethod, callbackType));
+		return this.callbackMethods.put(lifecycleClass, new AndroidCallbackDefinition(method, parentMethod, callbackType));
 	}
 
 	/**
@@ -815,7 +815,7 @@ public abstract class AbstractCallbackAnalyzer {
 		return classes;
 	}
 
-	public MultiMap<SootClass, CallbackDefinition> getCallbackMethods() {
+	public MultiMap<SootClass, AndroidCallbackDefinition> getCallbackMethods() {
 		return this.callbackMethods;
 	}
 

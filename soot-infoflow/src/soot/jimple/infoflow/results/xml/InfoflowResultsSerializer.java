@@ -192,6 +192,9 @@ public class InfoflowResultsSerializer {
 	private void writeSourceInfo(ResultSourceInfo source, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(XmlConstants.Tags.source);
 		writer.writeAttribute(XmlConstants.Attributes.statement, source.getStmt().toString());
+		if (config.getEnableLineNumbers())
+			writer.writeAttribute(XmlConstants.Attributes.linenumber,
+					String.valueOf(source.getStmt().getJavaSourceStartLineNumber()));
 		if (source.getDefinition().getCategory() != null)
 			writer.writeAttribute(XmlConstants.Attributes.category,
 					source.getDefinition().getCategory().getHumanReadableDescription());
@@ -246,6 +249,9 @@ public class InfoflowResultsSerializer {
 	private void writeSinkInfo(ResultSinkInfo sink, XMLStreamWriter writer) throws XMLStreamException {
 		writer.writeStartElement(XmlConstants.Tags.sink);
 		writer.writeAttribute(XmlConstants.Attributes.statement, sink.getStmt().toString());
+		if (config.getEnableLineNumbers())
+			writer.writeAttribute(XmlConstants.Attributes.linenumber,
+					String.valueOf(sink.getStmt().getJavaSourceStartLineNumber()));
 		if (sink.getDefinition().getCategory() != null)
 			writer.writeAttribute(XmlConstants.Attributes.category,
 					sink.getDefinition().getCategory().getHumanReadableDescription());
