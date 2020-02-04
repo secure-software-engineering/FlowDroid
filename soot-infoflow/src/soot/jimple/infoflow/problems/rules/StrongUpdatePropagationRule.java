@@ -11,7 +11,9 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -128,11 +130,15 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
 		// Do not propagate abstractions for locals that get overwritten
 		if (stmt instanceof AssignStmt) {
-			// a = foo() with a tainted
-			AssignStmt assignStmt = (AssignStmt) stmt;
-			if (!source.getAccessPath().isStaticFieldRef() && assignStmt.getLeftOp() instanceof Local
-					&& getAliasing().mayAlias(assignStmt.getLeftOp(), source.getAccessPath().getPlainValue()))
-				killSource.value = true;
+			AccessPath ap = source.getAccessPath();
+			if (ap != null) {
+				// a = foo() with a tainted
+				AssignStmt assignStmt = (AssignStmt) stmt;
+				final Aliasing aliasing = getAliasing();
+				if (aliasing != null && !ap.isStaticFieldRef() && assignStmt.getLeftOp() instanceof Local
+						&& aliasing.mayAlias(assignStmt.getLeftOp(), ap.getPlainValue()))
+					killSource.value = true;
+			}
 		}
 
 		return null;
