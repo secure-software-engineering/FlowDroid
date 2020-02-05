@@ -124,6 +124,8 @@ public class Infoflow extends AbstractInfoflow {
 	protected SootMethod dummyMainMethod = null;
 	protected Collection<SootMethod> additionalEntryPointMethods = null;
 
+	private boolean throwExceptions;
+
 	/**
 	 * Creates a new instance of the InfoFlow class for analyzing plain Java code
 	 * without any references to APKs or the Android SDK.
@@ -499,6 +501,9 @@ public class Infoflow extends AbstractInfoflow {
 					}
 					if (executor.getActiveCount() != 0 || !executor.isTerminated())
 						logger.error("Executor did not terminate gracefully");
+					if (executor.getException() != null) {
+						throw new RuntimeException("An exception has occurred in an executor", executor.getException());
+					}
 
 					// Update performance statistics
 					performanceData.updateMaxMemoryConsumption(getUsedMemory());
@@ -726,6 +731,8 @@ public class Infoflow extends AbstractInfoflow {
 			ex.printStackTrace(pw);
 			results.addException(ex.getClass().getName() + ": " + ex.getMessage() + "\n" + stacktrace.toString());
 			logger.error("Exception during data flow analysis", ex);
+			if (throwExceptions)
+				throw ex;
 		}
 	}
 
@@ -1223,6 +1230,10 @@ public class Infoflow extends AbstractInfoflow {
 			// Stop all registered solvers
 			memoryWatcher.forceTerminate(reason);
 		}
+	}
+
+	public void setThrowExceptions(boolean b) {
+		this.throwExceptions = b;
 	}
 
 }

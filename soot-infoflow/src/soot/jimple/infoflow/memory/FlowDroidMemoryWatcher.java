@@ -74,7 +74,7 @@ public class FlowDroidMemoryWatcher {
 			}
 
 		});
-		MemoryWarningSystem.setWarningThreshold(threshold);
+		warningSystem.setWarningThreshold(threshold);
 		this.results = res;
 	}
 
