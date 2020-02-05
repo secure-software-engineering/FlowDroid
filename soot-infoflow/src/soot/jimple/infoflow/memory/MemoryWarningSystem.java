@@ -53,7 +53,7 @@ public class MemoryWarningSystem {
 
 	}
 
-	private static final MemoryPoolMXBean tenuredGenPool = findTenuredGenPool();
+	private final MemoryPoolMXBean tenuredGenPool = findTenuredGenPool();
 
 	private final Set<OnMemoryThresholdReached> listeners = new HashSet<>();
 	private final NotificationListener memoryListener;
