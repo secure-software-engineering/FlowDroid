@@ -823,7 +823,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	}
 
 	protected void reportMissingMethod(SootMethod method) {
-		if (reportMissingSummaries && SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (reportMissingSummaries
+				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			System.out.println("Missing summary for class " + method.getDeclaringClass());
 	}
 

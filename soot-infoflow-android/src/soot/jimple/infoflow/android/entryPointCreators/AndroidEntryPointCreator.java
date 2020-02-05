@@ -90,8 +90,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private Collection<SootClass> components;
 
-	private ProcessManifest manifest;
-
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -101,7 +99,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 *                   lifecycle methods
 	 */
 	public AndroidEntryPointCreator(ProcessManifest manifest, Collection<SootClass> components) {
-		this.manifest = manifest;
+		super(manifest);
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
 	}
@@ -124,7 +122,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			for (SootClass currentClass : components) {
 				if (entryPointUtils.getComponentType(currentClass) == ComponentType.ContentProvider) {
 					// Create an instance of the content provider
-					Local localVal = generateClassConstructor(currentClass, body);
+					Local localVal = generateClassConstructor(currentClass);
 					if (localVal == null)
 						continue;
 					localVarsForClasses.put(currentClass, localVal);
@@ -150,7 +148,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// If we have an application, we need to start it in the very beginning
 		if (applicationClass != null) {
 			// Create the application
-			applicationLocal = generateClassConstructor(applicationClass, body);
+			applicationLocal = generateClassConstructor(applicationClass);
 			localVarsForClasses.put(applicationClass, applicationLocal);
 			if (applicationLocal != null) {
 				localVarsForClasses.put(applicationClass, applicationLocal);
@@ -215,7 +213,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		for (SootClass parentActivity : fragmentClasses.keySet()) {
 			Set<SootClass> fragments = fragmentClasses.get(parentActivity);
 			for (SootClass fragment : fragments) {
-				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass);
+				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass,
+						this.manifest);
 				entryPointCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
 				entryPointCreator.setCallbacks(callbackFunctions.get(fragment));
 
@@ -250,21 +249,23 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					}
 				}
 				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClass,
-						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod);
+						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod, this.manifest);
 				break;
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
-				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			case ServiceConnection:
-				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClass,
+						this.manifest);
 				break;
 			case BroadcastReceiver:
-				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClass,
+						this.manifest);
 				break;
 			case ContentProvider:
-				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass);
+				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			default:
 				componentCreator = null;
@@ -310,7 +311,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		// Optimize and check the generated main method
 		NopEliminator.v().transform(body);
-		eliminateSelfLoops(body);
+		eliminateSelfLoops();
 		eliminateFallthroughIfs(body);
 
 		if (DEBUG || Options.v().validate())
@@ -449,7 +450,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				// of the application class.
 				if (method == null)
 					continue;
-				if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+				if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 					continue;
 
 				// Get the local instance of the target class
@@ -463,7 +464,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				// Add a conditional call to the method
 				NopStmt thenStmt = Jimple.v().newNopStmt();
 				createIfStmt(thenStmt);
-				buildMethodCall(method, body, local, generator);
+				buildMethodCall(method, local);
 				body.getUnits().add(thenStmt);
 			}
 	}

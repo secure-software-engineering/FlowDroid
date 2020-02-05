@@ -652,6 +652,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			return true;
 		}
+
 	}
 
 	/**
@@ -1059,7 +1060,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		private Map<String, AbstractResource> value;
 
 		public ComplexResource() {
-			this.value = new HashMap<String, AbstractResource>();
+			this.value = new HashMap<>();
 		}
 
 		public ComplexResource(Map<String, AbstractResource> value) {
@@ -2194,43 +2195,35 @@ public class ARSCFileParser extends AbstractResourceParser {
 										// We silently ignore inconsistencies at thze moment
 										if (existingResource instanceof ArrayResource)
 											((ArrayResource) existingResource).add(value);
-									} else
+									} else {
 										cmpRes.value.put(mapName, value);
+									}
 								}
 							} else {
 								Res_Value val = new Res_Value();
 								entryOffset = readValue(val, remainingData, entryOffset);
 								res = parseValue(val);
 								if (res == null) {
-									logger.error(String.format("Could not parse resource %s of type %s, skipping entry",
-											keyStrings.get(entry.key), Integer.toHexString(val.dataType)));
+									logger.error(
+											String.format("Could not parse resource %s of type 0x%x, skipping entry",
+													keyStrings.get(entry.key), val.dataType));
 									continue;
 								}
 							}
 
-							// Create the data object. For finding the correct
-							// ID, we
-							// must check whether the entry is really new - if
-							// so, it
+							// Create the data object. For finding the correct ID, we
+							// must check whether the entry is really new - if so, it
 							// gets a new ID, otherwise, we reuse the old one
-							if (keyStrings.containsKey(entry.key))
+							if (keyStrings.containsKey(entry.key)) {
 								res.resourceName = keyStrings.get(entry.key);
-							else
+							} else {
 								res.resourceName = "<INVALID RESOURCE>";
-
-							if (res.resourceName != null && res.resourceName.length() > 0) {
-								// Some obfuscated resources do only contain an
-								// empty string as resource name
-								// -> We only need to check the name if it is
-								// really present
-								AbstractResource r = resType.getResourceByName(res.resourceName);
-								if (r != null) {
-									res.resourceID = r.resourceID;
-								}
 							}
+
 							if (res.resourceID <= 0) {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
+							logger.debug("resource added: {}", res);
 							config.resources.add(res);
 							resourceIdx++;
 						}
@@ -2239,17 +2232,16 @@ public class ARSCFileParser extends AbstractResourceParser {
 				}
 
 				// Create the data objects for the types in the package
-				if (logger.isDebugEnabled()) {
+				if (logger.isTraceEnabled()) {
 					for (ResType resType : resPackage.types) {
-						logger.debug(String.format("\t\tType %s (%d), configCount=%d, entryCount=%d", resType.typeName,
+						logger.trace("\t\tType {} ({}), configCount={}, entryCount={}", resType.typeName,
 								resType.id - 1, resType.configurations.size(),
-								resType.configurations.size() > 0 ? resType.configurations.get(0).resources.size()
-										: 0));
+								resType.configurations.size() > 0 ? resType.configurations.get(0).resources.size() : 0);
 						for (ResConfig resConfig : resType.configurations) {
-							logger.debug("\t\t\tconfig");
+							logger.trace("\t\t\tconfig");
 							for (AbstractResource res : resConfig.resources)
-								logger.debug(String.format("\t\t\t\tresource %s: %s",
-										Integer.toHexString(res.resourceID), res.resourceName));
+								logger.trace("\t\t\t\tresource {}: {}", Integer.toHexString(res.resourceID),
+										res.resourceName);
 						}
 					}
 				}
@@ -2332,6 +2324,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				res = new FractionResource(FractionType.FractionParent, data);
 			break;
 		default:
+			logger.warn(String.format("Unsupported data type: 0x%x", val.dataType));
 			return null;
 		}
 		return res;

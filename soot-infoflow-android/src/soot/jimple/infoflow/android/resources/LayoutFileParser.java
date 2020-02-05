@@ -41,13 +41,13 @@ import soot.util.MultiMap;
  */
 public class LayoutFileParser extends AbstractResourceParser {
 
-	private final MultiMap<String, AndroidLayoutControl> userControls = new HashMultiMap<>();
-	private final MultiMap<String, String> callbackMethods = new HashMultiMap<>();
-	private final MultiMap<String, String> includeDependencies = new HashMultiMap<>();
-	private final MultiMap<String, SootClass> fragments = new HashMultiMap<>();
+	protected final MultiMap<String, AndroidLayoutControl> userControls = new HashMultiMap<>();
+	protected final MultiMap<String, String> callbackMethods = new HashMultiMap<>();
+	protected final MultiMap<String, String> includeDependencies = new HashMultiMap<>();
+	protected final MultiMap<String, SootClass> fragments = new HashMultiMap<>();
 
-	private final String packageName;
-	private final ARSCFileParser resParser;
+	protected final String packageName;
+	protected final ARSCFileParser resParser;
 
 	private boolean loadOnlySensitiveControls = false;
 	private SootClass scViewGroup = null;

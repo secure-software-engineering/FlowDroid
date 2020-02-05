@@ -173,6 +173,7 @@ public class SootMethodAndClass {
 			if (!isFirst)
 				sb.append(",");
 			sb.append(param);
+			isFirst = false;
 		}
 		sb.append(")>");
 		return sb.toString();

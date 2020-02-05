@@ -3,7 +3,7 @@ package soot.jimple.infoflow.results;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Abstract base class for information on data flow results
@@ -13,16 +13,16 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
  */
 public abstract class AbstractResultSourceSinkInfo {
 
-	protected final SourceSinkDefinition definition;
+	protected final ISourceSinkDefinition definition;
 	protected final AccessPath accessPath;
 	protected final Stmt stmt;
 	protected final Object userData;
 
-	public AbstractResultSourceSinkInfo(SourceSinkDefinition definition, AccessPath accessPath, Stmt stmt) {
+	public AbstractResultSourceSinkInfo(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt) {
 		this(definition, accessPath, stmt, null);
 	}
 
-	public AbstractResultSourceSinkInfo(SourceSinkDefinition definition, AccessPath accessPath, Stmt stmt,
+	public AbstractResultSourceSinkInfo(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt,
 			Object userData) {
 		assert accessPath != null;
 
@@ -32,7 +32,7 @@ public abstract class AbstractResultSourceSinkInfo {
 		this.userData = userData;
 	}
 
-	public SourceSinkDefinition getDefinition() {
+	public ISourceSinkDefinition getDefinition() {
 		return this.definition;
 	}
 

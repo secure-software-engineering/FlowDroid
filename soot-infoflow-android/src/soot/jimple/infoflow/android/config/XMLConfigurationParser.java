@@ -19,20 +19,20 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
+import soot.jimple.infoflow.InfoflowConfiguration.CategoryMode;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
+import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.SourceSinkFilterMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.AnalysisFileConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackSourceMode;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CategoryMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkFilterMode;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
@@ -210,6 +210,10 @@ public class XMLConfigurationParser {
 						config.setEnableArrayTracking(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_ENABLE_REFLECTION))
 						config.setEnableReflection(Boolean.valueOf(data));
+					else if (currentElement.equals(XMLConstants.TAG_ENABLE_LINENUMBERS))
+						config.setEnableLineNumbers(Boolean.valueOf(data));
+					else if (currentElement.equals(XMLConstants.TAG_ENABLE_ORIGINALNAMES))
+						config.setEnableOriginalNames(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_FLOW_SENSITIVE_ALIASING))
 						config.setFlowSensitiveAliasing(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_LOG_SOURCES_AND_SINKS))

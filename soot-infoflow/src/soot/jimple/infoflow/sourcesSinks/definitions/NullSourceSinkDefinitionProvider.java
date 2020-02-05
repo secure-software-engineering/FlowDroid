@@ -9,21 +9,20 @@ import java.util.Set;
  * @author Steven Arzt
  *
  */
-public class NullSourceSinkDefinitionProvider implements
-		ISourceSinkDefinitionProvider {
+public class NullSourceSinkDefinitionProvider implements ISourceSinkDefinitionProvider {
 
 	@Override
-	public Set<SourceSinkDefinition> getSources() {
+	public Set<ISourceSinkDefinition> getSources() {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getSinks() {
+	public Set<ISourceSinkDefinition> getSinks() {
 		return Collections.emptySet();
 	}
 
 	@Override
-	public Set<SourceSinkDefinition> getAllMethods() {
+	public Set<ISourceSinkDefinition> getAllMethods() {
 		return Collections.emptySet();
 	}
 

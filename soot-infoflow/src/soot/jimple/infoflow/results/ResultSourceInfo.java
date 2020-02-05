@@ -6,7 +6,7 @@ import java.util.List;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.tagkit.LineNumberTag;
 
 /**
@@ -18,14 +18,14 @@ public class ResultSourceInfo extends AbstractResultSourceSinkInfo {
 	private final Stmt[] path;
 	private final AccessPath[] pathAPs;
 
-	public ResultSourceInfo(SourceSinkDefinition definition, AccessPath source, Stmt context) {
+	public ResultSourceInfo(ISourceSinkDefinition definition, AccessPath source, Stmt context) {
 		super(definition, source, context);
 
 		this.path = null;
 		this.pathAPs = null;
 	}
 
-	public ResultSourceInfo(SourceSinkDefinition definition, AccessPath source, Stmt context, Object userData,
+	public ResultSourceInfo(ISourceSinkDefinition definition, AccessPath source, Stmt context, Object userData,
 			List<Stmt> path, List<AccessPath> pathAPs) {
 		super(definition, source, context, userData);
 

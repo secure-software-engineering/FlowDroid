@@ -27,7 +27,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
 
@@ -141,14 +141,14 @@ public class InfoflowResults {
 		return !findSinkByMethodSignature(sinkSignature).isEmpty();
 	}
 
-	public void addResult(SourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
-			SourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
+	public void addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
+			ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
 		this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
 				new ResultSourceInfo(sourceDefinition, source, sourceStmt));
 	}
 
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(SourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, SourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Abstraction> propagationPath) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;
@@ -187,8 +187,8 @@ public class InfoflowResults {
 	 *                              path
 	 * @return The new data flow result
 	 */
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(SourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, SourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath) {
 		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
 				propagationPath, propagationAccessPath);

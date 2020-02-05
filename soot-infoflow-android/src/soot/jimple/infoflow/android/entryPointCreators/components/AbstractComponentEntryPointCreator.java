@@ -21,6 +21,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -42,7 +43,9 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	protected Local intentLocal = null;
 	protected SootField intentField = null;
 
-	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass) {
+	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
+			ProcessManifest manifest) {
+		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;
 		this.overwriteDummyMainMethod = true;
@@ -166,7 +169,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			createIfStmt(endClassStmt);
 
 			// Create a new instance of the component
-			thisLocal = generateClassConstructor(component, body);
+			thisLocal = generateClassConstructor(component);
 			if (thisLocal != null) {
 				localVarsForClasses.put(component, thisLocal);
 
@@ -278,8 +281,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				// Jimple statement here
 				Set<Local> tempLocals = new HashSet<>();
 				if (classLocal == null) {
-					classLocal = generateClassConstructor(callbackClass, body, new HashSet<SootClass>(),
-							referenceClasses, tempLocals);
+					classLocal = generateClassConstructor(callbackClass, new HashSet<SootClass>(), referenceClasses,
+							tempLocals);
 					if (classLocal == null)
 						continue;
 				}
@@ -341,7 +344,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			// callback
 			NopStmt thenStmt = Jimple.v().newNopStmt();
 			createIfStmt(thenStmt);
-			buildMethodCall(callbackMethod, body, classLocal, generator, referenceClasses);
+			buildMethodCall(callbackMethod, classLocal, referenceClasses);
 			body.getUnits().add(thenStmt);
 		}
 	}

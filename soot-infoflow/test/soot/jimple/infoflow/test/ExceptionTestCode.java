@@ -9,13 +9,12 @@ import soot.jimple.infoflow.test.android.TelephonyManager;
  * @author Steven Arzt
  */
 public class ExceptionTestCode {
-	
+
 	public void exceptionControlFlowTest1() {
 		String tainted = TelephonyManager.getDeviceId();
 		try {
 			doThrowException();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(tainted);
 			System.out.println(ex);
@@ -25,48 +24,45 @@ public class ExceptionTestCode {
 	private void doThrowException() {
 		throw new RuntimeException("foo");
 	}
-	
+
 	public void exceptionControlFlowTest2() {
 		try {
 			String s = getConstantStringAndThrow();
 			System.out.println(s);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(TelephonyManager.getDeviceId());
 			System.out.println(ex);
 		}
 	}
-	
+
 	private String getConstantStringAndThrow() {
 		throw new RuntimeException("foo");
 	}
-	
+
 	public void exceptionControlFlowTest3() {
 		String tainted = TelephonyManager.getDeviceId();
 		try {
 			tainted = doThrowImplicitException();
-		}
-		catch (ArrayIndexOutOfBoundsException ex) {
+		} catch (ArrayIndexOutOfBoundsException ex) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(tainted);
 			System.out.println(ex);
 		}
 		System.out.println(tainted);
 	}
-	
+
 	private String doThrowImplicitException() {
 		String[] foo = new String[2];
 		foo[10] = "Hello World";
 		return "foo";
 	}
-	
+
 	public void exceptionDataFlowTest1() {
 		String tainted = TelephonyManager.getDeviceId();
 		try {
 			throwData(tainted);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(ex.getMessage());
 		}
@@ -75,34 +71,32 @@ public class ExceptionTestCode {
 	private void throwData(String tainted) {
 		throw new RuntimeException(tainted);
 	}
-	
+
 	public void exceptionDataFlowTest2() {
 		String tainted = TelephonyManager.getDeviceId();
 		try {
 			throw new RuntimeException(tainted);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(ex.getMessage());
 		}
 	}
-	
+
 	public void disabledExceptionTest() {
 		String imei = TelephonyManager.getDeviceId();
 		try {
 			throw new RuntimeException();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(imei);		
+		cm.publish(imei);
 	}
-	
+
 	private class Data {
 		public String imei;
 	}
-	
+
 	public void callMethodParamReturnTest1() {
 		Data data = new Data();
 		data.imei = TelephonyManager.getDeviceId();
@@ -114,19 +108,18 @@ public class ExceptionTestCode {
 	private Data setAndReturn1(Data data) {
 		String s = data.imei;
 		data.imei = "";
-		
+
 		Data d = new Data();
 		d.imei = s;
 		return d;
 	}
-	
+
 	public void callMethodParamReturnTest2() {
 		Data data = new Data();
 		data.imei = TelephonyManager.getDeviceId();
 		try {
 			data = setAndReturn2(data);
-		}
-		finally {
+		} finally {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data.imei);
 		}
@@ -135,10 +128,10 @@ public class ExceptionTestCode {
 	private Data setAndReturn2(Data data) {
 		String s = data.imei;
 		data.imei = "";
-		
+
 		// cause an exception
 		data.imei.substring(-10, -1);
-		
+
 		Data d = new Data();
 		d.imei = s;
 		return d;
@@ -149,8 +142,7 @@ public class ExceptionTestCode {
 		data.imei = "";
 		try {
 			data = setAndReturn2b(data);
-		}
-		finally {
+		} finally {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data.imei);
 		}
@@ -159,10 +151,10 @@ public class ExceptionTestCode {
 	private Data setAndReturn2b(Data data) {
 		String s = data.imei;
 		data.imei = TelephonyManager.getDeviceId();
-		
+
 		// cause an exception
 		data.imei.substring(-10, -1);
-		
+
 		Data d = new Data();
 		d.imei = s;
 		return d;
@@ -173,8 +165,7 @@ public class ExceptionTestCode {
 		data.imei = TelephonyManager.getDeviceId();
 		try {
 			data = setAndReturn3(data);
-		}
-		finally {
+		} finally {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data.imei);
 		}
@@ -182,15 +173,43 @@ public class ExceptionTestCode {
 
 	private Data setAndReturn3(Data data) {
 		String s = data.imei;
-		
+
 		// cause an exception
 		data.imei.substring(-10, -1);
 
 		data.imei = "";
-				
+
 		Data d = new Data();
 		d.imei = s;
 		return d;
+	}
+
+	public void npeTest1() {
+		String s = TelephonyManager.getDeviceId();
+		Object nnnull = null;
+		try {
+			bar(nnnull);
+		} catch (Throwable t) {
+			ConnectionManager cm = new ConnectionManager();
+			cm.publish(s);
+		}
+	}
+
+	private String targetString;
+
+	public void npeTest2() {
+		Object nnnull = null;
+		try {
+			bar(nnnull);
+		} catch (Throwable t) {
+			ConnectionManager cm = new ConnectionManager();
+			cm.publish(targetString);
+		}
+	}
+
+	private void bar(Object nnnull) {
+		targetString = TelephonyManager.getDeviceId();
+		nnnull.toString(); // will throw NPE
 	}
 
 }

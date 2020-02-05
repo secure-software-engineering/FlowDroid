@@ -19,6 +19,7 @@ public class AndroidEntryPointUtils {
 
 	private SootClass osClassApplication;
 	private SootClass osClassActivity;
+	private SootClass osClassMapActivity;
 	private SootClass osClassService;
 	private SootClass osClassFragment;
 	private SootClass osClassSupportFragment;
@@ -53,6 +54,7 @@ public class AndroidEntryPointUtils {
 		osClassGCMListenerService = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.GCMLISTENERSERVICECLASS);
 		osInterfaceServiceConnection = Scene.v()
 				.getSootClassUnsafe(AndroidEntryPointConstants.SERVICECONNECTIONINTERFACE);
+		osClassMapActivity = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.MAPACTIVITYCLASS);
 	}
 
 	/**
@@ -108,6 +110,10 @@ public class AndroidEntryPointUtils {
 		else if (osInterfaceServiceConnection != null && Scene.v().getOrMakeFastHierarchy()
 				.canStoreType(currentClass.getType(), osInterfaceServiceConnection.getType()))
 			ctype = ComponentType.ServiceConnection;
+		// (10) com.google.android.maps.MapActivity
+		else if (osClassMapActivity != null && Scene.v().getOrMakeFastHierarchy().canStoreType(currentClass.getType(),
+				osClassMapActivity.getType()))
+			ctype = ComponentType.Activity;
 
 		componentTypeCache.put(currentClass, ctype);
 		return ctype;

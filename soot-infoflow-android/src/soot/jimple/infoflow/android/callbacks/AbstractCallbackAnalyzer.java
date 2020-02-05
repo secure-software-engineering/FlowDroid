@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
@@ -48,7 +48,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
@@ -64,7 +64,7 @@ import soot.util.MultiMap;
 /**
  * Analyzes the classes in the APK file to find custom implementations of the
  * well-known Android callback and handler interfaces.
- * 
+ *
  * @author Steven Arzt
  *
  */
@@ -96,7 +96,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final Set<SootClass> entryPointClasses;
 	protected final Set<String> androidCallbacks;
 
-	protected final MultiMap<SootClass, CallbackDefinition> callbackMethods = new HashMultiMap<>();
+	protected final MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods = new HashMultiMap<>();
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
@@ -137,7 +137,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
-	 * 
+	 *
 	 * @param androidCallbackFile The file from which to load the callback
 	 *                            definitions
 	 * @return A set containing the names of the interfaces that are used to
@@ -158,7 +158,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Loads the set of interfaces that are used to implement Android callback
 	 * handlers from a file on disk
-	 * 
+	 *
 	 * @param reader A file reader
 	 * @return A set containing the names of the interfaces that are used to
 	 *         implement Android callback handlers
@@ -190,14 +190,14 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Analyzes the given method and looks for callback registrations
-	 * 
+	 *
 	 * @param lifecycleElement The lifecycle element (activity, etc.) with which to
 	 *                         associate the found callbacks
 	 * @param method           The method in which to look for callbacks
 	 */
 	protected void analyzeMethodForCallbackRegistrations(SootClass lifecycleElement, SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete())
 			return;
@@ -221,9 +221,9 @@ public abstract class AbstractCallbackAnalyzer {
 
 						// This call must be to a system API in order to
 						// register an OS-level callback
-						if (!SystemClassHandler.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
+						if (!SystemClassHandler.v()
+								.isClassInSystemPackage(iinv.getMethod().getDeclaringClass().getName()))
 							continue;
-
 						// We have a formal parameter type that corresponds to one of the Android
 						// callback interfaces. Look for definitions of the parameter to estimate the
 						// actual type.
@@ -242,7 +242,7 @@ public abstract class AbstractCallbackAnalyzer {
 								}
 
 								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.isClassInSystemPackage(targetClass.getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
 									callbackClasses.add(targetClass);
 							}
 
@@ -261,7 +261,7 @@ public abstract class AbstractCallbackAnalyzer {
 								}
 
 								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.isClassInSystemPackage(targetClass.getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
 									callbackClasses.add(targetClass);
 							}
 						}
@@ -278,7 +278,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether all filters accept the association between the callback class
 	 * and its parent component
-	 * 
+	 *
 	 * @param lifecycleElement The hosting component's class
 	 * @param targetClass      The class implementing the callbacks
 	 * @return True if all filters accept the given component-callback mapping,
@@ -294,7 +294,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether all filters accept the association between the callback method
 	 * and its parent component
-	 * 
+	 *
 	 * @param lifecycleElement The hosting component's class
 	 * @param targetMethod     The method implementing the callback
 	 * @return True if all filters accept the given component-callback mapping,
@@ -310,12 +310,12 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method dynamically registers a new broadcast
 	 * receiver
-	 * 
+	 *
 	 * @param method The method to check
 	 */
 	protected void analyzeMethodForDynamicBroadcastReceiver(SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
@@ -332,7 +332,7 @@ public abstract class AbstractCallbackAnalyzer {
 					Value br = iexpr.getArg(0);
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
-						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+						if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 							dynamicManifestComponents.add(rt.getSootClass());
 					}
 				}
@@ -343,12 +343,12 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method dynamically registers a new service
 	 * connection
-	 * 
+	 *
 	 * @param method The method to check
 	 */
 	protected void analyzeMethodForServiceConnection(SootMethod method) {
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
@@ -367,7 +367,7 @@ public abstract class AbstractCallbackAnalyzer {
 						for (Type tp : pts.possibleTypes()) {
 							if (tp instanceof RefType) {
 								RefType rt = (RefType) tp;
-								if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+								if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 									dynamicManifestComponents.add(rt.getSootClass());
 							}
 						}
@@ -376,7 +376,7 @@ public abstract class AbstractCallbackAnalyzer {
 					// Just to be sure, also add the declared type
 					if (br.getType() instanceof RefType) {
 						RefType rt = (RefType) br.getType();
-						if (!SystemClassHandler.isClassInSystemPackage(rt.getSootClass().getName()))
+						if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 							dynamicManifestComponents.add(rt.getSootClass());
 					}
 				}
@@ -387,7 +387,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given method executes a fragment transaction that creates
 	 * new fragment
-	 * 
+	 *
 	 * @author Goran Piskachev
 	 * @param method The method to check
 	 */
@@ -467,10 +467,10 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Check whether a method registers a FragmentStatePagerAdapter to a ViewPager.
 	 * This pattern is very common for tabbed apps.
-	 * 
+	 *
 	 * @param clazz
 	 * @param method
-	 * 
+	 *
 	 * @author Julius Naeumann
 	 */
 	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
@@ -534,9 +534,10 @@ public abstract class AbstractCallbackAnalyzer {
 				if (getItemUnit instanceof ReturnStmt) {
 					ReturnStmt rs = (ReturnStmt) getItemUnit;
 					Value rv = rs.getOp();
-
-					checkAndAddFragment(method.getDeclaringClass(), ((RefType) rv.getType()).getSootClass());
-
+					Type type = rv.getType();
+					if (type instanceof RefType) {
+						checkAndAddFragment(method.getDeclaringClass(), ((RefType) type).getSootClass());
+					}
 				}
 			}
 		}
@@ -545,7 +546,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Gets whether the call in the given statement can end up in the respective
 	 * method inherited from one of the given classes.
-	 * 
+	 *
 	 * @param stmt       The statement containing the call sites
 	 * @param classNames The base classes in which the call can potentially end up
 	 * @return True if the given call can end up in a method inherited from one of
@@ -577,7 +578,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether this invocation calls Android's Activity.setContentView method
-	 * 
+	 *
 	 * @param inv The invocaton to check
 	 * @return True if this invocation calls setContentView, otherwise false
 	 */
@@ -605,7 +606,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether this invocation calls Android's LayoutInflater.inflate method
-	 * 
+	 *
 	 * @param inv The invocaton to check
 	 * @return True if this invocation calls inflate, otherwise false
 	 */
@@ -636,7 +637,8 @@ public abstract class AbstractCallbackAnalyzer {
 			return;
 
 		// Do not start the search in system classes
-		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.isClassInSystemPackage(sootClass.getName()))
+		if (config.getIgnoreFlowsInSystemPackages()
+				&& SystemClassHandler.v().isClassInSystemPackage(sootClass.getName()))
 			return;
 
 		// There are also some classes that implement interesting callback
@@ -645,7 +647,7 @@ public abstract class AbstractCallbackAnalyzer {
 		// Android OS class, we treat it as a potential callback.
 		Map<String, SootMethod> systemMethods = new HashMap<>(10000);
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
-			if (SystemClassHandler.isClassInSystemPackage(parentClass.getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				for (SootMethod sm : parentClass.getMethods())
 					if (!sm.isConstructor())
 						systemMethods.put(sm.getSubSignature(), sm);
@@ -654,7 +656,7 @@ public abstract class AbstractCallbackAnalyzer {
 		// Iterate over all user-implemented methods. If they are inherited
 		// from a system class, they are callback candidates.
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSubclassesOfIncluding(sootClass)) {
-			if (SystemClassHandler.isClassInSystemPackage(parentClass.getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				continue;
 			for (SootMethod method : parentClass.getMethods()) {
 				if (!method.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
@@ -677,16 +679,16 @@ public abstract class AbstractCallbackAnalyzer {
 		return null;
 	}
 
-	private void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
+	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
 		// reason to look for interface implementations
 		if (!baseClass.isConcrete())
 			return;
 
 		// Do not analyze system classes
-		if (SystemClassHandler.isClassInSystemPackage(baseClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(baseClass.getName()))
 			return;
-		if (SystemClassHandler.isClassInSystemPackage(sootClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(sootClass.getName()))
 			return;
 
 		// Check the filters
@@ -703,21 +705,36 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// Do we implement one of the well-known interfaces?
 		for (SootClass i : collectAllInterfaces(sootClass)) {
-			if (androidCallbacks.contains(i.getName())) {
-				CallbackType callbackType = isUICallback(i) ? CallbackType.Widget : CallbackType.Default;
+			this.checkAndAddCallback(i, baseClass, lifecycleElement);
+		}
+		for (SootClass c : collectAllSuperClasses(sootClass)) {
+			this.checkAndAddCallback(c, baseClass, lifecycleElement);
+		}
+	}
 
-				for (SootMethod sm : i.getMethods()) {
-					SootMethod callbackImplementation = getMethodFromHierarchyEx(baseClass, sm.getSubSignature());
-					if (callbackImplementation != null)
-						checkAndAddMethod(callbackImplementation, sm, lifecycleElement, callbackType);
-				}
+	/**
+	 * Checks if the given class/interface appears in android Callbacks. If yes, add
+	 * callback method to the list of callback methods
+	 *
+	 * @param sc               the class/interface to check for existence in
+	 *                         AndroidCallbacks
+	 * @param baseClass        the class implementing/extending sc
+	 * @param lifecycleElement the component to which the callback method belongs
+	 */
+	private void checkAndAddCallback(SootClass sc, SootClass baseClass, SootClass lifecycleElement) {
+		if (androidCallbacks.contains(sc.getName())) {
+			CallbackType callbackType = isUICallback(sc) ? CallbackType.Widget : CallbackType.Default;
+			for (SootMethod sm : sc.getMethods()) {
+				SootMethod callbackImplementation = getMethodFromHierarchyEx(baseClass, sm.getSubSignature());
+				if (callbackImplementation != null)
+					checkAndAddMethod(callbackImplementation, sm, lifecycleElement, callbackType);
 			}
 		}
 	}
 
 	/**
 	 * Gets whether the given callback interface or class represents a UI callback
-	 * 
+	 *
 	 * @param i The callback interface or class to check
 	 * @return True if the given callback interface or class represents a UI
 	 *         callback, otherwise false
@@ -730,7 +747,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Checks whether the given Soot method comes from a system class. If not, it is
 	 * added to the list of callback methods.
-	 * 
+	 *
 	 * @param method         The method to check and add
 	 * @param parentMethod   The original method in the Android framework that
 	 *                       declared the callback. This can, for example, be the
@@ -744,7 +761,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected boolean checkAndAddMethod(SootMethod method, SootMethod parentMethod, SootClass lifecycleClass,
 			CallbackType callbackType) {
 		// Do not call system methods
-		if (SystemClassHandler.isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return false;
 
 		// Skip empty methods
@@ -761,12 +778,12 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		return this.callbackMethods.put(lifecycleClass, new CallbackDefinition(method, parentMethod, callbackType));
+		return this.callbackMethods.put(lifecycleClass, new AndroidCallbackDefinition(method, parentMethod, callbackType));
 	}
 
 	/**
 	 * Registers a fragment that belongs to a given component
-	 * 
+	 *
 	 * @param componentClass The component (usually an activity) to which the
 	 *                       fragment belongs
 	 * @param fragmentClass  The fragment class
@@ -789,7 +806,16 @@ public abstract class AbstractCallbackAnalyzer {
 		return interfaces;
 	}
 
-	public MultiMap<SootClass, CallbackDefinition> getCallbackMethods() {
+	private Set<SootClass> collectAllSuperClasses(SootClass sootClass) {
+		Set<SootClass> classes = new HashSet<SootClass>();
+		if (sootClass.hasSuperclass()) {
+			classes.add(sootClass.getSuperclass());
+			classes.addAll(collectAllSuperClasses(sootClass.getSuperclass()));
+		}
+		return classes;
+	}
+
+	public MultiMap<SootClass, AndroidCallbackDefinition> getCallbackMethods() {
 		return this.callbackMethods;
 	}
 
@@ -808,7 +834,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Adds a new filter that checks every callback before it is associated with the
 	 * respective host component
-	 * 
+	 *
 	 * @param filter The filter to add
 	 */
 	public void addCallbackFilter(ICallbackFilter filter) {
@@ -818,7 +844,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Excludes an entry point from all further processing. No more callbacks will
 	 * be collected for the given entry point
-	 * 
+	 *
 	 * @param entryPoint The entry point to exclude
 	 */
 	public void excludeEntryPoint(SootClass entryPoint) {
@@ -827,7 +853,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 	/**
 	 * Checks whether the given class is an excluded entry point
-	 * 
+	 *
 	 * @param entryPoint The entry point to check
 	 * @return True if the given class is an excluded entry point, otherwise false
 	 */
@@ -838,7 +864,7 @@ public abstract class AbstractCallbackAnalyzer {
 	/**
 	 * Sets the provider that shall be used for obtaining constant values during the
 	 * callback analysis
-	 * 
+	 *
 	 * @param valueProvider The value provider to use
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {

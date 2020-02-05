@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object">
+		<interface name="java.io.Serializable" />
+		<interface name="javax.servlet.Servlet" />
+		<interface name="javax.servlet.ServletConfig" />
+	</hierarchy>
+</summary>

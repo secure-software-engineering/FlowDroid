@@ -25,6 +25,7 @@ import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.util.MultiMap;
@@ -45,8 +46,8 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 	public ActivityEntryPointCreator(SootClass component, SootClass applicationClass,
 			MultiMap<SootClass, String> activityLifecycleCallbacks, Map<SootClass, SootField> callbackClassToField,
-			Map<SootClass, SootMethod> fragmentToMainMethod) {
-		super(component, applicationClass);
+			Map<SootClass, SootMethod> fragmentToMainMethod, ProcessManifest manifest) {
+		super(component, applicationClass, manifest);
 		this.activityLifecycleCallbacks = activityLifecycleCallbacks;
 		this.callbackClassToField = callbackClassToField;
 		this.fragmentToMainMethod = fragmentToMainMethod;

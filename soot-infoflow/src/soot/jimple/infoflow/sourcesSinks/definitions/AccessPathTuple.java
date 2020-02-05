@@ -281,7 +281,8 @@ public class AccessPathTuple {
 					sb.append(".");
 				sb.append(fields[i]);
 			}
-		}
+		} else
+			sb.append("<empty>");
 
 		if (description != null && !description.isEmpty()) {
 			sb.append(" (");

@@ -1,6 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Class containing additional information about a sink. Users of FlowDroid can
@@ -14,22 +14,19 @@ public class SinkInfo extends AbstractSourceSinkInfo {
 	/**
 	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class.
 	 * 
-	 * @param definition
-	 *            The original definition of the source or sink
-	 * @param userData
-	 *            Additional user data to be propagated with the source
+	 * @param definition The original definition of the source or sink
+	 * @param userData   Additional user data to be propagated with the source
 	 */
-	public SinkInfo(SourceSinkDefinition definition, Object userData) {
+	public SinkInfo(ISourceSinkDefinition definition, Object userData) {
 		super(definition, userData);
 	}
 
 	/**
 	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class.
 	 * 
-	 * @param definition
-	 *            The original definition of the source or sink
+	 * @param definition The original definition of the source or sink
 	 */
-	public SinkInfo(SourceSinkDefinition definition) {
+	public SinkInfo(ISourceSinkDefinition definition) {
 		super(definition);
 	}
 

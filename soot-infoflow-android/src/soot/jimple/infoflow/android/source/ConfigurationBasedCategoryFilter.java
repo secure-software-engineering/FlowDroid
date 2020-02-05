@@ -1,8 +1,8 @@
 package soot.jimple.infoflow.android.source;
 
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CategoryMode;
+import soot.jimple.infoflow.InfoflowConfiguration.CategoryMode;
+import soot.jimple.infoflow.InfoflowConfiguration.SourceSinkFilterMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkFilterMode;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser.ICategoryFilter;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
@@ -20,9 +20,8 @@ public class ConfigurationBasedCategoryFilter implements ICategoryFilter {
 	/**
 	 * Creates a new instance of the {@link ConfigurationBasedCategoryFilter} class
 	 * 
-	 * @param config
-	 *            The configuration that defines which source and sink categories to
-	 *            include and which ones to exclude
+	 * @param config The configuration that defines which source and sink categories
+	 *               to include and which ones to exclude
 	 */
 	public ConfigurationBasedCategoryFilter(SourceSinkConfiguration config) {
 		this.config = config;

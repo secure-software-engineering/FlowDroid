@@ -33,9 +33,9 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
@@ -45,8 +45,8 @@ import soot.jimple.infoflow.util.SystemClassHandler;
  */
 public class DefaultSourceSinkManager implements ISourceSinkManager {
 
-	private Collection<String> sourceDefs;
-	private Collection<String> sinkDefs;
+	protected Collection<String> sourceDefs;
+	protected Collection<String> sinkDefs;
 
 	private Collection<SootMethod> sources;
 	private Collection<SootMethod> sinks;
@@ -113,7 +113,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		this.sinkDefs = new HashSet<>();
 
 		// Load the sources
-		for (SourceSinkDefinition ssd : sourceSinkProvider.getSources()) {
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSources()) {
 			if (ssd instanceof MethodSourceSinkDefinition) {
 				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
 				sourceDefs.add(mssd.getMethod().getSignature());
@@ -121,7 +121,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 		}
 
 		// Load the sinks
-		for (SourceSinkDefinition ssd : sourceSinkProvider.getSinks()) {
+		for (ISourceSinkDefinition ssd : sourceSinkProvider.getSinks()) {
 			if (ssd instanceof MethodSourceSinkDefinition) {
 				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
 				sinkDefs.add(mssd.getMethod().getSignature());
@@ -191,7 +191,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	 * @param sCallSite The call site to check
 	 * @return True if the given call site invoked a source method, otherwise false
 	 */
-	private boolean isSourceMethod(InfoflowManager manager, Stmt sCallSite) {
+	protected boolean isSourceMethod(InfoflowManager manager, Stmt sCallSite) {
 		// We only support method calls
 		if (!sCallSite.containsInvokeExpr())
 			return false;
@@ -237,7 +237,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 			SootMethodAndClass smac = isSinkMethod(manager, sCallSite);
 			if (smac != null) {
 				// Check that the incoming taint is visible in the callee at all
-				if (SystemClassHandler.isTaintVisible(ap, iexpr.getMethod())) {
+				if (SystemClassHandler.v().isTaintVisible(ap, iexpr.getMethod())) {
 					// If we don't have an access path, we can only
 					// over-approximate
 					if (ap == null)
@@ -271,7 +271,7 @@ public class DefaultSourceSinkManager implements ISourceSinkManager {
 	 * @return The method that was discovered as a sink, or null if no sink could be
 	 *         found
 	 */
-	private SootMethodAndClass isSinkMethod(InfoflowManager manager, Stmt sCallSite) {
+	protected SootMethodAndClass isSinkMethod(InfoflowManager manager, Stmt sCallSite) {
 		// Is the method directly in the sink set?
 		SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 		if (this.sinks.contains(callee))

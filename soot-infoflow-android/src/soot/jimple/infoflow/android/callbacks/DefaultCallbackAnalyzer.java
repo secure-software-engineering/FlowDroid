@@ -22,7 +22,7 @@ import soot.Value;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
-import soot.jimple.infoflow.android.callbacks.CallbackDefinition.CallbackType;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
@@ -103,6 +103,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides
 						analyzeMethodOverrideCallbacks(sc);
+						analyzeClassInterfaceCallbacks(sc, sc, sc);
 					}
 					logger.info("Callback analysis done.");
 				} else {
@@ -131,6 +132,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides. The whole class might be new.
 						analyzeMethodOverrideCallbacks(componentClass);
+						analyzeClassInterfaceCallbacks(componentClass, componentClass, componentClass);
 
 						// Collect all methods that we need to analyze
 						List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
@@ -203,7 +205,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			for (String sig : methods) {
 				SootMethod sm = currentClass.getMethodUnsafe(sig);
 				if (sm != null)
-					if (!SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 						lifecycleMethods.add(sm);
 			}
 			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;
@@ -271,7 +273,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 			SootMethod sm = rmIterator.next().method();
 			if (!sm.isConcrete())
 				continue;
-			if (SystemClassHandler.isClassInSystemPackage(sm.getDeclaringClass().getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 				continue;
 
 			for (Unit u : sm.retrieveActiveBody().getUnits())

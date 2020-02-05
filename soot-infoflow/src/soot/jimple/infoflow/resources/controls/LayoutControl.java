@@ -1,6 +1,6 @@
 package soot.jimple.infoflow.resources.controls;
 
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Abstract base class for all layout controls
@@ -27,6 +27,6 @@ public abstract class LayoutControl {
 	 * 
 	 * @return The source definition for this layout control
 	 */
-	public abstract SourceSinkDefinition getSourceDefinition();
+	public abstract ISourceSinkDefinition getSourceDefinition();
 
 }

@@ -10,9 +10,9 @@ import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.flags.InputType;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -22,8 +22,8 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  *
  */
 public class EditTextControl extends AndroidLayoutControl {
-	protected final static SourceSinkDefinition UI_PASSWORD_SOURCE_DEF;
-	protected final static SourceSinkDefinition UI_ELEMENT_SOURCE_DEF;
+	protected final static ISourceSinkDefinition UI_PASSWORD_SOURCE_DEF;
+	protected final static ISourceSinkDefinition UI_ELEMENT_SOURCE_DEF;
 
 	static {
 		UI_PASSWORD_SOURCE_DEF = new MethodSourceSinkDefinition(null, null,
@@ -95,8 +95,7 @@ public class EditTextControl extends AndroidLayoutControl {
 	/**
 	 * Sets the type of this input (text, password, etc.)
 	 * 
-	 * @param inputType
-	 *            The input type
+	 * @param inputType The input type
 	 */
 	void setInputType(int inputType) {
 		this.inputType = inputType;
@@ -115,6 +114,7 @@ public class EditTextControl extends AndroidLayoutControl {
 
 	/**
 	 * Returns true if the input satiesfies all specified types
+	 * 
 	 * @see InputType
 	 * @param type the types to check
 	 */
@@ -177,7 +177,7 @@ public class EditTextControl extends AndroidLayoutControl {
 	}
 
 	@Override
-	public SourceSinkDefinition getSourceDefinition() {
+	public ISourceSinkDefinition getSourceDefinition() {
 		return isSensitive() ? UI_PASSWORD_SOURCE_DEF : UI_ELEMENT_SOURCE_DEF;
 	}
 

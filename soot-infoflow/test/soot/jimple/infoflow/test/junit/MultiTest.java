@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.results.InfoflowResults;
 
 /**
  * contain various tests with more than one source, conditional statements,
@@ -187,6 +188,26 @@ public class MultiTest extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.MultiTestCode: void multiSourceCode()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void multiSinkTest1() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.MultiTestCode: void multiSinkTest1()>");
+
+		final String streamSource = "<java.io.ByteArrayOutputStream: byte[] toByteArray()>";
+		final String publishSink = "<soot.jimple.infoflow.test.android.ConnectionManager: void publish(java.lang.String)>";
+
+		List<String> testSources = new ArrayList<>(sources);
+		testSources.add(streamSource);
+
+		infoflow.computeInfoflow(appPath, libPath, epoints, testSources, sinks);
+		InfoflowResults results = infoflow.getResults();
+
+		Assert.assertNotNull(results);
+		Assert.assertTrue(results.isPathBetweenMethods(publishSink, streamSource));
+		Assert.assertEquals(2, results.numConnections());
 	}
 
 }
