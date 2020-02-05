@@ -144,7 +144,7 @@ public class MemoryWarningSystem {
 	 * 
 	 * @param percentage
 	 */
-	public static void setWarningThreshold(double percentage) {
+	public void setWarningThreshold(double percentage) {
 		if (percentage <= 0.0 || percentage > 1.0) {
 			throw new IllegalArgumentException("Percentage not in range");
 		}
