@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * lot of time left to perform corrective measures if the warning threshold is
  * reached.
  * 
- * @author Steven Arzt
+ * @author Steven Arzt, Marc Miltenberger
  *
  */
 public class MemoryWarningSystem {
@@ -99,12 +99,6 @@ public class MemoryWarningSystem {
 
 		}, null);
 
-	}
-
-	/**
-	 * Creates a new instance of the {@link MemoryWarningSystem} class
-	 */
-	public MemoryWarningSystem() {
 	}
 
 	private static long triggerNotification() {
@@ -199,6 +193,7 @@ public class MemoryWarningSystem {
 			warningSystems.add(this);
 			tenuredGenPool.setUsageThreshold(warningSystems.iterator().next().threshold);
 			if (!tenuredGenPool.isUsageThresholdSupported()) {
+				// No JVM support is available, use our own implementation
 				if (thrLowMemoryWarningThread == null) {
 					thrLowMemoryWarningThread = new Thread(new Runnable() {
 
