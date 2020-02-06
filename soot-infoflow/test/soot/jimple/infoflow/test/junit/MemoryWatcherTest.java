@@ -5,11 +5,15 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import soot.jimple.infoflow.memory.MemoryWarningSystem;
 import soot.jimple.infoflow.memory.MemoryWarningSystem.OnMemoryThresholdReached;
 
 public class MemoryWatcherTest {
+	private static final Logger logger = LoggerFactory.getLogger(MemoryWatcherTest.class);
+
 	private static final int MEMORY_STEP_SMALL = 1024 * 2;
 	private static final int MEMORY_STEP_BIG = 1024 * 1024 * 100;
 	List<byte[]> memoryLeak = new LinkedList<>();
@@ -32,7 +36,7 @@ public class MemoryWatcherTest {
 
 					@Override
 					public void onThresholdReached(long usedMemory, long maxMemory) {
-						System.out.println("Threshold reached: " + thresholds[current] + " with " + usedMemory);
+						logger.info("Threshold reached: " + thresholds[current] + " with " + usedMemory);
 						wsReached[current] = true;
 						for (int i = current + 1; i < wsReached.length; i++) {
 							if (wsReached[i])
@@ -56,7 +60,7 @@ public class MemoryWatcherTest {
 		for (long i = 0; i < MEMORY_STEP_BIG; i += MEMORY_STEP_SMALL)
 			memoryLeak.add(new byte[MEMORY_STEP_SMALL]);
 		long used = MemoryWarningSystem.findTenuredGenPool().getUsage().getUsed();
-		System.out.println("Leaking " + (memoryLeak.size() * (long) MEMORY_STEP_SMALL / 1024D / 1024D)
+		logger.info("Leaking " + (memoryLeak.size() * (long) MEMORY_STEP_SMALL / 1024D / 1024D)
 				+ " MiB, in tenured gen pool " + (used / 1024D / 1024D) + " MiB");
 
 	}
