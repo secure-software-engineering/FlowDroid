@@ -115,7 +115,7 @@ public class TypeTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test // (timeout=300000)
+	@Test(timeout = 300000)
 	public void arrayObjectCastTest3() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -266,6 +266,26 @@ public class TypeTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.TypeTestCode: void aliasTypeTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertTrue((infoflow.getResults().isPathBetweenMethods(sink, sourceDeviceId)));
+	}
+
+	@Test(timeout = 300000)
+	public void aliasTypeTest2() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.TypeTestCode: void aliasTypeTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertTrue((infoflow.getResults().isPathBetweenMethods(sink, sourceDeviceId)));
+	}
+
+	@Test // (timeout = 300000)
+	public void aliasTypeTest3() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.TypeTestCode: void aliasTypeTest3()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 		Assert.assertTrue((infoflow.getResults().isPathBetweenMethods(sink, sourceDeviceId)));

@@ -320,9 +320,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				lock.lock();
 			}
 
-			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
-			if (i == null)
-				return 1;
+			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(0));
 			return i.incrementAndGet();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -347,9 +345,9 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				lock.lock();
 			}
 
-			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(1));
+			AtomicInteger i = map.get(key);
 			if (i == null)
-				return 1;
+				return 0;
 			return i.decrementAndGet();
 		} finally {
 			if (lock.isHeldByCurrentThread())

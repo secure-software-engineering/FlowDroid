@@ -430,7 +430,34 @@ public class TypeTestCode {
 		b.arr[1] = new String[] { TelephonyManager.getDeviceId() };
 
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(((String[]) d.arr)[0]);
+		cm.publish((String) d.arr[0]);
+	}
+
+	public void aliasTypeTest2() {
+		X b = new X();
+		b.arr = new Object[2];
+		X c = new X();
+
+		doAlias(b, c);
+		b.arr[0] = TelephonyManager.getDeviceId();
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish((String) c.arr[0]);
+	}
+
+	public void aliasTypeTest3() {
+		X b = new X();
+		b.arr = new Object[2];
+		X c = new X();
+
+		doAlias(b, c);
+		b.arr[0] = TelephonyManager.getDeviceId();
+
+		X d = new X();
+		d.arr = c.arr;
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish((String) d.arr[0]);
 	}
 
 	private void doAlias(X b, X c) {

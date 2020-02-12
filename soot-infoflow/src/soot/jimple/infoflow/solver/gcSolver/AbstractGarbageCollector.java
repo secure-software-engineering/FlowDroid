@@ -1,7 +1,9 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
+import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
+import soot.util.ConcurrentHashMultiMap;
 
 /**
  * Abstract base class for garbage collectors
@@ -13,10 +15,13 @@ public abstract class AbstractGarbageCollector<N, D> implements IGarbageCollecto
 
 	protected final BiDiInterproceduralCFG<N, SootMethod> icfg;
 	protected final IGCReferenceProvider<D, N> referenceProvider;
+	protected final ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions;
 
-	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg) {
+	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
+			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
 		this.icfg = icfg;
 		this.referenceProvider = new AheadOfTimeReferenceProvider<>(icfg);
+		this.jumpFunctions = jumpFunctions;
 	}
 
 }

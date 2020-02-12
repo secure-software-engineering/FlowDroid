@@ -21,7 +21,6 @@ import soot.util.ConcurrentHashMultiMap;
 public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> {
 
 	private ConcurrentCountingMap<SootMethod> jumpFnCounter = new ConcurrentCountingMap<>();
-	private final ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions;
 	private final Set<SootMethod> gcScheduleSet = new ConcurrentHashSet<>();
 	private final AtomicInteger gcedMethods = new AtomicInteger();
 
@@ -33,10 +32,9 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 
 	public DefaultGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
-		super(icfg);
+		super(icfg, jumpFunctions);
 
 		this.jumpFnCounter.setLockingMode(LockingMode.Fast);
-		this.jumpFunctions = jumpFunctions;
 	}
 
 	@Override
@@ -75,9 +73,11 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 				// Clean up the methods
 				if (toRemove.size() > GC_THRESHOLD) {
 					for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
-						if (jumpFunctions.remove(it.next()))
+						SootMethod sm = it.next();
+						if (jumpFunctions.remove(sm))
 							gcedMethods.incrementAndGet();
 						it.remove();
+						gcScheduleSet.remove(sm);
 					}
 				}
 			}
