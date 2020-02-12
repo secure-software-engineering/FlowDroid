@@ -189,15 +189,6 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 		if (input.equals(output)) {
 			if (output.getCurrentStmt() == null || input.getCurrentStmt() == output.getCurrentStmt())
 				return input;
-			if (input.getCurrentStmt() == null) {
-				synchronized (input) {
-					if (input.getCurrentStmt() == null) {
-						input.setCurrentStmt(output.getCurrentStmt());
-						input.setCorrespondingCallSite(output.getCorrespondingCallSite());
-						return input;
-					}
-				}
-			}
 		}
 
 		// We check for a cached version of the access path
