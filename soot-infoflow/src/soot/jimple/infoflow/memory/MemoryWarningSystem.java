@@ -191,8 +191,17 @@ public class MemoryWarningSystem {
 			logger.info(MessageFormat.format("Registered a memory warning system for {0} MiB",
 					(threshold / 1024D / 1024D)));
 			warningSystems.add(this);
-			tenuredGenPool.setUsageThreshold(warningSystems.iterator().next().threshold);
-			if (!tenuredGenPool.isUsageThresholdSupported()) {
+			MemoryUsage usage = tenuredGenPool.getUsage();
+			long threshold = warningSystems.iterator().next().threshold;
+			boolean useOwnImplementation = !tenuredGenPool.isUsageThresholdSupported();
+			if (!useOwnImplementation && usage != null && usage.getUsed() > threshold) {
+				tenuredGenPool.setUsageThreshold(threshold);
+			} else {
+				// when the usage is already above the threshold, we use our own implementation,
+				// since the jvm implementation does not seem to get called in that case.
+				useOwnImplementation = true;
+			}
+			if (useOwnImplementation) {
 				// No JVM support is available, use our own implementation
 				if (thrLowMemoryWarningThread == null) {
 					thrLowMemoryWarningThread = new Thread(new Runnable() {
@@ -210,12 +219,12 @@ public class MemoryWarningSystem {
 								}
 								long nextThreshold = l.threshold;
 								MemoryUsage usage = tenuredGenPool.getUsage();
-								long used = usage.getUsed();
 								if (usage == null) {
 									logger.warn(MessageFormat.format("Memory usage of {0} could not be estimated",
 											tenuredGenPool.getName()));
 									return;
 								} else {
+									long used = usage.getUsed();
 									if (used >= l.threshold) {
 										nextThreshold = triggerNotification();
 										if (nextThreshold == -1) {
@@ -228,6 +237,7 @@ public class MemoryWarningSystem {
 										}
 									}
 								}
+								long used = usage.getUsed();
 								// Depending on how far we are from the next threshold, we can rest longer
 								// or shorter
 								long missing = nextThreshold - used;
