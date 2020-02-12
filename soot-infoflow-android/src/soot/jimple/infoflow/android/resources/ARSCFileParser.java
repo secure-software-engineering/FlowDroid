@@ -814,6 +814,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return this.b;
 		}
 
+		public int getARGB() {
+			return (this.a << 24) | (this.r << 16) | (this.g << 8) | b;
+		}
+
 		@Override
 		public String toString() {
 			return String.format("#%02x%02x%02x%02x", a, r, g, b);
