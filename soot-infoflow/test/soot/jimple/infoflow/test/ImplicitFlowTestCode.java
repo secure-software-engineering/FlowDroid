@@ -619,11 +619,11 @@ public class ImplicitFlowTestCode {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(b);
 		} catch (Exception e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		if (a) {
-//			System.out.println("");
+			System.out.println("");
 		}
 	}
 

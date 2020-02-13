@@ -643,7 +643,6 @@ public class ImplicitFlowTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	@Ignore("temporarily disabled, known issue")
 	public void userCodeTest1() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSinks(false);
