@@ -21,7 +21,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class LifecycleTests extends JUnitTests {
+public class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestActivityEventSequence1() throws IOException, XmlPullParserException {

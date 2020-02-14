@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class EmulatorDetectionTests extends JUnitTests {
+public class EmulatorDetectionTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestBattery1() throws IOException, XmlPullParserException {

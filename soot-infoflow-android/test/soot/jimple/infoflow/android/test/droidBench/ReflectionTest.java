@@ -20,7 +20,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class ReflectionTests extends JUnitTests {
+public class ReflectionTest extends JUnitTests {
 	
 	private AnalysisConfigurationCallback enableReflectionCallback = new AnalysisConfigurationCallback() {
 		

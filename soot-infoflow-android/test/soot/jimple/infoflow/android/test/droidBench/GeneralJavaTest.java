@@ -19,7 +19,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class GeneralJavaTests extends JUnitTests {
+public class GeneralJavaTest extends JUnitTests {
 		
 	@Test(timeout=300000)
 	public void runTestClone1() throws IOException, XmlPullParserException {

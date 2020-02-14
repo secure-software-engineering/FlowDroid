@@ -19,7 +19,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class InterComponentCommunicationTests extends JUnitTests {
+public class InterComponentCommunicationTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestActivityCommunication1() throws IOException, XmlPullParserException {

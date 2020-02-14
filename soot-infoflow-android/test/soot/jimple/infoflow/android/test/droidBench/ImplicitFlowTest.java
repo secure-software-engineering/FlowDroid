@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class ImplicitFlowTests extends JUnitTests {
+public class ImplicitFlowTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestImplicitFlow1() throws IOException, XmlPullParserException {
