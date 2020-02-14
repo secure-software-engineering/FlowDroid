@@ -41,7 +41,6 @@ import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
-import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
@@ -87,7 +86,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	// stores summaries that were queried before they were computed
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on 'incoming'")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Set<Pair<N, D>>> endSummary = new MyConcurrentHashMap<Pair<SootMethod, D>, Set<Pair<N, D>>>();
+	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Map<Pair<N, D>, D>> endSummary = new MyConcurrentHashMap<>();
 
 	// edges going along calls
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
@@ -656,17 +655,22 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	}
 
 	protected Set<Pair<N, D>> endSummary(SootMethod m, D d3) {
-		Set<Pair<N, D>> map = endSummary.get(new Pair<SootMethod, D>(m, d3));
-		return map;
+		Map<Pair<N, D>, D> map = endSummary.get(new Pair<>(m, d3));
+		return map == null ? null : map.keySet();
 	}
 
 	private boolean addEndSummary(SootMethod m, D d1, N eP, D d2) {
 		if (d1 == zeroValue)
 			return true;
 
-		Set<Pair<N, D>> summaries = endSummary.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d1),
-				() -> new ConcurrentHashSet<Pair<N, D>>());
-		return summaries.add(new Pair<N, D>(eP, d2));
+		Map<Pair<N, D>, D> summaries = endSummary.putIfAbsentElseGet(new Pair<>(m, d1),
+				() -> new MyConcurrentHashMap<>());
+		D oldD2 = summaries.putIfAbsent(new Pair<N, D>(eP, d2), d2);
+		if (oldD2 != null) {
+			oldD2.addNeighbor(d2);
+			return false;
+		}
+		return true;
 	}
 
 	protected Map<N, Map<D, D>> incoming(D d1, SootMethod m) {
