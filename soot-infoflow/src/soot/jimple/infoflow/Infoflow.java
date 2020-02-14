@@ -1101,7 +1101,7 @@ public class Infoflow extends AbstractInfoflow {
 	protected boolean isValidSeedMethod(SootMethod sm) {
 		if (sm == dummyMainMethod)
 			return false;
-		if (sm.getDeclaringClass() == dummyMainMethod.getDeclaringClass())
+		if (dummyMainMethod != null && sm.getDeclaringClass() == dummyMainMethod.getDeclaringClass())
 			return false;
 
 		// Exclude system classes
