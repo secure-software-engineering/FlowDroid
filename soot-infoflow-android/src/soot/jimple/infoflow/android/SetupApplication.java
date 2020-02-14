@@ -410,7 +410,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 *                                be read.
 	 */
 	protected void parseAppResources() throws IOException, XmlPullParserException {
-		final String targetAPK = config.getAnalysisFileConfig().getTargetAPKFile();
+		final File targetAPK = new File(config.getAnalysisFileConfig().getTargetAPKFile());
+		if (!targetAPK.exists())
+			throw new RuntimeException(
+					String.format("Target APK file %s does not exist", targetAPK.getCanonicalPath()));
 
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
@@ -427,7 +430,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Parse the resource file
 		long beforeARSC = System.nanoTime();
 		this.resources = new ARSCFileParser();
-		this.resources.parse(targetAPK);
+		this.resources.parse(targetAPK.getAbsolutePath());
 		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
 	}
 
@@ -1195,7 +1198,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @author Steven Arzt
 	 *
 	 */
-	protected static class InPlaceInfoflow extends Infoflow implements IInPlaceInfoflow {
+	protected class InPlaceInfoflow extends Infoflow implements IInPlaceInfoflow {
 
 		/**
 		 * Creates a new instance of the Infoflow class for analyzing Android APK files.
@@ -1224,6 +1227,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		public void runAnalysis(final ISourceSinkManager sourcesSinks, SootMethod entryPoint) {
 			this.dummyMainMethod = entryPoint;
 			super.runAnalysis(sourcesSinks);
+		}
+
+		@Override
+		protected boolean isUserCodeClass(String className) {
+			String packageName = manifest.getPackageName() + ".";
+			return super.isUserCodeClass(className) || className.startsWith(packageName);
 		}
 
 	}

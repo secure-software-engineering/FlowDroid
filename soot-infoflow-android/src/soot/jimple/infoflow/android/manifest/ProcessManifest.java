@@ -39,7 +39,7 @@ public class ProcessManifest implements Closeable {
 	 * Enumeration containing the various component types supported in Android
 	 */
 	public enum ComponentType {
-		Activity, Service, ContentProvider, BroadcastReceiver
+	Activity, Service, ContentProvider, BroadcastReceiver
 	}
 
 	/**
@@ -250,12 +250,13 @@ public class ProcessManifest implements Closeable {
 	}
 
 	private void checkAndAddComponent(Set<String> entryPoints, AXmlNode node) {
+		final String packageName = getPackageName() + ".";
 		AXmlAttribute<?> attrEnabled = node.getAttribute("enabled");
 		if (attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE)) {
 			AXmlAttribute<?> attr = node.getAttribute("name");
 			if (attr != null) {
 				String className = expandClassName((String) attr.getValue());
-				if (!SystemClassHandler.v().isClassInSystemPackage(className))
+				if (className.startsWith(packageName) || !SystemClassHandler.v().isClassInSystemPackage(className))
 					entryPoints.add(className);
 			} else {
 				// This component does not have a name, so this might be

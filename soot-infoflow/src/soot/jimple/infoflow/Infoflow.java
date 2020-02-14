@@ -1101,10 +1101,13 @@ public class Infoflow extends AbstractInfoflow {
 	protected boolean isValidSeedMethod(SootMethod sm) {
 		if (sm == dummyMainMethod)
 			return false;
+		if (sm.getDeclaringClass() == dummyMainMethod.getDeclaringClass())
+			return false;
 
 		// Exclude system classes
-		if (config.getIgnoreFlowsInSystemPackages()
-				&& SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
+		final String className = sm.getDeclaringClass().getName();
+		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(className)
+				&& !isUserCodeClass(className))
 			return false;
 
 		// Exclude library classes
@@ -1112,6 +1115,17 @@ public class Infoflow extends AbstractInfoflow {
 			return false;
 
 		return true;
+	}
+
+	/**
+	 * Checks whether the given class is user code and should not be filtered out.
+	 * By default, this method assumes that all code is potentially user code.
+	 * 
+	 * @param className The name of the class to check
+	 * @return True if the given class is user code, false otherwise
+	 */
+	protected boolean isUserCodeClass(String className) {
+		return false;
 	}
 
 	/**
