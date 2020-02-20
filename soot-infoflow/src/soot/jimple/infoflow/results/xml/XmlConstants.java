@@ -18,6 +18,7 @@ class XmlConstants {
 
 		public static final String performanceData = "PerformanceData";
 		public static final String performanceEntry = "PerformanceEntry";
+		public static final String resultsLeaks = "ResultsLeaks";
 
 		public static final String sink = "Sink";
 		public static final String accessPath = "AccessPath";
@@ -63,6 +64,7 @@ class XmlConstants {
 
 		public static final String PERF_SOURCE_COUNT = "SourceCount";
 		public static final String PERF_SINK_COUNT = "SinkCount";
+		public static final String PERF_RES_LEAKS = "LeaksFound";
 
 	}
 

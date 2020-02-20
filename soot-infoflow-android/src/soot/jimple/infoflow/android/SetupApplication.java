@@ -145,6 +145,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected TaintPropagationHandler backwardsPropagationHandler = null;
 
 	protected IInPlaceInfoflow infoflow = null;
+	private int resCount;
 
 	/**
 	 * Class for aggregating the data flow results obtained through multiple runs of
@@ -788,8 +789,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * out of memory. This method also starts the watchdog thread. Derived classes
 	 * can implement their own timeout handling if necessary.
 	 * 
-	 * @param callbackConfig The configuration for the callback analysis
-	 * @param analyzer       The callback analyzer
+	 * @param jimpleClass The configuration for the callback analysis
 	 * @return The memory watcher that keeps track of the amount of memory spent in
 	 *         the callback analysis
 	 */
@@ -944,7 +944,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * scans the code including unreachable methods.
 	 * 
 	 * @param lfp        The layout file parser to be used for analyzing UI controls
-	 * @param entryPoint The entry point for which to calculate the callbacks. Pass
+	 * @param component The entry point for which to calculate the callbacks. Pass
 	 *                   null to calculate callbacks for all entry points.
 	 * @throws IOException Thrown if a required configuration cannot be read
 	 */
@@ -1033,7 +1033,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * Creates the main method based on the current callback information, injects it
 	 * into the Soot scene.
 	 * 
-	 * @param The class name of a component to create a main method containing only
+	 * @param component The class name of a component to create a main method containing only
 	 *            that component, or null to create main method for all components
 	 */
 	private void createMainMethod(SootClass component) {
@@ -1414,7 +1414,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			processEntryPoint(sourcesAndSinks, resultAggregator, -1, null);
 
 		// Write the results to disk if requested
-		serializeResults(resultAggregator.getAggregatedResults(), resultAggregator.getLastICFG());
+		serializeResults(resultAggregator.getAggregatedResults(), resultAggregator.getLastICFG(), resCount);
 
 		// We return the aggregated results
 		this.infoflow = null;
@@ -1486,7 +1486,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Print out the found results
 		{
-			int resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
+			resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
 			if (config.getOneComponentAtATime())
 				logger.info("Found {} leaks for component {}", resCount, entrypoint);
 			else
@@ -1514,16 +1514,17 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	/**
 	 * Writes the given data flow results into the configured output file
-	 * 
+	 *
 	 * @param results The data flow results to write out
 	 * @param cfg     The control flow graph to use for writing out the results
+	 * @param resultLeaks number of leaks found
 	 */
-	protected void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
+	private void serializeResults(InfoflowResults results, IInfoflowCFG cfg, Integer resultLeaks) {
 		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
 		if (resultsFile != null && !resultsFile.isEmpty()) {
 			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
 			try {
-				serializer.serialize(results, resultsFile);
+				serializer.serialize(results, resultsFile, resultLeaks);
 			} catch (FileNotFoundException ex) {
 				System.err.println("Could not write data flow results to file: " + ex.getMessage());
 				ex.printStackTrace();

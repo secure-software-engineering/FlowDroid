@@ -56,10 +56,11 @@ public class InfoflowResultsSerializer {
 	 * 
 	 * @param results  The result object to serialize
 	 * @param fileName The target file name
+	 * @param resLeaks Leaks number
 	 * @throws FileNotFoundException Thrown if target file cannot be used
 	 * @throws XMLStreamException    Thrown if the XML data cannot be written
 	 */
-	public void serialize(InfoflowResults results, String fileName) throws FileNotFoundException, XMLStreamException {
+	public void serialize(InfoflowResults results, String fileName, Integer resLeaks) throws FileNotFoundException, XMLStreamException {
 		this.startTime = System.currentTimeMillis();
 
 		OutputStream out = new FileOutputStream(fileName);
@@ -86,6 +87,10 @@ public class InfoflowResultsSerializer {
 			writePerformanceData(performanceData, writer);
 			writer.writeEndElement();
 		}
+
+		writer.writeStartElement(XmlConstants.Tags.resultsLeaks);
+		writePerformanceDataLeaks(resLeaks, writer);
+		writer.writeEndElement();
 
 		writer.writeEndDocument();
 		writer.close();
@@ -141,6 +146,20 @@ public class InfoflowResultsSerializer {
 	}
 
 	/**
+	 * Writes out the leaks number into the given XML stream
+	 * writer
+	 *
+	 * @param resCountLeaks The performance data to write out
+	 * @param writer        The stream writer into which to write the data
+	 * @throws XMLStreamException Thrown if the XML data cannot be written
+	 */
+	private void writePerformanceDataLeaks(Integer resCountLeaks, XMLStreamWriter writer)
+			throws XMLStreamException {
+
+		writePerformanceEntryResLeaks(XmlConstants.Values.PERF_RES_LEAKS, resCountLeaks, writer);
+	}
+
+	/**
 	 * Writes a single performance data entry into the XML file. An entry has a name
 	 * and a value, where the name describes the performance metric.
 	 * 
@@ -157,6 +176,23 @@ public class InfoflowResultsSerializer {
 			writer.writeAttribute(XmlConstants.Attributes.value, entryValue + "");
 			writer.writeEndElement();
 		}
+	}
+
+	/**
+	 * Writes a single performance data entry into the XML file. An entry has a name
+	 * and a value, where the name describes the performance metric.
+	 *
+	 * @param entryName  The name that describes the performance metric
+	 * @param entryValue The value of the performance metric
+	 * @param writer     The stream writer into which to write the data
+	 * @throws XMLStreamException Thrown if the XML data cannot be written
+	 */
+	private void writePerformanceEntryResLeaks(String entryName, int entryValue, XMLStreamWriter writer)
+			throws XMLStreamException {
+		writer.writeStartElement(XmlConstants.Tags.performanceEntry);
+		writer.writeAttribute(XmlConstants.Attributes.name, entryName);
+		writer.writeAttribute(XmlConstants.Attributes.value, entryValue + "");
+		writer.writeEndElement();
 	}
 
 	/**
