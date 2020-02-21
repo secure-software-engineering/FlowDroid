@@ -339,7 +339,7 @@ public class IccRedirectionCreator {
 		paramTypes.add(RefType.v("android.os.IBinder"));
 		SootMethod method = serviceConnection.getMethod("onServiceConnected", paramTypes);
 
-		Local iLocal1 = lg.generateLocal(NullType.v());
+		Local iLocal1 = lg.generateLocal(RefType.v("android.content.ComponentName"));
 		b.getUnits().add(Jimple.v().newAssignStmt(iLocal1, NullConstant.v()));
 
 		List<Value> args = new ArrayList<Value>();
