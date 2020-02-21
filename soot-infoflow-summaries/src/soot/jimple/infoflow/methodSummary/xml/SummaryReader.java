@@ -68,7 +68,7 @@ public class SummaryReader extends AbstractXMLReader {
 			int currentID = -1;
 			boolean isAlias = false;
 			boolean typeChecking = true;
-			boolean cutSubfields = false;
+			Boolean cutSubfields = null;
 
 			State state = State.summary;
 			while (xmlreader.hasNext()) {
@@ -108,7 +108,7 @@ public class SummaryReader extends AbstractXMLReader {
 						if (sTypeChecking != null)
 							typeChecking = sTypeChecking.equals(XMLConstants.VALUE_TRUE);
 						String sCutSubfields = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_CUT_SUBFIELDS);
-						if (sCutSubfields != null)
+						if (sCutSubfields != null && !sCutSubfields.isEmpty())
 							cutSubfields = sTypeChecking.equals(XMLConstants.VALUE_TRUE);
 					} else
 						throw new SummaryXMLException();

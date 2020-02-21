@@ -21,7 +21,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	private final FlowSink to;
 	private final boolean isAlias;
 	private final boolean typeChecking;
-	private final boolean cutSubFields;
+	private final Boolean cutSubFields;
 
 	/**
 	 * Creates a new instance of the MethodFlow class
@@ -39,7 +39,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	 *                     enabled.
 	 */
 	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, boolean typeChecking,
-			boolean cutSubFields) {
+			Boolean cutSubFields) {
 		super(methodSig);
 		this.from = from;
 		this.to = to;
@@ -136,7 +136,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * @return True if sub fields shall be discarded and shall not be appended to
 	 *         the sink
 	 */
-	public boolean getCutSubFields() {
+	public Boolean getCutSubFields() {
 		return cutSubFields;
 	}
 
@@ -195,7 +195,10 @@ public class MethodFlow extends AbstractMethodSummary {
 		if (getClass() != obj.getClass())
 			return false;
 		MethodFlow other = (MethodFlow) obj;
-		if (cutSubFields != other.cutSubFields)
+		if (cutSubFields == null) {
+			if (other.cutSubFields != null)
+				return false;
+		} else if (!cutSubFields.equals(other.cutSubFields))
 			return false;
 		if (from == null) {
 			if (other.from != null)
@@ -218,7 +221,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + (cutSubFields ? 1231 : 1237);
+		result = prime * result + ((cutSubFields == null) ? 0 : cutSubFields.hashCode());
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
 		result = prime * result + (isAlias ? 1231 : 1237);
 		result = prime * result + ((to == null) ? 0 : to.hashCode());

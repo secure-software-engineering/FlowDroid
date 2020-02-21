@@ -1616,8 +1616,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		final boolean taintSubFields = flow.sink().taintSubFields();
 		final boolean checkTypes = flow.getTypeChecking();
 
-		final String[] remainingFields = flow.getCutSubFields() ? null : getRemainingFields(flowSource, taint);
-		final String[] remainingFieldTypes = flow.getCutSubFields() ? null : getRemainingFieldTypes(flowSource, taint);
+		final String[] remainingFields = isCutSubFields(flow) ? null : getRemainingFields(flowSource, taint);
+		final String[] remainingFieldTypes = isCutSubFields(flow) ? null : getRemainingFieldTypes(flowSource, taint);
 
 		final String[] appendedFields = append(flowSink.getAccessPath(), remainingFields);
 		final String[] appendedFieldTypes = append(flowSink.getAccessPathTypes(), remainingFieldTypes, true);
@@ -1682,6 +1682,20 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// Taint the correct fields
 		return new Taint(sourceSinkType, flowSink.getParameterIndex(), sBaseType, appendedFields, appendedFieldTypes,
 				taintSubFields || taint.taintSubFields(), gap);
+	}
+
+	/**
+	 * Checks whether the following fields shall be deleted when applying the given
+	 * flow specification
+	 * 
+	 * @param flow The flow specification to check
+	 * @return true if the following fields shall be deleted, false otherwise
+	 */
+	private boolean isCutSubFields(MethodFlow flow) {
+		Boolean cut = flow.getCutSubFields();
+		if (cut == null)
+			return !flow.getTypeChecking();
+		return cut.booleanValue();
 	}
 
 	/**
