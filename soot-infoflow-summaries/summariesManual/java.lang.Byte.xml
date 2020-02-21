@@ -121,8 +121,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: byte value]"
-						AccessPathTypes="[byte]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: java.lang.Byte value]"
+						AccessPathTypes="[java.lang.Byte]" />
 				</flow>
 			</flows>
 		</method>
@@ -130,8 +130,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: byte value]"
-						AccessPathTypes="[byte]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: java.lang.Byte value]"
+						AccessPathTypes="[java.lang.Byte]" />
 				</flow>
 			</flows>
 		</method>
@@ -139,8 +139,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: byte value]"
-						AccessPathTypes="[byte]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Byte: java.lang.Byte value]"
+						AccessPathTypes="[java.lang.Byte]" />
 				</flow>
 			</flows>
 		</method>

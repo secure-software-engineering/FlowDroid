@@ -58,17 +58,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Boolean: boolean value]"
-						AccessPathTypes="[boolean]" />
-				</flow>
-			</flows>
-		</method>
-		<method id="java.lang.Boolean valueOf(boolean)">
-			<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Boolean: boolean value]"
-						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Boolean: java.lang.Boolean value]"
+						AccessPathTypes="[java.lang.Boolean]" />
 				</flow>
 			</flows>
 		</method>
@@ -76,8 +67,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Boolean: boolean value]"
-						AccessPathTypes="[boolean]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Boolean: java.lang.Boolean value]"
+						AccessPathTypes="[java.lang.Boolean]" />
 				</flow>
 			</flows>
 		</method>
