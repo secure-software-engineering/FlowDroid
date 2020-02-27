@@ -24,8 +24,7 @@ public class Ic3ResultLoader {
 
 	public static App load(String resultConfigPath) {
 		Ic3Data.Application application;
-		try {
-			FileInputStream inputStream = new FileInputStream(resultConfigPath);
+		try (FileInputStream inputStream = new FileInputStream(resultConfigPath)) {
 			if (resultConfigPath.endsWith(".dat")) {
 				application = Application.parseFrom(inputStream);
 			} else {
