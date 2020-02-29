@@ -24,7 +24,6 @@ import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -32,7 +31,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 public class DummyHttpRequest implements HttpServletRequest {
@@ -426,24 +424,6 @@ public class DummyHttpRequest implements HttpServletRequest {
 	public int getRemotePort() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	@Override
-	public long getContentLengthLong() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public String changeSessionId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
