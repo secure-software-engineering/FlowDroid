@@ -1624,7 +1624,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// If we we already have an entry point creator, we make sure to clean up our
 		// leftovers from previous runs
 		if (entryPointCreator == null)
-			entryPointCreator = new AndroidEntryPointCreator(manifest, components);
+			entryPointCreator = createEntryPointCreator(components);
 		else {
 			entryPointCreator.removeGeneratedMethods(false);
 			entryPointCreator.reset();
@@ -1652,6 +1652,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		entryPointCreator.setFragments(fragmentClasses);
 		entryPointCreator.setComponents(components);
 		return entryPointCreator;
+	}
+
+	/**
+	 * Creates a new instance of the entry point creator
+	 * @param components The components for which the entry point creator shallk be responsible
+	 * @return The new instance of the entry point creator
+	 */
+	protected AndroidEntryPointCreator createEntryPointCreator(Set<SootClass> components) {
+		return new AndroidEntryPointCreator(manifest, components);
 	}
 
 	/**
