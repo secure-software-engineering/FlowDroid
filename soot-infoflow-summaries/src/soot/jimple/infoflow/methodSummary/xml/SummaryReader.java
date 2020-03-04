@@ -32,6 +32,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.MethodClear;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 
 public class SummaryReader extends AbstractXMLReader {
 
@@ -246,12 +247,13 @@ public class SummaryReader extends AbstractXMLReader {
 	private FlowSource createSource(MethodSummaries summary, Map<String, String> attributes)
 			throws SummaryXMLException {
 		if (isField(attributes)) {
-			return new FlowSource(SourceSinkType.Field, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+			return new FlowSource(SourceSinkType.Field, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSource(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
-					getAccessPath(attributes), getAccessPathTypes(attributes), getGapDefinition(attributes, summary),
-					isMatchStrict(attributes));
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSource(SourceSinkType.GapBaseObject, getBaseType(attributes),
 					getGapDefinition(attributes, summary), isMatchStrict(attributes));
@@ -261,8 +263,9 @@ public class SummaryReader extends AbstractXMLReader {
 				throw new SummaryXMLException(
 						"Return values can only be " + "sources if they have a gap specification");
 
-			return new FlowSource(SourceSinkType.Return, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+			return new FlowSource(SourceSinkType.Return, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		}
 		throw new SummaryXMLException("Invalid flow source definition");
 	}
@@ -277,17 +280,17 @@ public class SummaryReader extends AbstractXMLReader {
 	 */
 	private FlowSink createSink(MethodSummaries summary, Map<String, String> attributes) throws SummaryXMLException {
 		if (isField(attributes)) {
-			return new FlowSink(SourceSinkType.Field, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary),
-					isMatchStrict(attributes));
+			return new FlowSink(SourceSinkType.Field, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSink(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
-					getAccessPath(attributes), getAccessPathTypes(attributes), taintSubFields(attributes),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isReturn(attributes)) {
-			return new FlowSink(SourceSinkType.Return, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), taintSubFields(attributes), getGapDefinition(attributes, summary),
-					isMatchStrict(attributes));
+			return new FlowSink(SourceSinkType.Return, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSink(SourceSinkType.GapBaseObject, -1, getBaseType(attributes), false,
 					getGapDefinition(attributes, summary), isMatchStrict(attributes));
@@ -305,11 +308,13 @@ public class SummaryReader extends AbstractXMLReader {
 	 */
 	private FlowClear createClear(MethodSummaries summary, Map<String, String> attributes) throws SummaryXMLException {
 		if (isField(attributes)) {
-			return new FlowClear(SourceSinkType.Field, getBaseType(attributes), getAccessPath(attributes),
-					getAccessPathTypes(attributes), getGapDefinition(attributes, summary));
+			return new FlowClear(SourceSinkType.Field, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getGapDefinition(attributes, summary));
 		} else if (isParameter(attributes)) {
 			return new FlowClear(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
-					getAccessPath(attributes), getAccessPathTypes(attributes), getGapDefinition(attributes, summary));
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getGapDefinition(attributes, summary));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowClear(SourceSinkType.GapBaseObject, getBaseType(attributes),
 					getGapDefinition(attributes, summary));

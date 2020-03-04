@@ -4,6 +4,7 @@ import java.util.Map;
 
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 
 /**
  * Definition of a point at which an existing data flow is killed
@@ -21,12 +22,12 @@ public class FlowClear extends AbstractFlowSinkSource implements Cloneable {
 		super(type, -1, baseType, null, null, gap, false);
 	}
 
-	public FlowClear(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, -1, baseType, fields, fieldTypes, false);
+	public FlowClear(SourceSinkType type, String baseType, AccessPathFragment accessPath) {
+		super(type, -1, baseType, accessPath, false);
 	}
 
-	public FlowClear(SourceSinkType type, String baseType, String[] fields, String[] fieldTypes, GapDefinition gap) {
-		super(type, -1, baseType, fields, fieldTypes, gap, false);
+	public FlowClear(SourceSinkType type, String baseType, AccessPathFragment accessPath, GapDefinition gap) {
+		super(type, -1, baseType, accessPath, gap, false);
 	}
 
 	public FlowClear(SourceSinkType type, int parameterIdx, String baseType) {
@@ -37,18 +38,18 @@ public class FlowClear extends AbstractFlowSinkSource implements Cloneable {
 		super(type, parameterIdx, baseType, null, null, gap, false);
 	}
 
-	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, false);
+	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath) {
+		super(type, parameterIdx, baseType, accessPath, false);
 	}
 
-	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
 			GapDefinition gap) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap, false);
+		super(type, parameterIdx, baseType, accessPath, gap, false);
 	}
 
-	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowClear(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
 			GapDefinition gap, Object userData) {
-		super(type, parameterIdx, baseType, fields, fieldTypes, gap, userData, false);
+		super(type, parameterIdx, baseType, accessPath, gap, userData, false);
 	}
 
 	@Override
@@ -58,12 +59,12 @@ public class FlowClear extends AbstractFlowSinkSource implements Cloneable {
 		GapDefinition newGap = replacementMap.get(gap.getID());
 		if (newGap == null)
 			return this;
-		return new FlowClear(type, parameterIdx, baseType, accessPath, accessPathTypes, newGap);
+		return new FlowClear(type, parameterIdx, baseType, accessPath, newGap);
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new FlowClear(type, parameterIdx, baseType, accessPath, accessPathTypes, gap, userData);
+		return new FlowClear(type, parameterIdx, baseType, accessPath, gap, userData);
 	}
 
 }

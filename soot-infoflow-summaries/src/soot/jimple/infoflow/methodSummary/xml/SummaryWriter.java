@@ -30,6 +30,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 
 public class SummaryWriter {
@@ -219,9 +220,12 @@ public class SummaryWriter {
 			throw new RuntimeException("Unsupported source or sink type " + currentFlow.getType());
 
 		writer.writeAttribute(ATTRIBUTE_BASETYPE, currentFlow.getBaseType());
-		if (currentFlow.hasAccessPath() && currentFlow.getAccessPath() != null) {
-			writer.writeAttribute(ATTRIBUTE_ACCESSPATH, Arrays.toString(currentFlow.getAccessPath()));
-			writer.writeAttribute(ATTRIBUTE_ACCESSPATHTYPES, Arrays.toString(currentFlow.getAccessPathTypes()));
+		if (currentFlow.hasAccessPath()) {
+			final AccessPathFragment accessPath = currentFlow.getAccessPath();
+			if (accessPath != null && !accessPath.isEmpty()) {
+				writer.writeAttribute(ATTRIBUTE_ACCESSPATH, Arrays.toString(accessPath.getFields()));
+				writer.writeAttribute(ATTRIBUTE_ACCESSPATHTYPES, Arrays.toString(accessPath.getFieldTypes()));
+			}
 		}
 		if (currentFlow.getGap() != null)
 			writer.writeAttribute(XMLConstants.ATTRIBUTE_GAP, currentFlow.getGap().getID() + "");

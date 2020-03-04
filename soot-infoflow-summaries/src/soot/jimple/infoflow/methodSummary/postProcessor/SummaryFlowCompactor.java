@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 
 /**
  * Class for compacting a set of method flow summaries
@@ -133,6 +134,25 @@ public class SummaryFlowCompactor {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Compares two access paths to create some sort of ordering. This is important
+	 * to get reproducible test cases for those flows that can be represented
+	 * ambiguously.
+	 * 
+	 * @param accessPath  The first access path
+	 * @param accessPath2 The second access path
+	 * @return An ordering (-1, 0, 1) on the given access paths
+	 */
+	private int compare(AccessPathFragment accessPath, AccessPathFragment accessPath2) {
+		if (accessPath == null && accessPath2 == null)
+			return 0;
+		if (accessPath == null)
+			return -1;
+		if (accessPath2 == null)
+			return 1;
+		return compare(accessPath.getFields(), accessPath2.getFields());
 	}
 
 	/**
