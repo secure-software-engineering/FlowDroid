@@ -45,6 +45,7 @@ import soot.jimple.infoflow.methodSummary.handler.SummaryTaintPropagationHandler
 import soot.jimple.infoflow.methodSummary.postProcessor.InfoflowResultPostProcessor;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryFlowCompactor;
 import soot.jimple.infoflow.methodSummary.source.SummarySourceSinkManager;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
@@ -482,18 +483,26 @@ public class SummaryGenerator {
 	 */
 	private void calculateDependencies(ClassSummaries summaries) {
 		for (MethodFlow flow : summaries.getAllFlows()) {
-			if (flow.source().hasAccessPath())
-				for (String apElement : flow.source().getAccessPath()) {
-					String className = getTypeFromFieldDef(apElement);
-					if (!summaries.hasSummariesForClass(className))
-						summaries.addDependency(className);
+			if (flow.source().hasAccessPath()) {
+				final AccessPathFragment sourceAP = flow.source().getAccessPath();
+				if (!sourceAP.isEmpty()) {
+					for (String apElement : sourceAP.getFields()) {
+						String className = getTypeFromFieldDef(apElement);
+						if (!summaries.hasSummariesForClass(className))
+							summaries.addDependency(className);
+					}
 				}
-			if (flow.sink().hasAccessPath())
-				for (String apElement : flow.sink().getAccessPath()) {
-					String className = getTypeFromFieldDef(apElement);
-					if (!summaries.hasSummariesForClass(className))
-						summaries.addDependency(className);
+			}
+			if (flow.sink().hasAccessPath()) {
+				final AccessPathFragment sinkAP = flow.sink().getAccessPath();
+				if (!sinkAP.isEmpty()) {
+					for (String apElement : sinkAP.getFields()) {
+						String className = getTypeFromFieldDef(apElement);
+						if (!summaries.hasSummariesForClass(className))
+							summaries.addDependency(className);
+					}
 				}
+			}
 		}
 	}
 

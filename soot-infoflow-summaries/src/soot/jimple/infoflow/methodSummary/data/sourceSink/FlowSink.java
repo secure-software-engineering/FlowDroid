@@ -1,10 +1,10 @@
 package soot.jimple.infoflow.methodSummary.data.sourceSink;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 import soot.jimple.infoflow.methodSummary.xml.XMLConstants;
 
 /**
@@ -16,27 +16,27 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 
 	protected final boolean taintSubFields;
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, false);
+		super(type, paramterIdx, baseType, accessPath, false);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields, GapDefinition gap) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, gap, false);
+		super(type, paramterIdx, baseType, accessPath, gap, false);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields, GapDefinition gap, boolean matchStrict) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, gap, matchStrict);
+		super(type, paramterIdx, baseType, accessPath, gap, matchStrict);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields, GapDefinition gap, Object userData, boolean matchStrict) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, gap, userData, matchStrict);
+		super(type, paramterIdx, baseType, accessPath, gap, userData, matchStrict);
 		this.taintSubFields = taintSubFields;
 	}
 
@@ -52,20 +52,20 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, GapDefinition gap,
 			Object userData) {
-		super(type, paramterIdx, baseType, null, null, gap, userData, false);
+		super(type, paramterIdx, baseType, null, gap, userData, false);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, String baseType, String[] accessPath, String[] accessPathTypes,
-			boolean taintSubFields2, boolean matchStrict) {
-		super(type, -1, baseType, accessPath, accessPathTypes, matchStrict);
-		this.taintSubFields = taintSubFields2 || (accessPath != null && accessPath.length > this.accessPath.length);
+	public FlowSink(SourceSinkType type, String baseType, AccessPathFragment accessPath, boolean taintSubFields2,
+			boolean matchStrict) {
+		super(type, -1, baseType, accessPath, matchStrict);
+		this.taintSubFields = taintSubFields2 || (accessPath != null && accessPath.length() > this.accessPath.length());
 	}
 
-	public FlowSink(SourceSinkType type, String baseType, String[] accessPath, String[] accessPathTypes,
-			boolean taintSubFields2, GapDefinition gap, boolean matchStrict) {
-		super(type, -1, baseType, accessPath, accessPathTypes, gap, matchStrict);
-		this.taintSubFields = taintSubFields2 || (accessPath != null && accessPath.length > this.accessPath.length);
+	public FlowSink(SourceSinkType type, String baseType, AccessPathFragment accessPath, boolean taintSubFields2,
+			GapDefinition gap, boolean matchStrict) {
+		super(type, -1, baseType, accessPath, gap, matchStrict);
+		this.taintSubFields = taintSubFields2 || (accessPath != null && accessPath.length() > this.accessPath.length());
 	}
 
 	public boolean taintSubFields() {
@@ -77,8 +77,7 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src
-	 *            The source or sink with which to compare the current one
+	 * @param src The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -103,19 +102,20 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 
 		if (isParameter())
 			return gapString + "Parameter " + getParameterIndex()
-					+ (accessPath == null ? "" : " " + Arrays.toString(accessPath)) + " " + taintSubFields();
+					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " "
+					+ taintSubFields();
 
 		if (isField())
-			return gapString + "Field" + (accessPath == null ? "" : " " + Arrays.toString(accessPath)) + " "
+			return gapString + "Field" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " "
 					+ taintSubFields();
 
 		if (isReturn())
-			return gapString + "Return" + (accessPath == null ? "" : " " + Arrays.toString(accessPath)) + " "
-					+ taintSubFields();
+			return gapString + "Return" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath))
+					+ " " + taintSubFields();
 
 		if (isCustom())
 			return "CUSTOM " + gapString + "Parameter " + getParameterIndex()
-					+ (accessPath == null ? "" : " " + Arrays.toString(accessPath));
+					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
 
 		return "invalid sink";
 	}
@@ -136,9 +136,8 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	/**
 	 * Validates this flow sink
 	 * 
-	 * @param methodName
-	 *            The name of the containing method. This will be used to give more
-	 *            context in exception messages
+	 * @param methodName The name of the containing method. This will be used to
+	 *                   give more context in exception messages
 	 */
 	public void validate(String methodName) {
 		if (getType() == SourceSinkType.GapBaseObject && getGap() == null)
@@ -153,14 +152,12 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 		GapDefinition newGap = replacementMap.get(gap.getID());
 		if (newGap == null)
 			return this;
-		return new FlowSink(type, parameterIdx, baseType, accessPath, accessPathTypes, taintSubFields, newGap,
-				matchStrict);
+		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, newGap, matchStrict);
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new FlowSink(type, parameterIdx, baseType, accessPath, accessPathTypes, taintSubFields, gap, userData,
-				matchStrict);
+		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, gap, userData, matchStrict);
 	}
 
 }
