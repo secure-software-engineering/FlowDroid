@@ -434,7 +434,7 @@ public class InfoflowResultPostProcessor {
 			if (sinkAccessPath.length() != sourceAccessPath.length())
 				return false;
 			for (int i = 0; i < sink.getAccessPath().length(); i++) {
-				if (!sourceAccessPath.getFieldName(i).equals(sinkAccessPath.getFieldName(i)))
+				if (!sourceAccessPath.getField(i).equals(sinkAccessPath.getField(i)))
 					return false;
 			}
 		}

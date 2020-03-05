@@ -192,7 +192,7 @@ public class AccessPathFragment {
 	 * @param idx The field index
 	 * @return The name of the field at the given index
 	 */
-	public String getFieldName(int idx) {
+	public String getField(int idx) {
 		if (idx < 0 || idx >= fields.length)
 			return null;
 		return fields[idx];

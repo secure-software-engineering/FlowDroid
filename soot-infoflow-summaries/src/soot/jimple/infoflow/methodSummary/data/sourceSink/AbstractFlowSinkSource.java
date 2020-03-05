@@ -66,7 +66,7 @@ public abstract class AbstractFlowSinkSource {
 			if (this.accessPath.length() > other.accessPath.length())
 				return false;
 			for (int i = 0; i < this.accessPath.length(); i++)
-				if (!this.accessPath.getFieldName(i).equals(other.accessPath.getFieldName(i)))
+				if (!this.accessPath.getField(i).equals(other.accessPath.getField(i)))
 					return false;
 		}
 		return true;

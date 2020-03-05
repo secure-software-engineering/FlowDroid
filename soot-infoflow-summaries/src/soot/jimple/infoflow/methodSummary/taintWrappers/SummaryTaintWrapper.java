@@ -1459,8 +1459,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Compare the shared sub-path
 		for (int i = 0; i < taintedPath.getAccessPathLength() && i < flowSource.getAccessPathLength(); i++) {
-			String taintField = taintedPath.getAccessPath().getFieldName(i);
-			String sourceField = flowSource.getAccessPath().getFieldName(i);
+			String taintField = taintedPath.getAccessPath().getField(i);
+			String sourceField = flowSource.getAccessPath().getField(i);
 			if (!sourceField.equals(taintField))
 				return false;
 		}

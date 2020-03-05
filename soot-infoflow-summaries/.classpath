@@ -8,6 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="src" output="build/testclasses" path="test">
 		<attributes>
+			<attribute name="test" value="true"/>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
