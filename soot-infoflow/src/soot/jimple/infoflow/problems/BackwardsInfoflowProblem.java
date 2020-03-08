@@ -817,7 +817,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 									// Do not pass on this taint, but
 									// trigger the forward analysis
-									for (Unit u : interproceduralCFG().getPredsOf(defStmt))
+									for (Unit u : interproceduralCFG().getPredsOf(call))
 										manager.getForwardSolver()
 												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
 								}
