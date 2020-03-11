@@ -178,12 +178,9 @@ public class InfoflowResultPostProcessor {
 							if (sourceAP == null || sinkAP == null)
 								throw new RuntimeException("Invalid access path");
 
-							// We only take flows which are not identity flows.
-							// If we have a flow from a gap parameter to the
-							// original
-							// method parameter, the access paths are equal, but
-							// that's
-							// ok in the case of aliasing.
+							// We only take flows which are not identity flows. If we have a flow from a gap
+							// parameter to the original method parameter, the access paths are equal, but
+							// that's ok in the case of aliasing.
 							boolean isAliasedField = gapManager.getGapForCall(sourceStmt) != null
 									&& isAliasedField(sinkAP, sourceAP, sourceStmt) && si.getSourceInfo().getIsAlias();
 							if (!sinkAP.equals(sourceAP) || isAliasedField) {

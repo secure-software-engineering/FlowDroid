@@ -563,6 +563,21 @@ public class ApiTests extends ApiTestHelper {
 	}
 
 	@Test(timeout = 100000)
+	public void transferNoStringThroughDataClass() {
+		String mSig = "<" + className
+				+ ": java.lang.String transferNoStringThroughDataClass(soot.jimple.infoflow.test.methodSummary.IGapClass,java.lang.String)>";
+		Set<MethodFlow> res = createSummaries(mSig).getAllFlows();
+
+		final String gapSig = makeGapClassSignature(
+				"soot.jimple.infoflow.test.methodSummary.Data dataThroughGap(soot.jimple.infoflow.test.methodSummary.Data)");
+
+		assertTrue(containsFlow(res, Parameter, 1, null, null, Parameter, 0, new String[] { DATACLASS_STRING_FIELD },
+				gapSig));
+		assertTrue(containsFlow(res, Return, -1, new String[] { DATACLASS_STRING_FIELD2 }, gapSig, Return, -1, null,
+				null));
+	}
+
+	@Test(timeout = 100000)
 	public void makeStringUserCodeClass() {
 		String mSig = "<" + className
 				+ ": java.lang.String makeStringUserCodeClass(soot.jimple.infoflow.test.methodSummary.IUserCodeClass,java.lang.String)>";

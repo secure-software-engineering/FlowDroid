@@ -18,11 +18,11 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap) {
-		super(type, -1, baseType, null, null, gap, false);
+		super(type, -1, baseType, null, gap, null, false);
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap, boolean matchStrict) {
-		super(type, -1, baseType, null, null, gap, matchStrict);
+		super(type, -1, baseType, null, gap, null, matchStrict);
 	}
 
 	public FlowSource(SourceSinkType type, String baseType, AccessPathFragment accessPath) {
@@ -43,7 +43,7 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, GapDefinition gap) {
-		super(type, parameterIdx, baseType, null, null, gap, false);
+		super(type, parameterIdx, baseType, null, gap, null, false);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath) {
@@ -80,7 +80,8 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 			return "THIS";
 
 		if (isReturn() && gap != null)
-			return "Return value of gap " + gap.getSignature();
+			return "Return value of gap " + gap.getSignature()
+					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
 
 		if (isCustom())
 			return "CUSTOM " + gapString + "Parameter " + getParameterIndex()

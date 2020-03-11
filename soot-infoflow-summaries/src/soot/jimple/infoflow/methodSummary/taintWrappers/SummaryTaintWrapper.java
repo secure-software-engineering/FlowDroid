@@ -770,11 +770,15 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (!classSupported.value)
 				reportMissingMethod(method);
 
-			if (classSupported.value || fallbackWrapper == null)
+			if (classSupported.value)
 				return Collections.singleton(taintedAbs);
 			else {
-				Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
-				return fallbackTaints;
+				if (fallbackWrapper == null)
+					return null;
+				else {
+					Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
+					return fallbackTaints;
+				}
 			}
 		}
 

@@ -43,6 +43,8 @@ public abstract class TestHelper {
 	protected final static String LINKEDLIST_LAST = "<java.util.LinkedList: java.util.LinkedList$Node last>";
 	protected final static String LINKEDLIST_ITEM = "<java.util.LinkedList$Node: java.lang.Object item>";
 
+	protected static final String GAPCLASS_SIG = "soot.jimple.infoflow.test.methodSummary.IGapClass";
+
 	@BeforeClass
 	public static void setUp() throws IOException {
 		final String sep = System.getProperty("path.separator");
@@ -232,6 +234,17 @@ public abstract class TestHelper {
 	 */
 	protected MethodSummaries createSummaries(String methodSignature) {
 		return getSummary().createMethodSummary(getClasspath(), methodSignature);
+	}
+
+	/**
+	 * Converts the given method subsignature into a full method signature under the
+	 * assumption that the given method is part of the gap class.
+	 * 
+	 * @param subsignature The method subsignature
+	 * @return The full method signature
+	 */
+	protected String makeGapClassSignature(String subsignature) {
+		return String.format("<%s: %s>", GAPCLASS_SIG, subsignature);
 	}
 
 }

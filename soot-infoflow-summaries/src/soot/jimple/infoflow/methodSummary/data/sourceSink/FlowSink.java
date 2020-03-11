@@ -46,7 +46,7 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	}
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, GapDefinition gap) {
-		super(type, paramterIdx, baseType, null, null, gap, false);
+		super(type, paramterIdx, baseType, null, gap, null, false);
 		this.taintSubFields = taintSubFields;
 	}
 
