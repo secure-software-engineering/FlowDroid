@@ -68,7 +68,7 @@ public class SummaryReader extends AbstractXMLReader {
 			String currentMethod = "";
 			int currentID = -1;
 			boolean isAlias = false;
-			boolean typeChecking = true;
+			Boolean typeChecking = null;
 			Boolean cutSubfields = null;
 
 			State state = State.summary;
@@ -105,12 +105,14 @@ public class SummaryReader extends AbstractXMLReader {
 						state = State.flow;
 						String sAlias = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_ALIAS);
 						isAlias = sAlias != null && sAlias.equals(XMLConstants.VALUE_TRUE);
+
 						String sTypeChecking = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_TYPE_CHECKING);
-						if (sTypeChecking != null)
+						if (sTypeChecking != null && !sTypeChecking.isEmpty())
 							typeChecking = sTypeChecking.equals(XMLConstants.VALUE_TRUE);
+
 						String sCutSubfields = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_CUT_SUBFIELDS);
 						if (sCutSubfields != null && !sCutSubfields.isEmpty())
-							cutSubfields = sTypeChecking.equals(XMLConstants.VALUE_TRUE);
+							cutSubfields = sCutSubfields.equals(XMLConstants.VALUE_TRUE);
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isStartElement()) {

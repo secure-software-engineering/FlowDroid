@@ -742,6 +742,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	@Override
 	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
+
+		if (stmt.toString().contains("toByteArray"))
+			System.out.println("x");
+
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
@@ -751,8 +755,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 
 		// Compute the wrapper taints for the current method
-		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, stmt.getInvokeExpr().getMethod(),
-				killIncomingTaint, classSupported);
+		final SootMethod callee = stmt.getInvokeExpr().getMethod();
+		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
@@ -765,10 +769,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// If we have no data flows, we can abort early
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			wrapperMisses.incrementAndGet();
-			SootMethod method = stmt.getInvokeExpr().getMethod();
 
 			if (!classSupported.value)
-				reportMissingMethod(method);
+				reportMissingMethod(callee);
 
 			if (classSupported.value)
 				return Collections.singleton(taintedAbs);
@@ -897,8 +900,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			// implementations in the application code
 			if ((flowsInTarget == null || flowsInTarget.isEmpty()) && curGap != null) {
 				SootMethod callee = Scene.v().grabMethod(curGap.getSignature());
-				if (callee != null)
-					for (SootMethod implementor : getAllImplementors(callee))
+				if (callee != null) {
+					for (SootMethod implementor : getAllImplementors(callee)) {
 						if (implementor.getDeclaringClass().isConcrete() && !implementor.getDeclaringClass().isPhantom()
 								&& implementor.isConcrete()) {
 							Set<AccessPathPropagator> implementorPropagators = spawnAnalysisIntoClientCode(implementor,
@@ -906,10 +909,12 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 							if (implementorPropagators != null)
 								workList.addAll(implementorPropagators);
 						}
+					}
+				}
 			}
 
 			// Apply the flow summaries for other libraries
-			if (flowsInTarget != null && !flowsInTarget.isEmpty())
+			if (flowsInTarget != null && !flowsInTarget.isEmpty()) {
 				for (MethodFlow flow : flowsInTarget) {
 					// Apply the flow summary
 					AccessPathPropagator newPropagator = applyFlow(flow, curPropagator);
@@ -947,6 +952,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 							workList.add(backwardsPropagator);
 					}
 				}
+			}
 		}
 		return res;
 	}
@@ -1610,7 +1616,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		final AbstractFlowSinkSource flowSource = flow.source();
 		final AbstractFlowSinkSource flowSink = flow.sink();
 		final boolean taintSubFields = flow.sink().taintSubFields();
-		final boolean checkTypes = flow.getTypeChecking();
+		final Boolean checkTypes = flow.getTypeChecking();
 
 		AccessPathFragment remainingFields = cutSubFields(flow, getRemainingFields(flowSource, taint));
 		AccessPathFragment appendedFields = AccessPathFragment.append(flowSink.getAccessPath(), remainingFields);
@@ -1620,16 +1626,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink));
 		Type taintType = TypeUtils.getTypeFromString(getAssignmentType(taint, lastCommonAPIdx - 1));
 
-		if (checkTypes) {
-			// For type checking, we need types
-			if (sinkType == null || taintType == null)
-				return null;
-
+		// For type checking, we need types
+		if ((checkTypes == null || checkTypes.booleanValue()) && sinkType != null && taintType != null) {
 			// If we taint something in the base object, its type must match. We
 			// might have a taint for "a" in o.add(a) and need to check whether
 			// "o" matches the expected type in our summary.
 			if (!(sinkType instanceof PrimType) && !isCastCompatible(taintType, sinkType)
-					&& flowSink.getType() == SourceSinkType.Field && !checkTypes) {
+					&& flowSink.getType() == SourceSinkType.Field) {
 				// If the target is an array, the value might also flow into an
 				// element
 				boolean found = false;
@@ -1703,8 +1706,12 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	protected boolean isCutSubFields(MethodFlow flow) {
 		Boolean cut = flow.getCutSubFields();
-		if (cut == null)
-			return !flow.getTypeChecking();
+		Boolean typeChecking = flow.getTypeChecking();
+		if (cut == null) {
+			if (typeChecking != null)
+				return !typeChecking.booleanValue();
+			return false;
+		}
 		return cut.booleanValue();
 	}
 

@@ -150,7 +150,7 @@ public class AccessPathFragment {
 	public AccessPathFragment append(AccessPathFragment toAppend) {
 		// If only one of the two operands contains actual data, we simply take that
 		// object and don't need to append anything
-		if (toAppend == null) {
+		if (toAppend == null || toAppend.isEmpty()) {
 			if (this.isEmpty())
 				return null;
 			return this;
