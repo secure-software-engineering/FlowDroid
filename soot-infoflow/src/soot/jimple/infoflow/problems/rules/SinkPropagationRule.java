@@ -13,6 +13,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
@@ -70,16 +71,18 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	private void checkForSink(Abstraction d1, Abstraction source, Stmt stmt, final Value retVal) {
 		// The incoming value may be a complex expression. We have to look at
 		// every simple value contained within it.
-		for (Value val : BaseSelector.selectBaseList(retVal, false)) {
-			final AccessPath ap = source.getAccessPath();
-			final ISourceSinkManager sourceSinkManager = getManager().getSourceSinkManager();
+		final AccessPath ap = source.getAccessPath();
+		final Aliasing aliasing = getAliasing();
+		final ISourceSinkManager sourceSinkManager = getManager().getSourceSinkManager();
 
-			if (ap != null && sourceSinkManager != null && source.isAbstractionActive()
-					&& getAliasing().mayAlias(val, ap.getPlainValue())) {
-				SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
-				if (sinkInfo != null
-						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt)))
-					killState = true;
+		if (ap != null && sourceSinkManager != null && aliasing != null && source.isAbstractionActive()) {
+			for (Value val : BaseSelector.selectBaseList(retVal, false)) {
+				if (aliasing.mayAlias(val, ap.getPlainValue())) {
+					SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
+					if (sinkInfo != null
+							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt)))
+						killState = true;
+				}
 			}
 		}
 	}
