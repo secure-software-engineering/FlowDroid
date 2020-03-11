@@ -23,6 +23,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 
 	protected boolean applySummariesOnTheFly = true;
 	protected Set<String> additionalSummaryDirectories;
+	protected boolean useDefaultSummaries = true;
 
 	protected long classSummaryTimeout = -1;
 	private int repeatCount = 1;
@@ -65,6 +66,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 			this.validateResults = summaryConfig.validateResults;
 			this.repeatCount = summaryConfig.repeatCount;
 			this.applySummariesOnTheFly = summaryConfig.applySummariesOnTheFly;
+			this.useDefaultSummaries = summaryConfig.useDefaultSummaries;
 
 			{
 				Set<String> otherAdditionalDirs = summaryConfig.additionalSummaryDirectories;
@@ -241,6 +243,33 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
+	 * Sets whether the default summaries shall be applied while generating more
+	 * summaries
+	 * 
+	 * @param useDefaultSummaries True to use the default summaries for the JDK and
+	 *                            well-known libraries when generating new
+	 *                            summaries, false to only rely on the
+	 *                            implementation (and potentially user-defined
+	 *                            additional summary directories)
+	 */
+	public void setUseDefaultSummaries(boolean useDefaultSummaries) {
+		this.useDefaultSummaries = useDefaultSummaries;
+	}
+
+	/**
+	 * Gets whether the default summaries shall be applied while generating more
+	 * summaries
+	 * 
+	 * @return True to use the default summaries for the JDK and well-known
+	 *         libraries when generating new summaries, false to only rely on the
+	 *         implementation (and potentially user-defined additional summary
+	 *         directories)
+	 */
+	public boolean isUseDefaultSummaries() {
+		return useDefaultSummaries;
+	}
+
+	/**
 	 * Adds an additional directory in which the summary generator shall look for
 	 * existing summaries to speed up the generation of new ones
 	 * 
@@ -288,6 +317,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 		result = prime * result + (loadFullJAR ? 1231 : 1237);
 		result = prime * result + repeatCount;
 		result = prime * result + (summarizeHashCodeEquals ? 1231 : 1237);
+		result = prime * result + (useDefaultSummaries ? 1231 : 1237);
 		result = prime * result + (validateResults ? 1231 : 1237);
 		return result;
 	}
@@ -325,6 +355,8 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 		if (repeatCount != other.repeatCount)
 			return false;
 		if (summarizeHashCodeEquals != other.summarizeHashCodeEquals)
+			return false;
+		if (useDefaultSummaries != other.useDefaultSummaries)
 			return false;
 		if (validateResults != other.validateResults)
 			return false;

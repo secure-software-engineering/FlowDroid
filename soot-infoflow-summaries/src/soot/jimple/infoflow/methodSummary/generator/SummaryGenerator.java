@@ -74,9 +74,21 @@ public class SummaryGenerator {
 	protected List<String> substitutedWith = new LinkedList<String>();
 
 	protected SummaryTaintWrapper fallbackWrapper;
+	protected boolean fallbackWrapperInitialized = false;
 	protected MemorySummaryProvider onFlySummaryProvider = null;
 
 	public SummaryGenerator() {
+		//
+	}
+
+	/**
+	 * Initializes the fallback taint wrapper
+	 */
+	private void initializeFallbackWrapper() {
+		if (fallbackWrapperInitialized)
+			return;
+		fallbackWrapperInitialized = true;
+
 		try {
 			// Do we want to integrate summaries on the fly?
 			List<IMethodSummaryProvider> innerProviders = new ArrayList<>();
@@ -94,7 +106,8 @@ public class SummaryGenerator {
 			}
 
 			// Load the normal JDK summaries
-			innerProviders.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
+			if (config.isUseDefaultSummaries())
+				innerProviders.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
 
 			// Combine our summary providers
 			IMethodSummaryProvider provider = new MergingSummaryProvider(innerProviders);
@@ -103,6 +116,16 @@ public class SummaryGenerator {
 			LoggerFactory.getLogger(getClass()).error(
 					"An error occurred while loading the fallback taint wrapper, proceeding without fallback", e);
 		}
+	}
+
+	/**
+	 * Releases all pre-existing summary information that is used when constructing
+	 * new summaries. Call this method after changing pre-existing summary files on
+	 * disk.
+	 */
+	public void releaseFallbackTaintWrapper() {
+		this.fallbackWrapper = null;
+		this.fallbackWrapperInitialized = false;
 	}
 
 	/**
@@ -581,6 +604,10 @@ public class SummaryGenerator {
 	 */
 	private MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
 			final GapManager gapManager, final ResultsAvailableHandler resultHandler) {
+		// We need to construct a fallback taint wrapper based on the current
+		// configuration
+		initializeFallbackWrapper();
+
 		logger.info(String.format("Computing method summary for %s...", methodSig));
 		long nanosBeforeMethod = System.nanoTime();
 

@@ -214,7 +214,11 @@ public abstract class TestHelper {
 	 * 
 	 * @return The {@link SummaryGenerator} instance
 	 */
-	protected abstract SummaryGenerator getSummary();
+	protected SummaryGenerator getSummary() {
+		SummaryGenerator sg = new SummaryGenerator();
+		sg.getConfig().setUseDefaultSummaries(false);
+		return sg;
+	}
 
 	/**
 	 * Gets the classpath to use for creating summaries

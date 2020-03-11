@@ -201,7 +201,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 						for (SootClass childClass : childClasses) {
 							// Do we have support for the target class?
 							if (summaries.merge(flows.getMethodFlows(childClass, methodSig)))
-								return true;
+								found = true;
 
 							// Do we support any interface this class might have?
 							if (checkInterfaces(methodSig, summaries, childClass))
@@ -742,10 +742,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	@Override
 	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
-
-		if (stmt.toString().contains("toByteArray"))
-			System.out.println("x");
-
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
