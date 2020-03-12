@@ -220,7 +220,7 @@ public class FieldToParaTests extends TestHelper {
 
 	@Override
 	protected SummaryGenerator getSummary() {
-		SummaryGenerator sg = new SummaryGenerator();
+		SummaryGenerator sg = super.getSummary();
 		List<String> sub = new LinkedList<String>();
 		sub.add("java.util.ArrayList");
 		sg.setSubstitutedWith(sub);
