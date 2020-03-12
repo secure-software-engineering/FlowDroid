@@ -5,8 +5,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -15,8 +15,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -27,8 +27,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -37,8 +37,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -49,8 +49,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -59,11 +59,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" 
 						AccessPath="[android.os.Bundle: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -71,8 +71,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -81,8 +81,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -91,8 +91,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -101,8 +101,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -111,8 +111,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -121,8 +121,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -131,8 +131,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -141,16 +141,16 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -161,8 +161,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -171,8 +171,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -181,8 +181,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -193,8 +193,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -203,8 +203,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -213,16 +213,16 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -233,11 +233,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.os.Parcelable"
 						AccessPath="[android.os.Parcelable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -245,11 +245,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.os.Parcelable"
 						AccessPath="[android.os.Parcelable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -257,11 +257,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.os.PersistableBundle"
 						AccessPath="[android.os.PersistableBundle: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -269,11 +269,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.os.PersistableBundle"
 						AccessPath="[android.os.PersistableBundle: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -281,11 +281,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="java.io.Serializable"
 						AccessPath="[java.io.Serializable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -293,16 +293,16 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.util.Size"
 						AccessPath="[android.util.Size: int width]"
 						AccessPathTypes="[int]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.util.Size"
 						AccessPath="[android.util.Size: int height]"
 						AccessPathTypes="[int]" />
@@ -313,11 +313,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.util.SparseArray"
 						AccessPath="[android.util.SparseArray: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -325,8 +325,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" BaseType="android.util.SparseBooleanArray"
 						AccessPath="[android.util.SparseBooleanArray: boolean[] data]"
 						AccessPathTypes="[boolean[]]" />
@@ -337,8 +337,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -347,8 +347,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -357,8 +357,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -369,8 +369,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -379,8 +379,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -389,8 +389,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -399,8 +399,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -409,19 +409,19 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="void unmarshall(byte[],int,int)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -430,8 +430,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -440,8 +440,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -450,8 +450,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -460,8 +460,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -470,10 +470,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.os.Bundle: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -482,8 +482,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -492,8 +492,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -502,8 +502,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -512,8 +512,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -522,8 +522,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -532,8 +532,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -542,8 +542,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -552,8 +552,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -562,8 +562,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -572,8 +572,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -582,8 +582,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -592,8 +592,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -602,8 +602,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -614,8 +614,8 @@
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -624,8 +624,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -634,8 +634,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -646,16 +646,16 @@
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -664,10 +664,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.os.Parcelable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -676,10 +676,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.os.Parcelable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.Parcel"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -688,10 +688,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.os.PersistableBundle: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="android.os.PersistableBundle"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -700,10 +700,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.io.Serializable: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -714,16 +714,16 @@
 						AccessPath="[android.util.Size: int width]"
 						AccessPathTypes="[int]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.util.Size: int height]"
 						AccessPathTypes="[int]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -734,16 +734,16 @@
 						AccessPath="[android.util.SizeF: float width]"
 						AccessPathTypes="[float]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.util.SizeF: float height]"
 						AccessPathTypes="[float]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -752,10 +752,10 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.util.SparseArray: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -766,8 +766,8 @@
 						AccessPath="[android.util.SparseBooleanArray: boolean[] data]"
 						AccessPathTypes="[boolean[]]" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -776,8 +776,8 @@
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -785,18 +785,20 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[android.os.Parcel: byte[] data]"
-						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
 		<method id="void writeStringList(java.util.List)">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
+					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -805,8 +807,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -815,8 +817,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -825,8 +827,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -835,8 +837,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -845,8 +847,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
@@ -855,9 +857,19 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="java.io.Serializable"
-						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					<to sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
 						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte[] marshall()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.os.Parcel"
+						AccessPath="[android.os.Parcel: java.lang.Object[] data]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
