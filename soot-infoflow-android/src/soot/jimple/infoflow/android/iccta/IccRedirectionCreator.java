@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import soot.Body;
 import soot.Local;
 import soot.Modifier;
-import soot.NullType;
 import soot.PatchingChain;
 import soot.RefType;
 import soot.Scene;
@@ -430,6 +429,10 @@ public class IccRedirectionCreator {
 			args.add(arg1);
 			args.add(arg0);
 		} else {
+			// specially deal with ICC methods with no parameter, i.e., PendingIntent.send()
+			if (fromStmt.getInvokeExpr().getArgCount() == 0) {
+				return;
+			}
 			Value arg0 = fromStmt.getInvokeExpr().getArg(0);
 			args.add(arg0);
 		}
