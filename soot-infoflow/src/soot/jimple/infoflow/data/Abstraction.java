@@ -137,8 +137,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		this(sourceVal, new SourceContext(definition, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
 	}
 
-	protected Abstraction(AccessPath apToTaint, SourceContext sourceContext, boolean exceptionThrown,
-			boolean isImplicit) {
+	Abstraction(AccessPath apToTaint, SourceContext sourceContext, boolean exceptionThrown, boolean isImplicit) {
 		this.sourceContext = sourceContext;
 		this.accessPath = apToTaint;
 		this.activationUnit = null;

@@ -33,6 +33,7 @@ import soot.jimple.infoflow.methodSummary.generator.GapManager;
 import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.SummaryResultInfo;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.SummarySourceInfo;
+import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
@@ -177,12 +178,9 @@ public class InfoflowResultPostProcessor {
 							if (sourceAP == null || sinkAP == null)
 								throw new RuntimeException("Invalid access path");
 
-							// We only take flows which are not identity flows.
-							// If we have a flow from a gap parameter to the
-							// original
-							// method parameter, the access paths are equal, but
-							// that's
-							// ok in the case of aliasing.
+							// We only take flows which are not identity flows. If we have a flow from a gap
+							// parameter to the original method parameter, the access paths are equal, but
+							// that's ok in the case of aliasing.
 							boolean isAliasedField = gapManager.getGapForCall(sourceStmt) != null
 									&& isAliasedField(sinkAP, sourceAP, sourceStmt) && si.getSourceInfo().getIsAlias();
 							if (!sinkAP.equals(sourceAP) || isAliasedField) {
@@ -427,11 +425,13 @@ public class InfoflowResultPostProcessor {
 			return false;
 
 		// Compare the access paths
-		if (sink.getAccessPath() != null) {
-			if (sink.getAccessPath().length != source.getAccessPath().length)
+		final AccessPathFragment sinkAccessPath = sink.getAccessPath();
+		final AccessPathFragment sourceAccessPath = source.getAccessPath();
+		if (sinkAccessPath != null && sourceAccessPath != null) {
+			if (sinkAccessPath.length() != sourceAccessPath.length())
 				return false;
-			for (int i = 0; i < sink.getAccessPath().length; i++) {
-				if (!source.getAccessPath()[i].equals(sink.getAccessPath()[i]))
+			for (int i = 0; i < sink.getAccessPath().length(); i++) {
+				if (!sourceAccessPath.getField(i).equals(sinkAccessPath.getField(i)))
 					return false;
 			}
 		}

@@ -124,7 +124,7 @@ class Main {
 			generator.getConfig().setExcludes(excludes);
 
 			// Set optional settings
-			conifgureOptionalSettings(cmd, generator);
+			configureOptionalSettings(cmd, generator);
 
 			// Configure the output directory
 			if (!toAnalyze.exists()) {
@@ -149,6 +149,13 @@ class Main {
 					System.out.println(String.format("Jar %d of %d: %s", c + 1, files.length, f));
 					createSummaries(generator, classesToAnalyze, forceOverwrite, f, outputFolder);
 				}
+
+				// If we don't have any JAR files, the target may be a normal classpath with
+				// Java class files
+				if (files.length == 0) {
+					System.out.println(String.format("Analyzing directory %s...", toAnalyze.getAbsolutePath()));
+					createSummaries(generator, classesToAnalyze, forceOverwrite, toAnalyze, outputFolder);
+				}
 			} else {
 				createSummaries(generator, classesToAnalyze, forceOverwrite, toAnalyze, outputFolder);
 			}
@@ -167,7 +174,7 @@ class Main {
 	 * @param cmd       The command-line options
 	 * @param generator The summary generator
 	 */
-	protected void conifgureOptionalSettings(CommandLine cmd, SummaryGenerator generator) {
+	protected void configureOptionalSettings(CommandLine cmd, SummaryGenerator generator) {
 		{
 			int repeatCount = Integer.parseInt(cmd.getOptionValue(OPTION_REPEAT, "-1"));
 			if (repeatCount > 0)

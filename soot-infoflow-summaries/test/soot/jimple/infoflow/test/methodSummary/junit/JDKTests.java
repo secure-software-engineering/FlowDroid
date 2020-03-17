@@ -10,7 +10,6 @@ import org.junit.Test;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.generator.SummaryGenerator;
-import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorFactory;
 
 public class JDKTests extends TestHelper {
 
@@ -44,10 +43,9 @@ public class JDKTests extends TestHelper {
 		Assert.assertNotNull(flow);
 	}
 
-	@Test(timeout = 100000)
+	@Test(timeout = 150000)
 	public void arrayListTest() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.util.ArrayList"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -69,8 +67,7 @@ public class JDKTests extends TestHelper {
 
 	@Test(timeout = 100000)
 	public void gapTest2() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.util.Collections$UnmodifiableMap$UnmodifiableEntrySet"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -78,8 +75,7 @@ public class JDKTests extends TestHelper {
 
 	@Test(timeout = 300000)
 	public void gapTest3() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.util.HashMap$EntrySet"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -87,8 +83,7 @@ public class JDKTests extends TestHelper {
 
 	@Test(timeout = 300000)
 	public void gapTest4() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.util.concurrent.ConcurrentHashMap$Values"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -96,8 +91,7 @@ public class JDKTests extends TestHelper {
 
 	@Test(timeout = 300000)
 	public void gapTest5() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.lang.ProcessEnvironment$StringKeySet"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -105,8 +99,7 @@ public class JDKTests extends TestHelper {
 
 	@Test(timeout = 600000)
 	public void gapTest6() {
-		SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
-		ClassSummaries summaries = generator.createMethodSummaries(libPath,
+		ClassSummaries summaries = getSummary().createMethodSummaries(libPath,
 				Collections.singleton("java.util.PriorityQueue"));
 		Set<MethodFlow> flow = summaries.getAllFlows();
 		Assert.assertNotNull(flow);
@@ -170,7 +163,7 @@ public class JDKTests extends TestHelper {
 
 	@Override
 	protected SummaryGenerator getSummary() {
-		SummaryGenerator sg = new SummaryGenerator();
+		SummaryGenerator sg = super.getSummary();
 		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(4);
 		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.getConfig().setLoadFullJAR(false);

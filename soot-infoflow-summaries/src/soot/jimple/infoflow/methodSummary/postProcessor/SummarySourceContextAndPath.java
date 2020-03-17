@@ -196,12 +196,14 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 			// Match the access path from the caller back into the callee
 			for (SootMethod callee : curCallees) {
-				AccessPath newAP = mapAccessPathBackIntoCaller(scap.curAP, stmt, callee);
-				if (newAP != null) {
-					scap.curAP = newAP;
-					scap.depth--;
-					matched = true;
-					break;
+				if (callee.isConcrete()) {
+					AccessPath newAP = mapAccessPathBackIntoCaller(scap.curAP, stmt, callee);
+					if (newAP != null) {
+						scap.curAP = newAP;
+						scap.depth--;
+						matched = true;
+						break;
+					}
 				}
 			}
 
@@ -457,7 +459,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Make sure that we don't end up with a senseless callee
 		if (!callee.getSubSignature().equals(stmt.getInvokeExpr().getMethod().getSubSignature())
 				&& !isThreadCall(stmt.getInvokeExpr().getMethod(), callee)) {
-			System.out.println(String.format("WARNING: Invalid callee on stack. Caller was %s, callee was %s",
+			logger.warn(String.format("Invalid callee on stack. Caller was %s, callee was %s",
 					stmt.getInvokeExpr().getMethod().getSubSignature(), callee));
 			return null;
 		}

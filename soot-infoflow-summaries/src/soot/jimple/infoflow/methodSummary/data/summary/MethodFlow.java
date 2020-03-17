@@ -20,7 +20,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	private final FlowSource from;
 	private final FlowSink to;
 	private final boolean isAlias;
-	private final boolean typeChecking;
+	private final Boolean typeChecking;
 	private final Boolean cutSubFields;
 
 	/**
@@ -38,7 +38,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	 *                     field "b" will not appended to the sink if this option is
 	 *                     enabled.
 	 */
-	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, boolean typeChecking,
+	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, Boolean typeChecking,
 			Boolean cutSubFields) {
 		super(methodSig);
 		this.from = from;
@@ -102,9 +102,9 @@ public class MethodFlow extends AbstractMethodSummary {
 		}
 
 		FlowSource reverseSource = new FlowSource(fromType, to.getParameterIndex(), to.getBaseType(),
-				to.getAccessPath(), to.getAccessPathTypes(), to.getGap(), to.isMatchStrict());
+				to.getAccessPath(), to.getGap(), to.isMatchStrict());
 		FlowSink reverseSink = new FlowSink(toType, from.getParameterIndex(), from.getBaseType(), from.getAccessPath(),
-				from.getAccessPathTypes(), taintSubFields, from.getGap(), from.isMatchStrict());
+				taintSubFields, from.getGap(), from.isMatchStrict());
 		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, cutSubFields);
 	}
 
@@ -124,7 +124,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	 * @return True if type checking shall be performed before applying this method
 	 *         flow, otherwise false
 	 */
-	public boolean getTypeChecking() {
+	public Boolean getTypeChecking() {
 		return this.typeChecking;
 	}
 
@@ -212,7 +212,10 @@ public class MethodFlow extends AbstractMethodSummary {
 				return false;
 		} else if (!to.equals(other.to))
 			return false;
-		if (typeChecking != other.typeChecking)
+		if (typeChecking == null) {
+			if (other.typeChecking != null)
+				return false;
+		} else if (!typeChecking.equals(other.typeChecking))
 			return false;
 		return true;
 	}
@@ -225,7 +228,7 @@ public class MethodFlow extends AbstractMethodSummary {
 		result = prime * result + ((from == null) ? 0 : from.hashCode());
 		result = prime * result + (isAlias ? 1231 : 1237);
 		result = prime * result + ((to == null) ? 0 : to.hashCode());
-		result = prime * result + (typeChecking ? 1231 : 1237);
+		result = prime * result + ((typeChecking == null) ? 0 : typeChecking.hashCode());
 		return result;
 	}
 

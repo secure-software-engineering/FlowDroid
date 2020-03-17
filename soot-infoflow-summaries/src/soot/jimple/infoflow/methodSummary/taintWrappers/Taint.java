@@ -16,19 +16,19 @@ public class Taint extends FlowSink implements Cloneable {
 		super(type, paramterIdx, baseType, taintSubFields);
 	}
 
-	public Taint(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public Taint(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, taintSubFields);
+		super(type, paramterIdx, baseType, accessPath, taintSubFields);
 	}
 
-	public Taint(SourceSinkType type, int paramterIdx, String baseType, String[] fields, String[] fieldTypes,
+	public Taint(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
 			boolean taintSubFields, GapDefinition gap) {
-		super(type, paramterIdx, baseType, fields, fieldTypes, taintSubFields, gap);
+		super(type, paramterIdx, baseType, accessPath, taintSubFields, gap);
 	}
 
 	@Override
 	public Taint clone() {
-		return new Taint(type, parameterIdx, baseType, accessPath, accessPathTypes, taintSubFields);
+		return new Taint(type, parameterIdx, baseType, accessPath, taintSubFields);
 	}
 
 }

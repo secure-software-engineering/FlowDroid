@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.methodSummary.taintWrappers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -202,7 +201,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 						for (SootClass childClass : childClasses) {
 							// Do we have support for the target class?
 							if (summaries.merge(flows.getMethodFlows(childClass, methodSig)))
-								return true;
+								found = true;
 
 							// Do we support any interface this class might have?
 							if (checkInterfaces(methodSig, summaries, childClass))
@@ -571,8 +570,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				newTaints = new HashSet<>();
 
 			newTaints.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-					ap.getTaintSubFields()));
+					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
 		}
 
 		// Check whether a parameter is tainted
@@ -582,8 +580,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				newTaints = new HashSet<>();
 
 			newTaints.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-					ap.getTaintSubFields()));
+					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
 		}
 
 		// If we also match returned values, we must do this here
@@ -594,8 +591,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 					newTaints = new HashSet<>();
 
 				newTaints.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-						ap.getTaintSubFields()));
+						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
 			}
 		}
 
@@ -622,8 +618,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (res == null)
 				res = new HashSet<>();
 			res.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-					ap.getTaintSubFields(), gap));
+					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether a parameter is tainted
@@ -632,8 +627,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (res == null)
 				res = new HashSet<>();
 			res.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-					ap.getTaintSubFields(), gap));
+					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether the return value is tainted
@@ -643,8 +637,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (res == null)
 					res = new HashSet<>();
 				res.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						fieldArrayToStringArray(ap.getFields()), typeArrayToStringArray(ap.getFieldTypes()),
-						ap.getTaintSubFields(), gap));
+						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
 			}
 		}
 
@@ -662,7 +655,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	protected AccessPath createAccessPathFromTaint(Taint t, Stmt stmt) {
 		// Convert the taints to Soot objects
 		SootField[] fields = safeGetFields(t.getAccessPath());
-		Type[] types = safeGetTypes(t.getAccessPathTypes(), fields);
+		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
 
 		// If the taint is a return value, we taint the left side of the
@@ -725,7 +718,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	private AccessPath createAccessPathInMethod(Taint t, SootMethod sm) {
 		// Convert the taints to Soot objects
 		SootField[] fields = safeGetFields(t.getAccessPath());
-		Type[] types = safeGetTypes(t.getAccessPathTypes(), fields);
+		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
 
 		// A return value cannot be propagated into a method
@@ -747,36 +740,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		throw new RuntimeException("Failed to convert taint " + t);
 	}
 
-	/**
-	 * Converts an array of SootFields to an array of strings
-	 * 
-	 * @param fields The array of SootFields to convert
-	 * @return The array of strings corresponding to the given array of SootFields
-	 */
-	private String[] fieldArrayToStringArray(SootField[] fields) {
-		if (fields == null)
-			return null;
-		String[] stringFields = new String[fields.length];
-		for (int i = 0; i < fields.length; i++)
-			stringFields[i] = fields[i].toString();
-		return stringFields;
-	}
-
-	/**
-	 * Converts an array of Soot Types to an array of strings
-	 * 
-	 * @param fields The array of Soot Types to convert
-	 * @return The array of strings corresponding to the given array of Soot Types
-	 */
-	private String[] typeArrayToStringArray(Type[] types) {
-		if (types == null)
-			return null;
-		String[] stringTypes = new String[types.length];
-		for (int i = 0; i < types.length; i++)
-			stringTypes[i] = types[i].toString();
-		return stringTypes;
-	}
-
 	@Override
 	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
 		// We only care about method invocations
@@ -788,8 +751,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 
 		// Compute the wrapper taints for the current method
-		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, stmt.getInvokeExpr().getMethod(),
-				killIncomingTaint, classSupported);
+		final SootMethod callee = stmt.getInvokeExpr().getMethod();
+		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
@@ -802,16 +765,19 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// If we have no data flows, we can abort early
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			wrapperMisses.incrementAndGet();
-			SootMethod method = stmt.getInvokeExpr().getMethod();
 
 			if (!classSupported.value)
-				reportMissingMethod(method);
+				reportMissingMethod(callee);
 
-			if (classSupported.value || fallbackWrapper == null)
+			if (classSupported.value)
 				return Collections.singleton(taintedAbs);
 			else {
-				Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
-				return fallbackTaints;
+				if (fallbackWrapper == null)
+					return null;
+				else {
+					Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
+					return fallbackTaints;
+				}
 			}
 		}
 
@@ -930,8 +896,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			// implementations in the application code
 			if ((flowsInTarget == null || flowsInTarget.isEmpty()) && curGap != null) {
 				SootMethod callee = Scene.v().grabMethod(curGap.getSignature());
-				if (callee != null)
-					for (SootMethod implementor : getAllImplementors(callee))
+				if (callee != null) {
+					for (SootMethod implementor : getAllImplementors(callee)) {
 						if (implementor.getDeclaringClass().isConcrete() && !implementor.getDeclaringClass().isPhantom()
 								&& implementor.isConcrete()) {
 							Set<AccessPathPropagator> implementorPropagators = spawnAnalysisIntoClientCode(implementor,
@@ -939,10 +905,12 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 							if (implementorPropagators != null)
 								workList.addAll(implementorPropagators);
 						}
+					}
+				}
 			}
 
 			// Apply the flow summaries for other libraries
-			if (flowsInTarget != null && !flowsInTarget.isEmpty())
+			if (flowsInTarget != null && !flowsInTarget.isEmpty()) {
 				for (MethodFlow flow : flowsInTarget) {
 					// Apply the flow summary
 					AccessPathPropagator newPropagator = applyFlow(flow, curPropagator);
@@ -980,6 +948,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 							workList.add(backwardsPropagator);
 					}
 				}
+			}
 		}
 		return res;
 	}
@@ -1496,8 +1465,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Compare the shared sub-path
 		for (int i = 0; i < taintedPath.getAccessPathLength() && i < flowSource.getAccessPathLength(); i++) {
-			String taintField = taintedPath.getAccessPath()[i];
-			String sourceField = flowSource.getAccessPath()[i];
+			String taintField = taintedPath.getAccessPath().getField(i);
+			String sourceField = flowSource.getAccessPath().getField(i);
 			if (!sourceField.equals(taintField))
 				return false;
 		}
@@ -1541,6 +1510,20 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	/**
 	 * Gets an array of fields with the specified signatures
 	 * 
+	 * @param accessPath The access path from which to retrieve the list of the
+	 *                   field signatures
+	 * @return The Array of fields with the given signature if all exists, otherwise
+	 *         null
+	 */
+	private SootField[] safeGetFields(AccessPathFragment accessPath) {
+		if (accessPath == null || accessPath.isEmpty())
+			return null;
+		return safeGetFields(accessPath.getFields());
+	}
+
+	/**
+	 * Gets an array of fields with the specified signatures
+	 * 
 	 * @param fieldSigs , list of the field signatures to retrieve
 	 * @return The Array of fields with the given signature if all exists, otherwise
 	 *         null
@@ -1555,6 +1538,21 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				return null;
 		}
 		return fields;
+	}
+
+	/**
+	 * Gets an array of types with the specified class names
+	 * 
+	 * @param accessPath The access path from which to retrieve the field types
+	 * @param fields     The fields from which to get the types if we don't have any
+	 *                   explicit ones
+	 * @return The Array of fields with the given signature if all exists, otherwise
+	 *         null
+	 */
+	private Type[] safeGetTypes(AccessPathFragment accessPath, SootField[] fields) {
+		if (accessPath == null || accessPath.isEmpty())
+			return null;
+		return safeGetTypes(accessPath.getFieldTypes(), fields);
 	}
 
 	/**
@@ -1614,29 +1612,23 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		final AbstractFlowSinkSource flowSource = flow.source();
 		final AbstractFlowSinkSource flowSink = flow.sink();
 		final boolean taintSubFields = flow.sink().taintSubFields();
-		final boolean checkTypes = flow.getTypeChecking();
+		final Boolean checkTypes = flow.getTypeChecking();
 
-		final String[] remainingFields = isCutSubFields(flow) ? null : getRemainingFields(flowSource, taint);
-		final String[] remainingFieldTypes = isCutSubFields(flow) ? null : getRemainingFieldTypes(flowSource, taint);
-
-		final String[] appendedFields = append(flowSink.getAccessPath(), remainingFields);
-		final String[] appendedFieldTypes = append(flowSink.getAccessPathTypes(), remainingFieldTypes, true);
+		AccessPathFragment remainingFields = cutSubFields(flow, getRemainingFields(flowSource, taint));
+		AccessPathFragment appendedFields = AccessPathFragment.append(flowSink.getAccessPath(), remainingFields);
 
 		int lastCommonAPIdx = Math.min(flowSource.getAccessPathLength(), taint.getAccessPathLength());
 
 		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink));
 		Type taintType = TypeUtils.getTypeFromString(getAssignmentType(taint, lastCommonAPIdx - 1));
 
-		if (checkTypes) {
-			// For type checking, we need types
-			if (sinkType == null || taintType == null)
-				return null;
-
+		// For type checking, we need types
+		if ((checkTypes == null || checkTypes.booleanValue()) && sinkType != null && taintType != null) {
 			// If we taint something in the base object, its type must match. We
 			// might have a taint for "a" in o.add(a) and need to check whether
 			// "o" matches the expected type in our summary.
 			if (!(sinkType instanceof PrimType) && !isCastCompatible(taintType, sinkType)
-					&& flowSink.getType() == SourceSinkType.Field && !checkTypes) {
+					&& flowSink.getType() == SourceSinkType.Field) {
 				// If the target is an array, the value might also flow into an
 				// element
 				boolean found = false;
@@ -1662,7 +1654,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// If we enter a gap with a type "GapBaseObject", we need to convert
 		// it to a regular field
 		SourceSinkType sourceSinkType = flowSink.getType();
-		if (flowSink.getType() == SourceSinkType.GapBaseObject && remainingFields != null && remainingFields.length > 0)
+		if (flowSink.getType() == SourceSinkType.GapBaseObject && remainingFields != null && !remainingFields.isEmpty())
 			sourceSinkType = SourceSinkType.Field;
 
 		// Compute the new base type
@@ -1674,14 +1666,31 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// Set the correct type. In case x -> b.x, the new type is not the type
 		// of b, but of the field x.
 		if (flowSink.hasAccessPath()) {
-			if (appendedFieldTypes != null)
-				appendedFieldTypes[flowSink.getAccessPathLength() - 1] = "" + newBaseType;
+			if (appendedFields != null)
+				appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1, "" + newBaseType);
 			sBaseType = flowSink.getBaseType();
 		}
 
 		// Taint the correct fields
-		return new Taint(sourceSinkType, flowSink.getParameterIndex(), sBaseType, appendedFields, appendedFieldTypes,
+		return new Taint(sourceSinkType, flowSink.getParameterIndex(), sBaseType, appendedFields,
 				taintSubFields || taint.taintSubFields(), gap);
+	}
+
+	/**
+	 * Cuts the given access path if required for the given method flow. This method
+	 * can cut the incoming access path to shorter lengths or abandon the original
+	 * access path altogether.
+	 * 
+	 * @param flow       The method flow specification
+	 * @param accessPath The remaining fields from the original access path
+	 * @return The fields that shall be appended to the new access path. This is
+	 *         usually a prefix of the original remaining fields
+	 */
+	protected AccessPathFragment cutSubFields(MethodFlow flow, AccessPathFragment accessPath) {
+		if (isCutSubFields(flow))
+			return null;
+		else
+			return accessPath;
 	}
 
 	/**
@@ -1691,10 +1700,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param flow The flow specification to check
 	 * @return true if the following fields shall be deleted, false otherwise
 	 */
-	private boolean isCutSubFields(MethodFlow flow) {
+	protected boolean isCutSubFields(MethodFlow flow) {
 		Boolean cut = flow.getCutSubFields();
-		if (cut == null)
-			return !flow.getTypeChecking();
+		Boolean typeChecking = flow.getTypeChecking();
+		if (cut == null) {
+			if (typeChecking != null)
+				return !typeChecking.booleanValue();
+			return false;
+		}
 		return cut.booleanValue();
 	}
 
@@ -1709,7 +1722,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	private String getAssignmentType(Taint taint, int idx) {
 		if (idx < 0)
 			return taint.getBaseType();
-		return taint.getAccessPathTypes() == null ? null : taint.getAccessPathTypes()[idx];
+
+		final AccessPathFragment accessPath = taint.getAccessPath();
+		if (accessPath == null)
+			return null;
+		final String[] fieldTypes = accessPath.getFieldTypes();
+
+		return fieldTypes == null ? null : fieldTypes[idx];
 	}
 
 	/**
@@ -1726,8 +1745,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// If we don't have explicit access path types, we use the declared
 		// types instead
-		if (srcSink.getAccessPathTypes() == null && srcSink.getAccessPath() != null) {
-			String[] ap = srcSink.getAccessPath();
+		final AccessPathFragment accessPath = srcSink.getAccessPath();
+		if (accessPath.getFieldTypes() == null && accessPath.getFields() != null) {
+			String[] ap = accessPath.getFields();
 			String apElement = ap[srcSink.getAccessPathLength() - 1];
 
 			Pattern pattern = Pattern.compile("^\\s*<(.*?):\\s*(.*?)>\\s*$");
@@ -1737,47 +1757,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			}
 		}
 
-		return srcSink.getAccessPathTypes() == null ? null
-				: srcSink.getAccessPathTypes()[srcSink.getAccessPathLength() - 1];
-	}
-
-	/**
-	 * Concatenates the two given arrays to one bigger array
-	 * 
-	 * @param fields          The first array
-	 * @param remainingFields The second array
-	 * @return The concatenated array containing all elements from both given arrays
-	 */
-	private String[] append(String[] fields, String[] remainingFields) {
-		return append(fields, remainingFields, false);
-	}
-
-	/**
-	 * Concatenates the two given arrays to one bigger array
-	 * 
-	 * @param fields          The first array
-	 * @param remainingFields The second array
-	 * @return The concatenated array containing all elements from both given arrays
-	 */
-	private String[] append(String[] fields, String[] remainingFields, boolean alwaysCopy) {
-		if (fields == null) {
-			if (alwaysCopy && remainingFields != null)
-				return Arrays.copyOf(remainingFields, remainingFields.length);
-			else
-				return remainingFields;
-		}
-		if (remainingFields == null) {
-			if (alwaysCopy && fields != null)
-				return Arrays.copyOf(fields, fields.length);
-			else
-				return fields;
-		}
-
-		int cnt = fields.length + remainingFields.length;
-		String[] appended = new String[cnt];
-		System.arraycopy(fields, 0, appended, 0, fields.length);
-		System.arraycopy(remainingFields, 0, appended, fields.length, remainingFields.length);
-		return appended;
+		return accessPath.getFieldTypes() == null ? null
+				: accessPath.getFieldTypes()[srcSink.getAccessPathLength() - 1];
 	}
 
 	/**
@@ -1789,7 +1770,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @return The remaining fields which are tainted in the given access path, but
 	 *         which are not covered by the given flow summary source
 	 */
-	private String[] getRemainingFields(AbstractFlowSinkSource flowSource, Taint taintedPath) {
+	private AccessPathFragment getRemainingFields(AbstractFlowSinkSource flowSource, Taint taintedPath) {
 		if (!flowSource.hasAccessPath())
 			return taintedPath.getAccessPath();
 
@@ -1797,32 +1778,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (fieldCnt <= 0)
 			return null;
 
-		String[] fields = new String[fieldCnt];
-		System.arraycopy(taintedPath.getAccessPath(), flowSource.getAccessPathLength(), fields, 0, fieldCnt);
-		return fields;
-	}
-
-	/**
-	 * Gets the types of the remaining fields which are tainted, but not covered by
-	 * the given flow summary source
-	 * 
-	 * @param flowSource  The flow summary source
-	 * @param taintedPath The tainted access path
-	 * @return The types of the remaining fields which are tainted in the given
-	 *         access path, but which are not covered by the given flow summary
-	 *         source
-	 */
-	private String[] getRemainingFieldTypes(AbstractFlowSinkSource flowSource, Taint taintedPath) {
-		if (!flowSource.hasAccessPath())
-			return taintedPath.getAccessPathTypes();
-
-		int fieldCnt = taintedPath.getAccessPathLength() - flowSource.getAccessPathLength();
-		if (fieldCnt <= 0)
-			return null;
+		final AccessPathFragment taintedAP = taintedPath.getAccessPath();
+		String[] oldFields = taintedAP.getFields();
+		String[] oldFieldTypes = taintedAP.getFieldTypes();
 
 		String[] fields = new String[fieldCnt];
-		System.arraycopy(taintedPath.getAccessPathTypes(), flowSource.getAccessPathLength(), fields, 0, fieldCnt);
-		return fields;
+		String[] fieldTypes = new String[fieldCnt];
+		System.arraycopy(oldFields, flowSource.getAccessPathLength(), fields, 0, fieldCnt);
+		System.arraycopy(oldFieldTypes, flowSource.getAccessPathLength(), fieldTypes, 0, fieldCnt);
+
+		return new AccessPathFragment(fields, fieldTypes);
 	}
 
 	/**

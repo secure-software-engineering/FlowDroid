@@ -544,6 +544,8 @@ public class MainClass {
 			return PathBuildingAlgorithm.ContextInsensitive;
 		else if (pathAlgo.equalsIgnoreCase("SOURCESONLY"))
 			return PathBuildingAlgorithm.ContextInsensitiveSourceFinder;
+		else if (pathAlgo.equalsIgnoreCase("RECURSIVE"))
+			return PathBuildingAlgorithm.Recursive;
 		else {
 			System.err.println(String.format("Invalid path reconstruction algorithm: %s", pathAlgo));
 			throw new AbortAnalysisException();
