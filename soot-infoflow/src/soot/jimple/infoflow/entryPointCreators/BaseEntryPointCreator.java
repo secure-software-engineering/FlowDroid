@@ -45,7 +45,6 @@ import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.VoidType;
-import soot.dava.internal.javaRep.DIntConstant;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
@@ -469,11 +468,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		return this.generateClassConstructor(createdClass, new HashSet<SootClass>(), parentClasses, null);
 	}
 
-
 	/**
 	 * Determines whether a class is accepted for generating a constructor.
 	 * 
-	 * @param clazz      The class of which to create an instance
+	 * @param clazz The class of which to create an instance
 	 * @return Whether the class is accepted for generating a constructor
 	 */
 	protected boolean acceptClass(SootClass clazz) {
@@ -521,7 +519,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			return null;
 		}
 
-    // if sootClass is simpleClass:
+		// if sootClass is simpleClass:
 		if (isSimpleType(createdClass.toString())) {
 			Local varLocal = generator.generateLocal(getSimpleTypeFromType(createdClass.getType()));
 
@@ -736,7 +734,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		if (t instanceof DoubleType)
 			return DoubleConstant.v(0);
 		if (t instanceof BooleanType)
-			return DIntConstant.v(0, BooleanType.v());
+			return IntConstant.v(0);
 
 		// also for arrays etc.
 		return NullConstant.v();
