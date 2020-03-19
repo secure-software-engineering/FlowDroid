@@ -810,8 +810,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										|| (taintWrapper != null && taintWrapper.isExclusive(iCallStmt, newSource)))) {
 							// If one of the callers does not read the value, we
 							// must pass it on in any case
-							boolean allCalleesRead = true;
-							outer: for (SootMethod callee : interproceduralCFG().getCalleesOfCallAt(call)) {
+							Collection<SootMethod> callees = interproceduralCFG().getCalleesOfCallAt(call);
+							boolean allCalleesRead = !callees.isEmpty();
+							outer: for (SootMethod callee : callees) {
 								if (callee.isConcrete() && callee.hasActiveBody()) {
 									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, invExpr, null, null,
 											source.getAccessPath());

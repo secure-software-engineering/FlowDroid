@@ -1034,7 +1034,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * 
 	 * @param sourcesSinks The SourceSinkManager
 	 */
-	private void eliminateDeadCode(ISourceSinkManager sourcesSinks) {
+	protected void eliminateDeadCode(ISourceSinkManager sourcesSinks) {
 		InfoflowManager dceManager = new InfoflowManager(config, null,
 				icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(), config.getEnableExceptionTracking()), null,
 				null, null, new AccessPathFactory(config), null);
