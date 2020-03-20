@@ -7,7 +7,10 @@
 		<exclusiveModel type="package" name="com.flurry" />
 		<exclusiveModel type="package" name="it.sephiroth.android.library" />
 		
-		<exclusiveModel type="package" name="java.lang.reflect" />
+		<!--
+			This breaks reflection support
+			<exclusiveModel type="package" name="java.lang.reflect" />
+		-->
 		
 		<exclusiveModel type="package" name="org.apache.commons.codec" />
 		<exclusiveModel type="package" name="org.apache.http" />
