@@ -5,6 +5,7 @@ import soot.BooleanType;
 import soot.ByteType;
 import soot.CharType;
 import soot.DoubleType;
+import soot.FastHierarchy;
 import soot.FloatType;
 import soot.IntType;
 import soot.LongType;
@@ -179,6 +180,8 @@ public class TypeUtils {
 	 * @return The more precise one of the two given types
 	 */
 	public static Type getMorePreciseType(Type tp1, Type tp2) {
+		final FastHierarchy fastHierarchy = Scene.v().getOrMakeFastHierarchy();
+
 		if (tp1 == null)
 			return tp2;
 		else if (tp2 == null)
@@ -191,9 +194,9 @@ public class TypeUtils {
 			return tp1;
 		else if (tp1 instanceof PrimType && tp2 instanceof PrimType)
 			return tp1; // arbitrary choice
-		else if (Scene.v().getFastHierarchy().canStoreType(tp2, tp1))
+		else if (fastHierarchy.canStoreType(tp2, tp1))
 			return tp2;
-		else if (Scene.v().getFastHierarchy().canStoreType(tp1, tp2))
+		else if (fastHierarchy.canStoreType(tp1, tp2))
 			return tp1;
 		else {
 			// If one type is an array type and the other one is the base type,

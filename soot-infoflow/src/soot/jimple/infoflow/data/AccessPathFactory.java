@@ -131,8 +131,15 @@ public class AccessPathFactory {
 			boolean taintSubFields, boolean cutFirstField, boolean reduceBases, ArrayTaintType arrayTaintType,
 			boolean canHaveImmutableAliases) {
 		// Make sure that the base object is valid
-		assert (val == null && appendingFields != null && appendingFields.length > 0)
-				|| AccessPath.canContainValue(val);
+		if (val != null && !AccessPath.canContainValue(val)) {
+			logger.error(String.format("Access paths cannot be rooted in values of type %s", val.getClass().getName()));
+			return null;
+		}
+
+		// Make sure that we have data for an access path at all
+		if (val == null && (appendingFields == null || appendingFields.length == 0))
+			return null;
+
 		final AccessPathConfiguration accessPathConfig = config.getAccessPathConfiguration();
 
 		// Do we track types?
