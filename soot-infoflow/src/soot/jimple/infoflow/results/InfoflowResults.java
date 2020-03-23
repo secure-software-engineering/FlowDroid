@@ -231,7 +231,9 @@ public class InfoflowResults {
 	 * @param results The data structure from which to copy the results
 	 */
 	public void addAll(InfoflowResults results) {
-		if (results == null || results.isEmpty())
+		// We must also accept empty result objects, because even though they do not
+		// contain any data flows, they may still contain performance data.
+		if (results == null)
 			return;
 
 		if (results.getExceptions() != null) {
@@ -239,7 +241,7 @@ public class InfoflowResults {
 				addException(e);
 		}
 
-		if (!results.getResults().isEmpty()) {
+		if (!results.isEmpty() && !results.getResults().isEmpty()) {
 			for (ResultSinkInfo sink : results.getResults().keySet())
 				for (ResultSourceInfo source : results.getResults().get(sink))
 					addResult(sink, source);

@@ -55,9 +55,9 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * the IDESolver implementation in Heros for performance reasons.
  * 
  * @param <N> The type of nodes in the interprocedural control-flow graph.
- *            Typically {@link Unit}.
+ *        Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
- *            problem.
+ *        problem.
  * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
