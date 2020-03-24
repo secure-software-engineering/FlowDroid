@@ -254,6 +254,9 @@ public class InfoflowResults {
 			else
 				this.performanceData.add(results.performanceData);
 		}
+
+		// We aggregate all individual states rather than just taking the best one
+		this.terminationState |= results.terminationState;
 	}
 
 	/**
