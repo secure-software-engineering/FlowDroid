@@ -51,6 +51,9 @@ public class InfoflowResults {
 	private volatile List<String> exceptions = null;
 	private int terminationState = TERMINATION_SUCCESS;
 
+	public InfoflowResults() {
+	}
+
 	/**
 	 * Gets the exceptions that have happened during the data flow analysis. This
 	 * collection is immutable.
@@ -75,10 +78,6 @@ public class InfoflowResults {
 			}
 		}
 		exceptions.add(ex);
-	}
-
-	public InfoflowResults() {
-
 	}
 
 	/**
