@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.jimple.infoflow.collect.ConcurrentCountingMap;
-import soot.jimple.infoflow.collect.ConcurrentCountingMap.LockingMode;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.ConcurrentHashMultiMap;
@@ -33,8 +32,6 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 	public DefaultGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
 		super(icfg, jumpFunctions);
-
-		this.jumpFnCounter.setLockingMode(LockingMode.Fast);
 	}
 
 	@Override
