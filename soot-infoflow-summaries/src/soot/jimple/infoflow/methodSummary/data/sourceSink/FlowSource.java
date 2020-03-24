@@ -98,7 +98,8 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 	 */
 	public void validate(String methodName) {
 		if (getType() == SourceSinkType.Return && getGap() == null)
-			throw new RuntimeException("Return values cannot be sources. " + "Offending method: " + methodName);
+			throw new InvalidFlowSpecificationException(
+					"Return values cannot be sources. Offending method: " + methodName, this);
 	}
 
 	@Override

@@ -141,8 +141,11 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	 */
 	public void validate(String methodName) {
 		if (getType() == SourceSinkType.GapBaseObject && getGap() == null)
-			throw new RuntimeException(
-					"Gap base flows must always be linked " + "with gaps. Offending method: " + methodName);
+			throw new InvalidFlowSpecificationException(
+					"Gap base flows must always be linked with gaps. Offending method: " + methodName, this);
+
+		if (getType() == SourceSinkType.Parameter && getGap() == null)
+			throw new InvalidFlowSpecificationException("Parameters may only be sinks when referencing gaps", this);
 	}
 
 	@Override

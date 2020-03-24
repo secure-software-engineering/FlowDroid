@@ -466,6 +466,9 @@ public class InfoflowResultPostProcessor {
 			System.out.println("source: " + source.toString());
 			System.out.println("sink  : " + sink.toString());
 			System.out.println("alias : " + isAlias);
+			GapDefinition gap = sink.getGap();
+			if (gap != null)
+				System.out.println("gap : " + gap.getSignature());
 
 			System.out.println("------------------------------------");
 		}
