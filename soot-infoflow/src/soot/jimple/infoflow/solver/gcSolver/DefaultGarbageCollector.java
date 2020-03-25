@@ -22,6 +22,7 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 	private ConcurrentCountingMap<SootMethod> jumpFnCounter = new ConcurrentCountingMap<>();
 	private final Set<SootMethod> gcScheduleSet = new ConcurrentHashSet<>();
 	private final AtomicInteger gcedMethods = new AtomicInteger();
+	private final AtomicInteger gcedEdges = new AtomicInteger();
 
 	/**
 	 * The number of methods to collect as candidates for garbage collection, before
@@ -71,6 +72,9 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 				if (toRemove.size() > GC_THRESHOLD) {
 					for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
 						SootMethod sm = it.next();
+						Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
+						if (oldFunctions != null)
+							gcedEdges.addAndGet(oldFunctions.size());
 						if (jumpFunctions.remove(sm))
 							gcedMethods.incrementAndGet();
 						it.remove();

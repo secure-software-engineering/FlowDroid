@@ -172,7 +172,16 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		this.numThreads = Math.max(1, tabulationProblem.numThreads());
 		this.executor = getExecutor();
 
-		this.garbageCollector = new DefaultGarbageCollector<>(icfg, jumpFunctions);
+		this.garbageCollector = createGarbageCollector();
+	}
+
+	/**
+	 * Factory method for creating an instance of the garbage collector
+	 * 
+	 * @return The new garbage collector
+	 */
+	protected IGarbageCollector<N, D> createGarbageCollector() {
+		return new DefaultGarbageCollector<>(icfg, jumpFunctions);
 	}
 
 	public void setSolverId(boolean solverId) {
