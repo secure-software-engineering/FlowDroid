@@ -499,6 +499,18 @@ public class InfoflowResults {
 		this.performanceData = performanceData;
 	}
 
+	/**
+	 * Adds the given performance data to this result object
+	 * 
+	 * @param performanceData The performance data to add
+	 */
+	public void addPerformanceData(InfoflowPerformanceData performanceData) {
+		if (this.performanceData == null)
+			this.performanceData = performanceData;
+		else
+			this.performanceData.add(performanceData);
+	}
+
 	@Override
 	public String toString() {
 		if (this.results == null)

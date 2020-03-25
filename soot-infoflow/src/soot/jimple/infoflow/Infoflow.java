@@ -642,10 +642,7 @@ public class Infoflow extends AbstractInfoflow {
 						}
 
 						// Get the results once the path builder is done
-						if (this.results == null)
-							this.results = builder.getResults();
-						else
-							this.results.addAll(builder.getResults());
+						this.results.addAll(builder.getResults());
 					}
 					resultExecutor.shutdown();
 
@@ -721,6 +718,7 @@ public class Infoflow extends AbstractInfoflow {
 					performanceData.getTotalRuntimeSeconds(), performanceData.getMaxMemoryConsumption()));
 
 			// Provide the handler with the final results
+			this.results.addPerformanceData(performanceData);
 			for (ResultsAvailableHandler handler : onResultsAvailable)
 				handler.onResultsAvailable(iCfg, results);
 
