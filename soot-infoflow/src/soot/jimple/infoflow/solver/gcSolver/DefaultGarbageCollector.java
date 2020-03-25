@@ -109,4 +109,9 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 		return gcedMethods.get();
 	}
 
+	@Override
+	public int getGcedEdges() {
+		return gcedEdges.get();
+	}
+
 }
