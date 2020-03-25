@@ -30,4 +30,9 @@ public class NullGarbageCollector<N, D> implements IGarbageCollector<N, D> {
 		return 0;
 	}
 
+	@Override
+	public int getGcedEdges() {
+		return 0;
+	}
+
 }

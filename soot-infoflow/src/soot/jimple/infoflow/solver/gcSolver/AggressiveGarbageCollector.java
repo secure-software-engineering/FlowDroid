@@ -1,5 +1,9 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
@@ -14,6 +18,8 @@ import soot.util.ConcurrentHashMultiMap;
  *
  */
 public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> {
+
+	private final AtomicInteger gcedEdges = new AtomicInteger();
 
 	/**
 	 * The number of methods for which to collect jump functions, before halting the
@@ -40,15 +46,23 @@ public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N
 
 	@Override
 	public void gc() {
+		Iterator<Pair<SootMethod, PathEdge<N, D>>> it = jumpFunctions.iterator();
 		while (jumpFunctions.size() > GC_THRESHOLD) {
-			jumpFunctions.iterator().remove();
+			it.next();
+			it.remove();
+			gcedEdges.incrementAndGet();
 		}
 	}
 
 	@Override
 	public int getGcedMethods() {
-		// TODO Auto-generated method stub
+		// We don't keep track of individual methods
 		return 0;
+	}
+
+	@Override
+	public int getGcedEdges() {
+		return gcedEdges.get();
 	}
 
 }
