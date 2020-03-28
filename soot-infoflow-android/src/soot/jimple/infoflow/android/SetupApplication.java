@@ -414,9 +414,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throw new RuntimeException(
 					String.format("Target APK file %s does not exist", targetAPK.getCanonicalPath()));
 
+		// Parse the resource file
+		long beforeARSC = System.nanoTime();
+		this.resources = new ARSCFileParser();
+		this.resources.parse(targetAPK.getAbsolutePath());
+		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
+
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
-		this.manifest = new ProcessManifest(targetAPK);
+		this.manifest = new ProcessManifest(targetAPK, resources);
 		SystemClassHandler.v().setExcludeSystemComponents(config.getIgnoreFlowsInSystemPackages());
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
@@ -425,12 +431,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			if (sc != null)
 				this.entrypoints.add(sc);
 		}
-
-		// Parse the resource file
-		long beforeARSC = System.nanoTime();
-		this.resources = new ARSCFileParser();
-		this.resources.parse(targetAPK.getAbsolutePath());
-		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
 	}
 
 	/**

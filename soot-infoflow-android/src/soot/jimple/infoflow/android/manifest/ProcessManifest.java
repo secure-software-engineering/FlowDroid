@@ -20,6 +20,9 @@ import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlHandler;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.axml.ApkHandler;
+import soot.jimple.infoflow.android.resources.ARSCFileParser;
+import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
+import soot.jimple.infoflow.android.resources.ARSCFileParser.StringResource;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
@@ -51,6 +54,7 @@ public class ProcessManifest implements Closeable {
 	 * Handler for android xml files
 	 */
 	protected AXmlHandler axml;
+	protected ARSCFileParser arscParser;
 
 	// android manifest data
 	protected AXmlNode manifest;
@@ -84,11 +88,25 @@ public class ProcessManifest implements Closeable {
 	 * @see {@link ProcessManifest#ProcessManifest(InputStream)}
 	 */
 	public ProcessManifest(File apkFile) throws IOException, XmlPullParserException {
+		this(apkFile, ARSCFileParser.getInstance(apkFile));
+	}
+
+	/**
+	 * Processes an AppManifest which is within the given {@link File}.
+	 *
+	 * @param apkFile    the AppManifest within the given APK will be parsed.
+	 * @param arscParser The parser for the Android resource database
+	 * @throws IOException            if an I/O error occurs.
+	 * @throws XmlPullParserException can occur due to a malformed manifest.
+	 * @see {@link ProcessManifest#ProcessManifest(InputStream)}
+	 */
+	public ProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException, XmlPullParserException {
 		if (!apkFile.exists())
 			throw new RuntimeException(
 					String.format("The given APK file %s does not exist", apkFile.getCanonicalPath()));
 
 		this.apk = new ApkHandler(apkFile);
+		this.arscParser = arscParser;
 		InputStream is = null;
 		try {
 			is = this.apk.getInputStream("AndroidManifest.xml");
@@ -511,7 +529,21 @@ public class ProcessManifest implements Closeable {
 	 */
 	public String getApplicationName() {
 		AXmlAttribute<?> attr = this.application.getAttribute("name");
-		return attr == null || attr.getValue() == null ? null : expandClassName((String) attr.getValue());
+		if (attr != null) {
+			Object value = attr.getValue();
+			if (value != null) {
+				if (value instanceof String)
+					return expandClassName((String) attr.getValue());
+				else if (value instanceof Integer) {
+					AbstractResource res = arscParser.findResource((Integer) attr.getValue());
+					if (res instanceof StringResource) {
+						StringResource strRes = (StringResource) res;
+						return strRes.getValue();
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

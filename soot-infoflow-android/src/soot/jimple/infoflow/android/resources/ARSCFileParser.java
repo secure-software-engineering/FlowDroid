@@ -10,6 +10,8 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.resources;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -2808,6 +2810,22 @@ public class ARSCFileParser extends AbstractResourceParser {
 				resourceList.addAll(resType.getAllResources());
 		}
 		return resourceList;
+	}
+
+	/**
+	 * Creates a new instance of the {@link ARSCFileParser} class and parses the
+	 * Android resource database in the given APK file
+	 * 
+	 * @param apkFile The APK file in which to parse the resource database
+	 * @return The new {@link ARSCFileParser} instance
+	 * @throws IOException
+	 */
+	public static ARSCFileParser getInstance(File apkFile) throws IOException {
+		ARSCFileParser parser = new ARSCFileParser();
+		try (FileInputStream fis = new FileInputStream(apkFile)) {
+			parser.parse(fis);
+		}
+		return parser;
 	}
 
 }
