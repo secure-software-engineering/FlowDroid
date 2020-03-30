@@ -67,6 +67,12 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 		super(icfg, jumpFunctions);
 	}
 
+	public DefaultGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
+			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
+			IGCReferenceProvider<D, N> referenceProvider) {
+		super(icfg, jumpFunctions, referenceProvider);
+	}
+
 	@Override
 	public void notifyEdgeSchedule(PathEdge<N, D> edge) {
 		SootMethod sm = icfg.getMethodOf(edge.getTarget());
