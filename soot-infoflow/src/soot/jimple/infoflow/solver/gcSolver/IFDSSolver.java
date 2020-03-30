@@ -83,7 +83,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	protected ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions = new ConcurrentHashMultiMap<>();
 
 	@SynchronizedBy("thread safe data structure")
-	protected final IGarbageCollector<N, D> garbageCollector;
+	protected volatile IGarbageCollector<N, D> garbageCollector;
 
 	@SynchronizedBy("thread safe data structure, only modified internally")
 	protected final I icfg;
@@ -171,8 +171,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		this.followReturnsPastSeeds = tabulationProblem.followReturnsPastSeeds();
 		this.numThreads = Math.max(1, tabulationProblem.numThreads());
 		this.executor = getExecutor();
-
-		this.garbageCollector = createGarbageCollector();
 	}
 
 	/**
@@ -193,6 +191,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 */
 	public void solve() {
 		reset();
+
+		// Make sure that we have an instance of the garbage collector
+		if (this.garbageCollector == null)
+			this.garbageCollector = createGarbageCollector();
 
 		// Notify the listeners that the solver has been started
 		for (IMemoryBoundedSolverStatusNotification listener : notificationListeners)

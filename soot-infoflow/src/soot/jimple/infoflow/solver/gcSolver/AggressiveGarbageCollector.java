@@ -19,13 +19,13 @@ import soot.util.ConcurrentHashMultiMap;
  */
 public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> {
 
-	private final AtomicInteger gcedEdges = new AtomicInteger();
+	private final AtomicInteger gcedMethods = new AtomicInteger();
 
 	/**
 	 * The number of methods for which to collect jump functions, before halting the
 	 * taint propagation and actually cleaning them up
 	 */
-	private int GC_THRESHOLD = 10;
+	private int methodThreshold = 0;
 
 	public AggressiveGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
@@ -47,22 +47,33 @@ public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N
 	@Override
 	public void gc() {
 		Iterator<Pair<SootMethod, PathEdge<N, D>>> it = jumpFunctions.iterator();
-		while (jumpFunctions.size() > GC_THRESHOLD) {
+		while (jumpFunctions.size() > methodThreshold) {
 			it.next();
 			it.remove();
-			gcedEdges.incrementAndGet();
+			gcedMethods.incrementAndGet();
 		}
 	}
 
 	@Override
 	public int getGcedMethods() {
-		// We don't keep track of individual methods
-		return 0;
+		return gcedMethods.get();
 	}
 
 	@Override
 	public int getGcedEdges() {
-		return gcedEdges.get();
+		// We don't keep track of individual edges
+		return 0;
+	}
+
+	/**
+	 * Sets the number of methods for which edges must have been added before
+	 * garbage collection is started
+	 * 
+	 * @param threshold The threshold of new methods required to trigger garbage
+	 *                  collection
+	 */
+	public void setMethodThreshold(int threshold) {
+		this.methodThreshold = threshold;
 	}
 
 }

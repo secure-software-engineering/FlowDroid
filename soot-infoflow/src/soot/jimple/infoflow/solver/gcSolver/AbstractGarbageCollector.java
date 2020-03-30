@@ -20,7 +20,7 @@ public abstract class AbstractGarbageCollector<N, D> implements IGarbageCollecto
 	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
 		this.icfg = icfg;
-		this.referenceProvider = new AheadOfTimeReferenceProvider<>(icfg);
+		this.referenceProvider = new OnDemandReferenceProvider<>(icfg);
 		this.jumpFunctions = jumpFunctions;
 	}
 
