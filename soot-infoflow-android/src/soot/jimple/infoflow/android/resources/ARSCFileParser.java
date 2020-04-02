@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -271,6 +272,25 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return null;
 		}
 
+		/**
+		 * Adds all contents of the given package to this data object
+		 * 
+		 * @param other The other package that shall be integrated into this one
+		 */
+		private void addAll(ResPackage other) {
+			for (ResType tp : other.types) {
+				ResType existingType = getType(tp.id, tp.typeName);
+				if (existingType == null)
+					types.add(tp);
+				else
+					existingType.addAll(tp);
+			}
+		}
+
+		public ResType getType(int id, String typeName) {
+			return types.stream().filter(t -> t.id == id && t.typeName.equals(typeName)).findFirst().orElse(null);
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -320,6 +340,32 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return this.typeName;
 		}
 
+		/**
+		 * Adds all data from the given type into this type
+		 * 
+		 * @param tp The type from which to add all data into this type
+		 */
+		private void addAll(ResType tp) {
+			for (ResConfig config : tp.configurations) {
+				ResConfig existingConfig = getConfiguration(config.getConfig());
+				if (existingConfig == null)
+					configurations.add(config);
+				else
+					existingConfig.addAll(config);
+			}
+		}
+
+		/**
+		 * Gets the configuration object for the given settings
+		 * 
+		 * @param config The settings to look for
+		 * @return The configuration object that is associated with the given settings,
+		 *         or <code>null</code> if no such configuration object exists
+		 */
+		public ResConfig getConfiguration(ResTable_Config config) {
+			return configurations.stream().filter(c -> c.config.equals(config)).findFirst().orElse(null);
+		}
+
 		public List<ResConfig> getConfigurations() {
 			return this.configurations;
 		}
@@ -338,6 +384,16 @@ public class ARSCFileParser extends AbstractResourceParser {
 					if (!resources.containsKey(res.resourceName))
 						resources.put(res.resourceName, res);
 			return resources.values();
+		}
+
+		/**
+		 * Gets the names of all resources defined for this resource type
+		 * 
+		 * @return The names of all resources in the current type
+		 */
+		public Collection<String> getAllResourceNames() {
+			return this.configurations.stream().flatMap(c -> c.getResources().stream()).map(r -> r.getResourceName())
+					.collect(Collectors.toSet());
 		}
 
 		/**
@@ -449,6 +505,15 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 		public ResTable_Config getConfig() {
 			return config;
+		}
+
+		/**
+		 * Adds all data from the given configuration into this data object
+		 * 
+		 * @param other The configuration object from which to read the data
+		 */
+		private void addAll(ResConfig other) {
+			this.resources.addAll(other.resources);
 		}
 
 		public List<AbstractResource> getResources() {
@@ -2682,6 +2747,11 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return this.packages;
 	}
 
+	public ResPackage getPackage(int pkgID, String pkgName) {
+		return this.packages.stream().filter(p -> p.packageId == pkgID && p.packageName.equals(pkgName)).findFirst()
+				.orElse(null);
+	}
+
 	/**
 	 * Finds the resource with the given Android resource ID. This method is
 	 * configuration-agnostic and simply returns the first match it finds.
@@ -2826,6 +2896,26 @@ public class ARSCFileParser extends AbstractResourceParser {
 			parser.parse(fis);
 		}
 		return parser;
+	}
+
+	/**
+	 * Adds all resources loaded from another {@link ARSCFileParser} to this data
+	 * object
+	 * 
+	 * @param otherParser The other parser
+	 */
+	public void addAll(ARSCFileParser otherParser) {
+		// Merge the packages
+		for (ResPackage pkg : otherParser.packages) {
+			ResPackage existingPackage = getPackage(pkg.packageId, pkg.packageName);
+			if (existingPackage == null)
+				packages.add(pkg);
+			else
+				existingPackage.addAll(pkg);
+		}
+
+		// Merge the string table
+		stringTable.putAll(otherParser.stringTable);
 	}
 
 }
