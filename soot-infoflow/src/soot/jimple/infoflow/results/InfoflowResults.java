@@ -505,6 +505,10 @@ public class InfoflowResults {
 	 * @param performanceData The performance data to add
 	 */
 	public void addPerformanceData(InfoflowPerformanceData performanceData) {
+		// don't duplicate performance data
+		if (performanceData == this.performanceData)
+			return;
+
 		if (this.performanceData == null)
 			this.performanceData = performanceData;
 		else

@@ -57,6 +57,14 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 
 	@Override
 	public boolean processEdge(PathEdge<Unit, Abstraction> edge) {
+		// We might not have a garbage collector yet
+		if (this.garbageCollector == null) {
+			synchronized (this) {
+				if (this.garbageCollector == null)
+					this.garbageCollector = createGarbageCollector();
+			}
+		}
+
 		propagate(edge.factAtSource(), edge.getTarget(), edge.factAtTarget(), null, false);
 		return true;
 	}

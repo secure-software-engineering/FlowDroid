@@ -2,6 +2,8 @@ package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.Set;
 
+import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
@@ -24,7 +26,10 @@ public class AheadOfTimeReferenceProvider<D, N> extends AbstractReferenceProvide
 		super(icfg);
 
 		// Initialize the caller/callee relationships
-
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod sm : sc.getMethods())
+				methodToCallees.putAll(sm, getTransitiveCallees(sm));
+		}
 	}
 
 	@Override

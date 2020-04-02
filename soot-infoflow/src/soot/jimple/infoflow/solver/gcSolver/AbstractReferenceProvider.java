@@ -35,10 +35,17 @@ public abstract class AbstractReferenceProvider<D, N> implements IGCReferencePro
 
 		while (!workList.isEmpty()) {
 			SootMethod sm = workList.remove(0);
-			for (N callSite : icfg.getCallsFromWithin(sm)) {
-				for (SootMethod callee : icfg.getCalleesOfCallAt(callSite)) {
-					if (callees.add(callee))
-						workList.add(callee);
+			if (sm.isConcrete()) {
+				// We can only look for callees if we have a body
+				if (!sm.hasActiveBody())
+					sm.retrieveActiveBody();
+
+				// Schedule the callees
+				for (N callSite : icfg.getCallsFromWithin(sm)) {
+					for (SootMethod callee : icfg.getCalleesOfCallAt(callSite)) {
+						if (callees.add(callee))
+							workList.add(callee);
+					}
 				}
 			}
 		}

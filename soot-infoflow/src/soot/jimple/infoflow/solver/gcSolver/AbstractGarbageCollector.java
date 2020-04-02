@@ -18,10 +18,28 @@ public abstract class AbstractGarbageCollector<N, D> implements IGarbageCollecto
 	protected final ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions;
 
 	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
+			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
+			IGCReferenceProvider<D, N> referenceProvider) {
+		this.icfg = icfg;
+		this.referenceProvider = referenceProvider;
+		this.jumpFunctions = jumpFunctions;
+	}
+
+	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
 		this.icfg = icfg;
-		this.referenceProvider = new AheadOfTimeReferenceProvider<>(icfg);
+		this.referenceProvider = createReferenceProvider();
 		this.jumpFunctions = jumpFunctions;
+	}
+
+	/**
+	 * Creates the reference provider that garbage collectors can use to identify
+	 * dependencies
+	 * 
+	 * @return The new reference provider
+	 */
+	protected IGCReferenceProvider<D, N> createReferenceProvider() {
+		return new OnDemandReferenceProvider<>(icfg);
 	}
 
 }

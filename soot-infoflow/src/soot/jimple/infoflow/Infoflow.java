@@ -718,7 +718,6 @@ public class Infoflow extends AbstractInfoflow {
 					performanceData.getTotalRuntimeSeconds(), performanceData.getMaxMemoryConsumption()));
 
 			// Provide the handler with the final results
-			this.results.addPerformanceData(performanceData);
 			for (ResultsAvailableHandler handler : onResultsAvailable)
 				handler.onResultsAvailable(iCfg, results);
 
