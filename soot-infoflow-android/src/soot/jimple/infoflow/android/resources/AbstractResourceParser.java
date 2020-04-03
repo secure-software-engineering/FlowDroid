@@ -33,13 +33,10 @@ public abstract class AbstractResourceParser {
 	 * Opens the given apk file and provides the given handler with a stream for
 	 * accessing the contained resource manifest files
 	 * 
-	 * @param apk
-	 *            The apk file to process
-	 * @param fileNameFilter
-	 *            If this parameter is non-null, only files with a name
-	 *            (excluding extension) in this set will be analyzed.
-	 * @param handler
-	 *            The handler for processing the apk file
+	 * @param apk            The apk file to process
+	 * @param fileNameFilter If this parameter is non-null, only files with a name
+	 *                       (excluding extension) in this set will be analyzed.
+	 * @param handler        The handler for processing the apk file
 	 */
 	protected void handleAndroidResourceFiles(String apk, Set<String> fileNameFilter, IResourceHandler handler) {
 		File apkF = new File(apk);
@@ -47,26 +44,16 @@ public abstract class AbstractResourceParser {
 			throw new RuntimeException("file '" + apk + "' does not exist!");
 
 		try {
-			ZipFile archive = null;
-			try {
-				archive = new ZipFile(apkF);
+			try (ZipFile archive = new ZipFile(apkF)) {
 				Enumeration<?> entries = archive.entries();
 				while (entries.hasMoreElements()) {
 					ZipEntry entry = (ZipEntry) entries.nextElement();
 					String entryName = entry.getName();
 
-					InputStream is = null;
-					try {
-						is = archive.getInputStream(entry);
+					try (InputStream is = archive.getInputStream(entry)) {
 						handler.handleResourceFile(entryName, fileNameFilter, is);
-					} finally {
-						if (is != null)
-							is.close();
 					}
 				}
-			} finally {
-				if (archive != null)
-					archive.close();
 			}
 		} catch (Exception e) {
 			logger.error("Error when looking for XML resource files in apk " + apk, e);
