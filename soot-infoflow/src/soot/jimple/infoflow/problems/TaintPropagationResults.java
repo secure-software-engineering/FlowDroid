@@ -118,4 +118,13 @@ public class TaintPropagationResults {
 		this.resultAddedHandlers.add(handler);
 	}
 
+	/**
+	 * Gets the number of taint abstractions in this result object
+	 * 
+	 * @return The number of taint abstractions in this result object
+	 */
+	public int size() {
+		return results == null ? 0 : results.size();
+	}
+
 }
