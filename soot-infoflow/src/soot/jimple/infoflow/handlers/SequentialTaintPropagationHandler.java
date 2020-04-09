@@ -43,7 +43,8 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	 * @param handler The handler to add to the sequence
 	 */
 	public void addHandler(TaintPropagationHandler handler) {
-		this.innerHandlers.add(handler);
+		if (handler != null)
+			this.innerHandlers.add(handler);
 	}
 
 	/**
