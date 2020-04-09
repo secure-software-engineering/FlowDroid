@@ -30,9 +30,8 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Creates a sequence of taint propagation handlers from the given list
 	 * 
-	 * @param handlers
-	 *            A list of taint propagation handlers to which all calls shall be
-	 *            relayed
+	 * @param handlers A list of taint propagation handlers to which all calls shall
+	 *                 be relayed
 	 */
 	public SequentialTaintPropagationHandler(List<TaintPropagationHandler> handlers) {
 		this.innerHandlers = new ArrayList<>(handlers);
@@ -41,8 +40,7 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Adds a new handler to this sequence of handlers
 	 * 
-	 * @param handler
-	 *            The handler to add to the sequence
+	 * @param handler The handler to add to the sequence
 	 */
 	public void addHandler(TaintPropagationHandler handler) {
 		this.innerHandlers.add(handler);
@@ -73,6 +71,18 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 				resultSet.addAll(handlerResults);
 		}
 		return resultSet;
+	}
+
+	/**
+	 * Adds all of the given taint propagation handlers
+	 * 
+	 * @param handlers The taint propagation handlers to add
+	 */
+	public void addAllHandlers(TaintPropagationHandler[] handlers) {
+		if (handlers != null && handlers.length > 0) {
+			for (TaintPropagationHandler handler : handlers)
+				addHandler(handler);
+		}
 	}
 
 }
