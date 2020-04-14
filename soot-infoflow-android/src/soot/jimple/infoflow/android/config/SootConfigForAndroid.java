@@ -25,7 +25,9 @@ public class SootConfigForAndroid implements IInfoflowConfig {
 		List<String> excludeList = new LinkedList<String>();
 		excludeList.add("java.*");
 		excludeList.add("sun.*");
-		excludeList.add("android.*");
+        // exclude classes of android.* will cause layout class cannot be 
+        // loaded for layout file based callback analysis.
+		// excludeList.add("android.*");
 		excludeList.add("org.apache.*");
 		excludeList.add("org.eclipse.*");
 		excludeList.add("soot.*");
