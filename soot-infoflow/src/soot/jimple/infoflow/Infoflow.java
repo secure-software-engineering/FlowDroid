@@ -82,9 +82,11 @@ import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
+import soot.jimple.infoflow.solver.SolverPeerGroup;
 import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
+import soot.jimple.infoflow.solver.gcSolver.GCSolverPeerGroup;
 import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
@@ -126,6 +128,8 @@ public class Infoflow extends AbstractInfoflow {
 	protected Collection<SootMethod> additionalEntryPointMethods = null;
 
 	private boolean throwExceptions;
+
+	protected SolverPeerGroup solverPeerGroup;
 
 	/**
 	 * Creates a new instance of the InfoFlow class for analyzing plain Java code
@@ -350,6 +354,9 @@ public class Infoflow extends AbstractInfoflow {
 				// Initialize the data flow manager
 				manager = initializeInfoflowManager(sourcesSinks, iCfg, globalTaintManager);
 
+				// Create the solver peer group
+				solverPeerGroup = new GCSolverPeerGroup();
+
 				// Initialize the alias analysis
 				Abstraction zeroValue = null;
 				IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
@@ -565,6 +572,8 @@ public class Infoflow extends AbstractInfoflow {
 					forwardSolver.cleanup();
 					forwardSolver = null;
 					forwardProblem = null;
+
+					solverPeerGroup = null;
 
 					// Remove the alias analysis from memory
 					aliasing = null;
@@ -1022,7 +1031,10 @@ public class Infoflow extends AbstractInfoflow {
 			return new soot.jimple.infoflow.solver.fastSolver.flowInsensitive.InfoflowSolver(problem, executor);
 		case GarbageCollecting:
 			logger.info("Using garbage-collecting solver");
-			return new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(problem, executor);
+			IInfoflowSolver solver = new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(problem, executor);
+			solverPeerGroup.addSolver(solver);
+			solver.setPeerGroup(solverPeerGroup);
+			return solver;
 		default:
 			throw new RuntimeException("Unsupported data flow solver");
 		}

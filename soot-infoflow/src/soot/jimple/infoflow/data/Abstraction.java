@@ -43,7 +43,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	protected AccessPath accessPath;
 
 	protected Abstraction predecessor = null;
-	protected Set<Abstraction> neighbors = null;
+	protected volatile Set<Abstraction> neighbors = null;
 	protected Stmt currentStmt = null;
 	protected Stmt correspondingCallSite = null;
 

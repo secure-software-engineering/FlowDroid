@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,7 +18,7 @@ import soot.util.ConcurrentHashMultiMap;
  * @author Steven Arzt
  *
  */
-public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> {
+public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> implements IGarbageCollectorPeer {
 
 	/**
 	 * Possible triggers when to start garbage collection
@@ -51,6 +52,10 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 	private final AtomicInteger gcedEdges = new AtomicInteger();
 	private final AtomicInteger edgeCounterForThreshold = new AtomicInteger();
 	private GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
+	private GarbageCollectorPeerGroup peerGroup = null;
+
+	private boolean validateEdges = false;
+	private Set<PathEdge<N, D>> oldEdges = new HashSet<>();
 
 	/**
 	 * The number of methods to collect as candidates for garbage collection, before
@@ -79,6 +84,11 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 		jumpFnCounter.increment(sm);
 		gcScheduleSet.add(sm);
 		edgeCounterForThreshold.incrementAndGet();
+
+		if (validateEdges) {
+			if (oldEdges.contains(edge))
+				System.out.println("x");
+		}
 	}
 
 	@Override
@@ -109,7 +119,10 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 			if (!toRemove.isEmpty()) {
 				// Check and add the candidates for GC to our global mark list
 				for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
-					if (hasActiveDependencies(it.next(), snapshot))
+					if (peerGroup != null) {
+						if (peerGroup.hasActiveDependencies(it.next()))
+							it.remove();
+					} else if (hasActiveDependencies(it.next(), snapshot))
 						it.remove();
 				}
 
@@ -118,8 +131,11 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 					for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
 						SootMethod sm = it.next();
 						Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
-						if (oldFunctions != null)
+						if (oldFunctions != null) {
 							gcedEdges.addAndGet(oldFunctions.size());
+							if (validateEdges)
+								oldEdges.addAll(oldFunctions);
+						}
 						if (jumpFunctions.remove(sm))
 							gcedMethods.incrementAndGet();
 						it.remove();
@@ -147,6 +163,11 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean hasActiveDependencies(SootMethod method) {
+		return hasActiveDependencies(method, jumpFnCounter);
 	}
 
 	@Override
@@ -189,6 +210,16 @@ public class DefaultGarbageCollector<N, D> extends AbstractGarbageCollector<N, D
 	 */
 	public void setTrigger(GarbageCollectionTrigger trigger) {
 		this.trigger = trigger;
+	}
+
+	/**
+	 * Sets the peer group in which this solver operates. Peer groups are used to
+	 * synchronize active dependencies between multiple solvers.
+	 * 
+	 * @param peerGroup The peer group
+	 */
+	public void setPeerGroup(GarbageCollectorPeerGroup peerGroup) {
+		this.peerGroup = peerGroup;
 	}
 
 }

@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +44,7 @@ import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
+import soot.jimple.infoflow.solver.SolverPeerGroup;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
@@ -96,7 +96,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	// edges going along calls
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on field")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<N, Map<D, D>>> incoming = new MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<N, Map<D, D>>>();
+	protected final ConcurrentHashMultiMap<Pair<SootMethod, D>, IncomingRecord<N, D>> incoming = new ConcurrentHashMultiMap<>();
 
 	@DontSynchronize("stateless")
 	protected final FlowFunctions<N, D, SootMethod> flowFunctions;
@@ -132,6 +132,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	private int maxCalleesPerCallSite = 75;
 	private int maxAbstractionPathLength = 100;
+
+	protected SolverPeerGroup solverPeerGroup;
 
 	/**
 	 * Creates a solver for the given problem, which caches flow functions and edge
@@ -179,7 +181,13 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * @return The new garbage collector
 	 */
 	protected IGarbageCollector<N, D> createGarbageCollector() {
-		return new DefaultGarbageCollector<>(icfg, jumpFunctions);
+		if (garbageCollector != null)
+			return garbageCollector;
+
+		DefaultGarbageCollector<N, D> gc = new DefaultGarbageCollector<>(icfg, jumpFunctions);
+		GCSolverPeerGroup gcSolverGroup = (GCSolverPeerGroup) solverPeerGroup;
+		gc.setPeerGroup(gcSolverGroup.getGCPeerGroup());
+		return garbageCollector = gc;
 	}
 
 	public void setSolverId(boolean solverId) {
@@ -297,7 +305,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	private void processCall(PathEdge<N, D> edge) {
 		final D d1 = edge.factAtSource();
 		final N n = edge.getTarget(); // a call node; line 14...
-
 		final D d2 = edge.factAtTarget();
 		assert d2 != null;
 		Collection<N> returnSiteNs = icfg.getReturnSitesOfCallAt(n);
@@ -326,19 +333,22 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 							if (d3 == null)
 								continue;
 
-							// for each callee's start point(s)
-							for (N sP : startPointsOf) {
-								// create initial self-loop
-								propagate(d3, sP, d3, n, false); // line 15
-							}
-
 							// register the fact that <sp,d3> has an incoming edge from
 							// <n,d2>
 							// line 15.1 of Naeem/Lhotak/Rodriguez
 							if (!addIncoming(sCalledProcN, d3, n, d1, d2))
 								continue;
 
-							applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
+							// If we already have a summary, we take that summary instead of propagating
+							// through the callee again
+							if (applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3))
+								continue;
+
+							// for each callee's start point(s)
+							for (N sP : startPointsOf) {
+								// create initial self-loop
+								propagate(d3, sP, d3, n, false); // line 15
+							}
 						}
 					}
 				}
@@ -362,10 +372,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		}
 	}
 
-	protected void applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
+	protected boolean applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
 			SootMethod sCalledProcN, D d3) {
 		// line 15.2
-		Set<Pair<N, D>> endSumm = endSummary(sCalledProcN, d3);
+		Map<Pair<N, D>, D> endSumm = endSummaryMap(sCalledProcN, d3);
 
 		// still line 15.2 of Naeem/Lhotak/Rodriguez
 		// for each already-queried exit value <eP,d4> reachable
@@ -373,7 +383,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// the return sites because we have observed a potentially
 		// new incoming edge into <sP,d3>
 		if (endSumm != null && !endSumm.isEmpty()) {
-			for (Pair<N, D> entry : endSumm) {
+			for (Pair<N, D> entry : endSumm.keySet()) {
 				N eP = entry.getO1();
 				D d4 = entry.getO2();
 				// for each return site
@@ -406,12 +416,17 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 									d5p = d2;
 								break;
 							}
+							D oldD1 = endSumm.get(entry);
+							if (oldD1 != d1)
+								oldD1.addNeighbor(d3);
 							propagate(d1, retSiteN, d5p, n, false);
 						}
 					}
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -460,19 +475,19 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// register end-summary
 		if (!addEndSummary(methodThatNeedsSummary, d1, n, d2))
 			return;
-		Map<N, Map<D, D>> inc = incoming(d1, methodThatNeedsSummary);
+		Set<IncomingRecord<N, D>> inc = incoming(d1, methodThatNeedsSummary);
 
 		// for each incoming call edge already processed
 		// (see processCall(..))
-		if (inc != null && !inc.isEmpty())
-			for (Entry<N, Map<D, D>> entry : inc.entrySet()) {
+		if (inc != null && !inc.isEmpty()) {
+			for (IncomingRecord<N, D> entry : inc) {
 				// Early termination check
 				if (killFlag != null)
 					return;
 
 				// line 22
-				N c = entry.getKey();
-				Set<D> callerSideDs = entry.getValue().keySet();
+				N c = entry.n;
+				Set<D> callerSideDs = Collections.singleton(entry.d1);
 				// for each return site
 				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
 					// compute return-flow function
@@ -481,38 +496,41 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, callerSideDs);
 					// for each incoming-call value
 					if (targets != null && !targets.isEmpty()) {
-						for (Entry<D, D> d1d2entry : entry.getValue().entrySet()) {
-							final D d4 = d1d2entry.getKey();
-							final D predVal = d1d2entry.getValue();
+						final D d4 = entry.d1;
+						final D predVal = entry.d2;
 
-							for (D d5 : targets) {
-								if (memoryManager != null)
-									d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
-								if (d5 == null)
-									continue;
+						for (D d5 : targets) {
+							if (memoryManager != null)
+								d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
+							if (d5 == null)
+								continue;
 
-								// If we have not changed anything in the callee, we do not need the facts from
-								// there. Even if we change something: If we don't need the concrete path, we
-								// can skip the callee in the predecessor chain
-								D d5p = d5;
-								switch (shorteningMode) {
-								case AlwaysShorten:
-									if (d5p != predVal) {
-										d5p = d5p.clone();
-										d5p.setPredecessor(predVal);
-									}
-									break;
-								case ShortenIfEqual:
-									if (d5.equals(predVal))
-										d5p = predVal;
-									break;
+							// If we have not changed anything in the callee, we do not need the facts from
+							// there. Even if we change something: If we don't need the concrete path, we
+							// can skip the callee in the predecessor chain
+							D d5p = d5;
+							switch (shorteningMode) {
+							case AlwaysShorten:
+								if (d5p != predVal) {
+									d5p = d5p.clone();
+									d5p.setPredecessor(predVal);
 								}
-								propagate(d4, retSiteC, d5p, c, false);
+								break;
+							case ShortenIfEqual:
+								if (d5.equals(predVal))
+									d5p = predVal;
+								break;
 							}
+							propagate(d4, retSiteC, d5p, c, false);
+
+							// Make sure all of the incoming edges are registered with the edge from the new
+							// summary
+							d1.addNeighbor(entry.d3);
 						}
 					}
 				}
 			}
+		}
 
 		// handling for unbalanced problems where we return out of a method with
 		// a fact for which we have no incoming flow
@@ -668,9 +686,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		return oldEdge == null ? null : oldEdge.factAtTarget();
 	}
 
-	protected Set<Pair<N, D>> endSummary(SootMethod m, D d3) {
+	protected Map<Pair<N, D>, D> endSummaryMap(SootMethod m, D d3) {
 		Map<Pair<N, D>, D> map = endSummary.get(new Pair<SootMethod, D>(m, d3));
-		return map == null ? null : map.keySet();
+		return map;
 	}
 
 	private boolean addEndSummary(SootMethod m, D d1, N eP, D d2) {
@@ -679,24 +697,82 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 		Map<Pair<N, D>, D> summaries = endSummary.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d1),
 				() -> new MyConcurrentHashMap<>());
-		D oldD2 = summaries.putIfAbsent(new Pair<N, D>(eP, d2), d2);
-		if (oldD2 != null) {
-			oldD2.addNeighbor(d2);
+		D oldD1 = summaries.putIfAbsent(new Pair<N, D>(eP, d2), d1);
+		if (oldD1 != null) {
+			oldD1.addNeighbor(d1);
 			return false;
 		}
 		return true;
 	}
 
-	protected Map<N, Map<D, D>> incoming(D d1, SootMethod m) {
-		Map<N, Map<D, D>> map = incoming.get(new Pair<SootMethod, D>(m, d1));
-		return map;
+	protected static class IncomingRecord<N, D extends FastSolverLinkedNode<D, N>> {
+
+		public final N n;
+		public final D d1;
+		public final D d2;
+		public final D d3;
+
+		public IncomingRecord(N n, D d1, D d2, D d3) {
+			this.n = n;
+			this.d1 = d1;
+			this.d2 = d2;
+			this.d3 = d3;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((d1 == null) ? 0 : d1.hashCode());
+			result = prime * result + ((d2 == null) ? 0 : d2.hashCode());
+			result = prime * result + ((d3 == null) ? 0 : d3.hashCode());
+			result = prime * result + ((n == null) ? 0 : n.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			IncomingRecord other = (IncomingRecord) obj;
+			if (d1 == null) {
+				if (other.d1 != null)
+					return false;
+			} else if (!d1.equals(other.d1))
+				return false;
+			if (d2 == null) {
+				if (other.d2 != null)
+					return false;
+			} else if (!d2.equals(other.d2))
+				return false;
+			if (d3 == null) {
+				if (other.d3 != null)
+					return false;
+			} else if (!d3.equals(other.d3))
+				return false;
+			if (n == null) {
+				if (other.n != null)
+					return false;
+			} else if (!n.equals(other.n))
+				return false;
+			return true;
+		}
+
+	}
+
+	protected Set<IncomingRecord<N, D>> incoming(D d1, SootMethod m) {
+		Set<IncomingRecord<N, D>> inc = incoming.get(new Pair<SootMethod, D>(m, d1));
+		return inc;
 	}
 
 	protected boolean addIncoming(SootMethod m, D d3, N n, D d1, D d2) {
-		MyConcurrentHashMap<N, Map<D, D>> summaries = incoming.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d3),
-				() -> new MyConcurrentHashMap<N, Map<D, D>>());
-		Map<D, D> set = summaries.putIfAbsentElseGet(n, () -> new ConcurrentHashMap<D, D>());
-		return set.put(d1, d2) == null;
+		IncomingRecord<N, D> newRecord = new IncomingRecord<N, D>(n, d1, d2, d3);
+		IncomingRecord<N, D> rec = incoming.putIfAbsent(new Pair<SootMethod, D>(m, d3), newRecord);
+		return rec == null;
 	}
 
 	/**
@@ -870,6 +946,16 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	public void setMaxAbstractionPathLength(int maxAbstractionPathLength) {
 		this.maxAbstractionPathLength = maxAbstractionPathLength;
+	}
+
+	/**
+	 * Sets the peer group in which this solver operates. Peer groups allow for
+	 * synchronization between solvers
+	 * 
+	 * @param solverPeerGroup The solver peer group
+	 */
+	public void setPeerGroup(SolverPeerGroup solverPeerGroup) {
+		this.solverPeerGroup = solverPeerGroup;
 	}
 
 }

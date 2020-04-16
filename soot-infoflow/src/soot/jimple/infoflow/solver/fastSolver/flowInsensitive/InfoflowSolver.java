@@ -24,6 +24,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
+import soot.jimple.infoflow.solver.SolverPeerGroup;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -151,6 +152,11 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	@Override
 	public AbstractInfoflowProblem getTabulationProblem() {
 		return this.problem;
+	}
+
+	@Override
+	public void setPeerGroup(SolverPeerGroup solverPeerGroup) {
+		// We don't have support for peer groups and don't really need them either
 	}
 
 }
