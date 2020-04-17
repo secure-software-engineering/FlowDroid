@@ -1028,7 +1028,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
-		Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummaryMap(implementor, abs);
+		Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
 		if (endSummary != null && !endSummary.isEmpty()) {
 			for (Pair<Unit, Abstraction> pair : endSummary) {
 				if (outgoingTaints == null)
