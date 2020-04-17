@@ -179,12 +179,6 @@ public class FlowDroidMemoryManager implements IMemoryManager<Abstraction, Unit>
 		if (input == output)
 			return output;
 
-		// If the flow function gave us a chain of abstractions, we can
-		// compact it
-		Abstraction pred = output.getPredecessor();
-		if (pred != null && pred != input)
-			output.setPredecessor(input);
-
 		// If the abstraction didn't change at all, we can use the old one
 		if (input.equals(output)) {
 			if (output.getCurrentStmt() == null || input.getCurrentStmt() == output.getCurrentStmt())
