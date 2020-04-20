@@ -18,6 +18,11 @@ public class ResultSourceInfo extends AbstractResultSourceSinkInfo {
 	private final Stmt[] path;
 	private final AccessPath[] pathAPs;
 
+	public ResultSourceInfo() {
+		this.path = null;
+		this.pathAPs = null;
+	}
+
 	public ResultSourceInfo(ISourceSinkDefinition definition, AccessPath source, Stmt context) {
 		super(definition, source, context);
 

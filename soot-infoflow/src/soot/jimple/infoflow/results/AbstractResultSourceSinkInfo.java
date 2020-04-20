@@ -18,6 +18,14 @@ public abstract class AbstractResultSourceSinkInfo {
 	protected final Stmt stmt;
 	protected final Object userData;
 
+	public AbstractResultSourceSinkInfo() {
+		this.stmt = null;
+		this.definition = null;
+		this.accessPath = null;
+		this.userData = null;
+
+	}
+
 	public AbstractResultSourceSinkInfo(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt) {
 		this(definition, accessPath, stmt, null);
 	}
