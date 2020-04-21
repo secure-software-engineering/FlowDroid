@@ -45,6 +45,12 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		private final boolean isAlias;
 		private final boolean isInCallee;
 
+		public SummarySourceInfo() {
+			this.sourceAP = null;
+			this.isAlias = false;
+			this.isInCallee = false;
+		}
+
 		public SummarySourceInfo(AccessPath source, Stmt context, Object userData, AccessPath sourceAP, boolean isAlias,
 				boolean isInCallee) {
 			super(null, source, context, userData, null, null);

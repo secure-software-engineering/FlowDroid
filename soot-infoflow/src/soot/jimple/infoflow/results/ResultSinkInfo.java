@@ -13,6 +13,9 @@ import soot.tagkit.LineNumberTag;
  */
 public class ResultSinkInfo extends AbstractResultSourceSinkInfo {
 
+	public ResultSinkInfo() {
+	}
+
 	public ResultSinkInfo(ISourceSinkDefinition definition, AccessPath sink, Stmt context) {
 		super(definition, sink, context);
 	}
