@@ -48,4 +48,10 @@ public interface IGarbageCollector<N, D> {
 	 */
 	public int getGcedEdges();
 
+	/**
+	 * Notifies the garbage collector that the IFDS solver has finished propagating
+	 * its edges
+	 */
+	public void notifySolverTerminated();
+
 }

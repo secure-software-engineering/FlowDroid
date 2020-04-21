@@ -35,4 +35,8 @@ public class NullGarbageCollector<N, D> implements IGarbageCollector<N, D> {
 		return 0;
 	}
 
+	@Override
+	public void notifySolverTerminated() {
+	}
+
 }
