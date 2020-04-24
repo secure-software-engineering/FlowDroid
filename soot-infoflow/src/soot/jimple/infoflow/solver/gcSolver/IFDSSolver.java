@@ -960,4 +960,11 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		this.solverPeerGroup = solverPeerGroup;
 	}
 
+	/**
+	 * Notifies the solver that no further edges will be scheduled
+	 */
+	public void terminate() {
+		garbageCollector.notifySolverTerminated();
+	}
+
 }

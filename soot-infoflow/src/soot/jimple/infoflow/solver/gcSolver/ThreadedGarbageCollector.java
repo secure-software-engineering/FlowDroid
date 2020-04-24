@@ -42,6 +42,7 @@ public class ThreadedGarbageCollector<N, D> extends AbstractReferenceCountingGar
 		 */
 		public void finish() {
 			finished = true;
+			interrupt();
 		}
 
 	}

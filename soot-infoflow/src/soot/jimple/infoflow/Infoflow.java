@@ -577,8 +577,10 @@ public class Infoflow extends AbstractInfoflow {
 
 					// Remove the alias analysis from memory
 					aliasing = null;
-					if (aliasingStrategy.getSolver() != null)
+					if (aliasingStrategy.getSolver() != null) {
+						aliasingStrategy.getSolver().terminate();
 						memoryWatcher.removeSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
+					}
 					aliasingStrategy.cleanup();
 					aliasingStrategy = null;
 
@@ -669,6 +671,12 @@ public class Infoflow extends AbstractInfoflow {
 						timeoutWatcher.stop();
 					if (pathTimeoutWatcher != null)
 						pathTimeoutWatcher.stop();
+
+					if (aliasingStrategy != null) {
+						IInfoflowSolver solver = aliasingStrategy.getSolver();
+						if (solver != null)
+							solver.terminate();
+					}
 
 					// Do we have any more sources?
 					hasMoreSources = oneSourceAtATime != null && oneSourceAtATime.hasNextSource();
