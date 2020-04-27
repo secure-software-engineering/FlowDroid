@@ -492,6 +492,7 @@ public class Infoflow extends AbstractInfoflow {
 						performanceData.setTaintPropagationSeconds(0);
 					long beforeTaintPropagation = System.nanoTime();
 
+					onBeforeTaintPropagation(forwardSolver, backwardSolver);
 					forwardSolver.solve();
 
 					// Not really nice, but sometimes Heros returns before all
@@ -771,6 +772,16 @@ public class Infoflow extends AbstractInfoflow {
 	 */
 	protected Aliasing createAliasController(IAliasingStrategy aliasingStrategy) {
 		return new Aliasing(aliasingStrategy, manager);
+	}
+
+	/**
+	 * Callback that is invoked when the main taint propagation is about to start
+	 * 
+	 * @param forwardSolver  The forward data flow solver
+	 * @param backwardSolver The backward data flow solver
+	 */
+	protected void onBeforeTaintPropagation(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
+		//
 	}
 
 	/**
