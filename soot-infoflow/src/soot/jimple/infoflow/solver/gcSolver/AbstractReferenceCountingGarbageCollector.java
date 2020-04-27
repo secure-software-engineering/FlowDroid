@@ -9,6 +9,7 @@ import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.jimple.infoflow.collect.ConcurrentCountingMap;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
+import soot.jimple.infoflow.util.ExtendedAtomicInteger;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.ConcurrentHashMultiMap;
 
@@ -25,7 +26,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	private final Set<SootMethod> gcScheduleSet = new ConcurrentHashSet<>();
 	private final AtomicInteger gcedMethods = new AtomicInteger();
 	private final AtomicInteger gcedEdges = new AtomicInteger();
-	private final AtomicInteger edgeCounterForThreshold = new AtomicInteger();
+	private final ExtendedAtomicInteger edgeCounterForThreshold = new ExtendedAtomicInteger();
 	private GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
 	private GarbageCollectorPeerGroup peerGroup = null;
 
@@ -106,8 +107,6 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 
 		// Perform the garbage collection if required
 		if (gc) {
-			edgeCounterForThreshold.set(0);
-
 			// Get the methods for which no propagation tasks are scheduled right now. This
 			// set is approximate, because other threads may add new tasks while we're
 			// collecting our GC candidates.
@@ -129,17 +128,17 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 
 				// Clean up the methods
 				if (trigger != GarbageCollectionTrigger.Never && toRemove.size() > methodThreshold) {
-					for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
-						SootMethod sm = it.next();
+					for (SootMethod sm : toRemove) {
 						Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
 						if (oldFunctions != null) {
-							gcedEdges.addAndGet(oldFunctions.size());
+							int gcedSize = oldFunctions.size();
+							gcedEdges.addAndGet(gcedSize);
+							edgeCounterForThreshold.subtract(gcedSize);
 							if (validateEdges)
 								oldEdges.addAll(oldFunctions);
 						}
 						if (jumpFunctions.remove(sm))
 							gcedMethods.incrementAndGet();
-						it.remove();
 						gcScheduleSet.remove(sm);
 					}
 				}
