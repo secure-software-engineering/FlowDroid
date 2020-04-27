@@ -28,10 +28,12 @@ public class ThreadedGarbageCollector<N, D> extends AbstractReferenceCountingGar
 			while (!finished) {
 				gcImmediate();
 
-				try {
-					Thread.sleep(sleepTimeSeconds * 1000);
-				} catch (InterruptedException e) {
-					break;
+				if (sleepTimeSeconds > 0) {
+					try {
+						Thread.sleep(sleepTimeSeconds * 1000);
+					} catch (InterruptedException e) {
+						break;
+					}
 				}
 			}
 		}
