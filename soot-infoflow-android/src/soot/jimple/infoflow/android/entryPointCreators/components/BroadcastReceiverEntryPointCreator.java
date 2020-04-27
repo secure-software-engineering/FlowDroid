@@ -36,4 +36,11 @@ public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPo
 		createIfStmt(onReceiveStmt);
 	}
 
+	@Override
+	protected void createAdditionalMethods() {
+		super.createAdditionalMethods();
+
+		createGetIntentMethod();
+	}
+
 }

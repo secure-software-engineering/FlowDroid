@@ -146,6 +146,8 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// We need to instrument the onBind() method to store the binder in the field
 		instrumentOnBind();
+
+		createGetIntentMethod();
 	}
 
 	/**
