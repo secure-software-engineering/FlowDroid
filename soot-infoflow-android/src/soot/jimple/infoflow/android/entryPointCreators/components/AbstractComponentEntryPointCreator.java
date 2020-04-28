@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.Body;
 import soot.Local;
 import soot.PatchingChain;
@@ -19,9 +22,9 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
-import soot.Value;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.IdentityStmt;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
@@ -31,7 +34,6 @@ import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPoint
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
-import soot.util.Chain;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -44,6 +46,8 @@ import soot.util.MultiMap;
  */
 public abstract class AbstractComponentEntryPointCreator extends AbstractAndroidEntryPointCreator {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	protected final SootClass component;
 	protected final SootClass applicationClass;
 	protected Set<SootMethod> callbacks = null;
@@ -52,7 +56,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	protected Local intentLocal = null;
 	protected SootField intentField = null;
 
-	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
+	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
 			ProcessManifest manifest) {
@@ -220,29 +224,24 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
 			Stmt stmt = (Stmt) iter.next();
 
-			if (stmt instanceof IdentityStmt) {
+			if (stmt instanceof IdentityStmt)
 				continue;
-			}
+			if (!stmt.containsInvokeExpr())
+				continue;
 
-			if (!stmt.containsInvokeExpr()) {
+			InvokeExpr iexpr = stmt.getInvokeExpr();
+			if (iexpr.getMethodRef().isConstructor())
 				continue;
-			}
-
-			if (stmt.toString().contains("<init>")) {
-				continue;
-			}
 
 			List<Type> types = stmt.getInvokeExpr().getMethod().getParameterTypes();
 			for (int i = 0; i < types.size(); i++) {
 				Type type = types.get(i);
-
 				if (type.equals(INTENT_TYPE)) {
 					try {
-						assignIntent(component, stmt.getInvokeExpr().getMethod(), i + 1);
+						assignIntent(component, stmt.getInvokeExpr().getMethod(), i);
 					} catch (Exception ex) {
-						System.out.println("Assign Intent for " + stmt.getInvokeExpr().getMethod() + " fails.");
+						logger.error("Assign Intent for " + stmt.getInvokeExpr().getMethod() + " fails.", ex);
 					}
-
 				}
 			}
 		}
@@ -254,25 +253,17 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	 * Code adapted from FlowDroid v2.0.
 	 */
 	public void assignIntent(SootClass hostComponent, SootMethod method, int indexOfArgs) {
-		Body body = method.getActiveBody();
+		if (!method.isStatic()) {
+			Body body = method.retrieveActiveBody();
 
-		PatchingChain<Unit> units = body.getUnits();
-		Chain<Local> locals = body.getLocals();
-		Value intentV = null;
-		int identityStmtIndex = 0;
+			PatchingChain<Unit> units = body.getUnits();
+			Local thisLocal = body.getThisLocal();
+			Local intentV = body.getParameterLocal(indexOfArgs);
 
-		for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-			Stmt stmt = (Stmt) iter.next();
-			if (!method.isStatic()) {
-				if (stmt instanceof IdentityStmt) {
-					if (identityStmtIndex == indexOfArgs) {
-						intentV = ((IdentityStmt) stmt).getLeftOp();
-					}
-
-					identityStmtIndex++;
-				} else {
-					Local thisLocal = locals.getFirst();
-
+			for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+				Stmt stmt = (Stmt) iter.next();
+				// We need to look for the first non-identity statement
+				if (!(stmt instanceof IdentityStmt)) {
 					/*
 					 * Using the component that the dummyMain() belongs to, as in some cases the
 					 * invoked method is only available in its superclass. and its superclass does
@@ -286,8 +277,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 							hostComponent.getMethodByName("getIntent").makeRef()));
 
 					units.insertBefore(setIntentU, stmt);
-
-					return;
+					break;
 				}
 			}
 		}
