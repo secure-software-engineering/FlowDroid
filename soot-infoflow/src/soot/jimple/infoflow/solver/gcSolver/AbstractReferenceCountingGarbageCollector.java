@@ -128,6 +128,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 
 				// Clean up the methods
 				if (trigger != GarbageCollectionTrigger.Never && toRemove.size() > methodThreshold) {
+					onBeforeRemoveEdges();
 					for (SootMethod sm : toRemove) {
 						Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
 						if (oldFunctions != null) {
@@ -137,13 +138,34 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 							if (validateEdges)
 								oldEdges.addAll(oldFunctions);
 						}
+
+						// First unregister the method, then delete the edges. In case some other thread
+						// concurrently schedules a new edge, the method gets back into the GC work list
+						// this way.
+						gcScheduleSet.remove(sm);
 						if (jumpFunctions.remove(sm))
 							gcedMethods.incrementAndGet();
-						gcScheduleSet.remove(sm);
 					}
+					onAfterRemoveEdges(toRemove.size());
 				}
 			}
 		}
+	}
+
+	/**
+	 * Method that is called before the first edge is removed from the jump
+	 * functions
+	 */
+	protected void onBeforeRemoveEdges() {
+	}
+
+	/**
+	 * Method that is called after the last edge has been removed from the jump
+	 * functions
+	 * 
+	 * @param gcedMethods The number of methods for which edges have been removed
+	 */
+	protected void onAfterRemoveEdges(int gcedMethods) {
 	}
 
 	@Override

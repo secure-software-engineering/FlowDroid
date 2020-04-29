@@ -133,6 +133,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			AtomicInteger old = map.put(key, value == null ? null : new AtomicInteger(value));
@@ -153,6 +154,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			AtomicInteger old = map.remove(key);
@@ -173,6 +175,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			for (T t : m.keySet()) {
@@ -195,6 +198,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			map.clear();
@@ -229,9 +233,10 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
-			AtomicInteger i = map.putIfAbsent(key, new AtomicInteger(value));
+			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(value));
 			return i == null ? 0 : i.get();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -249,6 +254,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			if (value instanceof Integer)
@@ -270,6 +276,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			if (oldValue == null || newValue == null)
@@ -291,6 +298,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			if (value == null)
@@ -318,6 +326,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(0));
@@ -343,6 +352,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			case Safe:
 				lock.lock();
+				break;
 			}
 
 			AtomicInteger i = map.get(key);
