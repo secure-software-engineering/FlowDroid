@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -83,6 +82,11 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 *         garbage-collected, false otherwise
 	 */
 	private boolean hasActiveDependencies(SootMethod method, ConcurrentCountingMap<SootMethod> referenceCounter) {
+		// Check the method itself
+		if (referenceCounter.get(method) > 0)
+			return true;
+
+		// Check the transitive callees
 		Set<SootMethod> references = referenceProvider.getMethodReferences(method, null);
 		for (SootMethod ref : references) {
 			if (referenceCounter.get(ref) > 0)
@@ -100,54 +104,44 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 * Immediately performs garbage collection
 	 */
 	protected void gcImmediate() {
-		// Check our various triggers for garbage collection
-		boolean gc = trigger == GarbageCollectionTrigger.Immediate || trigger == GarbageCollectionTrigger.Never;
-		gc |= trigger == GarbageCollectionTrigger.MethodThreshold && gcScheduleSet.size() > methodThreshold;
-		gc |= trigger == GarbageCollectionTrigger.EdgeThreshold && edgeCounterForThreshold.get() > edgeThreshold;
+		if (gcScheduleSet != null && !gcScheduleSet.isEmpty()) {
+			// Check our various triggers for garbage collection
+			boolean gc = trigger == GarbageCollectionTrigger.Immediate;
+			gc |= trigger == GarbageCollectionTrigger.MethodThreshold && gcScheduleSet.size() > methodThreshold;
+			gc |= trigger == GarbageCollectionTrigger.EdgeThreshold && edgeCounterForThreshold.get() > edgeThreshold;
 
-		// Perform the garbage collection if required
-		if (gc) {
-			// Get the methods for which no propagation tasks are scheduled right now. This
-			// set is approximate, because other threads may add new tasks while we're
-			// collecting our GC candidates.
-			ConcurrentCountingMap<SootMethod> snapshot;
-			synchronized (gcScheduleSet) {
-				snapshot = jumpFnCounter.snapshot(gcScheduleSet);
-			}
-			Set<SootMethod> toRemove = snapshot.getByValue(0);
-
-			if (!toRemove.isEmpty()) {
-				// Check and add the candidates for GC to our global mark list
-				for (Iterator<SootMethod> it = toRemove.iterator(); it.hasNext();) {
+			// Perform the garbage collection if required
+			if (gc) {
+				int tempMethods = 0;
+				onBeforeRemoveEdges();
+				for (SootMethod sm : gcScheduleSet) {
+					// Is it safe to remove this method?
 					if (peerGroup != null) {
-						if (peerGroup.hasActiveDependencies(it.next()))
-							it.remove();
-					} else if (hasActiveDependencies(it.next(), snapshot))
-						it.remove();
-				}
+						if (peerGroup.hasActiveDependencies(sm))
+							continue;
+					} else if (hasActiveDependencies(sm))
+						continue;
 
-				// Clean up the methods
-				if (trigger != GarbageCollectionTrigger.Never && toRemove.size() > methodThreshold) {
-					onBeforeRemoveEdges();
-					for (SootMethod sm : toRemove) {
-						Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
-						if (oldFunctions != null) {
-							int gcedSize = oldFunctions.size();
-							gcedEdges.addAndGet(gcedSize);
-							edgeCounterForThreshold.subtract(gcedSize);
-							if (validateEdges)
-								oldEdges.addAll(oldFunctions);
-						}
-
-						// First unregister the method, then delete the edges. In case some other thread
-						// concurrently schedules a new edge, the method gets back into the GC work list
-						// this way.
-						gcScheduleSet.remove(sm);
-						if (jumpFunctions.remove(sm))
-							gcedMethods.incrementAndGet();
+					// Get stats for the stuff we are about to remove
+					Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
+					if (oldFunctions != null) {
+						int gcedSize = oldFunctions.size();
+						gcedEdges.addAndGet(gcedSize);
+						edgeCounterForThreshold.subtract(gcedSize);
+						if (validateEdges)
+							oldEdges.addAll(oldFunctions);
 					}
-					onAfterRemoveEdges(toRemove.size());
+
+					// First unregister the method, then delete the edges. In case some other thread
+					// concurrently schedules a new edge, the method gets back into the GC work list
+					// this way.
+					gcScheduleSet.remove(sm);
+					if (jumpFunctions.remove(sm)) {
+						gcedMethods.incrementAndGet();
+						tempMethods++;
+					}
 				}
+				onAfterRemoveEdges(tempMethods);
 			}
 		}
 	}

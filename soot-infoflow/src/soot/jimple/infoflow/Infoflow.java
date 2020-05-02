@@ -543,10 +543,12 @@ public class Infoflow extends AbstractInfoflow {
 					if (nativeCallHandler != null)
 						nativeCallHandler.shutdown();
 
-					logger.info("IFDS problem with {} forward and {} backward edges solved, processing {} results...",
-							forwardSolver.getPropagationCount(), aliasingStrategy.getSolver() == null ? 0
+					logger.info(
+							"IFDS problem with {} forward and {} backward edges solved in {} seconds, processing {} results...",
+							forwardSolver.getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0
 									: aliasingStrategy.getSolver().getPropagationCount(),
-							res == null ? 0 : res.size());
+							taintPropagationSeconds, res == null ? 0 : res.size());
 
 					// Update the statistics
 					{
