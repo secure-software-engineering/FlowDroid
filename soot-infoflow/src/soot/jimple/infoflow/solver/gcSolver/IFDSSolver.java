@@ -964,7 +964,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Notifies the solver that no further edges will be scheduled
 	 */
 	public void terminate() {
-		garbageCollector.notifySolverTerminated();
+		if (garbageCollector != null)
+			garbageCollector.notifySolverTerminated();
 	}
 
 }
