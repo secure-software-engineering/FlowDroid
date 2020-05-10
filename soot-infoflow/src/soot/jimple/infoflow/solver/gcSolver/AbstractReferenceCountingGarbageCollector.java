@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,6 +28,9 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	private final ExtendedAtomicInteger edgeCounterForThreshold = new ExtendedAtomicInteger();
 	private GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
 	private GarbageCollectorPeerGroup peerGroup = null;
+
+	protected boolean validateEdges = false;
+	protected Set<PathEdge<N, D>> oldEdges = new HashSet<>();
 
 	/**
 	 * The number of methods to collect as candidates for garbage collection, before
@@ -56,6 +60,11 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 		gcScheduleSet.add(sm);
 		if (trigger == GarbageCollectionTrigger.EdgeThreshold)
 			edgeCounterForThreshold.incrementAndGet();
+
+		if (validateEdges) {
+			if (oldEdges.contains(edge))
+				System.out.println("Edge re-scheduled");
+		}
 	}
 
 	@Override
@@ -136,6 +145,8 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 					if (jumpFunctions.remove(sm)) {
 						gcedMethods.incrementAndGet();
 						tempMethods++;
+						if (validateEdges)
+							oldEdges.addAll(oldFunctions);
 					}
 				}
 				onAfterRemoveEdges(tempMethods);
@@ -209,6 +220,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 */
 	public void setPeerGroup(GarbageCollectorPeerGroup peerGroup) {
 		this.peerGroup = peerGroup;
+		peerGroup.addGarbageCollector(this);
 	}
 
 }
