@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,9 +38,6 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 */
 	protected int edgeThreshold = 0;
 
-	protected boolean validateEdges = false;
-	protected Set<PathEdge<N, D>> oldEdges = new HashSet<>();
-
 	public AbstractReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
 			IGCReferenceProvider<D, N> referenceProvider) {
@@ -58,12 +54,8 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 		SootMethod sm = icfg.getMethodOf(edge.getTarget());
 		jumpFnCounter.increment(sm);
 		gcScheduleSet.add(sm);
-		edgeCounterForThreshold.incrementAndGet();
-
-		if (validateEdges) {
-			if (oldEdges.contains(edge))
-				System.out.println("Edge re-scheduled");
-		}
+		if (trigger == GarbageCollectionTrigger.EdgeThreshold)
+			edgeCounterForThreshold.incrementAndGet();
 	}
 
 	@Override
@@ -82,16 +74,22 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 *         garbage-collected, false otherwise
 	 */
 	private boolean hasActiveDependencies(SootMethod method, ConcurrentCountingMap<SootMethod> referenceCounter) {
-		// Check the method itself
-		if (referenceCounter.get(method) > 0)
-			return true;
+		int changeCounter = -1;
+		do {
+			// Update the change counter for the next round
+			changeCounter = referenceCounter.getChangeCounter();
 
-		// Check the transitive callees
-		Set<SootMethod> references = referenceProvider.getMethodReferences(method, null);
-		for (SootMethod ref : references) {
-			if (referenceCounter.get(ref) > 0)
+			// Check the method itself
+			if (referenceCounter.get(method) > 0)
 				return true;
-		}
+
+			// Check the transitive callees
+			Set<SootMethod> references = referenceProvider.getMethodReferences(method, null);
+			for (SootMethod ref : references) {
+				if (referenceCounter.get(ref) > 0)
+					return true;
+			}
+		} while (changeCounter != referenceCounter.getChangeCounter());
 		return false;
 	}
 
@@ -127,9 +125,8 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 					if (oldFunctions != null) {
 						int gcedSize = oldFunctions.size();
 						gcedEdges.addAndGet(gcedSize);
-						edgeCounterForThreshold.subtract(gcedSize);
-						if (validateEdges)
-							oldEdges.addAll(oldFunctions);
+						if (trigger == GarbageCollectionTrigger.EdgeThreshold)
+							edgeCounterForThreshold.subtract(gcedSize);
 					}
 
 					// First unregister the method, then delete the edges. In case some other thread

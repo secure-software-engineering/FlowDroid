@@ -39,6 +39,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 	private final ConcurrentMap<T, AtomicInteger> map;
 	private final ReentrantLock lock = new ReentrantLock();
 	private LockingMode lockingMode = LockingMode.NoLocking;
+	private AtomicInteger changeCounter = new AtomicInteger();
 
 	public class Entry implements Map.Entry<T, Integer> {
 
@@ -137,6 +138,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			}
 
 			AtomicInteger old = map.put(key, value == null ? null : new AtomicInteger(value));
+			changeCounter.incrementAndGet();
 			return old == null ? 0 : old.get();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -158,6 +160,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			}
 
 			AtomicInteger old = map.remove(key);
+			changeCounter.incrementAndGet();
 			return old == null ? 0 : old.get();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -181,6 +184,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			for (T t : m.keySet()) {
 				Integer i = m.get(t);
 				map.put(t, i == null ? null : new AtomicInteger(i));
+				changeCounter.incrementAndGet();
 			}
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -202,6 +206,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			}
 
 			map.clear();
+			changeCounter.incrementAndGet();
 		} finally {
 			if (lock.isHeldByCurrentThread())
 				lock.unlock();
@@ -237,7 +242,11 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			}
 
 			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(value));
-			return i == null ? 0 : i.get();
+			if (i == null) {
+				changeCounter.incrementAndGet();
+				return 0;
+			} else
+				return i.get();
 		} finally {
 			if (lock.isHeldByCurrentThread())
 				lock.unlock();
@@ -257,8 +266,11 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 				break;
 			}
 
-			if (value instanceof Integer)
-				return map.remove(key, new AtomicInteger((Integer) value));
+			if (value instanceof Integer) {
+				boolean res = map.remove(key, new AtomicInteger((Integer) value));
+				changeCounter.incrementAndGet();
+				return res;
+			}
 			return false;
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -281,7 +293,9 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
 			if (oldValue == null || newValue == null)
 				return false;
-			return map.replace(key, new AtomicInteger(oldValue), new AtomicInteger(newValue));
+			boolean res = map.replace(key, new AtomicInteger(oldValue), new AtomicInteger(newValue));
+			changeCounter.incrementAndGet();
+			return res;
 		} finally {
 			if (lock.isHeldByCurrentThread())
 				lock.unlock();
@@ -304,6 +318,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			if (value == null)
 				return null;
 			AtomicInteger i = map.replace(key, new AtomicInteger(value));
+			changeCounter.incrementAndGet();
 			return i == null ? 0 : i.get();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -330,6 +345,7 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			}
 
 			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(0));
+			changeCounter.incrementAndGet();
 			return i.incrementAndGet();
 		} finally {
 			if (lock.isHeldByCurrentThread())
@@ -358,7 +374,9 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 			AtomicInteger i = map.get(key);
 			if (i == null)
 				return 0;
-			return i.decrementAndGet();
+			int res = i.decrementAndGet();
+			changeCounter.incrementAndGet();
+			return res;
 		} finally {
 			if (lock.isHeldByCurrentThread())
 				lock.unlock();
@@ -431,6 +449,16 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	/**
+	 * Gets the current state of the change counter. This counter is modified
+	 * whenever the contents of the map are changed.
+	 * 
+	 * @return The current value of the change counter
+	 */
+	public int getChangeCounter() {
+		return changeCounter.get();
 	}
 
 }
