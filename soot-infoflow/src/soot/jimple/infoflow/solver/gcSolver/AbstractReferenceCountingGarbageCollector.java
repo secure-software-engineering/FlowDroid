@@ -28,6 +28,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	private final ExtendedAtomicInteger edgeCounterForThreshold = new ExtendedAtomicInteger();
 	private GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
 	private GarbageCollectorPeerGroup peerGroup = null;
+	private boolean checkChangeCounter = false;
 
 	protected boolean validateEdges = false;
 	protected Set<PathEdge<N, D>> oldEdges = new HashSet<>();
@@ -98,7 +99,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 				if (referenceCounter.get(ref) > 0)
 					return true;
 			}
-		} while (changeCounter != referenceCounter.getChangeCounter());
+		} while (checkChangeCounter && changeCounter != referenceCounter.getChangeCounter());
 		return false;
 	}
 
@@ -221,6 +222,17 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	public void setPeerGroup(GarbageCollectorPeerGroup peerGroup) {
 		this.peerGroup = peerGroup;
 		peerGroup.addGarbageCollector(this);
+	}
+
+	/**
+	 * Sets whether the change counter shall be checked when identifying active
+	 * method dependencies
+	 * 
+	 * @param checkChangeCounter True to ensure consistency using change counters,
+	 *                           false otherwise
+	 */
+	public void setCheckChangeCounter(boolean checkChangeCounter) {
+		this.checkChangeCounter = checkChangeCounter;
 	}
 
 }
