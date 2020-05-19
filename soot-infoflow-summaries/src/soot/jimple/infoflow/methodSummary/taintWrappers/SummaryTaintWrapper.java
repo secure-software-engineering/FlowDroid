@@ -766,12 +766,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			wrapperMisses.incrementAndGet();
 
-			if (!classSupported.value)
-				reportMissingMethod(callee);
-
 			if (classSupported.value)
 				return Collections.singleton(taintedAbs);
 			else {
+				reportMissingMethod(callee);
 				if (fallbackWrapper == null)
 					return null;
 				else {
