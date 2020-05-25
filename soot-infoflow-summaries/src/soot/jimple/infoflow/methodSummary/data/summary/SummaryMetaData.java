@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.methodSummary.data.summary;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,6 +15,7 @@ public class SummaryMetaData {
 
 	private final Set<String> exclusiveClasses = new HashSet<>();
 	private final Set<String> exclusivePackages = new HashSet<>();
+	private final Map<String, String> classToSuperclass = new HashMap<>();
 
 	public SummaryMetaData() {
 		//
@@ -86,6 +89,39 @@ public class SummaryMetaData {
 
 		// We found no match
 		return false;
+	}
+
+	/**
+	 * Sets the superclass for the given class
+	 * 
+	 * @param name       The name of the class
+	 * @param superclass The name of the superclass
+	 */
+	public void setSuperclass(String name, String superclass) {
+		classToSuperclass.put(name, superclass);
+	}
+
+	/**
+	 * Gets the name of the superclass of the given class
+	 * 
+	 * @param name The class name
+	 * @return The name of the superclass of the given class
+	 */
+	public String getSuperclass(String name) {
+		return classToSuperclass.get(name);
+	}
+
+	/**
+	 * Merges this hierarchy data into the given summaries object
+	 * 
+	 * @param summaries The summaries into which to merge the hierarchy data
+	 */
+	public void mergeHierarchyData(ClassSummaries summaries) {
+		for (String className : classToSuperclass.keySet()) {
+			ClassMethodSummaries clazzSummaries = summaries.getOrCreateClassSummaries(className);
+			if (!clazzSummaries.hasSuperclass())
+				clazzSummaries.setSuperClass(classToSuperclass.get(className));
+		}
 	}
 
 	@Override

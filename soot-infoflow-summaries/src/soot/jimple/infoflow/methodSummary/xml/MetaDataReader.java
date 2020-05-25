@@ -23,7 +23,7 @@ public class MetaDataReader extends AbstractXMLReader {
 	private static final String XSD_FILE_PATH = "schema/SummaryMetaData.xsd";
 
 	private enum State {
-		summaryMetaData, exclusiveModels, exclusiveModel
+		summaryMetaData, exclusiveModels, exclusiveModel, hierarchy, clazz
 	}
 
 	/**
@@ -43,6 +43,7 @@ public class MetaDataReader extends AbstractXMLReader {
 
 			String name = "";
 			String type = "";
+			String superclass = "";
 
 			State state = State.summaryMetaData;
 			while (xmlreader.hasNext()) {
@@ -83,6 +84,32 @@ public class MetaDataReader extends AbstractXMLReader {
 						throw new SummaryXMLException();
 				} else if (localName.equals(XMLMetaDataConstants.TREE_EXCLUSIVE_MODELS) && xmlreader.isEndElement()) {
 					if (state == State.exclusiveModels)
+						state = State.summaryMetaData;
+					else
+						throw new SummaryXMLException();
+				} else if (localName.equals(XMLMetaDataConstants.TREE_HIERARCHY) && xmlreader.isStartElement()) {
+					if (state == State.summaryMetaData)
+						state = State.hierarchy;
+					else
+						throw new SummaryXMLException();
+				} else if (localName.equals(XMLMetaDataConstants.TREE_CLASS) && xmlreader.isStartElement()) {
+					if (state == State.hierarchy) {
+						state = State.clazz;
+
+						name = getAttributeByName(xmlreader, XMLMetaDataConstants.ATTRIBUTE_NAME);
+						superclass = getAttributeByName(xmlreader, XMLMetaDataConstants.ATTRIBUTE_SUPERCLASS);
+					} else
+						throw new SummaryXMLException();
+				} else if (localName.equals(XMLMetaDataConstants.TREE_CLASS) && xmlreader.isEndElement()) {
+					if (state == State.clazz) {
+						state = State.hierarchy;
+
+						// Record the hierarchy element
+						metaData.setSuperclass(name, superclass);
+					} else
+						throw new SummaryXMLException();
+				} else if (localName.equals(XMLMetaDataConstants.TREE_HIERARCHY) && xmlreader.isEndElement()) {
+					if (state == State.hierarchy)
 						state = State.summaryMetaData;
 					else
 						throw new SummaryXMLException();

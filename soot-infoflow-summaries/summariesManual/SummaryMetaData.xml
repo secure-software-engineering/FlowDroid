@@ -25,4 +25,9 @@
 		<exclusiveModel type="class" name="java.util.Timer" />
 		<exclusiveModel type="class" name="java.text.SimpleDateFormat" />
 	</exclusiveModels>
+	<hierarchy>
+		<class
+			name="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$MvcMatchersAuthorizedUrl"
+			superClass="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$AuthorizedUrl" />
+	</hierarchy>
 </summaryMetaData>

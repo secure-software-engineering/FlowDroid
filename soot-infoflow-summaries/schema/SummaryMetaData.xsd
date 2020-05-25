@@ -12,6 +12,13 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+				<xs:element name="hierarchy" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="class" type="classType" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 			</xs:choice>
 		</xs:sequence>
 		<xs:attribute name="fileFormatVersion" type="xs:int" />
@@ -29,5 +36,10 @@
 		<xs:enumeration value="package" />
 	</xs:restriction>
 </xs:simpleType>
+
+<xs:complexType name="classType">
+	<xs:attribute name="name" type="xs:string" use="required" />
+	<xs:attribute name="superClass" type="xs:string" use="optional" />
+</xs:complexType>
 
 </xs:schema>

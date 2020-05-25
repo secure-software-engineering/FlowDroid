@@ -38,6 +38,16 @@ public class ClassSummaries {
 	}
 
 	/**
+	 * Gets or creates a summary object for the given class
+	 * 
+	 * @param className The name of the class for which to get a summary object
+	 * @return The summary object for the class with the given name
+	 */
+	public ClassMethodSummaries getOrCreateClassSummaries(String className) {
+		return summaries.computeIfAbsent(className, n -> new ClassMethodSummaries(className));
+	}
+
+	/**
 	 * Gets the flow summaries for the methods in the given class
 	 * 
 	 * @return The flow summaries for the methods in the given class
