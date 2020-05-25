@@ -235,6 +235,20 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
+	 * Gets a field name that is not already in use by some field
+	 * 
+	 * @param baseName The base name, i.e., prefix of the new field
+	 * @return A field name that is still free
+	 */
+	protected String getNonCollidingFieldName(String baseName) {
+		String fieldName = baseName;
+		int fieldIdx = 0;
+		while (mainMethod.getDeclaringClass().declaresFieldByName(fieldName))
+			fieldName = baseName + "_" + fieldIdx++;
+		return fieldName;
+	}
+
+	/**
 	 * Builds a new invocation statement that invokes the given method
 	 * 
 	 * @param methodToCall The method to call
