@@ -78,8 +78,9 @@ public class SummaryWriter {
 		writer.writeStartDocument();
 		writer.writeStartElement(XMLConstants.TREE_SUMMARY);
 		writer.writeAttribute(XMLConstants.ATTRIBUTE_FORMAT_VERSION, FILE_FORMAT_VERSION + "");
-		writer.writeAttribute(XMLConstants.ATTRIBUTE_IS_INTERFACE,
-				summary.isInterface() ? XMLConstants.VALUE_TRUE : XMLConstants.VALUE_FALSE);
+		if (summary.hasInterfaceInfo())
+			writer.writeAttribute(XMLConstants.ATTRIBUTE_IS_INTERFACE,
+					summary.isInterface() ? XMLConstants.VALUE_TRUE : XMLConstants.VALUE_FALSE);
 
 		MethodSummaries methodSummaries = summary.getMethodSummaries();
 

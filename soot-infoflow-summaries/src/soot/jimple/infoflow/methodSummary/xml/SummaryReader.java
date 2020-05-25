@@ -81,7 +81,8 @@ public class SummaryReader extends AbstractXMLReader {
 				final String localName = xmlreader.getLocalName();
 				if (localName.equals(XMLConstants.TREE_SUMMARY) && xmlreader.isStartElement()) {
 					String isInterface = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_INTERFACE);
-					summaries.setInterface(isInterface != null && isInterface.equals(XMLConstants.VALUE_TRUE));
+					if (isInterface != null)
+						summaries.setInterface(isInterface.equals(XMLConstants.VALUE_TRUE));
 				} else if (localName.equals(XMLConstants.TREE_METHODS) && xmlreader.isStartElement()) {
 					if (state == State.summary)
 						state = State.methods;

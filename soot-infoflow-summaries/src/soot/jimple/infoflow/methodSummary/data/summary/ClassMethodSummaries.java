@@ -15,7 +15,7 @@ public class ClassMethodSummaries {
 	private final MethodSummaries methodSummaries;
 	private final Set<String> interfaces = new HashSet<>();
 	private String superClass;
-	private boolean isInterface = false;
+	private Boolean isInterface = null;
 
 	private boolean isExclusiveForClass = true;
 
@@ -44,7 +44,8 @@ public class ClassMethodSummaries {
 	 *         class, false otherwise
 	 */
 	public boolean isEmpty() {
-		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces() && !hasSuperclass();
+		return (methodSummaries == null || methodSummaries.isEmpty()) && !hasInterfaces() && !hasSuperclass()
+				&& isInterface == null;
 	}
 
 	/**
@@ -121,6 +122,10 @@ public class ClassMethodSummaries {
 		if (methodFlows.hasInterfaces())
 			if (this.interfaces.addAll(methodFlows.getInterfaces()))
 				hasNewData = true;
+
+		if (isInterface == null && methodFlows.isInterface != null)
+			this.isInterface = methodFlows.isInterface;
+
 		return hasNewData;
 	}
 
@@ -246,7 +251,17 @@ public class ClassMethodSummaries {
 	 *         class
 	 */
 	public boolean isInterface() {
-		return isInterface;
+		return isInterface != null && isInterface.booleanValue();
+	}
+
+	/**
+	 * Gets whether this summary holds information about whether the target class is
+	 * an interface or not
+	 * 
+	 * @return True if interface status data is available, false otherwise
+	 */
+	public boolean hasInterfaceInfo() {
+		return isInterface != null;
 	}
 
 	/**
@@ -266,7 +281,7 @@ public class ClassMethodSummaries {
 		result = prime * result + ((className == null) ? 0 : className.hashCode());
 		result = prime * result + ((interfaces == null) ? 0 : interfaces.hashCode());
 		result = prime * result + (isExclusiveForClass ? 1231 : 1237);
-		result = prime * result + (isInterface ? 1231 : 1237);
+		result = prime * result + ((isInterface == null) ? 0 : isInterface.hashCode());
 		result = prime * result + ((methodSummaries == null) ? 0 : methodSummaries.hashCode());
 		result = prime * result + ((superClass == null) ? 0 : superClass.hashCode());
 		return result;
@@ -293,7 +308,10 @@ public class ClassMethodSummaries {
 			return false;
 		if (isExclusiveForClass != other.isExclusiveForClass)
 			return false;
-		if (isInterface != other.isInterface)
+		if (isInterface == null) {
+			if (other.isInterface != null)
+				return false;
+		} else if (!isInterface.equals(other.isInterface))
 			return false;
 		if (methodSummaries == null) {
 			if (other.methodSummaries != null)
