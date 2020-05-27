@@ -562,5 +562,6 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="boolean equals(java.lang.Object)" isExcluded="true" />
 	</methods>
 </summary>

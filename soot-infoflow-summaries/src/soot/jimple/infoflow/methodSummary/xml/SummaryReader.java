@@ -91,6 +91,9 @@ public class SummaryReader extends AbstractXMLReader {
 				} else if (localName.equals(TREE_METHOD) && xmlreader.isStartElement()) {
 					if (state == State.methods) {
 						currentMethod = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_METHOD_SIG);
+						String sIsExcluded = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUDED);
+						if (sIsExcluded != null && sIsExcluded.equals(XMLConstants.VALUE_TRUE))
+							summary.addExcludedMethod(currentMethod);
 						state = State.method;
 					} else
 						throw new SummaryXMLException();

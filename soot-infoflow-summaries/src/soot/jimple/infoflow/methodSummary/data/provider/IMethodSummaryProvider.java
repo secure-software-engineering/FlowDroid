@@ -103,4 +103,14 @@ public interface IMethodSummaryProvider {
 	 */
 	public ClassSummaries getSummaries();
 
+	/**
+	 * Gets whether the given method has been excluded from the data flow analysis
+	 * 
+	 * @param className    The name of the class that contains the method to check
+	 * @param subSignature The method to check
+	 * @return True if the given method has been excluded from the data flow
+	 *         analysis, false otherwise
+	 */
+	public boolean isMethodExcluded(String className, String subSignature);
+
 }

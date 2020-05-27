@@ -127,4 +127,13 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 		return summaries;
 	}
 
+	@Override
+	public boolean isMethodExcluded(String className, String subSignature) {
+		for (IMethodSummaryProvider provider : innerProviders) {
+			if (provider.isMethodExcluded(className, subSignature))
+				return true;
+		}
+		return false;
+	}
+
 }

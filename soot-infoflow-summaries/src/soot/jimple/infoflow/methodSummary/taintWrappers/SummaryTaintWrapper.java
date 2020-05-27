@@ -764,17 +764,20 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// If we have no data flows, we can abort early
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
-			wrapperMisses.incrementAndGet();
+			// Is this method explicitly excluded?
+			if (!this.flows.isMethodExcluded(callee.getDeclaringClass().getName(), callee.getSubSignature())) {
+				wrapperMisses.incrementAndGet();
 
-			if (classSupported.value)
-				return Collections.singleton(taintedAbs);
-			else {
-				reportMissingMethod(callee);
-				if (fallbackWrapper == null)
-					return null;
+				if (classSupported.value)
+					return Collections.singleton(taintedAbs);
 				else {
-					Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
-					return fallbackTaints;
+					reportMissingMethod(callee);
+					if (fallbackWrapper == null)
+						return null;
+					else {
+						Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
+						return fallbackTaints;
+					}
 				}
 			}
 		}

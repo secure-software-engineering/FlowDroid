@@ -253,10 +253,21 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public ClassMethodSummaries getMethodFlows(String className, String methodSignature) {
+		ClassMethodSummaries classSummaries = getClassSummaries(className);
+		return classSummaries == null ? null : classSummaries.filterForMethod(methodSignature);
+	}
+
+	/**
+	 * Gets all summaries for the given class
+	 * 
+	 * @param className The name of the class for which to get the summaries
+	 * @return The data flow summaries for the given class
+	 */
+	protected ClassMethodSummaries getClassSummaries(String className) {
 		if (loadableClasses != null && loadableClasses.contains(className))
 			loadClass(className);
 		ClassMethodSummaries classSummaries = summaries.getClassSummaries(className);
-		return classSummaries == null ? null : classSummaries.filterForMethod(methodSignature);
+		return classSummaries;
 	}
 
 	protected void loadClass(String clazz) {
@@ -416,6 +427,12 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 		}
 
 		return subsigMethodsWithSummaries.contains(subsig);
+	}
+
+	@Override
+	public boolean isMethodExcluded(String className, String subSignature) {
+		ClassMethodSummaries summaries = getClassSummaries(className);
+		return summaries.getMethodSummaries().isExcluded(subSignature);
 	}
 
 }
