@@ -784,8 +784,11 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// We always retain the incoming abstraction unless it is explicitly
 		// cleared
-		if (!killIncomingTaint.value)
+		if (!killIncomingTaint.value) {
+			if (resAbs == null)
+				return Collections.singleton(taintedAbs);
 			resAbs.add(taintedAbs);
+		}
 		return resAbs;
 	}
 
