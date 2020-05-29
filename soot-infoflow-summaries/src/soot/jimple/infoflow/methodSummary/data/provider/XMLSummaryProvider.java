@@ -432,7 +432,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	@Override
 	public boolean isMethodExcluded(String className, String subSignature) {
 		ClassMethodSummaries summaries = getClassSummaries(className);
-		return summaries.getMethodSummaries().isExcluded(subSignature);
+		return summaries != null && summaries.getMethodSummaries().isExcluded(subSignature);
 	}
 
 }
