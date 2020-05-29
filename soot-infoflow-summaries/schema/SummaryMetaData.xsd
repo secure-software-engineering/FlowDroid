@@ -3,7 +3,7 @@
 
 <xs:element name="summaryMetaData">
 	<xs:complexType>
-		<xs:sequence minOccurs="1" maxOccurs="1">
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
 			<xs:choice>
 				<xs:element name="exclusiveModels" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
