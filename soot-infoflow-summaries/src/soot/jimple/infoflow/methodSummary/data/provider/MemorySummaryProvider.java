@@ -87,7 +87,10 @@ public class MemorySummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public boolean isMethodExcluded(String className, String subSignature) {
-		return summaries.getClassSummaries(className).getMethodSummaries().isExcluded(subSignature);
+		ClassMethodSummaries classSummaries = summaries.getClassSummaries(className);
+		if (classSummaries == null)
+			return false;
+		return classSummaries.getMethodSummaries().isExcluded(subSignature);
 	}
 
 }
