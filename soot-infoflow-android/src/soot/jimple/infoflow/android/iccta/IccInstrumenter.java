@@ -72,12 +72,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		}
 
 		// Remove any potential leftovers from the last last instrumentation
-		for (Body body : instrumentedUnits.keySet()) {
-			for (Unit u : instrumentedUnits.get(body)) {
-				body.getUnits().remove(u);
-			}
-		}
-		instrumentedUnits.clear();
+		undoInstrumentation();
 
 		// Instrument the messenger class
 		instrumentMessenger();
@@ -86,6 +81,18 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		processedMethods.clear();
 
 		logger.info("[IccTA] ...End ICC Redirection Creation");
+	}
+
+	/**
+	 * Removes all units generated through instrumentation
+	 */
+	protected void undoInstrumentation() {
+		for (Body body : instrumentedUnits.keySet()) {
+			for (Unit u : instrumentedUnits.get(body)) {
+				body.getUnits().remove(u);
+			}
+		}
+		instrumentedUnits.clear();
 	}
 
 	protected void instrumentMessenger() {

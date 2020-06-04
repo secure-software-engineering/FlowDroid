@@ -82,6 +82,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		// Create the field itself
 		intentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
+		intentField.addTag(SimulatedCodeElementTag.TAG);
 		component.addField(intentField);
 	}
 

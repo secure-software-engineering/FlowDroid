@@ -72,8 +72,8 @@ public class IccRedirectionCreator {
 	private final RefType INTENT_TYPE = RefType.v("android.content.Intent");
 	private final RefType IBINDER_TYPE = RefType.v("android.os.IBinder");
 
-	private final Map<String, SootMethod> source2RedirectMethod = new HashMap<>();
-	private final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
+	protected final Map<String, SootMethod> source2RedirectMethod = new HashMap<>();
+	protected final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
 
 	protected final SootClass dummyMainClass;
 	protected final ComponentEntryPointCollection componentToEntryPoint;

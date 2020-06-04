@@ -223,6 +223,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// Create the field itself
 		resultIntentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
+		resultIntentField.addTag(SimulatedCodeElementTag.TAG);
 		component.addField(resultIntentField);
 	}
 
