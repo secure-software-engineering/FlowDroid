@@ -443,7 +443,6 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// altogether,
 					// otherwise we can just propagate the return value
 					Unit assignConst = Jimple.v().newAssignStmt(assign.getLeftOp(), value);
-					assignConst.addTag(SimulatedCodeElementTag.TAG);
 					if (!hasSideEffectsOrCallsSink(sm)) {
 						// If this method threw an exception, we have to make up
 						// for it
@@ -852,7 +851,6 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					Local paramLocal = sm.getActiveBody().getParameterLocal(i);
 					Unit point = getFirstNonIdentityStmt(sm);
 					Unit assignConst = Jimple.v().newAssignStmt(paramLocal, values[i]);
-					assignConst.addTag(SimulatedCodeElementTag.TAG);
 					sm.getActiveBody().getUnits().insertBefore(assignConst, point);
 
 					if (inserted == null)
