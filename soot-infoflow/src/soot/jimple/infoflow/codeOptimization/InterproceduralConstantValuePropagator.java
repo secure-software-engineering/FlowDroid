@@ -580,6 +580,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 				// Call the exception thrower after the old call site
 				Stmt throwCall = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(thrower.makeRef()));
+				throwCall.addTag(SimulatedCodeElementTag.TAG);
 				caller.getActiveBody().getUnits().insertBefore(throwCall, callSite);
 			}
 	}
