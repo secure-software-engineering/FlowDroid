@@ -277,6 +277,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 					Unit setIntentU = Jimple.v().newAssignStmt(intentV, Jimple.v().newVirtualInvokeExpr(thisLocal,
 							hostComponent.getMethodByName("getIntent").makeRef()));
 
+					setIntentU.addTag(SimulatedCodeElementTag.TAG);
 					units.insertBefore(setIntentU, stmt);
 					break;
 				}
