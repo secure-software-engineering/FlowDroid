@@ -35,6 +35,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointInfo;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointInfo;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.tagkit.Tag;
 import soot.util.HashMultiMap;
@@ -447,6 +448,7 @@ public class IccRedirectionCreator {
 		final PatchingChain<Unit> units = body.getUnits();
 
 		copyTags(link.getFromU(), redirectCallU);
+		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
 		units.insertAfter(redirectCallU, link.getFromU());
 		instrumentedUnits.put(body, redirectCallU);
 		if (instrumentationCallback != null)
@@ -471,6 +473,7 @@ public class IccRedirectionCreator {
 						List<ValueBox> vbs = stmt.getUseAndDefBoxes();
 						Unit assignU = Jimple.v().newAssignStmt(vbs.get(0).getValue(), vbs.get(1).getValue());
 						copyTags(stmt, assignU);
+						assignU.addTag(SimulatedCodeElementTag.TAG);
 						units.insertAfter(assignU, stmt);
 						instrumentedUnits.put(body, assignU);
 					}

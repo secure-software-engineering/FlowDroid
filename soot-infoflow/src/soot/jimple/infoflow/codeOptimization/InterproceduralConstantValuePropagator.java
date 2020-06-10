@@ -57,6 +57,7 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -442,6 +443,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// altogether,
 					// otherwise we can just propagate the return value
 					Unit assignConst = Jimple.v().newAssignStmt(assign.getLeftOp(), value);
+					assignConst.addTag(SimulatedCodeElementTag.TAG);
 					if (!hasSideEffectsOrCallsSink(sm)) {
 						// If this method threw an exception, we have to make up
 						// for it
@@ -581,6 +583,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 				// Call the exception thrower after the old call site
 				Stmt throwCall = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(thrower.makeRef()));
+				throwCall.addTag(SimulatedCodeElementTag.TAG);
 				caller.getActiveBody().getUnits().insertBefore(throwCall, callSite);
 			}
 	}
@@ -849,6 +852,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					Local paramLocal = sm.getActiveBody().getParameterLocal(i);
 					Unit point = getFirstNonIdentityStmt(sm);
 					Unit assignConst = Jimple.v().newAssignStmt(paramLocal, values[i]);
+					assignConst.addTag(SimulatedCodeElementTag.TAG);
 					sm.getActiveBody().getUnits().insertBefore(assignConst, point);
 
 					if (inserted == null)
