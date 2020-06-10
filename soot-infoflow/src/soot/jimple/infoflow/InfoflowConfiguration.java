@@ -1270,14 +1270,10 @@ public class InfoflowConfiguration {
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
 		this.codeEliminationMode = config.codeEliminationMode;
+		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
-
-		this.callgraphAlgorithm = config.callgraphAlgorithm;
-		this.aliasingAlgorithm = config.aliasingAlgorithm;
-		this.codeEliminationMode = config.codeEliminationMode;
-		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 
 		this.taintAnalysisEnabled = config.writeOutputFiles;
 		this.incrementalResultReporting = config.incrementalResultReporting;
