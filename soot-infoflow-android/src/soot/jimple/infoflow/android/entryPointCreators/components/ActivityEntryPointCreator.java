@@ -199,8 +199,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// 6. onRestart:
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, component, thisLocal);
-		createIfStmt(onStartStmt); // jump to onStart(), fall through to
-									// onDestroy()
+		body.getUnits().add(Jimple.v().newGotoStmt(onStartStmt)); // jump to onStart()
 
 		// 7. onDestroy
 		body.getUnits().add(stopToDestroyStmt);
