@@ -19,6 +19,7 @@ import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.util.Chain;
 import soot.util.HashMultiMap;
@@ -128,18 +129,21 @@ public class IccInstrumenter implements PreAnalysisHandler {
 
 									Unit newU = Jimple.v().newAssignStmt(handlerLocal,
 											Jimple.v().newNewExpr(handler.getType()));
+									newU.addTag(SimulatedCodeElementTag.TAG);
 									body.getUnits().insertAfter(newU, stmt);
 									instrumentedUnits.put(body, newU);
 
 									SootMethod initMethod = handler.getMethod("void <init>()");
 									Unit initU = Jimple.v().newInvokeStmt(
 											Jimple.v().newSpecialInvokeExpr(handlerLocal, initMethod.makeRef()));
+									initU.addTag(SimulatedCodeElementTag.TAG);
 									body.getUnits().insertAfter(initU, newU);
 									instrumentedUnits.put(body, initU);
 
 									SootMethod hmMethod = handler.getMethod("void handleMessage(android.os.Message)");
 									Unit callHMU = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(
 											handlerLocal, hmMethod.makeRef(), stmt.getInvokeExpr().getArg(0)));
+									callHMU.addTag(SimulatedCodeElementTag.TAG);
 									body.getUnits().insertAfter(callHMU, initU);
 									instrumentedUnits.put(body, callHMU);
 								}

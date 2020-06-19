@@ -22,6 +22,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NullConstant;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 
 /**
  * One ICC Link contain one source component and one destination component. this
@@ -199,6 +200,7 @@ public class IccInstrumentDestination {
 							Value arg0 = stmt.getInvokeExpr().getArg(0);
 							Unit assignUnit = Jimple.v().newAssignStmt(Jimple.v().newStaticFieldRef(sf.makeRef()),
 									arg0);
+							assignUnit.addTag(SimulatedCodeElementTag.TAG);
 							units.insertBefore(assignUnit, stmt);
 						}
 					}
