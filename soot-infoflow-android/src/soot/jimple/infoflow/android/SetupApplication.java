@@ -663,8 +663,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				// Since the gerenation of the main method can take some time,
 				// we check again whether we need to stop.
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
-					if (((IMemoryBoundedSolver) jimpleClass).isKilled())
+					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
+						logger.warn("Callback calculation aborted due to timeout");
 						break;
+					}
 				}
 
 				if (!isInitial) {
