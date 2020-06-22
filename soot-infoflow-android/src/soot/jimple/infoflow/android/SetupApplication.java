@@ -660,6 +660,23 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 				}
 
+				Set<Unit> prevUnits = new HashSet<>();
+				for (SootClass cc : Scene.v().getClasses()) {
+					for (SootMethod mm : cc.getMethods()) {
+						if (mm.hasActiveBody()) {
+							prevUnits.addAll(mm.retrieveActiveBody().getUnits());
+						}
+					}
+				}
+				int numPrevEdges = 0;
+				Set<String> previousEdges = new HashSet<>();
+				if (Scene.v().hasCallGraph()) {
+					numPrevEdges = Scene.v().getCallGraph().size();
+					Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
+					while (cit.hasNext())
+						previousEdges.add(cit.next().toString());
+				}
+
 				// Create the new iteration of the main method
 				createMainMethod(component);
 
@@ -668,15 +685,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
 					if (((IMemoryBoundedSolver) jimpleClass).isKilled())
 						break;
-				}
-
-				int numPrevEdges = 0;
-				Set<Edge> previousEdges = new HashSet<>();
-				if (Scene.v().hasCallGraph()) {
-					numPrevEdges = Scene.v().getCallGraph().size();
-					Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
-					while (cit.hasNext())
-						previousEdges.add(cit.next());
 				}
 
 				if (!isInitial) {
@@ -713,9 +721,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
 						while (cit.hasNext()) {
 							Edge i = cit.next();
-							if (!previousEdges.contains(i)) {
+							if (!previousEdges.contains(i.toString())) {
 								System.out.println("\tNew edge: " + i + "");
-								System.out.println("\t\tSrc unit hashcode: " + i.srcStmt().hashCode());
+							}
+
+						}
+
+						Set<Unit> crtUnits = new HashSet<>();
+						for (SootClass cc : Scene.v().getClasses()) {
+							for (SootMethod mm : cc.getMethods()) {
+								if (mm.hasActiveBody()) {
+									for (Unit u : mm.retrieveActiveBody().getUnits()) {
+										if (!prevUnits.contains(u))
+											System.out.println("\tNew unit " + u + " in " + mm);
+									}
+								}
 							}
 						}
 
