@@ -99,6 +99,7 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
+import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -670,8 +671,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				}
 
 				int numPrevEdges = 0;
-				if (Scene.v().hasCallGraph())
+				Set<Edge> previousEdges = new HashSet<>();
+				if (Scene.v().hasCallGraph()) {
 					numPrevEdges = Scene.v().getCallGraph().size();
+					Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
+					while (cit.hasNext())
+						previousEdges.add(cit.next());
+				}
 
 				if (!isInitial) {
 					// Reset the callgraph
@@ -703,6 +709,17 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					System.out.println(
 							"Iteration " + it + ": Was " + numPrevEdges + ", now " + Scene.v().getCallGraph().size()
 									+ " edges, took " + (System.currentTimeMillis() - ms) + " total ms");
+					if (Scene.v().getCallGraph().size() - numPrevEdges < 10) {
+						Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
+						while (cit.hasNext()) {
+							Edge i = cit.next();
+							if (!previousEdges.contains(i)) {
+								System.out.println("\tNew edge: " + i + "");
+								System.out.println("\t\tSrc unit hashcode: " + i.srcStmt().hashCode());
+							}
+						}
+
+					}
 					hasChanged = true;
 				}
 
