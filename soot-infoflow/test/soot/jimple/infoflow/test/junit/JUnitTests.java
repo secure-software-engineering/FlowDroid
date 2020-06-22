@@ -138,7 +138,7 @@ public abstract class JUnitTests {
 		if (useTaintWrapper) {
 			EasyTaintWrapper easyWrapper;
 			try {
-				easyWrapper = new EasyTaintWrapper();
+				easyWrapper = EasyTaintWrapper.getDefault();
 				result.setTaintWrapper(easyWrapper);
 			} catch (IOException e) {
 				System.err.println("Could not initialized Taintwrapper:");

@@ -410,7 +410,7 @@ public class MainClass {
 			// files
 			SummaryTaintWrapper summaryWrapper = createSummaryTaintWrapper(cmd,
 					new LazySummaryProvider("summariesManual"));
-			summaryWrapper.setFallbackTaintWrapper(new EasyTaintWrapper());
+			summaryWrapper.setFallbackTaintWrapper(EasyTaintWrapper.getDefault());
 			result = summaryWrapper;
 			break;
 		case "none":
