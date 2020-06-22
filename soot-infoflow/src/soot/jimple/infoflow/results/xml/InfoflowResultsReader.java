@@ -38,11 +38,8 @@ public class InfoflowResultsReader {
 		SerializedInfoflowResults results = new SerializedInfoflowResults();
 		InfoflowPerformanceData perfData = null;
 
-		InputStream in = null;
 		XMLStreamReader reader = null;
-
-		try {
-			in = new FileInputStream(fileName);
+		try (InputStream in = new FileInputStream(fileName)) {
 			reader = XMLInputFactory.newInstance().createXMLStreamReader(in);
 
 			String statement = null;
@@ -194,8 +191,6 @@ public class InfoflowResultsReader {
 		} finally {
 			if (reader != null)
 				reader.close();
-			if (in != null)
-				in.close();
 		}
 	}
 

@@ -148,11 +148,14 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!new File(fileName).exists()) {
 			fileName = "../soot-infoflow-android/AndroidCallbacks.txt";
 			if (!new File(fileName).exists()) {
-				return loadAndroidCallbacks(
-						new InputStreamReader(ResourceUtils.getResourceStream("/AndroidCallbacks.txt")));
+				try (InputStream is = ResourceUtils.getResourceStream("/AndroidCallbacks.txt")) {
+					return loadAndroidCallbacks(new InputStreamReader(is));
+				}
 			}
 		}
-		return loadAndroidCallbacks(new FileReader(fileName));
+		try (FileReader fr = new FileReader(fileName)) {
+			return loadAndroidCallbacks(fr);
+		}
 	}
 
 	/**
@@ -165,15 +168,11 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	public static Set<String> loadAndroidCallbacks(Reader reader) throws IOException {
 		Set<String> androidCallbacks = new HashSet<String>();
-		BufferedReader bufReader = new BufferedReader(reader);
-		try {
+		try (BufferedReader bufReader = new BufferedReader(reader)) {
 			String line;
 			while ((line = bufReader.readLine()) != null)
 				if (!line.isEmpty())
 					androidCallbacks.add(line);
-
-		} finally {
-			bufReader.close();
 		}
 		return androidCallbacks;
 	}
@@ -679,7 +678,8 @@ public abstract class AbstractCallbackAnalyzer {
 		return null;
 	}
 
-	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
+	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass,
+			SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
 		// reason to look for interface implementations
 		if (!baseClass.isConcrete())
@@ -778,7 +778,8 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		return this.callbackMethods.put(lifecycleClass, new AndroidCallbackDefinition(method, parentMethod, callbackType));
+		return this.callbackMethods.put(lifecycleClass,
+				new AndroidCallbackDefinition(method, parentMethod, callbackType));
 	}
 
 	/**
