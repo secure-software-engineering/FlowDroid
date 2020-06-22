@@ -660,6 +660,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 				}
 
+				// Create the new iteration of the main method
+				createMainMethod(component);
+
 				Set<Unit> prevUnits = new HashSet<>();
 				for (SootClass cc : Scene.v().getClasses()) {
 					for (SootMethod mm : cc.getMethods()) {
@@ -676,9 +679,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					while (cit.hasNext())
 						previousEdges.add(cit.next().toString());
 				}
-
-				// Create the new iteration of the main method
-				createMainMethod(component);
 
 				// Since the gerenation of the main method can take some time,
 				// we check again whether we need to stop.
