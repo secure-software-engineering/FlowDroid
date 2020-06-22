@@ -676,6 +676,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				}
 				isInitial = false;
 
+				int numPrevEdges = 0;
+				if (Scene.v().hasCallGraph())
+					numPrevEdges = Scene.v().getCallGraph().size();
+
 				// Run the soot-based operations
 				constructCallgraphInternal();
 				if (!Scene.v().hasCallGraph())
@@ -691,6 +695,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 					}
 				}
+
+				if (numPrevEdges != Scene.v().getCallGraph().size())
+					hasChanged = true;
 
 				// Collect the results of the soot-based phases
 				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods()))
