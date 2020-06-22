@@ -644,7 +644,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			timeoutWatcher = createCallbackTimeoutWatcher(callbackConfig, jimpleClass);
 		}
 
+		long ms = System.currentTimeMillis();
 		try {
+			int it = 0;
 			int depthIdx = 0;
 			boolean hasChanged = true;
 			boolean isInitial = true;
@@ -696,8 +698,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					}
 				}
 
-				if (numPrevEdges < Scene.v().getCallGraph().size())
+				it++;
+				if (numPrevEdges < Scene.v().getCallGraph().size()) {
+					System.out.println(
+							"Iteration " + it + ": Was " + numPrevEdges + ", now " + Scene.v().getCallGraph().size()
+									+ " edges, took " + (System.currentTimeMillis() - ms) + " total ms");
 					hasChanged = true;
+				}
 
 				// Collect the results of the soot-based phases
 				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods()))
