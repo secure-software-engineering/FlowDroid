@@ -667,6 +667,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 				}
 
+				int numPrevEdges = 0;
+				if (Scene.v().hasCallGraph())
+					numPrevEdges = Scene.v().getCallGraph().size();
+
 				if (!isInitial) {
 					// Reset the callgraph
 					releaseCallgraph();
@@ -675,10 +679,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					PackManager.v().getPack("wjtp").remove("wjtp.lfp");
 				}
 				isInitial = false;
-
-				int numPrevEdges = 0;
-				if (Scene.v().hasCallGraph())
-					numPrevEdges = Scene.v().getCallGraph().size();
 
 				// Run the soot-based operations
 				constructCallgraphInternal();
