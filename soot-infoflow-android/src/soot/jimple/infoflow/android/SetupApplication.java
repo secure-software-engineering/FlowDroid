@@ -99,7 +99,6 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
-import soot.jimple.toolkits.callgraph.Edge;
 import soot.options.Options;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -645,9 +644,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			timeoutWatcher = createCallbackTimeoutWatcher(callbackConfig, jimpleClass);
 		}
 
-		long ms = System.currentTimeMillis();
 		try {
-			int it = 0;
 			int depthIdx = 0;
 			boolean hasChanged = true;
 			boolean isInitial = true;
@@ -663,6 +660,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				// Create the new iteration of the main method
 				createMainMethod(component);
 
+				int numPrevEdges = 0;
+				if (Scene.v().hasCallGraph()) {
+					numPrevEdges = Scene.v().getCallGraph().size();
+				}
 				Set<Unit> prevUnits = new HashSet<>();
 				for (SootClass cc : Scene.v().getClasses()) {
 					for (SootMethod mm : cc.getMethods()) {
@@ -671,15 +672,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						}
 					}
 				}
-				int numPrevEdges = 0;
-				Set<String> previousEdges = new HashSet<>();
-				if (Scene.v().hasCallGraph()) {
-					numPrevEdges = Scene.v().getCallGraph().size();
-					Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
-					while (cit.hasNext())
-						previousEdges.add(cit.next().toString());
-				}
-
 				// Since the gerenation of the main method can take some time,
 				// we check again whether we need to stop.
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
@@ -714,36 +706,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					}
 				}
 
-				it++;
-				if (numPrevEdges < Scene.v().getCallGraph().size()) {
-					System.out.println(
-							"Iteration " + it + ": Was " + numPrevEdges + ", now " + Scene.v().getCallGraph().size()
-									+ " edges, took " + (System.currentTimeMillis() - ms) + " total ms");
-					if (Scene.v().getCallGraph().size() - numPrevEdges < 10) {
-						Iterator<Edge> cit = Scene.v().getCallGraph().iterator();
-						while (cit.hasNext()) {
-							Edge i = cit.next();
-							if (!previousEdges.contains(i.toString())) {
-								System.out.println("\tNew edge: " + i + "");
-							}
-
-						}
-
-						Set<Unit> crtUnits = new HashSet<>();
-						for (SootClass cc : Scene.v().getClasses()) {
-							for (SootMethod mm : cc.getMethods()) {
-								if (mm.hasActiveBody()) {
-									for (Unit u : mm.retrieveActiveBody().getUnits()) {
-										if (!prevUnits.contains(u))
-											System.out.println("\tNew unit " + u + " in " + mm);
-									}
-								}
-							}
-						}
-
-					}
+				if (numPrevEdges < Scene.v().getCallGraph().size())
 					hasChanged = true;
-				}
 
 				// Collect the results of the soot-based phases
 				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods()))
