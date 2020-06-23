@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.results.xml;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -56,39 +56,39 @@ public class InfoflowResultsSerializer {
 	 * 
 	 * @param results  The result object to serialize
 	 * @param fileName The target file name
-	 * @throws FileNotFoundException Thrown if target file cannot be used
-	 * @throws XMLStreamException    Thrown if the XML data cannot be written
+	 * @throws XMLStreamException Thrown if the XML data cannot be written
+	 * @throws IOException        Thrown if the target file could not be written
 	 */
-	public void serialize(InfoflowResults results, String fileName) throws FileNotFoundException, XMLStreamException {
+	public void serialize(InfoflowResults results, String fileName) throws XMLStreamException, IOException {
 		this.startTime = System.currentTimeMillis();
+		try (OutputStream out = new FileOutputStream(fileName)) {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			XMLStreamWriter writer = factory.createXMLStreamWriter(out, "UTF-8");
 
-		OutputStream out = new FileOutputStream(fileName);
-		XMLOutputFactory factory = XMLOutputFactory.newInstance();
-		XMLStreamWriter writer = factory.createXMLStreamWriter(out, "UTF-8");
+			writer.writeStartDocument("UTF-8", "1.0");
+			writer.writeStartElement(XmlConstants.Tags.root);
+			writer.writeAttribute(XmlConstants.Attributes.fileFormatVersion, FILE_FORMAT_VERSION + "");
+			writer.writeAttribute(XmlConstants.Attributes.terminationState,
+					terminationStateToString(results.getTerminationState()));
 
-		writer.writeStartDocument("UTF-8", "1.0");
-		writer.writeStartElement(XmlConstants.Tags.root);
-		writer.writeAttribute(XmlConstants.Attributes.fileFormatVersion, FILE_FORMAT_VERSION + "");
-		writer.writeAttribute(XmlConstants.Attributes.terminationState,
-				terminationStateToString(results.getTerminationState()));
+			// Write out the data flow results
+			if (results != null && !results.isEmpty()) {
+				writer.writeStartElement(XmlConstants.Tags.results);
+				writeDataFlows(results, writer);
+				writer.writeEndElement();
+			}
 
-		// Write out the data flow results
-		if (results != null && !results.isEmpty()) {
-			writer.writeStartElement(XmlConstants.Tags.results);
-			writeDataFlows(results, writer);
-			writer.writeEndElement();
+			// Write out performance data
+			InfoflowPerformanceData performanceData = results.getPerformanceData();
+			if (performanceData != null && !performanceData.isEmpty()) {
+				writer.writeStartElement(XmlConstants.Tags.performanceData);
+				writePerformanceData(performanceData, writer);
+				writer.writeEndElement();
+			}
+
+			writer.writeEndDocument();
+			writer.close();
 		}
-
-		// Write out performance data
-		InfoflowPerformanceData performanceData = results.getPerformanceData();
-		if (performanceData != null && !performanceData.isEmpty()) {
-			writer.writeStartElement(XmlConstants.Tags.performanceData);
-			writePerformanceData(performanceData, writer);
-			writer.writeEndElement();
-		}
-
-		writer.writeEndDocument();
-		writer.close();
 	}
 
 	/**
