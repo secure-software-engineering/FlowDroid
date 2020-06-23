@@ -11,7 +11,6 @@
 package soot.jimple.infoflow.android;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1534,7 +1533,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
 			try {
 				serializer.serialize(results, resultsFile);
-			} catch (FileNotFoundException ex) {
+			} catch (IOException ex) {
 				System.err.println("Could not write data flow results to file: " + ex.getMessage());
 				ex.printStackTrace();
 			} catch (XMLStreamException ex) {

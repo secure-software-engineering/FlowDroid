@@ -12,7 +12,6 @@ import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SOURCE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.VALUE_TRUE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,11 +46,11 @@ public class SummaryWriter {
 	 * 
 	 * @param file    The target directory in which to place the class summary files
 	 * @param summary The class summaries to write out
-	 * @throws FileNotFoundException Thrown if the target file could not be found or
-	 *                               created
-	 * @throws XMLStreamException    Thrown if the XML data could not be written
+	 * @throws IOException        Thrown if the target file could not be found or
+	 *                            created
+	 * @throws XMLStreamException Thrown if the XML data could not be written
 	 */
-	public void write(File file, ClassSummaries summary) throws FileNotFoundException, XMLStreamException {
+	public void write(File file, ClassSummaries summary) throws IOException, XMLStreamException {
 		for (String className : summary.getClasses()) {
 			String fileName = file.getAbsolutePath() + File.separatorChar + className + ".xml";
 			write(new File(fileName), summary.getClassSummaries(className));

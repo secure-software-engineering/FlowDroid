@@ -3,6 +3,7 @@ package soot.jimple.infoflow.methodSummary;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -290,7 +291,7 @@ class Main {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
