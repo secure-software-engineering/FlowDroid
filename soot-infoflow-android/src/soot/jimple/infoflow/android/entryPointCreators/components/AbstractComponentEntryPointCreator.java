@@ -274,8 +274,13 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 					 * RuntimeException: couldn't find method getIntent(*) in
 					 * com.google.android.gcm.GCMBroadcastReceiver
 					 */
-					Unit setIntentU = Jimple.v().newAssignStmt(intentV, Jimple.v().newVirtualInvokeExpr(thisLocal,
-							hostComponent.getMethodByName("getIntent").makeRef()));
+					SootMethod m = hostComponent.getMethodByName("getIntent");
+					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
+						if (stmt.getInvokeExpr().getMethod().equals(m))
+							break;
+					}
+					Unit setIntentU = Jimple.v().newAssignStmt(intentV,
+							Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
 
 					setIntentU.addTag(SimulatedCodeElementTag.TAG);
 					units.insertBefore(setIntentU, stmt);
