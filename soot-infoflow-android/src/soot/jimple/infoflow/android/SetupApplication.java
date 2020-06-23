@@ -664,15 +664,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				if (Scene.v().hasCallGraph()) {
 					numPrevEdges = Scene.v().getCallGraph().size();
 				}
-				Set<Unit> prevUnits = new HashSet<>();
-				for (SootClass cc : Scene.v().getClasses()) {
-					for (SootMethod mm : cc.getMethods()) {
-						if (mm.hasActiveBody()) {
-							prevUnits.addAll(mm.retrieveActiveBody().getUnits());
-						}
-					}
-				}
-				// Since the gerenation of the main method can take some time,
+				// Since the generation of the main method can take some time,
 				// we check again whether we need to stop.
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
 					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
