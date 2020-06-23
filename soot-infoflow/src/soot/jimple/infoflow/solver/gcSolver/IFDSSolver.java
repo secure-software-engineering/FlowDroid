@@ -184,7 +184,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (garbageCollector != null)
 			return garbageCollector;
 
-		DefaultGarbageCollector<N, D> gc = new DefaultGarbageCollector<>(icfg, jumpFunctions);
+//		DefaultGarbageCollector<N, D> gc = new DefaultGarbageCollector<>(icfg, jumpFunctions);
+		ThreadedGarbageCollector<N, D> gc = new ThreadedGarbageCollector<>(icfg, jumpFunctions);
 		GCSolverPeerGroup gcSolverGroup = (GCSolverPeerGroup) solverPeerGroup;
 		gc.setPeerGroup(gcSolverGroup.getGCPeerGroup());
 		return garbageCollector = gc;
@@ -216,6 +217,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			listener.notifySolverTerminated(this);
 
 		logger.info(String.format("GC removed abstractions for %d methods", garbageCollector.getGcedMethods()));
+		this.garbageCollector.notifySolverTerminated();
 	}
 
 	/**
@@ -956,6 +958,14 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 */
 	public void setPeerGroup(SolverPeerGroup solverPeerGroup) {
 		this.solverPeerGroup = solverPeerGroup;
+	}
+
+	/**
+	 * Notifies the solver that no further edges will be scheduled
+	 */
+	public void terminate() {
+		if (garbageCollector != null)
+			garbageCollector.notifySolverTerminated();
 	}
 
 }

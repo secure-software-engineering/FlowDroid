@@ -76,4 +76,10 @@ public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N
 		this.methodThreshold = threshold;
 	}
 
+	@Override
+	public void notifySolverTerminated() {
+		// TODO Auto-generated method stub
+
+	}
+
 }

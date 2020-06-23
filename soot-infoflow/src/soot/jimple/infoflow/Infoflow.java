@@ -492,6 +492,7 @@ public class Infoflow extends AbstractInfoflow {
 						performanceData.setTaintPropagationSeconds(0);
 					long beforeTaintPropagation = System.nanoTime();
 
+					onBeforeTaintPropagation(forwardSolver, backwardSolver);
 					forwardSolver.solve();
 
 					// Not really nice, but sometimes Heros returns before all
@@ -542,10 +543,12 @@ public class Infoflow extends AbstractInfoflow {
 					if (nativeCallHandler != null)
 						nativeCallHandler.shutdown();
 
-					logger.info("IFDS problem with {} forward and {} backward edges solved, processing {} results...",
-							forwardSolver.getPropagationCount(), aliasingStrategy.getSolver() == null ? 0
+					logger.info(
+							"IFDS problem with {} forward and {} backward edges solved in {} seconds, processing {} results...",
+							forwardSolver.getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0
 									: aliasingStrategy.getSolver().getPropagationCount(),
-							res == null ? 0 : res.size());
+							taintPropagationSeconds, res == null ? 0 : res.size());
 
 					// Update the statistics
 					{
@@ -577,8 +580,10 @@ public class Infoflow extends AbstractInfoflow {
 
 					// Remove the alias analysis from memory
 					aliasing = null;
-					if (aliasingStrategy.getSolver() != null)
+					if (aliasingStrategy.getSolver() != null) {
+						aliasingStrategy.getSolver().terminate();
 						memoryWatcher.removeSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
+					}
 					aliasingStrategy.cleanup();
 					aliasingStrategy = null;
 
@@ -669,6 +674,12 @@ public class Infoflow extends AbstractInfoflow {
 						timeoutWatcher.stop();
 					if (pathTimeoutWatcher != null)
 						pathTimeoutWatcher.stop();
+
+					if (aliasingStrategy != null) {
+						IInfoflowSolver solver = aliasingStrategy.getSolver();
+						if (solver != null)
+							solver.terminate();
+					}
 
 					// Do we have any more sources?
 					hasMoreSources = oneSourceAtATime != null && oneSourceAtATime.hasNextSource();
@@ -763,6 +774,16 @@ public class Infoflow extends AbstractInfoflow {
 	 */
 	protected Aliasing createAliasController(IAliasingStrategy aliasingStrategy) {
 		return new Aliasing(aliasingStrategy, manager);
+	}
+
+	/**
+	 * Callback that is invoked when the main taint propagation is about to start
+	 * 
+	 * @param forwardSolver  The forward data flow solver
+	 * @param backwardSolver The backward data flow solver
+	 */
+	protected void onBeforeTaintPropagation(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
+		//
 	}
 
 	/**

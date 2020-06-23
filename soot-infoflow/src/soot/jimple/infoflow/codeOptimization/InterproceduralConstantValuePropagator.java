@@ -57,6 +57,7 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -414,10 +415,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 				if (callSite instanceof AssignStmt) {
 					AssignStmt assign = (AssignStmt) callSite;
 
-					// If we have a taint wrapper, we need to keep the stub
-					// untouched since we
-					// don't know what artificial taint the wrapper will come up
-					// with
+					// If we have a taint wrapper, we need to keep the stub untouched since we don't
+					// know what artificial taint the wrapper will come up with
 					if (taintWrapper != null && taintWrapper.supportsCallee(assign))
 						continue;
 
@@ -438,9 +437,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					if (callees != null && callees.size() > 1)
 						continue;
 
-					// If the call has no side effects, we can remove it
-					// altogether,
-					// otherwise we can just propagate the return value
+					// If the call has no side effects, we can remove it altogether, otherwise we
+					// can just propagate the return value
 					Unit assignConst = Jimple.v().newAssignStmt(assign.getLeftOp(), value);
 					if (!hasSideEffectsOrCallsSink(sm)) {
 						// If this method threw an exception, we have to make up
@@ -535,6 +533,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 							body.getUnits().add(throwNewEx);
 
 							body.getUnits().add(afterEx);
+							mainMethod.addTag(SimulatedCodeElementTag.TAG);
 							return mainMethod;
 						}
 
@@ -581,6 +580,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 				// Call the exception thrower after the old call site
 				Stmt throwCall = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(thrower.makeRef()));
+				throwCall.addTag(SimulatedCodeElementTag.TAG);
 				caller.getActiveBody().getUnits().insertBefore(throwCall, callSite);
 			}
 	}

@@ -29,6 +29,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodClear;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
 import soot.jimple.infoflow.methodSummary.xml.MetaDataReader;
 import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
 import soot.util.MultiMap;
@@ -41,7 +42,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final static String FILE_META_DATA = "SummaryMetaData.xml";
+	protected final static String FILE_META_DATA = "SummaryMetaData.xml";
 
 	private final SummaryReader summaryReader;
 	private MetaDataReader metaDataReader;
@@ -50,8 +51,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	private Set<String> supportedClasses = new HashSet<String>();
 	protected Set<String> loadableClasses = new HashSet<String>();
-	private Set<File> files;
-	private Set<Path> pathes;
+	protected Set<File> files;
+	protected Set<Path> pathes;
 	private FileSystem fileSystem;
 
 	protected Set<String> subsigMethodsWithSummaries = new HashSet<String>();
@@ -252,10 +253,21 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public ClassMethodSummaries getMethodFlows(String className, String methodSignature) {
+		ClassMethodSummaries classSummaries = getClassSummaries(className);
+		return classSummaries == null ? null : classSummaries.filterForMethod(methodSignature);
+	}
+
+	/**
+	 * Gets all summaries for the given class
+	 * 
+	 * @param className The name of the class for which to get the summaries
+	 * @return The data flow summaries for the given class
+	 */
+	protected ClassMethodSummaries getClassSummaries(String className) {
 		if (loadableClasses != null && loadableClasses.contains(className))
 			loadClass(className);
 		ClassMethodSummaries classSummaries = summaries.getClassSummaries(className);
-		return classSummaries == null ? null : classSummaries.filterForMethod(methodSignature);
+		return classSummaries;
 	}
 
 	protected void loadClass(String clazz) {
@@ -327,11 +339,13 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	 */
 	private void loadMetaData() {
 		// Do we have a plain file we can load?
+		SummaryMetaData metadata = null;
 		if (files != null) {
 			for (File f : files) {
 				if (f.getName().equals(FILE_META_DATA)) {
 					try {
-						summaries.setMetaData(metaDataReader.read(f));
+						metadata = metaDataReader.read(f);
+						summaries.setMetaData(metadata);
 					} catch (Exception ex) {
 						LoggerFactory.getLogger(getClass())
 								.error("An error occurred while loading the meta data data of %s");
@@ -345,7 +359,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 			for (Path path : pathes) {
 				if (getFileName(path).equals(FILE_META_DATA)) {
 					try (InputStream inputStream = path.getFileSystem().provider().newInputStream(path)) {
-						summaries.setMetaData(metaDataReader.read(new InputStreamReader(inputStream)));
+						metadata = metaDataReader.read(new InputStreamReader(inputStream));
+						summaries.setMetaData(metadata);
 					} catch (Exception e) {
 						LoggerFactory.getLogger(getClass())
 								.error("An error occurred while loading the meta data data of %s");
@@ -353,6 +368,10 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 				}
 			}
 		}
+
+		// Merge the hierarchy data from the metadata object into the summaries
+		if (metadata != null)
+			metadata.mergeHierarchyData(summaries);
 	}
 
 	public boolean hasLoadingErrors() {
@@ -408,6 +427,12 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 		}
 
 		return subsigMethodsWithSummaries.contains(subsig);
+	}
+
+	@Override
+	public boolean isMethodExcluded(String className, String subSignature) {
+		ClassMethodSummaries summaries = getClassSummaries(className);
+		return summaries != null && summaries.getMethodSummaries().isExcluded(subSignature);
 	}
 
 }

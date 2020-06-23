@@ -162,6 +162,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	protected abstract SootMethod createDummyMainInternal();
 
 	/**
+	 * Gets the class that contains the dummy main method. If such a class does not
+	 * exist yet, it is created
+	 * 
+	 * @return The class tha contains the dummy main method
+	 */
+	protected SootClass getOrCreateDummyMainClass() {
+		SootClass mainClass = Scene.v().getSootClassUnsafe(dummyClassName);
+		if (mainClass == null) {
+			mainClass = Scene.v().makeSootClass(dummyClassName);
+			mainClass.setResolvingLevel(SootClass.BODIES);
+			Scene.v().addClass(mainClass);
+		}
+		return mainClass;
+	}
+
+	/**
 	 * Creates a new, empty main method containing the given body
 	 * 
 	 * @return The newly generated main method
@@ -169,19 +185,12 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	protected void createEmptyMainMethod() {
 		// If we already have a main class, we need to make sure to use a fresh
 		// method name
-		final SootClass mainClass;
+		int methodIndex = 0;
 		String methodName = dummyMethodName;
-		if (Scene.v().containsClass(dummyClassName)) {
-			int methodIndex = 0;
-			mainClass = Scene.v().getSootClass(dummyClassName);
-			if (!overwriteDummyMainMethod)
-				while (mainClass.declaresMethodByName(methodName))
-					methodName = dummyMethodName + "_" + methodIndex++;
-		} else {
-			mainClass = Scene.v().makeSootClass(dummyClassName);
-			mainClass.setResolvingLevel(SootClass.BODIES);
-			Scene.v().addClass(mainClass);
-		}
+		SootClass mainClass = getOrCreateDummyMainClass();
+		if (!overwriteDummyMainMethod)
+			while (mainClass.declaresMethodByName(methodName))
+				methodName = dummyMethodName + "_" + methodIndex++;
 
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 
@@ -232,6 +241,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	protected void createAdditionalMethods() {
 		// empty in default implementation
+	}
+
+	/**
+	 * Gets a field name that is not already in use by some field
+	 * 
+	 * @param baseName The base name, i.e., prefix of the new field
+	 * @return A field name that is still free
+	 */
+	protected String getNonCollidingFieldName(String baseName) {
+		String fieldName = baseName;
+		int fieldIdx = 0;
+		final SootClass mainClass = getOrCreateDummyMainClass();
+		while (mainClass.declaresFieldByName(fieldName))
+			fieldName = baseName + "_" + fieldIdx++;
+		return fieldName;
 	}
 
 	/**

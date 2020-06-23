@@ -403,13 +403,12 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 	public static XMLSourceSinkParser fromFile(String fileName, ICategoryFilter categoryFilter) throws IOException {
 		logger.info(String.format("Loading sources and sinks from %s...", fileName));
-		verifyXML(getStream(fileName));
+		try (InputStream is = getStream(fileName)) {
+			verifyXML(is);
+		}
 
-		InputStream inputStream = getStream(fileName);
-		try {
+		try (InputStream inputStream = getStream(fileName)) {
 			return fromStream(inputStream, categoryFilter);
-		} finally {
-			inputStream.close();
 		}
 	}
 

@@ -10,6 +10,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
@@ -146,6 +147,8 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// We need to instrument the onBind() method to store the binder in the field
 		instrumentOnBind();
+
+		createGetIntentMethod();
 	}
 
 	/**
@@ -184,9 +187,10 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 			final Local thisLocal = b.getThisLocal();
 			final Local binderLocal = b.getParameterLocal(0);
 
-			b.getUnits().insertAfter(Jimple.v()
-					.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()), binderLocal),
-					firstNonIdentityStmt);
+			final Unit assignStmt = Jimple.v()
+					.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()), binderLocal);
+			assignStmt.addTag(SimulatedCodeElementTag.TAG);
+			b.getUnits().insertAfter(assignStmt, firstNonIdentityStmt);
 		}
 	}
 

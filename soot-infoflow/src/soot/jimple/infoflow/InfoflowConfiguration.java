@@ -904,7 +904,7 @@ public class InfoflowConfiguration {
 	 */
 	public static class SolverConfiguration {
 
-		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive; // GarbageCollecting;
+		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive;
 		private int maxJoinPointAbstractions = 10;
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;
@@ -1270,14 +1270,10 @@ public class InfoflowConfiguration {
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
 		this.codeEliminationMode = config.codeEliminationMode;
+		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
-
-		this.callgraphAlgorithm = config.callgraphAlgorithm;
-		this.aliasingAlgorithm = config.aliasingAlgorithm;
-		this.codeEliminationMode = config.codeEliminationMode;
-		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 
 		this.taintAnalysisEnabled = config.writeOutputFiles;
 		this.incrementalResultReporting = config.incrementalResultReporting;

@@ -25,6 +25,7 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_IS_INTERFACE = "isInterface";
 	public static final String ATTRIBUTE_ID = "num";
 	public static final String ATTRIBUTE_METHOD_SIG = "id";
+	public static final String ATTRIBUTE_IS_EXCLUDED = "isExcluded";
 	public static final String ATTRIBUTE_FLOWTYPE = "sourceSinkType";
 	public static final String ATTRIBUTE_PARAMTER_INDEX = "ParameterIndex";
 	public static final String ATTRIBUTE_ACCESSPATH = "AccessPath";

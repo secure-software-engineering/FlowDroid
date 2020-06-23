@@ -361,7 +361,7 @@ public class ImplicitFlowTests extends JUnitTests {
 		// not yet supported
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.setTaintWrapper(new EasyTaintWrapper());
+		infoflow.setTaintWrapper(EasyTaintWrapper.getDefault());
 		infoflow.setSootConfig(new IInfoflowConfig() {
 
 			@Override
@@ -387,7 +387,7 @@ public class ImplicitFlowTests extends JUnitTests {
 	public void callToReturnTest2() throws IOException {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.setTaintWrapper(new EasyTaintWrapper());
+		infoflow.setTaintWrapper(EasyTaintWrapper.getDefault());
 		infoflow.setSootConfig(new IInfoflowConfig() {
 
 			@Override
@@ -435,7 +435,7 @@ public class ImplicitFlowTests extends JUnitTests {
 	public void implicitFlowTaintWrapperTest() throws IOException {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSinks(false);
-		infoflow.setTaintWrapper(new EasyTaintWrapper());
+		infoflow.setTaintWrapper(EasyTaintWrapper.getDefault());
 		infoflow.setSootConfig(new IInfoflowConfig() {
 
 			@Override

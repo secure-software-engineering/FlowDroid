@@ -44,6 +44,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.util.ResourceUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -130,8 +131,10 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 		this.includeList = includeList;
 	}
 
-	public EasyTaintWrapper() throws IOException {
-		this(soot.jimple.infoflow.util.ResourceUtils.getResourceStream("/EasyTaintWrapperSource.txt"));
+	public static EasyTaintWrapper getDefault() throws IOException {
+		try (InputStream is = ResourceUtils.getResourceStream("/EasyTaintWrapperSource.txt")) {
+			return new EasyTaintWrapper(is);
+		}
 	}
 
 	public EasyTaintWrapper(String f) throws IOException {

@@ -58,7 +58,7 @@ public class JUnitTests {
 		System.out.println("Loading Android.jar files from " + androidJars);
 
 		SetupApplication setupApplication = new SetupApplication(androidJars, apkFileName);
-		setupApplication.setTaintWrapper(new EasyTaintWrapper());
+		setupApplication.setTaintWrapper(EasyTaintWrapper.getDefault());
 		setupApplication.getConfig().setImplicitFlowMode(
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);
 		setupApplication.getConfig().setStaticFieldTrackingMode(

@@ -2567,10 +2567,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		if (remainingSize > 0) {
 			byte[] remainingBytes = new byte[remainingSize];
 			System.arraycopy(data, offset, remainingBytes, 0, remainingSize);
-			if (!(new BigInteger(1, remainingBytes).equals(BigInteger.ZERO))) {
-				logger.warn("Excessive non-null bytes in ResTable_Config ignored");
-				assert false;
-			}
+			BigInteger remainingData = new BigInteger(1, remainingBytes);
+			if (!(remainingData.equals(BigInteger.ZERO))) {
+				logger.debug("Excessive {} non-null bytes in ResTable_Config ignored", remainingSize);
+				if (logger.isTraceEnabled()) {
+					logger.trace("remaining data: 0x" + remainingData.toString(16));
+				}
+            }
 			offset += remainingSize;
 		}
 

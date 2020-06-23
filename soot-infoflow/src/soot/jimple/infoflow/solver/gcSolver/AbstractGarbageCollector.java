@@ -23,6 +23,7 @@ public abstract class AbstractGarbageCollector<N, D> implements IGarbageCollecto
 		this.icfg = icfg;
 		this.referenceProvider = referenceProvider;
 		this.jumpFunctions = jumpFunctions;
+		initialize();
 	}
 
 	public AbstractGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
@@ -30,6 +31,13 @@ public abstract class AbstractGarbageCollector<N, D> implements IGarbageCollecto
 		this.icfg = icfg;
 		this.referenceProvider = createReferenceProvider();
 		this.jumpFunctions = jumpFunctions;
+		initialize();
+	}
+
+	/**
+	 * Initializes the garbage collector
+	 */
+	protected void initialize() {
 	}
 
 	/**
