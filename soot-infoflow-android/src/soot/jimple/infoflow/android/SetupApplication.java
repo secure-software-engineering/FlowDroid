@@ -660,7 +660,11 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				// Create the new iteration of the main method
 				createMainMethod(component);
 
-				// Since the gerenation of the main method can take some time,
+				int numPrevEdges = 0;
+				if (Scene.v().hasCallGraph()) {
+					numPrevEdges = Scene.v().getCallGraph().size();
+				}
+				// Since the generation of the main method can take some time,
 				// we check again whether we need to stop.
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
 					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
@@ -668,10 +672,6 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						break;
 					}
 				}
-
-				int numPrevEdges = 0;
-				if (Scene.v().hasCallGraph())
-					numPrevEdges = Scene.v().getCallGraph().size();
 
 				if (!isInitial) {
 					// Reset the callgraph
