@@ -31,11 +31,13 @@ public class AndroidEntryPointConstants {
 	public static final String APPLICATIONCLASS = "android.app.Application";
 	public static final String FRAGMENTCLASS = "android.app.Fragment";
 	public static final String SUPPORTFRAGMENTCLASS = "android.support.v4.app.Fragment";
+	public static final String ANDROIDXFRAGMENTCLASS = "androidx.fragment.app.Fragment";
 	public static final String SERVICECONNECTIONINTERFACE = "android.content.ServiceConnection";
 	public static final String MAPACTIVITYCLASS = "com.google.android.maps.MapActivity";
 
 	public static final String APPCOMPATACTIVITYCLASS_V4 = "android.support.v4.app.AppCompatActivity";
 	public static final String APPCOMPATACTIVITYCLASS_V7 = "android.support.v7.app.AppCompatActivity";
+	public static final String APPCOMPATACTIVITYCLASS_X = "androidx.appcompat.app.AppCompatActivity";
 
 	public static final String ACTIVITY_ONCREATE = "void onCreate(android.os.Bundle)";
 	public static final String ACTIVITY_ONSTART = "void onStart()";
@@ -231,7 +233,7 @@ public class AndroidEntryPointConstants {
 		return className.equals(ACTIVITYCLASS) || className.equals(SERVICECLASS) || className.equals(FRAGMENTCLASS)
 				|| className.equals(BROADCASTRECEIVERCLASS) || className.equals(CONTENTPROVIDERCLASS)
 				|| className.equals(APPLICATIONCLASS) || className.equals(APPCOMPATACTIVITYCLASS_V4)
-				|| className.equals(APPCOMPATACTIVITYCLASS_V7);
+				|| className.equals(APPCOMPATACTIVITYCLASS_V7 || className.equals(APPCOMPATACTIVITYCLASS_X));
 	}
 
 	/**
