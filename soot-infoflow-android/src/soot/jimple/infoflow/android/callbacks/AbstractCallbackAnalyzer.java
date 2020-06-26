@@ -86,11 +86,17 @@ public abstract class AbstractCallbackAnalyzer {
 
 	protected final SootClass scSupportFragmentTransaction = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentTransaction");
+	protected final SootClass scAndroidXFragmentTransaction = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentTransaction");
 	protected final SootClass scSupportFragment = Scene.v().getSootClassUnsafe("android.support.v4.app.Fragment");
+	protected final SootClass scAndroidXFragment = Scene.v().getSootClassUnsafe("androidx.fragment.app.Fragment");
 
 	protected final SootClass scSupportViewPager = Scene.v().getSootClassUnsafe("android.support.v4.view.ViewPager");
+	protected final SootClass scAndroidXViewPager = Scene.v().getSootClassUnsafe("androidx.viewpager.widget.ViewPager");
 	protected final SootClass scFragmentStatePagerAdapter = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentStatePagerAdapter");
+	protected final SootClass scAndroidXFragmentStatePagerAdapter = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentStatePagerAdapter");
 
 	protected final InfoflowAndroidConfiguration config;
 	protected final Set<SootClass> entryPointClasses;
@@ -393,7 +399,8 @@ public abstract class AbstractCallbackAnalyzer {
 	protected void analyzeMethodForFragmentTransaction(SootClass lifecycleElement, SootMethod method) {
 		if (scFragment == null || scFragmentTransaction == null)
 			if (scSupportFragment == null || scSupportFragmentTransaction == null)
-				return;
+				if (scAndroidXFragment == null || scAndroidXFragmentTransaction == null)
+					return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
 
@@ -437,6 +444,8 @@ public abstract class AbstractCallbackAnalyzer {
 								.canStoreType(iinvExpr.getBase().getType(), scFragmentTransaction.getType());
 						isFragmentTransaction |= scSupportFragmentTransaction != null && Scene.v().getFastHierarchy()
 								.canStoreType(iinvExpr.getBase().getType(), scSupportFragmentTransaction.getType());
+						isFragmentTransaction |= scAndroidXFragmentTransaction != null && Scene.v().getFastHierarchy()
+								.canStoreType(iinvExpr.getBase().getType(), scAndroidXFragmentTransaction.getType());
 						isAddTransaction = stmt.getInvokeExpr().getMethod().getName().equals("add")
 								|| stmt.getInvokeExpr().getMethod().getName().equals("replace");
 
@@ -453,6 +462,8 @@ public abstract class AbstractCallbackAnalyzer {
 											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
 									addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
 											.canStoreType(rt, scSupportFragment.getType());
+									addFragment |= scAndroidXFragment != null && Scene.v().getFastHierarchy()
+											.canStoreType(rt, scAndroidXFragment.getType());
 									if (addFragment)
 										checkAndAddFragment(method.getDeclaringClass(), rt.getSootClass());
 								}
@@ -474,7 +485,8 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
 		if (scSupportViewPager == null || scFragmentStatePagerAdapter == null)
-			return;
+			if (scAndroidXViewPager == null || scAndroidXFragmentStatePagerAdapter == null)
+				return;
 
 		if (!method.isConcrete())
 			return;
@@ -497,7 +509,9 @@ public abstract class AbstractCallbackAnalyzer {
 
 			// check whether class is of ViewPager type
 
-			if (!Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(), scSupportViewPager.getType()))
+			if (!Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(), scSupportViewPager.getType())
+					&& !Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(),
+							scAndroidXViewPager.getType()))
 				continue;
 
 			// check whether setAdapter method is called
@@ -515,11 +529,15 @@ public abstract class AbstractCallbackAnalyzer {
 			RefType rt = (RefType) pa.getType();
 
 			// check whether argument is of type FragmentStatePagerAdapter
-			if (!Scene.v().getFastHierarchy().canStoreType(rt, scFragmentStatePagerAdapter.getType()))
+			if (!Scene.v().getFastHierarchy().canStoreType(rt, scFragmentStatePagerAdapter.getType())
+					&& !Scene.v().getFastHierarchy().canStoreType(rt, scAndroidXFragmentStatePagerAdapter.getType()))
 				continue;
 
 			// now analyze getItem() to find possible Fragments
 			SootMethod getItem = rt.getSootClass().getMethodUnsafe("android.support.v4.app.Fragment getItem(int)");
+
+			if (getItem == null)
+				getItem = rt.getSootClass().getMethodUnsafe("androidx.fragment.app.Fragment getItem(int)");
 
 			if (getItem == null)
 				continue;
@@ -594,7 +612,8 @@ public abstract class AbstractCallbackAnalyzer {
 		while (curClass != null) {
 			if (curClass.getName().equals("android.app.Activity")
 					|| curClass.getName().equals("android.support.v7.app.ActionBarActivity")
-					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity"))
+					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity")
+					|| curClass.getName().equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
 			if (curClass.declaresMethod("void setContentView(int)"))
 				return false;

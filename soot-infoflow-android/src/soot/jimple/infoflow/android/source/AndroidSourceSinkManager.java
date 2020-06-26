@@ -388,7 +388,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 
 		// We need special treatment for the Android support classes
 		if (!isResourceCall) {
-			if (callee.getDeclaringClass().getName().startsWith("android.support.v")
+			if ((callee.getDeclaringClass().getName().startsWith("android.support.v")
+					|| callee.getDeclaringClass().getName().startsWith("androidx."))
 					&& callee.getSubSignature().equals(smActivityFindViewById.getSubSignature()))
 				isResourceCall = true;
 		}
