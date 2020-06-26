@@ -224,8 +224,7 @@ public class AndroidEntryPointConstants {
 	 * Gets whether the given class if one of Android's default lifecycle classes
 	 * (android.app.Activity etc.)
 	 * 
-	 * @param className
-	 *            The name of the class to check
+	 * @param className The name of the class to check
 	 * @return True if the given class is one of Android's default lifecycle
 	 *         classes, otherwise false
 	 */
@@ -233,7 +232,7 @@ public class AndroidEntryPointConstants {
 		return className.equals(ACTIVITYCLASS) || className.equals(SERVICECLASS) || className.equals(FRAGMENTCLASS)
 				|| className.equals(BROADCASTRECEIVERCLASS) || className.equals(CONTENTPROVIDERCLASS)
 				|| className.equals(APPLICATIONCLASS) || className.equals(APPCOMPATACTIVITYCLASS_V4)
-				|| className.equals(APPCOMPATACTIVITYCLASS_V7 || className.equals(APPCOMPATACTIVITYCLASS_X));
+				|| className.equals(APPCOMPATACTIVITYCLASS_V7) || className.equals(APPCOMPATACTIVITYCLASS_X);
 	}
 
 	/**
