@@ -496,49 +496,38 @@ public abstract class AbstractCallbackAnalyzer {
 		// look for invocations of ViewPager.setAdapter
 		for (Unit u : body.getUnits()) {
 			Stmt stmt = (Stmt) u;
-
 			if (!stmt.containsInvokeExpr())
 				continue;
 
 			InvokeExpr invExpr = stmt.getInvokeExpr();
-
 			if (!(invExpr instanceof InstanceInvokeExpr))
 				continue;
-
 			InstanceInvokeExpr iinvExpr = (InstanceInvokeExpr) invExpr;
 
 			// check whether class is of ViewPager type
-
-			if (!Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(), scSupportViewPager.getType())
-					&& !Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(),
-							scAndroidXViewPager.getType()))
+			if (!safeIsType(iinvExpr.getBase(), scSupportViewPager)
+					&& !safeIsType(iinvExpr.getBase(), scAndroidXViewPager))
 				continue;
 
 			// check whether setAdapter method is called
-
 			if (!stmt.getInvokeExpr().getMethod().getName().equals("setAdapter")
 					|| stmt.getInvokeExpr().getArgCount() != 1)
 				continue;
 
 			// get argument
 			Value pa = stmt.getInvokeExpr().getArg(0);
-
 			if (!(pa.getType() instanceof RefType))
 				continue;
-
 			RefType rt = (RefType) pa.getType();
 
 			// check whether argument is of type FragmentStatePagerAdapter
-			if (!Scene.v().getFastHierarchy().canStoreType(rt, scFragmentStatePagerAdapter.getType())
-					&& !Scene.v().getFastHierarchy().canStoreType(rt, scAndroidXFragmentStatePagerAdapter.getType()))
+			if (!safeIsType(pa, scFragmentStatePagerAdapter) && !safeIsType(pa, scAndroidXFragmentStatePagerAdapter))
 				continue;
 
 			// now analyze getItem() to find possible Fragments
 			SootMethod getItem = rt.getSootClass().getMethodUnsafe("android.support.v4.app.Fragment getItem(int)");
-
 			if (getItem == null)
 				getItem = rt.getSootClass().getMethodUnsafe("androidx.fragment.app.Fragment getItem(int)");
-
 			if (getItem == null)
 				continue;
 
@@ -558,6 +547,17 @@ public abstract class AbstractCallbackAnalyzer {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Checks whether the given value is of the type of the given class
+	 * 
+	 * @param val   The value to check
+	 * @param clazz The class from which to get the type
+	 * @return True if the given value is of the type of the given class
+	 */
+	private boolean safeIsType(Value val, SootClass clazz) {
+		return clazz != null && Scene.v().getFastHierarchy().canStoreType(val.getType(), clazz.getType());
 	}
 
 	/**
