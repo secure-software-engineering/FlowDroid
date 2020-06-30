@@ -771,7 +771,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (classSupported.value)
 					return Collections.singleton(taintedAbs);
 				else {
-					reportMissingMethod(callee);
+					reportMissingMethod(callee, taintedAbs);
 					if (fallbackWrapper == null)
 						return null;
 					else {
@@ -792,7 +792,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		return resAbs;
 	}
 
-	protected void reportMissingMethod(SootMethod method) {
+	/**
+	 * Method that is called when no summary exists for a given method
+	 * 
+	 * @param method   The method for which no summary exists
+	 * @param incoming The incoming taint abstraction
+	 */
+	protected void reportMissingMethod(SootMethod method, Abstraction incoming) {
 		if (reportMissingSummaries
 				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			System.out.println("Missing summary for class " + method.getDeclaringClass());

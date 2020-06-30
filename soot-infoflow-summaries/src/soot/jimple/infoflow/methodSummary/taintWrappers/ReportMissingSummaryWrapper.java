@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 
 public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
@@ -34,7 +35,7 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 	ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
 
 	@Override
-	protected void reportMissingMethod(SootMethod method) {
+	protected void reportMissingMethod(SootMethod method, Abstraction incoming) {
 		count(method.getDeclaringClass(), classSummariesMissing);
 	}
 
