@@ -528,7 +528,7 @@ public abstract class AbstractCallbackAnalyzer {
 			SootMethod getItem = rt.getSootClass().getMethodUnsafe("android.support.v4.app.Fragment getItem(int)");
 			if (getItem == null)
 				getItem = rt.getSootClass().getMethodUnsafe("androidx.fragment.app.Fragment getItem(int)");
-			if (getItem == null)
+			if (getItem == null || !getItem.isConcrete())
 				continue;
 
 			Body b = getItem.retrieveActiveBody();

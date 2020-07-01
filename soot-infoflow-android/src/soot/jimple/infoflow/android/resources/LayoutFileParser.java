@@ -306,8 +306,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 						return;
 					}
 					if (!(targetRes instanceof StringResource)) {
-						logger.warn("Invalid target node for include tag in layout XML, was %s",
-								targetRes.getClass().getName());
+						logger.warn(String.format("Invalid target node for include tag in layout XML, was %s",
+								targetRes.getClass().getName()));
 						return;
 					}
 					String targetFile = ((StringResource) targetRes).getValue();

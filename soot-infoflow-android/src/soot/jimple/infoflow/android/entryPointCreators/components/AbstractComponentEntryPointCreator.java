@@ -274,7 +274,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 					 * RuntimeException: couldn't find method getIntent(*) in
 					 * com.google.android.gcm.GCMBroadcastReceiver
 					 */
-					SootMethod m = hostComponent.getMethodByName("getIntent");
+					SootMethod m = hostComponent.getMethod("android.content.Intent getIntent()");
 					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
 						if (stmt.getInvokeExpr().getMethod().equals(m))
 							break;

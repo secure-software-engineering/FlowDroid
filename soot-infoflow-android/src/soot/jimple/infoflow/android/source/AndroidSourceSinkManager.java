@@ -26,10 +26,12 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
+import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
@@ -204,7 +206,7 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 						if (tag instanceof IntegerConstantValueTag)
 							return ((IntegerConstantValueTag) tag).getIntValue();
 						else
-							logger.error("Constant %s was of unexpected type", field.toString());
+							logger.error(String.format("Constant %s was of unexpected type", field.toString()));
 				} else if (assign.getRightOp() instanceof InvokeExpr) {
 					InvokeExpr inv = (InvokeExpr) assign.getRightOp();
 					if (inv.getMethod().getName().equals("getIdentifier")
@@ -214,7 +216,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 						// well-known
 						// Android API method for resource handling
 						if (inv.getArgCount() != 3) {
-							logger.error("Invalid parameter count (%d) for call to getIdentifier", inv.getArgCount());
+							logger.error(String.format("Invalid parameter count (%d) for call to getIdentifier",
+									inv.getArgCount()));
 							return null;
 						}
 
@@ -228,13 +231,17 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 							resName = ((StringConstant) inv.getArg(0)).value;
 						if (inv.getArg(1) instanceof StringConstant)
 							resID = ((StringConstant) inv.getArg(1)).value;
-						if (inv.getArg(2) instanceof StringConstant)
-							packageName = ((StringConstant) inv.getArg(2)).value;
-						else if (inv.getArg(2) instanceof Local)
-							packageName = findLastStringAssignment(stmt, (Local) inv.getArg(2), cfg);
+
+						Value thirdArg = inv.getArg(2);
+						if (thirdArg instanceof StringConstant)
+							packageName = ((StringConstant) thirdArg).value;
+						else if (thirdArg instanceof Local)
+							packageName = findLastStringAssignment(stmt, (Local) thirdArg, cfg);
+						else if (thirdArg instanceof NullConstant)
+							return null;
 						else {
-							logger.error("Unknown parameter type %s in call to getIdentifier",
-									inv.getArg(2).getClass().getName());
+							logger.error(String.format("Unknown parameter type %s in call to getIdentifier",
+									inv.getArg(2).getClass().getName()));
 							return null;
 						}
 

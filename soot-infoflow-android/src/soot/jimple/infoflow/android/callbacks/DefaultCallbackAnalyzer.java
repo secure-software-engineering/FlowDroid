@@ -230,11 +230,13 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 				filter.setReachableMethods(rm);
 
 			SootMethod method = reachableMethods.next().method();
-			analyzeMethodForCallbackRegistrations(lifecycleElement, method);
-			analyzeMethodForDynamicBroadcastReceiver(method);
-			analyzeMethodForServiceConnection(method);
-			analyzeMethodForFragmentTransaction(lifecycleElement, method);
-			analyzeMethodForViewPagers(lifecycleElement, method);
+			if (method.isConcrete()) {
+				analyzeMethodForCallbackRegistrations(lifecycleElement, method);
+				analyzeMethodForDynamicBroadcastReceiver(method);
+				analyzeMethodForServiceConnection(method);
+				analyzeMethodForFragmentTransaction(lifecycleElement, method);
+				analyzeMethodForViewPagers(lifecycleElement, method);
+			}
 		}
 	}
 
