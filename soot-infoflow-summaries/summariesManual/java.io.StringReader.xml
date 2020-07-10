@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy>
+		<interface name="java.io.Reader" />
+	</hierarchy>
   <methods>
     <method id="void &lt;init&gt;(java.lang.String)">
       <flows>

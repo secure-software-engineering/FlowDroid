@@ -1,5 +1,8 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy>
+		<interface name="java.io.Writer" />
+	</hierarchy>
 	<methods>
 		<method id="java.io.StringWriter append(char)">
 			<flows>
