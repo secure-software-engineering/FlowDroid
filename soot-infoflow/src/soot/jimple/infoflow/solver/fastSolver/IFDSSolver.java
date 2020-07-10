@@ -340,6 +340,16 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		}
 	}
 
+	/**
+	 * Callback to notify derived classes that an end summary has been applied
+	 * 
+	 * @param n           The call site where the end summary has been applied
+	 * @param sCalledProc The callee
+	 * @param d3          The callee-side incoming taint abstraction
+	 */
+	protected void onEndSummaryApplied(N n, SootMethod sCalledProc, D d3) {
+	}
+
 	protected void applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
 			SootMethod sCalledProcN, D d3) {
 		// line 15.2
@@ -389,6 +399,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					}
 				}
 			}
+			onEndSummaryApplied(n, sCalledProcN, d3);
 		}
 	}
 
