@@ -1151,7 +1151,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 *         otherwise null. Note that this is a set of sets, one set per possible
 	 *         callee.
 	 */
-	private ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
+	protected ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
 			ByReferenceBoolean classSupported) {
 		final String subsig = method.getSubSignature();
 		if (!flows.mayHaveSummaryForMethod(subsig))
