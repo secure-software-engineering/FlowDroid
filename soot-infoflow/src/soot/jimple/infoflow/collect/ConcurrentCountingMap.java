@@ -333,6 +333,17 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 	 * @return The new counter value
 	 */
 	public int increment(T key) {
+		return increment(key, 1);
+	}
+
+	/**
+	 * Increments the counter associated with the given value by the given delta
+	 * 
+	 * @param key   The key of the value for which to increment the counter
+	 * @param delta The delta by which to increment the counter
+	 * @return The new counter value
+	 */
+	public int increment(T key, int delta) {
 		try {
 			switch (lockingMode) {
 			case Fast:
@@ -346,7 +357,10 @@ public class ConcurrentCountingMap<T> implements ConcurrentMap<T, Integer> {
 
 			AtomicInteger i = map.computeIfAbsent(key, k -> new AtomicInteger(0));
 			changeCounter.incrementAndGet();
-			return i.incrementAndGet();
+			int val = 0;
+			for (int j = 0; j < delta; j++)
+				val = i.incrementAndGet();
+			return val;
 		} finally {
 			if (lock.isHeldByCurrentThread())
 				lock.unlock();

@@ -421,7 +421,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
 						Set<Abstraction> res = computeTargetsInternal(d1, source);
-						if (res != null && !res.isEmpty()) {
+						if (res != null && !res.isEmpty() && d1 != null) {
 							for (Abstraction abs : res)
 								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, src, source, d1);
 						}

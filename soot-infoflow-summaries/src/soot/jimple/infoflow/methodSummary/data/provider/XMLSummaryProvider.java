@@ -48,7 +48,7 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 	private final SummaryReader summaryReader;
 	private MetaDataReader metaDataReader;
 
-	private ClassSummaries summaries = new ClassSummaries();
+	private ClassSummaries summaries = createClassSummaries();
 
 	private Set<String> supportedClasses = new HashSet<String>();
 	protected Set<String> loadableClasses = new HashSet<String>();
@@ -134,6 +134,15 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 
 		loadSummariesFromJAR(folderInJar, parentClass);
 		init();
+	}
+
+	/**
+	 * Creates a new instance of the {@link ClassSummaries} class
+	 * 
+	 * @return The new {@link ClassSummaries}
+	 */
+	protected ClassSummaries createClassSummaries() {
+		return new ClassSummaries();
 	}
 
 	protected void loadSummariesFromJAR(String folderInJar, Class<?> parentClass)

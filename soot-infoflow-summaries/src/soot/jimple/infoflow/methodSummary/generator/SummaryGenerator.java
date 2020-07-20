@@ -602,7 +602,7 @@ public class SummaryGenerator {
 	 *                      end (but in the context) of the data flow analysis
 	 * @return summary of method m
 	 */
-	private MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
+	protected MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
 			final GapManager gapManager, final ResultsAvailableHandler resultHandler) {
 		// We need to construct a fallback taint wrapper based on the current
 		// configuration

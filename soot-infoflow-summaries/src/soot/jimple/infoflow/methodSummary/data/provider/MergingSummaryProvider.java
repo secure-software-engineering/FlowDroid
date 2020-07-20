@@ -15,7 +15,11 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
  */
 public class MergingSummaryProvider implements IMethodSummaryProvider {
 
-	private final Collection<IMethodSummaryProvider> innerProviders;
+	protected final Collection<IMethodSummaryProvider> innerProviders;
+
+	protected MergingSummaryProvider() {
+		this.innerProviders = new HashSet<>();
+	}
 
 	public MergingSummaryProvider(Collection<IMethodSummaryProvider> innerProviders) {
 		this.innerProviders = innerProviders;
@@ -73,7 +77,7 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 			ClassSummaries providerSummaries = provider.getMethodFlows(classes, methodSignature);
 			if (providerSummaries != null) {
 				if (summaries == null)
-					summaries = new ClassSummaries();
+					summaries = createClassSummaries();
 				summaries.merge(providerSummaries);
 			}
 		}
@@ -120,11 +124,21 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 			ClassSummaries providerSummaries = provider.getSummaries();
 			if (providerSummaries != null) {
 				if (summaries == null)
-					summaries = new ClassSummaries();
+					summaries = createClassSummaries();
 				summaries.merge(providerSummaries);
 			}
 		}
 		return summaries;
+	}
+
+	/**
+	 * Creates the {@link ClassSummaries} object to use for merging individual
+	 * summaries
+	 * 
+	 * @return The new {@link ClassSummaries} object
+	 */
+	protected ClassSummaries createClassSummaries() {
+		return new ClassSummaries();
 	}
 
 	@Override
