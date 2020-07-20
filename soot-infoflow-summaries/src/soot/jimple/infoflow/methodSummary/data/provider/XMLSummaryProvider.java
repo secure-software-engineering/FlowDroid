@@ -13,6 +13,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -294,18 +295,15 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 		if (pathes != null && !pathes.isEmpty()) {
 			for (Path path : pathes) {
 				if (fileToClass(getFileName(path)).equals(clazz)) {
-					FileSystem fs = path.getFileSystem();
-					if (fs != null && fs.isOpen()) {
-						try (InputStream inputStream = fs.provider().newInputStream(path)) {
-							ClassMethodSummaries classSummaries = new ClassMethodSummaries(clazz);
-							summaryReader.read(new InputStreamReader(inputStream), classSummaries);
-							addMethodSummaries(classSummaries);
-							break;
-						} catch (Exception e) {
-							LoggerFactory.getLogger(getClass()).error(
-									String.format("An error occurred while loading the summary of %s", clazz), e);
-							hasLoadingErrors = true;
-						}
+					try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ)) {
+						ClassMethodSummaries classSummaries = new ClassMethodSummaries(clazz);
+						summaryReader.read(new InputStreamReader(inputStream), classSummaries);
+						addMethodSummaries(classSummaries);
+						break;
+					} catch (Exception e) {
+						LoggerFactory.getLogger(getClass())
+								.error(String.format("An error occurred while loading the summary of %s", clazz), e);
+						hasLoadingErrors = true;
 					}
 				}
 			}
