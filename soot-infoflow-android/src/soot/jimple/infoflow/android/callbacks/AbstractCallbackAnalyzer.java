@@ -615,8 +615,12 @@ public abstract class AbstractCallbackAnalyzer {
 					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity")
 					|| curClass.getName().equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
-			if (curClass.declaresMethod("void setContentView(int)"))
-				return false;
+            // As long as the class is subclass of android.app.Activity,
+            // it can be sure that the setContentView method is what we expected.
+            // Following 2 statements make the overriding of method
+            // setContentView ignored.
+			// if (curClass.declaresMethod("void setContentView(int)"))
+			// 	return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
