@@ -1,10 +1,16 @@
 package soot.jimple.infoflow.util;
 
+import soot.Body;
 import soot.RefType;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
+import soot.jimple.Constant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.infoflow.data.AccessPath;
 
 /**
@@ -128,6 +134,30 @@ public class SystemClassHandler {
 	 */
 	public void setExcludeSystemComponents(boolean excludeSystemComponents) {
 		this.excludeSystemComponents = excludeSystemComponents;
+	}
+
+	/**
+	 * Checks whether the given method body is a stub implementation and can safely
+	 * be overwritten
+	 * 
+	 * @param body The body to check
+	 * @return True if the given method body is a stub implementation, otherwise
+	 *         false
+	 */
+	public boolean isStubImplementation(Body body) {
+		Constant stubConst = StringConstant.v("Stub!");
+		for (Unit u : body.getUnits()) {
+			Stmt stmt = (Stmt) u;
+			if (stmt.containsInvokeExpr()) {
+				InvokeExpr iexpr = stmt.getInvokeExpr();
+				SootMethod targetMethod = iexpr.getMethod();
+				if (targetMethod.isConstructor()
+						&& targetMethod.getDeclaringClass().getName().equals("java.lang.RuntimeException"))
+					if (iexpr.getArgCount() > 0 && iexpr.getArg(0).equals(stubConst))
+						return true;
+			}
+		}
+		return false;
 	}
 
 }

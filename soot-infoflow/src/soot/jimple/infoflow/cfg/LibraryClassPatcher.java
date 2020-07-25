@@ -16,14 +16,12 @@ import soot.Type;
 import soot.Unit;
 import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
-import soot.jimple.Constant;
 import soot.jimple.IntConstant;
-import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
+import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
  * Class for patching OS libraries such as java.lang.Thread so that we get
@@ -33,8 +31,6 @@ import soot.jimple.StringConstant;
  *
  */
 public class LibraryClassPatcher {
-
-	private final Constant stubConst = StringConstant.v("Stub!");
 
 	/**
 	 * Helper interface to inject code into the Message.obtain() overloads
@@ -118,9 +114,12 @@ public class LibraryClassPatcher {
 		}
 		final SootField fldObj = tmp;
 
+		final SystemClassHandler systemClassHandler = SystemClassHandler.v();
+
 		// Method obtain(Handler,int)
 		SootMethod smObtain1 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int)");
-		if (smObtain1 != null && (!smObtain1.hasActiveBody() || isStubImplementation(smObtain1.getActiveBody()))) {
+		if (smObtain1 != null
+				&& (!smObtain1.hasActiveBody() || systemClassHandler.isStubImplementation(smObtain1.getActiveBody()))) {
 			generateMessageObtainMethod(smObtain1, new IMessageObtainCodeInjector() {
 
 				@Override
@@ -137,7 +136,8 @@ public class LibraryClassPatcher {
 		// Method obtain(Handler,int,int,int,Object)
 		SootMethod smObtain2 = sc
 				.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,int,int,java.lang.Object)");
-		if (smObtain2 != null && (!smObtain2.hasActiveBody() || isStubImplementation(smObtain2.getActiveBody()))) {
+		if (smObtain2 != null
+				&& (!smObtain2.hasActiveBody() || systemClassHandler.isStubImplementation(smObtain2.getActiveBody()))) {
 			generateMessageObtainMethod(smObtain2, new IMessageObtainCodeInjector() {
 
 				@Override
@@ -163,7 +163,8 @@ public class LibraryClassPatcher {
 
 		// Method obtain(Handler,int,int,int)
 		SootMethod smObtain3 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,int,int)");
-		if (smObtain3 != null && (!smObtain3.hasActiveBody() || isStubImplementation(smObtain3.getActiveBody()))) {
+		if (smObtain3 != null
+				&& (!smObtain3.hasActiveBody() || systemClassHandler.isStubImplementation(smObtain3.getActiveBody()))) {
 			generateMessageObtainMethod(smObtain3, new IMessageObtainCodeInjector() {
 
 				@Override
@@ -187,7 +188,8 @@ public class LibraryClassPatcher {
 
 		// Method obtain(Handler,int,Object)
 		SootMethod smObtain4 = sc.getMethodUnsafe("android.os.Message obtain(android.os.Handler,int,java.lang.Object)");
-		if (smObtain4 != null && (!smObtain4.hasActiveBody() || isStubImplementation(smObtain4.getActiveBody()))) {
+		if (smObtain4 != null
+				&& (!smObtain4.hasActiveBody() || systemClassHandler.isStubImplementation(smObtain4.getActiveBody()))) {
 			generateMessageObtainMethod(smObtain4, new IMessageObtainCodeInjector() {
 
 				@Override
@@ -239,29 +241,6 @@ public class LibraryClassPatcher {
 	}
 
 	/**
-	 * Checks whether the given method body is a stub implementation and can safely
-	 * be overwritten
-	 * 
-	 * @param body The body to check
-	 * @return True if the given method body is a stub implementation, otherwise
-	 *         false
-	 */
-	private boolean isStubImplementation(Body body) {
-		for (Unit u : body.getUnits()) {
-			Stmt stmt = (Stmt) u;
-			if (stmt.containsInvokeExpr()) {
-				InvokeExpr iexpr = stmt.getInvokeExpr();
-				SootMethod targetMethod = iexpr.getMethod();
-				if (targetMethod.isConstructor()
-						&& targetMethod.getDeclaringClass().getName().equals("java.lang.RuntimeException"))
-					if (iexpr.getArgCount() > 0 && iexpr.getArg(0).equals(stubConst))
-						return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Patch android.app.Activity getApplication method in order to return the
 	 * singleton Application instance created in the dummyMainMethod.
 	 */
@@ -274,7 +253,8 @@ public class LibraryClassPatcher {
 		sc.setLibraryClass();
 
 		SootMethod smRun = sc.getMethodUnsafe("android.app.Application getApplication()");
-		if (smRun == null || (smRun.hasActiveBody() && !isStubImplementation(smRun.getActiveBody())))
+		if (smRun == null
+				|| (smRun.hasActiveBody() && !SystemClassHandler.v().isStubImplementation(smRun.getActiveBody())))
 			return;
 		smRun.setPhantom(false);
 		smRun.addTag(new FlowDroidEssentialMethodTag());
@@ -337,13 +317,16 @@ public class LibraryClassPatcher {
 			return;
 		sc.setLibraryClass();
 
+		final SystemClassHandler systemClassHandler = SystemClassHandler.v();
+
 		SootMethod smRun = sc.getMethodUnsafe("void run()");
-		if (smRun == null || (smRun.hasActiveBody() && !isStubImplementation(smRun.getActiveBody())))
+		if (smRun == null || (smRun.hasActiveBody() && !systemClassHandler.isStubImplementation(smRun.getActiveBody())))
 			return;
 		smRun.addTag(new FlowDroidEssentialMethodTag());
 
 		SootMethod smCons = sc.getMethodUnsafe("void <init>(java.lang.Runnable)");
-		if (smCons == null || (smCons.hasActiveBody() && !isStubImplementation(smCons.getActiveBody())))
+		if (smCons == null
+				|| (smCons.hasActiveBody() && !systemClassHandler.isStubImplementation(smCons.getActiveBody())))
 			return;
 		smCons.addTag(new FlowDroidEssentialMethodTag());
 
@@ -456,37 +439,40 @@ public class LibraryClassPatcher {
 		SootMethod smPostDelayed = sc.getMethodUnsafe("boolean postDelayed(java.lang.Runnable,long)");
 		SootMethod smDispatchMessage = sc.getMethodUnsafe("void dispatchMessage(android.os.Message)");
 
-		if (smPost != null && (!smPost.hasActiveBody() || isStubImplementation(smPost.getActiveBody()))) {
+		final SystemClassHandler systemClassHandler = SystemClassHandler.v();
+
+		if (smPost != null
+				&& (!smPost.hasActiveBody() || systemClassHandler.isStubImplementation(smPost.getActiveBody()))) {
 			patchHandlerPostBody(smPost, runnable);
 			smPost.addTag(new FlowDroidEssentialMethodTag());
 		}
 
 		if (smPostAtFrontOfQueue != null && (!smPostAtFrontOfQueue.hasActiveBody()
-				|| isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
+				|| systemClassHandler.isStubImplementation(smPostAtFrontOfQueue.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtFrontOfQueue, runnable);
 			smPostAtFrontOfQueue.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostAtTime != null
-				&& (!smPostAtTime.hasActiveBody() || isStubImplementation(smPostAtTime.getActiveBody()))) {
+		if (smPostAtTime != null && (!smPostAtTime.hasActiveBody()
+				|| systemClassHandler.isStubImplementation(smPostAtTime.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtTime, runnable);
 			smPostAtTime.addTag(new FlowDroidEssentialMethodTag());
 		}
 
 		if (smPostAtTimeWithToken != null && (!smPostAtTimeWithToken.hasActiveBody()
-				|| isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
+				|| systemClassHandler.isStubImplementation(smPostAtTimeWithToken.getActiveBody()))) {
 			patchHandlerPostBody(smPostAtTimeWithToken, runnable);
 			smPostAtTimeWithToken.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smPostDelayed != null
-				&& (!smPostDelayed.hasActiveBody() || isStubImplementation(smPostDelayed.getActiveBody()))) {
+		if (smPostDelayed != null && (!smPostDelayed.hasActiveBody()
+				|| systemClassHandler.isStubImplementation(smPostDelayed.getActiveBody()))) {
 			patchHandlerPostBody(smPostDelayed, runnable);
 			smPostDelayed.addTag(new FlowDroidEssentialMethodTag());
 		}
 
-		if (smDispatchMessage != null
-				&& (!smDispatchMessage.hasActiveBody() || isStubImplementation(smDispatchMessage.getActiveBody()))) {
+		if (smDispatchMessage != null && (!smDispatchMessage.hasActiveBody()
+				|| systemClassHandler.isStubImplementation(smDispatchMessage.getActiveBody()))) {
 			patchHandlerDispatchBody(smDispatchMessage);
 			smDispatchMessage.addTag(new FlowDroidEssentialMethodTag());
 		}
