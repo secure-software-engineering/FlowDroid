@@ -262,7 +262,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
-		if (!smethod.isConcrete())
+		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
 
 		List<SootMethod> workList = new ArrayList<>();
