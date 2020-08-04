@@ -3,13 +3,19 @@ package soot.jimple.infoflow.methodSummary.generator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
+import soot.BooleanType;
+import soot.IntType;
 import soot.Scene;
 import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
 import soot.Value;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -67,12 +73,18 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 		if (manager.getICFG().getMethodOf(stmt).getDeclaringClass().getName().equals("java.lang.System"))
 			return Collections.singleton(taintedPath);
 
+		// We do not model hashCode() and equals() for performance reasons
+		Set<Abstraction> res = getTaintsForHashCodeEquals(stmt, taintedPath);
+		if (res != null)
+			return res;
+
 		// Do create the gap
 		GapDefinition gap = gapManager.getOrCreateGapForCall(summaries, stmt);
 
 		// Produce a continuation
-		Set<Abstraction> res = new HashSet<Abstraction>();
-		if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+		res = new HashSet<Abstraction>();
+		InvokeExpr iexpr = stmt.getInvokeExpr();
+		if (iexpr instanceof InstanceInvokeExpr) {
 			AccessPath ap = manager.getAccessPathFactory()
 					.createAccessPath(((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase(), true);
 			res.add(getContinuation(taintedPath, ap, gap, stmt));
@@ -92,13 +104,68 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	/**
+	 * Gets the taints for hashCode() and equals() methods if the summary generator
+	 * is configured to not summarizes these methods
+	 * 
+	 * @param stmt        The statement that might call hashCode() and equals()
+	 * @param taintedPath The incoming taint abstraction
+	 * @return The taint abstractions with which to continue the data flow analysis,
+	 *         or <code>null</code> if this method does not model the call. If the
+	 *         callee is handled, but no taint abstractions shall be propagated,
+	 *         this method returns an empty set.
+	 */
+	protected Set<Abstraction> getTaintsForHashCodeEquals(Stmt stmt, Abstraction taintedPath) {
+		final InvokeExpr iexpr = stmt.getInvokeExpr();
+		final SummaryGeneratorConfiguration config = (SummaryGeneratorConfiguration) manager.getConfig();
+
+		// hashCode() and equals() are always virtual calls
+		if (iexpr instanceof InstanceInvokeExpr && !config.getSummarizeHashCodeEquals()) {
+			SootMethodRef ref = iexpr.getMethodRef();
+			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+			AccessPath ap = taintedPath.getAccessPath();
+
+			// Check for hashCode()
+			if (ref.getName().equals("hashCode") && ref.getParameterTypes().isEmpty()
+					&& ref.getReturnType() instanceof IntType) {
+				if (ap.getPlainValue() == iiexpr.getBase()) {
+					// If the return value is used, we taint it
+					if (stmt instanceof DefinitionStmt) {
+						DefinitionStmt defStmt = (DefinitionStmt) stmt;
+						return Collections.singleton(taintedPath.deriveNewAbstraction(
+								manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
+					}
+
+					// The return value is apparently ignored
+					return Collections.emptySet();
+				}
+			}
+
+			// Check for equals()
+			List<Type> params = ref.getParameterTypes();
+			if (ref.getName().equals("equals") && params.size() == 1 && params.get(0).equals(Scene.v().getObjectType())
+					&& ref.getReturnType() == BooleanType.v()) {
+				// If the return value is used, we taint it
+				if (config.getImplicitFlowMode().trackControlFlowDependencies() && stmt instanceof DefinitionStmt) {
+					DefinitionStmt defStmt = (DefinitionStmt) stmt;
+					return Collections.singleton(taintedPath.deriveNewAbstraction(
+							manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
+				}
+
+				// The return value is apparently ignored
+				return Collections.emptySet();
+			}
+		}
+
+		// This is not a special method that we handle
+		return null;
+	}
+
+	/**
 	 * Creates a continuation at a gap. A continuation is a new abstraction without
 	 * a predecessor that has the gap definition as its source.
 	 * 
-	 * @param source
-	 *            The source abstraction that flowed into the gap
-	 * @param accessPath
-	 *            The new acces path that shall be tainted after the gap
+	 * @param source     The source abstraction that flowed into the gap
+	 * @param accessPath The new acces path that shall be tainted after the gap
 	 * @param gap
 	 * @param stmt
 	 * @return
@@ -121,12 +188,10 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	 * The flow source need not necessarily be unique. For a call z=b.foo(a,a), the
 	 * flow source for access path "a" can either be parameter 0 or parameter 1.
 	 * 
-	 * @param accessPath
-	 *            The access path for which to create the flow source
-	 * @param stmt
-	 *            The statement that calls the sink with the given access path
-	 * @param The
-	 *            definition of the gap from which the data flow originates
+	 * @param accessPath The access path for which to create the flow source
+	 * @param stmt       The statement that calls the sink with the given access
+	 *                   path
+	 * @param The        definition of the gap from which the data flow originates
 	 * @return The set of generated flow sources
 	 */
 	private Set<FlowSource> getFlowSource(AccessPath accessPath, Stmt stmt, GapDefinition gap) {

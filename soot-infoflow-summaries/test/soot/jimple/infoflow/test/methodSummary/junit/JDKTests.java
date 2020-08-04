@@ -147,6 +147,7 @@ public class JDKTests extends TestHelper {
 		Assert.assertNotNull(flow);
 	}
 
+	@Ignore("State explosion")
 	@Test(timeout = 100000)
 	public void gapTest10() {
 		String mSig = "<java.lang.String: byte[] getBytes(java.lang.String)>";
