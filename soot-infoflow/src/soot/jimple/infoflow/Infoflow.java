@@ -1124,10 +1124,12 @@ public class Infoflow extends AbstractInfoflow {
 		seeds.add(sm);
 		for (Unit u : sm.retrieveActiveBody().getUnits()) {
 			Stmt stmt = (Stmt) u;
-			if (stmt.containsInvokeExpr())
-				for (SootMethod callee : icfg.getCalleesOfCallAt(stmt))
+			if (stmt.containsInvokeExpr()) {
+				for (SootMethod callee : icfg.getCalleesOfCallAt(stmt)) {
 					if (isValidSeedMethod(callee))
 						getMethodsForSeedsIncremental(callee, doneSet, seeds, icfg);
+				}
+			}
 		}
 	}
 

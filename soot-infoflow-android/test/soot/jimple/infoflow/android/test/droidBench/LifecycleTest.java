@@ -87,8 +87,8 @@ public class LifecycleTest extends JUnitTests {
 
 				});
 		Assert.assertNotNull(res);
-		Assert.assertEquals(2, res.size()); // We consider the saved state plus
-											// the actual leak as sinks
+		// increased precision: We don't consider Bundles as sinks in general anymore
+		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)

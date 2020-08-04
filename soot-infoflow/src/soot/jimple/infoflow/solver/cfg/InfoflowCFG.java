@@ -540,7 +540,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		if (ieSubSig.equals("void execute(java.lang.Runnable)") && calleeSubSig.equals("void run()"))
 			return true;
 
-		if (calleeSubSig.equals("java.lang.Object run()")) {
+		if (dest.getName().equals("run") && dest.getParameterCount() == 0 && dest.getReturnType() instanceof RefType) {
 			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction)"))
 				return true;
 			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction,"
