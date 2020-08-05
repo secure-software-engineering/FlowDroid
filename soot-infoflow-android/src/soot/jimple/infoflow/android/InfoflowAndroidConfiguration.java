@@ -659,7 +659,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		UseExistingInstance,
 
 		/**
-		 * 
+		 * Use the existing Soot instance and existing callgraph. Do not generate
+		 * anything, the caller is responsible for providing a valid Soot instance and
+		 * callgraph.
 		 */
 		UseExistingCallgraph;
 
@@ -670,7 +672,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return True if FlowDroid must create its own callgraph, otherwise false
 		 */
 		boolean needsToBuildCallgraph() {
-			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingInstance;
+			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingCallgraph;
 		}
 
 	}
