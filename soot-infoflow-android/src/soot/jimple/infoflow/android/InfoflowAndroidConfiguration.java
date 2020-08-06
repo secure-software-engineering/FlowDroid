@@ -672,7 +672,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return True if FlowDroid must create its own callgraph, otherwise false
 		 */
 		boolean needsToBuildCallgraph() {
-			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingCallgraph;
+			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingInstance;
 		}
 
 	}
@@ -774,7 +774,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets how FloweDroid shall interact with the underlying Soot instance.
+	 * Sets how FlowDroid shall interact with the underlying Soot instance.
 	 * FlowDroid can either set up Soot on its own, or work with an existing
 	 * instance.
 	 * 
