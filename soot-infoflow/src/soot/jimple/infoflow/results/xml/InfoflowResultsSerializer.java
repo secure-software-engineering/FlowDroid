@@ -34,17 +34,20 @@ public class InfoflowResultsSerializer {
 
 	/**
 	 * Creates a new instance of the InfoflowResultsSerializer class
+	 * 
+	 * @param config The configuration of the data flow
 	 */
-	public InfoflowResultsSerializer() {
-		this(null, null);
+	public InfoflowResultsSerializer(InfoflowConfiguration config) {
+		this(null, config);
 	}
 
 	/**
 	 * Creates a new instance of the InfoflowResultsSerializer class
 	 * 
-	 * @param cfg The control flow graph to be used for obtaining additional
-	 *            information such as the methods containing source or sink
-	 *            statements
+	 * @param cfg    The control flow graph to be used for obtaining additional
+	 *               information such as the methods containing source or sink
+	 *               statements
+	 * @param config The configuration of the data flow
 	 */
 	public InfoflowResultsSerializer(IInfoflowCFG cfg, InfoflowConfiguration config) {
 		this.icfg = cfg;
