@@ -268,7 +268,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// We can use either a specific platform JAR file or automatically
 		// select the right one
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
 			if (platformDir == null || platformDir.isEmpty())
 				throw new RuntimeException("Android platform directory not specified");
@@ -1388,7 +1388,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 
 		// Start a new Soot instance
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			G.reset();
 			initializeSoot();
 		}

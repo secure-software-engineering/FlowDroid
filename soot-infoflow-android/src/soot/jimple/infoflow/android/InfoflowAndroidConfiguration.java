@@ -648,7 +648,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * With this option, FlowDroid initializes and configures its own Soot instance.
 		 * This option is the default and the best choice in most cases.
 		 */
-		CreateNewInstace,
+		CreateNewInstance,
 
 		/**
 		 * With this option, FlowDroid uses the existing Soot instance, but generates
@@ -672,7 +672,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return True if FlowDroid must create its own callgraph, otherwise false
 		 */
 		boolean needsToBuildCallgraph() {
-			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingInstance;
+			return this == SootIntegrationMode.CreateNewInstance || this == SootIntegrationMode.UseExistingInstance;
 		}
 
 	}
@@ -684,7 +684,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final IccConfiguration iccConfig = new IccConfiguration();
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
-	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstace;
+	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstance;
 	private boolean mergeDexFiles = false;
 
 	public InfoflowAndroidConfiguration() {
