@@ -96,6 +96,11 @@ public class AccessPathTuple {
 		return new AccessPathTuple(fields, fieldTypes, SourceSinkType.fromFlags(isSink, isSource));
 	}
 
+	public static AccessPathTuple fromPathElements(String baseType, String[] fields, String[] fieldTypes,
+			boolean isSource, boolean isSink) {
+		return new AccessPathTuple(baseType, fields, fieldTypes, SourceSinkType.fromFlags(isSink, isSource));
+	}
+
 	public String getBaseType() {
 		return this.baseType;
 	}
