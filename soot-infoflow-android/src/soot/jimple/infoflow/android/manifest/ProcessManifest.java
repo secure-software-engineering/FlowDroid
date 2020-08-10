@@ -1,17 +1,15 @@
 package soot.jimple.infoflow.android.manifest;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -20,10 +18,14 @@ import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlHandler;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.axml.ApkHandler;
+import soot.jimple.infoflow.android.manifest.binary.BinaryAndroidApplication;
+import soot.jimple.infoflow.android.manifest.binary.BinaryManifestActivity;
+import soot.jimple.infoflow.android.manifest.binary.BinaryManifestBroadcastReceiver;
+import soot.jimple.infoflow.android.manifest.binary.BinaryManifestContentProvider;
+import soot.jimple.infoflow.android.manifest.binary.BinaryManifestService;
+import soot.jimple.infoflow.android.manifest.containers.EagerComponentContainer;
+import soot.jimple.infoflow.android.manifest.containers.EmptyComponentContainer;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
-import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
-import soot.jimple.infoflow.android.resources.ARSCFileParser.StringResource;
-import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
  * This class provides easy access to all data of an AppManifest.<br />
@@ -36,13 +38,13 @@ import soot.jimple.infoflow.util.SystemClassHandler;
  *      "http://developer.android.com/guide/topics/manifest/manifest-intro.html">App
  *      Manifest</a>
  */
-public class ProcessManifest implements Closeable {
+public class ProcessManifest implements IManifestHandler {
 
 	/**
 	 * Enumeration containing the various component types supported in Android
 	 */
 	public enum ComponentType {
-	Activity, Service, ContentProvider, BroadcastReceiver
+		Activity, Service, ContentProvider, BroadcastReceiver
 	}
 
 	/**
@@ -167,23 +169,6 @@ public class ProcessManifest implements Closeable {
 	}
 
 	/**
-	 * Generates a full class name from a short class name by appending the
-	 * globally-defined package when necessary
-	 *
-	 * @param className The class name to expand
-	 * @return The expanded class name for the given short name
-	 */
-	private String expandClassName(String className) {
-		String packageName = getPackageName();
-		if (className.startsWith("."))
-			return packageName + className;
-		else if (!className.contains("."))
-			return packageName + "." + className;
-		else
-			return className;
-	}
-
-	/**
 	 * Returns the handler which parsed and holds the manifest's data.
 	 *
 	 * @return Android XML handler
@@ -212,112 +197,25 @@ public class ProcessManifest implements Closeable {
 		return this.manifest;
 	}
 
-	/**
-	 * The unique <code>application</code> node of the AppManifest.
-	 *
-	 * @return application node
-	 */
-	public AXmlNode getApplication() {
-		return this.application;
+	@Override
+	public BinaryAndroidApplication getApplication() {
+		return new BinaryAndroidApplication(this.application, this);
 	}
 
-	/**
-	 * Returns a list containing all nodes with tag <code>provider</code>.
-	 *
-	 * @return list with all providers
-	 */
-	public List<AXmlNode> getProviders() {
-		return this.providers == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.providers);
+	@Override
+	public IComponentContainer<IContentProvider> getContentProviders() {
+		if (this.providers == null)
+			return EmptyComponentContainer.get();
+		return new EagerComponentContainer<>(this.providers.stream()
+				.map(p -> new BinaryManifestContentProvider(p, this)).collect(Collectors.toList()));
 	}
 
-	/**
-	 * Returns a list containing all nodes with tag <code>service</code>.
-	 *
-	 * @return list with all services
-	 */
-	public List<AXmlNode> getServices() {
-		return this.services == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.services);
-	}
-
-	/**
-	 * Gets all classes the contain entry points in this applications
-	 *
-	 * @return All classes the contain entry points in this applications
-	 */
-	public Set<String> getEntryPointClasses() {
-		// If the application is not enabled, there are no entry points
-		if (!isApplicationEnabled())
-			return Collections.emptySet();
-
-		// Collect the components
-		Set<String> entryPoints = new HashSet<String>();
-		for (AXmlNode node : this.activities)
-			checkAndAddComponent(entryPoints, node);
-		for (AXmlNode node : this.providers)
-			checkAndAddComponent(entryPoints, node);
-		for (AXmlNode node : this.services)
-			checkAndAddComponent(entryPoints, node);
-		for (AXmlNode node : this.receivers)
-			checkAndAddComponent(entryPoints, node);
-
-		String appName = getApplicationName();
-		if (appName != null && !appName.isEmpty())
-			entryPoints.add(appName);
-
-		return entryPoints;
-	}
-
-	private void checkAndAddComponent(Set<String> entryPoints, AXmlNode node) {
-		final String packageName = getPackageName() + ".";
-		AXmlAttribute<?> attrEnabled = node.getAttribute("enabled");
-		if (attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE)) {
-			AXmlAttribute<?> attr = node.getAttribute("name");
-			if (attr != null) {
-				String className = expandClassName((String) attr.getValue());
-				if (className.startsWith(packageName) || !SystemClassHandler.v().isClassInSystemPackage(className))
-					entryPoints.add(className);
-			} else {
-				// This component does not have a name, so this might be
-				// obfuscated malware. We apply a heuristic.
-				for (Entry<String, AXmlAttribute<?>> a : node.getAttributes().entrySet()) {
-					AXmlAttribute<?> attrValue = a.getValue();
-					if (attrValue != null) {
-						String attrValueName = attrValue.getName();
-						if ((attrValueName == null || attrValueName.isEmpty())
-								&& attrValue.getType() == AxmlVisitor.TYPE_STRING) {
-							String name = (String) attrValue.getValue();
-							if (isValidComponentName(name)) {
-								String expandedName = expandClassName(name);
-								if (!SystemClassHandler.v().isClassInSystemPackage(expandedName))
-									entryPoints.add(expandedName);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Checks if the specified name is a valid Android component name
-	 *
-	 * @param name The Android component name to check
-	 * @return True if the given name is a valid Android component name, otherwise
-	 *         false
-	 */
-	private boolean isValidComponentName(String name) {
-		if (name == null || name.isEmpty())
-			return false;
-		if (name.equals("true") || name.equals("false"))
-			return false;
-		if (Character.isDigit(name.charAt(0)))
-			return false;
-
-		if (name.startsWith("."))
-			return true;
-
-		// Be conservative
-		return false;
+	@Override
+	public IComponentContainer<IService> getServices() {
+		if (this.services == null)
+			return EmptyComponentContainer.get();
+		return new EagerComponentContainer<>(
+				services.stream().map(s -> new BinaryManifestService(s, this)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -343,13 +241,12 @@ public class ProcessManifest implements Closeable {
 		return null;
 	}
 
-	/**
-	 * Returns a list containing all nodes with tag <code>activity</code>.
-	 *
-	 * @return list with all activities
-	 */
-	public List<AXmlNode> getActivities() {
-		return this.activities == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.activities);
+	@Override
+	public IComponentContainer<IActivity> getActivities() {
+		if (this.activities == null)
+			return EmptyComponentContainer.get();
+		return new EagerComponentContainer<>(
+				this.activities.stream().map(a -> new BinaryManifestActivity(a, this)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -361,13 +258,12 @@ public class ProcessManifest implements Closeable {
 		return new ArrayList<AXmlNode>(this.aliasActivities);
 	}
 
-	/**
-	 * Returns a list containing all nodes with tag <code>receiver</code>.
-	 *
-	 * @return list with all receivers
-	 */
-	public List<AXmlNode> getReceivers() {
-		return this.receivers == null ? Collections.<AXmlNode>emptyList() : new ArrayList<AXmlNode>(this.receivers);
+	@Override
+	public IComponentContainer<IBroadcastReceiver> getBroadcastReceivers() {
+		if (this.receivers == null)
+			return EmptyComponentContainer.get();
+		return new EagerComponentContainer<>(
+				receivers.stream().map(r -> new BinaryManifestBroadcastReceiver(r, this)).collect(Collectors.toList()));
 	}
 
 	/**
@@ -520,40 +416,6 @@ public class ProcessManifest implements Closeable {
 	public String getVersionName() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionName");
 		return attr == null || attr.getValue() == null ? null : attr.getValue().toString();
-	}
-
-	/**
-	 * Gets the name of the Android application class
-	 *
-	 * @return The name of the Android application class
-	 */
-	public String getApplicationName() {
-		AXmlAttribute<?> attr = this.application.getAttribute("name");
-		if (attr != null) {
-			Object value = attr.getValue();
-			if (value != null) {
-				if (value instanceof String)
-					return expandClassName((String) attr.getValue());
-				else if (value instanceof Integer) {
-					AbstractResource res = arscParser.findResource((Integer) attr.getValue());
-					if (res instanceof StringResource) {
-						StringResource strRes = (StringResource) res;
-						return strRes.getValue();
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Gets whether this Android application is enabled
-	 *
-	 * @return True if this application is enabled, otherwise false
-	 */
-	public boolean isApplicationEnabled() {
-		AXmlAttribute<?> attr = this.application.getAttribute("enabled");
-		return attr == null || attr.getValue() == null || !attr.getValue().equals(Boolean.FALSE);
 	}
 
 	/**
@@ -717,6 +579,32 @@ public class ProcessManifest implements Closeable {
 		}
 
 		return allLaunchableActivities;
+	}
+
+	/**
+	 * Generates a full class name from a short class name by appending the
+	 * globally-defined package when necessary
+	 *
+	 * @param className The class name to expand
+	 * @return The expanded class name for the given short name
+	 */
+	public String expandClassName(String className) {
+		String packageName = getPackageName();
+		if (className.startsWith("."))
+			return packageName + className;
+		else if (!className.contains("."))
+			return packageName + "." + className;
+		else
+			return className;
+	}
+
+	/**
+	 * Gets the Android resource parser
+	 * 
+	 * @return The Android resource parser
+	 */
+	public ARSCFileParser getArscParser() {
+		return arscParser;
 	}
 
 }

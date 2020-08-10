@@ -4,7 +4,7 @@ import soot.SootClass;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
  * Entry point creator for Android service connections
@@ -15,7 +15,7 @@ import soot.jimple.infoflow.android.manifest.ProcessManifest;
 public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public ServiceConnectionEntryPointCreator(SootClass component, SootClass applicationClass,
-			ProcessManifest manifest) {
+			IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 	}
 

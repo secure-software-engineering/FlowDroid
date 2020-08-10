@@ -3,7 +3,7 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 import soot.SootClass;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
  * Entry point creator for content providers
@@ -13,7 +13,8 @@ import soot.jimple.infoflow.android.manifest.ProcessManifest;
  */
 public class ContentProviderEntryPointCreator extends AbstractComponentEntryPointCreator {
 
-	public ContentProviderEntryPointCreator(SootClass component, SootClass applicationClass, ProcessManifest manifest) {
+	public ContentProviderEntryPointCreator(SootClass component, SootClass applicationClass,
+			IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 	}
 

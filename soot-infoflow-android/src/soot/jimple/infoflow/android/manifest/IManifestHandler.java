@@ -1,29 +1,126 @@
-/*******************************************************************************
- * Copyright (c) 2012 Secure Software Engineering Group at EC SPRIDE.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v2.1
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
- * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
- * Bodden, and others.
- ******************************************************************************/
 package soot.jimple.infoflow.android.manifest;
 
-import java.io.InputStream;
+import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
- * Common interface for handlers working on Android manifest files
+ * Common interface for all classes that can deal with Android manifests
  * 
  * @author Steven Arzt
  *
  */
-public interface IManifestHandler {
-	
+public interface IManifestHandler extends Closeable {
+
 	/**
-	 * Called when the contents of the Android manifest file shall be processed
-	 * @param stream The stream through which the manifest file can be accesses
+	 * Gets the unique package name of this Android app
+	 * 
+	 * @return The package name of this app
 	 */
-	public void handleManifest(InputStream stream);
+	public String getPackageName();
+
+	/**
+	 * Returns all activities in the Android app
+	 *
+	 * @return list with all activities
+	 */
+	public IComponentContainer<? extends IActivity> getActivities();
+
+	/**
+	 * Returns all content providers in the Android app
+	 *
+	 * @return list with all providers
+	 */
+	public IComponentContainer<? extends IContentProvider> getContentProviders();
+
+	/**
+	 * Returns all services providers in the Android app
+	 *
+	 * @return list with all services
+	 */
+	public IComponentContainer<? extends IService> getServices();
+
+	/**
+	 * Returns all broadcast receivers providers in the Android app
+	 *
+	 * @return list with all receivers
+	 */
+	public IComponentContainer<? extends IBroadcastReceiver> getBroadcastReceivers();
+
+	/**
+	 * Gets the Android application object
+	 * 
+	 * @return The Android application object
+	 */
+	public IAndroidApplication getApplication();
+
+	/**
+	 * Gets all components inside this Android app
+	 * 
+	 * @return All components inside this Android app
+	 */
+	public default List<IAndroidComponent> getAllComponents() {
+		List<IAndroidComponent> components = new ArrayList<>();
+
+		List<? extends IActivity> activities = getActivities().asList();
+		if (activities != null && !activities.isEmpty())
+			components.addAll(activities);
+
+		List<? extends IContentProvider> providers = getContentProviders().asList();
+		if (providers != null && !providers.isEmpty())
+			components.addAll(providers);
+
+		List<? extends IService> services = getServices().asList();
+		if (services != null && !services.isEmpty())
+			components.addAll(services);
+
+		List<? extends IBroadcastReceiver> receivers = getBroadcastReceivers().asList();
+		if (receivers != null && !receivers.isEmpty())
+			components.addAll(receivers);
+
+		return components;
+	}
+
+	/**
+	 * Gets all classes the contain entry points in this applications
+	 *
+	 * @return All classes the contain entry points in this applications
+	 */
+	public default Set<String> getEntryPointClasses() {
+		IAndroidApplication app = getApplication();
+
+		// If the application is not enabled, there are no entry points
+		if (app != null && app.isEnabled())
+			return Collections.emptySet();
+
+		// Collect the components
+		Set<String> entryPoints = new HashSet<String>();
+		for (IAndroidComponent node : getAllComponents())
+			checkAndAddComponent(entryPoints, node);
+
+		if (app != null) {
+			String appName = app.getName();
+			if (appName != null && !appName.isEmpty())
+				entryPoints.add(appName);
+		}
+
+		return entryPoints;
+	}
+
+	default void checkAndAddComponent(Set<String> entryPoints, IAndroidComponent component) {
+		final String packageName = getPackageName() + ".";
+		if (component.isEnabled()) {
+			String className = component.getNameString();
+			if (className != null && !className.isEmpty()) {
+				if (className.startsWith(packageName) || !SystemClassHandler.v().isClassInSystemPackage(className))
+					entryPoints.add(className);
+			}
+		}
+	}
 
 }
