@@ -53,6 +53,8 @@ import soot.jimple.infoflow.android.callbacks.filters.AlienFragmentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.AlienHostComponentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.ApplicationCallbackFilter;
 import soot.jimple.infoflow.android.callbacks.filters.UnreachableConstructorFilter;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacks;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacksSerializer;
 import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
@@ -788,6 +790,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 		if (!abortedEarly)
 			logger.info("Callback analysis terminated normally");
+
+		// Serialize the callbacks
+		if (callbackConfig.isSerializeCallbacks()) {
+			CollectedCallbacks callbacks = new CollectedCallbacks(entryPointClasses, callbackMethods, fragmentClasses);
+			CollectedCallbacksSerializer.serialize(callbacks, callbackConfig);
+		}
 	}
 
 	/**
@@ -1690,8 +1698,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return this.entrypoints;
 		else {
 			// We always analyze the application class together with each
-			// component
-			// as there might be interactions between the two
+			// component as there might be interactions between the two
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 
