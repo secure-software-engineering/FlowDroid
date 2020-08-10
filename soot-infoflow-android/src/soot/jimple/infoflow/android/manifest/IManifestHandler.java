@@ -95,7 +95,7 @@ public interface IManifestHandler extends Closeable {
 		IAndroidApplication app = getApplication();
 
 		// If the application is not enabled, there are no entry points
-		if (app != null && app.isEnabled())
+		if (app != null && !app.isEnabled())
 			return Collections.emptySet();
 
 		// Collect the components
