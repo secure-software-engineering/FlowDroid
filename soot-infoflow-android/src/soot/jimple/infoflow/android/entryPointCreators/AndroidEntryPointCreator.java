@@ -44,7 +44,8 @@ import soot.jimple.infoflow.android.entryPointCreators.components.ContentProvide
 import soot.jimple.infoflow.android.entryPointCreators.components.FragmentEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceConnectionEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointCreator;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IAndroidApplication;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
@@ -98,7 +99,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 * @param components The list of classes to be automatically scanned for Android
 	 *                   lifecycle methods
 	 */
-	public AndroidEntryPointCreator(ProcessManifest manifest, Collection<SootClass> components) {
+	public AndroidEntryPointCreator(IManifestHandler manifest, Collection<SootClass> components) {
 		super(manifest);
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
@@ -325,18 +326,23 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 */
 	private void initializeApplicationClass() {
 
-		String applicationName = manifest.getApplicationName();
-		// We can only look for callbacks if we have an application class
-		if (applicationName == null || applicationName.isEmpty())
-			return;
-		// Find the application class
-		for (SootClass currentClass : components) {
-			// Is this the application class?
-			if (entryPointUtils.isApplicationClass(currentClass) && currentClass.getName().equals(applicationName)) {
-				if (applicationClass != null && currentClass != applicationClass)
-					throw new RuntimeException("Multiple application classes in app");
-				applicationClass = currentClass;
-				break;
+		IAndroidApplication app = manifest.getApplication();
+		if (app != null) {
+			String applicationName = app.getName();
+			// We can only look for callbacks if we have an application class
+			if (applicationName == null || applicationName.isEmpty())
+				return;
+
+			// Find the application class
+			for (SootClass currentClass : components) {
+				// Is this the application class?
+				if (entryPointUtils.isApplicationClass(currentClass)
+						&& currentClass.getName().equals(applicationName)) {
+					if (applicationClass != null && currentClass != applicationClass)
+						throw new RuntimeException("Multiple application classes in app");
+					applicationClass = currentClass;
+					break;
+				}
 			}
 		}
 

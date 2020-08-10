@@ -31,7 +31,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.util.HashMultiMap;
@@ -59,7 +59,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
-			ProcessManifest manifest) {
+			IManifestHandler manifest) {
 		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;

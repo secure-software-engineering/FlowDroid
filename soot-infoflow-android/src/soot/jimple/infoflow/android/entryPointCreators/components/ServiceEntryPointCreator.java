@@ -17,7 +17,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 
 /**
@@ -30,7 +30,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 	protected SootField binderField = null;
 
-	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, ProcessManifest manifest) {
+	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 	}
 

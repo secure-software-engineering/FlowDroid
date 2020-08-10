@@ -10,7 +10,7 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -18,9 +18,9 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 	protected AndroidEntryPointUtils entryPointUtils = null;
 
-	protected ProcessManifest manifest;
+	protected IManifestHandler manifest;
 
-	public AbstractAndroidEntryPointCreator(ProcessManifest manifest) {
+	public AbstractAndroidEntryPointCreator(IManifestHandler manifest) {
 		this.manifest = manifest;
 	}
 

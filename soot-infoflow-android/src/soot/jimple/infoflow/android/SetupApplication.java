@@ -62,6 +62,8 @@ import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
+import soot.jimple.infoflow.android.manifest.IAndroidApplication;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
@@ -120,7 +122,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected IccInstrumenter iccInstrumenter = null;
 
 	protected ARSCFileParser resources = null;
-	protected ProcessManifest manifest = null;
+	protected IManifestHandler manifest = null;
 	protected IValueProvider valueProvider = null;
 
 	protected final boolean forceAndroidJar;
@@ -270,7 +272,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// We can use either a specific platform JAR file or automatically
 		// select the right one
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
 			if (platformDir == null || platformDir.isEmpty())
 				throw new RuntimeException("Android platform directory not specified");
@@ -423,7 +425,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
-		this.manifest = new ProcessManifest(targetAPK, resources);
+		this.manifest = createManifestParser(targetAPK);
 		SystemClassHandler.v().setExcludeSystemComponents(config.getIgnoreFlowsInSystemPackages());
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
@@ -432,6 +434,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			if (sc != null)
 				this.entrypoints.add(sc);
 		}
+	}
+
+	/**
+	 * Creates the manifest handler for processing the app manifest
+	 * 
+	 * @param targetAPK The target APK file
+	 * @return The manifest handler for reading the given app's manifest file
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
+	protected IManifestHandler createManifestParser(final File targetAPK) throws IOException, XmlPullParserException {
+		return new ProcessManifest(targetAPK, resources);
 	}
 
 	/**
@@ -1396,7 +1410,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 
 		// Start a new Soot instance
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			G.reset();
 			initializeSoot();
 		}
@@ -1702,9 +1716,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 
-			String applicationName = manifest.getApplicationName();
-			if (applicationName != null && !applicationName.isEmpty())
-				components.add(Scene.v().getSootClassUnsafe(applicationName));
+			IAndroidApplication app = manifest.getApplication();
+			if (app != null) {
+				String applicationName = app.getName();
+				if (applicationName != null && !applicationName.isEmpty())
+					components.add(Scene.v().getSootClassUnsafe(applicationName));
+			}
 			return components;
 		}
 	}
