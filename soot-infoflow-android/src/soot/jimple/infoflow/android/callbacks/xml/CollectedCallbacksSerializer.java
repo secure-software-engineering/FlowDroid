@@ -2,6 +2,8 @@ package soot.jimple.infoflow.android.callbacks.xml;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
@@ -12,6 +14,9 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition;
+import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
+import soot.util.HashMultiMap;
 
 /**
  * Class for serializing collected callbacks to disk for later re-use
@@ -72,12 +77,36 @@ public class CollectedCallbacksSerializer {
 	 * @throws IOException
 	 */
 	public static void serialize(CollectedCallbacks callbacks, CallbackConfiguration config) throws IOException {
-		Kryo kryo = new Kryo();
-		kryo.register(SootMethod.class, new SootMethodSerializer());
-		kryo.register(SootClass.class, new SootClassSerializer());
+		Kryo kryo = initializeKryo();
+
 		try (Output output = new Output(new FileOutputStream(config.getCallbacksFile()))) {
 			kryo.writeClassAndObject(output, callbacks);
 		}
+	}
+
+	/**
+	 * Initializes the Kryo serializer
+	 * 
+	 * @return The Kryo serializer
+	 */
+	protected static Kryo initializeKryo() {
+		Kryo kryo = new Kryo();
+
+		// FlowDroid classes
+		kryo.register(CollectedCallbacks.class);
+		kryo.register(AndroidCallbackDefinition.class);
+		kryo.register(CallbackType.class);
+
+		// Java collection classes
+		kryo.register(HashMultiMap.class);
+		kryo.register(HashMap.class);
+		kryo.register(HashSet.class);
+
+		// Soot classes
+		kryo.register(SootMethod.class, new SootMethodSerializer());
+		kryo.register(SootClass.class, new SootClassSerializer());
+
+		return kryo;
 	}
 
 }
