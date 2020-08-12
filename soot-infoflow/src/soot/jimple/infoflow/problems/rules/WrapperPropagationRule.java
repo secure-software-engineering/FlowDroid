@@ -56,19 +56,20 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 			return null;
 
 		// Do not check taints that are not mentioned anywhere in the call
-		if (!source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isEmpty()) {
+		final Aliasing aliasing = getAliasing();
+		if (aliasing != null && !source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isEmpty()) {
 			boolean found = false;
 
 			// The base object must be tainted
 			if (iStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iStmt.getInvokeExpr();
-				found = getAliasing().mayAlias(iiExpr.getBase(), source.getAccessPath().getPlainValue());
+				found = aliasing.mayAlias(iiExpr.getBase(), source.getAccessPath().getPlainValue());
 			}
 
 			// or one of the parameters must be tainted
 			if (!found)
 				for (int paramIdx = 0; paramIdx < iStmt.getInvokeExpr().getArgCount(); paramIdx++)
-					if (getAliasing().mayAlias(source.getAccessPath().getPlainValue(),
+					if (aliasing.mayAlias(source.getAccessPath().getPlainValue(),
 							iStmt.getInvokeExpr().getArg(paramIdx))) {
 						found = true;
 						break;
