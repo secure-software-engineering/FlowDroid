@@ -1,11 +1,14 @@
 package soot.jimple.infoflow.android.callbacks.xml;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -69,6 +72,31 @@ public class CollectedCallbacksSerializer {
 	}
 
 	/**
+	 * Serializer for {@link AndroidCallbackDefinition} instances
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	private static class AndroidCallbackDefinitionSerializer extends Serializer<AndroidCallbackDefinition> {
+
+		@Override
+		public void write(Kryo kryo, Output output, AndroidCallbackDefinition object) {
+			kryo.writeClassAndObject(output, object.getTargetMethod());
+			kryo.writeClassAndObject(output, object.getParentMethod());
+			kryo.writeClassAndObject(output, object.getCallbackType());
+		}
+
+		@Override
+		public AndroidCallbackDefinition read(Kryo kryo, Input input, Class<? extends AndroidCallbackDefinition> type) {
+			SootMethod targetMethod = (SootMethod) kryo.readClassAndObject(input);
+			SootMethod parentMethod = (SootMethod) kryo.readClassAndObject(input);
+			CallbackType callbackType = (CallbackType) kryo.readClassAndObject(input);
+			return new AndroidCallbackDefinition(targetMethod, parentMethod, callbackType);
+		}
+
+	}
+
+	/**
 	 * Serializes the given data object
 	 * 
 	 * @param callbacks The object to serialize
@@ -85,6 +113,23 @@ public class CollectedCallbacksSerializer {
 	}
 
 	/**
+	 * Deserializes the callback file for this application
+	 * 
+	 * @param config The configuration that defines how and where to store the data
+	 * @return The deserialized callback object
+	 * @throws FileNotFoundException
+	 * @throws KryoException
+	 */
+	public static CollectedCallbacks deserialize(CallbackConfiguration config)
+			throws KryoException, FileNotFoundException {
+		Kryo kryo = initializeKryo();
+
+		try (Input input = new Input(new FileInputStream(config.getCallbacksFile()))) {
+			return (CollectedCallbacks) kryo.readClassAndObject(input);
+		}
+	}
+
+	/**
 	 * Initializes the Kryo serializer
 	 * 
 	 * @return The Kryo serializer
@@ -94,7 +139,7 @@ public class CollectedCallbacksSerializer {
 
 		// FlowDroid classes
 		kryo.register(CollectedCallbacks.class);
-		kryo.register(AndroidCallbackDefinition.class);
+		kryo.register(AndroidCallbackDefinition.class, new AndroidCallbackDefinitionSerializer());
 		kryo.register(CallbackType.class);
 
 		// Java collection classes

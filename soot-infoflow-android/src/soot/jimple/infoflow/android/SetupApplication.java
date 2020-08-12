@@ -481,12 +481,35 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throws IOException, XmlPullParserException {
 		// Add the callback methods
 		LayoutFileParser lfp = null;
-		if (config.getCallbackConfig().getEnableCallbacks()) {
+		final CallbackConfiguration callbackConfig = config.getCallbackConfig();
+		if (callbackConfig.getEnableCallbacks()) {
+			// If we have a callback file, we use it
+			String callbackFile = callbackConfig.getCallbacksFile();
+			if (callbackFile != null && !callbackFile.isEmpty()) {
+				File cbFile = new File(callbackFile);
+				if (cbFile.exists()) {
+					CollectedCallbacks callbacks = CollectedCallbacksSerializer.deserialize(callbackConfig);
+					if (callbacks != null) {
+						// Get our callback data from the file
+						entrypoints = callbacks.getEntryPoints();
+						fragmentClasses = callbacks.getFragmentClasses();
+						callbackMethods = callbacks.getCallbackMethods();
+
+						// Create the callgraph
+						createMainMethod(entryPoint);
+						constructCallgraphInternal();
+
+						createSourceSinkProvider(entryPoint, lfp);
+						return;
+					}
+				}
+			}
+
 			if (callbackClasses != null && callbackClasses.isEmpty()) {
 				logger.warn("Callback definition file is empty, disabling callbacks");
 			} else {
 				lfp = createLayoutFileParser();
-				switch (config.getCallbackConfig().getCallbackAnalyzer()) {
+				switch (callbackConfig.getCallbackAnalyzer()) {
 				case Fast:
 					calculateCallbackMethodsFast(lfp, entryPoint);
 					break;
@@ -499,12 +522,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			}
 		} else if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			// Create the new iteration of the main method
-			createMainMethod(null);
+			createMainMethod(entryPoint);
 			constructCallgraphInternal();
 		}
 
 		logger.info("Entry point calculation done.");
+		createSourceSinkProvider(entryPoint, lfp);
+	}
 
+	/**
+	 * Creates the source/sink provider
+	 * 
+	 * @param entryPoint The entry point on which to run the data flow analysis
+	 * @param lfp        The layout file parser
+	 */
+	protected void createSourceSinkProvider(SootClass entryPoint, LayoutFileParser lfp) {
 		if (this.sourceSinkProvider != null) {
 			// Get the callbacks for the current entry point
 			Set<AndroidCallbackDefinition> callbacks;
