@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.android.callbacks.xml;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -115,6 +116,22 @@ public class CollectedCallbacksSerializer {
 	/**
 	 * Deserializes the callback file for this application
 	 * 
+	 * @param callbackFile The file with the collected callbacks
+	 * @return The deserialized callback object
+	 * @throws FileNotFoundException
+	 * @throws KryoException
+	 */
+	public static CollectedCallbacks deserialize(File callbackFile) throws KryoException, FileNotFoundException {
+		Kryo kryo = initializeKryo();
+
+		try (Input input = new Input(new FileInputStream(callbackFile))) {
+			return (CollectedCallbacks) kryo.readClassAndObject(input);
+		}
+	}
+
+	/**
+	 * Deserializes the callback file for this application
+	 * 
 	 * @param config The configuration that defines how and where to store the data
 	 * @return The deserialized callback object
 	 * @throws FileNotFoundException
@@ -122,11 +139,7 @@ public class CollectedCallbacksSerializer {
 	 */
 	public static CollectedCallbacks deserialize(CallbackConfiguration config)
 			throws KryoException, FileNotFoundException {
-		Kryo kryo = initializeKryo();
-
-		try (Input input = new Input(new FileInputStream(config.getCallbacksFile()))) {
-			return (CollectedCallbacks) kryo.readClassAndObject(input);
-		}
+		return deserialize(new File(config.getCallbacksFile()));
 	}
 
 	/**
