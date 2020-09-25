@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 import pxb.android.axml.AxmlVisitor;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlNode;
+import soot.jimple.infoflow.android.manifest.BaseProcessManifest;
 import soot.jimple.infoflow.android.manifest.IAndroidComponent;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
@@ -18,20 +18,29 @@ import soot.jimple.infoflow.util.SystemClassHandler;
 public abstract class AbstractBinaryAndroidComponent implements IAndroidComponent {
 
 	protected final AXmlNode node;
-	protected final ProcessManifest manifest;
+	protected final BaseProcessManifest<?, ?, ?, ?> manifest;
 	protected boolean enabled;
+	protected boolean exported;
 
-	AbstractBinaryAndroidComponent(AXmlNode node, ProcessManifest manifest) {
+	protected AbstractBinaryAndroidComponent(AXmlNode node, BaseProcessManifest<?, ?, ?, ?> manifest) {
 		this.node = node;
 		this.manifest = manifest;
 
 		AXmlAttribute<?> attrEnabled = node.getAttribute("enabled");
 		enabled = attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE);
+
+		AXmlAttribute<?> attrExported = node.getAttribute("exported");
+		exported = attrExported == null || !attrExported.getValue().equals(Boolean.FALSE);
 	}
 
 	@Override
 	public boolean isEnabled() {
 		return enabled;
+	}
+
+	@Override
+	public boolean isExported() {
+		return exported;
 	}
 
 	@Override

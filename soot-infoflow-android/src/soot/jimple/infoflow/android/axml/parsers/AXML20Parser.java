@@ -185,8 +185,7 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 		/**
 		 * Parses the given Android complex value
 		 * 
-		 * @param complexValue
-		 *            The numeric complex value to parse
+		 * @param complexValue The numeric complex value to parse
 		 * @return A data object that contains the information from the complex value
 		 */
 		private AXmlComplexValue parseComplexValue(int complexValue) {
@@ -210,8 +209,7 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 		 * Parses the given numeric complex unit into one of the well-known enum
 		 * constants
 		 * 
-		 * @param unitVal
-		 *            The numeric complex unit
+		 * @param unitVal The numeric complex unit
 		 * @return One of the well-known constants for complex units
 		 */
 		private Unit parseComplexUnit(int unitVal) {
@@ -251,6 +249,12 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 		@Override
 		public void ns(String prefix, String uri, int line) {
 			document.addNamespace(new AXmlNamespace(prefix, uri, line));
+		}
+
+		@Override
+		public void text(int lineNumber, String value) {
+			node.setText(value);
+			super.text(lineNumber, value);
 		}
 
 	}

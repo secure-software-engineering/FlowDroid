@@ -15,7 +15,8 @@ import soot.jimple.infoflow.util.SystemClassHandler;
  * @author Steven Arzt
  *
  */
-public interface IManifestHandler extends Closeable {
+public interface IManifestHandler<A extends IActivity, S extends IService, C extends IContentProvider, B extends IBroadcastReceiver>
+		extends Closeable {
 
 	/**
 	 * Gets the unique package name of this Android app
@@ -29,28 +30,28 @@ public interface IManifestHandler extends Closeable {
 	 *
 	 * @return list with all activities
 	 */
-	public IComponentContainer<? extends IActivity> getActivities();
+	public IComponentContainer<? extends A> getActivities();
 
 	/**
 	 * Returns all content providers in the Android app
 	 *
 	 * @return list with all providers
 	 */
-	public IComponentContainer<? extends IContentProvider> getContentProviders();
+	public IComponentContainer<? extends C> getContentProviders();
 
 	/**
 	 * Returns all services providers in the Android app
 	 *
 	 * @return list with all services
 	 */
-	public IComponentContainer<? extends IService> getServices();
+	public IComponentContainer<? extends S> getServices();
 
 	/**
 	 * Returns all broadcast receivers providers in the Android app
 	 *
 	 * @return list with all receivers
 	 */
-	public IComponentContainer<? extends IBroadcastReceiver> getBroadcastReceivers();
+	public IComponentContainer<? extends B> getBroadcastReceivers();
 
 	/**
 	 * Gets the Android application object
@@ -64,7 +65,7 @@ public interface IManifestHandler extends Closeable {
 	 * 
 	 * @return All components inside this Android app
 	 */
-	public default List<IAndroidComponent> getAllComponents() {
+	public default List<? extends IAndroidComponent> getAllComponents() {
 		List<IAndroidComponent> components = new ArrayList<>();
 
 		List<? extends IActivity> activities = getActivities().asList();

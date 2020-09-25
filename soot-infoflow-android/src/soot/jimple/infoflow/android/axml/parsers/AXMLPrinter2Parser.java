@@ -57,7 +57,7 @@ public class AXMLPrinter2Parser extends AbstractBinaryXMLFileParser {
 				case AXmlResourceParser.START_TAG:
 					tag = parser.getName();
 					parent = node;
-					node = new AXmlNode(tag, parser.getNamespace(), parent, false);
+					node = new AXmlNode(tag, parser.getNamespace(), parent, false, parser.getText());
 					this.addPointer(tag, node);
 
 					// add attributes to node object

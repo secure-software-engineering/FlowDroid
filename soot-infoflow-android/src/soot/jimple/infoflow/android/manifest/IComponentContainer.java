@@ -18,4 +18,20 @@ public interface IComponentContainer<E extends IAndroidComponent> extends Iterab
 	 */
 	public List<E> asList();
 
+	/**
+	 * Gets the component with the given unique class name
+	 * 
+	 * @param name The name of the class that implements the component
+	 * @return The component definition for the given class name, or
+	 *         <code>null</code> if no such component exists
+	 */
+	public E getComponentByName(String name);
+
+	/**
+	 * Checks whether this container is empty, i.e., does not contain any components
+	 * 
+	 * @return True if this container is empty, false otherwise
+	 */
+	public boolean isEmpty();
+
 }

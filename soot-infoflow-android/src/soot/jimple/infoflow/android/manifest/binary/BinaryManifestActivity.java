@@ -1,8 +1,8 @@
 package soot.jimple.infoflow.android.manifest.binary;
 
 import soot.jimple.infoflow.android.axml.AXmlNode;
+import soot.jimple.infoflow.android.manifest.BaseProcessManifest;
 import soot.jimple.infoflow.android.manifest.IActivity;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
 /**
  * An activity loaded from a binary Android manifest
@@ -18,7 +18,7 @@ public class BinaryManifestActivity extends AbstractBinaryAndroidComponent imple
 	 * @param node     The binary XML node
 	 * @param manifest The manifest
 	 */
-	public BinaryManifestActivity(AXmlNode node, ProcessManifest manifest) {
+	public BinaryManifestActivity(AXmlNode node, BaseProcessManifest<?, ?, ?, ?> manifest) {
 		super(node, manifest);
 	}
 

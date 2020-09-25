@@ -1,8 +1,8 @@
 package soot.jimple.infoflow.android.manifest.binary;
 
 import soot.jimple.infoflow.android.axml.AXmlNode;
+import soot.jimple.infoflow.android.manifest.BaseProcessManifest;
 import soot.jimple.infoflow.android.manifest.IBroadcastReceiver;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
 /**
  * A broadcast receiver loaded from a binary Android manifest
@@ -18,7 +18,7 @@ public class BinaryManifestBroadcastReceiver extends AbstractBinaryAndroidCompon
 	 * @param node     The binary XML node
 	 * @param manifest The manifest
 	 */
-	public BinaryManifestBroadcastReceiver(AXmlNode node, ProcessManifest manifest) {
+	public BinaryManifestBroadcastReceiver(AXmlNode node, BaseProcessManifest<?, ?, ?, ?> manifest) {
 		super(node, manifest);
 	}
 

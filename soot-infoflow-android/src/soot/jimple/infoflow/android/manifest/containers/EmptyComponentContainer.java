@@ -35,4 +35,14 @@ public class EmptyComponentContainer<E extends IAndroidComponent> implements ICo
 		return Collections.emptyIterator();
 	}
 
+	@Override
+	public E getComponentByName(String name) {
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return true;
+	}
+
 }
