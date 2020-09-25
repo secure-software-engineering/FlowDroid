@@ -33,6 +33,11 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 		exported = attrExported == null || !attrExported.getValue().equals(Boolean.FALSE);
 	}
 
+
+	public AXmlNode getAXmlNode() {
+		return node;
+	}
+	
 	@Override
 	public boolean isEnabled() {
 		return enabled;

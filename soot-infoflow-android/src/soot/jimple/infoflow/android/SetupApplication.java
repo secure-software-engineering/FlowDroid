@@ -53,6 +53,8 @@ import soot.jimple.infoflow.android.callbacks.filters.AlienFragmentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.AlienHostComponentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.ApplicationCallbackFilter;
 import soot.jimple.infoflow.android.callbacks.filters.UnreachableConstructorFilter;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacks;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacksSerializer;
 import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
@@ -479,12 +481,35 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throws IOException, XmlPullParserException {
 		// Add the callback methods
 		LayoutFileParser lfp = null;
-		if (config.getCallbackConfig().getEnableCallbacks()) {
+		final CallbackConfiguration callbackConfig = config.getCallbackConfig();
+		if (callbackConfig.getEnableCallbacks()) {
+			// If we have a callback file, we use it
+			String callbackFile = callbackConfig.getCallbacksFile();
+			if (callbackFile != null && !callbackFile.isEmpty()) {
+				File cbFile = new File(callbackFile);
+				if (cbFile.exists()) {
+					CollectedCallbacks callbacks = CollectedCallbacksSerializer.deserialize(callbackConfig);
+					if (callbacks != null) {
+						// Get our callback data from the file
+						entrypoints = callbacks.getEntryPoints();
+						fragmentClasses = callbacks.getFragmentClasses();
+						callbackMethods = callbacks.getCallbackMethods();
+
+						// Create the callgraph
+						createMainMethod(entryPoint);
+						constructCallgraphInternal();
+
+						createSourceSinkProvider(entryPoint, lfp);
+						return;
+					}
+				}
+			}
+
 			if (callbackClasses != null && callbackClasses.isEmpty()) {
 				logger.warn("Callback definition file is empty, disabling callbacks");
 			} else {
 				lfp = createLayoutFileParser();
-				switch (config.getCallbackConfig().getCallbackAnalyzer()) {
+				switch (callbackConfig.getCallbackAnalyzer()) {
 				case Fast:
 					calculateCallbackMethodsFast(lfp, entryPoint);
 					break;
@@ -497,12 +522,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			}
 		} else if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			// Create the new iteration of the main method
-			createMainMethod(null);
+			createMainMethod(entryPoint);
 			constructCallgraphInternal();
 		}
 
 		logger.info("Entry point calculation done.");
+		createSourceSinkProvider(entryPoint, lfp);
+	}
 
+	/**
+	 * Creates the source/sink provider
+	 * 
+	 * @param entryPoint The entry point on which to run the data flow analysis
+	 * @param lfp        The layout file parser
+	 */
+	protected void createSourceSinkProvider(SootClass entryPoint, LayoutFileParser lfp) {
 		if (this.sourceSinkProvider != null) {
 			// Get the callbacks for the current entry point
 			Set<AndroidCallbackDefinition> callbacks;
@@ -802,6 +836,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 		if (!abortedEarly)
 			logger.info("Callback analysis terminated normally");
+
+		// Serialize the callbacks
+		if (callbackConfig.isSerializeCallbacks()) {
+			CollectedCallbacks callbacks = new CollectedCallbacks(entryPointClasses, callbackMethods, fragmentClasses);
+			CollectedCallbacksSerializer.serialize(callbacks, callbackConfig);
+		}
 	}
 
 	/**
@@ -1704,8 +1744,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return this.entrypoints;
 		else {
 			// We always analyze the application class together with each
-			// component
-			// as there might be interactions between the two
+			// component as there might be interactions between the two
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 

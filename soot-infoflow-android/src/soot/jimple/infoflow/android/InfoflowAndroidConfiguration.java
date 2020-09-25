@@ -316,6 +316,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		private int maxCallbacksPerComponent = 100;
 		private int callbackAnalysisTimeout = 0;
 		private int maxCallbackAnalysisDepth = -1;
+		private boolean serializeCallbacks = false;
+		private String callbacksFile = "";
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -329,6 +331,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.maxCallbacksPerComponent = cbConfig.maxCallbacksPerComponent;
 			this.callbackAnalysisTimeout = cbConfig.callbackAnalysisTimeout;
 			this.maxCallbackAnalysisDepth = cbConfig.maxCallbackAnalysisDepth;
+			this.serializeCallbacks = cbConfig.serializeCallbacks;
+			this.callbacksFile = cbConfig.callbacksFile;
 		}
 
 		/**
@@ -465,16 +469,58 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.maxCallbackAnalysisDepth = maxCallbackAnalysisDepth;
 		}
 
+		/**
+		 * Gets whether the collected callbacks shall be serialized into a file
+		 * 
+		 * @return True to serialize the collected callbacks into a file, false
+		 *         otherwise
+		 */
+		public boolean isSerializeCallbacks() {
+			return serializeCallbacks;
+		}
+
+		/**
+		 * Sets whether the collected callbacks shall be serialized into a file
+		 * 
+		 * @param serializeCallbacks True to serialize the collected callbacks into a
+		 *                           file, false otherwise
+		 */
+		public void setSerializeCallbacks(boolean serializeCallbacks) {
+			this.serializeCallbacks = serializeCallbacks;
+		}
+
+		/**
+		 * Gets the full path and file name of the file to which the collected callback
+		 * shall be written, or from which they shall be read, respectively
+		 * 
+		 * @return The file for the collected callbacks
+		 */
+		public String getCallbacksFile() {
+			return callbacksFile;
+		}
+
+		/**
+		 * Sets the full path and file name of the file to which the collected callback
+		 * shall be written, or from which they shall be read, respectively
+		 * 
+		 * @param callbacksFile The file for the collected callbacks
+		 */
+		public void setCallbacksFile(String callbacksFile) {
+			this.callbacksFile = callbacksFile;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + callbackAnalysisTimeout;
 			result = prime * result + ((callbackAnalyzer == null) ? 0 : callbackAnalyzer.hashCode());
+			result = prime * result + ((callbacksFile == null) ? 0 : callbacksFile.hashCode());
 			result = prime * result + (enableCallbacks ? 1231 : 1237);
 			result = prime * result + (filterThreadCallbacks ? 1231 : 1237);
 			result = prime * result + maxCallbackAnalysisDepth;
 			result = prime * result + maxCallbacksPerComponent;
+			result = prime * result + (serializeCallbacks ? 1231 : 1237);
 			return result;
 		}
 
@@ -491,6 +537,11 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 				return false;
 			if (callbackAnalyzer != other.callbackAnalyzer)
 				return false;
+			if (callbacksFile == null) {
+				if (other.callbacksFile != null)
+					return false;
+			} else if (!callbacksFile.equals(other.callbacksFile))
+				return false;
 			if (enableCallbacks != other.enableCallbacks)
 				return false;
 			if (filterThreadCallbacks != other.filterThreadCallbacks)
@@ -498,6 +549,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			if (maxCallbackAnalysisDepth != other.maxCallbackAnalysisDepth)
 				return false;
 			if (maxCallbacksPerComponent != other.maxCallbacksPerComponent)
+				return false;
+			if (serializeCallbacks != other.serializeCallbacks)
 				return false;
 			return true;
 		}
