@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="javax.servlet.ServletOutputStream getOutputStream()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: javax.servlet.ServletOutputStream stream]"
+						AccessPathTypes="[javax.servlet.ServletOutputStream]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.PrintWriter getWriter()">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: javax.servlet.ServletOutputStream stream]"
+						AccessPathTypes="[javax.servlet.ServletOutputStream]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
