@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.android.test.manifest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -11,64 +10,49 @@ import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
-public class ProcessManifestTest 
-{
+public class ProcessManifestTest {
 	@Test
-	public void testGetVersionCode()
-	{
+	public void testGetVersionCode() {
 		ProcessManifest manifest = null;
-		
-		try 
-		{
+
+		try {
 			manifest = new ProcessManifest("testAPKs/enriched1.apk");
-		} 
-		catch (IOException | XmlPullParserException e) 
-		{
+		} catch (IOException | XmlPullParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		boolean throwsException = false;
-		
-		try
-		{
+
+		try {
 			manifest.getVersionCode();
 			manifest.getMinSdkVersion();
-			manifest.targetSdkVersion();
-		}
-		catch (Exception ex)
-		{
+			manifest.getTargetSdkVersion();
+		} catch (Exception ex) {
 			throwsException = true;
 		}
-		
+
 		org.junit.Assert.assertFalse(throwsException);
 	}
-	
+
 	@Test
-	public void testSdkVersion()
-	{
+	public void testSdkVersion() {
 		ProcessManifest manifest = null;
-		
-		try 
-		{
+
+		try {
 			manifest = new ProcessManifest("testAPKs/enriched1.apk");
-		} 
-		catch (IOException | XmlPullParserException e) 
-		{
+		} catch (IOException | XmlPullParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		boolean throwsException = false;
-		
-		try
-		{
+
+		try {
 			manifest.getMinSdkVersion();
-			manifest.targetSdkVersion();
-		}
-		catch (Exception ex)
-		{
+			manifest.getTargetSdkVersion();
+		} catch (Exception ex) {
 			throwsException = true;
 		}
-		
+
 		org.junit.Assert.assertFalse(throwsException);
 	}
 
@@ -77,13 +61,13 @@ public class ProcessManifestTest
 		ProcessManifest manifest = null;
 		try {
 			manifest = new ProcessManifest("testAPKs/FlowDroidAliasActivity.apk");
-		}catch (IOException | XmlPullParserException e) {
+		} catch (IOException | XmlPullParserException e) {
 			e.printStackTrace();
 		}
 
 		boolean throwsException = false;
 
-		try{
+		try {
 			List<AXmlNode> aliasActivities = manifest.getAliasActivities();
 			org.junit.Assert.assertFalse(aliasActivities.isEmpty()); // test that there is an Alias activity
 			AXmlNode aliasActivity = aliasActivities.get(0);
@@ -91,7 +75,7 @@ public class ProcessManifestTest
 			AXmlNode target = manifest.getAliasActivityTarget(aliasActivities.get(0));
 			org.junit.Assert.assertNotNull(target);
 
-			AXmlAttribute attr = aliasActivities.get(0).getAttribute("name");
+			AXmlAttribute<?> attr = aliasActivities.get(0).getAttribute("name");
 			AXmlNode aliasActivityBis = manifest.getAliasActivity((String) attr.getValue());
 			org.junit.Assert.assertNotNull(aliasActivityBis);
 		} catch (Exception ex) {
