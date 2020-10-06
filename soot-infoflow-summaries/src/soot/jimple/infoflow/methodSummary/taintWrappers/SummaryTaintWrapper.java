@@ -1929,7 +1929,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
 
 		// If we have no data flows, we can abort early
-		if (flowsInCallees.isEmpty()) {
+		if (flowsInCallees == null || flowsInCallees.isEmpty()) {
 			if (fallbackWrapper == null)
 				return null;
 			else
