@@ -2896,7 +2896,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	public static ARSCFileParser getInstance(File apkFile) throws IOException {
 		ARSCFileParser parser = new ARSCFileParser();
-		try (InputStream is = new ApkHandler(apkFile).getInputStream("resources.arsc")) {
+		try (ApkHandler handler = new ApkHandler(apkFile); InputStream is = handler.getInputStream("resources.arsc")) {
 			parser.parse(is);
 		}
 		return parser;
