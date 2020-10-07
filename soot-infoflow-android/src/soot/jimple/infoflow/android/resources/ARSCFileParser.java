@@ -11,7 +11,6 @@
 package soot.jimple.infoflow.android.resources;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -27,6 +26,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import soot.jimple.infoflow.android.axml.ApkHandler;
 
 /**
  * Parser for reading out the contents of Android's resource.arsc file.
@@ -2573,7 +2574,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				if (logger.isTraceEnabled()) {
 					logger.trace("remaining data: 0x" + remainingData.toString(16));
 				}
-            }
+			}
 			offset += remainingSize;
 		}
 
@@ -2895,8 +2896,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	public static ARSCFileParser getInstance(File apkFile) throws IOException {
 		ARSCFileParser parser = new ARSCFileParser();
-		try (FileInputStream fis = new FileInputStream(apkFile)) {
-			parser.parse(fis);
+		try (InputStream is = new ApkHandler(apkFile).getInputStream("resources.arsc")) {
+			parser.parse(is);
 		}
 		return parser;
 	}
