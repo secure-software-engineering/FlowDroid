@@ -354,8 +354,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 						metadata = metaDataReader.read(f);
 						summaries.setMetaData(metadata);
 					} catch (Exception ex) {
-						LoggerFactory.getLogger(getClass())
-								.error("An error occurred while loading the meta data data of %s");
+						logger.error(String.format("An error occurred while loading the meta data data of %s",
+								f.getAbsolutePath()));
 					}
 				}
 			}
@@ -369,8 +369,8 @@ public class XMLSummaryProvider implements IMethodSummaryProvider {
 						metadata = metaDataReader.read(new InputStreamReader(inputStream));
 						summaries.setMetaData(metadata);
 					} catch (Exception e) {
-						LoggerFactory.getLogger(getClass())
-								.error("An error occurred while loading the meta data data of %s");
+						logger.error(String.format("An error occurred while loading the meta data data of %s",
+								path.toString()));
 					}
 				}
 			}

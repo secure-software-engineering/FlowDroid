@@ -45,6 +45,11 @@ public class TaintWrapperFactory {
 		return new SummaryTaintWrapper(new EagerSummaryProvider(DEFAULT_SUMMARY_DIR));
 	}
 
+	public static SummaryTaintWrapper createTaintWrapperEager(String f)
+			throws FileNotFoundException, XMLStreamException {
+		return createTaintWrapperEager(java.util.Collections.singletonList(f));
+	}
+
 	public static SummaryTaintWrapper createTaintWrapper(File f) {
 		return new SummaryTaintWrapper(new LazySummaryProvider(f));
 	}
