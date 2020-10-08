@@ -511,7 +511,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		this.manager = manager;
 
 		// Load all classes for which we have summaries to signatures
-		Set<String> loadableClasses = flows.getLoadableClasses();
+		Set<String> loadableClasses = flows.getAllClassesWithSummaries();
 		if (loadableClasses != null) {
 			for (String className : loadableClasses)
 				loadClass(className);

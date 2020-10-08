@@ -26,17 +26,6 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 	}
 
 	@Override
-	public Set<String> getLoadableClasses() {
-		Set<String> loadableClasses = new HashSet<>();
-		for (IMethodSummaryProvider provider : innerProviders) {
-			Set<String> curClasses = provider.getLoadableClasses();
-			if (curClasses != null && !curClasses.isEmpty())
-				loadableClasses.addAll(curClasses);
-		}
-		return loadableClasses;
-	}
-
-	@Override
 	public Set<String> getSupportedClasses() {
 		Set<String> supportedClasses = new HashSet<>();
 		for (IMethodSummaryProvider provider : innerProviders) {
@@ -148,6 +137,17 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Set<String> getAllClassesWithSummaries() {
+		Set<String> classes = new HashSet<>();
+		for (IMethodSummaryProvider provider : innerProviders) {
+			Set<String> curClasses = provider.getAllClassesWithSummaries();
+			if (curClasses != null && !curClasses.isEmpty())
+				classes.addAll(curClasses);
+		}
+		return classes;
 	}
 
 }
