@@ -35,8 +35,9 @@ public class ProcessManifest extends
 		super(apkFile);
 	}
 
-	public ProcessManifest(InputStream manifestIS) throws IOException, XmlPullParserException {
-		super(manifestIS);
+	public ProcessManifest(InputStream manifestIS, ARSCFileParser arscParser)
+			throws IOException, XmlPullParserException {
+		super(manifestIS, arscParser);
 	}
 
 	public ProcessManifest(String apkPath) throws IOException, XmlPullParserException {
