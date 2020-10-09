@@ -3,7 +3,9 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class loads all method summary xml files.
@@ -20,8 +22,7 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * @throws IOException
 	 */
 	public EagerSummaryProvider(String folderInJar) throws URISyntaxException, IOException {
-		super(folderInJar);
-		load();
+		this(folderInJar, EagerSummaryProvider.class);
 	}
 
 	/**
@@ -34,8 +35,7 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * @throws IOException
 	 */
 	public EagerSummaryProvider(String folderInJar, Class<?> parentClass) throws URISyntaxException, IOException {
-		super(folderInJar, parentClass);
-		load();
+		loadSummariesFromJAR(folderInJar, parentClass, p -> loadClass(p));
 	}
 
 	/**
@@ -44,8 +44,7 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * @param source The single file or directory to load
 	 */
 	public EagerSummaryProvider(File source) {
-		super(source);
-		load();
+		this(Collections.singletonList(source));
 	}
 
 	/**
@@ -54,22 +53,17 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * @param files The files to load
 	 */
 	public EagerSummaryProvider(List<File> files) {
-		super(files);
-		load();
-	}
-
-	/**
-	 * Loads all summaries available in the target directory
-	 */
-	protected void load() {
-		for (Object s : loadableClasses.toArray())
-			loadClass(s.toString());
-		loadableClasses = null;
+		loadSummariesFromFiles(files, f -> loadClass(f));
 	}
 
 	@Override
 	public boolean mayHaveSummaryForMethod(String subsig) {
 		return subsigMethodsWithSummaries.contains(subsig);
+	}
+
+	@Override
+	public Set<String> getAllClassesWithSummaries() {
+		return loadedClasses;
 	}
 
 }

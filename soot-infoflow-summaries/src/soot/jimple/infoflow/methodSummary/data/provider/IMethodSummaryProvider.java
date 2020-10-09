@@ -15,20 +15,21 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 public interface IMethodSummaryProvider {
 
 	/**
-	 * Gets the names of all classes for which summaries have not yet been loaded,
-	 * but are available on some external storage
-	 * 
-	 * @return The set of classes for which summaries can be loaded
-	 */
-	public Set<String> getLoadableClasses();
-
-	/**
 	 * Gets the names of all classes for which this provider can directly return
 	 * method summaries
 	 * 
 	 * @return The set of classes for which summaries have been loaded
 	 */
 	public Set<String> getSupportedClasses();
+
+	/**
+	 * Gets the names of all classes for which this provider can obtain method
+	 * summaries, either directly, or via lazy loading
+	 * 
+	 * @return The names of all classes for which this provider can obtain method
+	 *         summaries
+	 */
+	public Set<String> getAllClassesWithSummaries();
 
 	/**
 	 * Gets whether the given class is supported by this provider, i.e., whether

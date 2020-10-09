@@ -25,7 +25,7 @@ import com.google.common.io.Files;
  * 
  * @author Stefan Haas, Mario Schlipf
  */
-public class ApkHandler {
+public class ApkHandler implements AutoCloseable {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

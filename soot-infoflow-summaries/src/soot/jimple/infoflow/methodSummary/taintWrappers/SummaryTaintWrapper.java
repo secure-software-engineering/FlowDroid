@@ -511,7 +511,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		this.manager = manager;
 
 		// Load all classes for which we have summaries to signatures
-		Set<String> loadableClasses = flows.getLoadableClasses();
+		Set<String> loadableClasses = flows.getAllClassesWithSummaries();
 		if (loadableClasses != null) {
 			for (String className : loadableClasses)
 				loadClass(className);
@@ -1929,7 +1929,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
 
 		// If we have no data flows, we can abort early
-		if (flowsInCallees.isEmpty()) {
+		if (flowsInCallees == null || flowsInCallees.isEmpty()) {
 			if (fallbackWrapper == null)
 				return null;
 			else
