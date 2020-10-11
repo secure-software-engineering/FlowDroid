@@ -51,7 +51,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 	protected final SummaryReader summaryReader = new SummaryReader();
 	protected MetaDataReader metaDataReader = new MetaDataReader();
 
-	private ClassSummaries summaries = createClassSummaries();
+	protected ClassSummaries summaries = createClassSummaries();
 
 	protected Set<String> loadedClasses = new HashSet<String>();
 
