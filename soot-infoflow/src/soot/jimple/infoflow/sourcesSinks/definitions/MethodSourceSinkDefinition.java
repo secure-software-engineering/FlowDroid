@@ -309,7 +309,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				if (this.parameters == null)
 					this.parameters = new Set[this.method.getParameters().size()];
 				for (int i = 0; i < otherMethod.parameters.length; i++) {
-					this.parameters[i].addAll(otherMethod.parameters[i]);
+					addParameterDefinition(i, otherMethod.parameters[i]);
 				}
 			}
 
@@ -320,6 +320,34 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				for (AccessPathTuple apt : otherMethod.returnValues)
 					this.returnValues.add(apt);
 			}
+		}
+	}
+
+	/**
+	 * Adds the given access path tuples to this source/sink definition for the
+	 * given parameter index
+	 * 
+	 * @param paramIdx  The parameter index
+	 * @param paramDefs The access path tuples
+	 */
+	@SuppressWarnings("unchecked")
+	public void addParameterDefinition(int paramIdx, Set<AccessPathTuple> paramDefs) {
+		if (paramDefs != null && !paramDefs.isEmpty()) {
+			// We may need to widen our parameter array
+			Set<AccessPathTuple>[] oldSet = this.parameters;
+			if (oldSet.length <= paramIdx) {
+				Set<AccessPathTuple>[] newSet = (Set<AccessPathTuple>[]) new Set<?>[paramIdx + 1];
+				System.arraycopy(oldSet, 0, newSet, 0, paramIdx);
+				this.parameters = newSet;
+			}
+
+			// We may not have a set of access path tuples yet
+			Set<AccessPathTuple> aps = this.parameters[paramIdx];
+			if (aps == null) {
+				aps = new HashSet<>(paramDefs.size());
+				this.parameters[paramIdx] = aps;
+			}
+			aps.addAll(paramDefs);
 		}
 	}
 
@@ -413,8 +441,9 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		if (index < 5 && callType == CallType.MethodCall) {
 			MethodSourceSinkDefinition def = PARAM_OBJ_SOURCE[index];
 			if (def == null) {
-				def = new MethodSourceSinkDefinition(null, (Set<AccessPathTuple>[]) new Set<?>[] {
-						Collections.singleton(AccessPathTuple.getBlankSourceTuple()) }, null, callType);
+				Set<AccessPathTuple>[] params = (Set<AccessPathTuple>[]) new Set<?>[index + 1];
+				params[index] = Collections.singleton(AccessPathTuple.getBlankSourceTuple());
+				def = new MethodSourceSinkDefinition(null, params, null, callType);
 				PARAM_OBJ_SOURCE[index] = def;
 			}
 			return def;
