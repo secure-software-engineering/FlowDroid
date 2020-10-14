@@ -56,5 +56,14 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.lang.String readLine()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" AccessPath="[java.io.BufferedReader: java.io.Reader innerReader]"
+						AccessPathTypes="[java.io.Reader]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 	</methods>
 </summary>

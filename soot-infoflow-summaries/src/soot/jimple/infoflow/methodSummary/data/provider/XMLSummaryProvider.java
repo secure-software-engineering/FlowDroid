@@ -52,7 +52,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 	protected final SummaryReader summaryReader = new SummaryReader();
 	protected MetaDataReader metaDataReader = new MetaDataReader();
 
-	private ClassSummaries summaries = createClassSummaries();
+	protected ClassSummaries summaries = createClassSummaries();
 
 	protected Set<String> loadedClasses = new HashSet<String>();
 
@@ -261,6 +261,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 			ClassMethodSummaries classSummaries = new ClassMethodSummaries(clazz);
 			summaryReader.read(new InputStreamReader(inputStream), classSummaries);
 			addMethodSummaries(classSummaries);
+			onClassSummariesLoaded(clazz);
 		} catch (Exception e) {
 			LoggerFactory.getLogger(getClass())
 					.error(String.format("An error occurred while loading the summary of %s", clazz), e);
@@ -288,11 +289,22 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 			ClassMethodSummaries classSummaries = new ClassMethodSummaries(clazz);
 			summaryReader.read(f, classSummaries);
 			addMethodSummaries(classSummaries);
+			onClassSummariesLoaded(clazz);
 		} catch (Exception e) {
 			LoggerFactory.getLogger(getClass())
 					.error(String.format("An error occurred while loading the summary of %s", clazz), e);
 			hasLoadingErrors = true;
 		}
+	}
+
+	/**
+	 * Callback method that is called when the summaries for the given have been
+	 * loaded
+	 * 
+	 * @param clazz The class for which summaries have been loaded
+	 */
+	protected void onClassSummariesLoaded(String clazz) {
+		//
 	}
 
 	/**

@@ -144,16 +144,11 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 
 		this.apk = new ApkHandler(apkFile);
 		this.arscParser = arscParser;
-		InputStream is = null;
-		try {
-			is = this.apk.getInputStream("AndroidManifest.xml");
+		try (InputStream is = this.apk.getInputStream("AndroidManifest.xml")) {
 			if (is == null)
 				throw new FileNotFoundException(
 						String.format("The file %s does not contain an Android Manifest", apkFile.getAbsolutePath()));
 			this.handle(is);
-		} finally {
-			if (is != null)
-				is.close();
 		}
 	}
 
@@ -161,10 +156,13 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Processes an AppManifest which is provided by the given {@link InputStream}.
 	 *
 	 * @param manifestIS InputStream for an AppManifest.
+	 * @param arscParser The Android resource file parser
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 */
-	public BaseProcessManifest(InputStream manifestIS) throws IOException, XmlPullParserException {
+	public BaseProcessManifest(InputStream manifestIS, ARSCFileParser arscParser)
+			throws IOException, XmlPullParserException {
+		this.arscParser = arscParser;
 		this.handle(manifestIS);
 	}
 
