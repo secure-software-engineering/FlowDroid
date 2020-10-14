@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.ClosedChannelException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
@@ -56,7 +57,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 	protected Set<String> loadedClasses = new HashSet<String>();
 
 	protected Set<String> subsigMethodsWithSummaries = new HashSet<String>();
-	private boolean hasLoadingErrors;
+	protected boolean hasLoadingErrors;
 
 	protected XMLSummaryProvider() {
 		//
@@ -149,10 +150,16 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 	}
 
 	protected SummaryMetaData loadMetaDataFile(Path path) {
-		try (Reader rdr = new InputStreamReader(path.getFileSystem().provider().newInputStream(path))) {
-			return metaDataReader.read(rdr);
-		} catch (Exception e) {
-			logger.error(String.format("An error occurred while loading the meta data data of %s", path.toString()));
+		if (!hasLoadingErrors) {
+			try (Reader rdr = new InputStreamReader(path.getFileSystem().provider().newInputStream(path))) {
+				return metaDataReader.read(rdr);
+			} catch (ClosedChannelException e) {
+				logger.error("Channel closed for path loading, ending summary loading.");
+				hasLoadingErrors = true;
+			} catch (Exception e) {
+				logger.error(
+						String.format("An error occurred while loading the meta data data of %s", path.toString()));
+			}
 		}
 		return null;
 	}
