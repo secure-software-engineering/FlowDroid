@@ -367,10 +367,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				PackManager.v().getPack("wjpp").apply();
 				PackManager.v().getPack("cg").apply();
 			}
+		}
 
-			// If we don't have a FastHierarchy, we need to create it
-			hierarchy = Scene.v().getOrMakeFastHierarchy();
+		// If we don't have a FastHierarchy, we need to create it - even if we use an
+		// existing callgraph
+		hierarchy = Scene.v().getOrMakeFastHierarchy();
 
+		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
 				tr.onAfterCallgraphConstruction();
