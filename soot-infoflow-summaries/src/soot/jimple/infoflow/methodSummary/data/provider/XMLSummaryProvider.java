@@ -143,8 +143,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 		try (Reader rdr = new InputStreamReader(new FileInputStream(f))) {
 			return metaDataReader.read(rdr);
 		} catch (Exception e) {
-			logger.error(
-					String.format("An error occurred while loading the meta data data of %s", f.getAbsolutePath()));
+			logger.error(String.format("An error occurred while loading the meta data of %s", f.getAbsolutePath()));
 		}
 		return null;
 	}
@@ -157,8 +156,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 				logger.error("Channel closed for path loading, ending summary loading.");
 				hasLoadingErrors = true;
 			} catch (Exception e) {
-				logger.error(
-						String.format("An error occurred while loading the meta data data of %s", path.toString()));
+				logger.error(String.format("An error occurred while loading the meta data of %s", path.toString()));
 			}
 		}
 		return null;
