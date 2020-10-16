@@ -7,6 +7,8 @@ import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -49,8 +51,13 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 		if (ap.isStaticFieldRef()) {
 			// Do not propagate static fields that are not read inside the
 			// callee
-			if (getAliasing().getAliasingStrategy().isLazyAnalysis()
-					|| manager.getICFG().isStaticFieldRead(dest, ap.getFirstField())) {
+			boolean isLazyAnalysis = false;
+			Aliasing aliasing = getAliasing();
+			if (aliasing != null) {
+				IAliasingStrategy strategy = aliasing.getAliasingStrategy();
+				isLazyAnalysis = strategy != null && strategy.isLazyAnalysis();
+			}
+			if (isLazyAnalysis || manager.getICFG().isStaticFieldRead(dest, ap.getFirstField())) {
 				Abstraction newAbs = source.deriveNewAbstraction(ap, stmt);
 				if (newAbs != null)
 					return Collections.singleton(newAbs);
