@@ -10,7 +10,58 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class InfoflowConfiguration {
+
 	protected final static Logger logger = LoggerFactory.getLogger(InfoflowConfiguration.class);
+
+	/**
+	 * Enumeration containing the different ways in which Soot can be used
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static enum SootIntegrationMode {
+		/**
+		 * With this option, FlowDroid initializes and configures its own Soot instance.
+		 * This option is the default and the best choice in most cases.
+		 */
+		CreateNewInstance,
+
+		/**
+		 * With this option, FlowDroid uses the existing Soot instance, but generates
+		 * its own callgraph. Note that it is the responsibility of the caller to make
+		 * sure that pre-existing Soot instances are configured correctly for the use
+		 * with FlowDroid.
+		 */
+		UseExistingInstance,
+
+		/**
+		 * Use the existing Soot instance and existing callgraph. Do not generate
+		 * anything, the caller is responsible for providing a valid Soot instance and
+		 * callgraph.
+		 */
+		UseExistingCallgraph;
+
+		/**
+		 * Gets whether this integration mode requires FlowDroid to build its own
+		 * callgraph
+		 * 
+		 * @return True if FlowDroid must create its own callgraph, otherwise false
+		 */
+		boolean needsToBuildCallgraph() {
+			return this == SootIntegrationMode.CreateNewInstance || this == SootIntegrationMode.UseExistingInstance;
+		}
+
+		/**
+		 * Checks whether this integration mode requires FlowDroid to initialize a fresh
+		 * Soot instance
+		 * 
+		 * @return True to initialize a fresh Soot instance, false otherwise
+		 */
+		boolean needsToInitializeSoot() {
+			return this == CreateNewInstance;
+		}
+
+	}
 
 	/**
 	 * Enumeration containing the callgraph algorithms supported for the use with
@@ -1233,6 +1284,7 @@ public class InfoflowConfiguration {
 	private AliasingAlgorithm aliasingAlgorithm = AliasingAlgorithm.FlowSensitive;
 	private CodeEliminationMode codeEliminationMode = CodeEliminationMode.PropagateConstants;
 	private StaticFieldTrackingMode staticFieldTrackingMode = StaticFieldTrackingMode.ContextFlowSensitive;
+	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstance;
 
 	private boolean taintAnalysisEnabled = true;
 	private boolean incrementalResultReporting = false;
@@ -1271,6 +1323,7 @@ public class InfoflowConfiguration {
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
 		this.codeEliminationMode = config.codeEliminationMode;
 		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
+		this.sootIntegrationMode = config.sootIntegrationMode;
 
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
@@ -1468,6 +1521,28 @@ public class InfoflowConfiguration {
 	 */
 	public StaticFieldTrackingMode getStaticFieldTrackingMode() {
 		return staticFieldTrackingMode;
+	}
+
+	/**
+	 * Sets how FlowDroid shall interact with the underlying Soot instance.
+	 * FlowDroid can either set up Soot on its own, or work with an existing
+	 * instance.
+	 * 
+	 * @param sootIntegrationMode The integration mode that FlowDroid shall use
+	 */
+	public void setSootIntegrationMode(SootIntegrationMode sootIntegrationMode) {
+		this.sootIntegrationMode = sootIntegrationMode;
+	}
+
+	/**
+	 * Gets how FloweDroid shall interact with the underlying Soot instance.
+	 * FlowDroid can either set up Soot on its own, or work with an existing
+	 * instance.
+	 * 
+	 * @return The integration mode that FlowDroid shall use
+	 */
+	public SootIntegrationMode getSootIntegrationMode() {
+		return this.sootIntegrationMode;
 	}
 
 	/**
@@ -2006,6 +2081,7 @@ public class InfoflowConfiguration {
 		result = prime * result + ((pathConfiguration == null) ? 0 : pathConfiguration.hashCode());
 		result = prime * result + ((solverConfiguration == null) ? 0 : solverConfiguration.hashCode());
 		result = prime * result + ((staticFieldTrackingMode == null) ? 0 : staticFieldTrackingMode.hashCode());
+		result = prime * result + ((sootIntegrationMode == null) ? 0 : sootIntegrationMode.hashCode());
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
@@ -2086,6 +2162,8 @@ public class InfoflowConfiguration {
 		} else if (!solverConfiguration.equals(other.solverConfiguration))
 			return false;
 		if (staticFieldTrackingMode != other.staticFieldTrackingMode)
+			return false;
+		if (sootIntegrationMode != other.sootIntegrationMode)
 			return false;
 		if (stopAfterFirstKFlows != other.stopAfterFirstKFlows)
 			return false;

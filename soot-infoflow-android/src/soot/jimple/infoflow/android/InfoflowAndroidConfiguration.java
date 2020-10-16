@@ -690,46 +690,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		Fast
 	}
 
-	/**
-	 * Enumeration containing the different ways in which Soot can be used
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	public static enum SootIntegrationMode {
-		/**
-		 * With this option, FlowDroid initializes and configures its own Soot instance.
-		 * This option is the default and the best choice in most cases.
-		 */
-		CreateNewInstance,
-
-		/**
-		 * With this option, FlowDroid uses the existing Soot instance, but generates
-		 * its own callgraph. Note that it is the responsibility of the caller to make
-		 * sure that pre-existing Soot instances are configured correctly for the use
-		 * with FlowDroid.
-		 */
-		UseExistingInstance,
-
-		/**
-		 * Use the existing Soot instance and existing callgraph. Do not generate
-		 * anything, the caller is responsible for providing a valid Soot instance and
-		 * callgraph.
-		 */
-		UseExistingCallgraph;
-
-		/**
-		 * Gets whether this integration mode requires FlowDroid to build its own
-		 * callgraph
-		 * 
-		 * @return True if FlowDroid must create its own callgraph, otherwise false
-		 */
-		boolean needsToBuildCallgraph() {
-			return this == SootIntegrationMode.CreateNewInstance || this == SootIntegrationMode.UseExistingInstance;
-		}
-
-	}
-
 	private boolean oneComponentAtATime = false;
 
 	private final CallbackConfiguration callbackConfig = new CallbackConfiguration();
@@ -737,7 +697,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final IccConfiguration iccConfig = new IccConfiguration();
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
-	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstance;
 	private boolean mergeDexFiles = false;
 
 	public InfoflowAndroidConfiguration() {
@@ -762,7 +721,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.iccConfig.merge(androidConfig.iccConfig);
 			this.analysisFileConfig.merge(androidConfig.analysisFileConfig);
 
-			this.sootIntegrationMode = androidConfig.sootIntegrationMode;
 			this.mergeDexFiles = androidConfig.mergeDexFiles;
 		}
 	}
@@ -827,28 +785,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets how FlowDroid shall interact with the underlying Soot instance.
-	 * FlowDroid can either set up Soot on its own, or work with an existing
-	 * instance.
-	 * 
-	 * @param sootIntegrationMode The integration mode that FlowDroid shall use
-	 */
-	public void setSootIntegrationMode(SootIntegrationMode sootIntegrationMode) {
-		this.sootIntegrationMode = sootIntegrationMode;
-	}
-
-	/**
-	 * Gets how FloweDroid shall interact with the underlying Soot instance.
-	 * FlowDroid can either set up Soot on its own, or work with an existing
-	 * instance.
-	 * 
-	 * @return The integration mode that FlowDroid shall use
-	 */
-	public SootIntegrationMode getSootIntegrationMode() {
-		return this.sootIntegrationMode;
-	}
-
-	/**
 	 * Gets whether FlowDroid shall merge all dex files in the APK to get a full
 	 * picture of the app
 	 * 
@@ -879,7 +815,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		result = prime * result + ((iccConfig == null) ? 0 : iccConfig.hashCode());
 		result = prime * result + (mergeDexFiles ? 1231 : 1237);
 		result = prime * result + (oneComponentAtATime ? 1231 : 1237);
-		result = prime * result + ((sootIntegrationMode == null) ? 0 : sootIntegrationMode.hashCode());
 		result = prime * result + ((sourceSinkConfig == null) ? 0 : sourceSinkConfig.hashCode());
 		return result;
 	}
@@ -911,8 +846,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		if (mergeDexFiles != other.mergeDexFiles)
 			return false;
 		if (oneComponentAtATime != other.oneComponentAtATime)
-			return false;
-		if (sootIntegrationMode != other.sootIntegrationMode)
 			return false;
 		if (sourceSinkConfig == null) {
 			if (other.sourceSinkConfig != null)

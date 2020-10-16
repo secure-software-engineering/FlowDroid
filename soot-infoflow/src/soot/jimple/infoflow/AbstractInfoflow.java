@@ -184,105 +184,111 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 *                too.
 	 */
 	protected void initializeSoot(String appPath, String libPath, Collection<String> classes, String extraSeed) {
-		// reset Soot:
-		logger.info("Resetting Soot...");
-		soot.G.reset();
+		if (config.getSootIntegrationMode().needsToInitializeSoot()) {
+			// reset Soot:
+			logger.info("Resetting Soot...");
+			soot.G.reset();
 
-		Options.v().set_no_bodies_for_excluded(true);
-		Options.v().set_allow_phantom_refs(true);
-		if (config.getWriteOutputFiles())
-			Options.v().set_output_format(Options.output_format_jimple);
-		else
-			Options.v().set_output_format(Options.output_format_none);
+			Options.v().set_no_bodies_for_excluded(true);
+			Options.v().set_allow_phantom_refs(true);
+			if (config.getWriteOutputFiles())
+				Options.v().set_output_format(Options.output_format_jimple);
+			else
+				Options.v().set_output_format(Options.output_format_none);
 
-		// We only need to distinguish between application and library classes
-		// if we use the OnTheFly ICFG
-		if (config.getCallgraphAlgorithm() == CallgraphAlgorithm.OnDemand) {
-			Options.v().set_soot_classpath(libPath);
-			if (appPath != null) {
-				List<String> processDirs = new LinkedList<String>();
-				for (String ap : appPath.split(File.pathSeparator))
-					processDirs.add(ap);
-				Options.v().set_process_dir(processDirs);
-			}
-		} else
-			Options.v().set_soot_classpath(appendClasspath(appPath, libPath));
+			// We only need to distinguish between application and library classes
+			// if we use the OnTheFly ICFG
+			if (config.getCallgraphAlgorithm() == CallgraphAlgorithm.OnDemand) {
+				Options.v().set_soot_classpath(libPath);
+				if (appPath != null) {
+					List<String> processDirs = new LinkedList<String>();
+					for (String ap : appPath.split(File.pathSeparator))
+						processDirs.add(ap);
+					Options.v().set_process_dir(processDirs);
+				}
+			} else
+				Options.v().set_soot_classpath(appendClasspath(appPath, libPath));
 
-		// Configure the callgraph algorithm
-		switch (config.getCallgraphAlgorithm()) {
-		case AutomaticSelection:
-			// If we analyze a distinct entry point which is not static,
-			// SPARK fails due to the missing allocation site and we fall
-			// back to CHA.
-			if (extraSeed == null || extraSeed.isEmpty()) {
-				setSparkOptions();
-			} else {
+			// do not merge variables (causes problems with PointsToSets)
+			Options.v().setPhaseOption("jb.ulp", "off");
+
+			setSourcePrec();
+		}
+
+		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
+			// Configure the callgraph algorithm
+			switch (config.getCallgraphAlgorithm()) {
+			case AutomaticSelection:
+				// If we analyze a distinct entry point which is not static,
+				// SPARK fails due to the missing allocation site and we fall
+				// back to CHA.
+				if (extraSeed == null || extraSeed.isEmpty()) {
+					setSparkOptions();
+				} else {
+					setChaOptions();
+				}
+				break;
+			case CHA:
 				setChaOptions();
+				break;
+			case RTA:
+				Options.v().setPhaseOption("cg.spark", "on");
+				Options.v().setPhaseOption("cg.spark", "rta:true");
+				Options.v().setPhaseOption("cg.spark", "on-fly-cg:false");
+				Options.v().setPhaseOption("cg.spark", "string-constants:true");
+				break;
+			case VTA:
+				Options.v().setPhaseOption("cg.spark", "on");
+				Options.v().setPhaseOption("cg.spark", "vta:true");
+				Options.v().setPhaseOption("cg.spark", "string-constants:true");
+				break;
+			case SPARK:
+				setSparkOptions();
+				break;
+			case GEOM:
+				setSparkOptions();
+				setGeomPtaSpecificOptions();
+				break;
+			case OnDemand:
+				// nothing to set here
+				break;
+			default:
+				throw new RuntimeException("Invalid callgraph algorithm");
 			}
-			break;
-		case CHA:
-			setChaOptions();
-			break;
-		case RTA:
-			Options.v().setPhaseOption("cg.spark", "on");
-			Options.v().setPhaseOption("cg.spark", "rta:true");
-			Options.v().setPhaseOption("cg.spark", "on-fly-cg:false");
-			Options.v().setPhaseOption("cg.spark", "string-constants:true");
-			break;
-		case VTA:
-			Options.v().setPhaseOption("cg.spark", "on");
-			Options.v().setPhaseOption("cg.spark", "vta:true");
-			Options.v().setPhaseOption("cg.spark", "string-constants:true");
-			break;
-		case SPARK:
-			setSparkOptions();
-			break;
-		case GEOM:
-			setSparkOptions();
-			setGeomPtaSpecificOptions();
-			break;
-		case OnDemand:
-			// nothing to set here
-			break;
-		default:
-			throw new RuntimeException("Invalid callgraph algorithm");
-		}
 
-		// Specify additional options required for the callgraph
-		if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand) {
-			Options.v().set_whole_program(true);
-			Options.v().setPhaseOption("cg", "trim-clinit:false");
-			if (config.getEnableReflection())
-				Options.v().setPhaseOption("cg", "types-for-invoke:true");
-		}
-
-		// do not merge variables (causes problems with PointsToSets)
-		Options.v().setPhaseOption("jb.ulp", "off");
-
-		setSourcePrec();
-
-		// at the end of setting: load user settings:
-		if (sootConfig != null)
-			sootConfig.setSootOptions(Options.v(), config);
-
-		// load all entryPoint classes with their bodies
-		for (String className : classes)
-			Scene.v().addBasicClass(className, SootClass.BODIES);
-		Scene.v().loadNecessaryClasses();
-		logger.info("Basic class loading done.");
-
-		boolean hasClasses = false;
-		for (String className : classes) {
-			SootClass c = Scene.v().forceResolve(className, SootClass.BODIES);
-			if (c != null) {
-				c.setApplicationClass();
-				if (!c.isPhantomClass() && !c.isPhantom())
-					hasClasses = true;
+			// Specify additional options required for the callgraph
+			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand) {
+				Options.v().set_whole_program(true);
+				Options.v().setPhaseOption("cg", "trim-clinit:false");
+				if (config.getEnableReflection())
+					Options.v().setPhaseOption("cg", "types-for-invoke:true");
 			}
 		}
-		if (!hasClasses) {
-			logger.error("Only phantom classes loaded, skipping analysis...");
-			return;
+
+		if (config.getSootIntegrationMode().needsToInitializeSoot()) {
+			// at the end of setting: load user settings:
+			if (sootConfig != null)
+				sootConfig.setSootOptions(Options.v(), config);
+
+			// load all entryPoint classes with their bodies
+			for (String className : classes)
+				Scene.v().addBasicClass(className, SootClass.BODIES);
+			Scene.v().loadNecessaryClasses();
+			logger.info("Basic class loading done.");
+
+			boolean hasClasses = false;
+			for (String className : classes) {
+				SootClass c = Scene.v().forceResolve(className, SootClass.BODIES);
+				if (c != null) {
+					c.setApplicationClass();
+					if (!c.isPhantomClass() && !c.isPhantom())
+						hasClasses = true;
+				}
+			}
+			if (!hasClasses) {
+				logger.error("Only phantom classes loaded, skipping analysis...");
+				return;
+			}
 		}
 	}
 
@@ -333,40 +339,42 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * Constructs the callgraph
 	 */
 	protected void constructCallgraph() {
-		// Allow the ICC manager to change the Soot Scene before we continue
-		if (ipcManager != null)
-			ipcManager.updateJimpleForICC();
+		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
+			// Allow the ICC manager to change the Soot Scene before we continue
+			if (ipcManager != null)
+				ipcManager.updateJimpleForICC();
 
-		// Run the preprocessors
-		for (PreAnalysisHandler tr : preProcessors)
-			tr.onBeforeCallgraphConstruction();
+			// Run the preprocessors
+			for (PreAnalysisHandler tr : preProcessors)
+				tr.onBeforeCallgraphConstruction();
 
-		// Patch the system libraries we need for callgraph construction
-		LibraryClassPatcher patcher = getLibraryClassPatcher();
-		patcher.patchLibraries();
+			// Patch the system libraries we need for callgraph construction
+			LibraryClassPatcher patcher = getLibraryClassPatcher();
+			patcher.patchLibraries();
 
-		// To cope with broken APK files, we convert all classes that are still
-		// dangling after resolution into phantoms
-		for (SootClass sc : Scene.v().getClasses())
-			if (sc.resolvingLevel() == SootClass.DANGLING) {
-				sc.setResolvingLevel(SootClass.BODIES);
-				sc.setPhantomClass();
+			// To cope with broken APK files, we convert all classes that are still
+			// dangling after resolution into phantoms
+			for (SootClass sc : Scene.v().getClasses())
+				if (sc.resolvingLevel() == SootClass.DANGLING) {
+					sc.setResolvingLevel(SootClass.BODIES);
+					sc.setPhantomClass();
+				}
+
+			// We explicitly select the packs we want to run for performance
+			// reasons. Do not re-run the callgraph algorithm if the host
+			// application already provides us with a CG.
+			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand && !Scene.v().hasCallGraph()) {
+				PackManager.v().getPack("wjpp").apply();
+				PackManager.v().getPack("cg").apply();
 			}
 
-		// We explicitly select the packs we want to run for performance
-		// reasons. Do not re-run the callgraph algorithm if the host
-		// application already provides us with a CG.
-		if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand && !Scene.v().hasCallGraph()) {
-			PackManager.v().getPack("wjpp").apply();
-			PackManager.v().getPack("cg").apply();
+			// If we don't have a FastHierarchy, we need to create it
+			hierarchy = Scene.v().getOrMakeFastHierarchy();
+
+			// Run the preprocessors
+			for (PreAnalysisHandler tr : preProcessors)
+				tr.onAfterCallgraphConstruction();
 		}
-
-		// If we don't have a FastHierarchy, we need to create it
-		hierarchy = Scene.v().getOrMakeFastHierarchy();
-
-		// Run the preprocessors
-		for (PreAnalysisHandler tr : preProcessors)
-			tr.onAfterCallgraphConstruction();
 	}
 
 	protected LibraryClassPatcher getLibraryClassPatcher() {

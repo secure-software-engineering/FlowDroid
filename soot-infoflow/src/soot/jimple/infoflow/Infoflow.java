@@ -38,6 +38,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.aliasing.FlowSensitiveAliasStrategy;
@@ -179,7 +180,8 @@ public class Infoflow extends AbstractInfoflow {
 			return;
 		}
 
-		initializeSoot(appPath, libPath, entryPointCreator.getRequiredClasses());
+		if (config.getSootIntegrationMode() != SootIntegrationMode.UseExistingInstance)
+			initializeSoot(appPath, libPath, entryPointCreator.getRequiredClasses());
 
 		// entryPoints are the entryPoints required by Soot to calculate Graph -
 		// if there is no main method, we have to create a new main method and
