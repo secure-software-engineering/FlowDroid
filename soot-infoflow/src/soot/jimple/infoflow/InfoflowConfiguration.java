@@ -47,7 +47,7 @@ public class InfoflowConfiguration {
 		 * 
 		 * @return True if FlowDroid must create its own callgraph, otherwise false
 		 */
-		boolean needsToBuildCallgraph() {
+		public boolean needsToBuildCallgraph() {
 			return this == SootIntegrationMode.CreateNewInstance || this == SootIntegrationMode.UseExistingInstance;
 		}
 
@@ -57,7 +57,7 @@ public class InfoflowConfiguration {
 		 * 
 		 * @return True to initialize a fresh Soot instance, false otherwise
 		 */
-		boolean needsToInitializeSoot() {
+		public boolean needsToInitializeSoot() {
 			return this == CreateNewInstance;
 		}
 
