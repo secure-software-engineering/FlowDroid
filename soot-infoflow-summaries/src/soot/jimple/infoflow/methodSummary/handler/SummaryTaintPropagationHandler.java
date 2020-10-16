@@ -15,7 +15,8 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
-import soot.jimple.infoflow.methodSummary.generator.GapManager;
+import soot.jimple.infoflow.methodSummary.generator.gaps.GapManager;
+import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
@@ -30,7 +31,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	private final String methodSig;
 	private final String parentClass;
 	private final Set<SootMethod> excludedMethods = new HashSet<>();
-	private final GapManager gapManager;
+	private final IGapManager gapManager;
 	private SootMethod method = null;
 	private boolean followReturnsPastSeeds = false;
 
@@ -39,14 +40,12 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	/**
 	 * Creates a new instance of the SummaryTaintPropagationHandler class
 	 * 
-	 * @param m
-	 *            The signature of the method for which summaries are being computed
-	 * @param parentClass
-	 *            The parent class to which the method belongs
-	 * @param gapManager
-	 *            The gap manager for creating and referencing gaps
+	 * @param m           The signature of the method for which summaries are being
+	 *                    computed
+	 * @param parentClass The parent class to which the method belongs
+	 * @param gapManager  The gap manager for creating and referencing gaps
 	 */
-	public SummaryTaintPropagationHandler(String m, String parentClass, GapManager gapManager) {
+	public SummaryTaintPropagationHandler(String m, String parentClass, IGapManager gapManager) {
 		this.methodSig = m;
 		this.parentClass = parentClass;
 		this.gapManager = gapManager;
@@ -55,10 +54,8 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	/**
 	 * Creates a new instance of the SummaryTaintPropagationHandler class
 	 * 
-	 * @param m
-	 *            The method for which summaries are being computed
-	 * @param gapManager
-	 *            The gap manager for creating and referencing gaps
+	 * @param m          The method for which summaries are being computed
+	 * @param gapManager The gap manager for creating and referencing gaps
 	 */
 	public SummaryTaintPropagationHandler(SootMethod m, GapManager gapManager) {
 		this.method = m;
@@ -101,12 +98,9 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	/**
 	 * Handles a taint that leaves a method at an exit node
 	 * 
-	 * @param stmt
-	 *            The statement at which the taint leaves the method
-	 * @param abs
-	 *            The taint abstraction that leaves the method
-	 * @param cfg
-	 *            The control flow graph
+	 * @param stmt The statement at which the taint leaves the method
+	 * @param abs  The taint abstraction that leaves the method
+	 * @param cfg  The control flow graph
 	 */
 	protected void handleReturnFlow(Stmt stmt, Abstraction abs, IInfoflowCFG cfg) {
 		// Check whether we must register the abstraction for post-processing
@@ -152,10 +146,8 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * Checks whether the given value is returned from inside the callee at the
 	 * given call site
 	 * 
-	 * @param stmt
-	 *            The statement to check
-	 * @param abs
-	 *            The value to check
+	 * @param stmt The statement to check
+	 * @param abs  The value to check
 	 * @return True if the given value is returned from inside the given callee at
 	 *         the given call site, otherwise false
 	 */
@@ -192,10 +184,8 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	/**
 	 * Adds the given abstraction and statement to the result map
 	 * 
-	 * @param abs
-	 *            The abstraction to be collected
-	 * @param stmt
-	 *            The statement at which the abstraction was collected
+	 * @param abs  The abstraction to be collected
+	 * @param stmt The statement at which the abstraction was collected
 	 */
 	protected void addResult(Abstraction abs, Stmt stmt) {
 		// Add the abstraction to the map. If we already have an equal
@@ -228,7 +218,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 		return result;
 	}
 
-	public GapManager getGapManager() {
+	public IGapManager getGapManager() {
 		return this.gapManager;
 	}
 
@@ -236,8 +226,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * Adds the given method to the set of excluded methods over which taints are
 	 * never propagated
 	 * 
-	 * @param excluded
-	 *            The method to exclude
+	 * @param excluded The method to exclude
 	 */
 	public void addExcludedMethod(SootMethod excluded) {
 		this.excludedMethods.add(excluded);
@@ -248,9 +237,8 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	 * If not the analysis will not march up the callgraph any further from that
 	 * method.
 	 * 
-	 * @param follow
-	 *            True if propagations upwards from the target method shall be
-	 *            allowed, otherwise false
+	 * @param follow True if propagations upwards from the target method shall be
+	 *               allowed, otherwise false
 	 */
 	public void setFollowReturnsPastSeeds(boolean follow) {
 		this.followReturnsPastSeeds = follow;

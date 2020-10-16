@@ -29,8 +29,8 @@ import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
-import soot.jimple.infoflow.methodSummary.generator.GapManager;
 import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration;
+import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.SummaryResultInfo;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.SummarySourceInfo;
 import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
@@ -47,11 +47,11 @@ public class InfoflowResultPostProcessor {
 	private final MultiMap<Abstraction, Stmt> collectedAbstractions;
 	private final String method;
 	protected final SourceSinkFactory sourceSinkFactory;
-	private final GapManager gapManager;
+	private final IGapManager gapManager;
 	private final SummaryGeneratorConfiguration config;
 
 	public InfoflowResultPostProcessor(MultiMap<Abstraction, Stmt> collectedAbstractions, InfoflowManager manager,
-			String m, SourceSinkFactory sourceSinkFactory, GapManager gapManager) {
+			String m, SourceSinkFactory sourceSinkFactory, IGapManager gapManager) {
 		this.collectedAbstractions = collectedAbstractions;
 		this.manager = manager;
 		this.method = m;
@@ -61,7 +61,7 @@ public class InfoflowResultPostProcessor {
 	}
 
 	public InfoflowResultPostProcessor(MultiMap<Abstraction, Stmt> collectedAbstractions, InfoflowConfiguration config,
-			String m, SourceSinkFactory sourceSinkFactory, GapManager gapManager) {
+			String m, SourceSinkFactory sourceSinkFactory, IGapManager gapManager) {
 		this.collectedAbstractions = collectedAbstractions;
 		this.manager = new FakeInfoflowManager(config);
 		this.method = m;

@@ -41,6 +41,8 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.generator.gaps.GapManager;
+import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.handler.SummaryTaintPropagationHandler;
 import soot.jimple.infoflow.methodSummary.postProcessor.InfoflowResultPostProcessor;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryFlowCompactor;
@@ -84,7 +86,7 @@ public class SummaryGenerator {
 	/**
 	 * Initializes the fallback taint wrapper
 	 */
-	private void initializeFallbackWrapper() {
+	protected void initializeFallbackWrapper() {
 		if (fallbackWrapperInitialized)
 			return;
 		fallbackWrapperInitialized = true;
@@ -603,7 +605,7 @@ public class SummaryGenerator {
 	 * @return summary of method m
 	 */
 	protected MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
-			final GapManager gapManager, final ResultsAvailableHandler resultHandler) {
+			final IGapManager gapManager, final ResultsAvailableHandler resultHandler) {
 		// We need to construct a fallback taint wrapper based on the current
 		// configuration
 		initializeFallbackWrapper();
@@ -707,7 +709,7 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The taint wrapper to be used during summary generation
 	 */
-	protected SummaryGenerationTaintWrapper createTaintWrapper(MethodSummaries summaries, GapManager gapManager) {
+	protected SummaryGenerationTaintWrapper createTaintWrapper(MethodSummaries summaries, IGapManager gapManager) {
 		return new SummaryGenerationTaintWrapper(summaries, gapManager);
 	}
 
@@ -718,7 +720,7 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The initialized data flow engine
 	 */
-	protected SummaryInfoflow initInfoflow(MethodSummaries summaries, GapManager gapManager) {
+	protected SummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
 		// Disable the default path reconstruction. However, still make sure to
 		// retain the contents of the callees.
 		SummaryInfoflow iFlow = getInfoflowInstance();

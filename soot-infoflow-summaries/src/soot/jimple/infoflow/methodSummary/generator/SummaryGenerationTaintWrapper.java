@@ -25,6 +25,7 @@ import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.toolkits.callgraph.Edge;
@@ -42,9 +43,9 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	protected InfoflowManager manager;
 
 	protected final MethodSummaries summaries;
-	protected final GapManager gapManager;
+	protected final IGapManager gapManager;
 
-	public SummaryGenerationTaintWrapper(MethodSummaries summaries, GapManager gapManager) {
+	public SummaryGenerationTaintWrapper(MethodSummaries summaries, IGapManager gapManager) {
 		this.summaries = summaries;
 		this.gapManager = gapManager;
 	}

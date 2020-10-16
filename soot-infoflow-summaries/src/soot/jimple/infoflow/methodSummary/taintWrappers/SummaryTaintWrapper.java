@@ -279,7 +279,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class SummaryQuery {
+	protected static class SummaryQuery {
 
 		public final SootClass calleeClass;
 		public final SootClass declaredClass;
@@ -346,7 +346,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class SummaryResponse {
+	protected static class SummaryResponse {
 
 		public final static SummaryResponse NOT_SUPPORTED = new SummaryResponse(null, false);
 		public final static SummaryResponse EMPTY_BUT_SUPPORTED = new SummaryResponse(null, true);
@@ -1175,6 +1175,30 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			}
 		}
 
+		// Check the direct callee
+		if (classSummaries == null || classSummaries.isEmpty()) {
+			SootClass declaredClass = getSummaryDeclaringClass(stmt);
+			SummaryResponse response = methodToImplFlows
+					.getUnchecked(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
+			if (response != null) {
+				if (classSupported != null)
+					classSupported.value = response.isClassSupported;
+				classSummaries = new ClassSummaries();
+				classSummaries.merge(response.classSummaries);
+			}
+		}
+
+		return classSummaries;
+	}
+
+	/**
+	 * Gets the class that likely declares the method that is being called by the
+	 * given statement
+	 * 
+	 * @param stmt The invocation statement
+	 * @return The class in which to look for a summary for the called method
+	 */
+	protected SootClass getSummaryDeclaringClass(Stmt stmt) {
 		// We may have a call such as
 		// x = editable.toString();
 		// In that case, the callee is Object.toString(), since in the stub Android
@@ -1189,20 +1213,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (baseType instanceof RefType)
 				declaredClass = ((RefType) baseType).getSootClass();
 		}
-
-		// Check the direct callee
-		if (classSummaries == null || classSummaries.isEmpty()) {
-			SummaryResponse response = methodToImplFlows
-					.getUnchecked(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
-			if (response != null) {
-				if (classSupported != null)
-					classSupported.value = response.isClassSupported;
-				classSummaries = new ClassSummaries();
-				classSummaries.merge(response.classSummaries);
-			}
-		}
-
-		return classSummaries;
+		return declaredClass;
 	}
 
 	/**
