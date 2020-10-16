@@ -55,9 +55,9 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * the IDESolver implementation in Heros for performance reasons.
  * 
  * @param <N> The type of nodes in the interprocedural control-flow graph.
- *        Typically {@link Unit}.
+ *            Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
- *        problem.
+ *            problem.
  * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
@@ -282,46 +282,48 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 		// for each possible callee
 		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(n);
-		if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
-			callees.stream().filter(m -> m.isConcrete()).forEach(new Consumer<SootMethod>() {
+		if (callees != null && !callees.isEmpty()) {
+			if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
+				callees.stream().filter(m -> m.isConcrete()).forEach(new Consumer<SootMethod>() {
 
-				@Override
-				public void accept(SootMethod sCalledProcN) {
-					// Early termination check
-					if (killFlag != null)
-						return;
+					@Override
+					public void accept(SootMethod sCalledProcN) {
+						// Early termination check
+						if (killFlag != null)
+							return;
 
-					// compute the call-flow function
-					FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
-					Set<D> res = computeCallFlowFunction(function, d1, d2);
+						// compute the call-flow function
+						FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
+						Set<D> res = computeCallFlowFunction(function, d1, d2);
 
-					if (res != null && !res.isEmpty()) {
-						Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
-						// for each result node of the call-flow function
-						for (D d3 : res) {
-							if (memoryManager != null)
-								d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
-							if (d3 == null)
-								continue;
+						if (res != null && !res.isEmpty()) {
+							Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
+							// for each result node of the call-flow function
+							for (D d3 : res) {
+								if (memoryManager != null)
+									d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
+								if (d3 == null)
+									continue;
 
-							// for each callee's start point(s)
-							for (N sP : startPointsOf) {
-								// create initial self-loop
-								propagate(d3, sP, d3, n, false); // line 15
+								// for each callee's start point(s)
+								for (N sP : startPointsOf) {
+									// create initial self-loop
+									propagate(d3, sP, d3, n, false); // line 15
+								}
+
+								// register the fact that <sp,d3> has an incoming edge from
+								// <n,d2>
+								// line 15.1 of Naeem/Lhotak/Rodriguez
+								if (!addIncoming(sCalledProcN, d3, n, d1, d2))
+									continue;
+
+								applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
 							}
-
-							// register the fact that <sp,d3> has an incoming edge from
-							// <n,d2>
-							// line 15.1 of Naeem/Lhotak/Rodriguez
-							if (!addIncoming(sCalledProcN, d3, n, d1, d2))
-								continue;
-
-							applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
 						}
 					}
-				}
 
-			});
+				});
+			}
 		}
 
 		// line 17-19 of Naeem/Lhotak/Rodriguez
