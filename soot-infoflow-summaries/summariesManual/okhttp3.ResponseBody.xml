@@ -81,7 +81,7 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
-						AccessPath="[okio.ByteString: byte[] bytes]"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Field"
 						AccessPath="[okhttp3.ResponseBody: byte[] bytes]"
@@ -105,7 +105,7 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2"
-						AccessPath="[okio.ByteString: byte[] bytes]"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Field"
 						AccessPath="[okhttp3.ResponseBody: byte[] bytes]"
