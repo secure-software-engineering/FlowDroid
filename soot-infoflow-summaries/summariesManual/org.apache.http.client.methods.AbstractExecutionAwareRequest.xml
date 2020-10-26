@@ -3,5 +3,7 @@
 	<hierarchy superClass="org.apache.http.message.AbstractHttpMessage">
 		<interface name="org.apache.http.HttpMessage" />
 		<interface name="org.apache.http.HttpRequest" />
+		<interface name="org.apache.http.client.methods.HttpExecutionAware" />
+		<interface name="org.apache.http.client.methods.AbortableHttpRequest" />
 	</hierarchy>
 </summary>
