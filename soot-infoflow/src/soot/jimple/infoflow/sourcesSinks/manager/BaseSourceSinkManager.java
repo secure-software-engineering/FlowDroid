@@ -414,6 +414,9 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		assert cfg != null;
 		assert cfg instanceof BiDiInterproceduralCFG;
 
+		if (sCallSite.toString().contains("execute"))
+			System.out.println("x");
+
 		// Do we have a statement-specific definition?
 		{
 			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
@@ -596,6 +599,12 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 					SootMethodAndClass method = ((MethodSourceSinkDefinition) sourceSinkDef).getMethod();
 					String returnType = method.getReturnType();
 
+					if (method.getMethodName().equals("execute")
+							&& method.getParameters().toString()
+									.contains("org.apache.http.client.methods.HttpUriRequest")
+							&& method.getParameters().size() == 1)
+						System.out.println("x");
+
 					// We need special handling for methods for which no return type has been
 					// specified, i.e., the signature is incomplete
 					if (returnType == null || returnType.isEmpty()) {
@@ -604,6 +613,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 						String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef).getMethod()
 								.getSubSignature());
 						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
+
 						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
 					} else {
@@ -622,7 +632,6 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 				}
 			}
 			sourceDefs = null;
-
 		}
 
 		// Get the Soot method or field for the sink signatures we have
