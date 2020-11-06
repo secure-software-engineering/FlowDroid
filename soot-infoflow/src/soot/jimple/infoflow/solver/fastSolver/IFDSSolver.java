@@ -55,9 +55,9 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * the IDESolver implementation in Heros for performance reasons.
  * 
  * @param <N> The type of nodes in the interprocedural control-flow graph.
- *            Typically {@link Unit}.
+ *        Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
- *            problem.
+ *        problem.
  * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
@@ -746,14 +746,15 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		}
 
 		public void run() {
-			if (icfg.isCallStmt(edge.getTarget())) {
+			final N target = edge.getTarget();
+			if (icfg.isCallStmt(target)) {
 				processCall(edge);
 			} else {
 				// note that some statements, such as "throw" may be
 				// both an exit statement and a "normal" statement
-				if (icfg.isExitStmt(edge.getTarget()))
+				if (icfg.isExitStmt(target))
 					processExit(edge);
-				if (!icfg.getSuccsOf(edge.getTarget()).isEmpty())
+				if (!icfg.getSuccsOf(target).isEmpty())
 					processNormalFlow(edge);
 			}
 		}
