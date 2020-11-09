@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.entryPointCreators;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,6 +92,11 @@ public class AndroidEntryPointConstants {
 	public static final String BROADCAST_ONRECEIVE = "void onReceive(android.content.Context,android.content.Intent)";
 
 	public static final String CONTENTPROVIDER_ONCREATE = "boolean onCreate()";
+	public static final String CONTENTPROVIDER_INSERT = "android.net.Uri insert(android.net.Uri,android.content.ContentValues)";
+	public static final String CONTENTPROVIDER_QUERY = "android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)";
+	public static final String CONTENTPROVIDER_UPDATE = "int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])";
+	public static final String CONTENTPROVIDER_DELETE = "int delete(android.net.Uri,java.lang.String,java.lang.String[])";
+	public static final String CONTENTPROVIDER_GETTYPE = "java.lang.String getType(android.net.Uri)";
 
 	public static final String APPLICATION_ONCREATE = "void onCreate()";
 	public static final String APPLICATION_ONTERMINATE = "void onTerminate()";
@@ -108,6 +114,7 @@ public class AndroidEntryPointConstants {
 	public static final String ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED = "void onActivityCreated(android.app.Activity,android.os.Bundle)";
 
 	public static final String COMPONENTCALLBACKSINTERFACE = "android.content.ComponentCallbacks";
+	public static final String COMPONENTCALLBACKS_ONLOWMEMORY = "void onLowMemory()";
 	public static final String COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED = "void onConfigurationChanged(android.content.res.Configuration)";
 
 	public static final String COMPONENTCALLBACKS2INTERFACE = "android.content.ComponentCallbacks2";
@@ -116,16 +123,22 @@ public class AndroidEntryPointConstants {
 	/*
 	 * ========================================================================
 	 */
+	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED,
+			COMPONENTCALLBACKS_ONLOWMEMORY };
+	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
+
+	private static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
+	private static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
 
 	private static final String[] activityMethods = { ACTIVITY_ONCREATE, ACTIVITY_ONDESTROY, ACTIVITY_ONPAUSE,
 			ACTIVITY_ONRESTART, ACTIVITY_ONRESUME, ACTIVITY_ONSTART, ACTIVITY_ONSTOP, ACTIVITY_ONSAVEINSTANCESTATE,
 			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE,
 			ACTIVITY_ONPOSTRESUME };
-	private static final List<String> activityMethodList = Arrays.asList(activityMethods);
+	private static final List<String> activityMethodList = combineComponentMethods(activityMethods);
 
 	private static final String[] serviceMethods = { SERVICE_ONCREATE, SERVICE_ONDESTROY, SERVICE_ONSTART1,
 			SERVICE_ONSTART2, SERVICE_ONBIND, SERVICE_ONREBIND, SERVICE_ONUNBIND };
-	private static final List<String> serviceMethodList = Arrays.asList(serviceMethods);
+	private static final List<String> serviceMethodList = combineComponentMethods(serviceMethods);
 
 	private static final String[] fragmentMethods = { FRAGMENT_ONCREATE, FRAGMENT_ONDESTROY, FRAGMENT_ONPAUSE,
 			FRAGMENT_ONATTACH, FRAGMENT_ONDESTROYVIEW, FRAGMENT_ONRESUME, FRAGMENT_ONSTART, FRAGMENT_ONSTOP,
@@ -142,25 +155,20 @@ public class AndroidEntryPointConstants {
 	private static final List<String> gcmListenerServiceMethodList = Arrays.asList(gcmListenerServiceMethods);
 
 	private static final String[] broadcastMethods = { BROADCAST_ONRECEIVE };
-	private static final List<String> broadcastMethodList = Arrays.asList(broadcastMethods);
+	private static final List<String> broadcastMethodList = combineComponentMethods(broadcastMethods);
 
-	private static final String[] contentproviderMethods = { CONTENTPROVIDER_ONCREATE };
-	private static final List<String> contentProviderMethodList = Arrays.asList(contentproviderMethods);
+	private static final String[] contentproviderMethods = { CONTENTPROVIDER_ONCREATE, CONTENTPROVIDER_DELETE,
+			CONTENTPROVIDER_GETTYPE, CONTENTPROVIDER_INSERT, CONTENTPROVIDER_QUERY, CONTENTPROVIDER_UPDATE };
+	private static final List<String> contentProviderMethodList = combineComponentMethods(contentproviderMethods);
 
 	private static final String[] applicationMethods = { APPLICATION_ONCREATE, APPLICATION_ONTERMINATE };
-	private static final List<String> applicationMethodList = Arrays.asList(applicationMethods);
+	private static final List<String> applicationMethodList = combineComponentMethods(applicationMethods);
 
 	private static final String[] activityLifecycleMethods = { ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTARTED,
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTOPPED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSAVEINSTANCESTATE,
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYRESUMED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYPAUSED,
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED };
-	private static final List<String> activityLifecycleMethodList = Arrays.asList(activityLifecycleMethods);
-
-	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED };
-	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
-
-	private static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
-	private static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
+	private static final List<String> activityLifecycleMethodList = combineComponentMethods(activityLifecycleMethods);
 
 	private static final String[] serviceConnectionMethods = { SERVICECONNECTION_ONSERVICECONNECTED,
 			SERVICECONNECTION_ONSERVICEDISCONNECTED };
@@ -168,6 +176,23 @@ public class AndroidEntryPointConstants {
 	/*
 	 * ========================================================================
 	 */
+
+	/**
+	 * Returns the given of subsignatures plus component callback methods
+	 * 
+	 * @param subsigs the method subsignatures
+	 * @return the given of subsignatures plus component callback methods
+	 */
+	private static List<String> combineComponentMethods(String... subsigs) {
+		List<String> res = new ArrayList<>(subsigs.length);
+		for (String s : subsigs)
+			res.add(s);
+
+		res.addAll(componentCallback2MethodList);
+		res.addAll(componentCallbackMethodList);
+
+		return res;
+	}
 
 	public static List<String> getActivityLifecycleMethods() {
 		return activityMethodList;

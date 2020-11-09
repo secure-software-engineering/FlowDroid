@@ -26,6 +26,7 @@ import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.Callback
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -161,7 +162,19 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	 * @return The set of lifecycle methods in the given class
 	 */
 	private Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc) {
-		switch (entryPointUtils.getComponentType(sc)) {
+		return getLifecycleMethods(entryPointUtils.getComponentType(sc), sc);
+	}
+
+	/**
+	 * Gets all lifecycle methods in the given entry point class
+	 * 
+	 * @param componentType the component type
+	 * @param sc            The class in which to look for lifecycle methods
+	 * @return The set of lifecycle methods in the given class
+	 */
+	public static Collection<? extends MethodOrMethodContext> getLifecycleMethods(ComponentType componentType,
+			SootClass sc) {
+		switch (componentType) {
 		case Activity:
 			return getLifecycleMethods(sc, AndroidEntryPointConstants.getActivityLifecycleMethods());
 		case Service:
@@ -198,7 +211,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	 *                component that the given class corresponds to
 	 * @return The set of implemented lifecycle methods in the given class
 	 */
-	private Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc, List<String> methods) {
+	private static Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc, List<String> methods) {
 		Set<MethodOrMethodContext> lifecycleMethods = new HashSet<>();
 		SootClass currentClass = sc;
 		while (currentClass != null) {
