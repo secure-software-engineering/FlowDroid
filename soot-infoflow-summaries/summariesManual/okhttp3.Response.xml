@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="okhttp3.ResponseBody body()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: java.lang.ResponseBody body]"
+						AccessPathTypes="[java.lang.ResponseBody]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int code()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: int code]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String header(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: java.util.Map headers,java.util.Map java.lang.Object[] values]"
+						AccessPathTypes="[int,java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String header(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: java.util.Map headers,java.util.Map java.lang.Object[] values]"
+						AccessPathTypes="[int,java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List headers(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: java.util.Map headers,java.util.Map java.lang.Object[] values]"
+						AccessPathTypes="[int,java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String message()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: java.lang.String message]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okhttp3.Response networkResponse()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okhttp3.Response priorResponse()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okhttp3.Protocol protocol()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: okhttp3.Protocol protocol]"
+						AccessPathTypes="[okhttp3.Protocol]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="okhttp3.Request request()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[okhttp3.Response: okhttp3.Request request]"
+						AccessPathTypes="[okhttp3.Request]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

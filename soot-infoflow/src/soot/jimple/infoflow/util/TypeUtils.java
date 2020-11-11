@@ -207,7 +207,8 @@ public class TypeUtils {
 			if (tp1 instanceof ArrayType && tp2 instanceof ArrayType) {
 				ArrayType at1 = (ArrayType) tp1;
 				ArrayType at2 = (ArrayType) tp2;
-				assert at1.numDimensions == at2.numDimensions;
+				if (at1.numDimensions != at2.numDimensions)
+					return null;
 				Type preciseType = getMorePreciseType(at1.getElementType(), at2.getElementType());
 				if (preciseType == null)
 					return null;

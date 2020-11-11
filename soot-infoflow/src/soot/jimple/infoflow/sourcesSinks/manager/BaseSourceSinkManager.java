@@ -604,6 +604,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 						String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef).getMethod()
 								.getSubSignature());
 						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
+
 						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
 					} else {
@@ -622,7 +623,6 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 				}
 			}
 			sourceDefs = null;
-
 		}
 
 		// Get the Soot method or field for the sink signatures we have
