@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -431,6 +432,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			return;
 		}
 
+		List<String> lifecycleMethods = AndroidEntryPointConstants.getApplicationLifecycleMethods();
 		for (SootClass sc : applicationCallbackClasses.keySet())
 			for (String methodSig : applicationCallbackClasses.get(sc)) {
 				SootMethodAndClass methodAndClass = SootMethodRepresentationParser.v().parseSootMethodString(methodSig);
@@ -438,16 +440,14 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				SootMethod method = findMethod(Scene.v().getSootClass(sc.getName()), subSig);
 
 				// We do not consider lifecycle methods which are directly
-				// inserted
-				// at their respective positions
-				if (sc == applicationClass
-						&& AndroidEntryPointConstants.getApplicationLifecycleMethods().contains(subSig))
+				// inserted at their respective positions
+				if (sc == applicationClass && lifecycleMethods.contains(subSig))
 					continue;
 
 				// If this is an activity lifecycle method, we skip it as well
 				// TODO: can be removed once we filter it in general
 				if (activityLifecycleCallbacks.containsKey(sc))
-					if (AndroidEntryPointConstants.getActivityLifecycleCallbackMethods().contains(subSig))
+					if (lifecycleMethods.contains(subSig))
 						continue;
 
 				// If we found no implementation or if the implementation we found is in a
