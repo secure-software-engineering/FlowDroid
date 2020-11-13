@@ -166,8 +166,8 @@ public class AndroidEntryPointConstants {
 	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED };
 	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
 
-	private static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
-	private static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
+	public static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
+	public static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
 
 	private static final String[] serviceConnectionMethods = { SERVICECONNECTION_ONSERVICECONNECTED,
 			SERVICECONNECTION_ONSERVICEDISCONNECTED };
