@@ -3,6 +3,9 @@ package soot.jimple.infoflow.android.entryPointCreators;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import soot.FastHierarchy;
 import soot.Scene;
 import soot.SootClass;
@@ -15,6 +18,8 @@ import soot.SootMethod;
  *
  */
 public class AndroidEntryPointUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(AndroidEntryPointUtils.class);
 
 	private Map<SootClass, ComponentType> componentTypeCache = new HashMap<SootClass, ComponentType>();
 
@@ -119,7 +124,8 @@ public class AndroidEntryPointUtils {
 			else if (osClassMapActivity != null
 					&& fh.canStoreType(currentClass.getType(), osClassMapActivity.getType()))
 				ctype = ComponentType.Activity;
-		}
+		} else
+			logger.warn(String.format("No FastHierarchy, assuming %s is a plain class", currentClass.getName()));
 
 		componentTypeCache.put(currentClass, ctype);
 		return ctype;
