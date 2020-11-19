@@ -40,7 +40,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 /**
  * abstract super class which - concentrates functionality used by
- * InfoflowProblem and BackwardsInfoflowProblem - contains helper functions
+ * InfoflowProblem and BackwardsAliasProblem - contains helper functions
  * which should not pollute the naturally large InfofflowProblems
  *
  */

@@ -71,7 +71,7 @@ import soot.jimple.infoflow.memory.reasons.AbortRequestedReason;
 import soot.jimple.infoflow.memory.reasons.OutOfMemoryReason;
 import soot.jimple.infoflow.memory.reasons.TimeoutReason;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
-import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
+import soot.jimple.infoflow.problems.BackwardsAliasProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.TaintPropagationResults.OnTaintPropagationResultAdded;
@@ -911,13 +911,13 @@ public class Infoflow extends AbstractInfoflow {
 			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
 		IAliasingStrategy aliasingStrategy;
 		IInfoflowSolver backSolver = null;
-		BackwardsInfoflowProblem backProblem = null;
+		BackwardsAliasProblem backProblem = null;
 		InfoflowManager backwardsManager = null;
 		switch (getConfig().getAliasingAlgorithm()) {
 		case FlowSensitive:
 			backwardsManager = new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg), sourcesSinks,
 					taintWrapper, hierarchy, manager.getAccessPathFactory(), manager.getGlobalTaintManager());
-			backProblem = new BackwardsInfoflowProblem(backwardsManager);
+			backProblem = new BackwardsAliasProblem(backwardsManager);
 
 			// We need to create the right data flow solver
 			SolverConfiguration solverConfig = config.getSolverConfiguration();

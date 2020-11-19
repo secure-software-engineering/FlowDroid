@@ -63,15 +63,15 @@ import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * class which contains the flow functions for the backwards solver. This is
- * required for on-demand alias analysis.
+ * required for on-demand alias analysis in (forward) InfoflowProblem.
  */
-public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
+public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 	public void setTaintWrapper(ITaintPropagationWrapper wrapper) {
 		taintWrapper = wrapper;
 	}
 
-	public BackwardsInfoflowProblem(InfoflowManager manager) {
+	public BackwardsAliasProblem(InfoflowManager manager) {
 		super(manager);
 	}
 
