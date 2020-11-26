@@ -5,7 +5,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -15,7 +15,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -25,7 +25,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -35,7 +35,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -45,7 +45,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -55,7 +55,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -65,17 +65,17 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
-		<method id="com.mashape.unirest.request.Body getBody()">
+		<method id="com.mashape.unirest.request.body.Body getBody()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -85,7 +85,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.HttpRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>

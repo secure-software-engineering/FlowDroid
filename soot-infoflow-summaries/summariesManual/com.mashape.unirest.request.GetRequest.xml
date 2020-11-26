@@ -5,7 +5,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[com.mashape.unirest.request.GetRequest: byte[] bytes]"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
