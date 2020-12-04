@@ -148,7 +148,7 @@ public class ConcurrentIdentityHashMultiMap<K, V> extends AbstractMultiMap<K, V>
 		Map<V, V> ret = m.get(o);
 		if (ret == null)
 			return Collections.emptySet();
-		return Collections.unmodifiableSet(ret.keySet());
+		return ret.keySet();
 	}
 
 	@Override
