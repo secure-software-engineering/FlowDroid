@@ -480,8 +480,7 @@ public class Infoflow extends AbstractInfoflow {
 					});
 
 					// Create the path builder
-					final IAbstractionPathBuilder builder = new BatchPathBuilder(manager,
-							pathBuilderFactory.createPathBuilder(manager, resultExecutor));
+					final IAbstractionPathBuilder builder = createPathBuilder(resultExecutor);
 //					final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
 
 					// If we want incremental result reporting, we have to
@@ -755,6 +754,17 @@ public class Infoflow extends AbstractInfoflow {
 			if (throwExceptions)
 				throw ex;
 		}
+	}
+
+	/**
+	 * Creates the path builder that shall be used for path reconstruction
+	 * 
+	 * @param executor The execute in which to run the parallel path reconstruction
+	 *                 tasks
+	 * @return The path builder implementation
+	 */
+	protected IAbstractionPathBuilder createPathBuilder(InterruptableExecutor executor) {
+		return new BatchPathBuilder(manager, pathBuilderFactory.createPathBuilder(manager, executor));
 	}
 
 	/**
