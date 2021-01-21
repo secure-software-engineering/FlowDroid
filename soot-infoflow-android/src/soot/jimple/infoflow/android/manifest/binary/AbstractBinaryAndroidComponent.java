@@ -30,14 +30,25 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 		enabled = attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE);
 
 		AXmlAttribute<?> attrExported = node.getAttribute("exported");
-		exported = attrExported == null || !attrExported.getValue().equals(Boolean.FALSE);
+		if (attrExported == null)
+			exported = getExportedDefault();
+		else
+			exported = !attrExported.getValue().equals(Boolean.FALSE);
 	}
 
+	/**
+	 * Gets whether the component is exported by default
+	 * 
+	 * @return True if the component is exported by default, false otherwise
+	 */
+	protected boolean getExportedDefault() {
+		return false;
+	}
 
 	public AXmlNode getAXmlNode() {
 		return node;
 	}
-	
+
 	@Override
 	public boolean isEnabled() {
 		return enabled;
