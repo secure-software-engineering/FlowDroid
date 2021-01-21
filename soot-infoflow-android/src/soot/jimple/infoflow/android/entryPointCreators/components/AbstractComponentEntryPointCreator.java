@@ -479,6 +479,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		Type intentType = RefType.v("android.content.Intent");
 		SootMethod sm = Scene.v().makeSootMethod("getIntent", Collections.<Type>emptyList(), intentType,
 				Modifier.PUBLIC);
+		sm.addTag(SimulatedCodeElementTag.TAG);
 		component.addMethod(sm);
 		sm.addTag(SimulatedCodeElementTag.TAG);
 
