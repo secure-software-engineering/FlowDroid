@@ -1,8 +1,11 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import soot.SootClass;
+import soot.SootMethod;
+import soot.UnitPatchingChain;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
+import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
@@ -26,17 +29,32 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 		// searchAndBuildMethod(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE,
 		// currentClass, entryPoints, classLocal);
 
+		final UnitPatchingChain units = body.getUnits();
+
 		// see:
 		// http://developer.android.com/reference/android/content/ContentProvider.html
 		// methods
 		NopStmt startWhileStmt = Jimple.v().newNopStmt();
 		NopStmt endWhileStmt = Jimple.v().newNopStmt();
-		body.getUnits().add(startWhileStmt);
+		units.add(startWhileStmt);
 		createIfStmt(endWhileStmt);
 
 		addCallbackMethods();
 
-		body.getUnits().add(endWhileStmt);
+		NopStmt beforeCallbacksStmt = Jimple.v().newNopStmt();
+		units.add(beforeCallbacksStmt);
+		for (String methodSig : AndroidEntryPointConstants.getContentproviderLifecycleMethods()) {
+			SootMethod sm = findMethod(component, methodSig);
+			if (sm != null && !sm.getSubSignature().equals(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE)) {
+				NopStmt afterMethodStmt = Jimple.v().newNopStmt();
+				createIfStmt(afterMethodStmt);
+				buildMethodCall(sm, thisLocal);
+				units.add(afterMethodStmt);
+			}
+		}
+		createIfStmt(beforeCallbacksStmt);
+
+		units.add(endWhileStmt);
 	}
 
 }
