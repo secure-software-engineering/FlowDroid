@@ -29,11 +29,20 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 		AXmlAttribute<?> attrEnabled = node.getAttribute("enabled");
 		enabled = attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE);
 
+		loadIntentFilters();
+
 		AXmlAttribute<?> attrExported = node.getAttribute("exported");
 		if (attrExported == null)
 			exported = getExportedDefault();
 		else
 			exported = !attrExported.getValue().equals(Boolean.FALSE);
+	}
+
+	/**
+	 * Allows components with intent filters to load them
+	 */
+	protected void loadIntentFilters() {
+		//
 	}
 
 	/**
