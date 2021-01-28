@@ -12,5 +12,13 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="void nextBytes(byte[],java.security.SecureRandomParameters)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" />
+				</flow>
+			</flows>
+		</method>
 	</methods>
 </summary>
