@@ -134,7 +134,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 
 		if (!taintedValueOverwritten) {
 			if (taintsStaticField || (taintsObjectValue && abs.getAccessPath().getTaintSubFields())
-					|| manager.getAliasing().canHaveAliases(iStmt, val.getPlainValue(), abs))
+					|| manager.getAliasing().canHaveAliases(iStmt, val.getCompleteValue(), abs))
 				getAliasing().computeAliases(d1, iStmt, val.getPlainValue(), resWithAliases,
 						getManager().getICFG().getMethodOf(iStmt), abs);
 		}

@@ -889,7 +889,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										// Compute the aliases
 										for (Abstraction abs : nativeAbs)
 											if (abs.getAccessPath().isStaticFieldRef() || aliasing.canHaveAliases(
-													iCallStmt, abs.getAccessPath().getPlainValue(), abs))
+													iCallStmt, abs.getAccessPath().getCompleteValue(), abs))
 												aliasing.computeAliases(d1, iCallStmt,
 														abs.getAccessPath().getPlainValue(), res,
 														interproceduralCFG().getMethodOf(call), abs);

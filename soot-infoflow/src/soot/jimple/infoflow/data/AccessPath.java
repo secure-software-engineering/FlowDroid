@@ -105,6 +105,20 @@ public class AccessPath implements Cloneable {
 		return value;
 	}
 
+	public Value getCompleteValue() {
+		SootField f = getFirstField();
+		if (value == null) {
+			if (f == null)
+				return null;
+
+			return Jimple.v().newStaticFieldRef(f.makeRef());
+		} else {
+			if (f == null)
+				return value;
+			return Jimple.v().newInstanceFieldRef(value, f.makeRef());
+		}
+	}
+
 	public SootField getLastField() {
 		if (fields == null || fields.length == 0)
 			return null;
