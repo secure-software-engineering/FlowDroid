@@ -318,11 +318,18 @@ public class Aliasing {
 		}
 
 		// Primitive types or constants do not have aliases
-		if (val.getType() instanceof PrimType)
-			return false;
+		// Check base object
+		if (val instanceof InstanceFieldRef) {
+			InstanceFieldRef instanceFieldRef = (InstanceFieldRef) val;
+			Value base = instanceFieldRef.getBase();
+			if (base.getType() instanceof PrimType)
+				return false;
+		} else if (val instanceof Local)
+			if (val.getType() instanceof PrimType)
+				return false;
+
 		if (val instanceof Constant)
 			return false;
-
 		// String cannot have aliases, unless we process a delayed constructor call
 		if (TypeUtils.isStringType(val.getType()) && !isStringConstructorCall(stmt)
 				&& !source.getAccessPath().getCanHaveImmutableAliases())

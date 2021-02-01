@@ -41,6 +41,7 @@ import soot.jimple.infoflow.callbacks.CallbackDefinition;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
@@ -295,7 +296,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 			}
 
 			// Try the next class up the hierarchy
-			if (curClass.hasSuperclass() && curClass.isPhantom())
+			if (curClass.hasSuperclass() && (curClass.isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)))
 				curClass = curClass.getSuperclass();
 			else
 				curClass = null;
@@ -450,7 +451,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 			// If the target method is in a phantom class, we scan the hierarchy
 			// upwards
 			// to see whether we have a sink definition for a parent class
-			if (callee.getDeclaringClass().isPhantom()) {
+			if (callee.getDeclaringClass().isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
 				def = findDefinitionInHierarchy(callee, this.sourceMethods);
 				if (def != null)
 					return def;

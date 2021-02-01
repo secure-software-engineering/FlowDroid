@@ -44,6 +44,9 @@ Either way, you will find the built JAR files in the "target" folder of the resp
 dependencies that are required for the build. Unless you need to build FlowDroid on a machine without an Internet connection,
 thing should be pretty easy.
 
+Note that our tests runs on Java 8. The tests have not been adapted to newer versions of the JDK yet, so if your system uses
+a newer version, we recommend that you disable the tests for now.
+
 ### Building The Tool With Eclipse
 
 We work on FlowDroid using the Eclipse IDE. All modules are Eclipse projects and can be imported into the Eclipse IDE. They will appear as Maven projects there and Eclipse should take care of downloading all required dependencies for you.
