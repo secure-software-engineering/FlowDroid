@@ -28,7 +28,7 @@
     <method id="java.lang.String toString()">
       <flows>
         <flow isAlias="false" ignoreTypes="true">
-          <from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
       </flows>
@@ -36,7 +36,7 @@
     <method id="java.lang.String toString(java.lang.String)">
       <flows>
         <flow isAlias="false" ignoreTypes="true">
-          <from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
       </flows>
@@ -51,8 +51,8 @@
     </method>
     <method id="byte[] toByteArray()">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
-          <from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+        <flow isAlias="false" ignoreTypes="true" cutSubfields="true">
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
       </flows>

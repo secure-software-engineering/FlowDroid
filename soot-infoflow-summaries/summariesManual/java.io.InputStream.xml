@@ -7,19 +7,11 @@
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" />
-					<to sourceSinkType="Return" />
-				</flow>
 			</flows>
 		</method>
 		<method id="int read(byte[])">
 			<flows>
-				<flow isAlias="false">
-					<from sourceSinkType="Field" />
-					<to sourceSinkType="Parameter" ParameterIndex="0" />
-				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
@@ -27,11 +19,7 @@
 		</method>
 		<method id="int read(byte[],int,int)">
 			<flows>
-				<flow isAlias="false">
-					<from sourceSinkType="Field" />
-					<to sourceSinkType="Parameter" ParameterIndex="0" />
-				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
