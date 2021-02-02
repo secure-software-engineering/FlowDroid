@@ -5,9 +5,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -15,18 +13,14 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream]"
-						AccessPathTypes="[java.io.InputStream]" />
+					<to sourceSinkType="Field"/>
 				</flow>
 			</flows>
 		</method>
 		<method id="int read()">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field"
-						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-						AccessPathTypes="[java.io.InputStream,byte[]]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -34,9 +28,7 @@
 		<method id="int read(byte[])">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field"
-						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-						AccessPathTypes="[java.io.InputStream,byte[]]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -44,9 +36,7 @@
 		<method id="int read(byte[],int,int)">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field"
-						AccessPath="[java.io.BufferedInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-						AccessPathTypes="[java.io.InputStream,byte[]]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>

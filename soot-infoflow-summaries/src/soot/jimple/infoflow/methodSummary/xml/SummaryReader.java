@@ -69,6 +69,7 @@ public class SummaryReader extends AbstractXMLReader {
 			int currentID = -1;
 			boolean isAlias = false;
 			Boolean typeChecking = null;
+			Boolean ignoreTypes = null;
 			Boolean cutSubfields = null;
 
 			State state = State.summary;
@@ -117,6 +118,11 @@ public class SummaryReader extends AbstractXMLReader {
 						String sCutSubfields = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_CUT_SUBFIELDS);
 						if (sCutSubfields != null && !sCutSubfields.isEmpty())
 							cutSubfields = sCutSubfields.equals(XMLConstants.VALUE_TRUE);
+
+						String sIgnoreTypes = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IGNORE_TYPES);
+						if (sIgnoreTypes != null && !sIgnoreTypes.isEmpty())
+							ignoreTypes = sIgnoreTypes.equals(XMLConstants.VALUE_TRUE);
+
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isStartElement()) {
@@ -143,7 +149,7 @@ public class SummaryReader extends AbstractXMLReader {
 					if (state == State.flow) {
 						state = State.method;
 						MethodFlow flow = new MethodFlow(currentMethod, createSource(summary, sourceAttributes),
-								createSink(summary, sinkAttributes), isAlias, typeChecking, cutSubfields);
+								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields);
 						summary.addFlow(flow);
 
 						isAlias = false;
@@ -231,6 +237,8 @@ public class SummaryReader extends AbstractXMLReader {
 
 	public void read(File fileName, ClassMethodSummaries summaries)
 			throws XMLStreamException, SummaryXMLException, IOException {
+		if (fileName.getName().contains("ByteArrayInputS"))
+			System.out.println();
 		if (validateSummariesOnRead) {
 			try (FileReader rdr = new FileReader(fileName)) {
 				if (!verifyXML(rdr, XSD_FILE_PATH)) {

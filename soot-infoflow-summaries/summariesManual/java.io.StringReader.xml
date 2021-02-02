@@ -8,16 +8,14 @@
       <flows>
         <flow isAlias="false" typeChecking="false">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.io.StringReader: java.lang.String string]"
-          	AccessPathTypes="[java.lang.String]" />
+          <to sourceSinkType="Field" />
         </flow>
       </flows>
     </method>
     <method id="int read()">
       <flows>
         <flow isAlias="false">
-          <from sourceSinkType="Field" AccessPath="[java.io.StringReader: java.lang.String string]"
-          	AccessPathTypes="[java.lang.String]" />
+          <from sourceSinkType="Field"  />
           <to sourceSinkType="Return" />
         </flow>
       </flows>
@@ -25,8 +23,7 @@
     <method id="int read(char[])">
       <flows>
         <flow isAlias="false">
-          <from sourceSinkType="Field" AccessPath="[java.io.StringReader: java.lang.String string]"
-          	AccessPathTypes="[java.lang.String]" />
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Parameter" ParameterIndex="0" />
         </flow>
       </flows>
@@ -34,8 +31,7 @@
     <method id="int read(java.nio.CharBuffer)">
       <flows>
         <flow isAlias="false">
-          <from sourceSinkType="Field" AccessPath="[java.io.StringReader: java.lang.String string]"
-          	AccessPathTypes="[java.lang.String]" />
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Parameter" ParameterIndex="0" />
         </flow>
       </flows>
@@ -43,8 +39,7 @@
     <method id="int read(char[],int,int)">
       <flows>
         <flow isAlias="false">
-          <from sourceSinkType="Field" AccessPath="[java.io.StringReader: java.lang.String string]"
-          	AccessPathTypes="[java.lang.String]" />
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Parameter" ParameterIndex="0" />
         </flow>
       </flows>
