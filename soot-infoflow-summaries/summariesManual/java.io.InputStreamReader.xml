@@ -5,7 +5,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -13,7 +13,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -21,7 +21,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -29,7 +29,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -43,7 +43,7 @@
 		</method>
 		<method id="int read(char[])">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
@@ -51,7 +51,7 @@
 		</method>
 		<method id="int read(char[],int,int)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>

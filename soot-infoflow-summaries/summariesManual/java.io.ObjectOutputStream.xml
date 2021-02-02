@@ -153,21 +153,13 @@
         </flow>
       </flows>
     </method>
-		<method id="java.lang.String toString()">
-			<flows>
-				<flow isAlias="false" ignoreTypes="true">
-					<from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
-					<to sourceSinkType="Return" />
-				</flow>
-			</flows>
-		</method>
-		<method id="java.io.ObjectOutputStream$PutField putFields()">
-			<flows>
-				<flow isAlias="true"  ignoreTypes="true">
-					<from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
-					<to sourceSinkType="Return" />
-				</flow>
-			</flows>
-		</method>
+	<method id="java.io.ObjectOutputStream$PutField putFields()">
+		<flows>
+			<flow isAlias="true"  ignoreTypes="true">
+				<from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+				<to sourceSinkType="Return" />
+			</flow>
+		</flows>
+	</method>
 	</methods>
 </summary>

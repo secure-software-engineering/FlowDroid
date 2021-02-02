@@ -27,7 +27,7 @@
 		</method>
 		<method id="int read(char[])">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
@@ -35,7 +35,7 @@
 		</method>
 		<method id="int read(char[],int,int)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
