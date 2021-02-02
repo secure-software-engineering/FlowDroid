@@ -296,6 +296,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				// Create the field source
 				if (!baseAPs.isEmpty()) {
 					IAccessPathBasedSourceSinkDefinition ssd = createFieldSourceSinkDefinition(fieldSignature, baseAPs);
+					ssd.setCategory(category);
 					addSourceSinkDefinition(fieldSignature, ssd);
 				}
 
