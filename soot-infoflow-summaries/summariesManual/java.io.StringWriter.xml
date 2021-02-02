@@ -8,12 +8,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 				<flow isAlias="true">
 					<from sourceSinkType="Field" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
@@ -21,12 +20,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 				<flow isAlias="true">
 					<from sourceSinkType="Field" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
@@ -34,12 +32,11 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 				<flow isAlias="true">
 					<from sourceSinkType="Field" />
-					<to sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
@@ -47,8 +44,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -56,8 +52,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -65,8 +60,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -74,8 +68,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -83,16 +76,14 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
 		<method id="java.lang.StringBuffer getBuffer()">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -100,8 +91,7 @@
 		<method id="java.lang.String toString()">
 			<flows>
 				<flow isAlias="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.StringWriter: java.lang.String string]"
-						AccessPathTypes="[java.lang.String]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

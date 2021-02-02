@@ -455,7 +455,7 @@ public class InfoflowResultPostProcessor {
 		if (isIdentityFlow(source, sink))
 			return;
 
-		MethodFlow mFlow = new MethodFlow(methodSubSig, source, sink, isAlias, true, false);
+		MethodFlow mFlow = new MethodFlow(methodSubSig, source, sink, isAlias, true, false, false);
 		if (summaries.addFlow(mFlow))
 			debugMSG(source, sink, isAlias);
 	}

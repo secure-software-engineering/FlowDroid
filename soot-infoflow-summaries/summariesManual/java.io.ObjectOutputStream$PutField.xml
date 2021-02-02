@@ -5,8 +5,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -14,8 +13,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -23,8 +21,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -32,8 +29,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -41,8 +37,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -50,8 +45,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -59,8 +53,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -68,8 +61,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -77,16 +69,14 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
 		<method id="void write(java.io.ObjectOutput)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

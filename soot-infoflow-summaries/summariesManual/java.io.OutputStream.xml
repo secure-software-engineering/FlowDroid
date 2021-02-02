@@ -5,9 +5,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
-						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -15,9 +13,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
-						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
@@ -25,9 +21,7 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
-						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>

@@ -5,18 +5,14 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-							AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream]"
-							AccessPathTypes="[java.io.InputStream]" />
+					<to sourceSinkType="Field" />
 				</flow>
 			</flows>
 		</method>
 	    <method id="int read()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -24,9 +20,7 @@
 	    <method id="int read(byte[])">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Parameter" ParameterIndex="0" />
 	        </flow>
 	      </flows>
@@ -34,9 +28,7 @@
 	    <method id="void read(byte[],int,int)">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Parameter" ParameterIndex="0" />
 	        </flow>
 	      </flows>
@@ -44,9 +36,7 @@
 	    <method id="byte readByte()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -54,9 +44,7 @@
 	    <method id="char readChar()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -64,9 +52,7 @@
 	    <method id="double readDouble()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -74,9 +60,7 @@
 	    <method id="float readFloat()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -84,9 +68,7 @@
 	    <method id="void readFully(byte[])">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Parameter" ParameterIndex="0" />
 	        </flow>
 	      </flows>
@@ -94,9 +76,7 @@
 	    <method id="void readFully(byte[],int,int)">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Parameter" ParameterIndex="0" />
 	        </flow>
 	      </flows>
@@ -104,9 +84,7 @@
 	    <method id="int readInt()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -114,9 +92,7 @@
 	    <method id="java.lang.String readLine()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -124,9 +100,7 @@
 	    <method id="long readLong()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -134,9 +108,7 @@
 	    <method id="java.lang.Object readObject()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -144,9 +116,7 @@
 	    <method id="java.lang.Object readObjectOverride()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -154,9 +124,7 @@
 	    <method id="short readShort()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -164,9 +132,7 @@
 	    <method id="java.lang.Object readUnshared()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -174,9 +140,7 @@
 	    <method id="int readUnsignedByte()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -184,9 +148,7 @@
 	    <method id="int readUnsignedShort()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -194,9 +156,7 @@
 	    <method id="java.lang.String readUTF()">
 	      <flows>
 	        <flow isAlias="false">
-	          <from sourceSinkType="Field"
-              	AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream,java.io.InputStream: byte[] innerArray]"
-          	  	AccessPathTypes="[java.io.InputStream,byte[]]" />
+	          <from sourceSinkType="Field" />
 	          <to sourceSinkType="Return" />
 	        </flow>
 	      </flows>
@@ -204,12 +164,9 @@
 		<method id="java.io.ObjectInputStream$GetField readFields()">
 			<flows>
 				<flow isAlias="false">
-		      <from sourceSinkType="Field"
-							AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream]"
-		        	AccessPathTypes="[java.io.InputStream]" />
-					<to sourceSinkType="Return"
-							AccessPath="[java.io.ObjectInputStream$GetField: java.io.InputStream innerStream]"
-							AccessPathTypes="[java.io.InputStream]" />
+		   		   <from sourceSinkType="Field"
+						 />
+					<to sourceSinkType="Return"/>
 				</flow>
 			</flows>
 		</method>
