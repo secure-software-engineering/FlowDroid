@@ -3,7 +3,7 @@
 	<methods>
 		<method id="int read()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>

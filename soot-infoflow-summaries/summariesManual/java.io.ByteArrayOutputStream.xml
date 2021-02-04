@@ -3,31 +3,37 @@
   <methods>
     <method id="void write(byte[])">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+          <to sourceSinkType="Field"
+            AccessPath="[java.io.OutputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]" />
         </flow>
       </flows>
     </method>
     <method id="void write(byte[],int,int)">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+          <to sourceSinkType="Field"
+            AccessPath="[java.io.OutputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]" />
         </flow>
       </flows>
     </method>
     <method id="void write(int)">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+          <to sourceSinkType="Field"
+            AccessPath="[java.io.OutputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]" />
         </flow>
       </flows>
     </method>
     <method id="java.lang.String toString()">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
           <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
@@ -35,7 +41,7 @@
     </method>
     <method id="java.lang.String toString(java.lang.String)">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
           <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
@@ -43,15 +49,15 @@
     </method>
     <method id="java.lang.String toString(int)">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
-          <from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
+          <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
       </flows>
     </method>
     <method id="byte[] toByteArray()">
       <flows>
-        <flow isAlias="false" ignoreTypes="true" cutSubfields="true">
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
           <from sourceSinkType="Field" />
           <to sourceSinkType="Return" />
         </flow>
@@ -59,9 +65,11 @@
     </method>
     <method id="void writeTo(java.io.OutputStream)">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
-          <from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
-          <to sourceSinkType="Parameter" ParameterIndex="0" />
+        <flow isAlias="false" cutSubfields="true" typeChecking="false">
+          <from sourceSinkType="Field"  />
+          <to sourceSinkType="Parameter" ParameterIndex="0"
+            AccessPath="[java.io.OutputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]" />
         </flow>
       </flows>
     </method>

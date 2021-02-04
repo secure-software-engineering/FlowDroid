@@ -3,17 +3,21 @@
 	<methods>
 		<method id="void &lt;init&gt;(java.io.OutputStream)">
 			<flows>
-				<flow isAlias="true" ignoreTypes="true">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"  />
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
 		</method>
     <method id="void write(byte[])">
       <flows>
-        <flow isAlias="false" ignoreTypes="true">
+        <flow isAlias="false">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -21,7 +25,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -29,7 +35,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -37,7 +45,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -45,7 +55,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -53,7 +65,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -61,7 +75,9 @@
       <flows>
         <flow isAlias="false"  ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -69,7 +85,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -77,7 +95,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -85,7 +105,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -93,7 +115,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -101,7 +125,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -109,7 +135,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -117,7 +145,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -125,7 +155,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -133,7 +165,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -141,7 +175,9 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
@@ -149,17 +185,21 @@
       <flows>
         <flow isAlias="false" ignoreTypes="true">
           <from sourceSinkType="Parameter" ParameterIndex="0" />
-          <to sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
+					<to sourceSinkType="Field"
+            AccessPath="[java.io.ObjectOutputStream: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
         </flow>
       </flows>
     </method>
-	<method id="java.io.ObjectOutputStream$PutField putFields()">
-		<flows>
-			<flow isAlias="true"  ignoreTypes="true">
-				<from sourceSinkType="Field" AccessPath="[java.lang.Object: java.lang.Object inner]" AccessPathTypes="[java.lang.Object]"/>
-				<to sourceSinkType="Return" />
-			</flow>
-		</flows>
-	</method>
+	  <method id="java.io.ObjectOutputStream$PutField putFields()">
+		  <flows>
+				<flow isAlias="true" ignoreTypes="true" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return"
+            AccessPath="[java.io.ObjectOutputStream$PutField: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+		  </flows>
+	  </method>
 	</methods>
 </summary>
