@@ -6,7 +6,7 @@
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[java.io.ObjectInputStream: java.io.InputStream innerStream]"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
 						AccessPathTypes="[java.io.InputStream]" />
 				</flow>
 			</flows>
