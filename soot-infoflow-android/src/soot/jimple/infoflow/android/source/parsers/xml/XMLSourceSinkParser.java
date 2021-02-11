@@ -25,6 +25,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
@@ -539,7 +540,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		SchemaFactory sf = SchemaFactory.newInstance(W3C_XML_SCHEMA);
 
 		// Read the schema
-		StreamSource xsdFile = new StreamSource(ResourceUtils.getResourceStream(XSD_FILE_PATH));
+		StreamSource xsdFile = new StreamSource(
+				ResourceUtils.getResourceStream(InfoflowConfiguration.getBaseDirectory() + XSD_FILE_PATH));
 
 		StreamSource xmlFile = new StreamSource(inp);
 		try {
