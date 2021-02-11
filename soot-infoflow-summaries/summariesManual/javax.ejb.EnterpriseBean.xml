@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="103" isInterface="true">
+	<hierarchy>
+		<interface name="java.io.Serializable" />
+	</hierarchy>
+</summary>

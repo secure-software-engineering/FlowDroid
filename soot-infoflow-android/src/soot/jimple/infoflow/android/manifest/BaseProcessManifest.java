@@ -15,6 +15,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import pxb.android.axml.AxmlVisitor;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
+import soot.jimple.infoflow.android.axml.AXmlDocument;
 import soot.jimple.infoflow.android.axml.AXmlHandler;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.axml.ApkHandler;
@@ -178,12 +179,10 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		this.axml = new AXmlHandler(manifestIS);
 
 		// get manifest node
-		List<AXmlNode> manifests = this.axml.getNodesWithTag("manifest");
-		if (manifests.isEmpty())
-			throw new RuntimeException("Manifest contains no manifest node");
-		else if (manifests.size() > 1)
-			throw new RuntimeException("Manifest contains more than one manifest node");
-		this.manifest = manifests.get(0);
+		AXmlDocument document = this.axml.getDocument();
+		this.manifest = document.getRootNode();
+		if (!this.manifest.getTag().equals("manifest"))
+			throw new RuntimeException("Root node is not a manifest node");
 
 		// get application node
 		List<AXmlNode> applications = this.manifest.getChildrenWithTag("application");

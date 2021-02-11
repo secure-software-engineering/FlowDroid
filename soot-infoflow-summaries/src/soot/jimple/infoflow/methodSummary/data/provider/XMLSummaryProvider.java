@@ -126,7 +126,7 @@ public abstract class XMLSummaryProvider implements IMethodSummaryProvider {
 				String name = getFileName(classp);
 				if (name.endsWith(".xml")) {
 					if (name.equals(FILE_META_DATA)) {
-						metadata = loadMetaDataFile(path);
+						metadata = loadMetaDataFile(classp);
 						summaries.setMetaData(metadata);
 					} else
 						summaryLoader.accept(classp);

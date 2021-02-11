@@ -3,7 +3,7 @@
 	<methods>
 		<method id="void write(byte[])">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.OutputStream: byte[] innerArray]"
@@ -13,7 +13,7 @@
 		</method>
 		<method id="void write(byte[],int,int)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.OutputStream: byte[] innerArray]"
@@ -23,7 +23,7 @@
 		</method>
 		<method id="void write(int)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.OutputStream: byte[] innerArray]"

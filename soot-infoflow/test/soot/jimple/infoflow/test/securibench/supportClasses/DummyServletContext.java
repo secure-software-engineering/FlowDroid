@@ -13,9 +13,21 @@ package soot.jimple.infoflow.test.securibench.supportClasses;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.EventListener;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterRegistration;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 public class DummyServletContext implements ServletContext {
@@ -275,31 +287,37 @@ public class DummyServletContext implements ServletContext {
 	@Override
 	public void log(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void log(Exception arg0, String arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void log(String arg0, Throwable arg1) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeAttribute(String arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setAttribute(String arg0, Object arg1) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	@Override
+	public String getVirtualServerName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

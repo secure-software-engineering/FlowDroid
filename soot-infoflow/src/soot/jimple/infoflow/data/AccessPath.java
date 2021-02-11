@@ -85,6 +85,7 @@ public class AccessPath implements Cloneable {
 		this.cutOffApproximation = isCutOffApproximation;
 		this.arrayTaintType = arrayTaintType;
 		this.canHaveImmutableAliases = canHaveImmutableAliases;
+
 	}
 
 	/**
@@ -103,6 +104,20 @@ public class AccessPath implements Cloneable {
 
 	public Local getPlainValue() {
 		return value;
+	}
+
+	public Value getCompleteValue() {
+		SootField f = getFirstField();
+		if (value == null) {
+			if (f == null)
+				return null;
+
+			return Jimple.v().newStaticFieldRef(f.makeRef());
+		} else {
+			if (f == null)
+				return value;
+			return Jimple.v().newInstanceFieldRef(value, f.makeRef());
+		}
 	}
 
 	public SootField getLastField() {

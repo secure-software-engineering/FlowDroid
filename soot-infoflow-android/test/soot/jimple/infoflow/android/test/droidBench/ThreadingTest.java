@@ -19,43 +19,43 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 public class ThreadingTest extends JUnitTests {
-	
-	@Test(timeout=300000)
+
+	@Test(timeout = 300000)
 	public void runTestAsyncTask1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/AsyncTask1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void runTestExecutor1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/Executor1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void runTestJavaThread1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/JavaThread1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
-	
-	@Test(timeout=300000)
+
+	@Test(timeout = 300000)
 	public void runTestJavaThread2() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/JavaThread2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
-	
-	@Test(timeout=300000)
+
+	@Test(timeout = 300000)
 	public void runTestLooper1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/Looper1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
-	
-	@Test(timeout=300000)
+
+	@Test(timeout = 300000)
 	public void runTestTimerTask1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Threading/TimerTask1.apk");
 		Assert.assertNotNull(res);

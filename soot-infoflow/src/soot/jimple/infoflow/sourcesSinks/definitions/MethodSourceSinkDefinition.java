@@ -65,9 +65,21 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 
 	/**
 	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
+	 * 
+	 * @param am The method for which this object defines sources and sinks
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am) {
 		this(am, null, null, null, CallType.MethodCall);
+	}
+
+	/**
+	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
+	 * 
+	 * @param am       The method for which this object defines sources and sinks
+	 * @param callType The type of calls to define as sources or sinks
+	 */
+	public MethodSourceSinkDefinition(SootMethodAndClass am, CallType callType) {
+		this(am, null, null, null, callType);
 	}
 
 	/**

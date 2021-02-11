@@ -21,6 +21,7 @@ public class MethodFlow extends AbstractMethodSummary {
 	private final FlowSink to;
 	private final boolean isAlias;
 	private final Boolean typeChecking;
+	private final Boolean ignoreTypes;
 	private final Boolean cutSubFields;
 
 	/**
@@ -33,18 +34,21 @@ public class MethodFlow extends AbstractMethodSummary {
 	 *                     not the case.
 	 * @param typeChecking True if type checking shall be performed before applying
 	 *                     this data flow, otherwise false
+	 * @param ignoreTypes  True if the type of potential fields should not be
+	 *                     altered
 	 * @param cutSubFields True if no sub fields shall be copied from the source to
 	 *                     the sink. If "a.b" is tainted and the source is "a", the
 	 *                     field "b" will not appended to the sink if this option is
 	 *                     enabled.
 	 */
 	public MethodFlow(String methodSig, FlowSource from, FlowSink to, boolean isAlias, Boolean typeChecking,
-			Boolean cutSubFields) {
+			Boolean ignoreTypes, Boolean cutSubFields) {
 		super(methodSig);
 		this.from = from;
 		this.to = to;
 		this.isAlias = isAlias;
 		this.typeChecking = typeChecking;
+		this.ignoreTypes = ignoreTypes;
 		this.cutSubFields = cutSubFields;
 	}
 
@@ -105,7 +109,7 @@ public class MethodFlow extends AbstractMethodSummary {
 				to.getAccessPath(), to.getGap(), to.isMatchStrict());
 		FlowSink reverseSink = new FlowSink(toType, from.getParameterIndex(), from.getBaseType(), from.getAccessPath(),
 				taintSubFields, from.getGap(), from.isMatchStrict());
-		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, cutSubFields);
+		return new MethodFlow(methodSig, reverseSource, reverseSink, isAlias, typeChecking, ignoreTypes, cutSubFields);
 	}
 
 	/**
@@ -154,7 +158,7 @@ public class MethodFlow extends AbstractMethodSummary {
 		if (replacementMap == null)
 			return this;
 		return new MethodFlow(methodSig, from.replaceGaps(replacementMap), to.replaceGaps(replacementMap), isAlias,
-				typeChecking, cutSubFields);
+				typeChecking, ignoreTypes, cutSubFields);
 	}
 
 	/**
@@ -235,6 +239,12 @@ public class MethodFlow extends AbstractMethodSummary {
 	@Override
 	public String toString() {
 		return "{" + methodSig + " Source: [" + from.toString() + "] Sink: [" + to.toString() + "]" + "}";
+	}
+
+	public boolean getIgnoreTypes() {
+		if (ignoreTypes == null)
+			return false;
+		return ignoreTypes;
 	}
 
 }

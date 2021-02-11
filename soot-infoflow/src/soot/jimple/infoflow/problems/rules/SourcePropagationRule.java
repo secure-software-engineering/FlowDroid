@@ -11,6 +11,9 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.TypeUtils;
@@ -98,7 +101,7 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		// Normally, we don't inspect source methods
 		if (!getManager().getConfig().getInspectSources() && getManager().getSourceSinkManager() != null) {
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager().getSourceInfo(stmt, getManager());
-			if (sourceInfo != null)
+			if (sourceInfo != null && isCallbackOrReturn(sourceInfo.getDefinition()))
 				killAll.value = true;
 		}
 
@@ -111,6 +114,23 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Checks whether the given source/sink definition is a callback or references
+	 * the return value of a method
+	 * 
+	 * @param definition The source/sink definition to check
+	 * @return True if the given source/sink definition references a callback or a
+	 *         method return value
+	 */
+	private boolean isCallbackOrReturn(ISourceSinkDefinition definition) {
+		if (definition instanceof MethodSourceSinkDefinition) {
+			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
+			CallType callType = methodDef.getCallType();
+			return callType == CallType.Callback || callType == CallType.Return;
+		}
+		return false;
 	}
 
 }
