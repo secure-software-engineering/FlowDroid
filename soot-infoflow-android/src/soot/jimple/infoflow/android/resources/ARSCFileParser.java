@@ -1129,18 +1129,25 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Android resource containing complex map data.
 	 */
 	public static class ComplexResource extends AbstractResource {
-		private Map<String, AbstractResource> value;
+		private final String resType;
+		private final Map<String, AbstractResource> value;
 
-		public ComplexResource() {
+		public ComplexResource(String resType) {
+			this.resType = resType;
 			this.value = new HashMap<>();
 		}
 
-		public ComplexResource(Map<String, AbstractResource> value) {
+		public ComplexResource(String resType, Map<String, AbstractResource> value) {
+			this.resType = resType;
 			this.value = value;
 		}
 
 		public Map<String, AbstractResource> getValue() {
 			return this.value;
+		}
+
+		public String getResType() {
+			return resType;
 		}
 
 		@Override
@@ -2244,7 +2251,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 							// If this is a simple entry, the data structure is
 							// followed by RES_VALUE
 							if (entry.flagsComplex) {
-								ComplexResource cmpRes = new ComplexResource();
+								ComplexResource cmpRes = new ComplexResource(resType.typeName);
 								res = cmpRes;
 
 								for (int j = 0; j < ((ResTable_Map_Entry) entry).count; j++) {
