@@ -150,7 +150,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		intCounter = generator.generateLocal(IntType.v());
 		body.getUnits().add(Jimple.v().newAssignStmt(intCounter, IntConstant.v(conditionCounter)));
 
-		return createDummyMainInternal();
+		SootMethod m = createDummyMainInternal();
+		m.addTag(SimulatedCodeElementTag.TAG);
+		return m;
 	}
 
 	/**
