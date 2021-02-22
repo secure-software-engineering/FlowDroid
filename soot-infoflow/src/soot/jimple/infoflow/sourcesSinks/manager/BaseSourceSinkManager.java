@@ -23,6 +23,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
@@ -341,12 +342,13 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		// Otherwise, if we have an instance invocation, we taint the base
 		// object
 		final InvokeExpr iexpr = sCallSite.getInvokeExpr();
-		if (sCallSite instanceof DefinitionStmt && iexpr.getMethod().getReturnType() != null) {
+		final Type returnType = iexpr.getMethod().getReturnType();
+		if (sCallSite instanceof DefinitionStmt && returnType != null && returnType != VoidType.v()) {
 			DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
 			// no immutable aliases, we overwrite the return values as a whole
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
 					null, true, false, true, ArrayTaintType.ContentsAndLength, false));
-		} else if (iexpr instanceof InstanceInvokeExpr && iexpr.getMethod().getReturnType() == VoidType.v()) {
+		} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
 			InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true));
 		} else
