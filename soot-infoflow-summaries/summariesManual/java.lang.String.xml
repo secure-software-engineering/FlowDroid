@@ -116,7 +116,7 @@
 		<method id="char charAt(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<to sourceSinkType="Field" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -124,7 +124,7 @@
 		<method id="int codePointAt(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<to sourceSinkType="Field" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -132,7 +132,7 @@
 		<method id="int codePointBefore(int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<to sourceSinkType="Field" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -140,11 +140,11 @@
 		<method id="java.lang.String concat(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<to sourceSinkType="Field" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<to sourceSinkType="Field" />
+					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
