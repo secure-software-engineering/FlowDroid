@@ -13,6 +13,7 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -51,7 +52,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 				continue;
 
 			// Exclude the dummy main method
-			if (entryPoints.contains(method))
+			if (method.getTag(SimulatedCodeElementTag.TAG_NAME) != null)
 				continue;
 
 			List<Unit> callSites = getCallsInMethod(method);
@@ -95,12 +96,15 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	}
 
 	/**
-	 * Collects all callsites of the given method and removes all edges from the callgraph that correspond to callsites
-	 * which are not in the given set of previously contained callsites.
+	 * Collects all callsites of the given method and removes all edges from the
+	 * callgraph that correspond to callsites which are not in the given set of
+	 * previously contained callsites.
 	 *
-	 * @param method The method which's outgoing callgraph edges should be sanitized
-	 * @param oldCallSites A list of callsites that where previously contained by the method's body and have to be
-	 *                     checked if still existent
+	 * @param method       The method which's outgoing callgraph edges should be
+	 *                     sanitized
+	 * @param oldCallSites A list of callsites that where previously contained by
+	 *                     the method's body and have to be checked if still
+	 *                     existent
 	 */
 	static void removeDeadCallgraphEdges(SootMethod method, List<Unit> oldCallSites) {
 		List<Unit> newCallSites = getCallsInMethod(method);
