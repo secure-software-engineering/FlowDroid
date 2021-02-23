@@ -508,7 +508,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 				// empty
 				// attributes as a best-effort solution for broken malware apps
 				for (AXmlAttribute<?> a : perm.getAttributes().values())
-					if (a.getType() == AxmlVisitor.TYPE_STRING && a.getName().isEmpty())
+					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
 						permissions.add((String) a.getValue());
 			}
 		}
