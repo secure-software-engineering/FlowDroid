@@ -538,7 +538,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * 
 	 * @param className The name of the class to load
 	 */
-	private void loadClass(String className) {
+	protected void loadClass(String className) {
 		SootClass sc = Scene.v().getSootClassUnsafe(className);
 		if (sc == null) {
 			sc = Scene.v().makeSootClass(className);
