@@ -10,6 +10,7 @@ import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
@@ -213,10 +214,14 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 				return new SinkInfo(def);
 
 			// Check whether the base object matches our definition
-			if (sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
-				for (AccessPathTuple apt : methodDef.getBaseObjects())
-					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-						return new SinkInfo(apDef.filter(Collections.singleton(apt)));
+			InvokeExpr iexpr = sCallSite.getInvokeExpr();
+			if (iexpr instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
+				InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+				if (iiexpr.getBase() == sourceAccessPath.getPlainValue()) {
+					for (AccessPathTuple apt : methodDef.getBaseObjects())
+						if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
+							return new SinkInfo(apDef.filter(Collections.singleton(apt)));
+				}
 			}
 
 			// Check whether a parameter matches our definition
