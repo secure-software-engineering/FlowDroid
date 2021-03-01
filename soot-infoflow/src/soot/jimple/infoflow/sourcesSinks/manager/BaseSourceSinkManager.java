@@ -308,6 +308,12 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 
 	@Override
 	public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		// Do not look for sinks in excluded methods
+		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
+			return null;
+		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
+			return null;
+
 		ISourceSinkDefinition def = getSinkDefinition(sCallSite, manager, ap);
 		return def == null ? null : new SinkInfo(def);
 	}
@@ -316,6 +322,8 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
 		// Do not look for sources in excluded methods
 		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
+			return null;
+		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
 		ISourceSinkDefinition def = getSource(sCallSite, manager.getICFG());
