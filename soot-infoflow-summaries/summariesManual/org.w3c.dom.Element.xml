@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void normalize()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.w3c.dom.Element: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.w3c.dom.Element: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+	</methods>
+</summary>

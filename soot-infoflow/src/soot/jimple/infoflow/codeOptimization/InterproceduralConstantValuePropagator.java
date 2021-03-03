@@ -811,7 +811,11 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					&& excludedMethods.contains(manager.getICFG().getMethodOf(callSite)))
 				continue;
 
+			// We do not support special edges that do not provide a 1:1 argument mapping
 			InvokeExpr iiExpr = ((Stmt) callSite).getInvokeExpr();
+			if (iiExpr.getArgCount() != sm.getParameterCount())
+				continue;
+
 			hasCallSites = true;
 
 			// If we have a reflective call site, we never have constant

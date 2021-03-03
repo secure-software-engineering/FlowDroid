@@ -88,7 +88,7 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.Double parseDouble(java.lang.String)">
+		<method id="double parseDouble(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />

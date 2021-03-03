@@ -46,10 +46,10 @@ public class InfoflowResults {
 
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
-	private volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
-	private volatile InfoflowPerformanceData performanceData = null;
-	private volatile List<String> exceptions = null;
-	private int terminationState = TERMINATION_SUCCESS;
+	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
+	protected volatile InfoflowPerformanceData performanceData = null;
+	protected volatile List<String> exceptions = null;
+	protected int terminationState = TERMINATION_SUCCESS;
 
 	public InfoflowResults() {
 	}
@@ -513,6 +513,15 @@ public class InfoflowResults {
 			this.performanceData = performanceData;
 		else
 			this.performanceData.add(performanceData);
+	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 * 
+	 * @param result The result to remove
+	 */
+	public void remove(DataFlowResult result) {
+		results.remove(result.getSink(), result.getSource());
 	}
 
 	@Override

@@ -28,7 +28,7 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.Boolean parseBoolean(java.lang.String)">
+		<method id="boolean parseBoolean(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />

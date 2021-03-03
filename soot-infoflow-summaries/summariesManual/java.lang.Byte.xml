@@ -73,7 +73,7 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.Byte parseByte(java.lang.String)">
+		<method id="byte parseByte(java.lang.String)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -82,7 +82,7 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.Byte parseByte(java.lang.String,int)">
+		<method id="byte parseByte(java.lang.String,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
