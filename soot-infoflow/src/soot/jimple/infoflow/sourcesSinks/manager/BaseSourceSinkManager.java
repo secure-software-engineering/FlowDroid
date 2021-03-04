@@ -325,7 +325,6 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		// Do we have data at all?
 		if (def == null)
 			return null;
-
 		// If we don't have an invocation, we just taint the left side of the
 		// assignment
 		if (!sCallSite.containsInvokeExpr()) {
