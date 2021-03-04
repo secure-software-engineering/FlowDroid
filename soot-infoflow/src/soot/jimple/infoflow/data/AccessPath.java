@@ -85,7 +85,6 @@ public class AccessPath implements Cloneable {
 		this.cutOffApproximation = isCutOffApproximation;
 		this.arrayTaintType = arrayTaintType;
 		this.canHaveImmutableAliases = canHaveImmutableAliases;
-
 	}
 
 	/**

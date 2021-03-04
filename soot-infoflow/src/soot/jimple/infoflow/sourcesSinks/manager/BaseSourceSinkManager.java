@@ -23,6 +23,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
@@ -307,6 +308,12 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 
 	@Override
 	public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		// Do not look for sinks in excluded methods
+		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
+			return null;
+		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
+			return null;
+
 		ISourceSinkDefinition def = getSinkDefinition(sCallSite, manager, ap);
 		return def == null ? null : new SinkInfo(def);
 	}
@@ -315,6 +322,8 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
 		// Do not look for sources in excluded methods
 		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
+			return null;
+		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
 		ISourceSinkDefinition def = getSource(sCallSite, manager.getICFG());
@@ -340,12 +349,13 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		// Otherwise, if we have an instance invocation, we taint the base
 		// object
 		final InvokeExpr iexpr = sCallSite.getInvokeExpr();
-		if (sCallSite instanceof DefinitionStmt && iexpr.getMethod().getReturnType() != null) {
+		final Type returnType = iexpr.getMethod().getReturnType();
+		if (sCallSite instanceof DefinitionStmt && returnType != null && returnType != VoidType.v()) {
 			DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
 			// no immutable aliases, we overwrite the return values as a whole
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
 					null, true, false, true, ArrayTaintType.ContentsAndLength, false));
-		} else if (iexpr instanceof InstanceInvokeExpr && iexpr.getMethod().getReturnType() == VoidType.v()) {
+		} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
 			InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true));
 		} else
