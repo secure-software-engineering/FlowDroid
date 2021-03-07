@@ -337,11 +337,21 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isReturn(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Return.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Return.toString());
+		}
+		return false;
 	}
 
 	private boolean isField(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Field.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			if (attr == null)
+				System.out.println("x");
+			return attr != null && attr.equals(SourceSinkType.Field.toString());
+		}
+		return false;
 	}
 
 	private String[] getAccessPath(Map<String, String> attributes) {
