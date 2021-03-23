@@ -81,6 +81,8 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 
 		// Do create the gap
 		GapDefinition gap = gapManager.getOrCreateGapForCall(summaries, stmt);
+		if (gap == null)
+			return Collections.singleton(taintedPath);
 
 		// Produce a continuation
 		res = new HashSet<Abstraction>();
