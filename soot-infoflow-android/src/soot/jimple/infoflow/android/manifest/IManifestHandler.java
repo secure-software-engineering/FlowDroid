@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -103,6 +104,12 @@ public interface IManifestHandler<A extends IActivity, S extends IService, C ext
 		Set<String> entryPoints = new HashSet<String>();
 		for (IAndroidComponent node : getAllComponents())
 			checkAndAddComponent(entryPoints, node);
+
+		if (entryPoints.isEmpty()){
+			//if no entry point is detected at all, the app is likely be malware, add all components
+			List<IAndroidComponent> allEnabled = getAllComponents().stream().filter(c -> c.isEnabled()).collect(Collectors.toList());
+			allEnabled.forEach(e->entryPoints.add(e.getNameString()));
+		}
 
 		if (app != null) {
 			String appName = app.getName();
