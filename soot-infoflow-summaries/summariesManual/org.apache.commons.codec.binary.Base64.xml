@@ -57,6 +57,14 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="byte[] encodeBase64(byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 		<method id="byte[] encodeBase64(byte[],boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">

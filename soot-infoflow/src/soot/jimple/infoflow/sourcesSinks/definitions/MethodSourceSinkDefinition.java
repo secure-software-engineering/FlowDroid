@@ -205,6 +205,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return method == null ? "<no method>" : method.getSignature();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public MethodSourceSinkDefinition getSourceOnlyDefinition() {
 		// Collect all base sources
@@ -217,15 +218,19 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		}
 
 		// Collect all parameter sources
-		@SuppressWarnings("unchecked")
-		Set<AccessPathTuple>[] paramSources = new Set[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			Set<AccessPathTuple> aptSet = parameters[i];
-			Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
-			paramSources[i] = thisParam;
-			for (AccessPathTuple apt : aptSet)
-				if (apt.getSourceSinkType().isSource())
-					thisParam.add(apt);
+		Set<AccessPathTuple>[] paramSources = null;
+		if (parameters != null && parameters.length > 0) {
+			paramSources = new Set[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				Set<AccessPathTuple> aptSet = parameters[i];
+				if (aptSet != null) {
+					Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
+					paramSources[i] = thisParam;
+					for (AccessPathTuple apt : aptSet)
+						if (apt.getSourceSinkType().isSource())
+							thisParam.add(apt);
+				}
+			}
 		}
 
 		// Collect all return sources
@@ -241,6 +246,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return mssd;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public MethodSourceSinkDefinition getSinkOnlyDefinition() {
 		// Collect all base sinks
@@ -253,15 +259,19 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		}
 
 		// Collect all parameter sinks
-		@SuppressWarnings("unchecked")
-		Set<AccessPathTuple>[] paramSinks = new Set[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			Set<AccessPathTuple> aptSet = parameters[i];
-			Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
-			paramSinks[i] = thisParam;
-			for (AccessPathTuple apt : aptSet)
-				if (apt.getSourceSinkType().isSink())
-					thisParam.add(apt);
+		Set<AccessPathTuple>[] paramSinks = null;
+		if (parameters != null) {
+			paramSinks = new Set[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				Set<AccessPathTuple> aptSet = parameters[i];
+				if (aptSet != null) {
+					Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
+					paramSinks[i] = thisParam;
+					for (AccessPathTuple apt : aptSet)
+						if (apt.getSourceSinkType().isSink())
+							thisParam.add(apt);
+				}
+			}
 		}
 
 		// Collect all return sinks

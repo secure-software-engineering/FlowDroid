@@ -414,7 +414,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// If we can't reason about aliases, there's little we can do here
 				final Aliasing aliasing = manager.getAliasing();
 				if (aliasing == null)
-					return null;
+					return KillAll.v();
 
 				return new SolverCallFlowFunction() {
 
@@ -498,7 +498,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// If we can't reason about aliases, there's little we can do here
 				final Aliasing aliasing = manager.getAliasing();
 				if (aliasing == null)
-					return null;
+					return KillAll.v();
 
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
@@ -734,7 +734,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// If we can't reason about aliases, there's little we can do here
 				final Aliasing aliasing = manager.getAliasing();
 				if (aliasing == null)
-					return null;
+					return KillAll.v();
 
 				final Value[] callArgs = new Value[invExpr.getArgCount()];
 				for (int i = 0; i < invExpr.getArgCount(); i++)
