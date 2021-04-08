@@ -161,14 +161,6 @@ public class InfoflowResultPostProcessor {
 					// Reconstruct the sources
 					for (Stmt stmt : collectedAbstractions.get(a)) {
 						abstractionCount++;
-
-						// If this abstraction is directly the source abstraction,
-						// we do not
-						// need to construct paths
-						if (a.getSourceContext() != null) {
-							continue;
-						}
-
 						for (SummaryResultInfo si : pathBuilder.getResultInfos()) {
 							final AccessPath sourceAP = si.getSourceInfo().getAccessPath();
 							final AccessPath sinkAP = si.getSinkInfo().getAccessPath();

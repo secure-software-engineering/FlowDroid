@@ -63,16 +63,15 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link SummarySourceSinkManager} class
 	 * 
-	 * @param mSig
-	 *            The signature of the method for which summaries shall be created
-	 * @param parentClass
-	 *            The parent class containing the method for which summaries shall
-	 *            be created. If mSig is the signature of a method inherited from a
-	 *            base class, this parameter receives the class on which the method
-	 *            denoted by mSig is called.
-	 * @param sourceSinkFactory
-	 *            The {@link SourceSinkFactory} to create source and sink data
-	 *            objects
+	 * @param mSig              The signature of the method for which summaries
+	 *                          shall be created
+	 * @param parentClass       The parent class containing the method for which
+	 *                          summaries shall be created. If mSig is the signature
+	 *                          of a method inherited from a base class, this
+	 *                          parameter receives the class on which the method
+	 *                          denoted by mSig is called.
+	 * @param sourceSinkFactory The {@link SourceSinkFactory} to create source and
+	 *                          sink data objects
 	 */
 	public SummarySourceSinkManager(String mSig, String parentClass, SourceSinkFactory sourceSinkFactory) {
 		this.methodSig = mSig;
@@ -83,11 +82,9 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link SummarySourceSinkManager} class
 	 * 
-	 * @param method
-	 *            The method for which summaries shall be created
-	 * @param sourceSinkFactory
-	 *            The {@link SourceSinkFactory} to create source and sink data
-	 *            objects
+	 * @param method            The method for which summaries shall be created
+	 * @param sourceSinkFactory The {@link SourceSinkFactory} to create source and
+	 *                          sink data objects
 	 */
 	public SummarySourceSinkManager(SootMethod method, SourceSinkFactory sourceSinkFactory) {
 		this.method = method;
@@ -160,7 +157,16 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 
 	@Override
 	public void initialize() {
-		// nothing to do heres
+		// nothing to do here
+	}
+
+	/**
+	 * Gets the factory that creates the sources and sinks
+	 * 
+	 * @return The factory that creates the sources and sinks
+	 */
+	public SourceSinkFactory getSourceSinkFactory() {
+		return sourceSinkFactory;
 	}
 
 }
