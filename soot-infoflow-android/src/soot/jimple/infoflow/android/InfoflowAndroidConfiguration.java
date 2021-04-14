@@ -698,6 +698,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
 	private boolean mergeDexFiles = false;
+	private static boolean createActivityEntryMethods = true;
 
 	public InfoflowAndroidConfiguration() {
 		// We need to adapt some of the defaults. Most people don't care about
@@ -722,6 +723,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.analysisFileConfig.merge(androidConfig.analysisFileConfig);
 
 			this.mergeDexFiles = androidConfig.mergeDexFiles;
+			this.createActivityEntryMethods = androidConfig.createActivityEntryMethods;
 		}
 	}
 
@@ -804,6 +806,27 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	 */
 	public void setMergeDexFiles(boolean mergeDexFiles) {
 		this.mergeDexFiles = mergeDexFiles;
+	}
+
+	/**
+	 * Gets if Flowdroid should create new Methods when creating the Activity Entry
+	 * point
+	 * 
+	 * @return true/false
+	 */
+	public static boolean getCreateActivityEntryMethods() {
+		return createActivityEntryMethods;
+	}
+
+	/**
+	 * Sets if Flow Flowdroid should create new Methods when creating the Activity
+	 * Entry point
+	 * 
+	 * @param createActivityEntryMethods boolean that is true if Methods should be
+	 *                                   created
+	 */
+	public static void setCreateActivityEntryMethods(boolean createActivityEntryMethods) {
+		InfoflowAndroidConfiguration.createActivityEntryMethods = createActivityEntryMethods;
 	}
 
 	@Override
