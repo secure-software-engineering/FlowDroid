@@ -1293,6 +1293,7 @@ public class InfoflowConfiguration {
 	private boolean oneSourceAtATime = false;
 
 	private static String baseDirectory = "";
+	private static boolean createActivityEntryMethods = true;
 
 	/**
 	 * Merges the given configuration options into this configuration object
@@ -2030,6 +2031,27 @@ public class InfoflowConfiguration {
 	 */
 	public static void setBaseDirectory(String baseDirectory) {
 		InfoflowConfiguration.baseDirectory = baseDirectory;
+	}
+
+	/**
+	 * Gets if Flowdroid should create new Methods when creating the Activity Entry
+	 * point
+	 * 
+	 * @return true/false
+	 */
+	public static boolean getCreateActivityEntryMethods() {
+		return createActivityEntryMethods;
+	}
+
+	/**
+	 * Sets if Flow Flowdroid should create new Methods when creating the Activity
+	 * Entry point
+	 * 
+	 * @param createActivityEntryMethods boolean that is true if Methods should be
+	 *                                   created
+	 */
+	public static void setCreateActivityEntryMethods(boolean createActivityEntryMethods) {
+		InfoflowConfiguration.createActivityEntryMethods = createActivityEntryMethods;
 	}
 
 	/**
