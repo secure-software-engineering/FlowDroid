@@ -23,6 +23,7 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
@@ -228,9 +229,12 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 	@Override
 	protected void createAdditionalMethods() {
-		createGetIntentMethod();
-		createSetIntentMethod();
-		createSetResultMethod();
+		if (InfoflowAndroidConfiguration.getCreateActivityEntryMethods()) {
+
+			createGetIntentMethod();
+			createSetIntentMethod();
+			createSetResultMethod();
+		}
 	}
 
 	/**
