@@ -35,6 +35,7 @@ import soot.Main;
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
@@ -80,6 +81,7 @@ import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
@@ -1895,6 +1897,30 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {
 		this.valueProvider = valueProvider;
+	}
+
+	/**
+	 * Removes all simulated code elements generated during entry point creation and
+	 * ICC instrumentation from the Soot Scene
+	 */
+	public void removeSimulatedCodeElements() {
+		for (Iterator<SootClass> scIt = Scene.v().getClasses().iterator(); scIt.hasNext();) {
+			SootClass sc = scIt.next();
+			if (sc.hasTag(SimulatedCodeElementTag.TAG_NAME))
+				scIt.remove();
+			else {
+				for (Iterator<SootMethod> smIt = sc.getMethods().iterator(); smIt.hasNext();) {
+					SootMethod sm = smIt.next();
+					if (sm.hasTag(SimulatedCodeElementTag.TAG_NAME))
+						smIt.remove();
+				}
+				for (Iterator<SootField> sfIt = sc.getFields().iterator(); sfIt.hasNext();) {
+					SootField sf = sfIt.next();
+					if (sf.hasTag(SimulatedCodeElementTag.TAG_NAME))
+						sfIt.remove();
+				}
+			}
+		}
 	}
 
 }
