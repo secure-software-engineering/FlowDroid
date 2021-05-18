@@ -174,9 +174,12 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		if (stmt instanceof ReturnStmt) {
 			final ReturnStmt returnStmt = (ReturnStmt) stmt;
 			final ISourceSinkManager ssm = getManager().getSourceSinkManager();
+			final Aliasing aliasing = getAliasing();
+
 			boolean matches = source.getAccessPath().isLocal() || source.getAccessPath().getTaintSubFields();
-			if (matches && source.isAbstractionActive() && ssm != null
-					&& getAliasing().mayAlias(source.getAccessPath().getPlainValue(), returnStmt.getOp())) {
+
+			if (matches && source.isAbstractionActive() && ssm != null && aliasing != null
+					&& aliasing.mayAlias(source.getAccessPath().getPlainValue(), returnStmt.getOp())) {
 				SinkInfo sinkInfo = ssm.getSinkInfo(returnStmt, getManager(), source.getAccessPath());
 				if (sinkInfo != null
 						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, returnStmt)))
