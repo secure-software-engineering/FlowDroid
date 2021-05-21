@@ -132,7 +132,7 @@ public class AccessPathFactory {
 			boolean canHaveImmutableAliases) {
 		// Make sure that the base object is valid
 		if (val != null && !AccessPath.canContainValue(val)) {
-			logger.error(String.format("Access paths cannot be rooted in values of type %s", val.getClass().getName()));
+			logger.error("Access paths cannot be rooted in values of type {}", val.getClass().getName());
 			return null;
 		}
 
@@ -424,8 +424,8 @@ public class AccessPathFactory {
 		assert value == null || !(!(baseType instanceof ArrayType) && !TypeUtils.isObjectLikeType(baseType)
 				&& value.getType() instanceof ArrayType);
 		assert value == null || !(baseType instanceof ArrayType && !(value.getType() instanceof ArrayType)
-				&& !TypeUtils.isObjectLikeType(value.getType())) : "Type mismatch. Type was " + baseType
-						+ ", value was: " + (value == null ? null : value.getType());
+				&& !TypeUtils.isObjectLikeType(value.getType()))
+				: "Type mismatch. Type was " + baseType + ", value was: " + (value == null ? null : value.getType());
 
 		if ((fields == null && fieldTypes != null) || (fields != null && fieldTypes == null))
 			throw new RuntimeException("When there are fields, there must be field types and vice versa");
@@ -435,16 +435,20 @@ public class AccessPathFactory {
 		// Sanity check
 		if (baseType instanceof PrimType) {
 			if (fields != null) {
-				logger.warn("Primitive types cannot have fields");
+				logger.warn("Primitive types cannot have fields: baseType={} fields={}", baseType,
+						Arrays.toString(fields));
 				return null;
 			}
 		}
 		if (fields != null) {
-			for (int i = 0; i < fields.length - 2; i++)
-				if (fields[i].getType() instanceof PrimType) {
-					logger.warn("Primitive types cannot have fields");
+			for (int i = 0; i < fields.length - 2; i++) {
+				SootField f = fields[i];
+				Type fieldType = f.getType();
+				if (fieldType instanceof PrimType) {
+					logger.warn("Primitive types cannot have fields: field={} type={}", f, fieldType);
 					return null;
 				}
+			}
 		}
 
 		return new AccessPath(value, fields, baseType, fieldTypes, taintSubFields, cutOffApproximation, arrayTaintType,

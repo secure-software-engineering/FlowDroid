@@ -2,6 +2,7 @@ package soot.jimple.infoflow.memory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,18 +26,18 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	 *
 	 */
 	private enum SolverState {
-	/**
-	 * The solver has not been started yet
-	 */
-	IDLE,
-	/**
-	 * The solver is running
-	 */
-	RUNNING,
-	/**
-	 * The solver has completed its work
-	 */
-	DONE
+		/**
+		 * The solver has not been started yet
+		 */
+		IDLE,
+		/**
+		 * The solver is running
+		 */
+		RUNNING,
+		/**
+		 * The solver has completed its work
+		 */
+		DONE
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -44,7 +45,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	private final long timeout;
 	private final InfoflowResults results;
 	private final Map<IMemoryBoundedSolver, SolverState> solvers = new ConcurrentHashMap<>();
-	private boolean stopped = false;
+	private volatile boolean stopped = false;
 	private ISolversTerminatedCallback terminationCallback = null;
 
 	/**
@@ -93,7 +94,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	 * Starts the timeout watcher
 	 */
 	public void start() {
-		final long startTime = System.currentTimeMillis();
+		final long startTime = System.nanoTime();
 		logger.info("FlowDroid timeout watcher started");
 		this.stopped = false;
 
@@ -103,34 +104,38 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 			public void run() {
 				// Sleep until we have reached the timeout
 				boolean allTerminated = isTerminated();
-				long timeElapsed = 0;
 
-				while (!stopped && ((timeElapsed = System.currentTimeMillis() - startTime) < 1000 * timeout)) {
+				long timeoutNano = TimeUnit.SECONDS.toNanos(timeout);
+				while (!stopped && ((System.nanoTime() - startTime) < timeoutNano)) {
 					allTerminated = isTerminated();
-					if (allTerminated)
+					if (allTerminated) {
 						break;
+					}
 
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// There's little we can do here
-
 					}
 				}
+				long timeElapsed = TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime);
 
 				// If things have not stopped on their own account, we force
 				// them to
 				if (!stopped & !allTerminated) {
 					logger.warn("Timeout reached, stopping the solvers...");
-					if (results != null)
+					if (results != null) {
 						results.addException("Timeout reached");
+					}
 
-					TimeoutReason reason = new TimeoutReason(timeElapsed / 1000, timeout);
-					for (IMemoryBoundedSolver solver : solvers.keySet())
+					TimeoutReason reason = new TimeoutReason(timeElapsed, timeout);
+					for (IMemoryBoundedSolver solver : solvers.keySet()) {
 						solver.forceTerminate(reason);
+					}
 
-					if (terminationCallback != null)
+					if (terminationCallback != null) {
 						terminationCallback.onSolversTerminated();
+					}
 				}
 
 				logger.info("FlowDroid timeout watcher terminated");
