@@ -181,6 +181,7 @@ public class IccRedirectionCreator {
 		dummyMainClass.addMethod(newSM);
 		final JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
+		newSM.addTag(SimulatedCodeElementTag.TAG);
 
 		LocalGenerator lg = new LocalGenerator(b);
 
@@ -228,13 +229,14 @@ public class IccRedirectionCreator {
 	protected SootMethod generateRedirectMethod(SootClass wrapper) {
 		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
 		if (targetDummyMain == null) {
-			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			logger.warn("Destination component {} has no dummy main method", wrapper.getName());
 			return null;
 		}
 
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
 				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
+		newSM.addTag(SimulatedCodeElementTag.TAG);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -260,12 +262,13 @@ public class IccRedirectionCreator {
 	protected SootMethod generateRedirectMethodForStartActivity(SootClass wrapper) {
 		SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(wrapper);
 		if (targetDummyMain == null) {
-			logger.warn(String.format("Destination component %s has no dummy main method", wrapper.getName()));
+			logger.warn("Destination component {} has no dummy main method", wrapper.getName());
 			return null;
 		}
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, Collections.<Type>singletonList(INTENT_TYPE),
 				VoidType.v(), Modifier.STATIC | Modifier.PUBLIC);
+		newSM.addTag(SimulatedCodeElementTag.TAG);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -291,12 +294,12 @@ public class IccRedirectionCreator {
 	protected SootMethod generateRedirectMethodForBindService(SootClass serviceConnection, SootClass destComp) {
 		ServiceEntryPointInfo entryPointInfo = (ServiceEntryPointInfo) componentToEntryPoint.get(destComp);
 		if (entryPointInfo == null) {
-			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			logger.warn("Destination component {} has no dummy main method", destComp.getName());
 			return null;
 		}
 		SootMethod targetDummyMain = entryPointInfo.getEntryPoint();
 		if (targetDummyMain == null) {
-			logger.warn(String.format("Destination component %s has no dummy main method", destComp.getName()));
+			logger.warn("Destination component {} has no dummy main method", destComp.getName());
 			return null;
 		}
 		String newSM_name = "redirector" + num++;
@@ -307,6 +310,7 @@ public class IccRedirectionCreator {
 
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, newSM_parameters, VoidType.v(),
 				Modifier.STATIC | Modifier.PUBLIC);
+		newSM.addTag(SimulatedCodeElementTag.TAG);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -342,7 +346,7 @@ public class IccRedirectionCreator {
 		Local iLocal1 = lg.generateLocal(RefType.v("android.content.ComponentName"));
 		b.getUnits().add(Jimple.v().newAssignStmt(iLocal1, NullConstant.v()));
 
-		List<Value> args = new ArrayList<Value>();
+		List<Value> args = new ArrayList<>();
 		args.add(iLocal1);
 		args.add(ibinderLocal);
 		SootClass sc = Scene.v().getSootClass(originActivityParameterLocal.getType().toString());
@@ -363,6 +367,7 @@ public class IccRedirectionCreator {
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, iccMethod.getParameterTypes(),
 				iccMethod.getReturnType(), Modifier.STATIC | Modifier.PUBLIC);
+		newSM.addTag(SimulatedCodeElementTag.TAG);
 		dummyMainClass.addMethod(newSM);
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
@@ -419,7 +424,7 @@ public class IccRedirectionCreator {
 
 		// specially deal with startActivityForResult since they have two
 		// parameters
-		List<Value> args = new ArrayList<Value>();
+		List<Value> args = new ArrayList<>();
 		if (callee.getNumberedSubSignature().equals(subsigStartActivityForResult)) {
 			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) fromStmt.getInvokeExpr();
 			args.add(iiexpr.getBase());
@@ -451,8 +456,9 @@ public class IccRedirectionCreator {
 		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
 		units.insertAfter(redirectCallU, link.getFromU());
 		instrumentedUnits.put(body, redirectCallU);
-		if (instrumentationCallback != null)
+		if (instrumentationCallback != null) {
 			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
+		}
 
 		// remove the real ICC methods call stmt
 		// link.getFromSM().retrieveActiveBody().getUnits().remove(link.getFromU());
