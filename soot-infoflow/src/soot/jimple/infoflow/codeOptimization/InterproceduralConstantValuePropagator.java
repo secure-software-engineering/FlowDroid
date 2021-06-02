@@ -69,7 +69,6 @@ import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.jimple.toolkits.scalar.UnconditionalBranchFolder;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.options.Options;
-import soot.tagkit.SyntheticTag;
 import soot.toolkits.exceptions.ThrowAnalysis;
 import soot.toolkits.exceptions.ThrowableSet;
 import soot.toolkits.exceptions.UnitThrowAnalysis;
@@ -481,7 +480,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	}
 
 	private void fixExceptions(SootMethod caller, Unit callSite) {
-		fixExceptions(caller, callSite, new HashSet<SootClass>());
+		fixExceptions(caller, callSite, new HashSet<>());
 	}
 
 	private void fixExceptions(SootMethod caller, Unit callSite, Set<SootClass> doneSet) {
@@ -496,6 +495,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					if (exceptionClass == null) {
 						exceptionClass = Scene.v().makeSootClass("FLOWDROID_EXCEPTIONS", Modifier.PUBLIC);
 						exceptionClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+						exceptionClass.addTag(SimulatedCodeElementTag.TAG);
 						Scene.v().addClass(exceptionClass);
 					}
 
@@ -544,9 +544,10 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						protected void createEmptyMainMethod() {
 							// Make sure that we don't end up with duplicate method names
 							int methodIdx = exceptionThrowers.size();
+							String baseName = "throw_" + t.getException().getName().replaceAll("\\W+", "_") + "_";
 							String methodName;
 							do {
-								methodName = "throw" + methodIdx++;
+								methodName = baseName + methodIdx++;
 							} while (exceptionClass.declaresMethodByName(methodName));
 
 							// Create the new method
@@ -585,6 +586,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 				Stmt throwCall = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(thrower.makeRef()));
 				throwCall.addTag(SimulatedCodeElementTag.TAG);
 				caller.getActiveBody().getUnits().insertBefore(throwCall, callSite);
+
 			}
 	}
 
@@ -597,7 +599,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 *         side-effects or calls a sink method, otherwise false.
 	 */
 	private boolean hasSideEffectsOrCallsSink(SootMethod method) {
-		return hasSideEffectsOrCallsSink(method, new HashSet<SootMethod>());
+		return hasSideEffectsOrCallsSink(method, new HashSet<>());
 	}
 
 	/**
@@ -781,7 +783,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 					// Check for super class constructor invocation
 					if (!(method.getDeclaringClass().hasSuperclass()
 							&& callee.getDeclaringClass() == method.getDeclaringClass().getSuperclass()
-							&& callee.getName().equals("<init>")))
+							&& callee.isConstructor()))
 						return false;
 			} else if (!(u instanceof ThrowStmt))
 				return false;
@@ -817,7 +819,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			if (excludedMethods != null && icfg.isReachable(callSite)) {
 				SootMethod caller = icfg.getMethodOf(callSite);
 				// synthetic methods e.g. created by FlowDroid are excluded by default
-				if (excludedMethods.contains(caller) || caller.hasTag(SyntheticTag.NAME)) {
+				if (excludedMethods.contains(caller) || caller.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
+					logger.trace("Ignoring calls from {}", caller);
 					continue;
 				}
 			}
