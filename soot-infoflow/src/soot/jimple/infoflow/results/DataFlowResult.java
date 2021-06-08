@@ -1,5 +1,8 @@
 package soot.jimple.infoflow.results;
 
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+
 /**
  * Data class for having the source and sink of a single flow together in one
  * place
@@ -23,6 +26,38 @@ public class DataFlowResult {
 
 	public ResultSinkInfo getSink() {
 		return sink;
+	}
+
+	/**
+	 * Convenience function to get the source category ID
+	 * 
+	 * @return The source category ID or <code>null</code> if no source data is
+	 *         available
+	 */
+	public String getSourceCategoryID() {
+		ISourceSinkDefinition sourceDef = source.getDefinition();
+		if (sourceDef != null) {
+			ISourceSinkCategory sourceCat = sourceDef.getCategory();
+			if (sourceCat != null)
+				return sourceCat.getID();
+		}
+		return null;
+	}
+
+	/**
+	 * Convenience function to get the sink category ID
+	 * 
+	 * @return The sink category ID or <code>null</code> if no sink data is
+	 *         available
+	 */
+	public String getSinkCategoryID() {
+		ISourceSinkDefinition sinkDef = sink.getDefinition();
+		if (sinkDef != null) {
+			ISourceSinkCategory sinkCat = sinkDef.getCategory();
+			if (sinkCat != null)
+				return sinkCat.getID();
+		}
+		return null;
 	}
 
 	@Override
