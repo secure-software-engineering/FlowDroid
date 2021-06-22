@@ -77,8 +77,9 @@ public class FastCallbackAnalyzer extends AbstractCallbackAnalyzer {
 								if (invokesSetContentView(inv)) {
 									for (Value val : inv.getArgs()) {
 										Integer intValue = valueProvider.getValue(sm, stmt, val, Integer.class);
-										if (intValue != null)
+										if (intValue != null) {
 											this.layoutClasses.put(sm.getDeclaringClass(), intValue);
+										}
 									}
 								}
 							}

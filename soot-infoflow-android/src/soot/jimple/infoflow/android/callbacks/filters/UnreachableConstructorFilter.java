@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.android.callbacks.filters;
 
+import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -20,6 +22,11 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 
 		// If the callback is in the component class itself, it is trivially reachable
 		if (component == callbackHandler)
+			return true;
+		RefType fragmentType = RefType.v("android.app.Fragment");
+		boolean isFragment = Scene.v().getFastHierarchy().canStoreType(callbackHandler.getType(), fragmentType);
+		if (isFragment)
+			// we cannot find constructors for these...
 			return true;
 
 		{

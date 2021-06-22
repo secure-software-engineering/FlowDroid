@@ -670,8 +670,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// filter out callbacks even if the respective component is only
 		// analyzed later.
 		AbstractCallbackAnalyzer jimpleClass = callbackClasses == null
-				? new DefaultCallbackAnalyzer(config, entryPointClasses, callbackFile)
-				: new DefaultCallbackAnalyzer(config, entryPointClasses, callbackClasses);
+				? new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackFile)
+				: new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackClasses);
 		if (valueProvider != null)
 			jimpleClass.setValueProvider(valueProvider);
 		jimpleClass.addCallbackFilter(new AlienHostComponentFilter(entrypoints));
@@ -736,6 +736,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				if (!Scene.v().hasCallGraph())
 					throw new RuntimeException("No callgraph in Scene even after creating one. That's very sad "
 							+ "and should never happen.");
+
+				lfp.parseLayoutFileDirect(config.getAnalysisFileConfig().getTargetAPKFile());
 				PackManager.v().getPack("wjtp").apply();
 
 				// Creating all callgraph takes time and memory. Check whether
@@ -956,6 +958,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 										hasNewCallback = true;
 									break;
 								}
+
 								SootClass sclass = currentClass.getSuperclassUnsafe();
 								if (sclass == null) {
 									logger.error(String.format("Callback method %s not found in class %s", methodName,
@@ -982,7 +985,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					if (controls != null) {
 						for (AndroidLayoutControl lc : controls) {
 							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass().getName()))
-								registerCallbackMethodsForView(callbackClass, lc);
+								hasNewCallback |= registerCallbackMethodsForView(callbackClass, lc);
 						}
 					}
 				} else
@@ -1053,11 +1056,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param callbackClass The class with which to associate the layout callbacks
 	 * @param lc            The layout control whose callbacks are to be associated
 	 *                      with the given class
+	 * @return 
 	 */
-	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
+	private boolean registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
 		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass.getName()))
-			return;
+			return false;
 
 		// Get common Android classes
 		if (scView == null)
@@ -1065,7 +1069,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Check whether the current class is actually a view
 		if (!Scene.v().getOrMakeFastHierarchy().canStoreType(lc.getViewClass().getType(), scView.getType()))
-			return;
+			return false;
 
 		// There are also some classes that implement interesting callback
 		// methods.
@@ -1080,16 +1084,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						systemMethods.put(sm.getSubSignature(), sm);
 		}
 
+		boolean changed = false;
 		// Scan for methods that overwrite parent class methods
 		for (SootMethod sm : sc.getMethods()) {
 			if (!sm.isConstructor()) {
 				SootMethod parentMethod = systemMethods.get(sm.getSubSignature());
-				if (parentMethod != null)
+				if (parentMethod != null) {
 					// This is a real callback method
-					this.callbackMethods.put(callbackClass,
+					changed |= this.callbackMethods.put(callbackClass,
 							new AndroidCallbackDefinition(sm, parentMethod, CallbackType.Widget));
+				}
 			}
 		}
+		return changed;
 	}
 
 	/**

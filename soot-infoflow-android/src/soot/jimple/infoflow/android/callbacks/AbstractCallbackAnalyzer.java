@@ -106,6 +106,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
+	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new HashMultiMap<>();
 	protected final Map<SootClass, Integer> fragmentIDs = new HashMap<>();
 
 	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
@@ -615,12 +616,12 @@ public abstract class AbstractCallbackAnalyzer {
 					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity")
 					|| curClass.getName().equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
-            // As long as the class is subclass of android.app.Activity,
-            // it can be sure that the setContentView method is what we expected.
-            // Following 2 statements make the overriding of method
-            // setContentView ignored.
+			// As long as the class is subclass of android.app.Activity,
+			// it can be sure that the setContentView method is what we expected.
+			// Following 2 statements make the overriding of method
+			// setContentView ignored.
 			// if (curClass.declaresMethod("void setContentView(int)"))
-			// 	return false;
+			// return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -646,7 +647,7 @@ public abstract class AbstractCallbackAnalyzer {
 			if (curClass.getName().equals("android.app.Fragment"))
 				return true;
 			if (curClass.declaresMethod("android.view.View inflate(int,android.view.ViewGroup,boolean)"))
-				return false;
+				return true;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -814,6 +815,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
 		this.fragmentClasses.put(componentClass, fragmentClass);
+		this.fragmentClassesRev.put(fragmentClass, componentClass);
 	}
 
 	private boolean isEmpty(Body activeBody) {

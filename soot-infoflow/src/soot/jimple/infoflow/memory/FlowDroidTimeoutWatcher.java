@@ -25,18 +25,18 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 	 *
 	 */
 	private enum SolverState {
-	/**
-	 * The solver has not been started yet
-	 */
-	IDLE,
-	/**
-	 * The solver is running
-	 */
-	RUNNING,
-	/**
-	 * The solver has completed its work
-	 */
-	DONE
+		/**
+		 * The solver has not been started yet
+		 */
+		IDLE,
+		/**
+		 * The solver is running
+		 */
+		RUNNING,
+		/**
+		 * The solver has completed its work
+		 */
+		DONE
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -120,7 +120,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 
 				// If things have not stopped on their own account, we force
 				// them to
-				if (!stopped & !allTerminated) {
+				if (!stopped && !allTerminated) {
 					logger.warn("Timeout reached, stopping the solvers...");
 					if (results != null)
 						results.addException("Timeout reached");
