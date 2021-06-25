@@ -37,7 +37,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.io.File)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -47,7 +47,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.io.File,java.lang.String)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -57,7 +57,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.io.File,java.nio.charset.Charset)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -67,16 +67,17 @@
 		</method>
 		<method id="void &lt;init&gt;(java.lang.Readable)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
 						AccessPathTypes="[java.io.InputStream]" />
 				</flow>
 			</flows>
+		</method>
 		<method id="void &lt;init&gt;(java.lang.String)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -86,7 +87,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -96,7 +97,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel,java.lang.String)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -106,7 +107,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel,java.nio.charset.Charset)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -116,7 +117,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.file.Path)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -126,7 +127,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.file.Path,java.lang.String)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
@@ -136,7 +137,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.nio.file.Path,java.nio.charset.Charset)">
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
