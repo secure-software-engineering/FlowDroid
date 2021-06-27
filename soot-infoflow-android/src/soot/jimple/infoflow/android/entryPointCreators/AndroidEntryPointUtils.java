@@ -21,7 +21,7 @@ public class AndroidEntryPointUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(AndroidEntryPointUtils.class);
 
-	private Map<SootClass, ComponentType> componentTypeCache = new HashMap<SootClass, ComponentType>();
+	private Map<SootClass, ComponentType> componentTypeCache = new HashMap<>();
 
 	private SootClass osClassApplication;
 	private SootClass osClassActivity;
