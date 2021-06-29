@@ -2,14 +2,8 @@ package soot.jimple.infoflow.problems.rules;
 
 import java.util.Collection;
 
-import soot.Local;
-import soot.SootMethod;
-import soot.ValueBox;
-import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.Stmt;
+import soot.*;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -45,6 +39,7 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 		// taints
 		if (assignStmt.getLeftOp() instanceof ArrayRef)
 			return null;
+
 
 		// If this is a newly created alias at this statement, we don't kill it right
 		// away
@@ -145,8 +140,8 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
+                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

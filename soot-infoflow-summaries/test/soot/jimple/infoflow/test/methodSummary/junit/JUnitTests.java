@@ -23,6 +23,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -97,7 +99,7 @@ public abstract class JUnitTests {
 
 	}
 
-	protected void checkInfoflow(Infoflow infoflow, int resultCount) {
+	protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 			assertEquals(resultCount, map.size());
@@ -116,7 +118,7 @@ public abstract class JUnitTests {
 
 	}
 
-	protected void negativeCheckInfoflow(Infoflow infoflow) {
+	protected void negativeCheckInfoflow(IInfoflow infoflow) {
 		// If the result is available, it must be empty. Otherwise, it is
 		// implicitly ok since we don't expect to find anything anyway.
 		if (infoflow.isResultAvailable()) {
@@ -127,11 +129,12 @@ public abstract class JUnitTests {
 		}
 	}
 
-	protected Infoflow initInfoflow() {
+	protected IInfoflow initInfoflow() {
 		return initInfoflow(false);
 	}
 
-	protected Infoflow initInfoflow(boolean useTaintWrapper) {
+	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
+//		IInfoflow result = new BackwardsInfoflow();
 		Infoflow result = new Infoflow();
 		ConfigForTest testConfig = new ConfigForTest();
 		result.setSootConfig(testConfig);

@@ -34,6 +34,8 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
@@ -459,6 +461,31 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 								return def;
 							break;
 						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	@Override
+	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
+		ISourceSinkDefinition definition = super.getInverseSink(sCallSite, cfg);
+		if (definition != null)
+			return definition;
+
+		if (sCallSite.containsInvokeExpr()) {
+			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
+			final String subSig = callee.getSubSignature();
+			final SootClass sc = callee.getDeclaringClass();
+
+			for (SootClass clazz : iccBaseClasses) {
+				if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
+					SootMethod sm = clazz.getMethodUnsafe(subSig);
+					if (sm != null) {
+						ISourceSinkDefinition def = this.sinkMethods.get(sm);
+						if (def != null)
+							return def;
+						break;
 					}
 				}
 			}

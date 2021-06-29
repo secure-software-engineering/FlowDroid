@@ -17,6 +17,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;

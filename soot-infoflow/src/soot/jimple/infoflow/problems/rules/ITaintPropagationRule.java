@@ -66,17 +66,18 @@ public interface ITaintPropagationRule {
 	/**
 	 * Propagates a flow along a the return edge
 	 * @param callerD1s The context abstraction at the caller side
+	 * @param calleeD1 The context abstraction at the callee side
 	 * @param source The abstraction to propagate over the statement
 	 * @param stmt The statement at which to propagate the abstraction
-	 * @param callSite The call site of the call from which we return
 	 * @param retSite The return site to which the execution returns after
 	 * leaving the current method
+	 * @param callSite The call site of the call from which we return
 	 * @param killAll Outgoing value for the rule to specify whether
 	 * all taints shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Collection<Abstraction> propagateReturnFlow(
-			Collection<Abstraction> callerD1s, Abstraction source,
+			Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source,
 			Stmt stmt, Stmt retSite, Stmt callSite,
 			ByReferenceBoolean killAll);
 	

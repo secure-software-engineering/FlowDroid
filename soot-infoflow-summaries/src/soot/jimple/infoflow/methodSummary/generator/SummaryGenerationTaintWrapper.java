@@ -27,6 +27,8 @@ import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
+import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
+import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.toolkits.callgraph.Edge;
 

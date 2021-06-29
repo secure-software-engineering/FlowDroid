@@ -165,8 +165,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
+                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		// Check whether this return is treated as a sink
 		if (stmt instanceof ReturnStmt) {
 			final ReturnStmt returnStmt = (ReturnStmt) stmt;

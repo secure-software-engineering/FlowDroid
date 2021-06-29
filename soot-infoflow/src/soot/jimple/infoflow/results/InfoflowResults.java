@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import heros.solver.Pair;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
@@ -33,7 +35,7 @@ import soot.util.MultiMap;
 
 /**
  * Class for collecting information flow results
- * 
+ *
  * @author Steven Arzt
  */
 public class InfoflowResults {
@@ -57,7 +59,7 @@ public class InfoflowResults {
 	/**
 	 * Gets the exceptions that have happened during the data flow analysis. This
 	 * collection is immutable.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<String> getExceptions() {
@@ -67,7 +69,7 @@ public class InfoflowResults {
 	/**
 	 * Adds an exception that has occurred during the data flow analysis to this
 	 * result object
-	 * 
+	 *
 	 * @param ex The exception to add
 	 */
 	public void addException(String ex) {
@@ -82,7 +84,7 @@ public class InfoflowResults {
 
 	/**
 	 * Gets the number of entries in this result object
-	 * 
+	 *
 	 * @return The number of entries in this result object
 	 */
 	public int size() {
@@ -93,7 +95,7 @@ public class InfoflowResults {
 	 * Gets the total number of source-to-sink connections. If there are two
 	 * connections along different paths between the same source and sink, size()
 	 * will return 1, but numConnections() will return 2.
-	 * 
+	 *
 	 * @return The number of source-to-sink connections in this result object
 	 */
 	public int numConnections() {
@@ -106,7 +108,7 @@ public class InfoflowResults {
 
 	/**
 	 * Gets whether this result object is empty, i.e. contains no information flows
-	 * 
+	 *
 	 * @return True if this result object is empty, otherwise false.
 	 */
 	public boolean isEmpty() {
@@ -116,7 +118,7 @@ public class InfoflowResults {
 	/**
 	 * Checks whether this result object contains a sink that exactly matches the
 	 * given value.
-	 * 
+	 *
 	 * @param sink The sink to check for
 	 * @return True if this result contains the given value as a sink, otherwise
 	 *         false.
@@ -131,7 +133,7 @@ public class InfoflowResults {
 	/**
 	 * Checks whether this result object contains a sink with the given method
 	 * signature
-	 * 
+	 *
 	 * @param sinkSignature The method signature to check for
 	 * @return True if there is a sink with the given method signature in this
 	 *         result object, otherwise false.
@@ -141,36 +143,46 @@ public class InfoflowResults {
 	}
 
 	public void addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
-			ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
+						  ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
 		this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
 				new ResultSourceInfo(sourceDefinition, source, sourceStmt));
 	}
 
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-			List<Abstraction> propagationPath) {
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Abstraction> propagationPath) {
+		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData, propagationPath, null);
+	}
+		public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Abstraction> propagationPath, InfoflowManager manager) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;
 		List<AccessPath> apPath = null;
+		List<Stmt> csPath = null;
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
 			apPath = new ArrayList<>(propagationPath.size());
+			if (!InfoflowConfiguration.getPathAgnosticResults())
+				csPath = new ArrayList<>(propagationPath.size());
 			for (Abstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
 					stmtPath.add(pathAbs.getCurrentStmt());
 					apPath.add(pathAbs.getAccessPath());
+					if (csPath != null)
+						csPath.add(pathAbs.getCorrespondingCallSite());
 				}
 			}
 		}
 
 		// Add the result
 		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData, stmtPath,
-				apPath);
+				apPath, csPath, manager);
 	}
 
 	/**
 	 * Adds the given result to this data structure
-	 * 
+	 *
 	 * @param sinkDefinition        The definition of the sink
 	 * @param sink                  The access path that arrived at the sink
 	 *                              statement
@@ -187,10 +199,16 @@ public class InfoflowResults {
 	 * @return The new data flow result
 	 */
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath) {
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites) {
+		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData, propagationPath, propagationAccessPath, propagationCallSites, null);
+	}
+	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
+															InfoflowManager manager) {
 		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
-				propagationPath, propagationAccessPath);
+				propagationPath, propagationAccessPath, propagationCallSites);
 		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
 
 		this.addResult(sinkObj, sourceObj);
@@ -199,7 +217,7 @@ public class InfoflowResults {
 
 	/**
 	 * Adds the given data flow result to this data structure
-	 * 
+	 *
 	 * @param res The data flow result to add
 	 */
 	public void addResult(DataFlowResult res) {
@@ -210,7 +228,7 @@ public class InfoflowResults {
 
 	/**
 	 * Adds the given result to this data structure
-	 * 
+	 *
 	 * @param sink   The sink at which the taint arrived
 	 * @param source The source from which the taint originated
 	 */
@@ -221,12 +239,14 @@ public class InfoflowResults {
 					results = new ConcurrentHashMultiMap<>();
 			}
 		}
-		this.results.put(sink, source);
+		boolean put = this.results.put(sink, source);
+		if (!put)
+			logger.debug("Found two equal paths");
 	}
 
 	/**
 	 * Adds all results from the given data structure to this one
-	 * 
+	 *
 	 * @param results The data structure from which to copy the results
 	 */
 	public void addAll(InfoflowResults results) {
@@ -260,7 +280,7 @@ public class InfoflowResults {
 
 	/**
 	 * Adds the given data flow results to this result object
-	 * 
+	 *
 	 * @param results The data flow results to add
 	 */
 	public void addAll(Set<DataFlowResult> results) {
@@ -273,7 +293,7 @@ public class InfoflowResults {
 
 	/**
 	 * Gets all results in this object as a hash map from sinks to sets of sources.
-	 * 
+	 *
 	 * @return All results in this object as a hash map.
 	 */
 	public MultiMap<ResultSinkInfo, ResultSourceInfo> getResults() {
@@ -282,7 +302,7 @@ public class InfoflowResults {
 
 	/**
 	 * Gets the data flow results in a flat set
-	 * 
+	 *
 	 * @return The data flow results in a flat set. If no data flows are available,
 	 *         the return value is null.
 	 */
@@ -300,7 +320,7 @@ public class InfoflowResults {
 
 	/**
 	 * Checks whether there is a path between the given source and sink.
-	 * 
+	 *
 	 * @param sink   The sink to which there may be a path
 	 * @param source The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
@@ -327,7 +347,7 @@ public class InfoflowResults {
 
 	/**
 	 * Checks whether there is a path between the given source and sink.
-	 * 
+	 *
 	 * @param sink   The sink to which there may be a path
 	 * @param source The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
@@ -350,7 +370,7 @@ public class InfoflowResults {
 	/**
 	 * Checks whether there is an information flow between the two given methods
 	 * (specified by their respective Soot signatures).
-	 * 
+	 *
 	 * @param sinkSignature   The sink to which there may be a path
 	 * @param sourceSignature The source from which there may be a path
 	 * @return True if there is a path between the given source and sink, false
@@ -374,7 +394,7 @@ public class InfoflowResults {
 
 	/**
 	 * Finds the entry for a sink method with the given signature
-	 * 
+	 *
 	 * @param sinkSignature The sink's method signature to look for
 	 * @return The key of the entry with the given method signature if such an entry
 	 *         has been found, otherwise null.
@@ -412,7 +432,7 @@ public class InfoflowResults {
 
 	/**
 	 * Prints all results stored in this object to the given writer
-	 * 
+	 *
 	 * @param wr The writer to which to print the results
 	 * @throws IOException Thrown when data writing fails
 	 */
@@ -441,7 +461,7 @@ public class InfoflowResults {
 	 * Gets the termination state that describes whether the data flow analysis
 	 * terminated normally or whether one or more phases terminated prematurely due
 	 * to a timeout or an out-of-memory condition
-	 * 
+	 *
 	 * @return The termination state
 	 */
 	public int getTerminationState() {
@@ -452,7 +472,7 @@ public class InfoflowResults {
 	 * Sets the termination state that describes whether the data flow analysis
 	 * terminated normally or whether one or more phases terminated prematurely due
 	 * to a timeout or an out-of-memory condition
-	 * 
+	 *
 	 * @param terminationState The termination state
 	 */
 	public void setTerminationState(int terminationState) {
@@ -461,18 +481,18 @@ public class InfoflowResults {
 
 	/**
 	 * Gets whether the analysis was aborted due to a timeout
-	 * 
+	 *
 	 * @return True if the analysis was aborted due to a timeout, otherwise false
 	 */
 	public boolean wasAbortedTimeout() {
 		return ((terminationState & TERMINATION_DATA_FLOW_TIMEOUT) == TERMINATION_DATA_FLOW_TIMEOUT)
 				|| ((terminationState
-						& TERMINATION_PATH_RECONSTRUCTION_TIMEOUT) == TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
+				& TERMINATION_PATH_RECONSTRUCTION_TIMEOUT) == TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
 	}
 
 	/**
 	 * Gets whether the analysis was terminated because it ran out of memory
-	 * 
+	 *
 	 * @return True if the analysis was terminated because it ran out of memory,
 	 *         otherwise false
 	 */
@@ -483,7 +503,7 @@ public class InfoflowResults {
 
 	/**
 	 * Gets the performance data on this FlowDroid run
-	 * 
+	 *
 	 * @return The performance data on this FlowDroid run
 	 */
 	public InfoflowPerformanceData getPerformanceData() {
@@ -492,7 +512,7 @@ public class InfoflowResults {
 
 	/**
 	 * Sets the performance data on this FlowDroid run
-	 * 
+	 *
 	 * @param performanceData The performance data on this FlowDroid run
 	 */
 	public void setPerformanceData(InfoflowPerformanceData performanceData) {
@@ -501,7 +521,7 @@ public class InfoflowResults {
 
 	/**
 	 * Adds the given performance data to this result object
-	 * 
+	 *
 	 * @param performanceData The performance data to add
 	 */
 	public void addPerformanceData(InfoflowPerformanceData performanceData) {

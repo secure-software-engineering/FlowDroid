@@ -82,8 +82,8 @@ public class StaticPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
+                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		// We only handle taints on static variables
 		if (!source.getAccessPath().isStaticFieldRef())
 			return null;

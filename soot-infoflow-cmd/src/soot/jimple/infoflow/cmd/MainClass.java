@@ -32,6 +32,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
+import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
 import soot.jimple.infoflow.android.SetupApplication;
@@ -125,6 +126,7 @@ public class MainClass {
 	private static final String OPTION_PATH_RECONSTRUCTION_MODE = "pr";
 	private static final String OPTION_IMPLICIT_FLOW_MODE = "i";
 	private static final String OPTION_STATIC_FLOW_TRACKING_MODE = "sf";
+	private static final String OPTION_DATA_FLOW_DIRECTION = "dir";
 
 	// Evaluation-specific options
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
@@ -234,6 +236,8 @@ public class MainClass {
 				"Use the specified mode when processing implicit data flows (NONE, ARRAYONLY, ALL)");
 		options.addOption(OPTION_STATIC_FLOW_TRACKING_MODE, "staticmode", true,
 				"Use the specified mode when tracking static data flows (CONTEXTFLOWSENSITIVE, CONTEXTFLOWINSENSITIVE, NONE)");
+		options.addOption(OPTION_DATA_FLOW_DIRECTION, "direction", true,
+				"Specifies the direction of the infoflow analysis (FORWARDS, BACKWARDS)");
 
 		// Evaluation-specific options
 		options.addOption(OPTION_ANALYZE_FRAMEWORKS, "analyzeframeworks", false,
@@ -719,6 +723,17 @@ public class MainClass {
 		}
 	}
 
+	private static DataFlowDirection parseDataFlowDirection(String dataflowDirection) {
+		if (dataflowDirection.equalsIgnoreCase("FORWARDS"))
+			return DataFlowDirection.Forwards;
+		else if (dataflowDirection.equalsIgnoreCase("BACKWARDS"))
+			return DataFlowDirection.Backwards;
+		else {
+			System.err.println(String.format("Invalid data flow direction: %s", dataflowDirection));
+			throw new AbortAnalysisException();
+		}
+	}
+
 	/**
 	 * Parses the given command-line options and fills the given configuration
 	 * object accordingly
@@ -889,6 +904,11 @@ public class MainClass {
 			String staticFlowMode = cmd.getOptionValue(OPTION_STATIC_FLOW_TRACKING_MODE);
 			if (staticFlowMode != null && !staticFlowMode.isEmpty())
 				config.setStaticFieldTrackingMode(parseStaticFlowMode(staticFlowMode));
+		}
+		{
+			String dataflowDirection = cmd.getOptionValue(OPTION_DATA_FLOW_DIRECTION);
+			if (dataflowDirection != null && !dataflowDirection.isEmpty())
+				config.setDataFlowDirection(parseDataFlowDirection(dataflowDirection));
 		}
 
 		{

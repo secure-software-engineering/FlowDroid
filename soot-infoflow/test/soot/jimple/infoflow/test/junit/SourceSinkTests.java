@@ -18,20 +18,21 @@ import org.junit.Test;
 
 import soot.SootMethod;
 import soot.Value;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.IfStmt;
-import soot.jimple.InvokeExpr;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
+import soot.jimple.infoflow.util.BaseSelector;
 
 /**
  * Test cases for FlowDroid's interaction with non-standard source sink managers
@@ -46,7 +47,7 @@ public class SourceSinkTests extends JUnitTests {
 	private static final String sinkAP = "<soot.jimple.infoflow.test.SourceSinkTestCode: void doLeakSecret2(soot.jimple.infoflow.test.SourceSinkTestCode$A)>";
 	private static final String sinkAP2 = "<soot.jimple.infoflow.test.SourceSinkTestCode: void doLeakSecret(java.lang.String)>";
 
-	private abstract class BaseSourceSinkManager implements ISourceSinkManager {
+	private abstract class BaseSourceSinkManager implements IReversibleSourceSinkManager {
 
 		@Override
 		public void initialize() {
@@ -72,6 +73,19 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+			if (!sCallSite.containsInvokeExpr())
+				return null;
+
+			SootMethod target = sCallSite.getInvokeExpr().getMethod();
+			if ((target.getSignature().equals(sinkAP) || target.getSignature().equals(sinkAP2)
+					|| target.getSignature().equals(sink)) && sCallSite.getInvokeExpr().getArgCount() > 0) {
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(sCallSite.getInvokeExpr().getArg(0), true);
+				return new SourceInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)), ap);
+			}
+			return null;
+		}
 	}
 
 	private final ISourceSinkManager getSecretSSM = new BaseSourceSinkManager() {
@@ -87,6 +101,16 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (sCallSite.containsInvokeExpr() && sCallSite instanceof DefinitionStmt
+					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")
+					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
+				SootMethod target = sCallSite.getInvokeExpr().getMethod();
+				return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));
+			}
+			return null;
+		}
 	};
 
 	private final ISourceSinkManager getSecretOrSecret2SSM = new BaseSourceSinkManager() {
@@ -103,6 +127,17 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (sCallSite.containsInvokeExpr() && sCallSite instanceof DefinitionStmt
+					&& (sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")
+					|| (sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret2")))
+					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
+				SootMethod target = sCallSite.getInvokeExpr().getMethod();
+				return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));
+			}
+			return null;
+		}
 	};
 
 	private final ISourceSinkManager noTaintSubFieldsSSM = new BaseSourceSinkManager() {
@@ -118,9 +153,35 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (ap == null)
+				return null;
+			if (sCallSite.containsInvokeExpr() && sCallSite instanceof DefinitionStmt
+					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")
+					&& ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue()) {
+				SootMethod target = sCallSite.getInvokeExpr().getMethod();
+				return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));
+			}
+			return null;
+		}
+
+		@Override
+		public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+			if (!sCallSite.containsInvokeExpr())
+				return null;
+
+			SootMethod target = sCallSite.getInvokeExpr().getMethod();
+			if ((target.getSignature().equals(sinkAP) || target.getSignature().equals(sinkAP2)
+					|| target.getSignature().equals(sink)) && sCallSite.getInvokeExpr().getArgCount() > 0) {
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(sCallSite.getInvokeExpr().getArg(0), false);
+				return new SourceInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)), ap);
+			}
+			return null;
+		}
 	};
 
-	private final class ifAsSinkSSM implements ISourceSinkManager {
+	private final class ifAsSinkSSM implements IReversibleSourceSinkManager {
 
 		@Override
 		public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
@@ -135,6 +196,28 @@ public class SourceSinkTests extends JUnitTests {
 		@Override
 		public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
 			return sCallSite instanceof IfStmt ? new SinkInfo(null) : null;
+		}
+
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (sCallSite instanceof DefinitionStmt && sCallSite.containsInvokeExpr()
+					&& sCallSite.getInvokeExpr().getMethod().getName().equals("currentTimeMillis")
+					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
+				return new SinkInfo(null);
+			}
+			return null;
+		}
+
+		@Override
+		public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+			if (!(sCallSite instanceof IfStmt))
+				return null;
+			Value cond = ((IfStmt) sCallSite).getCondition();
+			if (!(cond instanceof LeExpr))
+				return null;
+			LeExpr le = (LeExpr) cond;
+			AccessPath ap = manager.getAccessPathFactory().createAccessPath(le.getOp1(), true);
+			return ap != null ? new SourceInfo(null, ap) : null;
 		}
 
 		@Override
@@ -156,6 +239,16 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (sCallSite.containsInvokeExpr() && sCallSite instanceof DefinitionStmt
+					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")
+					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
+				SootMethod target = sCallSite.getInvokeExpr().getMethod();
+				return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));
+			}
+			return null;
+		}
 	}
 
 	private final class parameterSourceSSM extends BaseSourceSinkManager {
@@ -175,6 +268,37 @@ public class SourceSinkTests extends JUnitTests {
 			return null;
 		}
 
+		@Override
+		public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+			if (sCallSite.containsInvokeExpr()) {
+				InvokeExpr iexpr = sCallSite.getInvokeExpr();
+				String name = iexpr.getMethod().getName();
+				boolean includeExistingImmutableAliases = name.equals("annotatedSource");
+				if ((name.equals("source") || includeExistingImmutableAliases) && iexpr.getArgCount() > 0) {
+					if (ap == null)
+						return new SinkInfo(null);
+					else if (iexpr.getArg(0) == ap.getPlainValue()) {
+						SootMethod target = sCallSite.getInvokeExpr().getMethod();
+						return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));
+					}
+				}
+			}
+			return null;
+		}
+		@Override
+		public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+			if (!sCallSite.containsInvokeExpr())
+				return null;
+
+			SootMethod target = sCallSite.getInvokeExpr().getMethod();
+			if ((target.getSignature().equals(sinkAP) || target.getSignature().equals(sinkAP2)
+					|| target.getSignature().equals(sink)) && sCallSite.getInvokeExpr().getArgCount() > 0) {
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(sCallSite.getInvokeExpr().getArg(0), null, null, null,
+						true, false, true, AccessPath.ArrayTaintType.ContentsAndLength, true);
+				return new SourceInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)), ap);
+			}
+			return null;
+		}
 	}
 
 	@Test(timeout = 300000)

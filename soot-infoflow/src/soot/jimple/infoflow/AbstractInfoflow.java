@@ -45,7 +45,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected IPathBuilderFactory pathBuilderFactory;
 	protected InfoflowConfiguration config = new InfoflowConfiguration();
 	protected ITaintPropagationWrapper taintWrapper;
-	protected INativeCallHandler nativeCallHandler = new DefaultNativeCallHandler();
+	protected INativeCallHandler nativeCallHandler;
 	protected IIPCManager ipcManager = new DefaultIPCManager(new ArrayList<String>());
 
 	protected final BiDirICFGFactory icfgFactory;

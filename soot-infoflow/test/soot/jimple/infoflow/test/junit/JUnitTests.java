@@ -20,11 +20,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -131,6 +134,7 @@ public abstract class JUnitTests {
 	}
 
 	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
+//		BackwardsInfoflow result = new BackwardsInfoflow("", false, null);
 		Infoflow result = new Infoflow("", false, null);
 		result.setThrowExceptions(true);
 		ConfigForTest testConfig = new ConfigForTest();
@@ -146,7 +150,27 @@ public abstract class JUnitTests {
 			}
 
 		}
+//		result.getConfig().setLogSourcesAndSinks(true);
+
 		return result;
 	}
 
+	/**
+	 * Tells that the test should only be run on backwards analysis
+	 *
+	 * @param infoflow infoflow object
+	 * @param message message shown in console
+	 */
+	protected void onlyBackwards(IInfoflow infoflow, String message) {
+		Assume.assumeTrue("Test is only applicable on backwards analysis: " + message, infoflow instanceof BackwardsInfoflow);
+	}
+
+	/**
+	 * Tells that the test should only be run on forwards analysis
+	 *
+	 * @param infoflow infoflow object
+	 */
+	protected void onlyForwards(IInfoflow infoflow) {
+		Assume.assumeTrue("Test is only applicable on forwards analysis", infoflow instanceof Infoflow);
+	}
 }

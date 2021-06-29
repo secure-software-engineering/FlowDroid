@@ -513,6 +513,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (followReturnsPastSeeds && d1 == zeroValue && (inc == null || inc.isEmpty())) {
 			Collection<N> callers = icfg.getCallersOf(methodThatNeedsSummary);
 			for (N c : callers) {
+				SootMethod smm = icfg.getMethodOf(c);
 				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
 					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
 							retSiteC);

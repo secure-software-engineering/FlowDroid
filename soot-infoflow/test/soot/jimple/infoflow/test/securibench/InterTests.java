@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 
 public class InterTests extends JUnitTests {
@@ -22,7 +23,7 @@ public class InterTests extends JUnitTests {
 	public void inter1() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -31,7 +32,7 @@ public class InterTests extends JUnitTests {
 	public void inter2() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 2);
 	}
@@ -40,7 +41,7 @@ public class InterTests extends JUnitTests {
 	public void inter3() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -49,7 +50,7 @@ public class InterTests extends JUnitTests {
 	public void inter4() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter4: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -58,7 +59,7 @@ public class InterTests extends JUnitTests {
 	public void inter5() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter5: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -67,7 +68,7 @@ public class InterTests extends JUnitTests {
 	public void inter6() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter6: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -76,7 +77,7 @@ public class InterTests extends JUnitTests {
 	public void inter7() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter7: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -85,7 +86,7 @@ public class InterTests extends JUnitTests {
 	public void inter8() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter8: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -94,7 +95,7 @@ public class InterTests extends JUnitTests {
 	public void inter9() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter9: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 2);
 	}
@@ -103,7 +104,7 @@ public class InterTests extends JUnitTests {
 	public void inter10() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter10: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -112,7 +113,7 @@ public class InterTests extends JUnitTests {
 	public void inter11() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter11: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -121,7 +122,7 @@ public class InterTests extends JUnitTests {
 	public void inter12() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter12: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -130,7 +131,7 @@ public class InterTests extends JUnitTests {
 	public void inter13() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter13: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -139,7 +140,7 @@ public class InterTests extends JUnitTests {
 	public void inter14() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<securibench.micro.inter.Inter14: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
-		Infoflow infoflow = initInfoflow(epoints);
+		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}

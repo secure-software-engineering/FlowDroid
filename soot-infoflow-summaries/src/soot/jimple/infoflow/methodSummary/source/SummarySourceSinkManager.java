@@ -1,9 +1,6 @@
 package soot.jimple.infoflow.methodSummary.source;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,20 +9,13 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import heros.solver.IDESolver;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Value;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.ParameterRef;
-import soot.jimple.ReturnStmt;
-import soot.jimple.ReturnVoidStmt;
-import soot.jimple.Stmt;
-import soot.jimple.ThisRef;
+import soot.*;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.methodSummary.data.factory.SourceSinkFactory;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
+import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
@@ -36,7 +26,7 @@ import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
  * @author Malte Viering
  * @author Steven Arzt
  */
-public class SummarySourceSinkManager implements ISourceSinkManager {
+public class SummarySourceSinkManager implements IReversibleSourceSinkManager {
 
 	protected final LoadingCache<SootClass, Collection<SootField>> classToFields = IDESolver.DEFAULT_CACHE_BUILDER
 			.build(new CacheLoader<SootClass, Collection<SootField>>() {
@@ -128,6 +118,37 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 		return null;
 	}
 
+	public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		// If this is not the method we are looking for, we skip it
+		SootMethod currentMethod = manager.getICFG().getMethodOf(sCallSite);
+		if (!isMethodToSummarize(currentMethod))
+			return null;
+		if (ap != null)
+			return null;
+
+		if (sCallSite instanceof IdentityStmt) {
+			IdentityStmt jstmt = (IdentityStmt) sCallSite;
+			Value leftOp = jstmt.getLeftOp();
+			Value rightOp = jstmt.getRightOp();
+
+			// check if we have a source with apl = 0 (this or parameter source)
+			if (rightOp instanceof ParameterRef) {
+				ParameterRef pref = (ParameterRef) rightOp;
+				logger.debug("source: " + sCallSite + " " + currentMethod.getSignature());
+				if (debug)
+					System.out.println("source: " + sCallSite + " " + currentMethod.getSignature());
+
+				return new SinkInfo(null);
+			} else if (rightOp instanceof ThisRef) {
+				ThisRef tref = (ThisRef) rightOp;
+				if (debug)
+					System.out.println("source: (this)" + sCallSite + " " + currentMethod.getSignature());
+				return new SinkInfo(null);
+			}
+		}
+		return null;
+	}
+
 	private boolean isMethodToSummarize(SootMethod currentMethod) {
 		// Initialize the method we are interested in
 		if (method == null)
@@ -156,6 +177,46 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 			return null;
 
 		return sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt ? new SinkInfo(null) : null;
+	}
+	@Override
+	public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+		SootMethod currentMethod = manager.getICFG().getMethodOf(sCallSite);
+		if (!isMethodToSummarize(currentMethod))
+			return null;
+
+		if (!currentMethod.hasActiveBody())
+			return null;
+
+		if (!(sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt))
+			return null;
+
+		Set<AccessPath> aps = new HashSet<>();
+		List<FlowSource> sources = new ArrayList<>();
+		UnitPatchingChain units = currentMethod.getActiveBody().getUnits();
+		for (Unit unit : units) {
+			if (unit instanceof IdentityStmt) {
+				IdentityStmt iStmt = ((IdentityStmt) unit);
+				Value leftOp = iStmt.getLeftOp();
+				Value rightOp = iStmt.getRightOp();
+
+				if (rightOp instanceof ParameterRef) {
+					ParameterRef pref = (ParameterRef) rightOp;
+//					logger.debug("source: " + sCallSite + " " + currentMethod.getSignature());
+//					if (debug)
+//						System.out.println("sink: " + sCallSite + " " + currentMethod.getSignature());
+					aps.add(manager.getAccessPathFactory().createAccessPath(leftOp, true));
+					sources.add(sourceSinkFactory.createParameterSource(pref.getIndex(), pref.getType().toString()));
+				} else if (rightOp instanceof ThisRef) {
+					ThisRef tref = (ThisRef) rightOp;
+//					if (debug)
+//						System.out.println("sink: (this)" + sCallSite + " " + currentMethod.getSignature());
+					aps.add(manager.getAccessPathFactory().createAccessPath(leftOp, true));
+					sources.add(sourceSinkFactory.createThisSource(tref.getType().toString()));
+				}
+			}
+		}
+
+		return aps.isEmpty() ? null : new SourceInfo(null, aps, sources);
 	}
 
 	@Override

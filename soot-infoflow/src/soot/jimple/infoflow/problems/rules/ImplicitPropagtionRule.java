@@ -238,8 +238,8 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source,
-			Stmt returnStmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source,
+                                                       Stmt returnStmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		// Are we inside a conditionally-called method?
 		boolean callerD1sConditional = false;
 		for (Abstraction d1 : callerD1s)

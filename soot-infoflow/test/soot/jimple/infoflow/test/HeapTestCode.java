@@ -631,10 +631,10 @@ public class HeapTestCode {
 		
 		// Create the alias
 		foo2(b, b);
-		String tainted = bar2(a).b;
+		String tainted = bar2(a).b; // {bar2(a)}
 		
-		ConnectionManager cm = new ConnectionManager();
-		cm.publish(tainted);
+		ConnectionManager cm = new ConnectionManager(); // {tainted}
+		cm.publish(tainted); // {tainted}
 	}
 
 	public void negativeTestAliases() {
@@ -744,6 +744,14 @@ public class HeapTestCode {
 		cm.publish(b.b);
 		cm.publish(c.b);
 		cm.publish(d.b);
+	}
+
+	public void singleAliasTest() {
+		A a = new A();
+		A b = alias(a);
+		a.b = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(b.b);
 	}
 
 	private int intData;
@@ -1231,7 +1239,7 @@ public class HeapTestCode {
 		A b = a;
 		a.i = TelephonyManager.getIMEI();
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(b.i);		
+		cm.publish(b.i);
 	}
 	
 	public void taintPrimitiveFieldTest2() {

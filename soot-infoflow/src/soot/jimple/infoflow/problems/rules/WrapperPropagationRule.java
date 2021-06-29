@@ -26,6 +26,7 @@ import soot.jimple.infoflow.util.TypeUtils;
  *
  */
 public class WrapperPropagationRule extends AbstractTaintPropagationRule {
+	private static boolean DEBUG_TW = true;
 
 	public WrapperPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
@@ -156,12 +157,13 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 					break;
 				}
 		}
+
 		return wrapperTaints;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
+                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

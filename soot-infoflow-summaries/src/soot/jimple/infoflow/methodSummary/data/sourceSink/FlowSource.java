@@ -83,6 +83,9 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 			return "Return value of gap " + gap.getSignature()
 					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
 
+		if (isReturn())
+			return "Return value" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
+
 		if (isCustom())
 			return "CUSTOM " + gapString + "Parameter " + getParameterIndex()
 					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));

@@ -82,6 +82,7 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>test-jar</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -145,6 +146,16 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.5</version>
+		</dependency>
 		<dependency>
 			<groupId>de.tud.sse</groupId>
 			<artifactId>soot-infoflow</artifactId>

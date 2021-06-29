@@ -17,6 +17,9 @@ public class InfoflowPerformanceData {
 	private int sourceCount = -1;
 	private int sinkCount = -1;
 
+	private long infoflowPropagationCount = -1;
+	private long aliasPropagationCount = -1;
+
 	public InfoflowPerformanceData() {
 		//
 	}
@@ -250,6 +253,22 @@ public class InfoflowPerformanceData {
 	 */
 	public int getSinkCount() {
 		return sinkCount;
+	}
+
+	public void setInfoflowPropagationCount(long infoflowPropagationCount) {
+		this.infoflowPropagationCount = infoflowPropagationCount;
+	}
+
+	public void setAliasPropagationCount(long aliasPropagationCount) {
+		this.aliasPropagationCount = aliasPropagationCount;
+	}
+
+	public long getInfoflowPropagationCount() {
+		return this.infoflowPropagationCount;
+	}
+
+	public long getAliasPropagationCount() {
+		return this.aliasPropagationCount;
 	}
 
 	@Override

@@ -273,7 +273,8 @@ public class AccessPathFactory {
 
 				// If we have a more precise base type in the first field, we
 				// take that
-				if (fields != null && fields.length > 0 && !(baseType instanceof ArrayType))
+				if (fields != null && fields.length > 0 && !(baseType instanceof ArrayType) && fields[0] != null
+						&& fields[0].getDeclaringClass() != null)
 					baseType = TypeUtils.getMorePreciseType(baseType, fields[0].getDeclaringClass().getType());
 				if (baseType == null)
 					return null;

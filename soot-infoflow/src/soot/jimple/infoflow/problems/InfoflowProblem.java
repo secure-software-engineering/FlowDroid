@@ -509,11 +509,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
 							Collection<Abstraction> callerD1s) {
-						Set<Abstraction> res = computeTargetsInternal(source, callerD1s);
+						Set<Abstraction> res = computeTargetsInternal(source, d1, callerD1s);
 						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction source,
+					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -548,8 +548,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, newSource,
-								(Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
+						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, calleeD1,
+								newSource, (Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
 						if (killAll.value)
 							return null;
 						if (res == null)
@@ -1008,6 +1008,15 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										res.add(newAP);
 								}
 							} else {
+								// Sometimes callers have more arguments than the callee parameters.
+								// For example, this is the case on a call from sendMessageDelayed(android.os.Message, int)
+								// to the callee handler handleMessage(android.os.Message message). The delay is handled
+								// native and not present in the call-graph.
+								// In this case, we just break out of the loop as no more params are left to be mapped
+								// into the callee
+								if (i >= paramLocals.length)
+									break;
+
 								// Taint the corresponding parameter local in
 								// the callee
 								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[i]);

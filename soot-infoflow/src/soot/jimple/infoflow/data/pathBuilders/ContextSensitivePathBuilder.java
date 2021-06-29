@@ -60,6 +60,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					// Process the predecessor
 					if (processPredecessor(scap, pred)) {
 						// Schedule the predecessor
+						assert pathCache.containsKey(pred);
 						scheduleDependentTask(new SourceFindingTask(pred));
 					}
 
@@ -68,6 +69,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 						for (Abstraction neighbor : pred.getNeighbors()) {
 							if (processPredecessor(scap, neighbor)) {
 								// Schedule the predecessor
+								assert pathCache.containsKey(neighbor);
 								scheduleDependentTask(new SourceFindingTask(neighbor));
 							}
 						}
@@ -86,6 +88,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 				checkForSource(pred, extendedScap);
 				return pathCache.put(pred, extendedScap);
+
 			}
 
 			// If we enter a method, we put it on the stack
@@ -171,7 +174,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		SourceContext sourceContext = abs.getSourceContext();
 		Pair<ResultSourceInfo, ResultSinkInfo> newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
 				scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-				sourceContext.getUserData(), scap.getAbstractionPath());
+				sourceContext.getUserData(), scap.getAbstractionPath(), manager);
 
 		// Notify our handlers
 		if (resultAvailableHandlers != null)

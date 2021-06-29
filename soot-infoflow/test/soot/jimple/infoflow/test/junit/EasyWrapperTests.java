@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
@@ -53,7 +54,7 @@ public class EasyWrapperTests extends JUnitTests {
 		wrapper.setAlwaysModelEqualsHashCode(true);
 		
 		IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
+		List<String> epoints = new ArrayList<String>();
     	epoints.add("<soot.jimple.infoflow.test.EasyWrapperTestCode: void hashCodeTest()>");
     	infoflow.setTaintWrapper(wrapper);
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
