@@ -169,6 +169,9 @@ public class AndroidEntryPointUtils {
 		if (componentType == ComponentType.Service
 				&& AndroidEntryPointConstants.getServiceLifecycleMethods().contains(subsignature))
 			return true;
+		if (componentType == ComponentType.Application
+				&& AndroidEntryPointConstants.getApplicationLifecycleMethods().contains(subsignature))
+			return true;
 		if (componentType == ComponentType.Fragment
 				&& AndroidEntryPointConstants.getFragmentLifecycleMethods().contains(subsignature))
 			return true;
