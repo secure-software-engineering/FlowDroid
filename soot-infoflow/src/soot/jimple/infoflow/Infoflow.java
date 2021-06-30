@@ -305,432 +305,11 @@ public class Infoflow extends AbstractInfoflow {
 			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand)
 				logger.info("Callgraph has {} edges", Scene.v().getCallGraph().size());
 
-			if (!config.isTaintAnalysisEnabled())
-				return;
-
-			// Make sure that we have a path builder factory
-			if (pathBuilderFactory == null)
-				pathBuilderFactory = new DefaultPathBuilderFactory(config.getPathConfiguration());
-
-			logger.info("Starting Taint Analysis");
 			IInfoflowCFG iCfg = icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(),
 					config.getEnableExceptionTracking());
 
-			// Check whether we need to run with one source at a time
-			IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime() && sourcesSinks != null
-					&& sourcesSinks instanceof IOneSourceAtATimeManager ? (IOneSourceAtATimeManager) sourcesSinks
-							: null;
-
-			// Reset the current source
-			if (oneSourceAtATime != null)
-				oneSourceAtATime.resetCurrentSource();
-			boolean hasMoreSources = oneSourceAtATime == null || oneSourceAtATime.hasNextSource();
-
-			while (hasMoreSources) {
-				// Fetch the next source
-				if (oneSourceAtATime != null)
-					oneSourceAtATime.nextSource();
-
-				// Create the executor that takes care of the workers
-				int numThreads = Runtime.getRuntime().availableProcessors();
-				InterruptableExecutor executor = executorFactory.createExecutor(numThreads, true, config);
-				executor.setThreadFactory(new ThreadFactory() {
-
-					@Override
-					public Thread newThread(Runnable r) {
-						Thread thrIFDS = new Thread(r);
-						thrIFDS.setDaemon(true);
-						thrIFDS.setName("FlowDroid");
-						return thrIFDS;
-					}
-
-				});
-
-				// Initialize the memory manager
-				IMemoryManager<Abstraction, Unit> memoryManager = createMemoryManager();
-
-				// Initialize our infrastructure for global taints
-				final Set<IInfoflowSolver> solvers = new HashSet<>();
-				GlobalTaintManager globalTaintManager = new GlobalTaintManager(solvers);
-
-				// Initialize the data flow manager
-				manager = initializeInfoflowManager(sourcesSinks, iCfg, globalTaintManager);
-
-				// Create the solver peer group
-				solverPeerGroup = new GCSolverPeerGroup();
-
-				// Initialize the alias analysis
-				Abstraction zeroValue = null;
-				IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
-				IInfoflowSolver backwardSolver = aliasingStrategy.getSolver();
-				if (backwardSolver != null) {
-					zeroValue = backwardSolver.getTabulationProblem().createZeroValue();
-					solvers.add(backwardSolver);
-				}
-
-				// Initialize the aliasing infrastructure
-				Aliasing aliasing = createAliasController(aliasingStrategy);
-				if (dummyMainMethod != null)
-					aliasing.excludeMethodFromMustAlias(dummyMainMethod);
-				manager.setAliasing(aliasing);
-
-				// Initialize the data flow problem
-				InfoflowProblem forwardProblem = new InfoflowProblem(manager, zeroValue, ruleManagerFactory);
-
-				// We need to create the right data flow solver
-				IInfoflowSolver forwardSolver = createForwardSolver(executor, forwardProblem);
-
-				// Set the options
-				manager.setForwardSolver(forwardSolver);
-				if (aliasingStrategy.getSolver() != null)
-					aliasingStrategy.getSolver().getTabulationProblem().getManager().setForwardSolver(forwardSolver);
-				solvers.add(forwardSolver);
-
-				memoryWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
-
-				forwardSolver.setMemoryManager(memoryManager);
-				// forwardSolver.setEnableMergePointChecking(true);
-
-				forwardProblem.setTaintPropagationHandler(taintPropagationHandler);
-				forwardProblem.setTaintWrapper(taintWrapper);
-				if (nativeCallHandler != null)
-					forwardProblem.setNativeCallHandler(nativeCallHandler);
-
-				if (aliasingStrategy.getSolver() != null) {
-					aliasingStrategy.getSolver().getTabulationProblem().setActivationUnitsToCallSites(forwardProblem);
-				}
-
-				// Start a thread for enforcing the timeout
-				FlowDroidTimeoutWatcher timeoutWatcher = null;
-				FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
-				if (config.getDataFlowTimeout() > 0) {
-					timeoutWatcher = new FlowDroidTimeoutWatcher(config.getDataFlowTimeout(), results);
-					timeoutWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
-					if (aliasingStrategy.getSolver() != null)
-						timeoutWatcher.addSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
-					timeoutWatcher.start();
-				}
-
-				InterruptableExecutor resultExecutor = null;
-				long beforePathReconstruction = 0;
-				try {
-					// Print our configuration
-					if (config.getFlowSensitiveAliasing() && !aliasingStrategy.isFlowSensitive())
-						logger.warn("Trying to use a flow-sensitive aliasing with an "
-								+ "aliasing strategy that does not support this feature");
-					if (config.getFlowSensitiveAliasing()
-							&& config.getSolverConfiguration().getMaxJoinPointAbstractions() > 0)
-						logger.warn("Running with limited join point abstractions can break context-"
-								+ "sensitive path builders");
-
-					// We have to look through the complete program to find
-					// sources which are then taken as seeds.
-					int sinkCount = 0;
-					logger.info("Looking for sources and sinks...");
-
-					for (SootMethod sm : getMethodsForSeeds(iCfg))
-						sinkCount += scanMethodForSourcesSinks(sourcesSinks, forwardProblem, sm);
-
-					// We optionally also allow additional seeds to be specified
-					if (additionalSeeds != null)
-						for (String meth : additionalSeeds) {
-							SootMethod m = Scene.v().getMethod(meth);
-							if (!m.hasActiveBody()) {
-								logger.warn("Seed method {} has no active body", m);
-								continue;
-							}
-							forwardProblem.addInitialSeeds(m.getActiveBody().getUnits().getFirst(),
-									Collections.singleton(forwardProblem.zeroValue()));
-						}
-
-					// Report on the sources and sinks we have found
-					if (!forwardProblem.hasInitialSeeds()) {
-						logger.error("No sources found, aborting analysis");
-						continue;
-					}
-					if (sinkCount == 0) {
-						logger.error("No sinks found, aborting analysis");
-						continue;
-					}
-					logger.info("Source lookup done, found {} sources and {} sinks.",
-							forwardProblem.getInitialSeeds().size(), sinkCount);
-
-					// Update the performance statistics
-					performanceData.setSourceCount(forwardProblem.getInitialSeeds().size());
-					performanceData.setSinkCount(sinkCount);
-
-					// Initialize the taint wrapper if we have one
-					if (taintWrapper != null)
-						taintWrapper.initialize(manager);
-					if (nativeCallHandler != null)
-						nativeCallHandler.initialize(manager);
-
-					// Register the handler for interim results
-					TaintPropagationResults propagationResults = forwardProblem.getResults();
-					resultExecutor = executorFactory.createExecutor(numThreads, false, config);
-					resultExecutor.setThreadFactory(new ThreadFactory() {
-
-						@Override
-						public Thread newThread(Runnable r) {
-							Thread thrPath = new Thread(r);
-							thrPath.setDaemon(true);
-							thrPath.setName("FlowDroid Path Reconstruction");
-							return thrPath;
-						}
-					});
-
-					// Create the path builder
-					final IAbstractionPathBuilder builder = createPathBuilder(resultExecutor);
-//					final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
-
-					// If we want incremental result reporting, we have to
-					// initialize it before we start the taint tracking
-					if (config.getIncrementalResultReporting())
-						initializeIncrementalResultReporting(propagationResults, builder);
-
-					// Initialize the performance data
-					if (performanceData.getTaintPropagationSeconds() < 0)
-						performanceData.setTaintPropagationSeconds(0);
-					long beforeTaintPropagation = System.nanoTime();
-
-					onBeforeTaintPropagation(forwardSolver, backwardSolver);
-					forwardSolver.solve();
-
-					// Not really nice, but sometimes Heros returns before all
-					// executor tasks are actually done. This way, we give it a
-					// chance to terminate gracefully before moving on.
-					int terminateTries = 0;
-					while (terminateTries < 10) {
-						if (executor.getActiveCount() != 0 || !executor.isTerminated()) {
-							terminateTries++;
-							try {
-								Thread.sleep(500);
-							} catch (InterruptedException e) {
-								logger.error("Could not wait for executor termination", e);
-							}
-						} else
-							break;
-					}
-					if (executor.getActiveCount() != 0 || !executor.isTerminated())
-						logger.error("Executor did not terminate gracefully");
-					if (executor.getException() != null) {
-						throw new RuntimeException("An exception has occurred in an executor", executor.getException());
-					}
-
-					// Update performance statistics
-					performanceData.updateMaxMemoryConsumption(getUsedMemory());
-					int taintPropagationSeconds = (int) Math.round((System.nanoTime() - beforeTaintPropagation) / 1E9);
-					performanceData.addTaintPropagationSeconds(taintPropagationSeconds);
-
-					// Print taint wrapper statistics
-					if (taintWrapper != null) {
-						logger.info("Taint wrapper hits: " + taintWrapper.getWrapperHits());
-						logger.info("Taint wrapper misses: " + taintWrapper.getWrapperMisses());
-					}
-
-					// Give derived classes a chance to do whatever they need before we remove stuff
-					// from memory
-					onTaintPropagationCompleted(forwardSolver, backwardSolver);
-
-					// Get the result abstractions
-					Set<AbstractionAtSink> res = propagationResults.getResults();
-					propagationResults = null;
-
-					// We need to prune access paths that are entailed by
-					// another one
-					removeEntailedAbstractions(res);
-
-					// Shut down the native call handler
-					if (nativeCallHandler != null)
-						nativeCallHandler.shutdown();
-
-					logger.info(
-							"IFDS problem with {} forward and {} backward edges solved in {} seconds, processing {} results...",
-							forwardSolver.getPropagationCount(),
-							aliasingStrategy.getSolver() == null ? 0
-									: aliasingStrategy.getSolver().getPropagationCount(),
-							taintPropagationSeconds, res == null ? 0 : res.size());
-
-					// Update the statistics
-					{
-						ISolverTerminationReason reason = ((IMemoryBoundedSolver) forwardSolver).getTerminationReason();
-						if (reason != null) {
-							if (reason instanceof OutOfMemoryReason)
-								results.setTerminationState(
-										results.getTerminationState() | InfoflowResults.TERMINATION_DATA_FLOW_OOM);
-							else if (reason instanceof TimeoutReason)
-								results.setTerminationState(
-										results.getTerminationState() | InfoflowResults.TERMINATION_DATA_FLOW_TIMEOUT);
-						}
-					}
-
-					// Force a cleanup. Everything we need is reachable through
-					// the results set, the other abstractions can be killed
-					// now.
-					performanceData.updateMaxMemoryConsumption(getUsedMemory());
-					logger.info(String.format("Current memory consumption: %d MB", getUsedMemory()));
-
-					if (timeoutWatcher != null)
-						timeoutWatcher.stop();
-					memoryWatcher.removeSolver((IMemoryBoundedSolver) forwardSolver);
-					forwardSolver.cleanup();
-					forwardSolver = null;
-					forwardProblem = null;
-
-					solverPeerGroup = null;
-
-					// Remove the alias analysis from memory
-					aliasing = null;
-					if (aliasingStrategy.getSolver() != null) {
-						aliasingStrategy.getSolver().terminate();
-						memoryWatcher.removeSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
-					}
-					aliasingStrategy.cleanup();
-					aliasingStrategy = null;
-
-					if (config.getIncrementalResultReporting())
-						res = null;
-					iCfg.purge();
-
-					// Clean up the manager. Make sure to free objects, even if
-					// the manager is still held by other objects
-					if (manager != null)
-						manager.cleanup();
-					manager = null;
-
-					// Report the remaining memory consumption
-					Runtime.getRuntime().gc();
-					performanceData.updateMaxMemoryConsumption(getUsedMemory());
-					logger.info(String.format("Memory consumption after cleanup: %d MB", getUsedMemory()));
-
-					// Apply the timeout to path reconstruction
-					if (config.getPathConfiguration().getPathReconstructionTimeout() > 0) {
-						pathTimeoutWatcher = new FlowDroidTimeoutWatcher(
-								config.getPathConfiguration().getPathReconstructionTimeout(), results);
-						pathTimeoutWatcher.addSolver(builder);
-						pathTimeoutWatcher.start();
-					}
-					beforePathReconstruction = System.nanoTime();
-
-					// Do the normal result computation in the end unless we
-					// have used incremental path building
-					if (config.getIncrementalResultReporting()) {
-						// After the last intermediate result has been computed,
-						// we need to re-process those abstractions that
-						// received new neighbors in the meantime
-						builder.runIncrementalPathCompuation();
-
-						try {
-							resultExecutor.awaitCompletion();
-						} catch (InterruptedException e) {
-							logger.error("Could not wait for executor termination", e);
-						}
-					} else {
-						memoryWatcher.addSolver(builder);
-						builder.computeTaintPaths(res);
-						res = null;
-
-						// Update the statistics
-						{
-							ISolverTerminationReason reason = builder.getTerminationReason();
-							if (reason != null) {
-								if (reason instanceof OutOfMemoryReason)
-									results.setTerminationState(results.getTerminationState()
-											| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_OOM);
-								else if (reason instanceof TimeoutReason)
-									results.setTerminationState(results.getTerminationState()
-											| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
-							}
-						}
-
-						// Wait for the path builders to terminate
-						try {
-							// The path reconstruction should stop on time anyway. In case it doesn't, we
-							// make sure that we don't get stuck.
-							long pathTimeout = config.getPathConfiguration().getPathReconstructionTimeout();
-							if (pathTimeout > 0)
-								resultExecutor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
-							else
-								resultExecutor.awaitCompletion();
-						} catch (InterruptedException e) {
-							logger.error("Could not wait for executor termination", e);
-						}
-
-						// Get the results once the path builder is done
-						this.results.addAll(builder.getResults());
-					}
-					resultExecutor.shutdown();
-
-					// If the path builder was aborted, we warn the user
-					if (builder.isKilled())
-						logger.warn("Path reconstruction aborted. The reported results may be incomplete. "
-								+ "You might want to try again with sequential path processing enabled.");
-				} finally {
-					// Terminate the executor
-					if (resultExecutor != null)
-						resultExecutor.shutdown();
-
-					// Make sure to stop the watcher thread
-					if (timeoutWatcher != null)
-						timeoutWatcher.stop();
-					if (pathTimeoutWatcher != null)
-						pathTimeoutWatcher.stop();
-
-					if (aliasingStrategy != null) {
-						IInfoflowSolver solver = aliasingStrategy.getSolver();
-						if (solver != null)
-							solver.terminate();
-					}
-
-					// Do we have any more sources?
-					hasMoreSources = oneSourceAtATime != null && oneSourceAtATime.hasNextSource();
-
-					// Shut down the memory watcher
-					memoryWatcher.close();
-
-					// Get rid of all the stuff that's still floating around in
-					// memory
-					forwardProblem = null;
-					forwardSolver = null;
-					if (manager != null)
-						manager.cleanup();
-					manager = null;
-				}
-
-				// Make sure that we are in a sensible state even if we ran out
-				// of memory before
-				Runtime.getRuntime().gc();
-				performanceData.updateMaxMemoryConsumption((int) getUsedMemory());
-				performanceData.setPathReconstructionSeconds(
-						(int) Math.round((System.nanoTime() - beforePathReconstruction) / 1E9));
-
-				logger.info(String.format("Memory consumption after path building: %d MB", getUsedMemory()));
-				logger.info(String.format("Path reconstruction took %d seconds",
-						performanceData.getPathReconstructionSeconds()));
-			}
-
-			// Execute the post-processors
-			for (PostAnalysisHandler handler : this.postProcessors)
-				results = handler.onResultsAvailable(results, iCfg);
-
-			if (results == null || results.isEmpty())
-				logger.warn("No results found.");
-			else if (logger.isInfoEnabled()) {
-				for (ResultSinkInfo sink : results.getResults().keySet()) {
-					logger.info("The sink {} in method {} was called with values from the following sources:", sink,
-							iCfg.getMethodOf(sink.getStmt()).getSignature());
-					for (ResultSourceInfo source : results.getResults().get(sink)) {
-						logger.info("- {} in method {}", source, iCfg.getMethodOf(source.getStmt()).getSignature());
-						if (source.getPath() != null) {
-							logger.info("\ton Path: ");
-							for (Unit p : source.getPath()) {
-								logger.info("\t -> " + iCfg.getMethodOf(p));
-								logger.info("\t\t -> " + p);
-							}
-						}
-					}
-				}
-			}
+			if (config.isTaintAnalysisEnabled())
+				runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
 
 			// Gather performance data
 			performanceData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeCallgraph) / 1E9));
@@ -753,6 +332,429 @@ public class Infoflow extends AbstractInfoflow {
 			logger.error("Exception during data flow analysis", ex);
 			if (throwExceptions)
 				throw ex;
+		}
+	}
+
+	private void runTaintAnalysis(final ISourceSinkManager sourcesSinks, final Set<String> additionalSeeds,
+			IInfoflowCFG iCfg, InfoflowPerformanceData performanceData) {
+		logger.info("Starting Taint Analysis");
+
+		// Make sure that we have a path builder factory
+		if (pathBuilderFactory == null)
+			pathBuilderFactory = new DefaultPathBuilderFactory(config.getPathConfiguration());
+
+		// Check whether we need to run with one source at a time
+		IOneSourceAtATimeManager oneSourceAtATime = config.getOneSourceAtATime() && sourcesSinks != null
+				&& sourcesSinks instanceof IOneSourceAtATimeManager ? (IOneSourceAtATimeManager) sourcesSinks : null;
+
+		// Reset the current source
+		if (oneSourceAtATime != null)
+			oneSourceAtATime.resetCurrentSource();
+		boolean hasMoreSources = oneSourceAtATime == null || oneSourceAtATime.hasNextSource();
+
+		while (hasMoreSources) {
+			// Fetch the next source
+			if (oneSourceAtATime != null)
+				oneSourceAtATime.nextSource();
+
+			// Create the executor that takes care of the workers
+			int numThreads = Runtime.getRuntime().availableProcessors();
+			InterruptableExecutor executor = executorFactory.createExecutor(numThreads, true, config);
+			executor.setThreadFactory(new ThreadFactory() {
+
+				@Override
+				public Thread newThread(Runnable r) {
+					Thread thrIFDS = new Thread(r);
+					thrIFDS.setDaemon(true);
+					thrIFDS.setName("FlowDroid");
+					return thrIFDS;
+				}
+
+			});
+
+			// Initialize the memory manager
+			IMemoryManager<Abstraction, Unit> memoryManager = createMemoryManager();
+
+			// Initialize our infrastructure for global taints
+			final Set<IInfoflowSolver> solvers = new HashSet<>();
+			GlobalTaintManager globalTaintManager = new GlobalTaintManager(solvers);
+
+			// Initialize the data flow manager
+			manager = initializeInfoflowManager(sourcesSinks, iCfg, globalTaintManager);
+
+			// Create the solver peer group
+			solverPeerGroup = new GCSolverPeerGroup();
+
+			// Initialize the alias analysis
+			Abstraction zeroValue = null;
+			IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
+			IInfoflowSolver backwardSolver = aliasingStrategy.getSolver();
+			if (backwardSolver != null) {
+				zeroValue = backwardSolver.getTabulationProblem().createZeroValue();
+				solvers.add(backwardSolver);
+			}
+
+			// Initialize the aliasing infrastructure
+			Aliasing aliasing = createAliasController(aliasingStrategy);
+			if (dummyMainMethod != null)
+				aliasing.excludeMethodFromMustAlias(dummyMainMethod);
+			manager.setAliasing(aliasing);
+
+			// Initialize the data flow problem
+			InfoflowProblem forwardProblem = new InfoflowProblem(manager, zeroValue, ruleManagerFactory);
+
+			// We need to create the right data flow solver
+			IInfoflowSolver forwardSolver = createForwardSolver(executor, forwardProblem);
+
+			// Set the options
+			manager.setForwardSolver(forwardSolver);
+			if (aliasingStrategy.getSolver() != null)
+				aliasingStrategy.getSolver().getTabulationProblem().getManager().setForwardSolver(forwardSolver);
+			solvers.add(forwardSolver);
+
+			memoryWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
+
+			forwardSolver.setMemoryManager(memoryManager);
+			// forwardSolver.setEnableMergePointChecking(true);
+
+			forwardProblem.setTaintPropagationHandler(taintPropagationHandler);
+			forwardProblem.setTaintWrapper(taintWrapper);
+			if (nativeCallHandler != null)
+				forwardProblem.setNativeCallHandler(nativeCallHandler);
+
+			if (aliasingStrategy.getSolver() != null) {
+				aliasingStrategy.getSolver().getTabulationProblem().setActivationUnitsToCallSites(forwardProblem);
+			}
+
+			// Start a thread for enforcing the timeout
+			FlowDroidTimeoutWatcher timeoutWatcher = null;
+			FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
+			if (config.getDataFlowTimeout() > 0) {
+				timeoutWatcher = new FlowDroidTimeoutWatcher(config.getDataFlowTimeout(), results);
+				timeoutWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
+				if (aliasingStrategy.getSolver() != null)
+					timeoutWatcher.addSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
+				timeoutWatcher.start();
+			}
+
+			InterruptableExecutor resultExecutor = null;
+			long beforePathReconstruction = 0;
+			try {
+				// Print our configuration
+				if (config.getFlowSensitiveAliasing() && !aliasingStrategy.isFlowSensitive())
+					logger.warn("Trying to use a flow-sensitive aliasing with an "
+							+ "aliasing strategy that does not support this feature");
+				if (config.getFlowSensitiveAliasing()
+						&& config.getSolverConfiguration().getMaxJoinPointAbstractions() > 0)
+					logger.warn("Running with limited join point abstractions can break context-"
+							+ "sensitive path builders");
+
+				// We have to look through the complete program to find
+				// sources which are then taken as seeds.
+				int sinkCount = 0;
+				logger.info("Looking for sources and sinks...");
+
+				for (SootMethod sm : getMethodsForSeeds(iCfg))
+					sinkCount += scanMethodForSourcesSinks(sourcesSinks, forwardProblem, sm);
+
+				// We optionally also allow additional seeds to be specified
+				if (additionalSeeds != null)
+					for (String meth : additionalSeeds) {
+						SootMethod m = Scene.v().getMethod(meth);
+						if (!m.hasActiveBody()) {
+							logger.warn("Seed method {} has no active body", m);
+							continue;
+						}
+						forwardProblem.addInitialSeeds(m.getActiveBody().getUnits().getFirst(),
+								Collections.singleton(forwardProblem.zeroValue()));
+					}
+
+				// Report on the sources and sinks we have found
+				if (!forwardProblem.hasInitialSeeds()) {
+					logger.error("No sources found, aborting analysis");
+					continue;
+				}
+				if (sinkCount == 0) {
+					logger.error("No sinks found, aborting analysis");
+					continue;
+				}
+				logger.info("Source lookup done, found {} sources and {} sinks.",
+						forwardProblem.getInitialSeeds().size(), sinkCount);
+
+				// Update the performance statistics
+				performanceData.setSourceCount(forwardProblem.getInitialSeeds().size());
+				performanceData.setSinkCount(sinkCount);
+
+				// Initialize the taint wrapper if we have one
+				if (taintWrapper != null)
+					taintWrapper.initialize(manager);
+				if (nativeCallHandler != null)
+					nativeCallHandler.initialize(manager);
+
+				// Register the handler for interim results
+				TaintPropagationResults propagationResults = forwardProblem.getResults();
+				resultExecutor = executorFactory.createExecutor(numThreads, false, config);
+				resultExecutor.setThreadFactory(new ThreadFactory() {
+
+					@Override
+					public Thread newThread(Runnable r) {
+						Thread thrPath = new Thread(r);
+						thrPath.setDaemon(true);
+						thrPath.setName("FlowDroid Path Reconstruction");
+						return thrPath;
+					}
+				});
+
+				// Create the path builder
+				final IAbstractionPathBuilder builder = createPathBuilder(resultExecutor);
+//							final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
+
+				// If we want incremental result reporting, we have to
+				// initialize it before we start the taint tracking
+				if (config.getIncrementalResultReporting())
+					initializeIncrementalResultReporting(propagationResults, builder);
+
+				// Initialize the performance data
+				if (performanceData.getTaintPropagationSeconds() < 0)
+					performanceData.setTaintPropagationSeconds(0);
+				long beforeTaintPropagation = System.nanoTime();
+
+				onBeforeTaintPropagation(forwardSolver, backwardSolver);
+				forwardSolver.solve();
+
+				// Not really nice, but sometimes Heros returns before all
+				// executor tasks are actually done. This way, we give it a
+				// chance to terminate gracefully before moving on.
+				int terminateTries = 0;
+				while (terminateTries < 10) {
+					if (executor.getActiveCount() != 0 || !executor.isTerminated()) {
+						terminateTries++;
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							logger.error("Could not wait for executor termination", e);
+						}
+					} else
+						break;
+				}
+				if (executor.getActiveCount() != 0 || !executor.isTerminated())
+					logger.error("Executor did not terminate gracefully");
+				if (executor.getException() != null) {
+					throw new RuntimeException("An exception has occurred in an executor", executor.getException());
+				}
+
+				// Update performance statistics
+				performanceData.updateMaxMemoryConsumption(getUsedMemory());
+				int taintPropagationSeconds = (int) Math.round((System.nanoTime() - beforeTaintPropagation) / 1E9);
+				performanceData.addTaintPropagationSeconds(taintPropagationSeconds);
+
+				// Print taint wrapper statistics
+				if (taintWrapper != null) {
+					logger.info("Taint wrapper hits: " + taintWrapper.getWrapperHits());
+					logger.info("Taint wrapper misses: " + taintWrapper.getWrapperMisses());
+				}
+
+				// Give derived classes a chance to do whatever they need before we remove stuff
+				// from memory
+				onTaintPropagationCompleted(forwardSolver, backwardSolver);
+
+				// Get the result abstractions
+				Set<AbstractionAtSink> res = propagationResults.getResults();
+				propagationResults = null;
+
+				// We need to prune access paths that are entailed by
+				// another one
+				removeEntailedAbstractions(res);
+
+				// Shut down the native call handler
+				if (nativeCallHandler != null)
+					nativeCallHandler.shutdown();
+
+				logger.info(
+						"IFDS problem with {} forward and {} backward edges solved in {} seconds, processing {} results...",
+						forwardSolver.getPropagationCount(),
+						aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
+						taintPropagationSeconds, res == null ? 0 : res.size());
+
+				// Update the statistics
+				{
+					ISolverTerminationReason reason = ((IMemoryBoundedSolver) forwardSolver).getTerminationReason();
+					if (reason != null) {
+						if (reason instanceof OutOfMemoryReason)
+							results.setTerminationState(
+									results.getTerminationState() | InfoflowResults.TERMINATION_DATA_FLOW_OOM);
+						else if (reason instanceof TimeoutReason)
+							results.setTerminationState(
+									results.getTerminationState() | InfoflowResults.TERMINATION_DATA_FLOW_TIMEOUT);
+					}
+				}
+
+				// Force a cleanup. Everything we need is reachable through
+				// the results set, the other abstractions can be killed
+				// now.
+				performanceData.updateMaxMemoryConsumption(getUsedMemory());
+				logger.info(String.format("Current memory consumption: %d MB", getUsedMemory()));
+
+				if (timeoutWatcher != null)
+					timeoutWatcher.stop();
+				memoryWatcher.removeSolver((IMemoryBoundedSolver) forwardSolver);
+				forwardSolver.cleanup();
+				forwardSolver = null;
+				forwardProblem = null;
+
+				solverPeerGroup = null;
+
+				// Remove the alias analysis from memory
+				aliasing = null;
+				if (aliasingStrategy.getSolver() != null) {
+					aliasingStrategy.getSolver().terminate();
+					memoryWatcher.removeSolver((IMemoryBoundedSolver) aliasingStrategy.getSolver());
+				}
+				aliasingStrategy.cleanup();
+				aliasingStrategy = null;
+
+				if (config.getIncrementalResultReporting())
+					res = null;
+				iCfg.purge();
+
+				// Clean up the manager. Make sure to free objects, even if
+				// the manager is still held by other objects
+				if (manager != null)
+					manager.cleanup();
+				manager = null;
+
+				// Report the remaining memory consumption
+				Runtime.getRuntime().gc();
+				performanceData.updateMaxMemoryConsumption(getUsedMemory());
+				logger.info(String.format("Memory consumption after cleanup: %d MB", getUsedMemory()));
+
+				// Apply the timeout to path reconstruction
+				if (config.getPathConfiguration().getPathReconstructionTimeout() > 0) {
+					pathTimeoutWatcher = new FlowDroidTimeoutWatcher(
+							config.getPathConfiguration().getPathReconstructionTimeout(), results);
+					pathTimeoutWatcher.addSolver(builder);
+					pathTimeoutWatcher.start();
+				}
+				beforePathReconstruction = System.nanoTime();
+
+				// Do the normal result computation in the end unless we
+				// have used incremental path building
+				if (config.getIncrementalResultReporting()) {
+					// After the last intermediate result has been computed,
+					// we need to re-process those abstractions that
+					// received new neighbors in the meantime
+					builder.runIncrementalPathCompuation();
+
+					try {
+						resultExecutor.awaitCompletion();
+					} catch (InterruptedException e) {
+						logger.error("Could not wait for executor termination", e);
+					}
+				} else {
+					memoryWatcher.addSolver(builder);
+					builder.computeTaintPaths(res);
+					res = null;
+
+					// Update the statistics
+					{
+						ISolverTerminationReason reason = builder.getTerminationReason();
+						if (reason != null) {
+							if (reason instanceof OutOfMemoryReason)
+								results.setTerminationState(results.getTerminationState()
+										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_OOM);
+							else if (reason instanceof TimeoutReason)
+								results.setTerminationState(results.getTerminationState()
+										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
+						}
+					}
+
+					// Wait for the path builders to terminate
+					try {
+						// The path reconstruction should stop on time anyway. In case it doesn't, we
+						// make sure that we don't get stuck.
+						long pathTimeout = config.getPathConfiguration().getPathReconstructionTimeout();
+						if (pathTimeout > 0)
+							resultExecutor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
+						else
+							resultExecutor.awaitCompletion();
+					} catch (InterruptedException e) {
+						logger.error("Could not wait for executor termination", e);
+					}
+
+					// Get the results once the path builder is done
+					this.results.addAll(builder.getResults());
+				}
+				resultExecutor.shutdown();
+
+				// If the path builder was aborted, we warn the user
+				if (builder.isKilled())
+					logger.warn("Path reconstruction aborted. The reported results may be incomplete. "
+							+ "You might want to try again with sequential path processing enabled.");
+			} finally {
+				// Terminate the executor
+				if (resultExecutor != null)
+					resultExecutor.shutdown();
+
+				// Make sure to stop the watcher thread
+				if (timeoutWatcher != null)
+					timeoutWatcher.stop();
+				if (pathTimeoutWatcher != null)
+					pathTimeoutWatcher.stop();
+
+				if (aliasingStrategy != null) {
+					IInfoflowSolver solver = aliasingStrategy.getSolver();
+					if (solver != null)
+						solver.terminate();
+				}
+
+				// Do we have any more sources?
+				hasMoreSources = oneSourceAtATime != null && oneSourceAtATime.hasNextSource();
+
+				// Shut down the memory watcher
+				memoryWatcher.close();
+
+				// Get rid of all the stuff that's still floating around in
+				// memory
+				forwardProblem = null;
+				forwardSolver = null;
+				if (manager != null)
+					manager.cleanup();
+				manager = null;
+			}
+
+			// Make sure that we are in a sensible state even if we ran out
+			// of memory before
+			Runtime.getRuntime().gc();
+			performanceData.updateMaxMemoryConsumption((int) getUsedMemory());
+			performanceData.setPathReconstructionSeconds(
+					(int) Math.round((System.nanoTime() - beforePathReconstruction) / 1E9));
+
+			logger.info(String.format("Memory consumption after path building: %d MB", getUsedMemory()));
+			logger.info(String.format("Path reconstruction took %d seconds",
+					performanceData.getPathReconstructionSeconds()));
+		}
+
+		// Execute the post-processors
+		for (PostAnalysisHandler handler : this.postProcessors)
+			results = handler.onResultsAvailable(results, iCfg);
+
+		if (results == null || results.isEmpty())
+			logger.warn("No results found.");
+		else if (logger.isInfoEnabled()) {
+			for (ResultSinkInfo sink : results.getResults().keySet()) {
+				logger.info("The sink {} in method {} was called with values from the following sources:", sink,
+						iCfg.getMethodOf(sink.getStmt()).getSignature());
+				for (ResultSourceInfo source : results.getResults().get(sink)) {
+					logger.info("- {} in method {}", source, iCfg.getMethodOf(source.getStmt()).getSignature());
+					if (source.getPath() != null) {
+						logger.info("\ton Path: ");
+						for (Unit p : source.getPath()) {
+							logger.info("\t -> " + iCfg.getMethodOf(p));
+							logger.info("\t\t -> " + p);
+						}
+					}
+				}
+			}
 		}
 	}
 
