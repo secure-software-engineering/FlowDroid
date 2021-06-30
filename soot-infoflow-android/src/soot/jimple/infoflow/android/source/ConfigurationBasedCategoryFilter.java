@@ -62,20 +62,24 @@ public class ConfigurationBasedCategoryFilter implements ICategoryFilter {
 		CategoryMode sourceMode = config.getSourceCategoriesAndModes().get(category);
 		CategoryMode sinkMode = config.getSinkCategoriesAndModes().get(category);
 
-		if (config.getSourceFilterMode() == SourceSinkFilterMode.UseAllButExcluded) {
-			if (sourceSinkType == SourceSinkType.Source || sourceSinkType == SourceSinkType.Both)
+		if (sourceSinkType == SourceSinkType.Source || sourceSinkType == SourceSinkType.Both) {
+			if (config.getSourceFilterMode() == SourceSinkFilterMode.UseAllButExcluded) {
 				if (sourceMode != null && sourceMode == CategoryMode.Exclude)
 					sourceSinkType = sourceSinkType.removeType(SourceSinkType.Source);
-			if (sourceSinkType == SourceSinkType.Sink || sourceSinkType == SourceSinkType.Both)
-				if (sinkMode != null && sinkMode == CategoryMode.Exclude)
-					sourceSinkType = sourceSinkType.removeType(SourceSinkType.Sink);
-		} else if (config.getSourceFilterMode() == SourceSinkFilterMode.UseOnlyIncluded) {
-			if (sourceSinkType == SourceSinkType.Source || sourceSinkType == SourceSinkType.Both)
+			} else if (config.getSourceFilterMode() == SourceSinkFilterMode.UseOnlyIncluded) {
 				if (sourceMode == null || sourceMode != CategoryMode.Include)
 					sourceSinkType = sourceSinkType.removeType(SourceSinkType.Source);
-			if (sourceSinkType == SourceSinkType.Sink || sourceSinkType == SourceSinkType.Both)
-				if (sourceMode == null || sinkMode != CategoryMode.Include)
+			}
+		}
+
+		if (sourceSinkType == SourceSinkType.Sink || sourceSinkType == SourceSinkType.Both) {
+			if (config.getSinkFilterMode() == SourceSinkFilterMode.UseAllButExcluded) {
+				if (sinkMode != null && sinkMode == CategoryMode.Exclude)
 					sourceSinkType = sourceSinkType.removeType(SourceSinkType.Sink);
+			} else if (config.getSinkFilterMode() == SourceSinkFilterMode.UseOnlyIncluded) {
+				if (sinkMode == null || sinkMode != CategoryMode.Include)
+					sourceSinkType = sourceSinkType.removeType(SourceSinkType.Sink);
+			}
 		}
 
 		return sourceSinkType;

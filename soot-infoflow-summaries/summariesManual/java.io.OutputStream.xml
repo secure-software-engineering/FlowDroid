@@ -1,5 +1,10 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object">
+		<interface name="java.io.Closeable" />
+		<interface name="java.io.Flushable" />
+		<interface name="java.lang.AutoCloseable" />
+	</hierarchy>
 	<methods>
 		<method id="void write(byte[])">
 			<flows>

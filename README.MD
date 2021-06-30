@@ -109,7 +109,7 @@ Steven Arzt</a> is a good place to start.
 ## Contributing to FlowDroid
 
 Contributions are always welcome. FlowDroid is an open source project that we published in the hope that it will be useful to
-the research community as a whole. If you have a new feature of a bug fix that you would like to see in the official code
+the research community as a whole. If you have a new feature or a bug fix that you would like to see in the official code
 repository, please open a merge request here on Github and contact us (see below) with a short description of what you have
 done.
 
