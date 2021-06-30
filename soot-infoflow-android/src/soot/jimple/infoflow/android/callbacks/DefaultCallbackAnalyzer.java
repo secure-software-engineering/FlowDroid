@@ -2,8 +2,6 @@ package soot.jimple.infoflow.android.callbacks;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +24,6 @@ import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.Callback
 import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
-import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.util.SystemClassHandler;
@@ -97,7 +94,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 							break;
 
 						List<MethodOrMethodContext> methods = new ArrayList<MethodOrMethodContext>(
-								getLifecycleMethods(sc));
+								entryPointUtils.getLifecycleMethods(sc));
 
 						// Check for callbacks registered in the code
 						analyzeRechableMethods(sc, methods);
@@ -153,77 +150,6 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 		});
 		PackManager.v().getPack("wjtp").add(transform);
-	}
-
-	/**
-	 * Gets all lifecycle methods in the given entry point class
-	 * 
-	 * @param sc The class in which to look for lifecycle methods
-	 * @return The set of lifecycle methods in the given class
-	 */
-	private Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc) {
-		return getLifecycleMethods(entryPointUtils.getComponentType(sc), sc);
-	}
-
-	/**
-	 * Gets all lifecycle methods in the given entry point class
-	 * 
-	 * @param componentType the component type
-	 * @param sc            The class in which to look for lifecycle methods
-	 * @return The set of lifecycle methods in the given class
-	 */
-	public static Collection<? extends MethodOrMethodContext> getLifecycleMethods(ComponentType componentType,
-			SootClass sc) {
-		switch (componentType) {
-		case Activity:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getActivityLifecycleMethods());
-		case Service:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getServiceLifecycleMethods());
-		case Application:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getApplicationLifecycleMethods());
-		case BroadcastReceiver:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getBroadcastLifecycleMethods());
-		case Fragment:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getFragmentLifecycleMethods());
-		case ContentProvider:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getContentproviderLifecycleMethods());
-		case GCMBaseIntentService:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getGCMIntentServiceMethods());
-		case GCMListenerService:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getGCMListenerServiceMethods());
-		case ServiceConnection:
-			return getLifecycleMethods(sc, AndroidEntryPointConstants.getServiceConnectionMethods());
-		case Plain:
-			return Collections.emptySet();
-		}
-		return Collections.emptySet();
-	}
-
-	/**
-	 * This method takes a lifecycle class and the list of lifecycle method
-	 * subsignatures. For each subsignature, it checks whether the given class or
-	 * one of its superclass overwrites the respective methods. All findings are
-	 * collected in a set and returned.
-	 * 
-	 * @param sc      The class in which to look for lifecycle method
-	 *                implementations
-	 * @param methods The list of lifecycle method subsignatures for the type of
-	 *                component that the given class corresponds to
-	 * @return The set of implemented lifecycle methods in the given class
-	 */
-	private static Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc, List<String> methods) {
-		Set<MethodOrMethodContext> lifecycleMethods = new HashSet<>();
-		SootClass currentClass = sc;
-		while (currentClass != null) {
-			for (String sig : methods) {
-				SootMethod sm = currentClass.getMethodUnsafe(sig);
-				if (sm != null)
-					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
-						lifecycleMethods.add(sm);
-			}
-			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;
-		}
-		return lifecycleMethods;
 	}
 
 	private void analyzeRechableMethods(SootClass lifecycleElement, List<MethodOrMethodContext> methods) {
