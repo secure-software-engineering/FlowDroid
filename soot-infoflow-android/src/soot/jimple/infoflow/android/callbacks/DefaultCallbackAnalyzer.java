@@ -2,14 +2,17 @@ package soot.jimple.infoflow.android.callbacks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import heros.solver.Pair;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
+import soot.RefType;
 import soot.Scene;
 import soot.SceneTransformer;
 import soot.SootClass;
@@ -45,6 +48,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	private AndroidEntryPointUtils entryPointUtils = new AndroidEntryPointUtils();
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
 	private ISolverTerminationReason isKilled = null;
+	private MultiMap<SootClass, AndroidCallbackDefinition> viewCallbacks;
 
 	public DefaultCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses)
 			throws IOException {
@@ -52,14 +56,19 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	}
 
 	public DefaultCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses,
-			String callbackFile) throws IOException {
+			MultiMap<SootClass, AndroidCallbackDefinition> viewCallbacks, String callbackFile) throws IOException {
 		super(config, entryPointClasses, callbackFile);
+		this.viewCallbacks = viewCallbacks;
 	}
 
 	public DefaultCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses,
-			Set<String> androidCallbacks) throws IOException {
+			MultiMap<SootClass, AndroidCallbackDefinition> viewCallbacks, Set<String> androidCallbacks)
+			throws IOException {
 		super(config, entryPointClasses, androidCallbacks);
+		this.viewCallbacks = viewCallbacks;
 	}
+
+	QueueReader<MethodOrMethodContext> reachableChangedListener;
 
 	/**
 	 * Collects the callback methods for all Android default handlers implemented in
@@ -97,17 +106,31 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 								entryPointUtils.getLifecycleMethods(sc));
 
 						// Check for callbacks registered in the code
-						analyzeRechableMethods(sc, methods);
+						analyzeReachableMethods(sc, methods);
 
 						// Check for method overrides
 						analyzeMethodOverrideCallbacks(sc);
 						analyzeClassInterfaceCallbacks(sc, sc, sc);
 					}
+					reachableChangedListener = Scene.v().getReachableMethods().listener();
 					logger.info("Callback analysis done.");
 				} else {
 					// Incremental mode, only process the worklist
 					logger.info(String.format("Running incremental callback analysis for %d components...",
 							callbackWorklist.size()));
+					// Find the mappings between classes and layouts
+					findClassLayoutMappings();
+
+					MultiMap<SootMethod, SootClass> reverseViewCallbacks = new HashMultiMap<>();
+					for (Pair<SootClass, AndroidCallbackDefinition> i : viewCallbacks)
+						reverseViewCallbacks.put(i.getO2().getTargetMethod(), i.getO1());
+					while (reachableChangedListener.hasNext()) {
+						SootMethod m = reachableChangedListener.next().method();
+						Set<SootClass> o = reverseViewCallbacks.get(m);
+						for (SootClass i : o) {
+							callbackWorklist.put(i, m);
+						}
+					}
 
 					MultiMap<SootClass, SootMethod> workList = new HashMultiMap<>(callbackWorklist);
 					for (Iterator<SootClass> it = workList.keySet().iterator(); it.hasNext();) {
@@ -118,6 +141,10 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 						SootClass componentClass = it.next();
 						Set<SootMethod> callbacks = callbackWorklist.get(componentClass);
 						callbackWorklist.remove(componentClass);
+
+						Set<SootClass> activityComponents = fragmentClassesRev.get(componentClass);
+						if (activityComponents == null || activityComponents.isEmpty())
+							activityComponents = Collections.singleton(componentClass);
 
 						// Check whether we're already beyond the maximum number
 						// of callbacks for the current component
@@ -130,15 +157,21 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 						// Check for method overrides. The whole class might be new.
 						analyzeMethodOverrideCallbacks(componentClass);
-						analyzeClassInterfaceCallbacks(componentClass, componentClass, componentClass);
+						for (SootClass activityComponent : activityComponents) {
+							if (activityComponent == null)
+								activityComponent = componentClass;
+							analyzeClassInterfaceCallbacks(componentClass, componentClass, activityComponent);
+						}
 
 						// Collect all methods that we need to analyze
 						List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
-						for (SootMethod sm : callbacks)
-							entryClasses.add(sm);
+						for (SootMethod sm : callbacks) {
+							if (sm != null)
+								entryClasses.add(sm);
+						}
 
 						// Check for further callback declarations
-						analyzeRechableMethods(componentClass, entryClasses);
+						analyzeReachableMethods(componentClass, entryClasses);
 					}
 					logger.info("Incremental callback analysis done.");
 				}
@@ -152,7 +185,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		PackManager.v().getPack("wjtp").add(transform);
 	}
 
-	private void analyzeRechableMethods(SootClass lifecycleElement, List<MethodOrMethodContext> methods) {
+	private void analyzeReachableMethods(SootClass lifecycleElement, List<MethodOrMethodContext> methods) {
 		// Make sure to exclude all other edges in the callgraph except for the
 		// edges start in the lifecycle methods we explicitly pass in
 		ComponentReachableMethods rm = new ComponentReachableMethods(config, lifecycleElement, methods);
@@ -205,40 +238,53 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		}
 	}
 
+	Iterator<MethodOrMethodContext> rmIterator;
+
 	/**
 	 * Finds the mappings between classes and their respective layout files
 	 */
 	private void findClassLayoutMappings() {
-		Iterator<MethodOrMethodContext> rmIterator = Scene.v().getReachableMethods().listener();
+		if (rmIterator == null)
+			rmIterator = Scene.v().getReachableMethods().listener();
 		while (rmIterator.hasNext()) {
 			SootMethod sm = rmIterator.next().method();
+
 			if (!sm.isConcrete())
 				continue;
 			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 				continue;
-
-			for (Unit u : sm.retrieveActiveBody().getUnits())
+			RefType fragmentType = RefType.v("android.app.Fragment");
+			for (Unit u : sm.retrieveActiveBody().getUnits()) {
 				if (u instanceof Stmt) {
 					Stmt stmt = (Stmt) u;
 					if (stmt.containsInvokeExpr()) {
 						InvokeExpr inv = stmt.getInvokeExpr();
-						if (invokesSetContentView(inv) || invokesInflate(inv)) { // check
-																					// also
-																					// for
-																					// inflate
-																					// to
-																					// look
-																					// for
-																					// the
-																					// fragments
+						if (invokesSetContentView(inv)) { // check
+															// also
+															// for
+															// inflate
+															// to
+															// look
+															// for
+															// the
+															// fragments
 							for (Value val : inv.getArgs()) {
 								Integer intValue = valueProvider.getValue(sm, stmt, val, Integer.class);
-								if (intValue != null)
+								if (intValue != null) {
 									this.layoutClasses.put(sm.getDeclaringClass(), intValue);
+								}
+
+							}
+						}
+						if (invokesInflate(inv)) {
+							Integer intValue = valueProvider.getValue(sm, stmt, inv.getArg(0), Integer.class);
+							if (intValue != null) {
+								this.layoutClasses.put(sm.getDeclaringClass(), intValue);
 							}
 						}
 					}
 				}
+			}
 		}
 	}
 

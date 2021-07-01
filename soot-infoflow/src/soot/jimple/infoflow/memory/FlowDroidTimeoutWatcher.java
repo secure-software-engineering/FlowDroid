@@ -122,7 +122,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 
 				// If things have not stopped on their own account, we force
 				// them to
-				if (!stopped & !allTerminated) {
+				if (!stopped && !allTerminated) {
 					logger.warn("Timeout reached, stopping the solvers...");
 					if (results != null) {
 						results.addException("Timeout reached");
