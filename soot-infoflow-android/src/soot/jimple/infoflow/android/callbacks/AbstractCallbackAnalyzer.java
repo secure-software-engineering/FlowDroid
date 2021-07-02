@@ -644,8 +644,8 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Fragment")
-					|| curClass.getName().equals("android.view.LayoutInflater"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Fragment") || curClassName.equals("android.view.LayoutInflater"))
 				return true;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
