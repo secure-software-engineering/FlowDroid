@@ -611,10 +611,11 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Activity")
-					|| curClass.getName().equals("android.support.v7.app.ActionBarActivity")
-					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity")
-					|| curClass.getName().equals("androidx.appcompat.app.AppCompatActivity"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Activity")
+					|| curClassName.equals("android.support.v7.app.ActionBarActivity")
+					|| curClassName.equals("android.support.v7.app.AppCompatActivity")
+					|| curClassName.equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
 			// As long as the class is subclass of android.app.Activity,
 			// it can be sure that the setContentView method is what we expected.
