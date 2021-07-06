@@ -39,7 +39,10 @@ public class MetaDataReader extends AbstractXMLReader {
 		SummaryMetaData metaData = new SummaryMetaData();
 		XMLStreamReader xmlreader = null;
 		try {
-			xmlreader = XMLInputFactory.newInstance().createXMLStreamReader(reader);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			xmlreader = factory.createXMLStreamReader(reader);
 
 			String name = "";
 			String type = "";

@@ -58,7 +58,10 @@ public class SummaryReader extends AbstractXMLReader {
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			xmlreader = XMLInputFactory.newInstance().createXMLStreamReader(reader);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			xmlreader = factory.createXMLStreamReader(reader);
 			final MethodSummaries summary = summaries.getMethodSummaries();
 
 			Map<String, String> sourceAttributes = new HashMap<String, String>();

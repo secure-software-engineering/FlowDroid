@@ -40,7 +40,10 @@ public class InfoflowResultsReader {
 
 		XMLStreamReader reader = null;
 		try (InputStream in = new FileInputStream(fileName)) {
-			reader = XMLInputFactory.newInstance().createXMLStreamReader(in);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			reader = factory.createXMLStreamReader(in);
 
 			String statement = null;
 			String method = null;
