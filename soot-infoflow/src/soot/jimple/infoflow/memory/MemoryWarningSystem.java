@@ -24,6 +24,8 @@ import javax.management.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.jimple.infoflow.util.ThreadUtils;
+
 /**
  * Notification system that triggers a callback when the JVM is about to run out
  * of memory. Inspired by code from
@@ -204,7 +206,7 @@ public class MemoryWarningSystem {
 			if (useOwnImplementation) {
 				// No JVM support is available, use our own implementation
 				if (thrLowMemoryWarningThread == null) {
-					thrLowMemoryWarningThread = new Thread(new Runnable() {
+					thrLowMemoryWarningThread = ThreadUtils.createGenericThread(new Runnable() {
 
 						@Override
 						public void run() {
@@ -251,9 +253,7 @@ public class MemoryWarningSystem {
 							}
 						}
 
-					});
-					thrLowMemoryWarningThread.setName("Low memory monitor");
-					thrLowMemoryWarningThread.setDaemon(true);
+					}, "Low memory monitor", true);
 					thrLowMemoryWarningThread.setPriority(Thread.MIN_PRIORITY);
 					thrLowMemoryWarningThread.start();
 				}

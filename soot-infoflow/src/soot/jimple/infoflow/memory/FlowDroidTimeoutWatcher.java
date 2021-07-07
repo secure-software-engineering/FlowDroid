@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver.IMemoryBoundedSolverStatusNotification;
 import soot.jimple.infoflow.memory.reasons.TimeoutReason;
 import soot.jimple.infoflow.results.InfoflowResults;
+import soot.jimple.infoflow.util.ThreadUtils;
 
 /**
  * Class for enforcing timeouts on IFDS solvers
@@ -98,7 +99,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 		logger.info("FlowDroid timeout watcher started");
 		this.stopped = false;
 
-		new Thread(new Runnable() {
+		ThreadUtils.createGenericThread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -155,7 +156,7 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 				return allTerminated;
 			}
 
-		}, "FlowDroid Timeout Watcher").start();
+		}, "FlowDroid Timeout Watcher", true).start();
 	}
 
 	/**
