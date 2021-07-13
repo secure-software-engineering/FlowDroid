@@ -59,6 +59,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 	 */
 	public DefaultEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
+		setAllowNonPublicConstructors(true);
 	}
 
 	@Override
