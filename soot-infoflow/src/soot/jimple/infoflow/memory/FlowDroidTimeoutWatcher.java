@@ -143,17 +143,13 @@ public class FlowDroidTimeoutWatcher implements IMemoryBoundedSolverStatusNotifi
 			}
 
 			private boolean isTerminated() {
-				boolean allTerminated;
 				// Check whether all solvers in our watchlist have finished
 				// their work
-				allTerminated = true;
 				for (IMemoryBoundedSolver solver : solvers.keySet()) {
-					if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated()) {
-						allTerminated = false;
-						break;
-					}
+					if (solvers.get(solver) != SolverState.DONE || !solver.isTerminated())
+						return false;
 				}
-				return allTerminated;
+				return true;
 			}
 
 		}, "FlowDroid Timeout Watcher", true).start();
