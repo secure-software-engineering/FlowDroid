@@ -304,6 +304,9 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				// Start a new field and discard our old data
 				methodSignature = null;
 				fieldSignature = null;
+				baseAPs = new HashSet<>();
+				paramAPs = new ArrayList<>();
+				returnAPs = new HashSet<>();
 				description = null;
 				break;
 
