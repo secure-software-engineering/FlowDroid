@@ -99,11 +99,9 @@ public class TypeUtils {
 				return true;
 		}
 
-		// If both types are primitive, they can be cast unless a boolean type
-		// is involved
+		// If both types are primitive, they can be cast.
 		if (destType instanceof PrimType && sourceType instanceof PrimType)
-			if (destType != BooleanType.v() && sourceType != BooleanType.v())
-				return true;
+			return true;
 
 		return false;
 	}
