@@ -11,6 +11,13 @@ public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinit
 
 	protected ISourceSinkCategory category;
 
+	public AbstractSourceSinkDefinition() {
+	}
+
+	public AbstractSourceSinkDefinition(ISourceSinkCategory category) {
+		this.category = category;
+	}
+
 	@Override
 	public void setCategory(ISourceSinkCategory category) {
 		this.category = category;

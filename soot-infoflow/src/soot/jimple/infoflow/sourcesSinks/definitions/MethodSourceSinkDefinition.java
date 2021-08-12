@@ -97,6 +97,27 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
 			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType) {
+		this(am, baseObjects, parameters, returnValues, callType, null);
+	}
+
+	/**
+	 * Creates a new instance of the MethodSourceSinkDefinition class
+	 * 
+	 * @param am           The method for which this object defines sources and
+	 *                     sinks
+	 * @param baseObjects  The source and sink definitions for the base object on
+	 *                     which a method of this class is invoked
+	 * @param parameters   The source and sink definitions for parameters of the
+	 *                     current method
+	 * @param returnValues The source definitions for the return value of the
+	 *                     current method
+	 * @param callType     The type of calls to define as sources or sinks
+	 * @param category     The category to which this source or sink belongs
+	 */
+	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
+			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType,
+			ISourceSinkCategory category) {
+		super(category);
 		this.method = am;
 		this.baseObjects = baseObjects == null || baseObjects.isEmpty() ? null : baseObjects;
 		this.parameters = parameters;
