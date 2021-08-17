@@ -82,8 +82,6 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 					if (sinkInfo != null) {
 						if (getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt)))
 							killState = true;
-						if (stmt.toString().contains("startActivity"))
-							System.out.println("x");
 					}
 				}
 			}

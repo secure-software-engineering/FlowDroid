@@ -291,7 +291,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sinks loaded into FlowDroid
 	 */
-	public Set<? extends ISourceSinkDefinition> getSinks() {
+	public Collection<? extends ISourceSinkDefinition> getSinks() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSinks();
 	}
 
@@ -327,7 +327,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sources loaded into FlowDroid
 	 */
-	public Set<? extends ISourceSinkDefinition> getSources() {
+	public Collection<? extends ISourceSinkDefinition> getSources() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSources();
 	}
 
@@ -1056,7 +1056,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param callbackClass The class with which to associate the layout callbacks
 	 * @param lc            The layout control whose callbacks are to be associated
 	 *                      with the given class
-	 * @return 
+	 * @return
 	 */
 	private boolean registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
@@ -1524,8 +1524,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		logger.info(
 				String.format("Collecting callbacks and building a callgraph took %d seconds", (int) callbackDuration));
 
-		final Set<? extends ISourceSinkDefinition> sources = getSources();
-		final Set<? extends ISourceSinkDefinition> sinks = getSinks();
+		final Collection<? extends ISourceSinkDefinition> sources = getSources();
+		final Collection<? extends ISourceSinkDefinition> sinks = getSinks();
 		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (config.getOneComponentAtATime())
 			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",

@@ -128,7 +128,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
 		result = prime * result + ((local == null) ? 0 : local.hashCode());
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
@@ -139,7 +139,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;

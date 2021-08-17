@@ -133,8 +133,8 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	 * @param sinks   The list of sink methods
 	 * @param config  The configuration of the data flow analyzer
 	 */
-	public BaseSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, InfoflowConfiguration config) {
+	public BaseSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, InfoflowConfiguration config) {
 		this(sources, sinks, Collections.<CallbackDefinition>emptySet(), config);
 	}
 
@@ -154,8 +154,8 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	 *                        exactly match the one in the list.
 	 * @param config          The configuration of the data flow analyzer
 	 */
-	public BaseSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, Set<? extends CallbackDefinition> callbackMethods,
+	public BaseSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, Set<? extends CallbackDefinition> callbackMethods,
 			InfoflowConfiguration config) {
 		this.sourceSinkConfig = config.getSourceSinkConfig();
 

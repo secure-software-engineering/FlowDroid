@@ -425,11 +425,11 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((baseObjects == null) ? 0 : baseObjects.hashCode());
-		result = prime * result + ((method == null) ? 0 : method.hashCode());
 		result = prime * result + ((callType == null) ? 0 : callType.hashCode());
-		result = prime * result + ((parameters == null) ? 0 : Arrays.hashCode(parameters));
+		result = prime * result + ((method == null) ? 0 : method.hashCode());
+		result = prime * result + Arrays.hashCode(parameters);
 		result = prime * result + ((returnValues == null) ? 0 : returnValues.hashCode());
 		return result;
 	}
@@ -438,7 +438,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -448,20 +448,14 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				return false;
 		} else if (!baseObjects.equals(other.baseObjects))
 			return false;
+		if (callType != other.callType)
+			return false;
 		if (method == null) {
 			if (other.method != null)
 				return false;
 		} else if (!method.equals(other.method))
 			return false;
-		if (callType == null) {
-			if (other.callType != null)
-				return false;
-		} else if (!callType.equals(other.callType))
-			return false;
-		if (parameters == null) {
-			if (other.parameters != null)
-				return false;
-		} else if (!Arrays.equals(parameters, other.parameters))
+		if (!Arrays.equals(parameters, other.parameters))
 			return false;
 		if (returnValues == null) {
 			if (other.returnValues != null)

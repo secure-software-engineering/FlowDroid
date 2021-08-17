@@ -102,15 +102,18 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		}
 
 		SourceContextAndPath scap = null;
-		if (trackPath && abs.getCurrentStmt() != null && this.path != null) {
-			// We cannot leave the same method at two different sites
-			Abstraction topAbs = path.getLast();
-			if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
-					&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
-					&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
-				return null;
+		if (trackPath && abs.getCurrentStmt() != null) {
+			if (this.path != null) {
+				// We cannot leave the same method at two different sites
+				Abstraction topAbs = path.getLast();
+				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
+						&& topAbs.getCorrespondingCallSite() == abs.getCorrespondingCallSite()
+						&& topAbs.getCurrentStmt() != abs.getCurrentStmt())
+					return null;
+			}
 
 			scap = clone();
+
 			// Extend the propagation path
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();

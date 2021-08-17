@@ -150,7 +150,7 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
 		result = prime * result + ((fieldSignature == null) ? 0 : fieldSignature.hashCode());
 		return result;
@@ -160,7 +160,7 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
