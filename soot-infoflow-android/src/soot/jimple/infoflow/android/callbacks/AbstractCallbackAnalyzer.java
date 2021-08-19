@@ -414,7 +414,7 @@ public abstract class AbstractCallbackAnalyzer {
 			Stmt stmt = (Stmt) u;
 			if (stmt.containsInvokeExpr()) {
 				final String methodName = stmt.getInvokeExpr().getMethod().getName();
-				if (methodName.equals("getFragmentManager"))
+				if (methodName.equals("getFragmentManager") || methodName.equals("getSupportFragmentManager"))
 					isFragmentManager = true;
 				else if (methodName.equals("beginTransaction"))
 					isFragmentTransaction = true;
@@ -458,6 +458,8 @@ public abstract class AbstractCallbackAnalyzer {
 								// Is this a fragment?
 								if (br.getType() instanceof RefType) {
 									RefType rt = (RefType) br.getType();
+									if (br instanceof ClassConstant)
+										rt = (RefType) ((ClassConstant) br).toSootType();
 
 									boolean addFragment = scFragment != null
 											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
