@@ -41,6 +41,7 @@ public class AndroidEntryPointUtils {
 	private SootClass osClassContentProvider;
 	private SootClass osClassGCMBaseIntentService;
 	private SootClass osClassGCMListenerService;
+	private SootClass osClassHostApduService;
 	private SootClass osInterfaceServiceConnection;
 
 	/**
@@ -48,7 +49,7 @@ public class AndroidEntryPointUtils {
 	 */
 	public enum ComponentType {
 		Application, Activity, Service, Fragment, BroadcastReceiver, ContentProvider, GCMBaseIntentService,
-		GCMListenerService, ServiceConnection, Plain
+		GCMListenerService, HostApduService, ServiceConnection, Plain
 	}
 
 	/**
@@ -68,6 +69,7 @@ public class AndroidEntryPointUtils {
 		osClassGCMBaseIntentService = Scene.v()
 				.getSootClassUnsafe(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS);
 		osClassGCMListenerService = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.GCMLISTENERSERVICECLASS);
+		osClassHostApduService = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.HOSTAPDUSERVICECLASS);
 		osInterfaceServiceConnection = Scene.v()
 				.getSootClassUnsafe(AndroidEntryPointConstants.SERVICECONNECTIONINTERFACE);
 		osClassMapActivity = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.MAPACTIVITYCLASS);
@@ -88,17 +90,10 @@ public class AndroidEntryPointUtils {
 		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
 
 		if (fh != null) {
-			// (1) android.app.Application
-			if (osClassApplication != null && fh.canStoreType(currentClass.getType(), osClassApplication.getType()))
-				ctype = ComponentType.Application;
-			// (2) android.app.Activity
-			else if (osClassActivity != null && fh.canStoreType(currentClass.getType(), osClassActivity.getType()))
-				ctype = ComponentType.Activity;
-			// (3) android.app.Service
-			else if (osClassService != null && fh.canStoreType(currentClass.getType(), osClassService.getType()))
-				ctype = ComponentType.Service;
-			// (4) android.app.BroadcastReceiver
-			else if (osClassFragment != null && Scene.v().getOrMakeFastHierarchy().canStoreType(currentClass.getType(),
+			// We first look for the specialized types
+
+			// (a1) android.app.Fragment
+			if (osClassFragment != null && Scene.v().getOrMakeFastHierarchy().canStoreType(currentClass.getType(),
 					osClassFragment.getType()))
 				ctype = ComponentType.Fragment;
 			else if (osClassSupportFragment != null
@@ -107,30 +102,47 @@ public class AndroidEntryPointUtils {
 			else if (osClassAndroidXFragment != null
 					&& fh.canStoreType(currentClass.getType(), osClassAndroidXFragment.getType()))
 				ctype = ComponentType.Fragment;
-			// (5) android.app.BroadcastReceiver
-			else if (osClassBroadcastReceiver != null
-					&& fh.canStoreType(currentClass.getType(), osClassBroadcastReceiver.getType()))
-				ctype = ComponentType.BroadcastReceiver;
-			// (6) android.app.ContentProvider
-			else if (osClassContentProvider != null
-					&& fh.canStoreType(currentClass.getType(), osClassContentProvider.getType()))
-				ctype = ComponentType.ContentProvider;
-			// (7) com.google.android.gcm.GCMBaseIntentService
+			// (a2) com.google.android.gcm.GCMBaseIntentService
 			else if (osClassGCMBaseIntentService != null
 					&& fh.canStoreType(currentClass.getType(), osClassGCMBaseIntentService.getType()))
 				ctype = ComponentType.GCMBaseIntentService;
-			// (8) com.google.android.gms.gcm.GcmListenerService
+			// (a3) com.google.android.gms.gcm.GcmListenerService
 			else if (osClassGCMListenerService != null
 					&& fh.canStoreType(currentClass.getType(), osClassGCMListenerService.getType()))
 				ctype = ComponentType.GCMListenerService;
-			// (9) android.content.ServiceConnection
+			// (a4) android.nfc.cardemulation.HostApduService
+			else if (osClassHostApduService != null
+					&& fh.canStoreType(currentClass.getType(), osClassHostApduService.getType()))
+				ctype = ComponentType.HostApduService;
+			// (a5) android.content.ServiceConnection
 			else if (osInterfaceServiceConnection != null
 					&& fh.canStoreType(currentClass.getType(), osInterfaceServiceConnection.getType()))
 				ctype = ComponentType.ServiceConnection;
-			// (10) com.google.android.maps.MapActivity
+			// (a6) com.google.android.maps.MapActivity
 			else if (osClassMapActivity != null
 					&& fh.canStoreType(currentClass.getType(), osClassMapActivity.getType()))
 				ctype = ComponentType.Activity;
+
+			// If the given class is not a specific type of component, we look upwards in
+			// the hierarchy to see if we have something more generic
+			// (b1) android.app.Application
+			else if (osClassApplication != null
+					&& fh.canStoreType(currentClass.getType(), osClassApplication.getType()))
+				ctype = ComponentType.Application;
+			// (b2) android.app.Service
+			else if (osClassService != null && fh.canStoreType(currentClass.getType(), osClassService.getType()))
+				ctype = ComponentType.Service;
+			// (b3) android.app.Activity
+			else if (osClassActivity != null && fh.canStoreType(currentClass.getType(), osClassActivity.getType()))
+				ctype = ComponentType.Activity;
+			// (b4) android.app.BroadcastReceiver
+			else if (osClassBroadcastReceiver != null
+					&& fh.canStoreType(currentClass.getType(), osClassBroadcastReceiver.getType()))
+				ctype = ComponentType.BroadcastReceiver;
+			// (b5) android.app.ContentProvider
+			else if (osClassContentProvider != null
+					&& fh.canStoreType(currentClass.getType(), osClassContentProvider.getType()))
+				ctype = ComponentType.ContentProvider;
 		} else
 			logger.warn(String.format("No FastHierarchy, assuming %s is a plain class", currentClass.getName()));
 

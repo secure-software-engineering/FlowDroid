@@ -26,6 +26,7 @@ public class AndroidEntryPointConstants {
 	public static final String SERVICECLASS = "android.app.Service";
 	public static final String GCMBASEINTENTSERVICECLASS = "com.google.android.gcm.GCMBaseIntentService";
 	public static final String GCMLISTENERSERVICECLASS = "com.google.android.gms.gcm.GcmListenerService";
+	public static final String HOSTAPDUSERVICECLASS = "android.nfc.cardemulation.HostApduService";
 	public static final String BROADCASTRECEIVERCLASS = "android.content.BroadcastReceiver";
 	public static final String CONTENTPROVIDERCLASS = "android.content.ContentProvider";
 	public static final String APPLICATIONCLASS = "android.app.Application";
@@ -72,6 +73,9 @@ public class AndroidEntryPointConstants {
 	public static final String GCMLISTENERSERVICE_ONMESSAGERECEIVED = "void onMessageReceived(java.lang.String,android.os.Bundle)";
 	public static final String GCMLISTENERSERVICE_ONMESSAGESENT = "void onMessageSent(java.lang.String)";
 	public static final String GCMLISTENERSERVICE_ONSENDERROR = "void onSendError(java.lang.String,java.lang.String)";
+
+	public static final String HOSTAPDUSERVICE_PROCESSCOMMANDAPDU = "byte[] processCommandApdu(byte[],android.os.Bundle)";
+	public static final String HOSTAPDUSERVICE_ONDEACTIVATED = "void onDeactivated(int)";
 
 	public static final String FRAGMENT_ONCREATE = "void onCreate(android.os.Bundle)";
 	public static final String FRAGMENT_ONATTACH = "void onAttach(android.app.Activity)";
@@ -148,6 +152,10 @@ public class AndroidEntryPointConstants {
 			GCMLISTENERSERVICE_ONMESSAGERECEIVED, GCMLISTENERSERVICE_ONMESSAGESENT, GCMLISTENERSERVICE_ONSENDERROR };
 	private static final List<String> gcmListenerServiceMethodList = Arrays.asList(gcmListenerServiceMethods);
 
+	private static final String[] hostApduServiceMethods = { HOSTAPDUSERVICE_PROCESSCOMMANDAPDU,
+			HOSTAPDUSERVICE_ONDEACTIVATED };
+	private static final List<String> hostApduServiceMethodList = Arrays.asList(hostApduServiceMethods);
+
 	private static final String[] broadcastMethods = { BROADCAST_ONRECEIVE };
 	private static final List<String> broadcastMethodList = Arrays.asList(broadcastMethods);
 
@@ -196,6 +204,10 @@ public class AndroidEntryPointConstants {
 
 	public static List<String> getGCMListenerServiceMethods() {
 		return gcmListenerServiceMethodList;
+	}
+
+	public static List<String> getHostApduServiceMethods() {
+		return hostApduServiceMethodList;
 	}
 
 	public static List<String> getBroadcastLifecycleMethods() {
