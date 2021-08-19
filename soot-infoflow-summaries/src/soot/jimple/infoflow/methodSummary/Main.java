@@ -39,6 +39,7 @@ class Main {
 
 	private static final String OPTION_FORCE_OVERWRITE = "fo";
 	private static final String OPTION_LOAD_FULL_JAR = "lf";
+	private static final String OPTION_SUMMARIZE_FULL_JAR = "sf";
 	private static final String OPTION_EXCLUDE = "e";
 	private static final String OPTION_REPEAT = "r";
 	private static final String OPTION_FLOW_TIMEOUT = "ft";
@@ -63,7 +64,9 @@ class Main {
 
 		options.addOption(OPTION_FORCE_OVERWRITE, "forceoverwrite", false,
 				"Silently overwrite summary files in output directory");
-		options.addOption(OPTION_LOAD_FULL_JAR, "loadfulljar", false, "Summarizes all classes from the given JAR file");
+		options.addOption(OPTION_LOAD_FULL_JAR, "loadfulljar", false, "Loads all classes from the given JAR file");
+		options.addOption(OPTION_SUMMARIZE_FULL_JAR, "summarizefulljar", false,
+				"Summarizes all classes from the given JAR file");
 		options.addOption(OPTION_EXCLUDE, "exclude", true, "Excludes the given class(es)");
 		options.addOption(OPTION_REPEAT, "repeat", true,
 				"Repeats the summary generation multiple times. Useful for performance measurements.");
@@ -85,10 +88,11 @@ class Main {
 
 			final boolean forceOverwrite = cmd.hasOption(OPTION_FORCE_OVERWRITE);
 			boolean loadFullJAR = cmd.hasOption(OPTION_LOAD_FULL_JAR);
+			boolean summarizeFullJAR = cmd.hasOption(OPTION_SUMMARIZE_FULL_JAR);
 
 			// We need proper parameters
 			String[] extraArgs = cmd.getArgs();
-			if (extraArgs.length < 2 || (extraArgs.length < 3 && !loadFullJAR)) {
+			if (extraArgs.length < 2 || (extraArgs.length < 3 && !summarizeFullJAR)) {
 				printHelpMessage();
 				return;
 			}
@@ -105,7 +109,7 @@ class Main {
 
 			// Collect the classes to be analyzed from our command line
 			List<String> classesToAnalyze = new ArrayList<>();
-			if (!loadFullJAR) {
+			if (!summarizeFullJAR) {
 				for (int i = 2; i < extraArgs.length; i++) {
 					if (extraArgs[i].startsWith("-")) {
 						printHelpMessage();
@@ -122,6 +126,7 @@ class Main {
 			}
 
 			generator.getConfig().setLoadFullJAR(loadFullJAR);
+			generator.getConfig().setSummarizeFullJAR(summarizeFullJAR);
 			generator.getConfig().setExcludes(excludes);
 
 			// Set optional settings
@@ -227,7 +232,7 @@ class Main {
 		System.out.println();
 
 		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("soot-infoflow-cmd <JAR File> <Output Directory> <Classes...> [OPTIONS]", options);
+		formatter.printHelp("soot-infoflow-summaries <JAR File> <Output Directory> <Classes...> [OPTIONS]", options);
 	}
 
 	private static void createSummaries(SummaryGenerator generator, List<String> classesToAnalyze,
