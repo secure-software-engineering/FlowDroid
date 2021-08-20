@@ -119,9 +119,9 @@ public class JUnitTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		String droidBenchDir = System.getenv("DROIDBENCH");
+		String droidBenchDir = System.getenv("DROIDBENCH")+"/apk";
 		if (droidBenchDir == null)
-			droidBenchDir = System.getProperty("DROIDBENCH");
+			droidBenchDir = System.getProperty("DROIDBENCH")+"/apk";
 		if (droidBenchDir == null) {
 			File droidBenchFile = new File("DroidBench/apk");
 			if (!droidBenchFile.exists())
