@@ -322,7 +322,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	protected MethodSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> baseAPTs,
 			Set<AccessPathTuple>[] paramAPTs, Set<AccessPathTuple> returnAPTs) {
 		MethodSourceSinkDefinition def = buildNewDefinition(method, baseAPTs, paramAPTs, returnAPTs, callType);
-		def.setCategory(category);
+		def.category = category;
 		return def;
 	}
 

@@ -122,7 +122,9 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 
 	protected StatementSourceSinkDefinition buildNewDefinition(Stmt stmt, Local local,
 			Set<AccessPathTuple> accessPaths) {
-		return new StatementSourceSinkDefinition(stmt, local, accessPaths);
+		StatementSourceSinkDefinition sssd = new StatementSourceSinkDefinition(stmt, local, accessPaths);
+		sssd.category = category;
+		return sssd;
 	}
 
 	@Override

@@ -337,11 +337,14 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 					if (sstype != SourceSinkType.Neither) {
 						AccessPathTuple apt = AccessPathTuple.fromPathElements(pathElements, pathElementTypes, sstype);
-						apt = apt.simplify();
 
 						// Optional description
 						if (description != null && !description.isEmpty())
 							apt.setDescription(description);
+
+						// Simplify the AP after setting the description for not breaking the generic
+						// source definition
+						apt = apt.simplify();
 
 						switch (accessPathParentElement) {
 						case XMLConstants.BASE_TAG:

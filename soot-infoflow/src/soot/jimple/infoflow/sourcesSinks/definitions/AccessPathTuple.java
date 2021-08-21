@@ -46,6 +46,14 @@ public class AccessPathTuple {
 		this.sinkSource = sinkSource;
 	}
 
+	AccessPathTuple(AccessPathTuple original) {
+		this.baseType = original.baseType;
+		this.fields = original.fields;
+		this.fieldTypes = original.fields;
+		this.sinkSource = original.sinkSource;
+		this.description = original.description;
+	}
+
 	/**
 	 * Simplified factory method for creating an access path that just denotes the
 	 * base object
@@ -124,7 +132,7 @@ public class AccessPathTuple {
 	 */
 	public static AccessPathTuple getBlankSourceTuple() {
 		if (SOURCE_TUPLE == null)
-			SOURCE_TUPLE = create(true, false);
+			SOURCE_TUPLE = new ImmutableAccessPathTuple(create(true, false));
 		return SOURCE_TUPLE;
 	}
 
@@ -135,7 +143,7 @@ public class AccessPathTuple {
 	 */
 	public static AccessPathTuple getBlankSinkTuple() {
 		if (SINK_TUPLE == null)
-			SINK_TUPLE = create(false, true);
+			SINK_TUPLE = new ImmutableAccessPathTuple(create(false, true));
 		return SINK_TUPLE;
 	}
 
