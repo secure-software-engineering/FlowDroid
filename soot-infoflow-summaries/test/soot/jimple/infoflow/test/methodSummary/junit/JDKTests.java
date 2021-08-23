@@ -168,6 +168,7 @@ public class JDKTests extends TestHelper {
 		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(4);
 		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.getConfig().setLoadFullJAR(false);
+		sg.getConfig().setSummarizeFullJAR(false);
 		sg.getConfig().setEnableExceptionTracking(true);
 		return sg;
 	}

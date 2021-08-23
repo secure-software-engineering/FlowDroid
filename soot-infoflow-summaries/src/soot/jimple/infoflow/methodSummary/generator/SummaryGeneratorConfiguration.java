@@ -14,6 +14,7 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 
 	protected boolean loadFullJAR = false;
+	protected boolean summarizeFullJAR = false;
 	protected String androidPlatformDir = "";
 
 	protected Set<String> excludes = null;
@@ -58,6 +59,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 			SummaryGeneratorConfiguration summaryConfig = (SummaryGeneratorConfiguration) config;
 			this.androidPlatformDir = summaryConfig.androidPlatformDir;
 			this.loadFullJAR = summaryConfig.loadFullJAR;
+			this.summarizeFullJAR = summaryConfig.summarizeFullJAR;
 
 			this.excludes = summaryConfig.excludes == null || summaryConfig.excludes.isEmpty() ? null
 					: new HashSet<>(summaryConfig.excludes);
@@ -125,6 +127,26 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	 */
 	public boolean getLoadFullJAR() {
 		return this.loadFullJAR;
+	}
+
+	/**
+	 * Sets whether all classes from the target JAR file shall be summarized.
+	 * 
+	 * @param summarizeFullJAR True if all classes from the target JAR file shall be
+	 *                         summarized, otherwise false.
+	 */
+	public void setSummarizeFullJAR(boolean summarizeFullJAR) {
+		this.summarizeFullJAR = summarizeFullJAR;
+	}
+
+	/**
+	 * Gets whether all classes from the target JAR file shall be summarized.
+	 * 
+	 * @return True if all classes from the target JAR file shall be summarized,
+	 *         otherwise false.
+	 */
+	public boolean getSummarizeFullJAR() {
+		return this.summarizeFullJAR;
 	}
 
 	/**
@@ -315,6 +337,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 		result = prime * result + (int) (classSummaryTimeout ^ (classSummaryTimeout >>> 32));
 		result = prime * result + ((excludes == null) ? 0 : excludes.hashCode());
 		result = prime * result + (loadFullJAR ? 1231 : 1237);
+		result = prime * result + (summarizeFullJAR ? 1231 : 1237);
 		result = prime * result + repeatCount;
 		result = prime * result + (summarizeHashCodeEquals ? 1231 : 1237);
 		result = prime * result + (useDefaultSummaries ? 1231 : 1237);
@@ -351,6 +374,8 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 		} else if (!excludes.equals(other.excludes))
 			return false;
 		if (loadFullJAR != other.loadFullJAR)
+			return false;
+		if (summarizeFullJAR != other.summarizeFullJAR)
 			return false;
 		if (repeatCount != other.repeatCount)
 			return false;

@@ -268,7 +268,7 @@ public class SummaryGenerator {
 		}
 
 		Options.v().set_output_format(Options.output_format_none);
-		if (hasWildcard || config.getLoadFullJAR())
+		if (hasWildcard || config.getLoadFullJAR() || config.getSummarizeFullJAR())
 			Options.v().set_process_dir(Arrays.asList(classpath.split(File.pathSeparator)));
 		else
 			Options.v().set_soot_classpath(classpath);
@@ -289,7 +289,7 @@ public class SummaryGenerator {
 		Scene.v().loadNecessaryClasses();
 
 		Set<ClassAnalysisTask> realClasses = new HashSet<>(classNames.size());
-		if (config.getLoadFullJAR()) {
+		if (config.getSummarizeFullJAR()) {
 			for (Iterator<SootClass> scIt = Scene.v().getApplicationClasses().snapshotIterator(); scIt.hasNext();) {
 				SootClass sc = scIt.next();
 				Scene.v().forceResolve(sc.getName(), SootClass.SIGNATURES);
