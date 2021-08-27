@@ -11,22 +11,25 @@ import java.util.List;
  *
  */
 public class SerializedSourceInfo extends AbstractSerializedSourceSink {
-	
+
 	private List<SerializedPathElement> propagationPath = null;
-	
+	private final String calledMethod;
+
 	SerializedSourceInfo(SerializedAccessPath accessPath, String statement,
-			String method) {
-		this(accessPath, statement, method, null);
+			String method, String calledMethod) {
+		this(accessPath, statement, method, null, calledMethod);
 	}
-	
+
 	SerializedSourceInfo(SerializedAccessPath accessPath, String statement,
-			String method, List<SerializedPathElement> propagationPath) {
+			String method, List<SerializedPathElement> propagationPath, String calledMethod) {
 		super(accessPath, statement, method);
 		this.propagationPath = propagationPath;
+		this.calledMethod = calledMethod;
 	}
-	
+
 	/**
 	 * Adds an element to the propagation path
+	 * 
 	 * @param pathElement The path element to add
 	 */
 	void addPathElement(SerializedPathElement pathElement) {
@@ -34,7 +37,7 @@ public class SerializedSourceInfo extends AbstractSerializedSourceSink {
 			this.propagationPath = new ArrayList<>();
 		this.propagationPath.add(pathElement);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -60,14 +63,24 @@ public class SerializedSourceInfo extends AbstractSerializedSourceSink {
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * Gets the propagation of this data flow
+	 * 
 	 * @return The propagation path of this data flow if one has been loaded,
-	 * otherwise null
+	 *         otherwise null
 	 */
 	public List<SerializedPathElement> getPropagationPath() {
 		return this.propagationPath;
+	}
+
+	/**
+	 * Gets the method signature of the method of the statement.
+	 * 
+	 * @return The soot signature of the method that is called by the statement.
+	 */
+	public String getCalledMethod() {
+		return this.calledMethod;
 	}
 
 }
