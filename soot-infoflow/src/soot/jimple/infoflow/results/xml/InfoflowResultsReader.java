@@ -40,7 +40,10 @@ public class InfoflowResultsReader {
 
 		XMLStreamReader reader = null;
 		try (InputStream in = new FileInputStream(fileName)) {
-			reader = XMLInputFactory.newInstance().createXMLStreamReader(in);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			reader = factory.createXMLStreamReader(in);
 
 			String statement = null;
 			String method = null;
@@ -82,6 +85,7 @@ public class InfoflowResultsReader {
 
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
+					method = getAttributeByName(reader, XmlConstants.Attributes.method);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.accessPath) && reader.isStartElement()) {
 					stateStack.push(State.accessPath);
 
@@ -172,18 +176,18 @@ public class InfoflowResultsReader {
 				} else if (reader.isEndElement()) {
 					stateStack.pop();
 
-					if (reader.getLocalName().equals(XmlConstants.Tags.accessPath))
+					if (reader.getLocalName().equals(XmlConstants.Tags.accessPath)) {
 						ap = new SerializedAccessPath(apValue, apValueType, apTaintSubFields,
 								apFields.toArray(new String[apFields.size()]),
 								apTypes.toArray(new String[apTypes.size()]));
-					else if (reader.getLocalName().equals(XmlConstants.Tags.sink))
+					} else if (reader.getLocalName().equals(XmlConstants.Tags.sink)) {
 						sink = new SerializedSinkInfo(ap, statement, method);
-					else if (reader.getLocalName().equals(XmlConstants.Tags.source))
+					} else if (reader.getLocalName().equals(XmlConstants.Tags.source)) {
 						source = new SerializedSourceInfo(ap, statement, method, pathElements);
-					else if (reader.getLocalName().equals(XmlConstants.Tags.result))
 						results.addResult(source, sink);
-					else if (reader.getLocalName().equals(XmlConstants.Tags.pathElement))
+					} else if (reader.getLocalName().equals(XmlConstants.Tags.pathElement)) {
 						pathElements.add(new SerializedPathElement(ap, statement, method));
+					}
 				}
 			}
 

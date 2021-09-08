@@ -23,6 +23,7 @@ import soot.jimple.AssignStmt;
 import soot.jimple.Constant;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
@@ -383,6 +384,9 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 */
 	private AccessPath mapAccessPathIntoCallee(AccessPath curAP, final Stmt stmt, final Stmt callSite,
 			SootMethod callee, boolean isBackwards) {
+		final InvokeExpr iexpr = callSite.getInvokeExpr();
+		final SootMethod targetMethod = iexpr.getMethod();
+
 		// Map the return value into the scope of the callee
 		if (stmt instanceof ReturnStmt) {
 			ReturnStmt retStmt = (ReturnStmt) stmt;
@@ -392,8 +396,8 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		}
 
 		// Map the "this" fields into the callee
-		if (!callee.isStatic() && callSite.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) callSite.getInvokeExpr();
+		if (!callee.isStatic() && iexpr instanceof InstanceInvokeExpr) {
+			InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iexpr;
 			if (iiExpr.getBase() == curAP.getPlainValue()) {
 				Local thisLocal = callee.getActiveBody().getThisLocal();
 				return manager.getAccessPathFactory().copyWithNewValue(curAP, thisLocal);
@@ -403,23 +407,44 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Map the parameters into the callee. Note that parameters as
 		// such cannot return taints from methods, only fields reachable
 		// through them. (nope, not true for alias propagation)
-		if (!curAP.isLocal() || isBackwards)
-			for (int i = 0; i < callSite.getInvokeExpr().getArgCount(); i++) {
-				if (callSite.getInvokeExpr().getArg(i) == curAP.getPlainValue()) {
-					Local paramLocal = callee.getActiveBody().getParameterLocal(i);
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, paramLocal);
+		if (!curAP.isLocal() || isBackwards) {
+			// Special handling for doPrivileged() and for threads. The call to start(t) is
+			// with a taint on t is translated to t.this.
+			if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+				if (iexpr.getArgCount() == 1 && iexpr.getArg(0) == curAP.getPlainValue()) {
+					Local thisLocal = callee.getActiveBody().getThisLocal();
+					return manager.getAccessPathFactory().copyWithNewValue(curAP, thisLocal);
+				}
+			} else {
+				for (int i = 0; i < iexpr.getArgCount(); i++) {
+					if (iexpr.getArg(i) == curAP.getPlainValue()) {
+						Local paramLocal = callee.getActiveBody().getParameterLocal(i);
+						return manager.getAccessPathFactory().copyWithNewValue(curAP, paramLocal);
+					}
 				}
 			}
+		}
 
 		// Map the parameters back to arguments when we are entering a method
 		// during backwards propagation
 		if (!curAP.isLocal() && !isBackwards) {
 			SootMethod curMethod = manager.getICFG().getMethodOf(stmt);
-			for (int i = 0; i < callSite.getInvokeExpr().getArgCount(); i++) {
-				Local paramLocal = curMethod.getActiveBody().getParameterLocal(i);
-				if (paramLocal == curAP.getPlainValue()) {
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, callSite.getInvokeExpr().getArg(i),
-							curMethod.getParameterType(i), false);
+
+			// Special handling for doPrivileged() and for threads. The call to start(t) is
+			// with a taint on t is translated to t.this.
+			if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+				Local thisLocal = curMethod.getActiveBody().getThisLocal();
+				if (iexpr.getArgCount() == 1 && thisLocal == curAP.getPlainValue()) {
+					return manager.getAccessPathFactory().copyWithNewValue(curAP, iexpr.getArg(0),
+							curMethod.getParameterType(0), false);
+				}
+			} else {
+				for (int i = 0; i < iexpr.getArgCount(); i++) {
+					Local paramLocal = curMethod.getActiveBody().getParameterLocal(i);
+					if (paramLocal == curAP.getPlainValue()) {
+						return manager.getAccessPathFactory().copyWithNewValue(curAP, iexpr.getArg(i),
+								curMethod.getParameterType(i), false);
+					}
 				}
 			}
 		}
@@ -447,18 +472,16 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Cache the "this" local
 		Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 
-		// Special treatment for doPrivileged()
-		if (stmt.getInvokeExpr().getMethod().getName().equals("doPrivileged")) {
-			if (!callee.isStatic())
-				if (curAP.getPlainValue() == thisLocal)
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, stmt.getInvokeExpr().getArg(0));
-
+		// Special handling for threads and doPrivileged()
+		final SootMethod targetMethod = stmt.getInvokeExpr().getMethod();
+		if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+			if (curAP.getPlainValue() == thisLocal)
+				return manager.getAccessPathFactory().copyWithNewValue(curAP, stmt.getInvokeExpr().getArg(0));
 			return null;
 		}
 
 		// Make sure that we don't end up with a senseless callee
-		if (!callee.getSubSignature().equals(stmt.getInvokeExpr().getMethod().getSubSignature())
-				&& !isThreadCall(stmt.getInvokeExpr().getMethod(), callee)) {
+		if (!callee.getSubSignature().equals(targetMethod.getSubSignature()) && !isThreadCall(targetMethod, callee)) {
 			logger.warn(String.format("Invalid callee on stack. Caller was %s, callee was %s",
 					stmt.getInvokeExpr().getMethod().getSubSignature(), callee));
 			return null;
@@ -519,6 +542,18 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	/**
 	 * Simplistic check to see whether the given formal callee and actual callee can
+	 * be in a do-privileged relationship
+	 * 
+	 * @param callSite The method at the call site
+	 * @param callee   The actual callee
+	 * @return True if this can be a do-privileged call edge, otherwise false
+	 */
+	private boolean isDoPrivilegedCall(SootMethod targetMethod, SootMethod callee) {
+		return targetMethod.getName().equals("doPrivileged") && !callee.isStatic();
+	}
+
+	/**
+	 * Simplistic check to see whether the given formal callee and actual callee can
 	 * be in a thread-start relationship
 	 * 
 	 * @param callSite The method at the call site
@@ -526,7 +561,11 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 * @return True if this can be a thread-start call edge, otherwise false
 	 */
 	private boolean isThreadCall(SootMethod callSite, SootMethod callee) {
-		return (callSite.getName().equals("start") && callee.getName().equals("run"));
+		if (callee.getName().equals("run") && !callee.isStatic()) {
+			final String callSiteName = callSite.getName();
+			return callSiteName.equals("start") || callSiteName.equals("post");
+		}
+		return false;
 	}
 
 	@Override

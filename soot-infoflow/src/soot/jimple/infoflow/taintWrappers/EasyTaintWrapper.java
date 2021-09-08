@@ -154,7 +154,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 			List<String> killList = new LinkedList<String>();
 			this.includeList = new HashSet<String>();
 			while (line != null) {
-				if (!line.isEmpty() && !line.startsWith("%"))
+				if (!line.isEmpty() && !line.startsWith("#"))
 					if (line.startsWith("~"))
 						excludeList.add(line.substring(1));
 					else if (line.startsWith("-"))

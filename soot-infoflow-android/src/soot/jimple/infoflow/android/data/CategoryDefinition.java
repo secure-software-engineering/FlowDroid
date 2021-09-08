@@ -15,10 +15,13 @@ public class CategoryDefinition implements ISourceSinkCategory {
 		ALL,
 
 		// SOURCES
-		NO_CATEGORY, HARDWARE_INFO, UNIQUE_IDENTIFIER, LOCATION_INFORMATION, NETWORK_INFORMATION, ACCOUNT_INFORMATION, EMAIL_INFORMATION, FILE_INFORMATION, BLUETOOTH_INFORMATION, VOIP_INFORMATION, DATABASE_INFORMATION, PHONE_INFORMATION,
+		NO_CATEGORY, HARDWARE_INFO, UNIQUE_IDENTIFIER, LOCATION_INFORMATION, NETWORK_INFORMATION, ACCOUNT_INFORMATION,
+		EMAIL_INFORMATION, FILE_INFORMATION, BLUETOOTH_INFORMATION, VOIP_INFORMATION, DATABASE_INFORMATION,
+		PHONE_INFORMATION,
 
 		// SINKS
-		PHONE_CONNECTION, INTER_APP_COMMUNICATION, VOIP, PHONE_STATE, EMAIL, BLUETOOTH, ACCOUNT_SETTINGS, VIDEO, SYNCHRONIZATION_DATA, NETWORK, EMAIL_SETTINGS, FILE, LOG,
+		PHONE_CONNECTION, INTER_APP_COMMUNICATION, VOIP, PHONE_STATE, EMAIL, BLUETOOTH, ACCOUNT_SETTINGS, VIDEO,
+		SYNCHRONIZATION_DATA, NETWORK, EMAIL_SETTINGS, FILE, LOG,
 
 		// SHARED
 		AUDIO, SMS_MMS, CONTACT_INFORMATION, CALENDAR_INFORMATION, SYSTEM_SETTINGS, IMAGE, BROWSER_INFORMATION, NFC
@@ -33,8 +36,7 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	/**
 	 * Creates a new instance of the {@link CategoryDefinition} class
 	 * 
-	 * @param systemCategory
-	 *            The system-defined category
+	 * @param systemCategory The system-defined category
 	 */
 	public CategoryDefinition(CATEGORY systemCategory) {
 		this(systemCategory, null);
@@ -43,11 +45,10 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	/**
 	 * Creates a new instance of the {@link CategoryDefinition} class
 	 * 
-	 * @param systemCategory
-	 *            The system-defined category
-	 * @param customCategory
-	 *            A user-defined category ID. This parameter may only be used if
-	 *            the system-defined category is set to NO_CATEGORY.
+	 * @param systemCategory The system-defined category
+	 * @param customCategory A user-defined category ID. This parameter may only be
+	 *                       used if the system-defined category is set to
+	 *                       NO_CATEGORY.
 	 */
 	public CategoryDefinition(CATEGORY systemCategory, String customCategory) {
 		this(systemCategory, customCategory, null);
@@ -56,13 +57,11 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	/**
 	 * Creates a new instance of the {@link CategoryDefinition} class
 	 * 
-	 * @param systemCategory
-	 *            The system-defined category
-	 * @param customCategory
-	 *            A user-defined category ID. This parameter may only be used if
-	 *            the system-defined category is set to NO_CATEGORY.
-	 * @param customDescription
-	 *            An optional description for the custom category
+	 * @param systemCategory    The system-defined category
+	 * @param customCategory    A user-defined category ID. This parameter may only
+	 *                          be used if the system-defined category is set to
+	 *                          NO_CATEGORY.
+	 * @param customDescription An optional description for the custom category
 	 */
 	public CategoryDefinition(CATEGORY systemCategory, String customCategory, String customDescription) {
 		this.systemCategory = systemCategory;
@@ -71,8 +70,8 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	}
 
 	/**
-	 * Gets the system-defined category name. If this value is NO_CATEGORY,
-	 * there may be a user-defined custom category name.
+	 * Gets the system-defined category name. If this value is NO_CATEGORY, there
+	 * may be a user-defined custom category name.
 	 * 
 	 * @return The system-defined category name
 	 */
@@ -95,13 +94,12 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	}
 
 	/**
-	 * Sets the user-defined category id. This is an identifier for the system.
-	 * To define a human-readable category description, use the
-	 * setCustomDescription() instead.
+	 * Sets the user-defined category id. This is an identifier for the system. To
+	 * define a human-readable category description, use the setCustomDescription()
+	 * instead.
 	 * 
-	 * @param customCategory
-	 *            The user-defined category id. Category identifiers must be
-	 *            unique.
+	 * @param customCategory The user-defined category id. Category identifiers must
+	 *                       be unique.
 	 */
 	public void setCustomCategory(String customCategory) {
 		this.customCategory = customCategory;
@@ -119,8 +117,7 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	/**
 	 * Sets the description of the user-defined category
 	 * 
-	 * @param customDescription
-	 *            The description of the user-defined category
+	 * @param customDescription The description of the user-defined category
 	 */
 	public void setCustomDescription(String customDescription) {
 		this.customDescription = customDescription;
@@ -175,8 +172,8 @@ public class CategoryDefinition implements ISourceSinkCategory {
 	/**
 	 * Gets the category description as a string. This method either returns a
 	 * human-readable description for the current system category or the
-	 * user-defined category if the system-defined category is "NO_CATEGORY",
-	 * but a user-defined category is available.
+	 * user-defined category if the system-defined category is "NO_CATEGORY", but a
+	 * user-defined category is available.
 	 * 
 	 * @return The category description as a string
 	 */
@@ -266,11 +263,11 @@ public class CategoryDefinition implements ISourceSinkCategory {
 
 	/**
 	 * Gets a variant of this description that only contains identifiers. Such a
-	 * variant is helpful when trying to identify the category in a collection
-	 * in which not necessary all meta data is available.
+	 * variant is helpful when trying to identify the category in a collection in
+	 * which not necessary all meta data is available.
 	 * 
-	 * @return A variant of this category definition that only contains
-	 *         identifiers, but not, e.g., descriptions
+	 * @return A variant of this category definition that only contains identifiers,
+	 *         but not, e.g., descriptions
 	 */
 	public CategoryDefinition getIdOnlyDescription() {
 		return new CategoryDefinition(systemCategory, customCategory);
@@ -278,7 +275,7 @@ public class CategoryDefinition implements ISourceSinkCategory {
 
 	@Override
 	public String getID() {
-		if (systemCategory == CATEGORY.NO_CATEGORY)
+		if (systemCategory == null || systemCategory == CATEGORY.NO_CATEGORY)
 			return customCategory;
 		return systemCategory.name();
 	}

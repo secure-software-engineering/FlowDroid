@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.source;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -89,8 +90,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @param sinks   The list of sink methods
 	 * @param config  The configuration of the data flow analyzer
 	 */
-	public AndroidSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, InfoflowAndroidConfiguration config) {
+	public AndroidSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, InfoflowAndroidConfiguration config) {
 		this(sources, sinks, Collections.<AndroidCallbackDefinition>emptySet(), config, null);
 	}
 
@@ -113,8 +114,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @param layoutControls  A map from reference identifiers to the respective
 	 *                        Android layout controls
 	 */
-	public AndroidSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, Set<AndroidCallbackDefinition> callbackMethods,
+	public AndroidSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, Set<AndroidCallbackDefinition> callbackMethods,
 			InfoflowAndroidConfiguration config, Map<Integer, AndroidLayoutControl> layoutControls) {
 		super(sources, sinks, callbackMethods, config);
 		this.layoutControls = layoutControls;

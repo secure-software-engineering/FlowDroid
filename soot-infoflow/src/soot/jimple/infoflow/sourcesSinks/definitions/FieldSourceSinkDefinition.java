@@ -104,7 +104,9 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 * @return The new source/sink definition
 	 */
 	protected FieldSourceSinkDefinition buildNewDefinition(String fieldSignature, Set<AccessPathTuple> accessPaths) {
-		return new FieldSourceSinkDefinition(fieldSignature, accessPaths);
+		FieldSourceSinkDefinition fssd = new FieldSourceSinkDefinition(fieldSignature, accessPaths);
+		fssd.setCategory(category);
+		return fssd;
 	}
 
 	@Override
@@ -143,14 +145,14 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 					filteredAPs.add(ap);
 		}
 		FieldSourceSinkDefinition def = buildNewDefinition(fieldSignature, filteredAPs);
-		def.setCategory(category);
+		def.category = category;
 		return def;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
 		result = prime * result + ((fieldSignature == null) ? 0 : fieldSignature.hashCode());
 		return result;
@@ -160,7 +162,7 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;

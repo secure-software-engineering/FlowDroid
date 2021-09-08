@@ -242,8 +242,13 @@ public class MethodFlow extends AbstractMethodSummary {
 	}
 
 	public boolean getIgnoreTypes() {
-		if (ignoreTypes == null)
+		if (ignoreTypes == null) {
+			if (typeChecking != null && !typeChecking.booleanValue()) {
+				if ("java.lang.Object[]".equals(to.getLastFieldType()))
+					return true;
+			}
 			return false;
+		}
 		return ignoreTypes;
 	}
 

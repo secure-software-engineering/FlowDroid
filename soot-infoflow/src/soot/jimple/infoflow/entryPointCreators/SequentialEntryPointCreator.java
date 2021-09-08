@@ -32,6 +32,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 	 */
 	public SequentialEntryPointCreator(Collection<String> methodsToCall) {
 		this.methodsToCall = methodsToCall;
+		setAllowNonPublicConstructors(true);
 	}
 
 	@Override

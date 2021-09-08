@@ -78,6 +78,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	private List<String> substituteClasses;
 	private boolean allowSelfReferences = false;
 	private boolean ignoreSystemClassParams = true;
+	private boolean allowNonPublicConstructors = false;
 
 	private final Set<SootMethod> failedMethods = new HashSet<>();
 
@@ -512,7 +513,9 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Generates code which creates a new instance of the given class.
+	 * Generates code which creates a new instance of the given class. Note that if
+	 * {@link #allowNonPublicConstructors} is <code>true<code>, private or protected
+	 * constructors may be used.
 	 * 
 	 * @param createdClass      The class of which to create an instance
 	 * @param constructionStack The stack of classes currently under construction.
@@ -580,16 +583,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			// instance anyway.
 			List<SootMethod> constructors = new ArrayList<>();
 			for (SootMethod currentMethod : createdClass.getMethods()) {
-				if (currentMethod.isPrivate() || currentMethod.isProtected() || !currentMethod.isConstructor())
+				if (!currentMethod.isConstructor())
+					continue;
+				if (!allowNonPublicConstructors && (currentMethod.isPrivate() || currentMethod.isProtected()))
 					continue;
 				constructors.add(currentMethod);
 			}
 
-			// The fewer parameters a constructor has, the better for us
+			// Prefer public constructors. The fewer parameters a constructor has, the
+			// better for us.
 			Collections.sort(constructors, new Comparator<SootMethod>() {
 
 				@Override
 				public int compare(SootMethod o1, SootMethod o2) {
+					if ((o1.isPrivate() || o1.isProtected()) != (o2.isPrivate() || o2.isProtected()))
+						return (o1.isPrivate() || o1.isProtected()) ? 1 : -1;
 					if (o1.getParameterCount() == o2.getParameterCount()) {
 						int o1Prims = 0, o2Prims = 0;
 						for (int i = 0; i < o1.getParameterCount(); i++)
@@ -882,6 +890,16 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	public void setIgnoreSystemClassParams(boolean ignoreSystemClassParams) {
 		this.ignoreSystemClassParams = ignoreSystemClassParams;
+	}
+
+	/**
+	 * Sets whether the entry point creator may use private or protected
+	 * constructors in order to generate a class instance in the dummyMain method.
+	 * 
+	 * @param allowNonPublicConstructors
+	 */
+	public void setAllowNonPublicConstructors(boolean allowNonPublicConstructors) {
+		this.allowNonPublicConstructors = allowNonPublicConstructors;
 	}
 
 	/**

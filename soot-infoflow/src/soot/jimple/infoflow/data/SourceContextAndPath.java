@@ -91,29 +91,19 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (abs.getCorrespondingCallSite() == null && !trackPath)
 			return this;
 
+		// Do not add the very same abstraction over and over again.
+		if (this.path != null) {
+			Iterator<Abstraction> it = path.reverseIterator();
+			while (it.hasNext()) {
+				Abstraction a = it.next();
+				if (a == abs)
+					return null;
+			}
+		}
+
 		SourceContextAndPath scap = null;
 		if (trackPath && abs.getCurrentStmt() != null) {
-			// Do not add the very same abstraction over and over again.
 			if (this.path != null) {
-				Iterator<Abstraction> it = path.reverseIterator();
-				while (it.hasNext()) {
-					Abstraction a = it.next();
-					if (a == abs)
-						return null;
-
-					// Do not run into loops. If we come back to the same
-					// abstraction, we don't got on with a neighbor
-					if (a.getNeighbors() != null && a.getNeighbors().contains(abs))
-						return null;
-
-					// If this is exactly the same abstraction as one we have
-					// seen before, we skip it. Otherwise, we would run through
-					// loops infinitely.
-					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite() && a.equals(abs))
-						return null;
-				}
-
 				// We cannot leave the same method at two different sites
 				Abstraction topAbs = path.getLast();
 				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
@@ -123,6 +113,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			}
 
 			scap = clone();
+
 			// Extend the propagation path
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();

@@ -32,6 +32,7 @@ import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
@@ -279,8 +280,7 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 					@SuppressWarnings("unchecked")
 					IAccessPathBasedSourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
-							paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType);
-					ssd.setCategory(category);
+							paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category);
 					addSourceSinkDefinition(methodSignature, ssd);
 				}
 
@@ -304,6 +304,9 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 				// Start a new field and discard our old data
 				methodSignature = null;
 				fieldSignature = null;
+				baseAPs = new HashSet<>();
+				paramAPs = new ArrayList<>();
+				returnAPs = new HashSet<>();
 				description = null;
 				break;
 
@@ -334,11 +337,14 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 
 					if (sstype != SourceSinkType.Neither) {
 						AccessPathTuple apt = AccessPathTuple.fromPathElements(pathElements, pathElementTypes, sstype);
-						apt = apt.simplify();
 
 						// Optional description
 						if (description != null && !description.isEmpty())
 							apt.setDescription(description);
+
+						// Simplify the AP after setting the description for not breaking the generic
+						// source definition
+						apt = apt.simplify();
 
 						switch (accessPathParentElement) {
 						case XMLConstants.BASE_TAG:
@@ -460,10 +466,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 		// have the
 		// same category id just with different descriptions.
 		CategoryDefinition keyDef = new CategoryDefinition(systemCategory, customCategory);
-
-		CategoryDefinition newDef = new CategoryDefinition(systemCategory, customCategory, customDescription);
-		CategoryDefinition existingDef = categories.putIfAbsent(keyDef, newDef);
-		return existingDef == null ? newDef : existingDef;
+		return categories.computeIfAbsent(keyDef,
+				d -> new CategoryDefinition(systemCategory, customCategory, customDescription));
 	}
 
 	/**
@@ -484,6 +488,11 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	protected void parseInputStream(InputStream stream) {
 		SAXParserFactory pf = SAXParserFactory.newInstance();
 		try {
+			// Prevent XXE
+			pf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			pf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			pf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
 			SAXParser parser = pf.newSAXParser();
 			parser.parse(stream, new SAXHandler());
 		} catch (ParserConfigurationException e) {
@@ -600,8 +609,8 @@ public class XMLSourceSinkParser implements ISourceSinkDefinitionProvider {
 	 */
 	protected IAccessPathBasedSourceSinkDefinition createMethodSourceSinkDefinition(AndroidMethod method,
 			Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
-			CallType callType) {
-		return new MethodSourceSinkDefinition(method, baseAPs, paramAPs, returnAPs, callType);
+			CallType callType, ISourceSinkCategory category) {
+		return new MethodSourceSinkDefinition(method, baseAPs, paramAPs, returnAPs, callType, category);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.List;
 
 import soot.Local;
 import soot.RefType;
@@ -64,21 +65,17 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		ComponentType componentType = entryPointUtils.getComponentType(component);
 		boolean hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService) {
-			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
-				if (sm != null && !sm.getDeclaringClass().getName()
-						.equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
-					if (createPlainMethodCall(thisLocal, sm))
-						hasAdditionalMethods = true;
-			}
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getGCMIntentServiceMethods(),
+					AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS);
 		} else if (componentType == ComponentType.GCMListenerService) {
-			for (String sig : AndroidEntryPointConstants.getGCMListenerServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
-				if (sm != null
-						&& !sm.getDeclaringClass().getName().equals(AndroidEntryPointConstants.GCMLISTENERSERVICECLASS))
-					if (createPlainMethodCall(thisLocal, sm))
-						hasAdditionalMethods = true;
-			}
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getGCMListenerServiceMethods(),
+					AndroidEntryPointConstants.GCMLISTENERSERVICECLASS);
+		} else if (componentType == ComponentType.HostApduService) {
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getHostApduServiceMethods(),
+					AndroidEntryPointConstants.HOSTAPDUSERVICECLASS);
 		}
 		addCallbackMethods();
 		body.getUnits().add(endWhileStmt);
@@ -124,6 +121,27 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		// onDestroy:
 		body.getUnits().add(onDestroyStmt);
 		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, component, thisLocal);
+	}
+
+	/**
+	 * Creates invocations to the handler methods of special-purpose services in
+	 * Android
+	 * 
+	 * @param methodSigs  The signatures of the methods for which to create
+	 *                    invocations
+	 * @param parentClass The name of the parent class in the SDK that contains the
+	 *                    service interface
+	 * @return True if at least one method invocation was created, false otherwise
+	 */
+	protected boolean createSpecialServiceMethodCalls(List<String> methodSigs, String parentClass) {
+		boolean hasAdditionalMethods = false;
+		for (String sig : methodSigs) {
+			SootMethod sm = findMethod(component, sig);
+			if (sm != null && !sm.getDeclaringClass().getName().equals(parentClass))
+				if (createPlainMethodCall(thisLocal, sm))
+					hasAdditionalMethods = true;
+		}
+		return hasAdditionalMethods;
 	}
 
 	@Override

@@ -101,7 +101,7 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		// Normally, we don't inspect source methods
 		if (!getManager().getConfig().getInspectSources() && getManager().getSourceSinkManager() != null) {
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager().getSourceInfo(stmt, getManager());
-			if (sourceInfo != null && isCallbackOrReturn(sourceInfo.getDefinition()))
+			if (sourceInfo != null && !isCallbackOrReturn(sourceInfo.getDefinition()))
 				killAll.value = true;
 		}
 

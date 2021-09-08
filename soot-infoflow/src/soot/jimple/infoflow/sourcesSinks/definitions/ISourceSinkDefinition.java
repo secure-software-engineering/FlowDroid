@@ -9,9 +9,9 @@ package soot.jimple.infoflow.sourcesSinks.definitions;
 public interface ISourceSinkDefinition {
 
 	/**
-	 * Sets the category to which this source or sink belonga
+	 * Sets the category to which this source or sink belongs
 	 * 
-	 * @param category The category to which this source or sink belonga
+	 * @param category The category to which this source or sink belongs
 	 */
 	public void setCategory(ISourceSinkCategory category);
 

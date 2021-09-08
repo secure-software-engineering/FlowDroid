@@ -268,7 +268,7 @@ public class SummaryGenerator {
 		}
 
 		Options.v().set_output_format(Options.output_format_none);
-		if (hasWildcard || config.getLoadFullJAR())
+		if (hasWildcard || config.getLoadFullJAR() || config.getSummarizeFullJAR())
 			Options.v().set_process_dir(Arrays.asList(classpath.split(File.pathSeparator)));
 		else
 			Options.v().set_soot_classpath(classpath);
@@ -289,7 +289,7 @@ public class SummaryGenerator {
 		Scene.v().loadNecessaryClasses();
 
 		Set<ClassAnalysisTask> realClasses = new HashSet<>(classNames.size());
-		if (config.getLoadFullJAR()) {
+		if (config.getSummarizeFullJAR()) {
 			for (Iterator<SootClass> scIt = Scene.v().getApplicationClasses().snapshotIterator(); scIt.hasNext();) {
 				SootClass sc = scIt.next();
 				Scene.v().forceResolve(sc.getName(), SootClass.SIGNATURES);
@@ -613,10 +613,7 @@ public class SummaryGenerator {
 		logger.info(String.format("Computing method summary for %s...", methodSig));
 		long nanosBeforeMethod = System.nanoTime();
 
-		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(
-				config.getAccessPathConfiguration().getAccessPathLength());
-		final SummarySourceSinkManager sourceSinkManager = new SummarySourceSinkManager(methodSig, parentClass,
-				sourceSinkFactory);
+		final SummarySourceSinkManager sourceSinkManager = createSourceSinkManager(methodSig, parentClass);
 		final MethodSummaries summaries = new MethodSummaries();
 
 		final SummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
@@ -644,10 +641,10 @@ public class SummaryGenerator {
 				InfoflowResultPostProcessor processor;
 				if (infoflow.getManager() != null)
 					processor = new InfoflowResultPostProcessor(listener.getResult(), infoflow.getManager(), methodSig,
-							sourceSinkFactory, gapManager);
+							sourceSinkManager.getSourceSinkFactory(), gapManager);
 				else
 					processor = new InfoflowResultPostProcessor(listener.getResult(), infoflow.getConfig(), methodSig,
-							sourceSinkFactory, gapManager);
+							sourceSinkManager.getSourceSinkFactory(), gapManager);
 				processor.postProcess(summaries);
 
 				if (resultHandler != null)
@@ -667,6 +664,21 @@ public class SummaryGenerator {
 		logger.info("Method summary for " + methodSig + " done in " + (System.nanoTime() - nanosBeforeMethod) / 1E9
 				+ " seconds");
 		return summaries;
+	}
+
+	/**
+	 * Creates the source/sink manager for introducing new sources and sinks into
+	 * the taint analysis
+	 * 
+	 * @param methodSig   The signature of the method for which to create sources
+	 *                    and sinks, i.e., the method to be summarized
+	 * @param parentClass The class that contains the method to summarize
+	 * @return The new {@link SummarySourceSinkManager}
+	 */
+	protected SummarySourceSinkManager createSourceSinkManager(final String methodSig, final String parentClass) {
+		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(
+				config.getAccessPathConfiguration().getAccessPathLength());
+		return new SummarySourceSinkManager(methodSig, parentClass, sourceSinkFactory);
 	}
 
 	private BaseEntryPointCreator createEntryPoint(Collection<String> entryPoints, String parentClass) {

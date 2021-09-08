@@ -1,7 +1,9 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
-	<hierarchy>
-		<interface name="java.io.Reader" />
+	<hierarchy superClass="java.io.Reader">
+		<interface name="java.io.Closeable" />
+		<interface name="java.io.Flushable" />
+		<interface name="java.lang.AutoCloseable" />
 	</hierarchy>
   <methods>
     <method id="void &lt;init&gt;(java.lang.String)">

@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
-	<hierarchy>
-		<interface name="java.io.Writer" />
+	<hierarchy superClass="java.io.Writer">
+		<interface name="java.io.Closeable" />
+		<interface name="java.io.Flushable" />
+		<interface name="java.lang.Appendable" />
+		<interface name="java.lang.AutoCloseable" />
 	</hierarchy>
 	<methods>
 		<method id="java.io.StringWriter append(char)">

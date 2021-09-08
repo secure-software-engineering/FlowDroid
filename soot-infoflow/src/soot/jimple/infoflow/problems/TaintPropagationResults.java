@@ -127,4 +127,44 @@ public class TaintPropagationResults {
 		return results == null ? 0 : results.size();
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((results == null) ? 0 : results.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TaintPropagationResults other = (TaintPropagationResults) obj;
+		if (results == null) {
+			if (other.results != null)
+				return false;
+		} else if (!results.equals(other.results))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		if (results != null && !results.isEmpty()) {
+			for (AbstractionAtSink aas : results.keySet()) {
+				sb.append("Abstraction: ");
+				sb.append(aas.getAbstraction());
+				sb.append(" at ");
+				sb.append(aas.getSinkStmt());
+				sb.append("\n");
+			}
+		}
+		return sb.toString();
+	}
+
 }

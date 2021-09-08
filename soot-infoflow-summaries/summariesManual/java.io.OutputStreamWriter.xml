@@ -1,5 +1,11 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="java.io.Writer">
+		<interface name="java.io.Closeable" />
+		<interface name="java.io.Flushable" />
+		<interface name="java.lang.Appendable" />
+		<interface name="java.lang.AutoCloseable" />
+	</hierarchy>
 	<methods>
 		<method id="void &lt;init&gt;(java.io.OutputStream)">
 			<flows>

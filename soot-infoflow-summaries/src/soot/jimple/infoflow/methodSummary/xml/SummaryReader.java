@@ -58,7 +58,10 @@ public class SummaryReader extends AbstractXMLReader {
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			xmlreader = XMLInputFactory.newInstance().createXMLStreamReader(reader);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			xmlreader = factory.createXMLStreamReader(reader);
 			final MethodSummaries summary = summaries.getMethodSummaries();
 
 			Map<String, String> sourceAttributes = new HashMap<String, String>();
@@ -82,7 +85,10 @@ public class SummaryReader extends AbstractXMLReader {
 				final String localName = xmlreader.getLocalName();
 				if (localName.equals(XMLConstants.TREE_SUMMARY) && xmlreader.isStartElement()) {
 					String isInterface = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_INTERFACE);
-					if (isInterface != null)
+
+					// If the string is empty, it's unknown, and neither true nor false, so we must
+					// not call setInterface()!
+					if (isInterface != null && !isInterface.isEmpty())
 						summaries.setInterface(isInterface.equals(XMLConstants.VALUE_TRUE));
 				} else if (localName.equals(XMLConstants.TREE_METHODS) && xmlreader.isStartElement()) {
 					if (state == State.summary)
@@ -337,11 +343,19 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isReturn(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Return.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Return.toString());
+		}
+		return false;
 	}
 
 	private boolean isField(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Field.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Field.toString());
+		}
+		return false;
 	}
 
 	private String[] getAccessPath(Map<String, String> attributes) {

@@ -41,6 +41,7 @@ import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.jimple.ClassConstant;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -106,6 +107,7 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
+	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new HashMultiMap<>();
 	protected final Map<SootClass, Integer> fragmentIDs = new HashMap<>();
 
 	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
@@ -413,7 +415,7 @@ public abstract class AbstractCallbackAnalyzer {
 			Stmt stmt = (Stmt) u;
 			if (stmt.containsInvokeExpr()) {
 				final String methodName = stmt.getInvokeExpr().getMethod().getName();
-				if (methodName.equals("getFragmentManager"))
+				if (methodName.equals("getFragmentManager") || methodName.equals("getSupportFragmentManager"))
 					isFragmentManager = true;
 				else if (methodName.equals("beginTransaction"))
 					isFragmentTransaction = true;
@@ -457,6 +459,8 @@ public abstract class AbstractCallbackAnalyzer {
 								// Is this a fragment?
 								if (br.getType() instanceof RefType) {
 									RefType rt = (RefType) br.getType();
+									if (br instanceof ClassConstant)
+										rt = (RefType) ((ClassConstant) br).toSootType();
 
 									boolean addFragment = scFragment != null
 											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
@@ -610,17 +614,18 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Activity")
-					|| curClass.getName().equals("android.support.v7.app.ActionBarActivity")
-					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity")
-					|| curClass.getName().equals("androidx.appcompat.app.AppCompatActivity"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Activity")
+					|| curClassName.equals("android.support.v7.app.ActionBarActivity")
+					|| curClassName.equals("android.support.v7.app.AppCompatActivity")
+					|| curClassName.equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
-            // As long as the class is subclass of android.app.Activity,
-            // it can be sure that the setContentView method is what we expected.
-            // Following 2 statements make the overriding of method
-            // setContentView ignored.
+			// As long as the class is subclass of android.app.Activity,
+			// it can be sure that the setContentView method is what we expected.
+			// Following 2 statements make the overriding of method
+			// setContentView ignored.
 			// if (curClass.declaresMethod("void setContentView(int)"))
-			// 	return false;
+			// return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -643,10 +648,9 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Fragment"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Fragment") || curClassName.equals("android.view.LayoutInflater"))
 				return true;
-			if (curClass.declaresMethod("android.view.View inflate(int,android.view.ViewGroup,boolean)"))
-				return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -814,6 +818,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
 		this.fragmentClasses.put(componentClass, fragmentClass);
+		this.fragmentClassesRev.put(fragmentClass, componentClass);
 	}
 
 	private boolean isEmpty(Body activeBody) {

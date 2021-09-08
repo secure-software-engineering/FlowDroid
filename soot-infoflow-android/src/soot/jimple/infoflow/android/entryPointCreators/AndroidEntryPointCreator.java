@@ -256,6 +256,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
+			case HostApduService:
 				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			case ServiceConnection:

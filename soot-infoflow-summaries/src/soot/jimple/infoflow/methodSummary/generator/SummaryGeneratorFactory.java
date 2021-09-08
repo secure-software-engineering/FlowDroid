@@ -13,6 +13,7 @@ public class SummaryGeneratorFactory {
 	private final boolean flowSensitiveAliasing = true;
 	private final boolean useRecursiveAccessPaths = true;
 	private final boolean loadFullJAR = true;
+	private final boolean summarizeFullJAR = true;
 
 	/**
 	 * Initializes the summary generator object
@@ -28,6 +29,7 @@ public class SummaryGeneratorFactory {
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);
 		s.getConfig().setFlowSensitiveAliasing(flowSensitiveAliasing);
 		s.getConfig().setLoadFullJAR(loadFullJAR);
+		s.getConfig().setSummarizeFullJAR(summarizeFullJAR);
 
 		return s;
 	}

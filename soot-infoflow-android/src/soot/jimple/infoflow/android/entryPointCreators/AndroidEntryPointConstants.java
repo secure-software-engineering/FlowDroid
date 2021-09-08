@@ -26,6 +26,7 @@ public class AndroidEntryPointConstants {
 	public static final String SERVICECLASS = "android.app.Service";
 	public static final String GCMBASEINTENTSERVICECLASS = "com.google.android.gcm.GCMBaseIntentService";
 	public static final String GCMLISTENERSERVICECLASS = "com.google.android.gms.gcm.GcmListenerService";
+	public static final String HOSTAPDUSERVICECLASS = "android.nfc.cardemulation.HostApduService";
 	public static final String BROADCASTRECEIVERCLASS = "android.content.BroadcastReceiver";
 	public static final String CONTENTPROVIDERCLASS = "android.content.ContentProvider";
 	public static final String APPLICATIONCLASS = "android.app.Application";
@@ -72,6 +73,9 @@ public class AndroidEntryPointConstants {
 	public static final String GCMLISTENERSERVICE_ONMESSAGERECEIVED = "void onMessageReceived(java.lang.String,android.os.Bundle)";
 	public static final String GCMLISTENERSERVICE_ONMESSAGESENT = "void onMessageSent(java.lang.String)";
 	public static final String GCMLISTENERSERVICE_ONSENDERROR = "void onSendError(java.lang.String,java.lang.String)";
+
+	public static final String HOSTAPDUSERVICE_PROCESSCOMMANDAPDU = "byte[] processCommandApdu(byte[],android.os.Bundle)";
+	public static final String HOSTAPDUSERVICE_ONDEACTIVATED = "void onDeactivated(int)";
 
 	public static final String FRAGMENT_ONCREATE = "void onCreate(android.os.Bundle)";
 	public static final String FRAGMENT_ONATTACH = "void onAttach(android.app.Activity)";
@@ -125,8 +129,8 @@ public class AndroidEntryPointConstants {
 
 	private static final String[] activityMethods = { ACTIVITY_ONCREATE, ACTIVITY_ONDESTROY, ACTIVITY_ONPAUSE,
 			ACTIVITY_ONRESTART, ACTIVITY_ONRESUME, ACTIVITY_ONSTART, ACTIVITY_ONSTOP, ACTIVITY_ONSAVEINSTANCESTATE,
-			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE,
-			ACTIVITY_ONPOSTRESUME };
+			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE, ACTIVITY_ONPOSTRESUME,
+			ACTIVITY_ONATTACHFRAGMENT };
 	private static final List<String> activityMethodList = Arrays.asList(activityMethods);
 
 	private static final String[] serviceMethods = { SERVICE_ONCREATE, SERVICE_ONDESTROY, SERVICE_ONSTART1,
@@ -135,7 +139,8 @@ public class AndroidEntryPointConstants {
 
 	private static final String[] fragmentMethods = { FRAGMENT_ONCREATE, FRAGMENT_ONDESTROY, FRAGMENT_ONPAUSE,
 			FRAGMENT_ONATTACH, FRAGMENT_ONDESTROYVIEW, FRAGMENT_ONRESUME, FRAGMENT_ONSTART, FRAGMENT_ONSTOP,
-			FRAGMENT_ONCREATEVIEW, FRAGMENT_ONACTIVITYCREATED, FRAGMENT_ONVIEWSTATERESTORED, FRAGMENT_ONDETACH };
+			FRAGMENT_ONCREATEVIEW, FRAGMENT_ONACTIVITYCREATED, FRAGMENT_ONVIEWSTATERESTORED, FRAGMENT_ONDETACH,
+			FRAGMENT_ONSAVEINSTANCESTATE, FRAGMENT_ONVIEWCREATED };
 	private static final List<String> fragmentMethodList = Arrays.asList(fragmentMethods);
 
 	private static final String[] gcmIntentServiceMethods = { GCMINTENTSERVICE_ONDELETEDMESSAGES,
@@ -146,6 +151,10 @@ public class AndroidEntryPointConstants {
 	private static final String[] gcmListenerServiceMethods = { GCMLISTENERSERVICE_ONDELETEDMESSAGES,
 			GCMLISTENERSERVICE_ONMESSAGERECEIVED, GCMLISTENERSERVICE_ONMESSAGESENT, GCMLISTENERSERVICE_ONSENDERROR };
 	private static final List<String> gcmListenerServiceMethodList = Arrays.asList(gcmListenerServiceMethods);
+
+	private static final String[] hostApduServiceMethods = { HOSTAPDUSERVICE_PROCESSCOMMANDAPDU,
+			HOSTAPDUSERVICE_ONDEACTIVATED };
+	private static final List<String> hostApduServiceMethodList = Arrays.asList(hostApduServiceMethods);
 
 	private static final String[] broadcastMethods = { BROADCAST_ONRECEIVE };
 	private static final List<String> broadcastMethodList = Arrays.asList(broadcastMethods);
@@ -163,7 +172,8 @@ public class AndroidEntryPointConstants {
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED };
 	private static final List<String> activityLifecycleMethodList = Arrays.asList(activityLifecycleMethods);
 
-	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED };
+	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED,
+			COMPONENTCALLBACKS_ONLOWMEMORY };
 	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
 
 	public static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
@@ -194,6 +204,10 @@ public class AndroidEntryPointConstants {
 
 	public static List<String> getGCMListenerServiceMethods() {
 		return gcmListenerServiceMethodList;
+	}
+
+	public static List<String> getHostApduServiceMethods() {
+		return hostApduServiceMethodList;
 	}
 
 	public static List<String> getBroadcastLifecycleMethods() {

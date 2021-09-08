@@ -2,6 +2,8 @@ package soot.jimple.infoflow.android.callbacks.filters;
 
 import java.util.Set;
 
+import soot.FastHierarchy;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
@@ -21,12 +23,12 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 	private SootClass activityLifecycleCallbacks;
 	private SootClass provideAssistDataListener;
 	private SootClass componentCallbacks;
+	private SootClass componentCallbacks2;
 
 	/**
 	 * Creates a new instance of the {@link ApplicationCallbackFilter} class
 	 * 
-	 * @param entrypoints
-	 *            The set of entry points into the app
+	 * @param entrypoints The set of entry points into the app
 	 */
 	public ApplicationCallbackFilter(Set<SootClass> entrypoints) {
 		this(getApplicationClass(entrypoints));
@@ -35,14 +37,14 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 	/**
 	 * Scans through the list of entry points and finds the application class
 	 * 
-	 * @param entrypoints
-	 *            A set containing all entry points in the current app
+	 * @param entrypoints A set containing all entry points in the current app
 	 * @return The name of the application class if one exists, otherwise null
 	 */
 	private static String getApplicationClass(Set<SootClass> entrypoints) {
 		SootClass scApplication = Scene.v().getSootClassUnsafe("android.app.Application");
 		for (SootClass sc : entrypoints) {
-			if (sc != null && Scene.v().getOrMakeFastHierarchy().canStoreType(sc.getType(), scApplication.getType())) {
+			if (sc != null && scApplication != null
+					&& Scene.v().getOrMakeFastHierarchy().canStoreType(sc.getType(), scApplication.getType())) {
 				return sc.getName();
 			}
 		}
@@ -52,8 +54,7 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 	/**
 	 * Creates a new instance of the {@link ApplicationCallbackFilter} class
 	 * 
-	 * @param applicationClass
-	 *            The class extending android.app.Application
+	 * @param applicationClass The class extending android.app.Application
 	 */
 	public ApplicationCallbackFilter(String applicationClass) {
 		super();
@@ -67,12 +68,11 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 		// not implemented there
 		if (this.applicationClass != null && component.getName().equals(this.applicationClass)
 				&& !callbackHandler.getName().equals(applicationClass)) {
-			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
-					this.activityLifecycleCallbacks.getType())
-					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
-							this.provideAssistDataListener.getType())
-					&& !Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(),
-							this.componentCallbacks.getType()))
+			final FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+			final RefType callbackType = callbackHandler.getType();
+			if (!fh.canStoreType(callbackType, this.activityLifecycleCallbacks.getType())
+					&& !fh.canStoreType(callbackType, this.provideAssistDataListener.getType())
+					&& !fh.canStoreType(callbackType, this.componentCallbacks.getType()))
 				return false;
 		}
 
@@ -86,6 +86,8 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 		this.provideAssistDataListener = Scene.v()
 				.getSootClassUnsafe("android.app.Application$OnProvideAssistDataListener");
 		this.componentCallbacks = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.COMPONENTCALLBACKSINTERFACE);
+		this.componentCallbacks2 = Scene.v()
+				.getSootClassUnsafe(AndroidEntryPointConstants.COMPONENTCALLBACKS2INTERFACE);
 	}
 
 	@Override
@@ -94,10 +96,18 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 		// components that are not the application
 		if (component.getName().equals(applicationClass))
 			return true;
+
 		String subSig = callback.getSubSignature();
-		return !AndroidEntryPointConstants.getActivityLifecycleCallbackMethods().contains(subSig)
-				&& !AndroidEntryPointConstants.getComponentCallbackMethods().contains(subSig)
-				&& !AndroidEntryPointConstants.getComponentCallback2Methods().contains(subSig);
+		final FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		final RefType callbackType = callback.getDeclaringClass().getType();
+		if (AndroidEntryPointConstants.getActivityLifecycleCallbackMethods().contains(subSig))
+			return fh.canStoreType(callbackType, this.activityLifecycleCallbacks.getType());
+		if (AndroidEntryPointConstants.getComponentCallbackMethods().contains(subSig))
+			return fh.canStoreType(callbackType, this.componentCallbacks.getType());
+		if (AndroidEntryPointConstants.getComponentCallback2Methods().contains(subSig))
+			return fh.canStoreType(callbackType, this.componentCallbacks2.getType());
+
+		return true;
 	}
 
 }
