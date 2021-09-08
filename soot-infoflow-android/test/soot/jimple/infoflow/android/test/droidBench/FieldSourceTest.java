@@ -11,7 +11,7 @@ public class FieldSourceTest extends JUnitTests {
 
     @Test
     public void runTestFlowSensitivity1() throws IOException, XmlPullParserException {
-        InfoflowResults res = analyzeAPKFile("FieldSource/angel.numbers.apk");
+        InfoflowResults res = analyzeAPKFile("FieldSource/FieldSourceTest.apk");
         Assert.assertNotNull(res);
     }
 }
