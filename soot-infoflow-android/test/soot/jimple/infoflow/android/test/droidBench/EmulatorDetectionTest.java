@@ -23,7 +23,6 @@ public class EmulatorDetectionTest extends JUnitTests {
 	@Test(timeout=300000)
 	public void runTestBattery1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("EmulatorDetection/Battery1.apk");
-		System.out.println(res);
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
