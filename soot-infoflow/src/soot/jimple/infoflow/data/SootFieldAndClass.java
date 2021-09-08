@@ -1,30 +1,23 @@
 package soot.jimple.infoflow.data;
 
-import soot.SootField;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
-public class SootFieldAndMethod {
+public class SootFieldAndClass {
 
     private final String fieldName;
     private final String className;
     private final String fieldType;
-
     private Boolean isStatic;
-    private Boolean isFinal;
-    private String accessModifier;
-    private String initialValue;
-    private String signature = null;
-    private int hashCode = 0;
+    private SourceSinkType sourceSinkType = SourceSinkType.Undefined;
 
-    public SootFieldAndMethod(String fieldName, String className, String fieldType) {
+    private int hashCode = 0;
+    private String signature = null;
+
+    public SootFieldAndClass(String fieldName, String className, String fieldType, SourceSinkType sourceSinkType) {
         this.fieldName = fieldName;
         this.className = className;
         this.fieldType = fieldType;
-    }
-
-    public SootFieldAndMethod(SootField sootField) {
-        this.fieldName = sootField.getName();
-        this.className = sootField.getDeclaringClass().getName();
-        this.fieldType = sootField.getType().toString();
+        this.sourceSinkType = sourceSinkType;
     }
 
     public String getFieldName() {
@@ -39,36 +32,20 @@ public class SootFieldAndMethod {
         return fieldType;
     }
 
+    public SourceSinkType getSourceSinkType() {
+        return sourceSinkType;
+    }
+
+    public void setSourceSinkType(SourceSinkType sourceSinkType) {
+        this.sourceSinkType = sourceSinkType;
+    }
+
     public Boolean getStatic() {
         return isStatic;
     }
 
     public void setStatic(Boolean aStatic) {
         isStatic = aStatic;
-    }
-
-    public Boolean getFinal() {
-        return isFinal;
-    }
-
-    public void setFinal(Boolean aFinal) {
-        isFinal = aFinal;
-    }
-
-    public String getAccessModifier() {
-        return accessModifier;
-    }
-
-    public void setAccessModifier(String accessModifier) {
-        this.accessModifier = accessModifier;
-    }
-
-    public String getInitialValue() {
-        return initialValue;
-    }
-
-    public void setInitialValue(String initialValue) {
-        this.initialValue = initialValue;
     }
 
     public String getSignature() {
@@ -108,9 +85,9 @@ public class SootFieldAndMethod {
 
     @Override
     public boolean equals(Object another) {
-        if (!(another instanceof SootFieldAndMethod))
+        if (!(another instanceof SootFieldAndClass))
             return false;
-        SootFieldAndMethod otherMethod = (SootFieldAndMethod) another;
+        SootFieldAndClass otherMethod = (SootFieldAndClass) another;
 
         if (!this.fieldName.equals(otherMethod.fieldName))
             return false;
