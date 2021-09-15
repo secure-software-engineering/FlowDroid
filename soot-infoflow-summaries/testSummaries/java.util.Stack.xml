@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="java.util.Vector" />
     <methods>
         <method id="boolean add(java.lang.Object)">
             <flows>
