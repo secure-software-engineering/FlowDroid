@@ -53,10 +53,12 @@ public class SummaryResolver {
 					if (declaredClass != null && !isClassSupported)
 						isClassSupported = getSummariesHierarchy(methodSig, classSummaries, declaredClass);
 
-					if (!classSummaries.isEmpty())
+					if (isClassSupported) {
+						if (classSummaries.isEmpty())
+							return SummaryResponse.EMPTY_BUT_SUPPORTED;
 						return new SummaryResponse(classSummaries, isClassSupported);
-					else
-						return isClassSupported ? SummaryResponse.EMPTY_BUT_SUPPORTED : SummaryResponse.NOT_SUPPORTED;
+					} else
+						return SummaryResponse.NOT_SUPPORTED;
 				}
 
 				/**
@@ -135,24 +137,25 @@ public class SummaryResolver {
 					// flows for all possible classes.
 					SootMethod targetMethod = clazz.getMethodUnsafe(methodSig);
 					if (!clazz.isConcrete() || targetMethod == null || !targetMethod.isConcrete()) {
+						int found = 0;
 						Set<SootClass> childClasses = getAllChildClasses(clazz);
-						if (childClasses.size() > MAX_HIERARCHY_DEPTH)
-							return false;
-
-						boolean found = false;
 						for (SootClass childClass : childClasses) {
 							// Do we have support for the target class?
 							if (summaries.merge(flows.getMethodFlows(childClass, methodSig)))
-								found = true;
+								found++;
 
 							// Do we support any interface this class might have?
 							if (checkInterfaces(methodSig, summaries, childClass))
-								found = true;
+								found++;
+
+							// If we have too many summaries that could be applicable, we abort here to
+							// avoid false positives
+							if (found > MAX_HIERARCHY_DEPTH)
+								return false;
 						}
-						return found;
+						return found > 0;
 					}
 					return false;
-
 				}
 
 				/**
