@@ -10,10 +10,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import heros.solver.IDESolver;
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.ArrayType;
@@ -51,6 +47,9 @@ import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryQuery;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResolver;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResponse;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -70,8 +69,6 @@ import soot.util.MultiMap;
  */
 public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
-	private static final int MAX_HIERARCHY_DEPTH = 10;
-
 	private InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
 	private AtomicInteger wrapperMisses = new AtomicInteger();
@@ -82,323 +79,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	private Hierarchy hierarchy;
 	private FastHierarchy fastHierarchy;
+	private SummaryResolver summaryResolver;
 
 	private MultiMap<Pair<Abstraction, SootMethod>, AccessPathPropagator> userCodeTaints = new ConcurrentHashMultiMap<>();
-
-	protected final LoadingCache<SummaryQuery, SummaryResponse> methodToImplFlows = IDESolver.DEFAULT_CACHE_BUILDER
-			.build(new CacheLoader<SummaryQuery, SummaryResponse>() {
-				@Override
-				public SummaryResponse load(SummaryQuery query) throws Exception {
-					final SootClass calleeClass = query.calleeClass;
-					final SootClass declaredClass = query.declaredClass;
-					final String methodSig = query.subsignature;
-					final ClassSummaries classSummaries = new ClassSummaries();
-					boolean isClassSupported = false;
-
-					// Get the flows in the target method
-					if (calleeClass != null)
-						isClassSupported = getSummaries(methodSig, classSummaries, calleeClass);
-
-					// If we haven't found any summaries, we look at the class from the declared
-					// type at the call site
-					if (declaredClass != null && !isClassSupported)
-						isClassSupported = getSummaries(methodSig, classSummaries, declaredClass);
-
-					// If we still don't have anything, we must try the hierarchy. Since this
-					// best-effort approach can be fairly imprecise, it is our last resort.
-					if (!isClassSupported && calleeClass != null)
-						isClassSupported = getSummariesHierarchy(methodSig, classSummaries, calleeClass);
-					if (declaredClass != null && !isClassSupported)
-						isClassSupported = getSummariesHierarchy(methodSig, classSummaries, declaredClass);
-
-					if (!classSummaries.isEmpty())
-						return new SummaryResponse(classSummaries, isClassSupported);
-					else
-						return isClassSupported ? SummaryResponse.EMPTY_BUT_SUPPORTED : SummaryResponse.NOT_SUPPORTED;
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in the given
-				 * class
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The class for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean getSummaries(final String methodSig, final ClassSummaries summaries, SootClass clazz) {
-					// Do we have direct support for the target class?
-					if (summaries.merge(flows.getMethodFlows(clazz, methodSig)))
-						return true;
-
-					// Do we support any interface this class might have?
-					if (checkInterfaces(methodSig, summaries, clazz))
-						return true;
-
-					// If the target is abstract and we haven't found any flows,
-					// we check for child classes
-					SootMethod targetMethod = clazz.getMethodUnsafe(methodSig);
-					if (!clazz.isConcrete() || targetMethod == null || !targetMethod.isConcrete()) {
-						for (SootClass parentClass : getAllParentClasses(clazz)) {
-							// Do we have support for the target class?
-							if (summaries.merge(flows.getMethodFlows(parentClass, methodSig)))
-								return true;
-
-							// Do we support any interface this class might have?
-							if (checkInterfaces(methodSig, summaries, parentClass))
-								return true;
-						}
-					}
-
-					// In case we don't have a real hierarchy, we must reconstruct one from the
-					// summaries
-					String curClass = clazz.getName();
-					while (curClass != null) {
-						ClassMethodSummaries classSummaries = flows.getClassFlows(curClass);
-						if (classSummaries != null) {
-							// Check for flows in the current class
-							if (summaries.merge(flows.getMethodFlows(curClass, methodSig)))
-								return true;
-
-							// Check for interfaces
-							if (checkInterfacesFromSummary(methodSig, summaries, curClass))
-								return true;
-
-							curClass = classSummaries.getSuperClass();
-						} else
-							break;
-					}
-
-					return false;
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in a class in
-				 * the hierarchy of the given class
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The class for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean getSummariesHierarchy(final String methodSig, final ClassSummaries summaries,
-						SootClass clazz) {
-					// Don't try to look up the whole Java hierarchy
-					if (clazz == Scene.v().getSootClassUnsafe("java.lang.Object"))
-						return false;
-
-					// If the target is abstract and we haven't found any flows,
-					// we check for child classes. Since the summaries are class-specific and we
-					// don't really know which child class we're looking for, we have to merge the
-					// flows for all possible classes.
-					SootMethod targetMethod = clazz.getMethodUnsafe(methodSig);
-					if (!clazz.isConcrete() || targetMethod == null || !targetMethod.isConcrete()) {
-						Set<SootClass> childClasses = getAllChildClasses(clazz);
-						if (childClasses.size() > MAX_HIERARCHY_DEPTH)
-							return false;
-
-						boolean found = false;
-						for (SootClass childClass : childClasses) {
-							// Do we have support for the target class?
-							if (summaries.merge(flows.getMethodFlows(childClass, methodSig)))
-								found = true;
-
-							// Do we support any interface this class might have?
-							if (checkInterfaces(methodSig, summaries, childClass))
-								found = true;
-						}
-						return found;
-					}
-					return false;
-
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in the given
-				 * interface or any of its super-interfaces
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The interface for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean checkInterfaces(String methodSig, ClassSummaries summaries, SootClass clazz) {
-					for (SootClass intf : clazz.getInterfaces()) {
-						// Directly check the interface
-						if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-							return true;
-
-						for (SootClass parent : getAllParentClasses(intf)) {
-							// Do we have support for the interface?
-							if (summaries.merge(flows.getMethodFlows(parent, methodSig)))
-								return true;
-						}
-					}
-
-					// We might not have hierarchy information in the scene, so let's check the
-					// summary itself
-					return checkInterfacesFromSummary(methodSig, summaries, clazz.getName());
-				}
-
-				/**
-				 * Checks for summaries on the interfaces implemented by the given class. This
-				 * method relies on the hierarchy data from the summary XML files, rather than
-				 * the Soot scene
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param className The interface for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				protected boolean checkInterfacesFromSummary(String methodSig, ClassSummaries summaries,
-						String className) {
-					List<String> interfaces = new ArrayList<>();
-					interfaces.add(className);
-					while (!interfaces.isEmpty()) {
-						final String intfName = interfaces.remove(0);
-						ClassMethodSummaries classSummaries = flows.getClassFlows(intfName);
-						if (classSummaries != null && classSummaries.hasInterfaces()) {
-							for (String intf : classSummaries.getInterfaces()) {
-								// Do we have a summary on the current interface?
-								if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-									return true;
-
-								// Recursively check for more interfaces
-								interfaces.add(intf);
-							}
-						}
-					}
-					return false;
-				}
-
-			});
-
-	/**
-	 * Query that retrieves summaries for a given class and method.
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	protected static class SummaryQuery {
-
-		public final SootClass calleeClass;
-		public final SootClass declaredClass;
-		public final String subsignature;
-
-		public SummaryQuery(SootClass calleeClass, SootClass declaredClass, String subsignature) {
-			this.calleeClass = calleeClass;
-			this.declaredClass = declaredClass;
-			this.subsignature = subsignature;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(calleeClass.getName());
-			sb.append(": ");
-			sb.append(subsignature);
-			return sb.toString();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((calleeClass == null) ? 0 : calleeClass.hashCode());
-			result = prime * result + ((declaredClass == null) ? 0 : declaredClass.hashCode());
-			result = prime * result + ((subsignature == null) ? 0 : subsignature.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SummaryQuery other = (SummaryQuery) obj;
-			if (calleeClass == null) {
-				if (other.calleeClass != null)
-					return false;
-			} else if (!calleeClass.equals(other.calleeClass))
-				return false;
-			if (declaredClass == null) {
-				if (other.declaredClass != null)
-					return false;
-			} else if (!declaredClass.equals(other.declaredClass))
-				return false;
-			if (subsignature == null) {
-				if (other.subsignature != null)
-					return false;
-			} else if (!subsignature.equals(other.subsignature))
-				return false;
-			return true;
-		}
-
-	}
-
-	/**
-	 * Response from a cache that provides flows for a given combination of class
-	 * and method
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	protected static class SummaryResponse {
-
-		public final static SummaryResponse NOT_SUPPORTED = new SummaryResponse(null, false);
-		public final static SummaryResponse EMPTY_BUT_SUPPORTED = new SummaryResponse(null, true);
-
-		private final ClassSummaries classSummaries;
-		private final boolean isClassSupported;
-
-		public SummaryResponse(ClassSummaries classSummaries, boolean isClassSupported) {
-			this.classSummaries = classSummaries;
-			this.isClassSupported = isClassSupported;
-		}
-
-		@Override
-		public String toString() {
-			if (isClassSupported) {
-				if (classSummaries == null)
-					return "<Empty summary>";
-				else
-					return classSummaries.toString();
-			} else
-				return "<Class not supported>";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((classSummaries == null) ? 0 : classSummaries.hashCode());
-			result = prime * result + (isClassSupported ? 1231 : 1237);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SummaryResponse other = (SummaryResponse) obj;
-			if (classSummaries == null) {
-				if (other.classSummaries != null)
-					return false;
-			} else if (!classSummaries.equals(other.classSummaries))
-				return false;
-			if (isClassSupported != other.isClassSupported)
-				return false;
-			return true;
-		}
-
-	}
 
 	/**
 	 * Handler that is used for injecting taints from callbacks implemented in user
@@ -520,9 +203,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		for (String className : flows.getSupportedClasses())
 			loadClass(className);
 
+		// Initialize the resolver that decides which summary is applicable to which
+		// call site
+		this.summaryResolver = new SummaryResolver(flows);
+
 		// Get the hierarchy
-		this.hierarchy = Scene.v().getActiveHierarchy();
-		this.fastHierarchy = Scene.v().getOrMakeFastHierarchy();
+		final Scene scene = Scene.v();
+		this.hierarchy = scene.getActiveHierarchy();
+		this.fastHierarchy = scene.getOrMakeFastHierarchy();
 
 		// Register the taint propagation handler
 		manager.getForwardSolver().setFollowReturnsPastSeedsHandler(new SummaryFRPSHandler());
@@ -1178,13 +866,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// Check the direct callee
 		if (classSummaries == null || classSummaries.isEmpty()) {
 			SootClass declaredClass = getSummaryDeclaringClass(stmt);
-			SummaryResponse response = methodToImplFlows
-					.getUnchecked(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
+			SummaryResponse response = summaryResolver
+					.resolve(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
 			if (response != null) {
 				if (classSupported != null)
-					classSupported.value = response.isClassSupported;
+					classSupported.value = response.isClassSupported();
 				classSummaries = new ClassSummaries();
-				classSummaries.merge(response.classSummaries);
+				classSummaries.merge(response.getClassSummaries());
 			}
 		}
 
@@ -1248,68 +936,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		return implementors;
-	}
-
-	/**
-	 * Gets all child classes of the given class. If the given class is an
-	 * interface, all implementors of this interface and its all of child-
-	 * interfaces are returned.
-	 * 
-	 * @param sc The class or interface for which to get the children
-	 * @return The children of the given class or interface
-	 */
-	private Set<SootClass> getAllChildClasses(SootClass sc) {
-		List<SootClass> workList = new ArrayList<SootClass>();
-		workList.add(sc);
-
-		Set<SootClass> doneSet = new HashSet<SootClass>();
-		Set<SootClass> classes = new HashSet<>();
-
-		while (!workList.isEmpty()) {
-			SootClass curClass = workList.remove(0);
-			if (!doneSet.add(curClass))
-				continue;
-
-			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getImplementersOf(curClass));
-				workList.addAll(hierarchy.getSubinterfacesOf(curClass));
-			} else {
-				workList.addAll(hierarchy.getSubclassesOf(curClass));
-				classes.add(curClass);
-			}
-		}
-
-		return classes;
-	}
-
-	/**
-	 * Gets all parent classes of the given class. If the given class is an
-	 * interface, all parent implementors of this interface are returned.
-	 * 
-	 * @param sc The class or interface for which to get the parents
-	 * @return The parents of the given class or interface
-	 */
-	private Set<SootClass> getAllParentClasses(SootClass sc) {
-		List<SootClass> workList = new ArrayList<SootClass>();
-		workList.add(sc);
-
-		Set<SootClass> doneSet = new HashSet<SootClass>();
-		Set<SootClass> classes = new HashSet<>();
-
-		while (!workList.isEmpty()) {
-			SootClass curClass = workList.remove(0);
-			if (!doneSet.add(curClass))
-				continue;
-
-			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getSuperinterfacesOf(curClass));
-			} else {
-				workList.addAll(hierarchy.getSuperclassesOf(curClass));
-				classes.add(curClass);
-			}
-		}
-
-		return classes;
 	}
 
 	/**

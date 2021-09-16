@@ -121,6 +121,17 @@ public class AccessPathFragment {
 	}
 
 	/**
+	 * Gets the name of the first field in this access path fragment
+	 * 
+	 * @return The name of the first field in this access path fragment
+	 */
+	public String getFirstFieldName() {
+		if (fields == null || fields.length == 0)
+			return null;
+		return fields[0];
+	}
+
+	/**
 	 * Gets the type of the last field in this access path fragment
 	 * 
 	 * @return The type of the last field in this access path fragment
@@ -129,6 +140,17 @@ public class AccessPathFragment {
 		if (fieldTypes == null || fieldTypes.length == 0)
 			return null;
 		return fieldTypes[fieldTypes.length - 1];
+	}
+
+	/**
+	 * Gets the type of the first field in this access path fragment
+	 * 
+	 * @return The type of the first field in this access path fragment
+	 */
+	public String getFirstFieldType() {
+		if (fieldTypes == null || fieldTypes.length == 0)
+			return null;
+		return fieldTypes[0];
 	}
 
 	/**
