@@ -21,27 +21,17 @@ import soot.Type;
  * Data container which stores the string representation of a SootMethod and its
  * corresponding class
  */
-public class SootMethodAndClass {
-	private final String methodName;
-	private final String className;
-	private final String returnType;
-	private final List<String> parameters;
+public class SootMethodAndClass extends AbstractMethodAndClass {
 
-	private String subSignature = null;
-	private String signature = null;
 	private int hashCode = 0;
 
 	public SootMethodAndClass(String methodName, String className, String returnType, List<String> parameters) {
-		this.methodName = methodName;
-		this.className = className;
-		this.returnType = returnType;
-		this.parameters = parameters;
+		super(methodName, className, returnType, parameters);
 	}
 
 	public SootMethodAndClass(String methodName, String className, String returnType, String parameters) {
-		this.methodName = methodName;
-		this.className = className;
-		this.returnType = returnType;
+		super(methodName, className, returnType, parameterFromString(parameters));
+	}
 
 	private static List<String> parameterFromString(String parameters) {
 		if (parameters != null && !parameters.isEmpty()) {
@@ -51,86 +41,19 @@ public class SootMethodAndClass {
 	}
 
 	public SootMethodAndClass(SootMethod sm) {
-		this.methodName = sm.getName();
-		this.className = sm.getDeclaringClass().getName();
-		this.returnType = sm.getReturnType().toString();
-		this.parameters = new ArrayList<String>();
+		super(sm.getName(), sm.getDeclaringClass().getName(), sm.getReturnType().toString(), parameterFromMethod(sm));
+	}
+
+	private static List<String> parameterFromMethod(SootMethod sm) {
+		ArrayList<String> parameters = new ArrayList<String>();
 		for (Type p : sm.getParameterTypes())
-			this.parameters.add(p.toString());
+			parameters.add(p.toString());
+		return parameters;
 	}
 
 	public SootMethodAndClass(SootMethodAndClass methodAndClass) {
-		this.methodName = methodAndClass.methodName;
-		this.className = methodAndClass.className;
-		this.returnType = methodAndClass.returnType;
-		this.parameters = new ArrayList<String>(methodAndClass.parameters);
-	}
-
-	public String getMethodName() {
-		return this.methodName;
-	}
-
-	public String getClassName() {
-		return this.className;
-	}
-
-	public String getReturnType() {
-		return this.returnType;
-	}
-
-	public List<String> getParameters() {
-		return this.parameters;
-	}
-
-	public String getSubSignature() {
-		if (subSignature != null)
-			return subSignature;
-
-		StringBuilder sb = new StringBuilder(
-				10 + this.returnType.length() + this.methodName.length() + (this.parameters.size() * 30));
-		if (!this.returnType.isEmpty()) {
-			sb.append(this.returnType);
-			sb.append(" ");
-		}
-		sb.append(this.methodName);
-		sb.append("(");
-
-		for (int i = 0; i < this.parameters.size(); i++) {
-			if (i > 0)
-				sb.append(",");
-			sb.append(this.parameters.get(i).trim());
-		}
-		sb.append(")");
-		this.subSignature = sb.toString();
-
-		return this.subSignature;
-	}
-
-	public String getSignature() {
-		if (signature != null)
-			return signature;
-
-		StringBuilder sb = new StringBuilder(10 + this.className.length() + this.returnType.length()
-				+ this.methodName.length() + (this.parameters.size() * 30));
-		sb.append("<");
-		sb.append(this.className);
-		sb.append(": ");
-		if (!this.returnType.isEmpty()) {
-			sb.append(this.returnType);
-			sb.append(" ");
-		}
-		sb.append(this.methodName);
-		sb.append("(");
-
-		for (int i = 0; i < this.parameters.size(); i++) {
-			if (i > 0)
-				sb.append(",");
-			sb.append(this.parameters.get(i).trim());
-		}
-		sb.append(")>");
-		this.signature = sb.toString();
-
-		return this.signature;
+		super(methodAndClass.methodName, methodAndClass.className, methodAndClass.returnType,
+				new ArrayList<String>(methodAndClass.parameters));
 	}
 
 	@Override
