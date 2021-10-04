@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import soot.SootMethod;
@@ -34,10 +35,8 @@ public class SootMethodAndClass extends AbstractMethodAndClass {
 
 	private static List<String> parameterFromString(String parameters) {
 		List<String> paras = new ArrayList<>();
-		if (paras != null && !paras.isEmpty()) {
-			String[] params = parameters.split(",");
-			for (String s : params)
-				paras.add(s);
+		if (parameters != null && !parameters.isEmpty()) {
+			return Arrays.asList(parameters.split(","));
 		}
 		return paras;
 	}
