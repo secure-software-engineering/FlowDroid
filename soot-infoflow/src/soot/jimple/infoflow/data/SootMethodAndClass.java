@@ -34,11 +34,10 @@ public class SootMethodAndClass extends AbstractMethodAndClass {
 	}
 
 	private static List<String> parameterFromString(String parameters) {
-		List<String> paras = new ArrayList<>();
 		if (parameters != null && !parameters.isEmpty()) {
 			return Arrays.asList(parameters.split(","));
 		}
-		return paras;
+		return new ArrayList<>();
 	}
 
 	public SootMethodAndClass(SootMethod sm) {
