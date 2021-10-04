@@ -28,7 +28,6 @@ import soot.G;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
 import soot.PatchingChain;
-import soot.PointsToAnalysis;
 import soot.Scene;
 import soot.SootMethod;
 import soot.Unit;
@@ -99,7 +98,6 @@ import soot.jimple.infoflow.threading.IExecutorFactory;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
-import soot.jimple.toolkits.pointer.DumbPointerAnalysis;
 import soot.options.Options;
 
 /**
@@ -1097,10 +1095,6 @@ public class Infoflow extends AbstractInfoflow {
 				icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(), config.getEnableExceptionTracking()), null,
 				null, null, new AccessPathFactory(config), null);
 
-		// Dead code elimination may drop the points-to analysis. We need to restore it.
-		final Scene scene = Scene.v();
-		PointsToAnalysis pta = scene.getPointsToAnalysis();
-
 		// We need to exclude the dummy main method and all other artificial methods
 		// that the entry point creator may have generated as well
 		Set<SootMethod> excludedMethods = new HashSet<>();
@@ -1111,16 +1105,6 @@ public class Infoflow extends AbstractInfoflow {
 		ICodeOptimizer dce = new DeadCodeEliminator();
 		dce.initialize(config);
 		dce.run(dceManager, excludedMethods, sourcesSinks, taintWrapper);
-
-		// Restore the points-to analysis. This may restore a PAG that contains outdated
-		// methods, but it's still better than running the entire callgraph algorithm
-		// again. Continuing with the DumbPointerAnalysis is not a viable solution
-		// either, since it heavily over-approximates.
-		if (pta != null && !(pta instanceof DumbPointerAnalysis)) {
-			PointsToAnalysis newPta = scene.getPointsToAnalysis();
-			if (newPta == null || newPta instanceof DumbPointerAnalysis)
-				scene.setPointsToAnalysis(pta);
-		}
 	}
 
 	protected Collection<SootMethod> getMethodsForSeeds(IInfoflowCFG icfg) {
