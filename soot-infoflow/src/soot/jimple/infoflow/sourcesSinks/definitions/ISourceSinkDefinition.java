@@ -46,4 +46,11 @@ public interface ISourceSinkDefinition {
 	 */
 	public abstract void merge(ISourceSinkDefinition other);
 
+	/**
+	 * Indicates if the definition contains any sources or sinks
+	 * 
+	 * @return The boolean if this definition is empty
+	 */
+	public abstract boolean isEmpty();
+
 }
