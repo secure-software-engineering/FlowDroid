@@ -267,7 +267,10 @@ public class SummaryGenerator {
 			}
 		}
 
-		Options.v().set_output_format(Options.output_format_none);
+		if (config.getWriteOutputFiles())
+			Options.v().set_output_format(Options.output_format_jimple);
+		else
+			Options.v().set_output_format(Options.output_format_none);
 		if (hasWildcard || config.getLoadFullJAR() || config.getSummarizeFullJAR())
 			Options.v().set_process_dir(Arrays.asList(classpath.split(File.pathSeparator)));
 		else
