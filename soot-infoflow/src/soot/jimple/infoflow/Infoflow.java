@@ -1199,7 +1199,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * @return True if the given class is user code, false otherwise
 	 */
 	protected boolean isUserCodeClass(String className) {
-		return false;
+		return true;
 	}
 
 	/**
