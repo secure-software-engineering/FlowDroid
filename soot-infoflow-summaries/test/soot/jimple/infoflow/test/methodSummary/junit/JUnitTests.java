@@ -72,7 +72,8 @@ public abstract class JUnitTests {
 
 		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath()
 				+ sep + testSrc4.getCanonicalPath() + sep + testSrc5.getCanonicalPath();
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+//		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		libPath = "C:\\Program Files\\Java\\jre1.8.0_301\\lib\\rt.jar";
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
