@@ -110,6 +110,13 @@ public abstract class AbstractXMLSourceSinkParser {
 		protected Map<String, ISourceSinkDefinition> sourcesAndSinks;
 		protected ICategoryFilter categoryFilter = null;
 
+		public SAXHandler() {
+		}
+
+		public SAXHandler(ICategoryFilter categoryFilter) {
+			this.categoryFilter = categoryFilter;
+		}
+
 		/**
 		 * Event Handler for the starting element for SAX. Possible start elements for
 		 * filling AndroidMethod objects with the new data format: - method: Setting
