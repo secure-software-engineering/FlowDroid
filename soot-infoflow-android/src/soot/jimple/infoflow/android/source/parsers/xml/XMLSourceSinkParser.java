@@ -211,7 +211,7 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 	@Override
 	protected void runParse(SAXParser parser, InputStream stream) {
 		try {
-			parser.parse(stream, new SAXHandler());
+			parser.parse(stream, new SAXHandler(this.categoryFilter));
 		} catch (SAXException | IOException e) {
 			e.printStackTrace();
 		}
