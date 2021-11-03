@@ -129,6 +129,10 @@ public class MainClass {
 	// Evaluation-specific options
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
 
+	// Callgraph analysis
+	private static final String OPTION_CALLGRAPH_FILE = "cf";
+	private static final String OPTION_CALLGRAPH_ONLY = "x";
+
 	protected MainClass() {
 		initializeCommandLineOptions();
 	}
@@ -238,6 +242,11 @@ public class MainClass {
 		// Evaluation-specific options
 		options.addOption(OPTION_ANALYZE_FRAMEWORKS, "analyzeframeworks", false,
 				"Analyze the full frameworks together with the app without any optimizations");
+
+		// Callgraph-specific options
+		options.addOption(OPTION_CALLGRAPH_FILE, "callgraphdir", true,
+				"The file in which to store and from which to read serialized callgraphs");
+		options.addOption(OPTION_CALLGRAPH_ONLY, "callgraphonly", false, "Only compute the callgraph and terminate");
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -904,6 +913,17 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_ANALYZE_FRAMEWORKS)) {
 			config.setExcludeSootLibraryClasses(false);
 			config.setIgnoreFlowsInSystemPackages(false);
+		}
+
+		// Callgraph-specific options
+		if (cmd.hasOption(OPTION_CALLGRAPH_ONLY))
+			config.setTaintAnalysisEnabled(false);
+		{
+			String callgraphFile = cmd.getOptionValue(OPTION_CALLGRAPH_FILE);
+			if (callgraphFile != null && !callgraphFile.isEmpty()) {
+				config.getCallbackConfig().setSerializeCallbacks(true);
+				config.getCallbackConfig().setCallbacksFile(callgraphFile);
+			}
 		}
 	}
 
