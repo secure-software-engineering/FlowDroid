@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import soot.Body;
 import soot.Local;
+import soot.LocalGenerator;
 import soot.PatchingChain;
 import soot.RefType;
 import soot.Scene;
@@ -22,7 +23,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
@@ -487,7 +487,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		sm.setActiveBody(b);
 		b.insertIdentityStmts();
 
-		LocalGenerator localGen = new LocalGenerator(b);
+		LocalGenerator localGen = Scene.v().createLocalGenerator(b);
 		Local lcIntent = localGen.generateLocal(intentType);
 		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
 				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));

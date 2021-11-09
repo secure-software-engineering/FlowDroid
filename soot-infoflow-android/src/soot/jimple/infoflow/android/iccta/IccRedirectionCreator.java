@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import soot.Body;
 import soot.Local;
+import soot.LocalGenerator;
 import soot.Modifier;
 import soot.PatchingChain;
 import soot.RefType;
@@ -24,7 +25,6 @@ import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
 import soot.VoidType;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
@@ -183,7 +183,7 @@ public class IccRedirectionCreator {
 		newSM.setActiveBody(b);
 		newSM.addTag(SimulatedCodeElementTag.TAG);
 
-		LocalGenerator lg = new LocalGenerator(b);
+		LocalGenerator lg = Scene.v().createLocalGenerator(b);
 
 		Local originActivityParameterLocal = lg.generateLocal(originActivity.getType());
 		Unit originActivityParameterU = Jimple.v().newIdentityStmt(originActivityParameterLocal,
@@ -241,7 +241,7 @@ public class IccRedirectionCreator {
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
-		LocalGenerator lg = new LocalGenerator(b);
+		LocalGenerator lg = Scene.v().createLocalGenerator(b);
 
 		// identity
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
@@ -273,7 +273,7 @@ public class IccRedirectionCreator {
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
-		LocalGenerator lg = new LocalGenerator(b);
+		LocalGenerator lg = Scene.v().createLocalGenerator(b);
 
 		// identity
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
@@ -315,7 +315,7 @@ public class IccRedirectionCreator {
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
-		LocalGenerator lg = new LocalGenerator(b);
+		LocalGenerator lg = Scene.v().createLocalGenerator(b);
 
 		Local originActivityParameterLocal = lg.generateLocal(serviceConnection.getType());
 		b.getUnits().add(Jimple.v().newIdentityStmt(originActivityParameterLocal,
@@ -372,7 +372,7 @@ public class IccRedirectionCreator {
 		JimpleBody b = Jimple.v().newBody(newSM);
 		newSM.setActiveBody(b);
 
-		LocalGenerator lg = new LocalGenerator(b);
+		LocalGenerator lg = Scene.v().createLocalGenerator(b);
 
 		// all parameters
 		List<Local> locals = new ArrayList<>();
