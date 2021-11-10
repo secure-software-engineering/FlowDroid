@@ -237,6 +237,7 @@ public class AndroidEntryPointConstants {
 	public static List<String> getServiceConnectionMethods() {
 		return serviceConnectionMethodList;
 	}
+
 	/*
 	 * ========================================================================
 	 */
@@ -261,6 +262,25 @@ public class AndroidEntryPointConstants {
 	 */
 	private AndroidEntryPointConstants() {
 
+	}
+
+	/**
+	 * Checks whether the given subsignature corresponds to the subsignature of a
+	 * lifecycle method
+	 * 
+	 * @param subsig The subsignature
+	 * @return True if the given subsignature is potentially a lifecycle method
+	 *         (depending on the parent class which is not checked here), false
+	 *         otherwise
+	 */
+	public static boolean isLifecycleSubsignature(String subsig) {
+		return activityMethodList.contains(subsig) || serviceMethodList.contains(subsig)
+				|| fragmentMethodList.contains(subsig) || gcmIntentServiceMethodList.contains(subsig)
+				|| gcmListenerServiceMethodList.contains(subsig) || hostApduServiceMethodList.contains(subsig)
+				|| broadcastMethodList.contains(subsig) || contentProviderMethodList.contains(subsig)
+				|| applicationMethodList.contains(subsig) || activityLifecycleMethodList.contains(subsig)
+				|| componentCallbackMethodList.contains(subsig) || componentCallback2MethodList.contains(subsig)
+				|| serviceConnectionMethodList.contains(subsig);
 	}
 
 }
