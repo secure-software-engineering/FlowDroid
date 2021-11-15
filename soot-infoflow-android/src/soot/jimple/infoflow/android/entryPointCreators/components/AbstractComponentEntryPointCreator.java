@@ -257,34 +257,37 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		if (!method.isStatic()) {
 			Body body = method.retrieveActiveBody();
 
-			PatchingChain<Unit> units = body.getUnits();
-			Local thisLocal = body.getThisLocal();
-			Local intentV = body.getParameterLocal(indexOfArgs);
+			// Some component types such as fragments don't have a getIntent() method
+			SootMethod m = hostComponent.getMethodUnsafe("android.content.Intent getIntent()");
+			if (m != null) {
+				PatchingChain<Unit> units = body.getUnits();
+				Local thisLocal = body.getThisLocal();
+				Local intentV = body.getParameterLocal(indexOfArgs);
 
-			for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
-				Stmt stmt = (Stmt) iter.next();
-				// We need to look for the first non-identity statement
-				if (!(stmt instanceof IdentityStmt)) {
-					/*
-					 * Using the component that the dummyMain() belongs to, as in some cases the
-					 * invoked method is only available in its superclass. and its superclass does
-					 * not contain getIntent() and consequently cause an runtime exception of
-					 * couldn't find getIntent().
-					 * 
-					 * RuntimeException: couldn't find method getIntent(*) in
-					 * com.google.android.gcm.GCMBroadcastReceiver
-					 */
-					SootMethod m = hostComponent.getMethod("android.content.Intent getIntent()");
-					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
-						if (stmt.getInvokeExpr().getMethod().equals(m))
-							break;
+				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+					Stmt stmt = (Stmt) iter.next();
+					// We need to look for the first non-identity statement
+					if (!(stmt instanceof IdentityStmt)) {
+						/*
+						 * Using the component that the dummyMain() belongs to, as in some cases the
+						 * invoked method is only available in its superclass. and its superclass does
+						 * not contain getIntent() and consequently cause an runtime exception of
+						 * couldn't find getIntent().
+						 * 
+						 * RuntimeException: couldn't find method getIntent(*) in
+						 * com.google.android.gcm.GCMBroadcastReceiver
+						 */
+						if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
+							if (stmt.getInvokeExpr().getMethod().equals(m))
+								break;
+						}
+						Unit setIntentU = Jimple.v().newAssignStmt(intentV,
+								Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
+
+						setIntentU.addTag(SimulatedCodeElementTag.TAG);
+						units.insertBefore(setIntentU, stmt);
+						break;
 					}
-					Unit setIntentU = Jimple.v().newAssignStmt(intentV,
-							Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
-
-					setIntentU.addTag(SimulatedCodeElementTag.TAG);
-					units.insertBefore(setIntentU, stmt);
-					break;
 				}
 			}
 		}
