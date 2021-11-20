@@ -549,6 +549,9 @@ public class Infoflow extends AbstractInfoflow {
 				performanceData.updateMaxMemoryConsumption(getUsedMemory());
 				int taintPropagationSeconds = (int) Math.round((System.nanoTime() - beforeTaintPropagation) / 1E9);
 				performanceData.addTaintPropagationSeconds(taintPropagationSeconds);
+				performanceData.addEdgePropagationCount(forwardSolver.getPropagationCount());
+				if (backwardSolver != null)
+					performanceData.addEdgePropagationCount(backwardSolver.getPropagationCount());
 
 				// Print taint wrapper statistics
 				if (taintWrapper != null) {
