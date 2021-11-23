@@ -211,6 +211,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	}
 
 	@Override
+	public void computeTaintPaths(Set<AbstractionAtSink> res) {
+		super.computeTaintPaths(res);
+		executor.shutdown();
+	}
+
+	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
 		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
