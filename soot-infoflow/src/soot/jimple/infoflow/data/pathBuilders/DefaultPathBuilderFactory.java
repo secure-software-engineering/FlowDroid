@@ -62,7 +62,7 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 		case Recursive:
 			return new RecursivePathBuilder(manager, executor);
 		case ContextSensitive:
-			return new ContextSensitivePathBuilder(manager, executor);
+			return new ContextSensitivePathBuilder(manager);
 		case ContextInsensitive:
 			return new ContextInsensitivePathBuilder(manager, executor);
 		case ContextInsensitiveSourceFinder:

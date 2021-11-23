@@ -20,7 +20,7 @@ import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
 import soot.jimple.toolkits.ide.icfg.OnTheFlyJimpleBasedICFG;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.graph.DirectedGraph;
-import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraphFactory;
 
 /**
  * Default factory for bidirectional interprocedural CFGs
@@ -67,7 +67,7 @@ public class DefaultBiDiICFGFactory implements BiDirICFGFactory {
 			baseCFG = new JimpleBasedInterproceduralCFG(enableExceptions, true) {
 
 				protected DirectedGraph<Unit> makeGraph(Body body) {
-					return enableExceptions ? new ExceptionalUnitGraph(body, DalvikThrowAnalysis.interproc(), true)
+					return enableExceptions ? ExceptionalUnitGraphFactory.createExceptionalUnitGraph(body, DalvikThrowAnalysis.interproc(), true)
 							: new BriefUnitGraph(body);
 				}
 
