@@ -14,7 +14,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 	protected final InfoflowResults results = new InfoflowResults();
 
-	private final InterruptableExecutor executor;
+	protected final InterruptableExecutor executor;
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
 	private ISolverTerminationReason killFlag = null;
 

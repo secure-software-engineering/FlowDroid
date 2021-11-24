@@ -516,9 +516,6 @@ public class LibraryClassPatcher {
 
 		Unit retStmt = Jimple.v().newReturnVoidStmt();
 		b.getUnits().add(retStmt);
-
-		b.validate();
-
 		return b;
 	}
 

@@ -2,6 +2,8 @@ package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -32,10 +34,16 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * 
 	 * @param manager  The data flow manager that gives access to the icfg and other
 	 *                 objects
-	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
-	public ContextSensitivePathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
-		super(manager, executor);
+	public ContextSensitivePathBuilder(InfoflowManager manager) {
+		super(manager, createExecutor(manager));
+	}
+
+	private static InterruptableExecutor createExecutor(InfoflowManager manager) {
+		int numThreads = Runtime.getRuntime().availableProcessors();
+		int mtn = manager.getConfig().getMaxThreadNum();
+		return new InterruptableExecutor(mtn == -1 ? numThreads : Math.min(mtn, numThreads), Integer.MAX_VALUE, 30,
+				TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>());
 	}
 
 	/**
@@ -43,7 +51,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * 
 	 * @author Steven Arzt
 	 */
-	protected class SourceFindingTask implements Runnable {
+	protected class SourceFindingTask implements Runnable, Comparable<SourceFindingTask> {
 		private final Abstraction abstraction;
 
 		public SourceFindingTask(Abstraction abstraction) {
@@ -138,9 +146,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (getClass() != obj.getClass())
 				return false;
 			SourceFindingTask other = (SourceFindingTask) obj;
-			if (abstraction != other.abstraction)
-				return false;
-			return true;
+			return abstraction == other.abstraction;
+		}
+
+		@Override
+		public int compareTo(SourceFindingTask arg0) {
+			return Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
 		}
 
 	}
@@ -197,6 +208,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 		if (!incrementalAbs.isEmpty())
 			this.computeTaintPaths(incrementalAbs);
+	}
+
+	@Override
+	public void computeTaintPaths(Set<AbstractionAtSink> res) {
+		super.computeTaintPaths(res);
+		executor.shutdown();
 	}
 
 	@Override
