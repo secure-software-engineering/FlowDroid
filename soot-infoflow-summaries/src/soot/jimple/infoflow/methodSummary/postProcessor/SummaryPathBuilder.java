@@ -18,7 +18,6 @@ import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
-import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 
 /**
@@ -189,8 +188,8 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	 *                 objects
 	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
-	public SummaryPathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
-		super(manager, executor);
+	public SummaryPathBuilder(InfoflowManager manager) {
+		super(manager);
 		this.context = new SummaryPathBuilderContext(manager.getTaintWrapper());
 	}
 
