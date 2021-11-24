@@ -276,8 +276,6 @@ public class LibraryClassPatcher {
 
 		Unit retStmt = Jimple.v().newReturnStmt(targetLocal);
 		b.getUnits().add(retStmt);
-
-		b.validate();
 	}
 
 	/**
@@ -518,9 +516,6 @@ public class LibraryClassPatcher {
 
 		Unit retStmt = Jimple.v().newReturnVoidStmt();
 		b.getUnits().add(retStmt);
-
-		b.validate();
-
 		return b;
 	}
 
