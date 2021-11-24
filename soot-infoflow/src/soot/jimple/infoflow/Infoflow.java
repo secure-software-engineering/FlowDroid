@@ -660,19 +660,6 @@ public class Infoflow extends AbstractInfoflow {
 					builder.computeTaintPaths(res);
 					res = null;
 
-					// Update the statistics
-					{
-						ISolverTerminationReason reason = builder.getTerminationReason();
-						if (reason != null) {
-							if (reason instanceof OutOfMemoryReason)
-								results.setTerminationState(results.getTerminationState()
-										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_OOM);
-							else if (reason instanceof TimeoutReason)
-								results.setTerminationState(results.getTerminationState()
-										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
-						}
-					}
-
 					// Wait for the path builders to terminate
 					try {
 						// The path reconstruction should stop on time anyway. In case it doesn't, we
@@ -684,6 +671,19 @@ public class Infoflow extends AbstractInfoflow {
 							resultExecutor.awaitCompletion();
 					} catch (InterruptedException e) {
 						logger.error("Could not wait for executor termination", e);
+					}
+
+					// Update the statistics
+					{
+						ISolverTerminationReason reason = builder.getTerminationReason();
+						if (reason != null) {
+							if (reason instanceof OutOfMemoryReason)
+								results.setTerminationState(results.getTerminationState()
+										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_OOM);
+							else if (reason instanceof TimeoutReason)
+								results.setTerminationState(results.getTerminationState()
+										| InfoflowResults.TERMINATION_PATH_RECONSTRUCTION_TIMEOUT);
+						}
 					}
 
 					// Get the results once the path builder is done

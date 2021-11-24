@@ -32,8 +32,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
 	 * 
-	 * @param manager  The data flow manager that gives access to the icfg and other
-	 *                 objects
+	 * @param manager The data flow manager that gives access to the icfg and other
+	 *                objects
 	 */
 	public ContextSensitivePathBuilder(InfoflowManager manager) {
 		super(manager, createExecutor(manager));
@@ -151,10 +151,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		@Override
 		public int compareTo(SourceFindingTask arg0) {
-			int r = Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
-			if (r == 0)
-				return 1;
-			return r;
+			return Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
 		}
 
 	}
@@ -216,6 +213,19 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	@Override
 	public void computeTaintPaths(Set<AbstractionAtSink> res) {
 		super.computeTaintPaths(res);
+
+		// Wait for the path builder to terminate
+		try {
+			// The path reconstruction should stop on time anyway. In case it doesn't, we
+			// make sure that we don't get stuck.
+			long pathTimeout = manager.getConfig().getPathConfiguration().getPathReconstructionTimeout();
+			if (pathTimeout > 0)
+				executor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
+			else
+				executor.awaitCompletion();
+		} catch (InterruptedException e) {
+			logger.error("Could not wait for executor termination", e);
+		}
 		executor.shutdown();
 	}
 
