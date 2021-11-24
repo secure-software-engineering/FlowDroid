@@ -151,7 +151,10 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		@Override
 		public int compareTo(SourceFindingTask arg0) {
-			return Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
+			int r = Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
+			if (r == 0)
+				return 1;
+			return r;
 		}
 
 	}
