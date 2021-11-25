@@ -253,4 +253,17 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		return null;
 	}
 
+	@Override
+	protected void onTaintPathsComputed() {
+		// Don't shut down the executor, because we reset it and run several iterations
+		// on the same path builder.
+	}
+
+	/**
+	 * Terminates the path builder. Afterwards, no new tasks can be scheduled.
+	 */
+	public void shutdown() {
+		executor.shutdown();
+	}
+
 }

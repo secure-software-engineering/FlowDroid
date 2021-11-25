@@ -163,6 +163,7 @@ public class InfoflowResultPostProcessor {
 					pathBuilder.clear();
 				}
 			}
+			pathBuilder.shutdown();
 		}
 
 		// Compact the flow set to remove paths that are over-approximations of

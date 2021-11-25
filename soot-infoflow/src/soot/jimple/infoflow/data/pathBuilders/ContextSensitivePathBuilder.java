@@ -226,6 +226,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		} catch (InterruptedException e) {
 			logger.error("Could not wait for executor termination", e);
 		}
+	}
+
+	/**
+	 * Method that is called when the taint paths have been computed
+	 */
+	protected void onTaintPathsComputed() {
 		executor.shutdown();
 	}
 
