@@ -54,7 +54,6 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
-import soot.jimple.infoflow.data.pathBuilders.BatchPathBuilder;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.data.pathBuilders.IAbstractionPathBuilder;
 import soot.jimple.infoflow.data.pathBuilders.IAbstractionPathBuilder.OnPathBuilderResultAvailable;
@@ -771,7 +770,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * @return The path builder implementation
 	 */
 	protected IAbstractionPathBuilder createPathBuilder(InterruptableExecutor executor) {
-		return new BatchPathBuilder(manager, pathBuilderFactory.createPathBuilder(manager, executor));
+		return pathBuilderFactory.createPathBuilder(manager, executor);
 	}
 
 	/**
