@@ -222,12 +222,11 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 	@Override
 	public void computeTaintPaths(Set<AbstractionAtSink> res) {
-		super.computeTaintPaths(res);
-
-		// Wait for the path builder to terminate
 		try {
-			// The path reconstruction should stop on time anyway. In case it doesn't, we
-			// make sure that we don't get stuck.
+			super.computeTaintPaths(res);
+
+			// Wait for the path builder to terminate. The path reconstruction should stop
+			// on time anyway. In case it doesn't, we make sure that we don't get stuck.
 			long pathTimeout = manager.getConfig().getPathConfiguration().getPathReconstructionTimeout();
 			if (pathTimeout > 0)
 				executor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
@@ -253,9 +252,10 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
 		scap = scap.extendPath(abs.getAbstraction(), pathConfig);
 
-		if (pathCache.put(abs.getAbstraction(), scap))
+		if (pathCache.put(abs.getAbstraction(), scap)) {
 			if (!checkForSource(abs.getAbstraction(), scap))
 				return new SourceFindingTask(abs.getAbstraction());
+		}
 		return null;
 	}
 
