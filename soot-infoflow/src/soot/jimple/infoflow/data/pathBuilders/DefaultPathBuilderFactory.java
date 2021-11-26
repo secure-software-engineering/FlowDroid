@@ -56,7 +56,7 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 			try {
 				super.computeTaintPaths(res);
 			} finally {
-				((RepeatableContextSensitivePathBuilder) innerBuilder).onTaintPathsComputed();
+				((RepeatableContextSensitivePathBuilder) innerBuilder).shutdown();
 			}
 		}
 

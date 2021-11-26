@@ -243,6 +243,13 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * Method that is called when the taint paths have been computed
 	 */
 	protected void onTaintPathsComputed() {
+		shutdown();
+	}
+
+	/**
+	 * Terminates the internal executor and cleans up all resources that were used
+	 */
+	public void shutdown() {
 		executor.shutdown();
 	}
 
