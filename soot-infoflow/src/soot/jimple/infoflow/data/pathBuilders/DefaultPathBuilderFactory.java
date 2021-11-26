@@ -53,8 +53,11 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 
 		@Override
 		public void computeTaintPaths(Set<AbstractionAtSink> res) {
-			super.computeTaintPaths(res);
-			((RepeatableContextSensitivePathBuilder) innerBuilder).onTaintPathsComputed();
+			try {
+				super.computeTaintPaths(res);
+			} finally {
+				((RepeatableContextSensitivePathBuilder) innerBuilder).onTaintPathsComputed();
+			}
 		}
 
 	}
