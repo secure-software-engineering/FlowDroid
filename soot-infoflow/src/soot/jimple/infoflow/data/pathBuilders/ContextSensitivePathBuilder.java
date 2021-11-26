@@ -3,6 +3,7 @@ package soot.jimple.infoflow.data.pathBuilders;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
@@ -42,8 +43,17 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	private static InterruptableExecutor createExecutor(InfoflowManager manager) {
 		int numThreads = Runtime.getRuntime().availableProcessors();
 		int mtn = manager.getConfig().getMaxThreadNum();
-		return new InterruptableExecutor(mtn == -1 ? numThreads : Math.min(mtn, numThreads), Integer.MAX_VALUE, 30,
-				TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>());
+		InterruptableExecutor executor = new InterruptableExecutor(mtn == -1 ? numThreads : Math.min(mtn, numThreads),
+				Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>());
+		executor.setThreadFactory(new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "Path reconstruction");
+			}
+
+		});
+		return executor;
 	}
 
 	/**
