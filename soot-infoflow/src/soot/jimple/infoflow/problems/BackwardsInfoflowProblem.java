@@ -209,7 +209,10 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							ArrayRef arrayRef = (ArrayRef) leftValue;
 							newType = TypeUtils.buildArrayOrAddDimension(newType, arrayRef.getType().getArrayType());
 						} else if (defStmt.getRightOp() instanceof ArrayRef) {
-							newType = ((ArrayType) newType).getElementType();
+							if (newType instanceof ArrayType)
+								newType = ((ArrayType) newType).getElementType();
+							else
+								newType = null;
 						} else {
 							// Type check
 							if (!manager.getTypeUtils().checkCast(source.getAccessPath(), leftValue.getType()))
