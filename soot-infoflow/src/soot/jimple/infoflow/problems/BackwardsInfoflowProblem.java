@@ -318,17 +318,19 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								targetType = TypeUtils.buildArrayOrAddDimension(targetType,
 										arrayRef.getType().getArrayType());
 							} else if (leftValue instanceof ArrayRef) {
-								assert source.getAccessPath().getBaseType() instanceof ArrayType;
-								targetType = ((ArrayType) targetType).getElementType();
-
 								// If we have a type of java.lang.Object, we try
 								// to tighten it
 								if (TypeUtils.isObjectLikeType(targetType))
 									targetType = rightValue.getType();
+								else if (targetType instanceof ArrayType)
+									targetType = ((ArrayType) targetType).getElementType();
+								else
+									targetType = null;
 
 								// If the types do not match, the right side
 								// cannot be an alias
-								if (!manager.getTypeUtils().checkCast(rightValue.getType(), targetType))
+								if (targetType != null
+										&& !manager.getTypeUtils().checkCast(rightValue.getType(), targetType))
 									addRightValue = false;
 							}
 						}
