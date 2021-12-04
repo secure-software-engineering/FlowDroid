@@ -1403,5 +1403,29 @@ public class HeapTestCode {
 	private void doAlias(B b, A a) {
 		b.attr = a;
 	}
+	
+	
+	class D {
+		E e;
+
+		public void read() {
+			e = new E();
+			e.read();
+		}
+	}
+
+	class E {
+		String str;
+		public void read() {
+			str = "";
+			str = str + TelephonyManager.getDeviceId();
+		}
+	}
+	public void aliasWithOverwriteTest1() {
+		D d = new D();
+		d.read();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(d.e.str);
+	}
 
 }
