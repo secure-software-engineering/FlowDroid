@@ -69,7 +69,10 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 				// We must remove one layer of array typing, e.g., A[][] -> A[]
 				Type targetType = source.getAccessPath().getBaseType();
 				assert targetType instanceof ArrayType;
-				targetType = ((ArrayType) targetType).getElementType();
+				if (targetType instanceof ArrayType)
+					targetType = ((ArrayType) targetType).getElementType();
+				else
+					targetType = null;
 
 				// Create the new taint abstraction
 				ArrayTaintType arrayTaintType = source.getAccessPath().getArrayTaintType();
