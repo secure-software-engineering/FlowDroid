@@ -78,6 +78,8 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 						// Without a name, we cannot really carry on
 						return;
 					}
+					if (tname == null)
+						tname = String.valueOf(resourceId);
 				}
 			} else
 				tname = name.trim();
