@@ -350,7 +350,7 @@ public class SummaryGenerator {
 					break;
 
 				for (SootMethod sm : curClass.getMethods()) {
-					if (checkAndAdd(analysisTask, sm))
+					if (!doneMethods.contains(sm.getSubSignature()) && checkAndAdd(analysisTask, sm))
 						doneMethods.add(sm.getSubSignature());
 				}
 				curClass = curClass.getSuperclassUnsafe();
@@ -365,7 +365,7 @@ public class SummaryGenerator {
 
 		// Do the actual analysis
 		ClassSummaries summaries = new ClassSummaries();
-		for (ClassAnalysisTask analysisTask : realClasses) {
+		for (ClassAnalysisTask analysisTask : sortedTasks) {
 			final String className = analysisTask.className;
 
 			// Check if we really need to analyze this class
