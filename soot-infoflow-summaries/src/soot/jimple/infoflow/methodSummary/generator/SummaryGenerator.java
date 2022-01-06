@@ -342,18 +342,30 @@ public class SummaryGenerator {
 				}
 			}
 
-			// We also need to analyze methods of parent classes except for
-			// those methods that have been overwritten in the child class
-			SootClass curClass = sc.getSuperclassUnsafe();
-			while (curClass != null) {
-				if (!curClass.isConcrete() || curClass.isLibraryClass())
-					break;
+			// We also need to analyze methods of (transitive) parent classes except for
+			// those methods that have been overwritten in the child class. From Java 8,
+			// interfaces can implement default methods. Therefore, methods of implemented
+			// interfaces need to be analyzed as well.
+			List<SootClass> parentClasses = new ArrayList<>();
+			if (sc.hasSuperclass())
+				parentClasses.add(sc.getSuperclassUnsafe());
+			parentClasses.addAll(sc.getInterfaces());
+			Set<SootClass> doneClasses = new HashSet<>();
+			while (!parentClasses.isEmpty()) {
+				SootClass curClass = parentClasses.remove(0);
+				if (curClass == null || curClass.getName().equals("java.lang.Object") || doneClasses.contains(curClass))
+					continue;
 
 				for (SootMethod sm : curClass.getMethods()) {
 					if (!doneMethods.contains(sm.getSubSignature()) && checkAndAdd(analysisTask, sm))
 						doneMethods.add(sm.getSubSignature());
 				}
-				curClass = curClass.getSuperclassUnsafe();
+
+				doneClasses.add(curClass);
+
+				if (curClass.hasSuperclass())
+					parentClasses.add(curClass.getSuperclassUnsafe());
+				parentClasses.addAll(curClass.getInterfaces());
 			}
 		}
 
