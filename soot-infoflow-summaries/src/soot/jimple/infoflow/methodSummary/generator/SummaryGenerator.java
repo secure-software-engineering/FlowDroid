@@ -454,13 +454,13 @@ public class SummaryGenerator {
 			return false;
 
 		// We normally don't analyze hashCode() and equals()
-		final String sig = sm.getSignature();
+		final String subSig = sm.getSubSignature();
 		if (!config.getSummarizeHashCodeEquals()) {
-			if (sig.equals("int hashCode()") || sig.equals("boolean equals(java.lang.Object)"))
+			if (subSig.equals("int hashCode()") || subSig.equals("boolean equals(java.lang.Object)"))
 				return false;
 		}
 
-		analysisTask.addMethod(sig);
+		analysisTask.addMethod(sm.getSignature());
 		return true;
 	}
 
