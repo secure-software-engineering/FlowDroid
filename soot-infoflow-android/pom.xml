@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -163,12 +163,12 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.18.1</version>
+			<version>3.19.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.esotericsoftware</groupId>
 		    <artifactId>kryo</artifactId>
-		    <version>5.2.0</version>
+		    <version>5.2.1</version>
 		</dependency>
 	</dependencies>
 	
