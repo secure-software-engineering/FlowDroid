@@ -311,6 +311,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
 					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef(), args);
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = Jimple.v().newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
 					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef(), args);
 			}
@@ -321,6 +323,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
 					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef());
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = Jimple.v().newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
 					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef());
 			}
