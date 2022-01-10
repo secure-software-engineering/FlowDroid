@@ -47,8 +47,6 @@ public abstract class TestHelper {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		final String sep = System.getProperty("path.separator");
-
 		File f = new File(".");
 		File testSrc1 = new File(f, "testBin");
 		File testSrc2 = new File(f, "build" + File.separator + "testclasses");
