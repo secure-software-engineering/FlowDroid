@@ -47,6 +47,7 @@ class Main {
 	private static final String OPTION_CLASS_TIMEOUT = "ct";
 	private static final String OPTION_ANALYZE_HASHCODE_EQUALS = "he";
 	private static final String OPTION_ANDROID_PLATFORMS = "p";
+	private static final String OPTION_IGNORE_DEFAULT_SUMMARIES = "is";
 	private static final String OPTION_WRITE_JIMPLE_FILES = "wj";
 
 	public static void main(final String[] args) throws FileNotFoundException, XMLStreamException {
@@ -80,6 +81,8 @@ class Main {
 				"Also analyze hashCode() and equals() methods");
 		options.addOption(OPTION_ANDROID_PLATFORMS, "platformsdir", true,
 				"Path to the platforms directory from the Android SDK");
+		options.addOption(OPTION_IGNORE_DEFAULT_SUMMARIES, "ignoresummaries", false,
+				"Existing summaries from the default summary directory are ignored");
 		options.addOption(OPTION_WRITE_JIMPLE_FILES, "writejimplefiles", false, "Write out the Jimple files");
 	}
 
@@ -202,6 +205,11 @@ class Main {
 		{
 			String platformsDir = cmd.getOptionValue(OPTION_ANDROID_PLATFORMS);
 			generator.getConfig().setAndroidPlatformDir(platformsDir);
+		}
+		{
+			boolean ignoreDefaultSummaries = cmd.hasOption(OPTION_IGNORE_DEFAULT_SUMMARIES);
+			if (ignoreDefaultSummaries)
+				generator.getConfig().setUseDefaultSummaries(false);
 		}
 		{
 			boolean writeJimpleFiles = cmd.hasOption(OPTION_WRITE_JIMPLE_FILES);
