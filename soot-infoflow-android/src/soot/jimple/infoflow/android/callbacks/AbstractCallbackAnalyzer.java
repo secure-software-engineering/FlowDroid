@@ -24,10 +24,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+import heros.solver.Pair;
 import soot.AnySubType;
 import soot.Body;
 import soot.FastHierarchy;
@@ -36,12 +42,17 @@ import soot.PointsToSet;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.CastExpr;
 import soot.jimple.ClassConstant;
+import soot.jimple.FieldRef;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -59,6 +70,9 @@ import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.jimple.infoflow.values.SimpleConstantValueProvider;
 import soot.jimple.toolkits.callgraph.Edge;
+import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraphFactory;
+import soot.toolkits.scalar.SimpleLocalDefs;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -94,10 +108,16 @@ public abstract class AbstractCallbackAnalyzer {
 
 	protected final SootClass scSupportViewPager = Scene.v().getSootClassUnsafe("android.support.v4.view.ViewPager");
 	protected final SootClass scAndroidXViewPager = Scene.v().getSootClassUnsafe("androidx.viewpager.widget.ViewPager");
+
 	protected final SootClass scFragmentStatePagerAdapter = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentStatePagerAdapter");
+	protected final SootClass scFragmentPagerAdapter = Scene.v()
+			.getSootClassUnsafe("android.support.v4.app.FragmentPagerAdapter");
+
 	protected final SootClass scAndroidXFragmentStatePagerAdapter = Scene.v()
 			.getSootClassUnsafe("androidx.fragment.app.FragmentStatePagerAdapter");
+	protected final SootClass scAndroidXFragmentPagerAdapter = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentPagerAdapter");
 
 	protected final InfoflowAndroidConfiguration config;
 	protected final Set<SootClass> entryPointClasses;
@@ -114,6 +134,69 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final Set<SootClass> excludedEntryPoints = new HashSet<>();
 
 	protected IValueProvider valueProvider = new SimpleConstantValueProvider();
+
+	protected LoadingCache<SootField, List<Type>> arrayToContentTypes = CacheBuilder.newBuilder()
+			.build(new CacheLoader<SootField, List<Type>>() {
+
+				@Override
+				public List<Type> load(SootField field) throws Exception {
+					// Find all assignments to this field
+					List<Type> typeList = new ArrayList<>();
+					field.getDeclaringClass().getMethods().stream().filter(m -> m.isConcrete())
+							.map(m -> m.retrieveActiveBody()).forEach(b -> {
+								// Find all locals that reference the field
+								Set<Local> arrayLocals = new HashSet<>();
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+										if (rop instanceof FieldRef && ((FieldRef) rop).getField() == field) {
+											arrayLocals.add((Local) lop);
+										} else if (lop instanceof FieldRef && ((FieldRef) lop).getField() == field) {
+											arrayLocals.add((Local) rop);
+										}
+									}
+								}
+
+								// Find casts
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+
+										if (rop instanceof CastExpr) {
+											CastExpr ce = (CastExpr) rop;
+											if (arrayLocals.contains(ce.getOp()))
+												arrayLocals.add((Local) lop);
+											else if (arrayLocals.contains(lop))
+												arrayLocals.add((Local) ce.getOp());
+										}
+									}
+								}
+
+								// Find the assignments to the array locals
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+										if (lop instanceof ArrayRef) {
+											ArrayRef arrayRef = (ArrayRef) lop;
+											if (arrayLocals.contains(arrayRef.getBase())) {
+												Type t = rop.getType();
+												if (t instanceof RefType)
+													typeList.add(rop.getType());
+											}
+										}
+									}
+								}
+							});
+					return typeList;
+				}
+
+			});
 
 	public AbstractCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses)
 			throws IOException {
@@ -488,14 +571,22 @@ public abstract class AbstractCallbackAnalyzer {
 	 * @author Julius Naeumann
 	 */
 	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
-		if (scSupportViewPager == null || scFragmentStatePagerAdapter == null)
-			if (scAndroidXViewPager == null || scAndroidXFragmentStatePagerAdapter == null)
-				return;
+		// We need at least one fragment base class
+		if (scSupportViewPager == null && scAndroidXViewPager == null)
+			return;
+		// We need at least one class with a method to register a fragment
+		if (scFragmentStatePagerAdapter == null && scAndroidXFragmentStatePagerAdapter == null
+				&& scFragmentPagerAdapter == null && scAndroidXFragmentPagerAdapter == null)
+			return;
 
 		if (!method.isConcrete())
 			return;
 
 		Body body = method.retrieveActiveBody();
+
+		if (method.getDeclaringClass().getName().equals("org.liberty.android.fantastischmemo.ui.AnyMemo")
+				&& method.getName().equals("initDrawer"))
+			System.out.println("x");
 
 		// look for invocations of ViewPager.setAdapter
 		for (Unit u : body.getUnits()) {
@@ -525,7 +616,8 @@ public abstract class AbstractCallbackAnalyzer {
 			RefType rt = (RefType) pa.getType();
 
 			// check whether argument is of type FragmentStatePagerAdapter
-			if (!safeIsType(pa, scFragmentStatePagerAdapter) && !safeIsType(pa, scAndroidXFragmentStatePagerAdapter))
+			if (!safeIsType(pa, scFragmentStatePagerAdapter) && !safeIsType(pa, scAndroidXFragmentStatePagerAdapter)
+					&& !safeIsType(pa, scFragmentPagerAdapter) && !safeIsType(pa, scAndroidXFragmentPagerAdapter))
 				continue;
 
 			// now analyze getItem() to find possible Fragments
@@ -546,7 +638,59 @@ public abstract class AbstractCallbackAnalyzer {
 					Value rv = rs.getOp();
 					Type type = rv.getType();
 					if (type instanceof RefType) {
-						checkAndAddFragment(method.getDeclaringClass(), ((RefType) type).getSootClass());
+						SootClass rtClass = ((RefType) type).getSootClass();
+						if (rv instanceof Local && (rtClass.getName().startsWith("android.")
+								|| rtClass.getName().startsWith("androidx.")))
+							analyzeFragmentCandidates(rs, getItem, (Local) rv);
+						else
+							checkAndAddFragment(method.getDeclaringClass(), rtClass);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Attempts to find fragments that are not returned immediately, but that
+	 * require a more complex backward analysis. This analysis is best-effort, we do
+	 * not attempt to solve every possible case.
+	 * 
+	 * @param s The statement at which the fragment is returned
+	 * @param m The method in which the fragment is returned
+	 * @param l The local that contains the fragment
+	 */
+	private void analyzeFragmentCandidates(Stmt s, SootMethod m, Local l) {
+		ExceptionalUnitGraph g = ExceptionalUnitGraphFactory.createExceptionalUnitGraph(m.getActiveBody());
+		SimpleLocalDefs lds = new SimpleLocalDefs(g);
+
+		List<Pair<Local, Stmt>> toSearch = new ArrayList<>();
+		Set<Pair<Local, Stmt>> doneSet = new HashSet<>();
+		toSearch.add(new Pair<>(l, s));
+
+		while (!toSearch.isEmpty()) {
+			Pair<Local, Stmt> pair = toSearch.remove(0);
+			if (doneSet.add(pair)) {
+				List<Unit> defs = lds.getDefsOfAt(pair.getO1(), pair.getO2());
+				for (Unit def : defs) {
+					if (def instanceof AssignStmt) {
+						AssignStmt assignStmt = (AssignStmt) def;
+						Value rop = assignStmt.getRightOp();
+						if (rop instanceof ArrayRef) {
+							ArrayRef arrayRef = (ArrayRef) rop;
+
+							// Look for all assignments to the array
+							toSearch.add(new Pair<>((Local) arrayRef.getBase(), assignStmt));
+						} else if (rop instanceof FieldRef) {
+							FieldRef fieldRef = (FieldRef) rop;
+							try {
+								List<Type> typeList = arrayToContentTypes.get(fieldRef.getField());
+								typeList.stream().map(t -> ((RefType) t).getSootClass())
+										.forEach(c -> checkAndAddFragment(m.getDeclaringClass(), c));
+							} catch (ExecutionException e) {
+								logger.error(String.format("Could not load potential types for field %s",
+										fieldRef.getField().getSignature()), e);
+							}
+						}
 					}
 				}
 			}
