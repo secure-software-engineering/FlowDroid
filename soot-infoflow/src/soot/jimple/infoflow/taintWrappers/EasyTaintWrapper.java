@@ -186,7 +186,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 	@Override
 	public Set<AccessPath> getTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath) {
 		if (!stmt.containsInvokeExpr())
-			Collections.singleton(taintedPath);
+			return Collections.singleton(taintedPath);
 
 		final Set<AccessPath> taints = new HashSet<AccessPath>();
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
