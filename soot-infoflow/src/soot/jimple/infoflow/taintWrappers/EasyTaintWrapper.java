@@ -186,22 +186,16 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 	@Override
 	public Set<AccessPath> getTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath) {
 		if (!stmt.containsInvokeExpr())
-			return Collections.emptySet();
+			Collections.singleton(taintedPath);
 
 		final Set<AccessPath> taints = new HashSet<AccessPath>();
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
 
-		// If the callee is a phantom class or has no body, we pass on the taint
-		if (method.isPhantom() || !method.hasActiveBody()) {
-			// Exception: Tainted value is overwritten
-			if (!(!taintedPath.isStaticFieldRef() && stmt instanceof DefinitionStmt
-					&& ((DefinitionStmt) stmt).getLeftOp() == taintedPath.getPlainValue()))
-				taints.add(taintedPath);
-		}
+		// We always keep the incoming taint
+		taints.add(taintedPath);
 
-		// For the moment, we don't implement static taints on wrappers. Pass it
-		// on
-		// not to break anything
+		// For the moment, we don't implement static taints on wrappers. Pass it on not
+		// to break anything
 		if (taintedPath.isStaticFieldRef())
 			return Collections.singleton(taintedPath);
 
@@ -249,9 +243,6 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 							&& SystemClassHandler.v().isTaintVisible(taintedPath, method))
 						taints.add(manager.getAccessPathFactory().createAccessPath(def.getLeftOp(), true));
 				}
-
-				// If the base object is tainted, we pass this taint on
-				taints.add(taintedPath);
 			}
 		}
 
@@ -289,10 +280,6 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements Cloneable 
 				if (stmt.getInvokeExprBox().getValue() instanceof InstanceInvokeExpr)
 					taints.add(manager.getAccessPathFactory().createAccessPath(
 							((InstanceInvokeExpr) stmt.getInvokeExprBox().getValue()).getBase(), true));
-
-				// The originally tainted parameter or base object as such
-				// stays tainted
-				taints.add(taintedPath);
 			}
 		}
 
