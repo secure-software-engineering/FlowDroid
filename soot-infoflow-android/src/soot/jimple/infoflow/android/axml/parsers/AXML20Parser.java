@@ -166,7 +166,7 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
 				} else
 					throw new RuntimeException("Unsupported value type");
-			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB4) {
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_RGB4) {
 				if (obj instanceof Integer) {
 					int color = (Integer) obj;
 					int b = color & 0x000F;
