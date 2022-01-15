@@ -342,18 +342,30 @@ public class SummaryGenerator {
 				}
 			}
 
-			// We also need to analyze methods of parent classes except for
-			// those methods that have been overwritten in the child class
-			SootClass curClass = sc.getSuperclassUnsafe();
-			while (curClass != null) {
-				if (!curClass.isConcrete() || curClass.isLibraryClass())
-					break;
+			// We also need to analyze methods of (transitive) parent classes except for
+			// those methods that have been overwritten in the child class. From Java 8,
+			// interfaces can implement default methods. Therefore, methods of implemented
+			// interfaces need to be analyzed as well.
+			List<SootClass> parentClasses = new ArrayList<>();
+			if (sc.hasSuperclass())
+				parentClasses.add(sc.getSuperclassUnsafe());
+			parentClasses.addAll(sc.getInterfaces());
+			Set<SootClass> doneClasses = new HashSet<>();
+			while (!parentClasses.isEmpty()) {
+				SootClass curClass = parentClasses.remove(0);
+				if (curClass == null || curClass.getName().equals("java.lang.Object") || doneClasses.contains(curClass))
+					continue;
 
 				for (SootMethod sm : curClass.getMethods()) {
-					if (checkAndAdd(analysisTask, sm))
+					if (!doneMethods.contains(sm.getSubSignature()) && checkAndAdd(analysisTask, sm))
 						doneMethods.add(sm.getSubSignature());
 				}
-				curClass = curClass.getSuperclassUnsafe();
+
+				doneClasses.add(curClass);
+
+				if (curClass.hasSuperclass())
+					parentClasses.add(curClass.getSuperclassUnsafe());
+				parentClasses.addAll(curClass.getInterfaces());
 			}
 		}
 
@@ -365,7 +377,7 @@ public class SummaryGenerator {
 
 		// Do the actual analysis
 		ClassSummaries summaries = new ClassSummaries();
-		for (ClassAnalysisTask analysisTask : realClasses) {
+		for (ClassAnalysisTask analysisTask : sortedTasks) {
 			final String className = analysisTask.className;
 
 			// Check if we really need to analyze this class
@@ -442,13 +454,13 @@ public class SummaryGenerator {
 			return false;
 
 		// We normally don't analyze hashCode() and equals()
-		final String sig = sm.getSignature();
+		final String subSig = sm.getSubSignature();
 		if (!config.getSummarizeHashCodeEquals()) {
-			if (sig.equals("int hashCode()") || sig.equals("boolean equals(java.lang.Object)"))
+			if (subSig.equals("int hashCode()") || subSig.equals("boolean equals(java.lang.Object)"))
 				return false;
 		}
 
-		analysisTask.addMethod(sig);
+		analysisTask.addMethod(sm.getSignature());
 		return true;
 	}
 

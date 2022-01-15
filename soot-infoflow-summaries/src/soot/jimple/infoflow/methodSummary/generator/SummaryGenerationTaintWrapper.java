@@ -127,6 +127,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
 			AccessPath ap = taintedPath.getAccessPath();
 
+			final Set<Abstraction> taints = new HashSet<Abstraction>();
+
+			// We always keep the incoming taint
+			taints.add(taintedPath);
+
 			// Check for hashCode()
 			if (ref.getName().equals("hashCode") && ref.getParameterTypes().isEmpty()
 					&& ref.getReturnType() instanceof IntType) {
@@ -134,12 +139,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 					// If the return value is used, we taint it
 					if (stmt instanceof DefinitionStmt) {
 						DefinitionStmt defStmt = (DefinitionStmt) stmt;
-						return Collections.singleton(taintedPath.deriveNewAbstraction(
+						taints.add(taintedPath.deriveNewAbstraction(
 								manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
 					}
 
-					// The return value is apparently ignored
-					return Collections.emptySet();
+					return taints;
 				}
 			}
 
@@ -150,12 +154,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 				// If the return value is used, we taint it
 				if (config.getImplicitFlowMode().trackControlFlowDependencies() && stmt instanceof DefinitionStmt) {
 					DefinitionStmt defStmt = (DefinitionStmt) stmt;
-					return Collections.singleton(taintedPath.deriveNewAbstraction(
+					taints.add(taintedPath.deriveNewAbstraction(
 							manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
 				}
 
-				// The return value is apparently ignored
-				return Collections.emptySet();
+				return taints;
 			}
 		}
 
