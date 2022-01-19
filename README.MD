@@ -1,5 +1,3 @@
-[![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/)
-
 # FlowDroid Data Flow Analysis Tool
 
 This repository hosts the FlowDroid data flow analysis tool. FlowDroid statically computes data flows in Android apps and Java programs.
