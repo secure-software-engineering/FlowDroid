@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.fraunhofer.sit.flowdroid</groupId>
+	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.10.0-SNAPSHOT</version>
+	<version>2.10.0</version>
 	<name>FlowDroid Parent Module</name>
 	<packaging>pom</packaging>
 
@@ -14,6 +12,21 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
+	<developers>
+		<developer>
+			<name>Steven Arzt</name>
+			<email>steven.arzt@sit.fraunhofer.de</email>
+			<organization>Fraunhofer SIT</organization>
+			<organizationUrl>https://www.sit.fraunhofer.de/</organizationUrl>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
+			<url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 	<modules>
 		<module>soot-infoflow</module>
 		<module>soot-infoflow-android</module>
@@ -50,4 +63,17 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<!-- Do not deploy parent module -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
