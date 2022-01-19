@@ -7,6 +7,7 @@
 	<name>StubDroid</name>
 	<version>2.10.0</version>
 	<description>Data Flow Summaries for FlowDroid</description>
+    <url>https://github.com/secure-software-engineering/FlowDroid</url>
 	
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -20,7 +21,13 @@
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
 	</properties>
-	
+
+	<scm>
+		<connection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</connection>
+		<developerConnection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</developerConnection>
+		<url>https://github.com/secure-software-engineering/FlowDroid/tree/develop</url>
+	</scm>
+
     <organization>
         <name>Fraunhofer SIT</name>
         <url>https://www.sit.fraunhofer.de/</url>
@@ -81,7 +88,7 @@
 					<execution>
 						<id>attach-sources</id>
 						<goals>
-							<goal>test-jar</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -144,6 +151,29 @@
 		</resources>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>sign-artifacts</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.0.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<dependency>
 			<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
