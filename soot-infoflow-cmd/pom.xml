@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.tud.sse</groupId>
+	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>soot-infoflow-cmd</artifactId>
 	<name>FlowDroid Command Line Util</name>
-	<version>2.10.0-SNAPSHOT</version>
+	<version>2.10.0</version>
 	<description>Command-line utility for running FlowDroid</description>
 	
 	<properties>
@@ -132,14 +132,14 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.tud.sse</groupId>
+			<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 			<artifactId>soot-infoflow-android</artifactId>
-			<version>2.10.0-SNAPSHOT</version>
+			<version>2.10.0</version>
 		</dependency>
 		<dependency>
-			<groupId>de.tud.sse</groupId>
+			<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 			<artifactId>soot-infoflow-summaries</artifactId>
-			<version>2.10.0-SNAPSHOT</version>
+			<version>2.10.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -156,17 +156,4 @@
             <optional>true</optional>
         </dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>soot-snapshot</id>
-			<name>Soot snapshot server</name>
-			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
-		</repository>
-		<repository>
-			<id>soot-release</id>
-			<name>Soot release server</name>
-			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-release/</url>
-		</repository>
-	</repositories>
 </project>
