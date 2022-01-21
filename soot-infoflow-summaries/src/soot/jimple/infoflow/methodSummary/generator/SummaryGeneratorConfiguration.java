@@ -77,6 +77,8 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 			this.excludes = summaryConfig.excludes == null || summaryConfig.excludes.isEmpty() ? null
 					: new HashSet<>(summaryConfig.excludes);
 			this.summarizeHashCodeEquals = summaryConfig.summarizeHashCodeEquals;
+			this.defaultTaints = summaryConfig.defaultTaints == null || summaryConfig.defaultTaints.isEmpty() ? null
+					: new HashMap<>(summaryConfig.defaultTaints);
 
 			this.validateResults = summaryConfig.validateResults;
 			this.repeatCount = summaryConfig.repeatCount;
