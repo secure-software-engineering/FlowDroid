@@ -83,9 +83,12 @@ public class SourceSinkFactory {
 	 */
 	public FlowSink createParameterSink(int paraIdx, AccessPath accessPath, GapDefinition gap) {
 		if (accessPath.isLocal()) {
-			if (gap == null && !(accessPath.getBaseType() instanceof ArrayType))
-				throw new RuntimeException("Parameter locals cannot directly be sinks");
-			else
+			if (gap == null && !(accessPath.getBaseType() instanceof ArrayType)) {
+				// Parameter locals cannot directly be sinks. We cannot throw an exception,
+				// because identity flows param0 -> param0 may trigger this check (and will be
+				// filtered out later anyway)
+				return null;
+			} else
 				return new FlowSink(SourceSinkType.Parameter, paraIdx, accessPath.getBaseType().toString(),
 						accessPath.getTaintSubFields(), gap);
 		} else if (accessPath.getFieldCount() < summaryAPLength)

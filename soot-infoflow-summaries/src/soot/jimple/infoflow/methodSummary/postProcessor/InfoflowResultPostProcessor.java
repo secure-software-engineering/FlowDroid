@@ -417,12 +417,16 @@ public class InfoflowResultPostProcessor {
 	 * @param summaries The method summary to which to add the data flow
 	 */
 	protected void addFlow(FlowSource source, FlowSink sink, boolean isAlias, MethodSummaries summaries) {
-		// Convert the method signature into a subsignature
-		String methodSubSig = SootMethodRepresentationParser.v().parseSootMethodString(method).getSubSignature();
+		// Ignore flows for which we don't have source and sink
+		if (source == null || sink == null)
+			return;
 
 		// Ignore identity flows
 		if (isIdentityFlow(source, sink))
 			return;
+
+		// Convert the method signature into a subsignature
+		String methodSubSig = SootMethodRepresentationParser.v().parseSootMethodString(method).getSubSignature();
 
 		MethodFlow mFlow = new MethodFlow(methodSubSig, source, sink, isAlias, true, false, false);
 		if (summaries.addFlow(mFlow))
