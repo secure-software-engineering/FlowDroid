@@ -3,15 +3,11 @@ package soot.jimple.infoflow.methodSummary.generator;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
-import soot.BooleanType;
-import soot.IntType;
 import soot.Scene;
 import soot.SootMethod;
 import soot.SootMethodRef;
-import soot.Type;
 import soot.Value;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
@@ -25,6 +21,7 @@ import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration.TaintCondition;
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -107,10 +104,10 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	}
 
 	/**
-	 * Gets the taints for hashCode() and equals() methods if the summary generator
-	 * is configured to not summarizes these methods
+	 * Gets the taints for hashCode() and equals() and other methods with default
+	 * taints if the summary generator is configured to not summarizes these methods
 	 * 
-	 * @param stmt        The statement that might call hashCode() and equals()
+	 * @param stmt        The statement that might call a method with default taint
 	 * @param taintedPath The incoming taint abstraction
 	 * @return The taint abstractions with which to continue the data flow analysis,
 	 *         or <code>null</code> if this method does not model the call. If the
@@ -121,41 +118,33 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 		final InvokeExpr iexpr = stmt.getInvokeExpr();
 		final SummaryGeneratorConfiguration config = (SummaryGeneratorConfiguration) manager.getConfig();
 
-		// hashCode() and equals() are always virtual calls
+		// The calls to methods with default taints are always virtual calls
 		if (iexpr instanceof InstanceInvokeExpr && !config.getSummarizeHashCodeEquals()) {
 			SootMethodRef ref = iexpr.getMethodRef();
 			InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
 			AccessPath ap = taintedPath.getAccessPath();
 
-			final Set<Abstraction> taints = new HashSet<Abstraction>();
+			TaintCondition taintCondition = config.getDefaultTaints().get(ref.getSubSignature().toString());
+			if (taintCondition != null) {
+				final Set<Abstraction> taints = new HashSet<Abstraction>();
 
-			// We always keep the incoming taint
-			taints.add(taintedPath);
+				// We always keep the incoming taint
+				taints.add(taintedPath);
 
-			// Check for hashCode()
-			if (ref.getName().equals("hashCode") && ref.getParameterTypes().isEmpty()
-					&& ref.getReturnType() instanceof IntType) {
-				if (ap.getPlainValue() == iiexpr.getBase()) {
-					// If the return value is used, we taint it
-					if (stmt instanceof DefinitionStmt) {
-						DefinitionStmt defStmt = (DefinitionStmt) stmt;
-						taints.add(taintedPath.deriveNewAbstraction(
-								manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
-					}
-
-					return taints;
-				}
-			}
-
-			// Check for equals()
-			List<Type> params = ref.getParameterTypes();
-			if (ref.getName().equals("equals") && params.size() == 1 && params.get(0).equals(Scene.v().getObjectType())
-					&& ref.getReturnType() == BooleanType.v()) {
-				// If the return value is used, we taint it
-				if (config.getImplicitFlowMode().trackControlFlowDependencies() && stmt instanceof DefinitionStmt) {
+				if (stmt instanceof DefinitionStmt) {
 					DefinitionStmt defStmt = (DefinitionStmt) stmt;
-					taints.add(taintedPath.deriveNewAbstraction(
-							manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
+
+					// Taint the return value only if the incoming tainted path is part of the
+					// invoke expression
+					if (ap.getPlainValue() == iiexpr.getBase() || iiexpr.getArgs().contains(ap.getPlainValue())) {
+
+						// If the taint condition is fulfilled, the return value is tainted
+						if (taintCondition.equals(TaintCondition.TaintAlways)
+								|| (taintCondition.equals(TaintCondition.TaintOnImplicit)
+										&& config.getImplicitFlowMode().trackControlFlowDependencies()))
+							taints.add(taintedPath.deriveNewAbstraction(
+									manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), false), stmt));
+					}
 				}
 
 				return taints;
