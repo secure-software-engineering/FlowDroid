@@ -2302,7 +2302,6 @@ public class ARSCFileParser extends AbstractResourceParser {
 							if (res.resourceID <= 0) {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
-							logger.debug("resource added: {}", res);
 							config.resources.add(res);
 							resourceIdx++;
 						}
