@@ -117,9 +117,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				if (source == getZeroValue())
 					return null;
 
-				if (defStmt.toString().equals("r2 = new android.content.Intent"))
-					System.out.println("x");
-
 				final Set<Abstraction> res = new MutableTwoElementSet<Abstraction>();
 
 				// Check whether the left side of the assignment matches our
@@ -154,6 +151,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					// not track, we can stop here.
 					if (!(rightValue instanceof Local || rightValue instanceof FieldRef
 							|| rightValue instanceof ArrayRef)) {
+						res.add(source);
 						return res;
 					}
 				}
