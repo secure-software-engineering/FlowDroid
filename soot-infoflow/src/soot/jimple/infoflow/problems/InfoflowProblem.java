@@ -986,33 +986,36 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 					// check if param is tainted:
-					for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-						if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
-							if (res == null)
-								res = new HashSet<AccessPath>();
+					if (isReflectiveCallSite || ie.getArgCount() == paramLocals.length) {
+						for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+							if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
+								if (res == null)
+									res = new HashSet<AccessPath>();
 
-							// Get the parameter locals if we don't have them
-							// yet
-							if (paramLocals == null)
-								paramLocals = callee.getActiveBody().getParameterLocals()
-										.toArray(new Local[callee.getParameterCount()]);
+								// Get the parameter locals if we don't have them
+								// yet
+								if (paramLocals == null)
+									paramLocals = callee.getActiveBody().getParameterLocals()
+											.toArray(new Local[callee.getParameterCount()]);
 
-							if (isReflectiveCallSite) {
-								// Taint all parameters in the callee if the
-								// argument array of a
-								// reflective method call is tainted
-								for (int j = 0; j < paramLocals.length; j++) {
+								if (isReflectiveCallSite) {
+									// Taint all parameters in the callee if the
+									// argument array of a
+									// reflective method call is tainted
+									for (int j = 0; j < paramLocals.length; j++) {
+										AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
+												paramLocals[j], null, false);
+										if (newAP != null)
+											res.add(newAP);
+									}
+								} else {
+									// Taint the corresponding parameter local in
+									// the callee
 									AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
-											paramLocals[j], null, false);
+											paramLocals[i]);
 									if (newAP != null)
 										res.add(newAP);
 								}
-							} else {
-								// Taint the corresponding parameter local in
-								// the callee
-								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[i]);
-								if (newAP != null)
-									res.add(newAP);
 							}
 						}
 					}
