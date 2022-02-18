@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import pxb.android.axml.AxmlVisitor;
+import soot.FastHierarchy;
 import soot.PackManager;
 import soot.Scene;
 import soot.SceneTransformer;
@@ -115,9 +116,10 @@ public class LayoutFileParser extends AbstractResourceParser {
 
 		// To make sure that nothing all wonky is going on here, we
 		// check the hierarchy to find the android view class
-		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scView.getType()))
+		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		if (scView != null && fh.canStoreType(theClass.getType(), scView.getType()))
 			return true;
-		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scWebView.getType()))
+		if (scWebView != null && fh.canStoreType(theClass.getType(), scWebView.getType()))
 			return true;
 
 		logger.warn(String.format("Layout class %s is not derived from android.view.View", theClass.getName()));
