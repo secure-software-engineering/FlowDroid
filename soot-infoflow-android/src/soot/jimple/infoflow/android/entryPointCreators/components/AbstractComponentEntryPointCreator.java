@@ -269,7 +269,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
 					Stmt stmt = (Stmt) iter.next();
 					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
-						if (stmt.getInvokeExpr().getMethod().equals(m))
+						if (stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethod().equals(m))
 							return;
 					}
 				}
