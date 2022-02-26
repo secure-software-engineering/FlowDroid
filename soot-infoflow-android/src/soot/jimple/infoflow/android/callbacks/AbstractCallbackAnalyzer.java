@@ -816,35 +816,28 @@ public abstract class AbstractCallbackAnalyzer {
 		// We model this as follows: Whenever the user overwrites a method in an
 		// Android OS class, we treat it as a potential callback.
 		Map<String, SootMethod> systemMethods = new HashMap<>(10000);
-		//Make it recursive?
-		SootClass lastParentNotInSystemPackage = null;
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
-			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName())) {
+			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				for (SootMethod sm : parentClass.getMethods())
 					if (!sm.isConstructor())
 						systemMethods.put(sm.getSubSignature(), sm);
-			}
-			else lastParentNotInSystemPackage = parentClass;
 		}
 
 		// Iterate over all user-implemented methods. If they are inherited
 		// from a system class, they are callback candidates.
-		List<SootClass> subClasses = new ArrayList<>();
-		subClasses.addAll(Scene.v().getActiveHierarchy().getSubclassesOfIncluding(sootClass));
-		if(lastParentNotInSystemPackage != null)
-			subClasses.add(lastParentNotInSystemPackage);
-
-		// Iterate over all user-implemented methods. If they are inherited
-		// from a system class, they are callback candidates.
-		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSubclassesOfIncluding(sootClass)) {
+		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOfIncluding(sootClass)) {
 			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				continue;
 			for (SootMethod method : parentClass.getMethods()) {
 				if (!method.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
 					// Check whether this is a real callback method
 					SootMethod parentMethod = systemMethods.get(method.getSubSignature());
-					if (parentMethod != null)
-						checkAndAddMethod(method, parentMethod, sootClass, CallbackType.Default);
+					if (parentMethod != null) {
+						if (checkAndAddMethod(method, parentMethod, sootClass, CallbackType.Default)) {
+							//We only keep the latest override in the class hierarchy
+							systemMethods.remove(parentMethod.getSubSignature());
+						}
+					}
 				}
 			}
 		}
