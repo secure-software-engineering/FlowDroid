@@ -44,6 +44,10 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 			}
 		}
 
+		// If the component is a subclass of the callbackHandler
+		if(Scene.v().getFastHierarchy().canStoreClass(component, callbackHandler) && component.isConcrete())
+			return true;
+
 		// Is this handler class instantiated in a reachable method?
 		boolean hasConstructor = false;
 		for (SootMethod sm : callbackHandler.getMethods()) {
