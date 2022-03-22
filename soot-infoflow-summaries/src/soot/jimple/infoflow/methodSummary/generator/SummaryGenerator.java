@@ -196,7 +196,9 @@ public class SummaryGenerator {
 		 */
 		private int getDependencyCount(SootClass sc) {
 			Set<SootClass> dependencies = new HashSet<>();
-			for (SootMethod sm : sc.getMethods()) {
+			// Resolving method bodies may lead to the creation of new phantom methods,
+			// which in turn leads to a ConcurrentModificationExcpetion.
+			for (SootMethod sm : new ArrayList<>(sc.getMethods())) {
 				if (sm.isConcrete()) {
 					for (Unit u : sm.retrieveActiveBody().getUnits()) {
 						Stmt stmt = (Stmt) u;
