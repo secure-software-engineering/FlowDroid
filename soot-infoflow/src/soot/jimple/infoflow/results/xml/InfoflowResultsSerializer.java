@@ -11,6 +11,7 @@ import javax.xml.stream.XMLStreamWriter;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -295,12 +296,13 @@ public class InfoflowResultsSerializer {
 				accessPath.getTaintSubFields() ? XmlConstants.Values.TRUE : XmlConstants.Values.FALSE);
 
 		// Write out the fields
-		if (accessPath.getFieldCount() > 0) {
+		if (accessPath.getFragmentCount() > 0) {
 			writer.writeStartElement(XmlConstants.Tags.fields);
-			for (int i = 0; i < accessPath.getFieldCount(); i++) {
+			for (int i = 0; i < accessPath.getFragmentCount(); i++) {
 				writer.writeStartElement(XmlConstants.Tags.field);
-				writer.writeAttribute(XmlConstants.Attributes.value, accessPath.getFields()[i].toString());
-				writer.writeAttribute(XmlConstants.Attributes.type, accessPath.getFieldTypes()[i].toString());
+				AccessPathFragment fragment = accessPath.getFragments()[i];
+				writer.writeAttribute(XmlConstants.Attributes.value, fragment.getField().toString());
+				writer.writeAttribute(XmlConstants.Attributes.type, fragment.getFieldType().toString());
 				writer.writeEndElement();
 			}
 			writer.writeEndElement();

@@ -292,7 +292,7 @@ public class InfoflowResultPostProcessor {
 		}
 
 		// The sink may be a local field on the base object
-		if (apAtCall.getFieldCount() > 0 && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+		if (apAtCall.getFragmentCount() > 0 && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 			InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
 			if (apAtCall.getPlainValue() == iinv.getBase()) {
 				return sourceSinkFactory.createFieldSink(apAtCall);

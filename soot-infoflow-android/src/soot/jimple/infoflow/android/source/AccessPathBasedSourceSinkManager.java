@@ -168,10 +168,12 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			}
 		} else if (def instanceof StatementSourceSinkDefinition) {
 			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
-			for (AccessPathTuple apt : ssdef.getAccessPaths()) {
-				if (apt.getSourceSinkType().isSource()) {
-					aps.add(apt.toAccessPath(ssdef.getLocal(), manager, true));
-					apTuples.add(apt);
+			if (sCallSite instanceof AssignStmt && ssdef.getAccessPaths() != null) {
+				for (AccessPathTuple apt : ssdef.getAccessPaths()) {
+					if (apt.getSourceSinkType().isSource()) {
+						aps.add(apt.toAccessPath(ssdef.getLocal(), manager, true));
+						apTuples.add(apt);
+					}
 				}
 			}
 		}
@@ -274,11 +276,11 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 		for (int i = 0; i < apt.getFields().length; i++) {
 			// If a.b.c.* is our defined sink and a.b is tainted, this is not a
 			// leak. If a.b.* is tainted, it is.
-			if (i >= sourceAccessPath.getFieldCount())
+			if (i >= sourceAccessPath.getFragmentCount())
 				return sourceAccessPath.getTaintSubFields();
 
 			// Compare the fields
-			if (!sourceAccessPath.getFields()[i].getName().equals(apt.getFields()[i]))
+			if (!sourceAccessPath.getFragments()[i].getField().getName().equals(apt.getFields()[i]))
 				return false;
 		}
 		return true;

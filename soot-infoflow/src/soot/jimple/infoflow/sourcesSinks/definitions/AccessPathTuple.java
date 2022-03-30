@@ -14,6 +14,7 @@ import soot.Value;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.util.TypeUtils;
 
 /**
@@ -244,7 +245,7 @@ public class AccessPathTuple {
 	public AccessPath toAccessPath(Value baseVal, InfoflowManager manager, boolean canHaveImmutableAliases) {
 		if (baseVal.getType() instanceof PrimType || fields == null || fields.length == 0) {
 			// no immutable aliases, we overwrite the return values as a whole
-			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, null, true, false, true,
+			return manager.getAccessPathFactory().createAccessPath(baseVal, null, null, true, false, true,
 					ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 		}
 
@@ -252,8 +253,8 @@ public class AccessPathTuple {
 		RefType baseType = this.baseType == null || this.baseType.isEmpty() ? null : RefType.v(this.baseType);
 		SootClass baseClass = baseType == null ? ((RefType) baseVal.getType()).getSootClass() : baseType.getSootClass();
 
-		SootField[] fields = new SootField[this.fields.length];
-		for (int i = 0; i < fields.length; i++) {
+		AccessPathFragment[] fragments = new AccessPathFragment[this.fields.length];
+		for (int i = 0; i < fragments.length; i++) {
 			final String fieldName = this.fields[i];
 
 			// Get the type and class of the previous entry in the access path
@@ -278,10 +279,10 @@ public class AccessPathTuple {
 			}
 			if (fld == null)
 				return null;
-			fields[i] = fld;
+			fragments[i] = new AccessPathFragment(fld, fieldType);
 		}
 
-		return manager.getAccessPathFactory().createAccessPath(baseVal, fields, baseType, null, true, false, true,
+		return manager.getAccessPathFactory().createAccessPath(baseVal, baseType, fragments, true, false, true,
 				ArrayTaintType.ContentsAndLength, canHaveImmutableAliases);
 	}
 

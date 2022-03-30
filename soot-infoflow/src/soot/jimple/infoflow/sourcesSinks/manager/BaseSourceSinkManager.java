@@ -341,7 +341,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 			if (sCallSite instanceof DefinitionStmt) {
 				DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
 				return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null,
-						null, null, true, false, true, ArrayTaintType.ContentsAndLength, false));
+						null, true, false, true, ArrayTaintType.ContentsAndLength, false));
 			}
 			return null;
 		}
@@ -355,7 +355,7 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 			DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
 			// no immutable aliases, we overwrite the return values as a whole
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
-					null, true, false, true, ArrayTaintType.ContentsAndLength, false));
+					true, false, true, ArrayTaintType.ContentsAndLength, false));
 		} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
 			InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
 			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true));

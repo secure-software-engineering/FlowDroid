@@ -19,7 +19,6 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
-import soot.Type;
 import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.Constant;
@@ -31,7 +30,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.data.AccessPathFactory.BasePair;
+import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.util.TypeUtils;
 import soot.jimple.toolkits.pointer.LocalMustAliasAnalysis;
 import soot.jimple.toolkits.pointer.StrongLocalMustAliasAnalysis;
@@ -103,14 +102,14 @@ public class Aliasing {
 	 *         otherwise null
 	 */
 	private AccessPath getReferencedAPBase(AccessPath taintedAP, SootField[] referencedFields) {
-		final Collection<BasePair> bases = taintedAP.isStaticFieldRef()
+		final Collection<AccessPathFragment[]> bases = taintedAP.isStaticFieldRef()
 				? manager.getAccessPathFactory().getBaseForType(taintedAP.getFirstFieldType())
 				: manager.getAccessPathFactory().getBaseForType(taintedAP.getBaseType());
 
 		int fieldIdx = 0;
 		while (fieldIdx < referencedFields.length) {
 			// If we reference a.b.c, this only matches a.b.*, but not a.b
-			if (fieldIdx >= taintedAP.getFieldCount()) {
+			if (fieldIdx >= taintedAP.getFragmentCount()) {
 				if (taintedAP.getTaintSubFields())
 					return taintedAP;
 				else
@@ -118,31 +117,26 @@ public class Aliasing {
 			}
 
 			// a.b does not match a.c
-			if (taintedAP.getFields()[fieldIdx] != referencedFields[fieldIdx]) {
+			if (taintedAP.getFragments()[fieldIdx].getField() != referencedFields[fieldIdx]) {
 				// If the referenced field is a base, we add it in. Note that
 				// the first field in a static reference is the base, so this
 				// must be excluded from base matching.
 				if (bases != null && !(taintedAP.isStaticFieldRef() && fieldIdx == 0)) {
 					// Check the base. Handles A.y (taint) ~ A.[x].y (ref)
-					for (BasePair base : bases) {
-						if (base.getFields()[0] == referencedFields[fieldIdx]) {
+					for (AccessPathFragment[] base : bases) {
+						if (base[0].getField() == referencedFields[fieldIdx]) {
 							// Build the access path against which we have
 							// actually matched
-							SootField[] cutFields = new SootField[taintedAP.getFieldCount() + base.getFields().length];
-							Type[] cutFieldTypes = new Type[cutFields.length];
+							AccessPathFragment[] cutFragments = new AccessPathFragment[taintedAP.getFragmentCount()
+									+ base.length];
 
-							System.arraycopy(taintedAP.getFields(), 0, cutFields, 0, fieldIdx);
-							System.arraycopy(base.getFields(), 0, cutFields, fieldIdx, base.getFields().length);
-							System.arraycopy(taintedAP.getFields(), fieldIdx, cutFields,
-									fieldIdx + base.getFields().length, taintedAP.getFieldCount() - fieldIdx);
+							System.arraycopy(taintedAP.getFragments(), 0, cutFragments, 0, fieldIdx);
+							System.arraycopy(base, 0, cutFragments, fieldIdx, base.length);
+							System.arraycopy(taintedAP.getFragments(), fieldIdx, cutFragments, fieldIdx + base.length,
+									taintedAP.getFragmentCount() - fieldIdx);
 
-							System.arraycopy(taintedAP.getFieldTypes(), 0, cutFieldTypes, 0, fieldIdx);
-							System.arraycopy(base.getTypes(), 0, cutFieldTypes, fieldIdx, base.getTypes().length);
-							System.arraycopy(taintedAP.getFieldTypes(), fieldIdx, cutFieldTypes,
-									fieldIdx + base.getTypes().length, taintedAP.getFieldCount() - fieldIdx);
-
-							return manager.getAccessPathFactory().createAccessPath(taintedAP.getPlainValue(), cutFields,
-									taintedAP.getBaseType(), cutFieldTypes, taintedAP.getTaintSubFields(), false, false,
+							return manager.getAccessPathFactory().createAccessPath(taintedAP.getPlainValue(),
+									taintedAP.getBaseType(), cutFragments, taintedAP.getTaintSubFields(), false, false,
 									taintedAP.getArrayTaintType());
 						}
 					}
@@ -421,7 +415,7 @@ public class Aliasing {
 		if (baseValue instanceof Local)
 			return source.getAccessPath().isLocal();
 		else if (baseValue instanceof InstanceFieldRef || baseValue instanceof StaticFieldRef)
-			return source.getAccessPath().getFieldCount() == 1;
+			return source.getAccessPath().getFragmentCount() == 1;
 
 		throw new RuntimeException("Unexpected left side");
 	}

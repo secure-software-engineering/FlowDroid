@@ -167,8 +167,8 @@ public class SourceSinkTests extends JUnitTests {
 				String name = iexpr.getMethod().getName();
 				boolean includeExistingImmutableAliases = name.equals("annotatedSource");
 				if ((name.equals("source") || includeExistingImmutableAliases) && iexpr.getArgCount() > 0) {
-					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iexpr.getArg(0), null, null, null,
-							true, false, true, AccessPath.ArrayTaintType.ContentsAndLength, true);
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iexpr.getArg(0), null, null, true,
+							false, true, AccessPath.ArrayTaintType.ContentsAndLength, true);
 					return new SourceInfo(null, ap);
 				}
 			}

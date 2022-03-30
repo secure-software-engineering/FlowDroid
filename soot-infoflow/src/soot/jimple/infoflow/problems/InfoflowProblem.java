@@ -282,10 +282,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								// with the start of the given one
 								if (mappedAP != null) {
 									addLeftValue = true;
-									cutFirstField = (mappedAP.getFieldCount() > 0
+									cutFirstField = (mappedAP.getFragmentCount() > 0
 											&& mappedAP.getFirstField() == rightField);
 								} else if (aliasing.mayAlias(rightBase, sourceBase)
-										&& newSource.getAccessPath().getFieldCount() == 0
+										&& newSource.getAccessPath().getFragmentCount() == 0
 										&& newSource.getAccessPath().getTaintSubFields()) {
 									addLeftValue = true;
 									targetType = rightField.getType();

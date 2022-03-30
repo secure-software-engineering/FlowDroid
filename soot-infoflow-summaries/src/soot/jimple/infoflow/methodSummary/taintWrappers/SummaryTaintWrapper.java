@@ -257,8 +257,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (newTaints == null)
 				newTaints = new HashSet<>();
 
-			newTaints.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+			newTaints.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+					ap.getTaintSubFields()));
 		}
 
 		// Check whether a parameter is tainted
@@ -268,7 +268,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				newTaints = new HashSet<>();
 
 			newTaints.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+					new AccessPathFragment(ap), ap.getTaintSubFields()));
 		}
 
 		// If we also match returned values, we must do this here
@@ -279,7 +279,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 					newTaints = new HashSet<>();
 
 				newTaints.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+						new AccessPathFragment(ap), ap.getTaintSubFields()));
 			}
 		}
 
@@ -305,8 +305,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				&& ap.getPlainValue() == sm.getActiveBody().getThisLocal()) {
 			if (res == null)
 				res = new HashSet<>();
-			res.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+			res.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+					ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether a parameter is tainted
@@ -315,7 +315,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (res == null)
 				res = new HashSet<>();
 			res.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+					new AccessPathFragment(ap), ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether the return value is tainted
@@ -324,8 +324,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (retStmt.getOp() == ap.getPlainValue()) {
 				if (res == null)
 					res = new HashSet<>();
-				res.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+				res.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+						ap.getTaintSubFields(), gap));
 			}
 		}
 
@@ -345,6 +345,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		SootField[] fields = safeGetFields(t.getAccessPath());
 		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
+		soot.jimple.infoflow.data.AccessPathFragment fragments[] = soot.jimple.infoflow.data.AccessPathFragment
+				.createFragmentArray(fields, types);
 
 		// If the taint is a return value, we taint the left side of the
 		// assignment
@@ -354,7 +356,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				return null;
 
 			DefinitionStmt defStmt = (DefinitionStmt) stmt;
-			return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), fields, baseType, types,
+			return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), baseType, fragments,
 					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 		}
 
@@ -366,8 +368,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (!AccessPath.canContainValue(paramVal))
 				return null;
 
-			return manager.getAccessPathFactory().createAccessPath(paramVal, fields, baseType, types,
-					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+			return manager.getAccessPathFactory().createAccessPath(paramVal, baseType, fragments, t.taintSubFields(),
+					false, true, ArrayTaintType.ContentsAndLength);
 		}
 
 		// If the taint is on the base value, we need to taint the base local
@@ -375,7 +377,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			final InvokeExpr iexpr = stmt.getInvokeExpr();
 			if (iexpr instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
-				return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), fields, baseType, types,
+				return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), baseType, fragments,
 						t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 			} else if (iexpr instanceof StaticInvokeExpr) {
 				// For a static invocation, we apply field taints to the return value
@@ -383,8 +385,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (!(siexpr.getMethodRef().getReturnType() instanceof VoidType)) {
 					if (stmt instanceof DefinitionStmt) {
 						DefinitionStmt defStmt = (DefinitionStmt) stmt;
-						return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), fields, baseType,
-								types, t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+						return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), baseType, fragments,
+								t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 					} else
 						return null;
 				}
@@ -408,6 +410,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		SootField[] fields = safeGetFields(t.getAccessPath());
 		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
+		soot.jimple.infoflow.data.AccessPathFragment fragments[] = soot.jimple.infoflow.data.AccessPathFragment
+				.createFragmentArray(fields, types);
 
 		// A return value cannot be propagated into a method
 		if (t.isReturn())
@@ -415,13 +419,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		if (t.isParameter()) {
 			Local l = sm.getActiveBody().getParameterLocal(t.getParameterIndex());
-			return manager.getAccessPathFactory().createAccessPath(l, fields, baseType, types, true, false, true,
+			return manager.getAccessPathFactory().createAccessPath(l, baseType, fragments, true, false, true,
 					ArrayTaintType.ContentsAndLength);
 		}
 
 		if (t.isField() || t.isGapBaseObject()) {
 			Local l = sm.getActiveBody().getThisLocal();
-			return manager.getAccessPathFactory().createAccessPath(l, fields, baseType, types, true, false, true,
+			return manager.getAccessPathFactory().createAccessPath(l, baseType, fragments, true, false, true,
 					ArrayTaintType.ContentsAndLength);
 		}
 

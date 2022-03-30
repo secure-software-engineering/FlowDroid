@@ -3,7 +3,6 @@ package soot.jimple.infoflow.util;
 import soot.Body;
 import soot.RefType;
 import soot.SootClass;
-import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
@@ -12,6 +11,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPathFragment;
 
 /**
  * Utility class for checking whether methods belong to system classes
@@ -107,10 +107,9 @@ public class SystemClassHandler {
 		// Check whether we have a system-defined field followed by a user-defined field
 		// in our access path
 		boolean hasSystemType = taintedPath.getBaseType() != null && isClassInSystemPackage(taintedPath.getBaseType());
-		for (SootField fld : taintedPath.getFields()) {
-			boolean curFieldIsSystem = isClassInSystemPackage(fld.getType());
-			if (isClassInSystemPackage(fld.getDeclaringClass().getType()))
-				curFieldIsSystem = true;
+		for (AccessPathFragment fragment : taintedPath.getFragments()) {
+			boolean curFieldIsSystem = isClassInSystemPackage(fragment.getFieldType())
+					|| isClassInSystemPackage(fragment.getField().getDeclaringClass().getType());
 
 			if (curFieldIsSystem) {
 				hasSystemType = true;
