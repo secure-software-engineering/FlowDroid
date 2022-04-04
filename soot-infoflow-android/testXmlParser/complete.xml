@@ -23,7 +23,7 @@
 		<method signature="&lt;com.example.androidtest.Sinks: void sinkTest(double,double)&gt;">
 			<param index="0" type="double">
 				<accessPath isSource="false" isSink="true">  
-					<!-- Wenn leer, dann primitiver Datentyp (int, double, String,...)-->
+					<!-- If this is empty, it's a primitive datatype (int, double, String,...)-->
 				</accessPath>
 			</param>
 		</method>
