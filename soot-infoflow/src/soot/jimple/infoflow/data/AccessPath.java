@@ -181,7 +181,7 @@ public class AccessPath implements Cloneable {
 	 */
 	public Type getLastFieldType() {
 		if (fragments == null || fragments.length == 0)
-			return null;
+			return getBaseType();
 		return fragments[fragments.length - 1].getFieldType();
 	}
 
