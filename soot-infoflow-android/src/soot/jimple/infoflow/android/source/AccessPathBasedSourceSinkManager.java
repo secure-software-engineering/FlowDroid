@@ -168,7 +168,7 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 			}
 		} else if (def instanceof StatementSourceSinkDefinition) {
 			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
-			if (sCallSite instanceof AssignStmt && ssdef.getAccessPaths() != null) {
+			if (ssdef.getAccessPaths() != null) {
 				for (AccessPathTuple apt : ssdef.getAccessPaths()) {
 					if (apt.getSourceSinkType().isSource()) {
 						aps.add(apt.toAccessPath(ssdef.getLocal(), manager, true));
