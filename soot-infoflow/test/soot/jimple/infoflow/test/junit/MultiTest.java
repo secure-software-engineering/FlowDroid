@@ -23,7 +23,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
  * contain various tests with more than one source, conditional statements,
  * loops and java-internal functions on tainted objects
  */
-public class MultiTest extends JUnitTests {
+public abstract class MultiTest extends JUnitTests {
 
 	private static final String SOURCE_STRING_PWD = "<soot.jimple.infoflow.test.android.AccountManager: java.lang.String getPassword()>";
 

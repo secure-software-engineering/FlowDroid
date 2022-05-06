@@ -3,4 +3,18 @@
 	<hierarchy>
 		<interface name="java.util.List" />
 	</hierarchy>
+	<methods>
+		<method id="java.lang.Object clone()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
 </summary>

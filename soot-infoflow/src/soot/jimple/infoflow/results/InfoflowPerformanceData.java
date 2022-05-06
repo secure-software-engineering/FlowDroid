@@ -20,6 +20,9 @@ public class InfoflowPerformanceData {
 	private int sourceCount = -1;
 	private int sinkCount = -1;
 
+	private long infoflowPropagationCount = -1;
+	private long aliasPropagationCount = -1;
+
 	public InfoflowPerformanceData() {
 		//
 	}
@@ -218,7 +221,8 @@ public class InfoflowPerformanceData {
 	}
 
 	/**
-	 * Adds the given number of edges to the total number of edges propagated
+	 * Adds the given number of edges to the total number of edges propagated,
+	 * regardless of the solver in which they were propagated
 	 * 
 	 * @param toaAdd The number of edges to add
 	 */
@@ -269,12 +273,41 @@ public class InfoflowPerformanceData {
 	}
 
 	/**
-	 * Gets the number of edges that have been propagated in the solver
+	 * Gets the number of edges that have been propagated in any solver, regardless
+	 * of which solver propagated the edges
 	 * 
-	 * @return The number of edges that have been propagated in the solver
+	 * @return The number of edges that have been propagated in any solver
 	 */
 	public long getEdgePropagationCount() {
 		return edgePropagationCount;
+	}
+
+	/**
+	 * Sets the number of edges propagated in the data flow analysis
+	 * 
+	 * @param infoflowPropagationCount The number of edges propagated in the data
+	 *                                 flow analysis
+	 */
+	public void setInfoflowPropagationCount(long infoflowPropagationCount) {
+		this.infoflowPropagationCount = infoflowPropagationCount;
+	}
+
+	/**
+	 * Sets the number of edges propagated in the alias analysis
+	 * 
+	 * @param infoflowPropagationCount The number of edges propagated in the alias
+	 *                                 analysis
+	 */
+	public void setAliasPropagationCount(long aliasPropagationCount) {
+		this.aliasPropagationCount = aliasPropagationCount;
+	}
+
+	public long getInfoflowPropagationCount() {
+		return this.infoflowPropagationCount;
+	}
+
+	public long getAliasPropagationCount() {
+		return this.aliasPropagationCount;
 	}
 
 	@Override
@@ -299,8 +332,9 @@ public class InfoflowPerformanceData {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(callgraphConstructionSeconds, edgePropagationCount, maxMemoryConsumption,
-				pathReconstructionSeconds, sinkCount, sourceCount, taintPropagationSeconds, totalRuntimeSeconds);
+		return Objects.hash(aliasPropagationCount, callgraphConstructionSeconds, edgePropagationCount,
+				infoflowPropagationCount, maxMemoryConsumption, pathReconstructionSeconds, sinkCount, sourceCount,
+				taintPropagationSeconds, totalRuntimeSeconds);
 	}
 
 	@Override
@@ -312,8 +346,10 @@ public class InfoflowPerformanceData {
 		if (getClass() != obj.getClass())
 			return false;
 		InfoflowPerformanceData other = (InfoflowPerformanceData) obj;
-		return callgraphConstructionSeconds == other.callgraphConstructionSeconds
+		return aliasPropagationCount == other.aliasPropagationCount
+				&& callgraphConstructionSeconds == other.callgraphConstructionSeconds
 				&& edgePropagationCount == other.edgePropagationCount
+				&& infoflowPropagationCount == other.infoflowPropagationCount
 				&& maxMemoryConsumption == other.maxMemoryConsumption
 				&& pathReconstructionSeconds == other.pathReconstructionSeconds && sinkCount == other.sinkCount
 				&& sourceCount == other.sourceCount && taintPropagationSeconds == other.taintPropagationSeconds

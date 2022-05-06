@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.test;
 
+import soot.jimple.StringConstant;
 import soot.jimple.infoflow.test.android.AccountManager;
 import soot.jimple.infoflow.test.android.ConnectionManager;
 import soot.jimple.infoflow.test.android.TelephonyManager;
@@ -59,7 +60,7 @@ public class EasyWrapperTestCode {
 		A a = new A(tainted);
 		System.out.println("Hello World " + a.hashCode());
 	}
-	
+
 	private class B {	
 		String data;
 		

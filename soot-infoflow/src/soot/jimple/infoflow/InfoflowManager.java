@@ -22,6 +22,7 @@ public class InfoflowManager {
 
 	private final InfoflowConfiguration config;
 	private IInfoflowSolver forwardSolver;
+	private IInfoflowSolver backwardSolver;
 	private final IInfoflowCFG icfg;
 	private final ISourceSinkManager sourceSinkManager;
 	private final ITaintPropagationWrapper taintWrapper;
@@ -70,6 +71,24 @@ public class InfoflowManager {
 	 */
 	public IInfoflowSolver getForwardSolver() {
 		return this.forwardSolver;
+	}
+
+	/**
+	 * Gets the IFDS solver that propagates edges forward
+	 *
+	 * @return The IFDS solver that propagates edges forward
+	 */
+	public IInfoflowSolver getBackwardSolver() {
+		return this.backwardSolver;
+	}
+
+	/**
+	 * Sets the IFDS solver that propagates edges forward
+	 *
+	 * @param solver The IFDS solver that propagates edges forward
+	 */
+	public void setBackwardSolver(IInfoflowSolver solver) {
+		this.backwardSolver = solver;
 	}
 
 	/**

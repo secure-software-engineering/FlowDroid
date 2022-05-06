@@ -1,41 +1,29 @@
-/*******************************************************************************
- * Copyright (c) 2012 Secure Software Engineering Group at EC SPRIDE.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v2.1
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
- * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
- * Bodden, and others.
- ******************************************************************************/
 package soot.jimple.infoflow.problems;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import heros.FlowFunction;
 import heros.FlowFunctions;
-import heros.flowfunc.Identity;
 import heros.flowfunc.KillAll;
-import heros.solver.PathEdge;
 import soot.ArrayType;
 import soot.Local;
+import soot.NullType;
 import soot.PrimType;
-import soot.RefType;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.jimple.AnyNewExpr;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
-import soot.jimple.BinopExpr;
 import soot.jimple.CastExpr;
 import soot.jimple.Constant;
-import soot.jimple.DefinitionStmt;
 import soot.jimple.FieldRef;
-import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InstanceOfExpr;
@@ -45,591 +33,597 @@ import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
-import soot.jimple.UnopExpr;
-import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
-import soot.jimple.infoflow.collect.MutableTwoElementSet;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
+import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
+import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.BaseSelector;
+import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.TypeUtils;
 
 /**
- * class which contains the flow functions for the backwards solver. This is
- * required for on-demand alias analysis.
+ * Class which contains the flow functions for the backwards analysis. Not to be
+ * confused with the AliasProblem, which is used for finding aliases.
+ *
+ * @author Tim Lange
  */
 public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
-	public void setTaintWrapper(ITaintPropagationWrapper wrapper) {
-		taintWrapper = wrapper;
-	}
-
-	public BackwardsInfoflowProblem(InfoflowManager manager) {
-		super(manager);
+	public BackwardsInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
+			IPropagationRuleManagerFactory ruleManagerFactory) {
+		super(manager, zeroValue, ruleManagerFactory);
 	}
 
 	@Override
-	public FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
+	protected FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
 		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
-
-			private Abstraction checkAbstraction(Abstraction abs) {
-				if (abs == null)
-					return null;
-
-				// Primitive types and strings cannot have aliases and thus
-				// never need to be propagated back
-				if (!abs.getAccessPath().isStaticFieldRef()) {
-					if (abs.getAccessPath().getBaseType() instanceof PrimType)
-						return null;
-				} else {
-					if (abs.getAccessPath().getFirstFieldType() instanceof PrimType)
-						return null;
-				}
-				return abs;
-			}
-
-			/**
-			 * Computes the aliases for the given statement
-			 * 
-			 * @param def       The definition statement from which to extract the alias
-			 *                  information
-			 * @param leftValue The left side of def. Passed in to allow for caching, no
-			 *                  need to recompute this for every abstraction being
-			 *                  processed.
-			 * @param d1        The abstraction at the method's start node
-			 * @param source    The source abstraction of the alias search from before the
-			 *                  current statement
-			 * @return The set of abstractions after the current statement
-			 */
-			private Set<Abstraction> computeAliases(final DefinitionStmt defStmt, Value leftValue, Abstraction d1,
-					Abstraction source) {
-				assert !source.getAccessPath().isEmpty();
-
-				// A backward analysis looks for aliases of existing taints and
-				// thus cannot create new taints out of thin air
-				if (source == getZeroValue())
-					return null;
-
-				final Set<Abstraction> res = new MutableTwoElementSet<Abstraction>();
-
-				// Check whether the left side of the assignment matches our
-				// current taint abstraction
-				final boolean leftSideMatches = Aliasing.baseMatches(leftValue, source);
-				if (!leftSideMatches)
-					res.add(source);
-				else {
-					// The left side is overwritten completely
-
-					// If we have an assignment to the base local of the current
-					// taint, all taint propagations must be below that point,
-					// so this is the right point to turn around.
-					for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-						manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, source));
-				}
-
-				// We only handle assignments and identity statements
-				if (defStmt instanceof IdentityStmt) {
-					res.add(source);
-					return res;
-				}
-				if (!(defStmt instanceof AssignStmt))
-					return res;
-
-				// Get the right side of the assignment
-				final Value rightValue = BaseSelector.selectBase(defStmt.getRightOp(), false);
-
-				// Is the left side overwritten completely?
-				if (leftSideMatches) {
-					// Termination shortcut: If the right side is a value we do
-					// not track, we can stop here.
-					if (!(rightValue instanceof Local || rightValue instanceof FieldRef
-							|| rightValue instanceof ArrayRef)) {
-						res.add(source);
-						return res;
-					}
-				}
-
-				// If we assign a constant, there is no need to track the right
-				// side any further or do any forward propagation since constants
-				// cannot carry taint.
-				if (rightValue instanceof Constant)
-					return res;
-
-				// If this statement creates a new array, we cannot track
-				// upwards the size
-				if (defStmt.getRightOp() instanceof NewArrayExpr)
-					return res;
-
-				// We only process heap objects. Binary operations can only
-				// be performed on primitive objects.
-				if (defStmt.getRightOp() instanceof BinopExpr)
-					return res;
-				if (defStmt.getRightOp() instanceof UnopExpr)
-					return res;
-
-				// If we have a = x with the taint "x" being inactive,
-				// we must not taint the left side. We can only taint
-				// the left side if the tainted value is some "x.y".
-				boolean aliasOverwritten = Aliasing.baseMatchesStrict(rightValue, source)
-						&& rightValue.getType() instanceof RefType && !source.dependsOnCutAP();
-
-				if (!aliasOverwritten && !(rightValue.getType() instanceof PrimType)) {
-					// If the tainted value 'b' is assigned to variable 'a' and
-					// 'b' is a heap object, we must also look for aliases of
-					// 'a' upwards from the current statement.
-					Abstraction newLeftAbs = null;
-					if (rightValue instanceof InstanceFieldRef) {
-						InstanceFieldRef ref = (InstanceFieldRef) rightValue;
-						if (source.getAccessPath().isInstanceFieldRef()
-								&& ref.getBase() == source.getAccessPath().getPlainValue()
-								&& source.getAccessPath().firstFieldMatches(ref.getField())) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									leftValue, source.getAccessPath().getFirstFieldType(), true);
-							newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
-						}
-					} else if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
-							&& rightValue instanceof StaticFieldRef) {
-						StaticFieldRef ref = (StaticFieldRef) rightValue;
-						if (source.getAccessPath().isStaticFieldRef()
-								&& source.getAccessPath().firstFieldMatches(ref.getField())) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									leftValue, source.getAccessPath().getBaseType(), true);
-							newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
-						}
-					} else if (rightValue == source.getAccessPath().getPlainValue()) {
-						Type newType = source.getAccessPath().getBaseType();
-						if (leftValue instanceof ArrayRef) {
-							ArrayRef arrayRef = (ArrayRef) leftValue;
-							newType = TypeUtils.buildArrayOrAddDimension(newType, arrayRef.getType().getArrayType());
-						} else if (defStmt.getRightOp() instanceof ArrayRef) {
-							if (newType instanceof ArrayType)
-								newType = ((ArrayType) newType).getElementType();
-							else
-								newType = null;
-						} else {
-							// Type check
-							if (!manager.getTypeUtils().checkCast(source.getAccessPath(), leftValue.getType()))
-								return null;
-						}
-
-						// If the cast was realizable, we can assume that we had
-						// the type to which we cast. Do not loosen types,
-						// though.
-						if (defStmt.getRightOp() instanceof CastExpr) {
-							CastExpr ce = (CastExpr) defStmt.getRightOp();
-							if (!manager.getHierarchy().canStoreType(newType, ce.getCastType()))
-								newType = ce.getCastType();
-						}
-						// Special type handling for certain operations
-						else if (defStmt.getRightOp() instanceof LengthExpr) {
-							// ignore. The length of an array is a primitive and
-							// thus cannot have aliases
-							return res;
-						} else if (defStmt.getRightOp() instanceof InstanceOfExpr) {
-							// ignore. The type check of an array returns a
-							// boolean which is a primitive and thus cannot
-							// have aliases
-							return res;
-						}
-
-						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-								leftValue, newType, false);
-						newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
-					}
-
-					if (newLeftAbs != null) {
-						// If we ran into a new abstraction that points to a
-						// primitive value, we can remove it
-						if (newLeftAbs.getAccessPath().getLastFieldType() instanceof PrimType)
-							return res;
-
-						if (!newLeftAbs.getAccessPath().equals(source.getAccessPath())) {
-							// Propagate the new alias upwards
-							res.add(newLeftAbs);
-
-							// Inject the new alias into the forward solver
-							for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-								manager.getForwardSolver()
-										.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
-						}
-					}
-				}
-
-				// If we have the tainted value on the left side of the
-				// assignment, we also have to look or aliases of the value on
-				// the right side of the assignment.
-				if ((rightValue instanceof Local || rightValue instanceof FieldRef)
-						&& !(leftValue.getType() instanceof PrimType)) {
-					boolean addRightValue = false;
-					boolean cutFirstField = false;
-					Type targetType = null;
-
-					// if both are fields, we have to compare their fieldName
-					// via equals and their bases via PTS
-					if (leftValue instanceof InstanceFieldRef) {
-						if (source.getAccessPath().isInstanceFieldRef()) {
-							InstanceFieldRef leftRef = (InstanceFieldRef) leftValue;
-							if (leftRef.getBase() == source.getAccessPath().getPlainValue()) {
-								if (source.getAccessPath().firstFieldMatches(leftRef.getField())) {
-									targetType = source.getAccessPath().getFirstFieldType();
-									addRightValue = true;
-									cutFirstField = true;
-								}
-							}
-						}
-						// indirect taint propagation:
-						// if leftValue is local and source is instancefield of
-						// this local:
-					} else if (leftValue instanceof Local && source.getAccessPath().isInstanceFieldRef()) {
-						Local base = source.getAccessPath().getPlainValue();
-						if (leftValue == base) {
-							targetType = source.getAccessPath().getBaseType();
-							addRightValue = true;
-						}
-					} else if (leftValue instanceof ArrayRef) {
-						ArrayRef ar = (ArrayRef) leftValue;
-						Local leftBase = (Local) ar.getBase();
-						if (leftBase == source.getAccessPath().getPlainValue()) {
-							addRightValue = true;
-							targetType = source.getAccessPath().getBaseType();
-						}
-						// generic case, is true for Locals, ArrayRefs that are
-						// equal etc..
-					} else if (leftValue == source.getAccessPath().getPlainValue()) {
-						// If this is an unrealizable cast, we can stop
-						// propagating
-						if (!manager.getTypeUtils().checkCast(source.getAccessPath(), defStmt.getRightOp().getType()))
-							return null;
-
-						addRightValue = true;
-						targetType = source.getAccessPath().getBaseType();
-					}
-
-					// if one of them is true -> add rightValue
-					if (addRightValue) {
-						if (targetType != null) {
-							// Special handling for some operations
-							if (defStmt.getRightOp() instanceof ArrayRef) {
-								ArrayRef arrayRef = (ArrayRef) defStmt.getRightOp();
-								targetType = TypeUtils.buildArrayOrAddDimension(targetType,
-										arrayRef.getType().getArrayType());
-							} else if (leftValue instanceof ArrayRef) {
-								// If we have a type of java.lang.Object, we try
-								// to tighten it
-								if (TypeUtils.isObjectLikeType(targetType))
-									targetType = rightValue.getType();
-								else if (targetType instanceof ArrayType)
-									targetType = ((ArrayType) targetType).getElementType();
-								else
-									targetType = null;
-
-								// If the types do not match, the right side
-								// cannot be an alias
-								if (targetType != null
-										&& !manager.getTypeUtils().checkCast(rightValue.getType(), targetType))
-									addRightValue = false;
-							}
-						}
-
-						// Special type handling for certain operations
-						if (defStmt.getRightOp() instanceof LengthExpr)
-							targetType = null;
-
-						// We do not need to handle casts. Casts only make
-						// types more imprecise when going backwards.
-
-						// If the source has fields, we may not have a primitive
-						// type
-						if (targetType instanceof PrimType || (targetType instanceof ArrayType
-								&& ((ArrayType) targetType).getElementType() instanceof PrimType))
-							if (!source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isLocal())
-								return null;
-						if (rightValue.getType() instanceof PrimType || (rightValue.getType() instanceof ArrayType
-								&& ((ArrayType) rightValue.getType()).getElementType() instanceof PrimType))
-							if (!source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isLocal())
-								return null;
-
-						// If the right side's type is not compatible with our
-						// current type, this cannot be an alias
-						if (addRightValue) {
-							if (!manager.getTypeUtils().checkCast(rightValue.getType(), targetType))
-								addRightValue = false;
-						}
-
-						// Make sure to only track static fields if it has been
-						// enabled
-						if (addRightValue && rightValue instanceof StaticFieldRef
-								&& manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None)
-							addRightValue = false;
-
-						if (addRightValue) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									rightValue, targetType, cutFirstField);
-							Abstraction newAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
-							if (newAbs != null && !newAbs.getAccessPath().equals(source.getAccessPath())) {
-								// Do we treat static fields outside of IFDS?
-								if (rightValue instanceof StaticFieldRef && manager.getConfig()
-										.getStaticFieldTrackingMode() == StaticFieldTrackingMode.ContextFlowInsensitive) {
-									manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
-								} else {
-									res.add(newAbs);
-
-									// Inject the new alias into the forward solver
-									for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-										manager.getForwardSolver()
-												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newAbs));
-								}
-							}
-						}
-					}
-				}
-
-				return res;
-			}
-
 			@Override
-			public FlowFunction<Abstraction> getNormalFlowFunction(final Unit src, final Unit dest) {
-				if (src instanceof DefinitionStmt) {
-					final DefinitionStmt defStmt = (DefinitionStmt) src;
-					final Value leftValue = BaseSelector.selectBase(defStmt.getLeftOp(), true);
-
-					final DefinitionStmt destDefStmt = dest instanceof DefinitionStmt ? (DefinitionStmt) dest : null;
-					final Value destLeftValue = destDefStmt == null ? null
-							: BaseSelector.selectBase(destDefStmt.getLeftOp(), true);
-
-					return new SolverNormalFlowFunction() {
-
-						@Override
-						public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
-							if (source == getZeroValue())
-								return null;
-							assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
-
-							// Notify the handler if we have one
-							if (taintPropagationHandler != null)
-								taintPropagationHandler.notifyFlowIn(src, source, manager,
-										FlowFunctionType.NormalFlowFunction);
-
-							Set<Abstraction> res = computeAliases(defStmt, leftValue, d1, source);
-
-							if (destDefStmt != null && res != null && !res.isEmpty()
-									&& interproceduralCFG().isExitStmt(destDefStmt)) {
-								for (Abstraction abs : res)
-									computeAliases(destDefStmt, destLeftValue, d1, abs);
-							}
-
-							return notifyOutFlowHandlers(src, d1, source, res, FlowFunctionType.NormalFlowFunction);
-						}
-
-					};
-				}
-				return Identity.v();
-			}
-
-			@Override
-			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete())
+			public FlowFunction<Abstraction> getNormalFlowFunction(Unit srcUnit, Unit destUnit) {
+				if (!(srcUnit instanceof Stmt))
 					return KillAll.v();
 
-				final Stmt stmt = (Stmt) src;
-				final InvokeExpr ie = (stmt != null && stmt.containsInvokeExpr()) ? stmt.getInvokeExpr() : null;
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return KillAll.v();
 
-				final Value[] paramLocals = new Value[dest.getParameterCount()];
-				for (int i = 0; i < dest.getParameterCount(); i++)
-					paramLocals[i] = dest.getActiveBody().getParameterLocal(i);
+				return new SolverNormalFlowFunction() {
+					@Override
+					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
+						if (taintPropagationHandler != null)
+							taintPropagationHandler.notifyFlowIn(srcUnit, source, manager,
+									TaintPropagationHandler.FlowFunctionType.NormalFlowFunction);
 
-				final boolean isSource = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSourceInfo((Stmt) src, manager) != null
-						: false;
-				final boolean isSink = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null
-						: false;
+						Set<Abstraction> res = computeTargetsInternal(d1,
+								source.isAbstractionActive() ? source : source.getActiveCopy());
+						return notifyOutFlowHandlers(srcUnit, d1, source, res,
+								TaintPropagationHandler.FlowFunctionType.NormalFlowFunction);
+					}
 
-				// This is not cached by Soot, so accesses are more expensive
-				// than one might think
+					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+						Set<Abstraction> res = null;
+						ByReferenceBoolean killSource = new ByReferenceBoolean();
+						ByReferenceBoolean killAll = new ByReferenceBoolean();
+						// If we have a RuleManager, apply the rules
+						if (propagationRules != null) {
+							res = propagationRules.applyNormalFlowFunction(d1, source, (Stmt) srcUnit, (Stmt) destUnit,
+									killSource, killAll);
+						}
+						// On killAll, we do not propagate anything and can stop here
+						if (killAll.value)
+							return null;
+
+						// Instanciate res in case the RuleManager did return null
+						if (res == null)
+							res = new HashSet<>();
+
+						// Shortcut: propagate implicit taint over the statement.
+						if (source.getAccessPath().isEmpty()) {
+							if (killSource.value)
+								res.remove(source);
+							return res;
+						}
+
+						if (!(srcUnit instanceof AssignStmt))
+							return res;
+
+						final AssignStmt assignStmt = (AssignStmt) srcUnit;
+						// left can not be an expr
+						final Value leftVal = assignStmt.getLeftOp();
+						final Value rightOp = assignStmt.getRightOp();
+						final Value[] rightVals = BaseSelector.selectBaseList(rightOp, true);
+
+						AccessPath ap = source.getAccessPath();
+						Local sourceBase = ap.getPlainValue();
+						boolean keepSource = false;
+						// Statements such as c = a + b with the taint c can produce multiple taints
+						// because we can not
+						// decide which one originated from a source at this point.
+						for (Value rightVal : rightVals) {
+							boolean addLeftValue = false;
+							boolean cutFirstFieldLeft = false;
+							boolean createNewVal = false;
+							Type leftType = null;
+
+							if (rightVal instanceof StaticFieldRef) {
+								StaticFieldRef staticRef = (StaticFieldRef) rightVal;
+
+								AccessPath mappedAp = aliasing.mayAlias(ap, staticRef);
+								if (manager.getConfig()
+										.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
+										&& mappedAp != null) {
+									addLeftValue = true;
+									cutFirstFieldLeft = true;
+									if (!mappedAp.equals(ap)) {
+										ap = mappedAp;
+										source = source.deriveNewAbstraction(ap, null);
+									}
+								}
+							} else if (rightVal instanceof InstanceFieldRef) {
+								InstanceFieldRef instRef = (InstanceFieldRef) rightVal;
+
+								// Kill the taint if o = null
+								if (instRef.getBase().getType() instanceof NullType)
+									return null;
+
+								AccessPath mappedAp = aliasing.mayAlias(ap, instRef);
+								// field ref match
+								if (mappedAp != null) {
+									addLeftValue = true;
+									// $stack1 = o.x with t=o.x -> T={$stack1}.
+									cutFirstFieldLeft = (mappedAp.getFragmentCount() > 0
+											&& mappedAp.getFirstField() == instRef.getField());
+									// We can't really get more precise typewise
+//                                    leftType = leftVal.getType();
+									if (!mappedAp.equals(ap)) {
+										ap = mappedAp;
+//                                        source = source.deriveNewAbstraction(ap, null);
+									}
+								}
+								// whole object tainted
+								else if (aliasing.mayAlias(instRef.getBase(), sourceBase) && ap.getTaintSubFields()
+										&& ap.getFragmentCount() == 0) {
+									// $stack1 = o.x with t=o.* -> T={$stack1}.
+									addLeftValue = true;
+									createNewVal = true;
+//                                    leftType = leftVal.getType();
+								}
+							} else if (rightVal instanceof ArrayRef) {
+								if (!getManager().getConfig().getEnableArrayTracking()
+										|| ap.getArrayTaintType() == AccessPath.ArrayTaintType.Length)
+									continue;
+
+								ArrayRef arrayRef = (ArrayRef) rightVal;
+								// do we track indices...
+								if (getManager().getConfig().getImplicitFlowMode().trackArrayAccesses()) {
+									if (arrayRef.getIndex() == sourceBase) {
+										addLeftValue = true;
+										leftType = ((ArrayType) arrayRef.getBase().getType()).getElementType();
+									}
+								}
+								// ...or only the whole array?
+								else if (aliasing.mayAlias(arrayRef.getBase(), sourceBase)) {
+									addLeftValue = true;
+									leftType = ((ArrayType) arrayRef.getBase().getType()).getElementType();
+								}
+							}
+							if (rightVal == sourceBase) {
+								addLeftValue = true;
+								leftType = ap.getBaseType();
+
+								if (leftVal instanceof ArrayRef) {
+									ArrayRef arrayRef = (ArrayRef) leftVal;
+									leftType = TypeUtils.buildArrayOrAddDimension(leftType,
+											arrayRef.getType().getArrayType());
+								} else if (rightOp instanceof InstanceOfExpr) {
+									createNewVal = true;
+								} else if (rightOp instanceof LengthExpr) {
+									if (ap.getArrayTaintType() == AccessPath.ArrayTaintType.Contents)
+										addLeftValue = false;
+									createNewVal = true;
+								} else if (rightOp instanceof NewArrayExpr) {
+									createNewVal = true;
+								} else {
+									if (!manager.getTypeUtils().checkCast(source.getAccessPath(), leftVal.getType()))
+										return null;
+								}
+
+								if (rightVal instanceof CastExpr) {
+									CastExpr ce = (CastExpr) rightOp;
+									if (!manager.getHierarchy().canStoreType(leftType, ce.getCastType()))
+										leftType = ce.getCastType();
+								}
+							}
+
+							if (addLeftValue) {
+								AccessPath newAp;
+								if (createNewVal)
+									newAp = manager.getAccessPathFactory().createAccessPath(leftVal, true);
+								else
+									newAp = manager.getAccessPathFactory().copyWithNewValue(ap, leftVal, leftType,
+											cutFirstFieldLeft);
+								Abstraction newAbs = source.deriveNewAbstraction(newAp, assignStmt);
+
+								if (newAbs != null) {
+									if (aliasing.canHaveAliasesRightSide(assignStmt, leftVal, newAbs)) {
+										for (Unit pred : manager.getICFG().getPredsOf(srcUnit))
+											aliasing.computeAliases(d1, (Stmt) pred, leftVal,
+													Collections.singleton(newAbs),
+													interproceduralCFG().getMethodOf(pred), newAbs);
+									}
+								}
+							}
+
+							boolean addRightValue = false;
+							boolean cutFirstField = false;
+							Type rightType = null;
+
+							// S.x
+							if (leftVal instanceof StaticFieldRef) {
+								StaticFieldRef staticRef = (StaticFieldRef) leftVal;
+
+								AccessPath mappedAp = aliasing.mayAlias(ap, staticRef);
+								// If we do not track statics, just skip this rightVal
+								if (getManager().getConfig()
+										.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
+										&& mappedAp != null) {
+									addRightValue = true;
+									cutFirstField = true;
+									rightType = mappedAp.getFirstFieldType();
+									if (!mappedAp.equals(ap)) {
+										ap = mappedAp;
+										source = source.deriveNewAbstraction(ap, null);
+									}
+								}
+							}
+							// o.x
+							else if (leftVal instanceof InstanceFieldRef) {
+								InstanceFieldRef instRef = ((InstanceFieldRef) leftVal);
+
+								// Kill the taint if o = null
+								if (instRef.getBase().getType() instanceof NullType)
+									return null;
+
+								AccessPath mappedAp = aliasing.mayAlias(ap, instRef);
+								// field reference match
+								if (mappedAp != null) {
+									addRightValue = true;
+									// o.x = $stack1 with t=o.x -> T={$stack1}. Without it would be $stack1.x.
+									cutFirstField = (mappedAp.getFragmentCount() > 0
+											&& mappedAp.getFirstField() == instRef.getField());
+									// If there was a path expansion (cutFirstField = false), we can not
+									// precise the type using the left field
+									rightType = mappedAp.getFirstFieldType();
+									if (!mappedAp.equals(ap)) {
+										ap = mappedAp;
+										source = source.deriveNewAbstraction(ap, null);
+									}
+								}
+								// whole object tainted
+								else if (aliasing.mayAlias(instRef.getBase(), sourceBase) && ap.getTaintSubFields()
+										&& ap.getFragmentCount() == 0) {
+									// o.x = $stack1 with t=o.* -> T={$stack1}. No cut as source has no fields.
+									addRightValue = true;
+									rightType = instRef.getField().getType();
+									// Because the whole object is tainted, we can not kill our source
+									// as we do not know in which field the tainted value lies.
+									keepSource = true;
+								}
+							} else if (leftVal instanceof ArrayRef) {
+								// If we don't track arrays or just the length is tainted we have nothing to do.
+								if (!getManager().getConfig().getEnableArrayTracking()
+										|| ap.getArrayTaintType() == AccessPath.ArrayTaintType.Length)
+									continue;
+
+								ArrayRef arrayRef = (ArrayRef) leftVal;
+								// do we track indices...
+								if (getManager().getConfig().getImplicitFlowMode().trackArrayAccesses()) {
+									if (arrayRef.getIndex() == sourceBase) {
+										addRightValue = true;
+										rightType = ((ArrayType) arrayRef.getBase().getType()).getElementType();
+									}
+								}
+								// ...or only the whole array?
+								else if (aliasing.mayAlias(arrayRef.getBase(), sourceBase)) {
+									addRightValue = true;
+									rightType = ((ArrayType) arrayRef.getBase().getType()).getElementType();
+									// We don't track indices => we don't know if the tainted value was at this
+									// index
+									keepSource = true;
+								}
+							}
+							// default case
+							else if (aliasing.mayAlias(leftVal, sourceBase)) {
+								if (rightOp instanceof InstanceOfExpr) {
+									// Left side is a boolean but the resulting taint
+									// needs to be the object type
+									rightType = rightVal.getType();
+								} else if (rightOp instanceof CastExpr) {
+									// CastExpr only make the types more imprecise backwards
+									// but we need to kill impossible casts
+									CastExpr ce = (CastExpr) rightOp;
+									if (!manager.getTypeUtils().checkCast(ce.getCastType(), rightVal.getType()))
+										return null;
+								}
+								// LengthExpr/RHS ArrayRef and NewArrayExpr handled in ArrayPropagationRule.
+								// We allow NewArrayExpr to pass for removing the source but not creating a new
+								// taint below.
+								addRightValue = !(rightOp instanceof LengthExpr || rightOp instanceof ArrayRef);
+							}
+
+							if (addRightValue) {
+								// keepSource is true if
+								// ... the whole object is tainted
+								// ... the left side is an ArrayRef
+								if (!keepSource)
+									res.remove(source);
+
+								boolean isImplicit = source.getDominator() != null;
+								if (isImplicit)
+									res.add(source.deriveConditionalUpdate(assignStmt));
+
+								if (rightVal instanceof Constant)
+									continue;
+
+								// NewExpr's can not be tainted
+								// so we can stop here
+								if (rightOp instanceof AnyNewExpr)
+									continue;
+
+								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightVal,
+										rightType, cutFirstField);
+								Abstraction newAbs = source.deriveNewAbstraction(newAp, assignStmt);
+								if (newAbs != null) {
+									if (rightVal instanceof StaticFieldRef && manager.getConfig()
+											.getStaticFieldTrackingMode() == InfoflowConfiguration.StaticFieldTrackingMode.ContextFlowInsensitive)
+										manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
+									else {
+										enterConditional(newAbs, assignStmt, destUnit);
+										res.add(newAbs);
+
+										if (isPrimitiveOrStringBase(source)) {
+											newAbs.setTurnUnit(srcUnit);
+										} else if (leftVal instanceof FieldRef
+												&& isPrimitiveOrStringType(((FieldRef) leftVal).getField().getType())
+												&& !ap.getCanHaveImmutableAliases()) {
+											newAbs.setTurnUnit(srcUnit);
+										} else {
+											if (aliasing.canHaveAliasesRightSide(assignStmt, rightVal, newAbs)) {
+												for (Unit pred : manager.getICFG().getPredsOf(assignStmt))
+													aliasing.computeAliases(d1, (Stmt) pred, rightVal, res,
+															interproceduralCFG().getMethodOf(pred), newAbs);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						return res;
+					}
+				};
+			}
+
+			@Override
+			public FlowFunction<Abstraction> getCallFlowFunction(final Unit callStmt, final SootMethod dest) {
+				if (!dest.isConcrete()) {
+					logger.debug("Call skipped because target has no body: {} -> {}", callStmt, dest);
+					return KillAll.v();
+				}
+
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return KillAll.v();
+
+				if (!(callStmt instanceof Stmt))
+					return KillAll.v();
+
+				final Stmt stmt = (Stmt) callStmt;
+				final InvokeExpr ie = stmt.containsInvokeExpr() ? stmt.getInvokeExpr() : null;
+
+				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				// Android executor methods are handled specially.
-				// getSubSignature()
-				// is slow, so we try to avoid it whenever we can
+				final boolean isSource = manager.getSourceSinkManager() != null
+						&& manager.getSourceSinkManager().getSourceInfo((Stmt) callStmt, manager) != null;
+				final boolean isSink = manager.getSourceSinkManager() != null
+						&& manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null;
+
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
+				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 				return new SolverCallFlowFunction() {
-
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
 						if (source == getZeroValue())
 							return null;
-						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
-									FlowFunctionType.CallFlowFunction);
+									TaintPropagationHandler.FlowFunctionType.CallFlowFunction);
 
-						// if we do not have to look into sources or sinks:
+						Set<Abstraction> res = computeTargetsInternal(d1,
+								source.isAbstractionActive() ? source : source.getActiveCopy());
+						if (res != null) {
+							for (Abstraction abs : res)
+								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, callStmt, source,
+										d1);
+						}
+						return notifyOutFlowHandlers(stmt, d1, source, res,
+								TaintPropagationHandler.FlowFunctionType.CallFlowFunction);
+					}
+
+					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+						// Respect user settings
+						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
+							return null;
 						if (!manager.getConfig().getInspectSources() && isSource)
 							return null;
 						if (!manager.getConfig().getInspectSinks() && isSink)
 							return null;
-
-						// Do not propagate in inactive taints that will be
-						// activated there since they already came out of the
-						// callee
-						if (isCallSiteActivatingTaint(stmt, source.getActivationUnit()))
-							return null;
-
-						// Do not analyze static initializers if static field
-						// tracking is disabled
-						if (manager.getConfig().getStaticFieldTrackingMode() == StaticFieldTrackingMode.None
+						if (manager.getConfig()
+								.getStaticFieldTrackingMode() == InfoflowConfiguration.StaticFieldTrackingMode.None
 								&& dest.isStaticInitializer())
 							return null;
 
-						// taint is propagated in CallToReturnFunction, so we do
-						// not need any taint here if the taint wrapper is
-						// exclusive:
-						if (taintWrapper != null && taintWrapper.isExclusive(stmt, source))
-							return null;
-
-						// Do not propagate into Soot library classes if that
-						// optimization is enabled
+						// Do not propagate into Soot library classes if that optimization is enabled
+						// CallToReturn handles the propagation over the excluded statement
 						if (isExcluded(dest))
 							return null;
 
-						// Only propagate the taint if the target field is
-						// actually read
-						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+						// not used static fields do not need to be propagated
+						if (manager.getConfig()
+								.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
-							if (!interproceduralCFG().isStaticFieldRead(dest, source.getAccessPath().getFirstField()))
+							// static fields first get pushed onto the stack before used,
+							// so we check for a read on the base class
+							if (!(interproceduralCFG().isStaticFieldUsed(dest, source.getAccessPath().getFirstField())
+									|| interproceduralCFG().isStaticFieldRead(dest,
+											source.getAccessPath().getFirstField())))
 								return null;
 						}
 
-						Set<Abstraction> res = new HashSet<Abstraction>();
+						Set<Abstraction> res = null;
+						ByReferenceBoolean killAll = new ByReferenceBoolean();
+						if (propagationRules != null)
+							res = propagationRules.applyCallFlowFunction(d1, source, stmt, dest, killAll);
+						if (killAll.value)
+							return null;
 
-						// if the returned value is tainted - taint values from
-						// return statements
-						if (src instanceof DefinitionStmt) {
-							DefinitionStmt defnStmt = (DefinitionStmt) src;
-							Value leftOp = defnStmt.getLeftOp();
-							if (leftOp == source.getAccessPath().getPlainValue()) {
-								// look for returnStmts:
-								for (Unit u : dest.getActiveBody().getUnits()) {
-									if (u instanceof ReturnStmt) {
-										ReturnStmt rStmt = (ReturnStmt) u;
-										if (rStmt.getOp() instanceof Local || rStmt.getOp() instanceof FieldRef)
-											if (manager.getTypeUtils().checkCast(source.getAccessPath(),
-													rStmt.getOp().getType())) {
-												AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-														source.getAccessPath(), rStmt.getOp(), null, false);
-												Abstraction abs = checkAbstraction(
-														source.deriveNewAbstraction(ap, (Stmt) src));
-												if (abs != null)
-													res.add(abs);
+						// Instanciate in case RuleManager did not produce an object
+						if (res == null)
+							res = new HashSet<>();
+
+						// x = o.m(a1, ..., an)
+						// Taints the return if needed
+						if (callStmt instanceof AssignStmt) {
+							AssignStmt assignStmt = (AssignStmt) callStmt;
+							Value left = assignStmt.getLeftOp();
+
+							boolean isImplicit = source.getDominator() != null;
+
+							// we only taint the return statement(s) if x is tainted
+							if (aliasing.mayAlias(left, source.getAccessPath().getPlainValue()) && !isImplicit) {
+								for (Unit unit : dest.getActiveBody().getUnits()) {
+									if (unit instanceof ReturnStmt) {
+										ReturnStmt returnStmt = (ReturnStmt) unit;
+										Value retVal = returnStmt.getOp();
+										if (retVal instanceof Local) {
+											// if types are incompatible, stop here
+											if (!manager.getTypeUtils().checkCast(source.getAccessPath().getBaseType(),
+													retVal.getType()))
+												continue;
+
+											AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+													source.getAccessPath(), retVal, returnStmt.getOp().getType(),
+													false);
+											Abstraction abs = source.deriveNewAbstraction(ap, stmt);
+											if (abs != null) {
+												if (isPrimitiveOrStringBase(source))
+													abs.setTurnUnit(stmt);
+
+												if (abs.getDominator() == null && manager.getConfig()
+														.getImplicitFlowMode().trackControlFlowDependencies()) {
+													List<Unit> condUnits = manager.getICFG()
+															.getConditionalBranchIntraprocedural(returnStmt);
+													if (condUnits.size() >= 1) {
+														abs.setDominator(condUnits.get(0));
+														for (int i = 1; i < condUnits.size(); i++)
+															res.add(abs.deriveNewAbstractionWithDominator(
+																	condUnits.get(i)));
+													}
+												}
+
+												res.add(abs);
 											}
+										}
 									}
 								}
 							}
 						}
 
-						// easy: static
-						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+						// static fields access path stay the same
+						if (manager.getConfig()
+								.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
-							Abstraction abs = checkAbstraction(
-									source.deriveNewAbstraction(source.getAccessPath(), stmt));
+							Abstraction abs = source.deriveNewAbstraction(source.getAccessPath(), stmt);
 							if (abs != null)
 								res.add(abs);
 						}
 
-						// checks: this/fields
-						Value sourceBase = source.getAccessPath().getPlainValue();
+						// o.m(a1, ..., an)
+						// map o.f to this.f
 						if (!isExecutorExecute && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
-							InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-							Value callBase = isReflectiveCallSite ? iIExpr.getArg(0) : iIExpr.getBase();
+							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
+							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
+									: instanceInvokeExpr.getBase();
 
-							if (callBase == sourceBase && manager.getTypeUtils()
+							Value sourceBase = source.getAccessPath().getPlainValue();
+							if (aliasing.mayAlias(callBase, sourceBase) && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
-								boolean param = false;
-								// check if it is not one of the params (then we
-								// have already fixed it)
-								if (!isReflectiveCallSite) {
-									for (int i = 0; i < dest.getParameterCount(); i++) {
-										if (stmt.getInvokeExpr().getArg(i) == sourceBase) {
-											param = true;
-											break;
-										}
-									}
-								}
-
-								// Map the base local into the callee
-								if (!param) {
+								// second condition prevents mapping o if it is also a parameter
+								if (isReflectiveCallSite
+										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), thisLocal);
-									Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, (Stmt) src));
+									Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) callStmt);
 									if (abs != null)
 										res.add(abs);
 								}
 							}
 						}
 
-						// Map the parameter values into the callee
+						// map arguments to parameter
 						if (isExecutorExecute) {
-							if (ie.getArg(0) == source.getAccessPath().getPlainValue()) {
+							if (ie != null && aliasing.mayAlias(ie.getArg(0), source.getAccessPath().getPlainValue())) {
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 										thisLocal);
-								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
+								Abstraction abs = source.deriveNewAbstraction(ap, stmt);
 								if (abs != null)
 									res.add(abs);
 							}
 						} else if (ie != null && dest.getParameterCount() > 0) {
-							assert dest.getParameterCount() == ie.getArgCount();
-							// check if param is tainted:
 							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-								if (ie.getArg(i) == source.getAccessPath().getPlainValue()) {
+								if (!aliasing.mayAlias(ie.getArg(i), source.getAccessPath().getPlainValue()))
+									continue;
+								if (isPrimitiveOrStringBase(source))
+									continue;
+								if (!source.getAccessPath().getTaintSubFields())
+									continue;
 
-									if (isReflectiveCallSite) {
-										// If we have a reflective method call
-										// and the argument array is
-										// tainted, we taint all parameters
-										for (int j = 0; i < paramLocals.length; i++) {
-											AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-													source.getAccessPath(), paramLocals[j], null, false);
-											Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
-											if (abs != null)
-												res.add(abs);
-										}
-									} else {
-										// Taint the respective parameter local
+								// If the variable was overwritten
+								// somewehere in the callee, we assume
+								// it to overwritten on all paths (yeah,
+								// I know ...) Otherwise, we need SSA
+								// or lots of bookkeeping to avoid FPs
+								// (BytecodeTests.flowSensitivityTest1).
+								if (interproceduralCFG().methodWritesValue(dest, paramLocals[i]))
+									continue;
+
+								// taint all parameters if reflective call site
+								if (isReflectiveCallSite) {
+									for (Value param : paramLocals) {
 										AccessPath ap = manager.getAccessPathFactory()
-												.copyWithNewValue(source.getAccessPath(), paramLocals[i]);
-										Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
+												.copyWithNewValue(source.getAccessPath(), param, null, false);
+										Abstraction abs = source.deriveNewAbstraction(ap, stmt);
 										if (abs != null)
 											res.add(abs);
+									}
+									// taint just the tainted parameter
+								} else {
+									AccessPath ap = manager.getAccessPathFactory()
+											.copyWithNewValue(source.getAccessPath(), paramLocals[i]);
+									Abstraction abs = source.deriveNewAbstraction(ap, stmt);
+									if (abs != null) {
+										res.add(abs);
 									}
 								}
 							}
 						}
 
-						// Inject our calling context into the other solver
-						if (res != null && !res.isEmpty())
-							for (Abstraction d3 : res)
-								manager.getForwardSolver().injectContext(solver, dest, d3, src, source, d1);
-
-						return notifyOutFlowHandlers(src, d1, source, res, FlowFunctionType.CallFlowFunction);
+						return res;
 					}
 				};
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getReturnFlowFunction(final Unit callSite, final SootMethod callee,
-					final Unit exitStmt, final Unit retSite) {
+			public FlowFunction<Abstraction> getReturnFlowFunction(Unit callSite, SootMethod callee, Unit exitSite,
+					Unit returnSite) {
+				if (callSite != null && !(callSite instanceof Stmt))
+					return KillAll.v();
+
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return KillAll.v();
+
 				final Value[] paramLocals = new Value[callee.getParameterCount()];
 				for (int i = 0; i < callee.getParameterCount(); i++)
 					paramLocals[i] = callee.getActiveBody().getParameterLocal(i);
@@ -637,138 +631,161 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final Stmt stmt = (Stmt) callSite;
 				final InvokeExpr ie = (stmt != null && stmt.containsInvokeExpr()) ? stmt.getInvokeExpr() : null;
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				final Stmt callStmt = (Stmt) callSite;
+				final Stmt exitStmt = (Stmt) exitSite;
 
-				// This is not cached by Soot, so accesses are more expensive
-				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-
-				// Android executor methods are handled specially.
-				// getSubSignature()
-				// is slow, so we try to avoid it whenever we can
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
 				return new SolverReturnFlowFunction() {
-
 					@Override
-					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
+					public Set<Abstraction> computeTargets(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
 						if (source == getZeroValue())
 							return null;
-						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
-
-						// If we have no caller, we have nowhere to propagate.
-						// This can happen when leaving the main method.
 						if (callSite == null)
 							return null;
 
-						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
-									FlowFunctionType.ReturnFlowFunction);
+									TaintPropagationHandler.FlowFunctionType.ReturnFlowFunction);
 
-						// easy: static
-						if (manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
+						Set<Abstraction> res = computeTargetsInternal(
+								source.isAbstractionActive() ? source : source.getActiveCopy(), calleeD1, callerD1s);
+						return notifyOutFlowHandlers(exitSite, calleeD1, source, res,
+								TaintPropagationHandler.FlowFunctionType.ReturnFlowFunction);
+					}
+
+					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
+							Collection<Abstraction> callerD1s) {
+						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
+							return null;
+
+						Set<Abstraction> res = null;
+						ByReferenceBoolean killAll = new ByReferenceBoolean();
+						if (propagationRules != null)
+							res = propagationRules.applyReturnFlowFunction(callerD1s, calleeD1, source, (Stmt) exitSite,
+									(Stmt) returnSite, (Stmt) callSite, killAll);
+						if (killAll.value)
+							return null;
+
+						// Already handled in the rule
+						if (source.getAccessPath().isEmpty())
+							return res;
+
+						if (res == null)
+							res = new HashSet<>();
+
+						// Static fields get propagated unchanged
+						if (manager.getConfig()
+								.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
 								&& source.getAccessPath().isStaticFieldRef()) {
-							registerActivationCallSite(callSite, callee, source);
-							return notifyOutFlowHandlers(exitStmt, d1, source, Collections.singleton(source),
-									FlowFunctionType.ReturnFlowFunction);
+							res.add(source);
 						}
 
-						final Value sourceBase = source.getAccessPath().getPlainValue();
-						Set<Abstraction> res = new HashSet<Abstraction>();
+						// o.m(a1, ..., an)
+						// map o.f to this.f
+						if (!isExecutorExecute && !callee.isStatic()) {
+							Value sourceBase = source.getAccessPath().getPlainValue();
+							if (aliasing.mayAlias(thisLocal, sourceBase) && manager.getTypeUtils()
+									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
+								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
+								Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
+										: instanceInvokeExpr.getBase();
 
-						// Since we return from the top of the callee into the
-						// caller, return values cannot be propagated here. They
-						// don't yet exist at the beginning of the callee.
-
-						if (isExecutorExecute) {
-							// Map the "this" object to the first argument of
-							// the call site
-							if (source.getAccessPath().getPlainValue() == thisLocal) {
-								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-										ie.getArg(0));
-								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-								if (abs != null) {
-									res.add(abs);
-									registerActivationCallSite(callSite, callee, abs);
-								}
-							}
-						} else {
-							boolean parameterAliases = false;
-
-							// check one of the call params are tainted (not if
-							// simple type)
-							for (int i = 0; i < paramLocals.length; i++) {
-								if (paramLocals[i] == sourceBase) {
-									parameterAliases = true;
-									if (callSite instanceof Stmt) {
-										Value originalCallArg = ie.getArg(isReflectiveCallSite ? 1 : i);
-
-										// If this is a constant parameter, we
-										// can safely ignore it
-										if (!AccessPath.canContainValue(originalCallArg))
-											continue;
-										if (!isReflectiveCallSite && !manager.getTypeUtils()
-												.checkCast(source.getAccessPath(), originalCallArg.getType()))
-											continue;
-
-										// Primitive types and strings cannot
-										// have aliases and thus
-										// never need to be propagated back
-										if (source.getAccessPath().getBaseType() instanceof PrimType)
-											continue;
-										if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
-												&& !source.getAccessPath().getCanHaveImmutableAliases())
-											continue;
-
-										// If the variable was overwritten
-										// somewehere in the callee, we assume
-										// it to overwritten on all paths (yeah,
-										// I know ...) Otherwise, we need SSA
-										// or lots of bookkeeping to avoid FPs
-										// (BytecodeTests.flowSensitivityTest1).
-										if (interproceduralCFG().methodWritesValue(callee, paramLocals[i]))
-											continue;
-
-										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-												source.getAccessPath(), originalCallArg,
-												isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
-												false);
-										Abstraction abs = checkAbstraction(
-												source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-
-										if (abs != null) {
-											res.add(abs);
-											registerActivationCallSite(callSite, callee, abs);
-										}
+								// Either the callBase is from a reflective call site
+								// or the source base doesn't match with any parameters
+								if (isReflectiveCallSite || instanceInvokeExpr.getArgs().stream()
+										.noneMatch(arg -> aliasing.mayAlias(arg, sourceBase))) {
+									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+											source.getAccessPath(), callBase,
+											isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);
+									Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
+									if (abs != null) {
+										enterConditional(abs, callSite, returnSite);
+										res.add(abs);
 									}
 								}
 							}
+						}
 
-							// Map the "this" local
-							if (!callee.isStatic()) {
-								if (thisLocal == sourceBase && manager.getTypeUtils().hasCompatibleTypesForCall(
-										source.getAccessPath(), callee.getDeclaringClass())) {
-									// check if it is not one of the params
-									// (then we have already fixed it)
-									if (!parameterAliases) {
-										if (callSite instanceof Stmt) {
-											Stmt stmt = (Stmt) callSite;
-											if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-												InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-												Value callerBaseLocal = interproceduralCFG().isReflectiveCallSite(
-														iIExpr) ? iIExpr.getArg(0) : iIExpr.getBase();
+						// map arguments to parameter
+						if (isExecutorExecute && ie != null) {
+							if (aliasing.mayAlias(thisLocal, source.getAccessPath().getPlainValue())) {
+								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
+										ie.getArg(0));
+								Abstraction abs = source.deriveNewAbstraction(ap, exitStmt);
+								if (abs != null) {
+									enterConditional(abs, callSite, returnSite);
+									res.add(abs);
+								}
+							}
+						} else if (ie != null) {
+							for (int paramIndex = 0; paramIndex < callee.getParameterCount(); paramIndex++) {
+								if (!aliasing.mayAlias(source.getAccessPath().getPlainValue(), paramLocals[paramIndex]))
+									continue;
 
-												AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-														source.getAccessPath(), callerBaseLocal,
-														isReflectiveCallSite ? null
-																: source.getAccessPath().getBaseType(),
-														false);
-												Abstraction abs = checkAbstraction(
-														source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-												if (abs != null) {
-													res.add(abs);
-													registerActivationCallSite(callSite, callee, abs);
+								Value originalCallArg = ie.getArg(isReflectiveCallSite ? 1 : paramIndex);
+								if (!AccessPath.canContainValue(originalCallArg))
+									continue;
+								if (!isReflectiveCallSite && !manager.getTypeUtils().checkCast(source.getAccessPath(),
+										originalCallArg.getType()))
+									continue;
+
+								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
+										originalCallArg,
+										isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);
+								Abstraction abs = source.deriveNewAbstraction(ap, exitStmt);
+								if (abs != null) {
+									enterConditional(abs, callSite, returnSite);
+									res.add(abs);
+
+									if (!isReflectiveCallSite
+											&& aliasing.canHaveAliasesRightSide(callStmt, originalCallArg, abs)) {
+										// see HeapTests#testAliases
+										// If two arguments are the same, we maybe missed one parameter
+										// so we fully revisit the callSite using aliasing
+										SootMethod caller = manager.getICFG().getMethodOf(callStmt);
+										boolean foundDuplicate = false;
+										// Look if we have a duplicate argument to originalCallArg
+										for (int argIndex = 0; argIndex < ie.getArgCount(); argIndex++) {
+											if (paramIndex != argIndex && originalCallArg == ie.getArg(argIndex)) {
+												foundDuplicate = true;
+												break;
+											}
+										}
+										// trigger aliasing on all args that are equal
+										// to originalCallArg including itself
+										if (foundDuplicate) {
+											for (Value arg : ie.getArgs()) {
+												if (arg == originalCallArg) {
+													for (Abstraction d1 : callerD1s) {
+														aliasing.computeAliases(d1, callStmt, arg, res, caller, abs);
+													}
+												}
+											}
+										}
+
+										// A foo(A a) {
+										// return a;
+										// }
+										// A b = foo(a);
+										// An alias is created using the returned value. If no assignment
+										// happen inside the method, also no alias analysis is triggered.
+										// Thus, here we trigger a manual alias analysis for all return
+										// values which equal a param if the param is on the heap.
+										for (Unit u : callee.getActiveBody().getUnits()) {
+											if (!(u instanceof ReturnStmt))
+												continue;
+											Value retOp = ((ReturnStmt) u).getOp();
+
+											if (paramLocals[paramIndex] == retOp) {
+												for (Unit pred : manager.getICFG().getPredsOf(callStmt)) {
+													for (Abstraction d1 : callerD1s) {
+														aliasing.computeAliases(d1, stmt, originalCallArg,
+																Collections.singleton(abs),
+																manager.getICFG().getMethodOf(pred), abs);
+													}
 												}
 											}
 										}
@@ -777,102 +794,206 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							}
 						}
 
-						for (Abstraction abs : res)
-							if (abs != source)
-								abs.setCorrespondingCallSite((Stmt) callSite);
+						setCallSite(source, res, (Stmt) callSite);
 
-						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
+						return res;
 					}
 				};
 			}
 
 			@Override
-			public FlowFunction<Abstraction> getCallToReturnFlowFunction(final Unit call, final Unit returnSite) {
-				final Stmt iStmt = (Stmt) call;
-				final InvokeExpr invExpr = iStmt.getInvokeExpr();
+			public FlowFunction<Abstraction> getCallToReturnFlowFunction(Unit callSite, Unit returnSite) {
+				if (!(callSite instanceof Stmt)) {
+					return KillAll.v();
+				}
 
-				final Value[] callArgs = new Value[iStmt.getInvokeExpr().getArgCount()];
-				for (int i = 0; i < iStmt.getInvokeExpr().getArgCount(); i++)
-					callArgs[i] = iStmt.getInvokeExpr().getArg(i);
+				final Aliasing aliasing = manager.getAliasing();
+				if (aliasing == null)
+					return KillAll.v();
+
+				final Stmt callStmt = (Stmt) callSite;
+				final InvokeExpr invExpr = callStmt.getInvokeExpr();
+
+				final Value[] callArgs = new Value[invExpr.getArgCount()];
+				for (int i = 0; i < invExpr.getArgCount(); i++) {
+					callArgs[i] = invExpr.getArg(i);
+				}
 
 				final SootMethod callee = invExpr.getMethod();
 
-				final DefinitionStmt defStmt = iStmt instanceof DefinitionStmt ? (DefinitionStmt) iStmt : null;
+				final boolean isSink = manager.getSourceSinkManager() != null
+						&& manager.getSourceSinkManager().getSinkInfo(callStmt, manager, null) != null;
 
 				return new SolverCallToReturnFlowFunction() {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
-						if (source == getZeroValue())
-							return null;
-						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
-
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
-							taintPropagationHandler.notifyFlowIn(call, source, manager,
-									FlowFunctionType.CallToReturnFlowFunction);
+							taintPropagationHandler.notifyFlowIn(callSite, source, manager,
+									TaintPropagationHandler.FlowFunctionType.CallToReturnFlowFunction);
 
-						// Compute wrapper aliases
-						if (taintWrapper != null) {
-							Set<Abstraction> wrapperAliases = taintWrapper.getAliasesForMethod(iStmt, d1, source);
-							if (wrapperAliases != null && !wrapperAliases.isEmpty()) {
-								Set<Abstraction> passOnSet = new HashSet<>(wrapperAliases.size());
-								for (Abstraction abs : wrapperAliases) {
-									if (defStmt == null || defStmt.getLeftOp() != abs.getAccessPath().getPlainValue())
-										passOnSet.add(abs);
+						Set<Abstraction> res = computeTargetsInternal(d1,
+								source.isAbstractionActive() ? source : source.getActiveCopy());
+						return notifyOutFlowHandlers(callSite, d1, source, res,
+								TaintPropagationHandler.FlowFunctionType.CallToReturnFlowFunction);
+					}
 
-									// Do not pass on this taint, but
-									// trigger the forward analysis
-									for (Unit u : interproceduralCFG().getPredsOf(call))
-										manager.getForwardSolver()
-												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
+					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
+							return null;
+
+						Set<Abstraction> res = null;
+						ByReferenceBoolean killSource = new ByReferenceBoolean();
+						ByReferenceBoolean killAll = new ByReferenceBoolean();
+						// if we have a RuleManager, apply the rules
+						if (propagationRules != null) {
+							res = propagationRules.applyCallToReturnFlowFunction(d1, source, callStmt, killSource,
+									killAll, true);
+						}
+						// On killAll, we do not propagate and can stop here
+						if (killAll.value)
+							return null;
+
+						// Instanciate res if RuleManager did return null
+						if (res == null)
+							res = new HashSet<>();
+
+						// If left side is tainted, the return value overwrites the taint
+						// CallFlow takes care of tainting the return value
+						if (callStmt instanceof AssignStmt && aliasing.mayAlias(((AssignStmt) callStmt).getLeftOp(),
+								source.getAccessPath().getPlainValue())) {
+							return res;
+						}
+
+						// If we do not know the callees, we can not reason
+						// To not break anything, propagate over
+						if (interproceduralCFG().getCalleesOfCallAt(callSite).isEmpty()) {
+							if (source != zeroValue)
+								res.add(source);
+							return res;
+						}
+
+						// Assumption: Sinks only leak taints but never
+						// overwrite them. This is needed e.g. if an heap object
+						// is an argument and leaked twice in the same path.
+						// See also Android Source Sink Tests
+						if (isSink && !manager.getConfig().getInspectSinks()) {
+							if (source != zeroValue)
+								res.add(source);
+						}
+
+						// If method is excluded, add the taint to not
+						// break anything
+						if (isExcluded(callee)) {
+							if (source != zeroValue)
+								res.add(source);
+						}
+
+						// Static values can be propagated over methods if
+						// the value isn't written inside the method.
+						// Otherwise CallFlowFunction already does the job.
+						if (manager.getConfig()
+								.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
+								&& source.getAccessPath().isStaticFieldRef() && interproceduralCFG()
+										.isStaticFieldUsed(callee, source.getAccessPath().getFirstField()))
+							return res;
+
+						if (callee.isNative() && ncHandler != null) {
+							for (Value arg : callArgs) {
+								if (aliasing.mayAlias(arg, source.getAccessPath().getPlainValue())) {
+									Set<Abstraction> nativeAbs = ncHandler.getTaintedValues(callStmt, source, callArgs);
+									if (nativeAbs != null) {
+										res.addAll(nativeAbs);
+
+										// Compute the aliases
+										for (Abstraction abs : nativeAbs) {
+											enterConditional(abs, callStmt, returnSite);
+											if (abs.getAccessPath().isStaticFieldRef()
+													|| aliasing.canHaveAliasesRightSide(callStmt,
+															abs.getAccessPath().getPlainValue(), abs)) {
+												for (Unit pred : manager.getICFG().getPredsOf(callStmt))
+													aliasing.computeAliases(d1, (Stmt) pred,
+															abs.getAccessPath().getPlainValue(), res,
+															interproceduralCFG().getMethodOf(pred), abs);
+											}
+										}
+									}
+									break;
 								}
-								return notifyOutFlowHandlers(call, d1, source, passOnSet,
-										FlowFunctionType.CallToReturnFlowFunction);
+							}
+						}
+						// Do not pass base if tainted
+						// CallFlow passes this into the callee
+						// unless the callee is native and can not be visited
+						// The third condition represents a tainted reference without any fields tainted
+						// of which the callee only can overwrite the reference to the object but not
+						// its contents
+						if (invExpr instanceof InstanceInvokeExpr
+								&& aliasing.mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
+										source.getAccessPath().getPlainValue())
+								&& (source.getAccessPath().getTaintSubFields()
+										|| source.getAccessPath().getFragmentCount() > 0)
+								&& !callee.isNative())
+							return res;
+
+						// Do not pass over reference parameters
+						// CallFlow passes this into the callee
+						if (Arrays.stream(callArgs).anyMatch(arg -> !isPrimitiveOrStringBase(source)
+								&& aliasing.mayAlias(arg, source.getAccessPath().getPlainValue())))
+							return res;
+
+						if (!killSource.value && source != zeroValue)
+							res.add(source);
+
+						setCallSite(source, res, callStmt);
+
+						if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies()
+								&& source.getDominator() == null && res.contains(source)) {
+							IInfoflowCFG.UnitContainer dom = manager.getICFG().getDominatorOf(callSite);
+							if (dom.getUnit() != null && dom.getUnit() != returnSite) {
+								res.remove(source);
+								res.add(source.deriveNewAbstractionWithDominator(dom.getUnit()));
 							}
 						}
 
-						// Additional check: If all callees are library classes, we pass it on as well
-						boolean mustPropagate = isExcluded(callee);
-
-						// If we don't know what we're calling, we just keep the original taint alive
-						mustPropagate |= interproceduralCFG().getCalleesOfCallAt(call).isEmpty();
-
-						// If the callee does not read the given value, we also need to pass it on since
-						// we do not propagate it into the callee.
-						if (!mustPropagate
-								&& manager.getConfig().getStaticFieldTrackingMode() != StaticFieldTrackingMode.None
-								&& source.getAccessPath().isStaticFieldRef()) {
-							if (interproceduralCFG().isStaticFieldUsed(callee, source.getAccessPath().getFirstField()))
-								return null;
-						}
-
-						// We may not pass on a taint if it is overwritten by this call
-						if (iStmt instanceof DefinitionStmt
-								&& ((DefinitionStmt) iStmt).getLeftOp() == source.getAccessPath().getPlainValue()) {
-							return null;
-						}
-
-						// If the base local of the invocation is tainted, we do not pass on the taint
-						if (!mustPropagate && iStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-							InstanceInvokeExpr iinv = (InstanceInvokeExpr) iStmt.getInvokeExpr();
-							if (iinv.getBase() == source.getAccessPath().getPlainValue()
-									&& !interproceduralCFG().getCalleesOfCallAt(call).isEmpty())
-								return null;
-						}
-
-						// We do not pass taints on parameters over the call-to-return edge
-						if (!mustPropagate) {
-							for (int i = 0; i < callArgs.length; i++)
-								if (callArgs[i] == source.getAccessPath().getPlainValue())
-									return null;
-						}
-
-						return notifyOutFlowHandlers(call, d1, source, Collections.singleton(source),
-								FlowFunctionType.CallToReturnFlowFunction);
+						return res;
 					}
 				};
 			}
 
+			private void setCallSite(Abstraction source, Set<Abstraction> set, Stmt callStmt) {
+				for (Abstraction abs : set) {
+					if (!abs.equals(source))
+						abs.setCorrespondingCallSite(callStmt);
+				}
+			}
+
+			/**
+			 * Sets the dominator if the taint enters a conditional
+			 *
+			 * @param abs      target abstraction
+			 * @param stmt     Current statement
+			 * @param destStmt Destination statement
+			 */
+			private void enterConditional(Abstraction abs, Unit stmt, Unit destStmt) {
+				if (!manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies()
+						|| abs.getDominator() != null)
+					return;
+				IInfoflowCFG.UnitContainer dom = manager.getICFG().getDominatorOf(stmt);
+				if (dom.getUnit() != null && dom.getUnit() != destStmt) {
+					abs.setDominator(dom.getUnit());
+				}
+			}
+
+			private boolean isPrimitiveOrStringBase(Abstraction abs) {
+				Type t = abs.getAccessPath().getBaseType();
+				return t instanceof PrimType
+						|| (TypeUtils.isStringType(t) && !abs.getAccessPath().getCanHaveImmutableAliases());
+			}
+
+			private boolean isPrimitiveOrStringType(Type t) {
+				return t instanceof PrimType || TypeUtils.isStringType(t);
+			}
 		};
 	}
 

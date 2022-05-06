@@ -21,7 +21,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 /**
  * contain tests which check taint propagation for static variables
  */
-public class StaticTests extends JUnitTests {
+public abstract class StaticTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void staticTest() {
@@ -96,4 +96,13 @@ public class StaticTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
+	@Test(timeout = 300000)
+	public void staticInitTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		onlyBackwards(infoflow, "Needs explicit clinit modelling");
+		epoints.add("<soot.jimple.infoflow.test.StaticTestCode: void staticInitTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
 }

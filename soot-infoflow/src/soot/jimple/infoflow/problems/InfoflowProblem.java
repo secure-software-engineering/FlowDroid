@@ -50,7 +50,6 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
-import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
@@ -61,17 +60,9 @@ import soot.jimple.infoflow.util.TypeUtils;
 
 public class InfoflowProblem extends AbstractInfoflowProblem {
 
-	private final PropagationRuleManager propagationRules;
-
-	protected final TaintPropagationResults results;
-
 	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
-		super(manager);
-
-		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
-		this.results = new TaintPropagationResults(manager);
-		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
+		super(manager, zeroValue, ruleManagerFactory);
 	}
 
 	@Override
@@ -509,11 +500,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
 							Collection<Abstraction> callerD1s) {
-						Set<Abstraction> res = computeTargetsInternal(source, callerD1s);
+						Set<Abstraction> res = computeTargetsInternal(source, d1, callerD1s);
 						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction source,
+					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -548,7 +539,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, newSource,
+						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, calleeD1, newSource,
 								(Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
 						if (killAll.value)
 							return null;
@@ -874,7 +865,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								res.add(newSource);
 						}
 
-						if (callee.isNative())
+						if (callee.isNative() && ncHandler != null)
 							for (Value callVal : callArgs)
 								if (callVal == newSource.getAccessPath().getPlainValue()) {
 									// java uses call by value, but fields of
@@ -1005,7 +996,17 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									if (newAP != null)
 										res.add(newAP);
 								}
-							} else if (ie.getArgCount() == paramLocals.length) {
+							} else if (i < paramLocals.length) {
+								// Sometimes callers have more arguments than the callee parameters.
+								// For example, this is the case on a call from
+								// sendMessageDelayed(android.os.Message, int)
+								// to the callee handler handleMessage(android.os.Message message). The delay is
+								// handled
+								// native and not present in the call-graph.
+								// In this case, we just break out of the loop as no more params are left to be
+								// mapped
+								// into the callee
+
 								// Taint the corresponding parameter local in the callee
 								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[i]);
 								if (newAP != null)
@@ -1017,28 +1018,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return res;
 			}
 		};
-	}
-
-	@Override
-	public boolean autoAddZero() {
-		return false;
-	}
-
-	/**
-	 * Gets the results of the data flow analysis
-	 */
-	public TaintPropagationResults getResults() {
-		return this.results;
-	}
-
-	/**
-	 * Gets the rules that FlowDroid uses internally to conduct specific analysis
-	 * tasks such as handling sources or sinks
-	 * 
-	 * @return The propagation rule manager
-	 */
-	public PropagationRuleManager getPropagationRules() {
-		return propagationRules;
 	}
 
 }

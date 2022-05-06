@@ -16,12 +16,13 @@ import java.util.List;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
-/**
- *  test taint propagation in vectors
- */
-public class VectorTests extends JUnitTests {
 
-	@Test(timeout=300000)
+/**
+ * test taint propagation in vectors
+ */
+public abstract class VectorTests extends JUnitTests {
+
+	@Test(timeout = 300000)
 	public void vectorRWPos0Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -30,7 +31,7 @@ public class VectorTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void vectorRWPos1Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -39,7 +40,7 @@ public class VectorTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void vIteratorPos0Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -47,8 +48,8 @@ public class VectorTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-	
-	@Test(timeout=300000)
+
+	@Test(timeout = 300000)
 	public void vIteratorPos1Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -57,7 +58,7 @@ public class VectorTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void concreteVIteratorTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -66,7 +67,7 @@ public class VectorTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void concreteNegativeTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

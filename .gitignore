@@ -1,3 +1,4 @@
+soot-infoflow/jimpleCode/
 soot-infoflow-summaries/build/
 soot-infoflow-summaries/target/
 /.metadata
@@ -5,4 +6,3 @@ soot-infoflow-summaries/target/
 .idea/
 *.iml
 target/
-*/target

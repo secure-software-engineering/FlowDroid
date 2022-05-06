@@ -20,42 +20,42 @@ import soot.jimple.infoflow.IInfoflow;
 /**
  * cover taint propagation within inherited classes
  */
-public class InheritanceTests extends JUnitTests {
-	
-	@Test(timeout=300000)
-    public void defaultlifecycle2Test(){
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testInheritance1()>");
+public abstract class InheritanceTests extends JUnitTests {
+
+	@Test(timeout = 300000)
+	public void defaultlifecycle2Test() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testInheritance1()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-    }
-	
-	@Test(timeout=300000)
-    public void inheritanceTestSpecial(){
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testInheritance2()>");
+	}
+
+	@Test(timeout = 300000)
+	public void inheritanceTestSpecial() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testInheritance2()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-    }
-	
-	@Test(timeout=300000)
-    public void staticInheritanceTest(){
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testWithStaticInheritance()>");
+	}
+
+	@Test(timeout = 300000)
+	public void staticInheritanceTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testWithStaticInheritance()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-    }
-	
-	@Test(timeout=300000)
-    public void fieldInheritanceTest(){
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testWithFieldInheritance()>");
+	}
+
+	@Test(timeout = 300000)
+	public void fieldInheritanceTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.InheritanceTestCode: void testWithFieldInheritance()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-    }
+	}
 
 }

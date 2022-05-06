@@ -10,15 +10,8 @@
  ******************************************************************************/
 package soot.jimple.infoflow.solver.cfg;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.cache.CacheLoader;
@@ -44,10 +37,8 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
 import soot.toolkits.exceptions.ThrowableSet;
-import soot.toolkits.graph.DirectedGraph;
-import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.*;
 import soot.toolkits.graph.ExceptionalUnitGraph.ExceptionDest;
-import soot.toolkits.graph.MHGPostDominatorsFinder;
 
 /**
  * Interprocedural control-flow graph for the infoflow solver
@@ -68,6 +59,22 @@ public class InfoflowCFG implements IInfoflowCFG {
 	protected final Map<SootMethod, Boolean> methodSideEffects = new ConcurrentHashMap<SootMethod, Boolean>();
 
 	protected final BiDiInterproceduralCFG<Unit, SootMethod> delegate;
+
+	protected final LoadingCache<Unit, UnitContainer> unitsToDominator = IDESolver.DEFAULT_CACHE_BUILDER
+			.build(new CacheLoader<Unit, UnitContainer>() {
+				@Override
+				public UnitContainer load(Unit unit) throws Exception {
+					SootMethod method = getMethodOf(unit);
+					DirectedGraph<Unit> graph = delegate.getOrCreateUnitGraph(method);
+
+					MHGDominatorsFinder<Unit> dominatorFinder = new MHGDominatorsFinder<Unit>(graph);
+					Unit dom = dominatorFinder.getImmediateDominator(unit);
+					if (dom == null)
+						return new UnitContainer(method);
+					else
+						return new UnitContainer(dom);
+				}
+			});
 
 	protected final LoadingCache<Unit, UnitContainer> unitToPostdominator = IDESolver.DEFAULT_CACHE_BUILDER
 			.build(new CacheLoader<Unit, UnitContainer>() {
@@ -144,6 +151,11 @@ public class InfoflowCFG implements IInfoflowCFG {
 	@Override
 	public UnitContainer getPostdominatorOf(Unit u) {
 		return unitToPostdominator.getUnchecked(u);
+	}
+
+	@Override
+	public UnitContainer getDominatorOf(Unit u) {
+		return unitsToDominator.getUnchecked(u);
 	}
 
 	// delegate methods follow
@@ -521,6 +533,16 @@ public class InfoflowCFG implements IInfoflowCFG {
 	}
 
 	@Override
+	public List<Unit> getConditionalBranchIntraprocedural(Unit callSite) {
+		return null;
+	}
+
+	@Override
+	public List<Unit> getConditionalBranchesInterprocedural(Unit unit) {
+		return null;
+	}
+
+	@Override
 	public boolean isReachable(Unit u) {
 		return delegate.isReachable(u);
 	}
@@ -601,6 +623,9 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 		unitToPostdominator.invalidateAll();
 		unitToPostdominator.cleanUp();
+
+		unitsToDominator.invalidateAll();
+		unitsToDominator.cleanUp();
 	}
 
 }

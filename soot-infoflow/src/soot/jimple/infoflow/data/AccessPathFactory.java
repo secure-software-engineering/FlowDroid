@@ -33,6 +33,70 @@ public class AccessPathFactory {
 	private final InfoflowConfiguration config;
 
 	/**
+	 * Specialized pair class for field bases
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static class BasePair {
+
+		private final SootField[] fields;
+		private final Type[] types;
+		private int hashCode = 0;
+
+		private BasePair(SootField[] fields, Type[] types) {
+			this.fields = fields;
+			this.types = types;
+
+			// Check whether this base makes sense
+			if (fields == null || fields.length == 0)
+				throw new RuntimeException("A base must contain at least one field");
+		}
+
+		public SootField[] getFields() {
+			return this.fields;
+		}
+
+		public Type[] getTypes() {
+			return this.types;
+		}
+
+		@Override
+		public int hashCode() {
+			if (hashCode == 0) {
+				final int prime = 31;
+				int result = 1;
+				result = prime * result + Arrays.hashCode(fields);
+				result = prime * result + Arrays.hashCode(types);
+				hashCode = result;
+			}
+			return hashCode;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			BasePair other = (BasePair) obj;
+			if (!Arrays.equals(fields, other.fields))
+				return false;
+			if (!Arrays.equals(types, other.types))
+				return false;
+			return true;
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(fields);
+		}
+
+	}
+
+	/**
 	 * Creates a new instance of the {@link AccessPathFactory} class
 	 * 
 	 * @param config The FlowDroid configuration object

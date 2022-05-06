@@ -35,7 +35,7 @@ import soot.jimple.infoflow.taintWrappers.AbstractTaintWrapper;
 /**
  * tests aliasing of heap references
  */
-public class HeapTestsPtsAliasing extends JUnitTests {
+public abstract class HeapTestsPtsAliasing extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void testForEarlyTermination() {
