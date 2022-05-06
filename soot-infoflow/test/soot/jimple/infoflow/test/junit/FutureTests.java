@@ -36,7 +36,7 @@ public abstract class FutureTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
-	// static initialization is not performed correctly on Soot
+	// static initialization is not performed correctly on Soot (forward only)
 	@Test(timeout = 300000)
 	public void staticInit1Test() {
 		IInfoflow infoflow = initInfoflow();

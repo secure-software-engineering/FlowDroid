@@ -105,4 +105,5 @@ public abstract class StaticTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
+
 }
