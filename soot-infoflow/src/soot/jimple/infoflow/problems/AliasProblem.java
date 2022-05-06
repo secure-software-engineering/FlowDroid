@@ -150,7 +150,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				if (leftSideMatches) {
 					// Termination shortcut: If the right side is a value we do
 					// not track, we can stop here.
-					if (!(rightValue instanceof Local || rightValue instanceof FieldRef)) {
+					if (!(rightValue instanceof Local || rightValue instanceof FieldRef
+							|| rightValue instanceof ArrayRef)) {
 						res.add(source);
 						return res;
 					}
