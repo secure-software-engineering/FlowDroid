@@ -511,10 +511,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (source == getZeroValue())
 							return null;
 
-						if (callee.getSignature().equals(
-								"<java.lang.AbstractStringBuilder: java.lang.AbstractStringBuilder append(java.lang.String)>"))
-							System.out.println("x");
-
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(exitStmt, source, manager,
@@ -623,6 +619,15 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										// field is tainted, we can safely
 										// ignore it
 										if (!source.getAccessPath().getTaintSubFields())
+											continue;
+
+										// Primitive types and strings cannot
+										// have aliases and thus never need to
+										// be propagated back
+										if (source.getAccessPath().getBaseType() instanceof PrimType)
+											continue;
+										if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
+												&& !source.getAccessPath().getCanHaveImmutableAliases())
 											continue;
 
 										// If the variable was overwritten
@@ -784,13 +789,23 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (newSource.getAccessPath().isStaticFieldRef())
 							passOn = false;
 
+						boolean isPrimitiveOrString = false;
+						// Primitive types and strings cannot
+						// have aliases and thus never need to
+						// be propagated back
+						if (source.getAccessPath().getBaseType() instanceof PrimType)
+							isPrimitiveOrString = true;
+						if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
+								&& !source.getAccessPath().getCanHaveImmutableAliases())
+							isPrimitiveOrString = true;
+
 						// we only can remove the taint if we step into the
 						// call/return edges
 						// otherwise we will loose taint - see
 						// ArrayTests/arrayCopyTest
 						if (passOn && invExpr instanceof InstanceInvokeExpr
 								&& (manager.getConfig().getInspectSources() || !isSource)
-								&& (manager.getConfig().getInspectSinks() || !isSink)
+								&& (manager.getConfig().getInspectSinks() || !isSink) && !isPrimitiveOrString
 								&& newSource.getAccessPath().isInstanceFieldRef() && (hasValidCallees
 										|| (taintWrapper != null && taintWrapper.isExclusive(iCallStmt, newSource)))) {
 							// If one of the callers does not read the value, we
