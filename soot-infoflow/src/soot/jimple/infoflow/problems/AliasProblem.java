@@ -149,17 +149,15 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// Is the left side overwritten completely?
 				if (leftSideMatches) {
 					// Termination shortcut: If the right side is a value we do
-					// not track,
-					// we can stop here.
-					if (!(rightValue instanceof Local || rightValue instanceof FieldRef))
-						return null;
+					// not track, we can stop here.
+					if (!(rightValue instanceof Local || rightValue instanceof FieldRef)) {
+						res.add(source);
+						return res;
+					}
 				}
 
-				// If we assign a constant, there is no need to track the right
-				// side
-				// any further or do any forward propagation since constants
-				// cannot
-				// carry taint.
+				// If we assign a constant, there is no need to track the right side any further
+				// or do any forward propagation since constants cannot carry taint.
 				if (rightValue instanceof Constant)
 					return res;
 
