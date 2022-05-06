@@ -511,6 +511,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (source == getZeroValue())
 							return null;
 
+						if (callee.getSignature().equals(
+								"<java.lang.AbstractStringBuilder: java.lang.AbstractStringBuilder append(java.lang.String)>"))
+							System.out.println("x");
+
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(exitStmt, source, manager,
@@ -608,21 +612,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 												.getArg(isReflectiveCallSite ? 1 : i);
 
 										// If this is a constant parameter, we
-										// can
-										// safely ignore it
+										// can safely ignore it
 										if (!AccessPath.canContainValue(originalCallArg))
 											continue;
 										if (!isReflectiveCallSite && !manager.getTypeUtils()
 												.checkCast(source.getAccessPath(), originalCallArg.getType()))
-											continue;
-
-										// Primitive types and strings cannot
-										// have aliases and thus never need to
-										// be propagated back
-										if (source.getAccessPath().getBaseType() instanceof PrimType)
-											continue;
-										if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
-												&& !source.getAccessPath().getCanHaveImmutableAliases())
 											continue;
 
 										// If only the object itself, but no
@@ -977,40 +971,40 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 					// check if param is tainted:
-					for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-						if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
-							if (res == null)
-								res = new HashSet<AccessPath>();
+					if (isReflectiveCallSite || ie.getArgCount() == callee.getParameterCount()) {
+						for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+							if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
+								if (res == null)
+									res = new HashSet<AccessPath>();
 
-							// Get the parameter locals if we don't have them yet
-							if (paramLocals == null)
-								paramLocals = callee.getActiveBody().getParameterLocals()
-										.toArray(new Local[callee.getParameterCount()]);
+								// Get the parameter locals if we don't have them yet
+								if (paramLocals == null)
+									paramLocals = callee.getActiveBody().getParameterLocals()
+											.toArray(new Local[callee.getParameterCount()]);
 
-							if (isReflectiveCallSite) {
-								// Taint all parameters in the callee if the argument array of a reflective
-								// method call is tainted
-								for (int j = 0; j < paramLocals.length; j++) {
+								if (isReflectiveCallSite) {
+									// Taint all parameters in the callee if the argument array of a reflective
+									// method call is tainted
+									for (int j = 0; j < paramLocals.length; j++) {
+										AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
+												paramLocals[j], null, false);
+										if (newAP != null)
+											res.add(newAP);
+									}
+								} else if (i < paramLocals.length) {
+									// Sometimes callers have more arguments than the callee parameters. For
+									// example, this is the case on a call from
+									// sendMessageDelayed(android.os.Message, int)
+									// to the callee handler handleMessage(android.os.Message message). The delay is
+									// handled native and not present in the call-graph. In this case, we just break
+									// out of the loop as no more params are left to be mapped into the callee
+
+									// Taint the corresponding parameter local in the callee
 									AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
-											paramLocals[j], null, false);
+											paramLocals[i]);
 									if (newAP != null)
 										res.add(newAP);
 								}
-							} else if (i < paramLocals.length) {
-								// Sometimes callers have more arguments than the callee parameters.
-								// For example, this is the case on a call from
-								// sendMessageDelayed(android.os.Message, int)
-								// to the callee handler handleMessage(android.os.Message message). The delay is
-								// handled
-								// native and not present in the call-graph.
-								// In this case, we just break out of the loop as no more params are left to be
-								// mapped
-								// into the callee
-
-								// Taint the corresponding parameter local in the callee
-								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[i]);
-								if (newAP != null)
-									res.add(newAP);
 							}
 						}
 					}
