@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.RefType;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
@@ -100,6 +103,9 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		logger.info("Launching Messenger Transformer...");
 
 		Chain<SootClass> applicationClasses = Scene.v().getApplicationClasses();
+		Map<String,String> handlerClass= new HashMap<>();
+		Map<String,String> handlerInner= new HashMap<>();
+
 		for (Iterator<SootClass> iter = applicationClasses.snapshotIterator(); iter.hasNext();) {
 			SootClass sootClass = iter.next();
 
@@ -108,55 +114,101 @@ public class IccInstrumenter implements PreAnalysisHandler {
 			List<SootMethod> methodCopyList = new ArrayList<>(sootClass.getMethods());
 			for (SootMethod sootMethod : methodCopyList) {
 				if (sootMethod.isConcrete()) {
-					final Body body = sootMethod.retrieveActiveBody();
-					final LocalGenerator lg = Scene.v().createLocalGenerator(body);
+					final Body body = sootMethod.retrieveActiveBody();				
 
 					// Mark the method as processed
 					if (!processedMethods.add(sootMethod))
 						continue;
 
 					for (Iterator<Unit> unitIter = body.getUnits().snapshotIterator(); unitIter.hasNext();) {
-						Stmt stmt = (Stmt) unitIter.next();
-
-						if (stmt.containsInvokeExpr()) {
-							SootMethod callee = stmt.getInvokeExpr().getMethod();
-
-							// For Messenger.send(), we directly call the respective handler
-							if (callee == smMessengerSend) {
-								Set<SootClass> handlers = MessageHandler.v().getAllHandlers();
-								for (SootClass handler : handlers) {
-									Local handlerLocal = lg.generateLocal(handler.getType());
-
-									Unit newU = Jimple.v().newAssignStmt(handlerLocal,
-											Jimple.v().newNewExpr(handler.getType()));
-									newU.addTag(SimulatedCodeElementTag.TAG);
-									body.getUnits().insertAfter(newU, stmt);
-									instrumentedUnits.put(body, newU);
-
-									SootMethod initMethod = handler.getMethod("void <init>()");
-									Unit initU = Jimple.v().newInvokeStmt(
-											Jimple.v().newSpecialInvokeExpr(handlerLocal, initMethod.makeRef()));
-									initU.addTag(SimulatedCodeElementTag.TAG);
-									body.getUnits().insertAfter(initU, newU);
-									instrumentedUnits.put(body, initU);
-
-									SootMethod hmMethod = handler.getMethod("void handleMessage(android.os.Message)");
-									Unit callHMU = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(
-											handlerLocal, hmMethod.makeRef(), stmt.getInvokeExpr().getArg(0)));
-									callHMU.addTag(SimulatedCodeElementTag.TAG);
-									body.getUnits().insertAfter(callHMU, initU);
-									instrumentedUnits.put(body, callHMU);
+						Unit unit = unitIter.next();
+						Stmt stmt = (Stmt) unit;
+						//+++ collect handler fields signature	
+						if (stmt.containsFieldRef() && stmt.getFieldRef().getType().toString().contains("android.os.Handler")) {
+							if(stmt.getUseBoxes().size() > 1 && handlerInner.get(stmt.getFieldRef().getField().getSignature()) == null)
+								handlerInner.put(stmt.getFieldRef().getField().getSignature(),stmt.getUseBoxes().get(1).getValue().getType().toString());
+							// use value as locator
+							handlerClass.put(sootClass.getName() + ":" + stmt.getDefBoxes().get(0).getValue(),stmt.getFieldRef().getField().getSignature());
+						}
+							
+						if(stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethodRef().getSignature().contains("android.os.Handler")) {
+							//Soot has a access$XXX method that returns private fields in outer class
+							if(stmt.getInvokeExpr().getMethodRef().getName().contains("access")) {
+								Body b = stmt.getInvokeExpr().getMethod().retrieveActiveBody();
+								for (Iterator<Unit> u = b.getUnits().iterator(); u.hasNext();) {
+									Stmt s = (Stmt) u.next();
+									//if the access method return a handler, collect its signature
+									if(s.containsFieldRef() && s.getFieldRef().getType().toString().contains("android.os.Handler"))
+									{
+										if(!stmt.getDefBoxes().isEmpty())
+											handlerClass.put(sootClass.getName() + ":" + stmt.getDefBoxes().get(0).getValue(),s.getFieldRef().getField().getSignature());
+									}
 								}
 							}
-						}
+						}													
 					}
 
 					body.validate();
 				}
 
 			}
-		}
 
+								
+		}
+		//instrument the outerclass
+		for(String sc : handlerClass.keySet())
+			if(sc!=null)
+				generateSendMessage(sc.split(":")[0],handlerClass,handlerInner);
+
+	}
+
+	public void generateSendMessage(String sc,Map<String,String> handlerClass,Map<String,String> handlerInner) {
+		
+		if(sc == null || handlerClass.isEmpty() || handlerInner.isEmpty())
+			return;
+		SootClass sootClass = Scene.v().getSootClass(sc);
+		List<SootMethod> methodCopyList = new ArrayList<>(sootClass.getMethods());
+		for (SootMethod sootMethod : methodCopyList) {
+			if (sootMethod.isConcrete()) {
+				final Body body = sootMethod.retrieveActiveBody();
+				final LocalGenerator lg = Scene.v().createLocalGenerator(body);
+				
+				for (Iterator<Unit> unitIter = body.getUnits().snapshotIterator(); unitIter.hasNext();) {
+					Unit unit = unitIter.next();
+					Stmt stmt = (Stmt) unit;
+					if (stmt.containsInvokeExpr()) {
+						SootMethod callee = stmt.getInvokeExpr().getMethod();
+						
+						// For sendMessage(), we directly call the respective handler.handleMessage()
+						if (callee == smMessengerSend || callee == Scene.v().grabMethod("<android.os.Handler: boolean sendMessage(android.os.Message)>")) {
+							//collect the value for sendMessage()
+							String hc = handlerClass.get(sootClass.getName() + ":" + stmt.getInvokeExpr().getUseBoxes().get(1).getValue().toString());
+							//System.out.println("--1: "+hc);
+							Set<SootClass> handlers = MessageHandler.v().getAllHandlers();								
+							soot.javaToJimple.InitialResolver.v().getNextPrivateAccessCounter();
+							for (SootClass handler : handlers) {
+								// matching the handler and its signature	
+								if(hc != null && handlerInner.get(hc) == handler.getName()) {
+									Local handlerLocal = lg.generateLocal(handler.getType());													
+									SootMethod hmMethod = handler.getMethod("void handleMessage(android.os.Message)");
+									Unit callHMU = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(
+											handlerLocal, hmMethod.makeRef(), stmt.getInvokeExpr().getArg(0)));
+									callHMU.addTag(SimulatedCodeElementTag.TAG);
+									body.getUnits().insertAfter(callHMU, stmt);
+									instrumentedUnits.put(body, callHMU);
+									break;
+								}			
+							}
+						}
+					}	
+												
+					
+				}
+
+				body.validate();
+			}
+		}
+		
 	}
 
 	@Override
