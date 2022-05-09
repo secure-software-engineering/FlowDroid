@@ -57,9 +57,9 @@ import soot.util.ConcurrentHashMultiMap;
  * the IDESolver implementation in Heros for performance reasons.
  * 
  * @param <N> The type of nodes in the interprocedural control-flow graph.
- *        Typically {@link Unit}.
+ *            Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
- *        problem.
+ *            problem.
  * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
@@ -658,8 +658,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
 			return;
 
-		final PathEdge<N, D> edge = new PathEdge<N, D>(sourceVal, target, targetVal);
-		final D existingVal = addFunction(edge);
+		D activeVal = targetVal.getActiveCopy();
+		final PathEdge<N, D> activeEdge = new PathEdge<N, D>(sourceVal, target, activeVal);
+		final PathEdge<N, D> edge = new PathEdge<>(sourceVal, target, targetVal);
+		final D existingVal = addFunction(activeEdge);
 		if (existingVal != null) {
 			if (existingVal != targetVal) {
 				// Check whether we need to retain this abstraction

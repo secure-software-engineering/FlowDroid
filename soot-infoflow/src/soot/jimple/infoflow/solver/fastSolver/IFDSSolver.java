@@ -629,8 +629,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
 			return;
 
-		final PathEdge<N, D> edge = new PathEdge<N, D>(sourceVal, target, targetVal);
-		final D existingVal = addFunction(edge);
+		D activeVal = targetVal.getActiveCopy();
+		PathEdge<N, D> activeEdge = new PathEdge<>(sourceVal, target, activeVal);
+		final PathEdge<N, D> edge = new PathEdge<>(sourceVal, target, targetVal);
+		final D existingVal = addFunction(activeEdge);
 		if (existingVal != null) {
 			if (existingVal != targetVal) {
 				// Check whether we need to retain this abstraction
@@ -646,14 +648,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 				}
 			}
 		} else {
-			// If this is an inactive abstraction and we have already processed
-			// its active counterpart, we can skip this one
-			D activeVal = targetVal.getActiveCopy();
-			if (activeVal != targetVal) {
-				PathEdge<N, D> activeEdge = new PathEdge<>(sourceVal, target, activeVal);
-				if (jumpFunctions.containsKey(activeEdge))
-					return;
-			}
 			scheduleEdgeProcessing(edge);
 		}
 	}
