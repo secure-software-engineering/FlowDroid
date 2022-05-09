@@ -24,8 +24,10 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Value;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.IdentityStmt;
@@ -50,6 +52,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
+import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.jimple.infoflow.values.SimpleConstantValueProvider;
@@ -57,7 +60,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
-public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneSourceAtATimeManager {
+public abstract class BaseSourceSinkManager implements IReversibleSourceSinkManager, IOneSourceAtATimeManager {
 	private final static String GLOBAL_SIG = "--GLOBAL--";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -147,11 +150,6 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	 * @param callbackMethods The list of callback methods whose parameters are
 	 *                        sources through which the application receives data
 	 *                        from the operating system
-	 * @param weakMatching    True for weak matching: If an entry in the list has no
-	 *                        return type, it matches arbitrary return types if the
-	 *                        rest of the method signature is compatible. False for
-	 *                        strong matching: The method signature in the code
-	 *                        exactly match the one in the list.
 	 * @param config          The configuration of the data flow analyzer
 	 */
 	public BaseSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
@@ -270,6 +268,74 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		return null;
 	}
 
+	protected ISourceSinkDefinition getInverseSource(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		// Do we have a statement-specific definition?
+		{
+			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
+			if (def != null)
+				return def;
+		}
+
+		ISourceSinkDefinition def = null;
+		if (sCallSite.containsInvokeExpr()) {
+			// This might be a normal source method
+			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
+
+			// Only difference to getSource
+			if (!SystemClassHandler.v().isTaintVisible(ap, callee))
+				return null;
+
+			def = getSourceDefinition(callee);
+			if (def != null)
+				return def;
+
+			// Check whether we have any of the interfaces on the list
+			final String subSig = callee.getSubSignature();
+			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
+				SootMethod m = i.getMethodUnsafe(subSig);
+				if (m != null) {
+					def = getSourceDefinition(m);
+					if (def != null)
+						return def;
+				}
+			}
+
+			// Ask the CFG in case we don't know any better
+			for (SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
+				def = getSourceDefinition(sm);
+				if (def != null)
+					return def;
+			}
+
+			// If the target method is in a phantom class, we scan the hierarchy
+			// upwards
+			// to see whether we have a sink definition for a parent class
+			if (callee.getDeclaringClass().isPhantom()) {
+				def = findDefinitionInHierarchy(callee, this.sourceMethods);
+				if (def != null)
+					return def;
+			}
+		}
+
+		// This call might read out sensitive data from the UI
+		def = getUISourceDefinition(sCallSite, manager.getICFG());
+		if (def != null)
+			return def;
+
+		// This statement might access a sensitive parameter in a callback
+		// method
+		def = checkCallbackParamSource(sCallSite, manager.getICFG());
+		if (def != null)
+			return def;
+
+		// This statement may read sensitive data from a field
+		def = checkFieldSource(sCallSite, manager.getICFG());
+		if (def != null)
+			return def;
+
+		return null;
+	}
+
 	/**
 	 * Scans the hierarchy of the class containing the given method to find any
 	 * implementations of the same method further up in the hierarchy for which
@@ -319,6 +385,17 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	}
 
 	@Override
+	public SinkInfo getInverseSourceInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		if (oneSourceAtATime) {
+			logger.error("This does not support one source at a time for inverse methods.");
+			return null;
+		}
+
+		ISourceSinkDefinition def = getInverseSource(sCallSite, manager, ap);
+		return def == null ? null : new SinkInfo(def);
+	}
+
+	@Override
 	public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
 		// Do not look for sources in excluded methods
 		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
@@ -328,6 +405,23 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 
 		ISourceSinkDefinition def = getSource(sCallSite, manager.getICFG());
 		return createSourceInfo(sCallSite, manager, def);
+	}
+
+	@Override
+	public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
+		if (oneSourceAtATime) {
+			logger.error("This does not support one source at a time for inverse methods.");
+			return null;
+		}
+
+		// This results in different behavior than in forwards search
+		if (excludedMethods.contains(manager.getICFG().getMethodOf(sCallSite)))
+			return null;
+		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
+			return null;
+
+		ISourceSinkDefinition def = getInverseSink(sCallSite, manager.getICFG());
+		return createInverseSinkInfo(sCallSite, manager, def);
 	}
 
 	protected SourceInfo createSourceInfo(Stmt sCallSite, InfoflowManager manager, ISourceSinkDefinition def) {
@@ -363,6 +457,42 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 			return null;
 	}
 
+	protected SourceInfo createInverseSinkInfo(Stmt sCallSite, InfoflowManager manager, ISourceSinkDefinition def) {
+		if (def == null)
+			return null;
+
+		HashSet<AccessPath> aps = new HashSet<>();
+
+		if (sCallSite.containsInvokeExpr()) {
+			InvokeExpr iExpr = sCallSite.getInvokeExpr();
+
+			// taint parameters
+			for (Value arg : iExpr.getArgs()) {
+				if (!(arg instanceof Constant))
+					aps.add(manager.getAccessPathFactory().createAccessPath(arg, true));
+			}
+
+			// taint base object
+			if (iExpr instanceof InstanceInvokeExpr) {
+				InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iExpr;
+				aps.add(manager.getAccessPathFactory().createAccessPath(iiExpr.getBase(), true));
+			}
+		} else if (sCallSite instanceof AssignStmt) {
+			AssignStmt assignStmt = (AssignStmt) sCallSite;
+
+			// Taint rhs in case of lhs being a sink field
+			for (Value rightVal : BaseSelector.selectBaseList(assignStmt.getRightOp(), true))
+				aps.add(manager.getAccessPathFactory().createAccessPath(rightVal, true));
+		} else if (sCallSite instanceof ReturnStmt) {
+			ReturnStmt retStmt = (ReturnStmt) sCallSite;
+
+			// taint return value
+			aps.add(manager.getAccessPathFactory().createAccessPath(retStmt.getOp(), true));
+		}
+
+		return new SourceInfo(def, aps);
+	}
+
 	/**
 	 * Checks whether the given method is registered as a source method. If so,
 	 * returns the corresponding definition, otherwise null.
@@ -377,6 +507,12 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		return this.sourceMethods.get(method);
 	}
 
+	protected ISourceSinkDefinition getInverseSourceMethod(SootMethod method) {
+		if (oneSourceAtATime && (osaatType != SourceType.MethodCall || currentSource != method))
+			return null;
+		return this.sinkMethods.get(method);
+	}
+
 	/**
 	 * Checks whether the given method is registered as a source method
 	 *
@@ -384,13 +520,17 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 	 * @return True if the given method is a source method, otherwise false
 	 */
 	protected ISourceSinkDefinition getSourceDefinition(SootMethod method) {
+		return getDefFromMap(this.sourceMethods, method);
+	}
+
+	private ISourceSinkDefinition getDefFromMap(Map<SootMethod, ISourceSinkDefinition> map, SootMethod method) {
 		if (oneSourceAtATime) {
 			if (osaatType == SourceType.MethodCall && currentSource == method)
-				return this.sourceMethods.get(method);
+				return map.get(method);
 			else
 				return null;
 		} else
-			return this.sourceMethods.get(method);
+			return map.get(method);
 	}
 
 	/**
@@ -485,6 +625,69 @@ public abstract class BaseSourceSinkManager implements ISourceSinkManager, IOneS
 		def = checkFieldSource(sCallSite, cfg);
 		if (def != null)
 			return def;
+
+		return null;
+	}
+
+	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
+		// Do we have a statement-specific definition?
+		{
+			ISourceSinkDefinition def = this.sinkStatements.get(sCallSite);
+			if (def != null)
+				return def;
+		}
+
+		if ((!oneSourceAtATime || osaatType == SourceType.MethodCall) && sCallSite.containsInvokeExpr()) {
+			// Check whether the taint is even visible inside the callee
+			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
+
+			// Do we have a direct hit?
+			{
+				ISourceSinkDefinition def = this.sinkMethods.get(callee);
+				if (def != null)
+					return def;
+			}
+
+			final String subSig = callee.getSubSignature();
+
+			// Check whether we have any of the interfaces on the list
+			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
+				if (i.declaresMethod(subSig)) {
+					ISourceSinkDefinition def = this.sinkMethods.get(i.getMethod(subSig));
+					if (def != null)
+						return def;
+				}
+			}
+
+			// Ask the CFG in case we don't know any better
+			for (SootMethod sm : cfg.getCalleesOfCallAt(sCallSite)) {
+				ISourceSinkDefinition def = this.sinkMethods.get(sm);
+				if (def != null)
+					return def;
+			}
+
+			// If the target method is in a phantom class, we scan the hierarchy
+			// upwards to see whether we have a sink definition for a parent
+			// class
+			if (callee.getDeclaringClass().isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
+				ISourceSinkDefinition def = findDefinitionInHierarchy(callee, this.sinkMethods);
+				if (def != null)
+					return def;
+			}
+			return null;
+
+		} else if (sCallSite instanceof AssignStmt) {
+			// Check if the target is a sink field
+			AssignStmt assignStmt = (AssignStmt) sCallSite;
+			if (assignStmt.getLeftOp() instanceof FieldRef) {
+				FieldRef fieldRef = (FieldRef) assignStmt.getLeftOp();
+				ISourceSinkDefinition def = this.sinkFields.get(fieldRef.getField());
+				if (def != null)
+					return def;
+			}
+		} else if (sCallSite instanceof ReturnStmt) {
+			return sinkReturnMethods.get(cfg.getMethodOf(sCallSite));
+		}
 
 		return null;
 	}

@@ -25,7 +25,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
  * @author Steven Arzt
  * 
  */
-public class ContextSensitivityTests extends JUnitTests {
+public abstract class ContextSensitivityTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void contextSensitivityTest1() {

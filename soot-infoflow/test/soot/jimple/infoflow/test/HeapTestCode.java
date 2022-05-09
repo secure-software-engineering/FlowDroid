@@ -749,6 +749,14 @@ public class HeapTestCode {
 		cm.publish(d.b);
 	}
 
+	public void singleAliasTest() {
+		A a = new A();
+		A b = alias(a);
+		a.b = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(b.b);
+	}
+
 	private int intData;
 
 	private void setIntData() {

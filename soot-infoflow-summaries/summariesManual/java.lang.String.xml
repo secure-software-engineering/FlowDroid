@@ -144,7 +144,7 @@
 					<to sourceSinkType="Return" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

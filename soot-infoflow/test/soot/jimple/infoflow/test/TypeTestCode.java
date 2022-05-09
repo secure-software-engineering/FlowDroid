@@ -184,6 +184,14 @@ public class TypeTestCode {
 		callIt(b);
 	}
 
+	public void callTargetTest1Reduced() {
+		ConnectionManager cm = new ConnectionManager();
+		StringBuilder sb = new StringBuilder();
+		String tainted = TelephonyManager.getDeviceId();
+		sb.append(tainted);
+		cm.publish(sb.toString());
+	}
+
 	public void arrayObjectCastTest() {
 		Object obj = Bundle.get("foo");
 		A foo2[] = (A[]) obj;
@@ -433,6 +441,17 @@ public class TypeTestCode {
 		cm.publish((String) d.arr[0]);
 	}
 
+	public void aliasTypeTestReduced() {
+		X b = new X();
+		b.arr = new Object[2];
+
+		X c = b;
+		b.arr[0] = TelephonyManager.getDeviceId();
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish((String) c.arr[0]);
+	}
+
 	public void aliasTypeTest2() {
 		X b = new X();
 		b.arr = new Object[2];
@@ -592,6 +611,16 @@ public class TypeTestCode {
 		arr2[0] = id.charAt(0);
 		int[] arr3 = arr[0];
 		ConnectionManager cm = new ConnectionManager();
+		cm.publish(arr3[0]);
+	}
+
+	public void multiDimensionalArrayTest2Reduced() {
+		ConnectionManager cm = new ConnectionManager();
+		int[][] arr = new int[1][1];
+		String id = TelephonyManager.getDeviceId();
+		int[] arr2 = arr[0];
+		arr2[0] = id.charAt(0);
+		int[] arr3 = arr[0];
 		cm.publish(arr3[0]);
 	}
 

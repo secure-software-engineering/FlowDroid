@@ -201,6 +201,16 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.lang.String getString(java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.lang.String getString(java.lang.String,java.lang.String)">
 			<flows>
 				<flow isAlias="false">

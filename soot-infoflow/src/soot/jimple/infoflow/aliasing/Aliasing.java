@@ -101,7 +101,21 @@ public class Aliasing {
 	 * @return The actually matched access path if a matching was possible,
 	 *         otherwise null
 	 */
-	private AccessPath getReferencedAPBase(AccessPath taintedAP, SootField[] referencedFields) {
+	public AccessPath getReferencedAPBase(AccessPath taintedAP, SootField[] referencedFields) {
+		return getReferencedAPBase(taintedAP, referencedFields, manager);
+	}
+
+	/**
+	 * Matches the given access path against the given array of fields
+	 * 
+	 * @param taintedAP        The tainted access paths
+	 * @param referencedFields The array of referenced access paths
+	 * @param manager          The data flow manager
+	 * @return The actually matched access path if a matching was possible,
+	 *         otherwise null
+	 */
+	public static AccessPath getReferencedAPBase(AccessPath taintedAP, SootField[] referencedFields,
+			InfoflowManager manager) {
 		final Collection<AccessPathFragment[]> bases = taintedAP.isStaticFieldRef()
 				? manager.getAccessPathFactory().getBaseForType(taintedAP.getFirstFieldType())
 				: manager.getAccessPathFactory().getBaseForType(taintedAP.getBaseType());
@@ -234,7 +248,7 @@ public class Aliasing {
 		// Get the field set from the value
 		SootField[] fields = val instanceof FieldRef ? new SootField[] { ((FieldRef) val).getField() }
 				: new SootField[0];
-		return getReferencedAPBase(ap, fields);
+		return getReferencedAPBase(ap, fields, manager);
 	}
 
 	/**
@@ -332,6 +346,36 @@ public class Aliasing {
 		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType);
 	}
 
+	public boolean canHaveAliasesRightSide(Stmt stmt, Value val, Abstraction source) {
+		if (stmt instanceof DefinitionStmt) {
+			// Arrays are heap objects
+			if (val instanceof ArrayRef)
+				return true;
+			if (val instanceof FieldRef)
+				return true;
+		}
+
+		// Primitive types or constants do not have aliases
+		if (val instanceof InstanceFieldRef) {
+			InstanceFieldRef instanceFieldRef = (InstanceFieldRef) val;
+			Value base = instanceFieldRef.getBase();
+			if (base.getType() instanceof PrimType)
+				return false;
+		} else if (val instanceof Local)
+			if (val.getType() instanceof PrimType)
+				return false;
+
+		if (val instanceof Constant)
+			return false;
+
+		// String cannot have aliases, unless we process a delayed constructor call
+		if (TypeUtils.isStringType(val.getType()) && !isStringConstructorCall(stmt)
+				&& !source.getAccessPath().getCanHaveImmutableAliases())
+			return false;
+
+		return val instanceof FieldRef || val instanceof Local;
+	}
+
 	/**
 	 * Checks whether the given statement is a call to a String constructor
 	 * 
@@ -375,7 +419,7 @@ public class Aliasing {
 	/**
 	 * Checks whether the given base value matches the base of the given taint
 	 * abstraction
-	 * 
+	 *
 	 * @param baseValue The value to check
 	 * @param source    The taint abstraction to check
 	 * @return True if the given value has the same base value as the given taint

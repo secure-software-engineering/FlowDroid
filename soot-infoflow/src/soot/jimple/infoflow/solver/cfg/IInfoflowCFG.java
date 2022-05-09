@@ -5,6 +5,7 @@
 package soot.jimple.infoflow.solver.cfg;
 
 import java.util.Collection;
+import java.util.List;
 
 import soot.SootField;
 import soot.SootMethod;
@@ -92,9 +93,37 @@ public interface IInfoflowCFG extends BiDiInterproceduralCFG<Unit, SootMethod> {
 	public UnitContainer getPostdominatorOf(Unit u);
 
 	/**
+	 * Gets the dominator of the given unit. If this unit is a conditional, the
+	 * dominator is the join point above both branches of the conditional.
+	 *
+	 * @param u
+	 *            The unit for which to get the postdominator.
+	 * @return The postdominator of the given unit
+	 */
+	public UnitContainer getDominatorOf(Unit u);
+
+	/**
+	 * Reconstructs if the unit is inside a conditional.
+	 * Needed for implicit backwards on an unbalanced return into a method.
+	 *
+	 * @param callSite The unit to start the search at
+	 * @return The same-level conditional
+	 */
+	public List<Unit> getConditionalBranchIntraprocedural(Unit callSite);
+
+	/**
+	 * Reconstructs the conditionals a taint could possibly reach.
+	 * Needed for implicit backward flows to model sink calls inside a callee
+	 *
+	 * @param unit start unit, possibly a sink
+	 * @return List of units with the context appended
+	 */
+	public List<Unit> getConditionalBranchesInterprocedural(Unit unit);
+
+	/**
 	 * Checks whether the given static field is read inside the given method or one
 	 * of its transitive callees.
-	 * 
+	 *
 	 * @param method
 	 *            The method to check
 	 * @param variable
@@ -221,5 +250,4 @@ public interface IInfoflowCFG extends BiDiInterproceduralCFG<Unit, SootMethod> {
 	 * on the functional behavior of the class.
 	 */
 	public void purge();
-
 }

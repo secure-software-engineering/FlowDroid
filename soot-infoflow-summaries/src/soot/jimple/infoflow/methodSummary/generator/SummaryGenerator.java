@@ -633,7 +633,7 @@ public class SummaryGenerator {
 		final SummarySourceSinkManager sourceSinkManager = createSourceSinkManager(methodSig, parentClass);
 		final MethodSummaries summaries = new MethodSummaries();
 
-		final SummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
+		final ISummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
 
 		final SummaryTaintPropagationHandler listener = new SummaryTaintPropagationHandler(methodSig, parentClass,
 				gapManager);
@@ -717,8 +717,8 @@ public class SummaryGenerator {
 	 * 
 	 * @return The newly constructed Infoflow instance
 	 */
-	protected SummaryInfoflow getInfoflowInstance() {
-		SummaryInfoflow infoflow = new SummaryInfoflow();
+	protected ISummaryInfoflow getInfoflowInstance() {
+		ISummaryInfoflow infoflow = new SummaryInfoflow();
 		infoflow.setPathBuilderFactory(new DefaultPathBuilderFactory(config.getPathConfiguration()) {
 
 			@Override
@@ -749,10 +749,10 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The initialized data flow engine
 	 */
-	protected SummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
+	protected ISummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
 		// Disable the default path reconstruction. However, still make sure to
 		// retain the contents of the callees.
-		SummaryInfoflow iFlow = getInfoflowInstance();
+		ISummaryInfoflow iFlow = getInfoflowInstance();
 		InfoflowConfiguration.setMergeNeighbors(true);
 		iFlow.setConfig(config);
 

@@ -13,7 +13,6 @@ package soot.jimple.infoflow.android.test.droidBench;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -85,11 +84,15 @@ public class AndroidSpecificTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	@Ignore // not supported, would require taint tracking via files
+	 // not supported, would require taint tracking via files
 	public void runTestPrivateDataLeak3() throws IOException, XmlPullParserException {
+		int expected = 2;
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
+			expected = 1;
+
 		InfoflowResults res = analyzeAPKFile("AndroidSpecific/PrivateDataLeak3.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(2, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout = 300000)

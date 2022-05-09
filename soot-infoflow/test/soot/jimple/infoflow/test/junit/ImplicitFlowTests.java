@@ -32,7 +32,7 @@ import soot.options.Options;
  * 
  * @author Steven Arzt
  */
-public class ImplicitFlowTests extends JUnitTests {
+public abstract class ImplicitFlowTests extends JUnitTests {
 
 	@Override
 	protected IInfoflow initInfoflow() {
@@ -680,4 +680,15 @@ public class ImplicitFlowTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
+	@Test(timeout = 300000)
+	public void nestedIfTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSinks(false);
+		infoflow.getConfig().setCodeEliminationMode(InfoflowConfiguration.CodeEliminationMode.NoCodeElimination);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ImplicitFlowTestCode: void nestedIfTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
 }

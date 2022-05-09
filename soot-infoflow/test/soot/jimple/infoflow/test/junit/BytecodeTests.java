@@ -23,13 +23,13 @@ import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 
 /**
- * Bytecode-specific tests. We do not analyze code that we compile from Java, but
- * specifically craft Jimple code with the properties we need.
+ * Bytecode-specific tests. We do not analyze code that we compile from Java,
+ * but specifically craft Jimple code with the properties we need.
  * 
  * @author Steven Arzt
  *
  */
-public class BytecodeTests extends JUnitTests {
+public abstract class BytecodeTests extends JUnitTests {
 
 	public static class Container {
 		public String data;
@@ -41,6 +41,7 @@ public class BytecodeTests extends JUnitTests {
 
 	/**
 	 * Source method for the test cases
+	 * 
 	 * @return A dummy container
 	 */
 	public Container source() {
@@ -49,6 +50,7 @@ public class BytecodeTests extends JUnitTests {
 
 	/**
 	 * Sink method for the test cases
+	 * 
 	 * @param c A dummy container
 	 */
 	public void sink(Container c) {

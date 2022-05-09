@@ -17,13 +17,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
+
 /**
  * test taint propagation in queues
  */
 @Ignore
-public class QueueTests extends JUnitTests {
+public abstract class QueueTests extends JUnitTests {
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void concreteSynchronousQueueTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -32,7 +33,7 @@ public class QueueTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void concreteSynchronousQueueNegativeTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

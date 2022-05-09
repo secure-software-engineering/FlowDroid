@@ -50,7 +50,6 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
-import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
@@ -61,17 +60,9 @@ import soot.jimple.infoflow.util.TypeUtils;
 
 public class InfoflowProblem extends AbstractInfoflowProblem {
 
-	private final PropagationRuleManager propagationRules;
-
-	protected final TaintPropagationResults results;
-
 	public InfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
-		super(manager);
-
-		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
-		this.results = new TaintPropagationResults(manager);
-		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
+		super(manager, zeroValue, ruleManagerFactory);
 	}
 
 	@Override
@@ -509,11 +500,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
 							Collection<Abstraction> callerD1s) {
-						Set<Abstraction> res = computeTargetsInternal(source, callerD1s);
+						Set<Abstraction> res = computeTargetsInternal(source, d1, callerD1s);
 						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
 					}
 
-					private Set<Abstraction> computeTargetsInternal(Abstraction source,
+					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -548,7 +539,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								return null;
 
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
-						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, newSource,
+						Set<Abstraction> res = propagationRules.applyReturnFlowFunction(callerD1s, calleeD1, newSource,
 								(Stmt) exitStmt, (Stmt) retSite, (Stmt) callSite, killAll);
 						if (killAll.value)
 							return null;
@@ -617,12 +608,17 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 												.getArg(isReflectiveCallSite ? 1 : i);
 
 										// If this is a constant parameter, we
-										// can
-										// safely ignore it
+										// can safely ignore it
 										if (!AccessPath.canContainValue(originalCallArg))
 											continue;
 										if (!isReflectiveCallSite && !manager.getTypeUtils()
 												.checkCast(source.getAccessPath(), originalCallArg.getType()))
+											continue;
+
+										// If only the object itself, but no
+										// field is tainted, we can safely
+										// ignore it
+										if (!source.getAccessPath().getTaintSubFields())
 											continue;
 
 										// Primitive types and strings cannot
@@ -632,12 +628,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 											continue;
 										if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
 												&& !source.getAccessPath().getCanHaveImmutableAliases())
-											continue;
-
-										// If only the object itself, but no
-										// field is tainted, we can safely
-										// ignore it
-										if (!source.getAccessPath().getTaintSubFields())
 											continue;
 
 										// If the variable was overwritten
@@ -799,13 +789,23 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (newSource.getAccessPath().isStaticFieldRef())
 							passOn = false;
 
+						boolean isPrimitiveOrString = false;
+						// Primitive types and strings cannot
+						// have aliases and thus never need to
+						// be propagated back
+						if (source.getAccessPath().getBaseType() instanceof PrimType)
+							isPrimitiveOrString = true;
+						if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
+								&& !source.getAccessPath().getCanHaveImmutableAliases())
+							isPrimitiveOrString = true;
+
 						// we only can remove the taint if we step into the
 						// call/return edges
 						// otherwise we will loose taint - see
 						// ArrayTests/arrayCopyTest
 						if (passOn && invExpr instanceof InstanceInvokeExpr
 								&& (manager.getConfig().getInspectSources() || !isSource)
-								&& (manager.getConfig().getInspectSinks() || !isSink)
+								&& (manager.getConfig().getInspectSinks() || !isSink) && !isPrimitiveOrString
 								&& newSource.getAccessPath().isInstanceFieldRef() && (hasValidCallees
 										|| (taintWrapper != null && taintWrapper.isExclusive(iCallStmt, newSource)))) {
 							// If one of the callers does not read the value, we
@@ -874,7 +874,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								res.add(newSource);
 						}
 
-						if (callee.isNative())
+						if (callee.isNative() && ncHandler != null)
 							for (Value callVal : callArgs)
 								if (callVal == newSource.getAccessPath().getPlainValue()) {
 									// java uses call by value, but fields of
@@ -986,30 +986,40 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 					// check if param is tainted:
-					for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-						if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
-							if (res == null)
-								res = new HashSet<AccessPath>();
+					if (isReflectiveCallSite || ie.getArgCount() == callee.getParameterCount()) {
+						for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+							if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
+								if (res == null)
+									res = new HashSet<AccessPath>();
 
-							// Get the parameter locals if we don't have them yet
-							if (paramLocals == null)
-								paramLocals = callee.getActiveBody().getParameterLocals()
-										.toArray(new Local[callee.getParameterCount()]);
+								// Get the parameter locals if we don't have them yet
+								if (paramLocals == null)
+									paramLocals = callee.getActiveBody().getParameterLocals()
+											.toArray(new Local[callee.getParameterCount()]);
 
-							if (isReflectiveCallSite) {
-								// Taint all parameters in the callee if the argument array of a reflective
-								// method call is tainted
-								for (int j = 0; j < paramLocals.length; j++) {
+								if (isReflectiveCallSite) {
+									// Taint all parameters in the callee if the argument array of a reflective
+									// method call is tainted
+									for (int j = 0; j < paramLocals.length; j++) {
+										AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
+												paramLocals[j], null, false);
+										if (newAP != null)
+											res.add(newAP);
+									}
+								} else if (i < paramLocals.length) {
+									// Sometimes callers have more arguments than the callee parameters. For
+									// example, this is the case on a call from
+									// sendMessageDelayed(android.os.Message, int)
+									// to the callee handler handleMessage(android.os.Message message). The delay is
+									// handled native and not present in the call-graph. In this case, we just break
+									// out of the loop as no more params are left to be mapped into the callee
+
+									// Taint the corresponding parameter local in the callee
 									AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
-											paramLocals[j], null, false);
+											paramLocals[i]);
 									if (newAP != null)
 										res.add(newAP);
 								}
-							} else if (ie.getArgCount() == paramLocals.length) {
-								// Taint the corresponding parameter local in the callee
-								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[i]);
-								if (newAP != null)
-									res.add(newAP);
 							}
 						}
 					}
@@ -1017,28 +1027,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				return res;
 			}
 		};
-	}
-
-	@Override
-	public boolean autoAddZero() {
-		return false;
-	}
-
-	/**
-	 * Gets the results of the data flow analysis
-	 */
-	public TaintPropagationResults getResults() {
-		return this.results;
-	}
-
-	/**
-	 * Gets the rules that FlowDroid uses internally to conduct specific analysis
-	 * tasks such as handling sources or sinks
-	 * 
-	 * @return The propagation rule manager
-	 */
-	public PropagationRuleManager getPropagationRules() {
-		return propagationRules;
 	}
 
 }

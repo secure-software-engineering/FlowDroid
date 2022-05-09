@@ -33,7 +33,7 @@ import soot.options.Options;
  * @author Christian
  *
  */
-public class StringTests extends JUnitTests {
+public abstract class StringTests extends JUnitTests {
 
 	@Test(timeout = 600000)
 	public void multipleSourcesTest() {

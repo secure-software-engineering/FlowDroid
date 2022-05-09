@@ -20,7 +20,7 @@ import soot.options.Options;
  * 
  * @author Steven Arzt
  */
-public class ExceptionTests extends JUnitTests {
+public abstract class ExceptionTests extends JUnitTests {
 
 	@Test
 	public void exceptionControlFlowTest1() {

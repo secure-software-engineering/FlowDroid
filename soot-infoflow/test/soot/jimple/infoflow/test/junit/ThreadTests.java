@@ -14,7 +14,7 @@ import soot.jimple.infoflow.IInfoflow;
  * @author Steven Arzt
  *
  */
-public class ThreadTests extends JUnitTests {
+public abstract class ThreadTests extends JUnitTests {
 
 	private static final String SOURCE_STRING_PWD = "<soot.jimple.infoflow.test.android.AccountManager: java.lang.String getPassword()>";
 
