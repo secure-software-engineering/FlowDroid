@@ -366,6 +366,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			for (Pair<N, D> entry : endSumm) {
 				N eP = entry.getO1();
 				D d4 = entry.getO2();
+
+				// We must acknowledge the incoming abstraction from the other path
+				d4.addNeighbor(d3);
+
 				// for each return site
 				for (N retSiteN : returnSiteNs) {
 					// compute return-flow function
