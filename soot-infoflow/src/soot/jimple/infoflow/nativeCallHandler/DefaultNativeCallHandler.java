@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import soot.Value;
+import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
@@ -28,12 +29,6 @@ public class DefaultNativeCallHandler extends AbstractNativeCallHandler {
 	@Override
 	public Set<Abstraction> getTaintedValues(Stmt call, Abstraction source, Value[] params) {
 		// check some evaluated methods:
-
-		// arraycopy:
-		// arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
-		// Copies an array from the specified source array, beginning at the specified
-		// position,
-		// to the specified position of the destination array.
 		if (source.isAbstractionActive()) {
 			Value taintedValue = source.getAccessPath().getPlainValue();
 			switch (call.getInvokeExpr().getMethodRef().getSignature()) {
@@ -49,10 +44,11 @@ public class DefaultNativeCallHandler extends AbstractNativeCallHandler {
 				}
 				break;
 			case SIG_NEW_ARRAY:
-				if (params[1].equals(taintedValue)) {
+				if (params[1].equals(taintedValue) && call instanceof DefinitionStmt) {
+					DefinitionStmt defStmt = (DefinitionStmt) call;
 					if (manager.getTypeUtils().checkCast(source.getAccessPath(), params[1].getType())) {
 						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-								params[1], source.getAccessPath().getBaseType(), false, true, ArrayTaintType.Length);
+								defStmt.getLeftOp(), null, false, true, ArrayTaintType.Length);
 						Abstraction abs = source.deriveNewAbstraction(ap, call);
 						abs.setCorrespondingCallSite(call);
 						return Collections.singleton(abs);
