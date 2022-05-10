@@ -15,6 +15,7 @@ package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +44,7 @@ import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.SolverPeerGroup;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
@@ -91,7 +93,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	// stores summaries that were queried before they were computed
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on 'incoming'")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Map<Pair<N, D>, D>> endSummary = new MyConcurrentHashMap<>();
+	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Map<EndSummary<N, D>, EndSummary<N, D>>> endSummary = new MyConcurrentHashMap<>();
 
 	// edges going along calls
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
@@ -377,7 +379,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	protected boolean applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
 			SootMethod sCalledProcN, D d3) {
 		// line 15.2
-		Map<Pair<N, D>, D> endSumm = endSummaryMap(sCalledProcN, d3);
+		Set<EndSummary<N, D>> endSumm = endSummary(sCalledProcN, d3);
 
 		// still line 15.2 of Naeem/Lhotak/Rodriguez
 		// for each already-queried exit value <eP,d4> reachable
@@ -385,12 +387,12 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// the return sites because we have observed a potentially
 		// new incoming edge into <sP,d3>
 		if (endSumm != null && !endSumm.isEmpty()) {
-			for (Pair<N, D> entry : endSumm.keySet()) {
-				N eP = entry.getO1();
-				D d4 = entry.getO2();
+			for (EndSummary<N, D> entry : endSumm) {
+				N eP = entry.eP;
+				D d4 = entry.d4;
 
 				// We must acknowledge the incoming abstraction from the other path
-				d4.addNeighbor(d3);
+				entry.calleeD1.addNeighbor(d3);
 
 				// for each return site
 				for (N retSiteN : returnSiteNs) {
@@ -422,9 +424,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 									d5p = d2;
 								break;
 							}
-							D oldD1 = endSumm.get(entry);
-							if (oldD1 != d1)
-								oldD1.addNeighbor(d3);
 							propagate(d1, retSiteN, d5p, n, false);
 						}
 					}
@@ -694,20 +693,21 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		return oldEdge == null ? null : oldEdge.factAtTarget();
 	}
 
-	protected Map<Pair<N, D>, D> endSummaryMap(SootMethod m, D d3) {
-		Map<Pair<N, D>, D> map = endSummary.get(new Pair<SootMethod, D>(m, d3));
-		return map;
+	protected Set<EndSummary<N, D>> endSummary(SootMethod m, D d3) {
+		Map<EndSummary<N, D>, EndSummary<N, D>> map = endSummary.get(new Pair<>(m, d3));
+		return map == null ? null : map.keySet();
 	}
 
 	private boolean addEndSummary(SootMethod m, D d1, N eP, D d2) {
 		if (d1 == zeroValue)
 			return true;
 
-		Map<Pair<N, D>, D> summaries = endSummary.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d1),
-				() -> new MyConcurrentHashMap<>());
-		D oldD1 = summaries.putIfAbsent(new Pair<N, D>(eP, d2), d1);
-		if (oldD1 != null) {
-			oldD1.addNeighbor(d1);
+		Map<EndSummary<N, D>, EndSummary<N, D>> summaries = endSummary.putIfAbsentElseGet(new Pair<>(m, d1),
+				() -> new HashMap<>());
+		EndSummary<N, D> newSummary = new EndSummary<>(eP, d2, d1);
+		EndSummary<N, D> existingSummary = summaries.putIfAbsent(newSummary, newSummary);
+		if (existingSummary != null) {
+			existingSummary.calleeD1.addNeighbor(d2);
 			return false;
 		}
 		return true;

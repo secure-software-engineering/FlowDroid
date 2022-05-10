@@ -54,7 +54,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 */
 	protected Unit activationUnit = null;
 	/**
-	 * Unit/Stmt which indicates it origin; tells the aliasing to turn around in backwards analysis
+	 * Unit/Stmt which indicates it origin; tells the aliasing to turn around in
+	 * backwards analysis
 	 */
 	protected Unit turnUnit = null;
 	/**
@@ -424,6 +425,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		abs.setDominator(dominator);
 		return abs;
 	}
+
 	public Abstraction deriveNewAbstractionWithDominator(Unit dominator) {
 		return deriveNewAbstractionWithDominator(dominator, null);
 	}
@@ -432,7 +434,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return deriveNewAbstractionMutable(AccessPath.getEmptyAccessPath(), stmt);
 	}
 
-	public Abstraction deriveCondition(AccessPath ap, Stmt stmt)  {
+	public Abstraction deriveCondition(AccessPath ap, Stmt stmt) {
 		Abstraction abs = deriveNewAbstractionMutable(ap, stmt);
 		if (abs == null)
 			return null;
