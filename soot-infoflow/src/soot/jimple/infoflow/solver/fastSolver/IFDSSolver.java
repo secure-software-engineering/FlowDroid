@@ -15,7 +15,6 @@ package soot.jimple.infoflow.solver.fastSolver;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -677,7 +676,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			return true;
 
 		Map<EndSummary<N, D>, EndSummary<N, D>> summaries = endSummary.putIfAbsentElseGet(new Pair<>(m, d1),
-				() -> new HashMap<>());
+				() -> new ConcurrentHashMap<>());
 		EndSummary<N, D> newSummary = new EndSummary<>(eP, d2, d1);
 		EndSummary<N, D> existingSummary = summaries.putIfAbsent(newSummary, newSummary);
 		if (existingSummary != null) {
@@ -748,11 +747,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 		public void run() {
 			final N target = edge.getTarget();
-
-			if (target.toString()
-					.equals("virtualinvoke $stack5.<java.lang.String: java.lang.String substring(int,int)>($i0, $i1)"))
-				System.out.println("x");
-
 			if (icfg.isCallStmt(target)) {
 				processCall(edge);
 			} else {

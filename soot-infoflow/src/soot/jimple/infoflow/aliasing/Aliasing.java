@@ -343,7 +343,9 @@ public class Aliasing {
 				&& !source.getAccessPath().getCanHaveImmutableAliases())
 			return false;
 
-		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType);
+		AccessPath ap = source.getAccessPath();
+		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType)
+				|| (ap != null && ap.getTaintSubFields());
 	}
 
 	public boolean canHaveAliasesRightSide(Stmt stmt, Value val, Abstraction source) {
