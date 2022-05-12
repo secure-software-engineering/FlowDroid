@@ -52,6 +52,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryQuery;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResolver;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResponse;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -782,16 +783,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
 		for (Abstraction abs : absSet) {
-			Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
+			Set<EndSummary<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
 			if (endSummary != null && !endSummary.isEmpty()) {
-				for (Pair<Unit, Abstraction> pair : endSummary) {
+				for (EndSummary<Unit, Abstraction> pair : endSummary) {
 					if (outgoingTaints == null)
 						outgoingTaints = new HashSet<>();
 
 					// Create the taint that corresponds to the access path leaving
 					// the user-code method
-					Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.getO2().getAccessPath(),
-							(Stmt) pair.getO1(), propagator.getGap());
+					Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.d4.getAccessPath(), (Stmt) pair.eP,
+							propagator.getGap());
 					if (newTaints != null) {
 						for (Taint newTaint : newTaints) {
 							AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent,
