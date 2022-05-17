@@ -514,6 +514,37 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		}
 		return permissions;
 	}
+	
+	
+	/**
+	 * polyu zachary
+	 * Gets the hardware components this application requests
+	 *
+	 * @return the hardware requested by this application
+	 * @return
+	 * **/
+	public Set<String> getHardware(){
+		List<AXmlNode> usesHardware = this.manifest.getChildrenWithTag("uses-feature");
+		Set<String> hardware = new HashSet<>();
+		for (AXmlNode hard : usesHardware){
+			AXmlAttribute<?> attr = hard.getAttribute("name");
+			if (attr!=null){
+				hardware.add(attr.getValue().toString());
+			}
+			else {
+				// The required "name" attribute is missing, following flowdroid,
+				// I also collect all empty
+				// attributes as a best-effort solution for broken malware apps
+				for (AXmlAttribute<?> a : hard.getAttributes().values()){
+					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty())){
+						hardware.add(a.getValue().toString());
+					}
+				}
+			}
+		}
+		return  hardware;
+	}
+
 
 	/**
 	 * Adds a new permission to the manifest.
