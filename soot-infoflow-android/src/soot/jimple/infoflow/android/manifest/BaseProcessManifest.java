@@ -517,12 +517,9 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	
 	
  /** *
-     * polyu zachary
-     * <p>
      * Gets the intent-filter components this application used
      *
      * @return the intent filter used by this application
-     * @return
      * **/
 
     public Set<String> getIntentFilter() {
@@ -547,11 +544,9 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	
 	
 	/**
-	 * polyu zachary
 	 * Gets the hardware components this application requests
 	 *
 	 * @return the hardware requested by this application
-	 * @return
 	 * **/
 	public Set<String> getHardware(){
 		List<AXmlNode> usesHardware = this.manifest.getChildrenWithTag("uses-feature");
