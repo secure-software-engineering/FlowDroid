@@ -105,7 +105,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 			aliasSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
 			aliasSolver.setMaxAbstractionPathLength(solverConfig.getMaxAbstractionPathLength());
 			aliasSolver.setSolverId(false);
-			aliasProblem.setTaintPropagationHandler(backwardsPropagationHandler);
+			aliasProblem.setTaintPropagationHandler(aliasPropagationHandler);
 			aliasProblem.setTaintWrapper(taintWrapper);
 			if (nativeCallHandler != null)
 				aliasProblem.setNativeCallHandler(nativeCallHandler);

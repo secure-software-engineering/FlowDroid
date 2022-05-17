@@ -143,7 +143,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	protected Set<ResultsAvailableHandler> onResultsAvailable = new HashSet<>();
 	protected TaintPropagationHandler taintPropagationHandler = null;
-	protected TaintPropagationHandler backwardsPropagationHandler = null;
+	protected TaintPropagationHandler aliasPropagationHandler = null;
 
 	protected FlowDroidMemoryWatcher memoryWatcher = null;
 
@@ -1541,8 +1541,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	@Override
-	public void setBackwardsPropagationHandler(TaintPropagationHandler handler) {
-		this.backwardsPropagationHandler = handler;
+	public void setAliasPropagationHandler(TaintPropagationHandler handler) {
+		this.aliasPropagationHandler = handler;
 	}
 
 	@Override

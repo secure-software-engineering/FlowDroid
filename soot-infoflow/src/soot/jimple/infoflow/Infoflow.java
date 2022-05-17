@@ -114,7 +114,7 @@ public class Infoflow extends AbstractInfoflow {
 			backSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
 			backSolver.setMaxAbstractionPathLength(solverConfig.getMaxAbstractionPathLength());
 			backSolver.setSolverId(false);
-			backProblem.setTaintPropagationHandler(backwardsPropagationHandler);
+			backProblem.setTaintPropagationHandler(aliasPropagationHandler);
 			backProblem.setTaintWrapper(taintWrapper);
 			if (nativeCallHandler != null)
 				backProblem.setNativeCallHandler(nativeCallHandler);
