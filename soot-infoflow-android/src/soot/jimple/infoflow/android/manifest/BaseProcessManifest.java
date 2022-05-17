@@ -516,6 +516,38 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	}
 	
 	
+ /** *
+     * polyu zachary
+     * <p>
+     * Gets the intent-filter components this application used
+     *
+     * @return the intent filter used by this application
+     * @return
+     * **/
+
+    public Set<String> getIntentFilter() {
+        List<AXmlNode> usesIntentFilter = this.manifest.getChildrenWithTag("intent-filter");
+        Set<String> intentFilters = new HashSet<>();
+        for (AXmlNode itFilter : usesIntentFilter) {
+            AXmlAttribute<?> attr = itFilter.getAttribute("namme");
+            if (attr != null) {
+                intentFilters.add(attr.getValue().toString());
+            }
+            else {
+                // The required "name" attribute is missing, so we collect all
+                // empty
+                // attributes as a best-effort solution for broken malware apps
+                for (AXmlAttribute<?> a : itFilter.getAttributes().values()){
+                    if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName()==null || a.getName().isEmpty())){
+                        intentFilters.add(a.getValue().toString());
+                    }
+                }
+            }
+        }
+        return intentFilters;
+    }
+	
+	
 	/**
 	 * polyu zachary
 	 * Gets the hardware components this application requests
