@@ -514,6 +514,62 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		}
 		return permissions;
 	}
+	
+	
+ /** *
+     * Gets the intent-filter components this application used
+     *
+     * @return the intent filter used by this application
+     * **/
+
+    public Set<String> getIntentFilter() {
+        List<AXmlNode> usesActions = this.axml.getNodesWithTag("action");
+        Set<String> intentFilters = new HashSet<>();
+        for (AXmlNode ittft : usesActions) {
+            if (ittft.getParent().getTag().equals("intent-filter")) {
+                AXmlAttribute<?> attr = ittft.getAttribute("name");
+                if (attr != null) {
+                    intentFilters.add(attr.getValue().toString());
+                } else {
+                    // The required "name" attribute is missing, so we collect all
+                    // empty attributes as a best-effort solution for broken malware apps
+                    for (AXmlAttribute<?> a : ittft.getAttributes().values())
+                        if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
+                            intentFilters.add((String) a.getValue());
+                }
+            }
+        }
+        return intentFilters;
+    }
+	
+	
+	/**
+	 * Gets the hardware components this application requests
+	 *
+	 * @return the hardware requested by this application
+	 * **/
+	public Set<String> getHardware(){
+		List<AXmlNode> usesHardware = this.manifest.getChildrenWithTag("uses-feature");
+		Set<String> hardware = new HashSet<>();
+		for (AXmlNode hard : usesHardware){
+			AXmlAttribute<?> attr = hard.getAttribute("name");
+			if (attr!=null){
+				hardware.add(attr.getValue().toString());
+			}
+			else {
+				// The required "name" attribute is missing, following flowdroid,
+				// I also collect all empty
+				// attributes as a best-effort solution for broken malware apps
+				for (AXmlAttribute<?> a : hard.getAttributes().values()){
+					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty())){
+						hardware.add(a.getValue().toString());
+					}
+				}
+			}
+		}
+		return  hardware;
+	}
+
 
 	/**
 	 * Adds a new permission to the manifest.
