@@ -329,8 +329,15 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return this.turnUnit;
 	}
 
-	public void setTurnUnit(Unit turnUnit) {
-		this.turnUnit = turnUnit;
+	public Abstraction deriveNewAbstractionWithTurnUnit(Unit turnUnit) {
+		if (this.turnUnit == turnUnit)
+			return this;
+
+		Abstraction a = clone();
+		a.sourceContext = null;
+		a.activationUnit = null;
+		a.turnUnit = turnUnit;
+		return a;
 	}
 
 	public Abstraction getActiveCopy() {
@@ -438,8 +445,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		Abstraction abs = deriveNewAbstractionMutable(ap, stmt);
 		if (abs == null)
 			return null;
-		abs.setTurnUnit(stmt);
-		abs.setDominator(null);
+		abs.turnUnit = stmt;
+		abs.dominator = null;
 		return abs;
 	}
 
@@ -473,6 +480,9 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		abs.currentStmt = null;
 		abs.correspondingCallSite = null;
 		abs.propagationPathLength = propagationPathLength + 1;
+
+		if (!abs.equals(this))
+			System.out.println("x");
 
 		assert abs.equals(this);
 		return abs;

@@ -210,7 +210,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 
 						if (retVal instanceof Constant) {
 							Abstraction abs = source.deriveConditionalUpdate(stmt);
-							abs.setTurnUnit(stmt);
+							abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 							List<Unit> condUnits = manager.getICFG().getConditionalBranchIntraprocedural(returnStmt);
 							for (Unit condUnit : condUnits) {
 								Abstraction intraRet = abs.deriveNewAbstractionWithDominator(condUnit);
