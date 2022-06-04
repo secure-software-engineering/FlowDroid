@@ -28,7 +28,9 @@ public abstract class HTTPTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void testURL() throws IOException {
-		IInfoflow infoflow = initInfoflow();
+		// We need the taint wrapper, because SPARK misses an edge to
+		// URLStreamHandler.toExternalForm()
+		IInfoflow infoflow = initInfoflow(true);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void testURL()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
@@ -38,8 +40,9 @@ public abstract class HTTPTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void testConnection() throws IOException {
-//    	this.taintWrapper = true;
-		IInfoflow infoflow = initInfoflow();
+		// We need the taint wrapper, because SPARK misses an edge to
+		// URLStreamHandler.toExternalForm()
+		IInfoflow infoflow = initInfoflow(true);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void method1()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);

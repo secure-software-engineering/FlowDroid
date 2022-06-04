@@ -131,6 +131,7 @@ public abstract class ExceptionTests extends JUnitTests {
 	}
 
 	@Test
+	@Ignore("Escaping exceptions are not supported")
 	public void callMethodParamReturnTest2b() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

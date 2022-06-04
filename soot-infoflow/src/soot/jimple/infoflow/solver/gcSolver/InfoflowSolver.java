@@ -11,16 +11,15 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import heros.FlowFunction;
-import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
@@ -126,9 +125,8 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	}
 
 	@Override
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
-		Map<Pair<Unit, Abstraction>, Abstraction> map = super.endSummaryMap(m, d3);
-		return map == null ? null : map.keySet();
+	public Set<EndSummary<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
+		return super.endSummary(m, d3);
 	}
 
 	@Override

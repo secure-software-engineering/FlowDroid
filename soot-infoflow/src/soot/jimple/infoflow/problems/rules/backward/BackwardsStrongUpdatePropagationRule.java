@@ -4,8 +4,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
-import soot.*;
-import soot.jimple.*;
+import soot.ArrayType;
+import soot.Local;
+import soot.PrimType;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
+import soot.Value;
+import soot.jimple.AnyNewExpr;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
+import soot.jimple.FieldRef;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.ReturnStmt;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -25,13 +39,13 @@ import soot.jimple.infoflow.util.TypeUtils;
 public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 
 	public BackwardsStrongUpdatePropagationRule(InfoflowManager manager, Abstraction zeroValue,
-									   TaintPropagationResults results) {
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
-													   ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
 		if (!(stmt instanceof AssignStmt))
 			return null;
 		AssignStmt assignStmt = (AssignStmt) stmt;
@@ -48,7 +62,8 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 
 		// If the statement has just been activated, we do not overwrite stuff
 		if (source.getPredecessor() != null && !source.getPredecessor().isAbstractionActive()
-				&& source.isAbstractionActive() && source.getAccessPath().equals(source.getPredecessor().getAccessPath()))
+				&& source.isAbstractionActive()
+				&& source.getAccessPath().equals(source.getPredecessor().getAccessPath()))
 			return null;
 
 		// We already handle the cases where it may aliases, so no need to go further
@@ -62,8 +77,7 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 			// Data Propagation: x.f = y && x.f tainted --> y propagated
 			if (leftOp instanceof InstanceFieldRef) {
 				InstanceFieldRef leftRef = (InstanceFieldRef) leftOp;
-				if (aliasing.mustAlias((Local) leftRef.getBase(),
-						source.getAccessPath().getPlainValue(), assignStmt)) {
+				if (aliasing.mustAlias((Local) leftRef.getBase(), source.getAccessPath().getPlainValue(), assignStmt)) {
 					if (aliasing.mustAlias(leftRef.getField(), source.getAccessPath().getFirstField())) {
 						addRightValue = true;
 						cutFirstField = true;
@@ -91,9 +105,11 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 		// then the fields should not be tainted any more
 		// x = y && x.f tainted -> no taint propagated
 		else if (source.getAccessPath().isLocal() && leftOp instanceof Local) {
-			if (leftOp instanceof ArrayRef && source.getAccessPath().getArrayTaintType() != AccessPath.ArrayTaintType.Length) {
+			if (leftOp instanceof ArrayRef
+					&& source.getAccessPath().getArrayTaintType() != AccessPath.ArrayTaintType.Length) {
 				Value base = ((ArrayRef) leftOp).getBase();
-				if (base instanceof Local && aliasing.mustAlias((Local) base, source.getAccessPath().getPlainValue(), stmt)) {
+				if (base instanceof Local
+						&& aliasing.mustAlias((Local) base, source.getAccessPath().getPlainValue(), stmt)) {
 					addRightValue = true;
 					type = ((ArrayType) ((ArrayRef) leftOp).getBase().getType()).getElementType();
 				}
@@ -110,13 +126,13 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 				return null;
 
 			Value rightVal = BaseSelector.selectBase(assignStmt.getRightOp(), true);
-			AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(), rightVal,
-					type, cutFirstField);
+			AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(), rightVal, type,
+					cutFirstField);
 			Abstraction newAbs = source.deriveNewAbstraction(newAp, assignStmt);
 
 			if (newAbs != null) {
 				if (type instanceof PrimType || TypeUtils.isStringType(type))
-					newAbs.setTurnUnit(assignStmt);
+					newAbs = newAbs.deriveNewAbstractionWithTurnUnit(assignStmt);
 				else {
 					if (getAliasing().canHaveAliasesRightSide(assignStmt, rightVal, newAbs)) {
 						for (Unit pred : manager.getICFG().getPredsOf(assignStmt))
@@ -134,7 +150,7 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 
 	@Override
 	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
-													 ByReferenceBoolean killAll) {
+			ByReferenceBoolean killAll) {
 		if (source.getAccessPath().isEmpty())
 			return null;
 
@@ -169,12 +185,12 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 							continue;
 
 						Type type = returnStmt.getOp().getType();
-						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-								source.getAccessPath(), retVal, type, false);
+						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(), retVal,
+								type, false);
 						Abstraction abs = source.deriveNewAbstraction(ap, stmt);
 						if (abs != null) {
 							if (type instanceof PrimType || TypeUtils.isStringType(type))
-								abs.setTurnUnit(stmt);
+								abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 
 							abs.setCorrespondingCallSite(stmt);
 							res.add(abs);
@@ -189,13 +205,13 @@ public class BackwardsStrongUpdatePropagationRule extends AbstractTaintPropagati
 
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
-															 ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
 		return null;
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

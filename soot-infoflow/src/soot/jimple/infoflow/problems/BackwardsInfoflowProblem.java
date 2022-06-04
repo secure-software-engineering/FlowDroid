@@ -366,14 +366,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 										manager.getGlobalTaintManager().addToGlobalTaintState(newAbs);
 									else {
 										enterConditional(newAbs, assignStmt, destUnit);
-										res.add(newAbs);
 
 										if (isPrimitiveOrStringBase(source)) {
-											newAbs.setTurnUnit(srcUnit);
+											newAbs = newAbs.deriveNewAbstractionWithTurnUnit(srcUnit);
 										} else if (leftVal instanceof FieldRef
 												&& isPrimitiveOrStringType(((FieldRef) leftVal).getField().getType())
 												&& !ap.getCanHaveImmutableAliases()) {
-											newAbs.setTurnUnit(srcUnit);
+											newAbs = newAbs.deriveNewAbstractionWithTurnUnit(srcUnit);
 										} else {
 											if (aliasing.canHaveAliasesRightSide(assignStmt, rightVal, newAbs)) {
 												for (Unit pred : manager.getICFG().getPredsOf(assignStmt))
@@ -381,6 +380,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 															interproceduralCFG().getMethodOf(pred), newAbs);
 											}
 										}
+										res.add(newAbs);
 									}
 								}
 							}
@@ -508,7 +508,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 											Abstraction abs = source.deriveNewAbstraction(ap, stmt);
 											if (abs != null) {
 												if (isPrimitiveOrStringBase(source))
-													abs.setTurnUnit(stmt);
+													abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 
 												if (abs.getDominator() == null && manager.getConfig()
 														.getImplicitFlowMode().trackControlFlowDependencies()) {

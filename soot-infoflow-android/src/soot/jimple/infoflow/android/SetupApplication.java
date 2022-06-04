@@ -1657,7 +1657,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		info.setSootConfig(sootConfig);
 		info.setTaintWrapper(taintWrapper);
 		info.setTaintPropagationHandler(taintPropagationHandler);
-		info.setBackwardsPropagationHandler(backwardsPropagationHandler);
+		info.setAliasPropagationHandler(backwardsPropagationHandler);
 
 		// We use a specialized memory manager that knows about Android
 		info.setMemoryManagerFactory(new IMemoryManagerFactory() {

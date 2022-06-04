@@ -536,7 +536,7 @@ public abstract class HeapTestsPtsAliasing extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test // (timeout = 300000)
+	@Test(timeout = 300000)
 	public void longAPAliasTest1() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);

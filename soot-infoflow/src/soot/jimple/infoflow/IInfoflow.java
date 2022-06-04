@@ -239,11 +239,11 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	public void setTaintPropagationHandler(TaintPropagationHandler handler);
 
 	/**
-	 * Sets a handler which is invoked whenever an alias is propagated backwards
+	 * Sets a handler which is invoked whenever an alias is propagated
 	 * 
 	 * @param handler The handler to be invoked when propagating aliases
 	 */
-	public void setBackwardsPropagationHandler(TaintPropagationHandler handler);
+	public void setAliasPropagationHandler(TaintPropagationHandler handler);
 
 	/**
 	 * Sets the factory to be used for creating memory managers

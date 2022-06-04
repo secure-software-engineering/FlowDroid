@@ -137,6 +137,23 @@ public class HeapTestCode {
 		new AsyncTask().execute(tainted);
 	}
 
+	public void methodTest2() {
+		String tainted = TelephonyManager.getDeviceId();
+		Worker wo = new Worker() {
+			public void call() {
+				ConnectionManager cm = new ConnectionManager();
+				cm.publish(mParams);
+			}
+		};
+		wo.mParams = tainted;
+		new FutureTask(wo).run();
+	}
+
+	public void methodTest3() {
+		String tainted = TelephonyManager.getDeviceId();
+		new AsyncTask2().execute(tainted);
+	}
+
 	protected class AsyncTask {
 		public Worker mWorker;
 		public FutureTask mFuture;
@@ -156,6 +173,25 @@ public class HeapTestCode {
 			// shortcut (no executor used):
 			// exec.execute(mFuture);
 			mFuture.run();
+		}
+
+	}
+
+	protected class AsyncTask2 {
+		public Worker mWorker;
+
+		public AsyncTask2() {
+			mWorker = new Worker() {
+				public void call() {
+					ConnectionManager cm = new ConnectionManager();
+					cm.publish(mParams);
+				}
+			};
+		}
+
+		public void execute(String t) {
+			mWorker.mParams = t;
+			mWorker.call();
 		}
 
 	}
