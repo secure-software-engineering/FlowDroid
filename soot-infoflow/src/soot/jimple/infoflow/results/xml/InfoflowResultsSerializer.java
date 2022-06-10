@@ -209,7 +209,7 @@ public class InfoflowResultsSerializer {
 		ISourceSinkDefinition def = source.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
-			writer.writeAttribute(XmlConstants.Attributes.calledMethod, ms.getMethod().getSignature());
+			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
 		}
 
 		writeAdditionalSourceInfo(source, writer);
@@ -271,7 +271,7 @@ public class InfoflowResultsSerializer {
 		ISourceSinkDefinition def = sink.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
-			writer.writeAttribute(XmlConstants.Attributes.calledMethod, ms.getMethod().getSignature());
+			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
 		}
 		writeAdditionalSinkInfo(sink, writer);
 		writeAccessPath(sink.getAccessPath(), writer);

@@ -13,18 +13,18 @@ import java.util.List;
 public class SerializedSourceInfo extends AbstractSerializedSourceSink {
 
 	private List<SerializedPathElement> propagationPath = null;
-	private final String calledMethod;
+	private final String methodSourceSinkDefinition;
 
 	SerializedSourceInfo(SerializedAccessPath accessPath, String statement,
-			String method, String calledMethod) {
-		this(accessPath, statement, method, null, calledMethod);
+			String method, String methodSourceSinkDefinition) {
+		this(accessPath, statement, method, null, methodSourceSinkDefinition);
 	}
 
 	SerializedSourceInfo(SerializedAccessPath accessPath, String statement,
-			String method, List<SerializedPathElement> propagationPath, String calledMethod) {
+			String method, List<SerializedPathElement> propagationPath, String methodSourceSinkDefinition) {
 		super(accessPath, statement, method);
 		this.propagationPath = propagationPath;
-		this.calledMethod = calledMethod;
+		this.methodSourceSinkDefinition = methodSourceSinkDefinition;
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class SerializedSourceInfo extends AbstractSerializedSourceSink {
 	 * 
 	 * @return The soot signature of the method that is called by the statement.
 	 */
-	public String getCalledMethod() {
-		return this.calledMethod;
+	public String getMethodSourceSinkDefinition() {
+		return this.methodSourceSinkDefinition;
 	}
 
 }

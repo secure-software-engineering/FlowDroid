@@ -49,7 +49,7 @@ class XmlConstants {
 
 		public static final String name = "Name";
 
-		public static final String calledMethod = "CalledMethod";
+		public static final String methodSourceSinkDefinition = "MethodSourceSinkDefinition";
 
 	}
 
