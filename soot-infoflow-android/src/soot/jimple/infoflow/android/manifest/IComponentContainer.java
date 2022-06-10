@@ -28,6 +28,17 @@ public interface IComponentContainer<E extends IAndroidComponent> extends Iterab
 	public E getComponentByName(String name);
 
 	/**
+	 * Checks whether a component with the given unique class name exists
+	 * 
+	 * @param name The name of the class that implements the component
+	 * @return True if this container contains an Android component that is
+	 *         implemented by a class with the given name, false otherwise
+	 */
+	default public boolean hasComponentByName(String name) {
+		return name != null && getComponentByName(name) != null;
+	}
+
+	/**
 	 * Checks whether this container is empty, i.e., does not contain any components
 	 * 
 	 * @return True if this container is empty, false otherwise

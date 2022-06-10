@@ -24,10 +24,10 @@ import soot.jimple.infoflow.IInfoflow;
  * 
  */
 @Ignore
-public class FutureTests extends JUnitTests {
+public abstract class FutureTests extends JUnitTests {
 
 	// Subtraktions-Operator wird von soot nicht ausgewertet
-	@Test(timeout=300000)
+	@Test(timeout = 300000)
 	public void mathTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -36,8 +36,8 @@ public class FutureTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
-	// static initialization is not performed correctly on Soot
-	@Test(timeout=300000)
+	// static initialization is not performed correctly on Soot (forward only)
+	@Test(timeout = 300000)
 	public void staticInit1Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -46,8 +46,9 @@ public class FutureTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	//deleting tainted aliases of memory locations requires must-alias analysis, which is not used by FlowDroid
-	@Test(timeout=300000)
+	// deleting tainted aliases of memory locations requires must-alias analysis,
+	// which is not used by FlowDroid
+	@Test(timeout = 300000)
 	public void returnOverwriteTest7() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

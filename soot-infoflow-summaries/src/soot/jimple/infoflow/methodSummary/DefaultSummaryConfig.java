@@ -40,7 +40,11 @@ public class DefaultSummaryConfig implements IInfoflowConfig {
 		options.set_no_bodies_for_excluded(true);
 		options.set_allow_phantom_refs(true);
 		options.set_include(includeList);
-		options.set_output_format(Options.output_format_none);
+		if (summaryConfig.getWriteOutputFiles())
+			options.set_output_format(Options.output_format_jimple);
+		else
+			options.set_output_format(Options.output_format_none);
+
 		options.setPhaseOption("jb", "use-original-names:true");
 		options.set_ignore_classpath_errors(true);
 

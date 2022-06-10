@@ -23,6 +23,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
@@ -125,7 +127,7 @@ public class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void apl3Flow()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test
 	public void gapFlow1() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void gapFlow1()>");
 	}
@@ -173,7 +175,7 @@ public class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void storeAliasInGapClass2()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test
 	public void storeAliasInSummaryClass() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void storeAliasInSummaryClass()>");
 	}
@@ -183,12 +185,12 @@ public class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void getLength()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test
 	public void gapToGap() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void gapToGap()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test(timeout = 3000000)
 	public void callToCall() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void callToCall()>");
 	}
@@ -220,7 +222,7 @@ public class SummaryTaintWrapperTests {
 	}
 
 	private void testFlowForMethod(String m) {
-		Infoflow iFlow = null;
+		IInfoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
 			iFlow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
@@ -233,7 +235,7 @@ public class SummaryTaintWrapperTests {
 	}
 
 	private void testNoFlowForMethod(String m) {
-		Infoflow iFlow = null;
+		IInfoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
 			iFlow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(Collections.singletonList(m)),
@@ -244,11 +246,11 @@ public class SummaryTaintWrapperTests {
 		checkNoInfoflow(iFlow);
 	}
 
-	private void checkNoInfoflow(Infoflow infoflow) {
+	private void checkNoInfoflow(IInfoflow infoflow) {
 		assertTrue(!infoflow.isResultAvailable() || infoflow.getResults().size() == 0);
 	}
 
-	private void checkInfoflow(Infoflow infoflow, int resultCount) {
+	private void checkInfoflow(IInfoflow infoflow, int resultCount) {
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 
@@ -261,8 +263,9 @@ public class SummaryTaintWrapperTests {
 		}
 	}
 
-	protected Infoflow initInfoflow() throws FileNotFoundException, XMLStreamException {
-		Infoflow result = new Infoflow();
+	protected IInfoflow initInfoflow() throws FileNotFoundException, XMLStreamException {
+		IInfoflow result = new BackwardsInfoflow();
+//		Infoflow result = new Infoflow();
 		result.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 		IInfoflowConfig testConfig = new IInfoflowConfig() {
 
@@ -299,7 +302,6 @@ public class SummaryTaintWrapperTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		final String sep = System.getProperty("path.separator");
 		File f = new File(".");
 		File testSrc1 = new File(f, "bin");
 		File testSrc2 = new File(f, "testBin");
@@ -310,9 +312,29 @@ public class SummaryTaintWrapperTests {
 			fail("Test aborted - none of the test sources are available");
 		}
 
-		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath()
-				+ sep + testSrc4.getCanonicalPath();
+		StringBuilder appPathBuilder = new StringBuilder();
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appendWithSeparator(appPathBuilder, testSrc3);
+		appendWithSeparator(appPathBuilder, testSrc4);
+		appPath = appPathBuilder.toString();
+
 		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+	}
+
+	/**
+	 * Appends the given path to the given {@link StringBuilder} if it exists
+	 * 
+	 * @param sb The {@link StringBuilder} to which to append the path
+	 * @param f  The path to append
+	 * @throws IOException
+	 */
+	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+		if (f.exists()) {
+			if (sb.length() > 0)
+				sb.append(System.getProperty("path.separator"));
+			sb.append(f.getCanonicalPath());
+		}
 	}
 
 }

@@ -102,16 +102,16 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 
 		if (isParameter())
 			return gapString + "Parameter " + getParameterIndex()
-					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " "
+					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " | "
 					+ taintSubFields();
 
 		if (isField())
-			return gapString + "Field" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " "
+			return gapString + "Field" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " | "
 					+ taintSubFields();
 
 		if (isReturn())
 			return gapString + "Return" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath))
-					+ " " + taintSubFields();
+					+ " | " + taintSubFields();
 
 		if (isCustom())
 			return "CUSTOM " + gapString + "Parameter " + getParameterIndex()
@@ -143,9 +143,6 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 		if (getType() == SourceSinkType.GapBaseObject && getGap() == null)
 			throw new InvalidFlowSpecificationException(
 					"Gap base flows must always be linked with gaps. Offending method: " + methodName, this);
-
-		if (getType() == SourceSinkType.Parameter && getGap() == null)
-			throw new InvalidFlowSpecificationException("Parameters may only be sinks when referencing gaps", this);
 	}
 
 	@Override

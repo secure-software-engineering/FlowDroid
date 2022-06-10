@@ -1,5 +1,3 @@
-[![Build Status](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/badge/icon)](https://soot-build.cs.uni-paderborn.de/jenkins/job/flowdroid/job/FlowDroid_DEVELOP/)
-
 # FlowDroid Data Flow Analysis Tool
 
 This repository hosts the FlowDroid data flow analysis tool. FlowDroid statically computes data flows in Android apps and Java programs.
@@ -10,7 +8,36 @@ product implementations. We are happy to see that FlowDroid is now widely used i
 
 You can either build FlowDroid on your own using Maven, or you can download a release from here on Github.
 
-### Downloading The Release
+### Downloading The Release Via Maven
+
+FlowDroid can now be found on <a href="https://mvnrepository.com/artifact/de.fraunhofer.sit.sse.flowdroid">Maven Central</a>.
+In order to use FlowDroid in your Maven build, include the following in your ```pom.xml``` file.
+We recommend using the latest and greatest version unless you have a specific
+issue that prevents you from doing so. In that case, please let us know (see contact below).
+```
+    <dependencies>
+        <dependency>
+            <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+            <artifactId>soot-infoflow</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+            <artifactId>soot-infoflow-summaries</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+            <artifactId>soot-infoflow-android</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+    </dependencies>
+```
+
+For a quick start with FlowDroid, look at "Using The Data Flow Tracker" below. If you only want to use the command-line tool,
+all you need is the "soot-infoflow-cmd-jar-with-dependencies.jar" file.
+
+### Downloading The Release Via GitHub
 
 The <a href="https://github.com/secure-software-engineering/FlowDroid/releases">Release Page</a> contains all pre-built JAR
 files for each release that we officially publish. We recommend using the latest and greatest version unless you have a specific

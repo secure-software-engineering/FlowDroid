@@ -202,6 +202,9 @@ public class AndroidEntryPointUtils {
 		if (componentType == ComponentType.ServiceConnection
 				&& AndroidEntryPointConstants.getServiceConnectionMethods().contains(subsignature))
 			return true;
+		if (componentType == ComponentType.HostApduService
+				&& AndroidEntryPointConstants.getHostApduServiceMethods().contains(subsignature))
+			return true;
 
 		return false;
 	}

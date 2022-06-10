@@ -196,7 +196,9 @@ public class SummaryGenerator {
 		 */
 		private int getDependencyCount(SootClass sc) {
 			Set<SootClass> dependencies = new HashSet<>();
-			for (SootMethod sm : sc.getMethods()) {
+			// Resolving method bodies may lead to the creation of new phantom methods,
+			// which in turn leads to a ConcurrentModificationExcpetion.
+			for (SootMethod sm : new ArrayList<>(sc.getMethods())) {
 				if (sm.isConcrete()) {
 					for (Unit u : sm.retrieveActiveBody().getUnits()) {
 						Stmt stmt = (Stmt) u;
@@ -267,7 +269,10 @@ public class SummaryGenerator {
 			}
 		}
 
-		Options.v().set_output_format(Options.output_format_none);
+		if (config.getWriteOutputFiles())
+			Options.v().set_output_format(Options.output_format_jimple);
+		else
+			Options.v().set_output_format(Options.output_format_none);
 		if (hasWildcard || config.getLoadFullJAR() || config.getSummarizeFullJAR())
 			Options.v().set_process_dir(Arrays.asList(classpath.split(File.pathSeparator)));
 		else
@@ -339,18 +344,30 @@ public class SummaryGenerator {
 				}
 			}
 
-			// We also need to analyze methods of parent classes except for
-			// those methods that have been overwritten in the child class
-			SootClass curClass = sc.getSuperclassUnsafe();
-			while (curClass != null) {
-				if (!curClass.isConcrete() || curClass.isLibraryClass())
-					break;
+			// We also need to analyze methods of (transitive) parent classes except for
+			// those methods that have been overwritten in the child class. From Java 8,
+			// interfaces can implement default methods. Therefore, methods of implemented
+			// interfaces need to be analyzed as well.
+			List<SootClass> parentClasses = new ArrayList<>();
+			if (sc.hasSuperclass())
+				parentClasses.add(sc.getSuperclassUnsafe());
+			parentClasses.addAll(sc.getInterfaces());
+			Set<SootClass> doneClasses = new HashSet<>();
+			while (!parentClasses.isEmpty()) {
+				SootClass curClass = parentClasses.remove(0);
+				if (curClass == null || curClass.getName().equals("java.lang.Object") || doneClasses.contains(curClass))
+					continue;
 
 				for (SootMethod sm : curClass.getMethods()) {
-					if (checkAndAdd(analysisTask, sm))
+					if (!doneMethods.contains(sm.getSubSignature()) && checkAndAdd(analysisTask, sm))
 						doneMethods.add(sm.getSubSignature());
 				}
-				curClass = curClass.getSuperclassUnsafe();
+
+				doneClasses.add(curClass);
+
+				if (curClass.hasSuperclass())
+					parentClasses.add(curClass.getSuperclassUnsafe());
+				parentClasses.addAll(curClass.getInterfaces());
 			}
 		}
 
@@ -362,7 +379,7 @@ public class SummaryGenerator {
 
 		// Do the actual analysis
 		ClassSummaries summaries = new ClassSummaries();
-		for (ClassAnalysisTask analysisTask : realClasses) {
+		for (ClassAnalysisTask analysisTask : sortedTasks) {
 			final String className = analysisTask.className;
 
 			// Check if we really need to analyze this class
@@ -439,13 +456,13 @@ public class SummaryGenerator {
 			return false;
 
 		// We normally don't analyze hashCode() and equals()
-		final String sig = sm.getSignature();
+		final String subSig = sm.getSubSignature();
 		if (!config.getSummarizeHashCodeEquals()) {
-			if (sig.equals("int hashCode()") || sig.equals("boolean equals(java.lang.Object)"))
+			if (subSig.equals("int hashCode()") || subSig.equals("boolean equals(java.lang.Object)"))
 				return false;
 		}
 
-		analysisTask.addMethod(sig);
+		analysisTask.addMethod(sm.getSignature());
 		return true;
 	}
 
@@ -616,7 +633,7 @@ public class SummaryGenerator {
 		final SummarySourceSinkManager sourceSinkManager = createSourceSinkManager(methodSig, parentClass);
 		final MethodSummaries summaries = new MethodSummaries();
 
-		final SummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
+		final ISummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
 
 		final SummaryTaintPropagationHandler listener = new SummaryTaintPropagationHandler(methodSig, parentClass,
 				gapManager);
@@ -700,8 +717,8 @@ public class SummaryGenerator {
 	 * 
 	 * @return The newly constructed Infoflow instance
 	 */
-	protected SummaryInfoflow getInfoflowInstance() {
-		SummaryInfoflow infoflow = new SummaryInfoflow();
+	protected ISummaryInfoflow getInfoflowInstance() {
+		ISummaryInfoflow infoflow = new SummaryInfoflow();
 		infoflow.setPathBuilderFactory(new DefaultPathBuilderFactory(config.getPathConfiguration()) {
 
 			@Override
@@ -732,10 +749,10 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The initialized data flow engine
 	 */
-	protected SummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
+	protected ISummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
 		// Disable the default path reconstruction. However, still make sure to
 		// retain the contents of the callees.
-		SummaryInfoflow iFlow = getInfoflowInstance();
+		ISummaryInfoflow iFlow = getInfoflowInstance();
 		InfoflowConfiguration.setMergeNeighbors(true);
 		iFlow.setConfig(config);
 

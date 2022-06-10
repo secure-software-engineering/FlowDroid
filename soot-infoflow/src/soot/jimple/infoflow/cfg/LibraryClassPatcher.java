@@ -5,6 +5,7 @@ import java.util.Collections;
 import soot.Body;
 import soot.IntType;
 import soot.Local;
+import soot.LocalGenerator;
 import soot.Modifier;
 import soot.RefType;
 import soot.Scene;
@@ -15,7 +16,6 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.VoidType;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
@@ -228,7 +228,7 @@ public class LibraryClassPatcher {
 		// message mocking
 		SootMethod smMessageConstructor = Scene.v().grabMethod("<android.os.Message: void <init>()>");
 
-		LocalGenerator lg = new LocalGenerator(body);
+		LocalGenerator lg = Scene.v().createLocalGenerator(body);
 		Local messageLocal = lg.generateLocal(tpMessage);
 		body.getUnits().add(Jimple.v().newAssignStmt(messageLocal, Jimple.v().newNewExpr(tpMessage)));
 		body.getUnits().add(Jimple.v()
@@ -276,8 +276,6 @@ public class LibraryClassPatcher {
 
 		Unit retStmt = Jimple.v().newReturnStmt(targetLocal);
 		b.getUnits().add(retStmt);
-
-		b.validate();
 	}
 
 	/**
@@ -518,9 +516,6 @@ public class LibraryClassPatcher {
 
 		Unit retStmt = Jimple.v().newReturnVoidStmt();
 		b.getUnits().add(retStmt);
-
-		b.validate();
-
 		return b;
 	}
 

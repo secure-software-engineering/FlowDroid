@@ -27,7 +27,7 @@ import soot.options.Options;
  * they are added due to findings in real-world applications, including negative
  * tests and tests for lifecycle handling
  */
-public class OtherTests extends JUnitTests {
+public abstract class OtherTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void fieldTest() {

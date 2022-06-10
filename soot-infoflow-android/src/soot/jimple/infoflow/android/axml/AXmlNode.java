@@ -199,6 +199,19 @@ public class AXmlNode extends AXmlElement {
 	}
 
 	/**
+	 * Removes an element from the attributes.
+	 *
+	 * @param key the key
+	 * @return the previously associated value or null
+	 */
+	public AXmlAttribute<?> removeAttribute(String key) {
+		if (this.attributes == null)
+			return null;
+		return this.attributes.remove(key);
+	}
+
+
+	/**
 	 * Returns a map which contains all attributes. The keys match the attributes'
 	 * names.
 	 * 

@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
@@ -58,7 +61,6 @@ public abstract class JUnitTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		final String sep = System.getProperty("path.separator");
 		File f = new File(".");
 		File testSrc1 = new File(f, "bin");
 		File testSrc2 = new File(f, "build" + File.separator + "classes");
@@ -68,7 +70,12 @@ public abstract class JUnitTests {
 			fail("Test aborted - none of the test sources are available");
 		}
 
-		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath();
+		StringBuilder appPathBuilder = new StringBuilder();
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appendWithSeparator(appPathBuilder, testSrc3);
+		appPath = appPathBuilder.toString();
+
 		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
 
 		sources = new ArrayList<String>();
@@ -86,6 +93,21 @@ public abstract class JUnitTests {
 		sinks.add(sinkInt);
 		sinks.add(sinkBoolean);
 		sinks.add(sinkDouble);
+	}
+
+	/**
+	 * Appends the given path to the given {@link StringBuilder} if it exists
+	 * 
+	 * @param sb The {@link StringBuilder} to which to append the path
+	 * @param f  The path to append
+	 * @throws IOException
+	 */
+	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+		if (f.exists()) {
+			if (sb.length() > 0)
+				sb.append(System.getProperty("path.separator"));
+			sb.append(f.getCanonicalPath());
+		}
 	}
 
 	@Before
@@ -131,7 +153,7 @@ public abstract class JUnitTests {
 	}
 
 	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
-		Infoflow result = new Infoflow("", false, null);
+		AbstractInfoflow result = createInfoflowInstance();
 		result.setThrowExceptions(true);
 		ConfigForTest testConfig = new ConfigForTest();
 		result.setSootConfig(testConfig);
@@ -146,7 +168,30 @@ public abstract class JUnitTests {
 			}
 
 		}
+//		result.getConfig().setLogSourcesAndSinks(true);
+
 		return result;
 	}
 
+	protected abstract AbstractInfoflow createInfoflowInstance();
+
+	/**
+	 * Tells that the test should only be run on backwards analysis
+	 *
+	 * @param infoflow infoflow object
+	 * @param message  message shown in console
+	 */
+	protected void onlyBackwards(IInfoflow infoflow, String message) {
+		Assume.assumeTrue("Test is only applicable on backwards analysis: " + message,
+				infoflow instanceof BackwardsInfoflow);
+	}
+
+	/**
+	 * Tells that the test should only be run on forwards analysis
+	 *
+	 * @param infoflow infoflow object
+	 */
+	protected void onlyForwards(IInfoflow infoflow) {
+		Assume.assumeTrue("Test is only applicable on forwards analysis", infoflow instanceof Infoflow);
+	}
 }

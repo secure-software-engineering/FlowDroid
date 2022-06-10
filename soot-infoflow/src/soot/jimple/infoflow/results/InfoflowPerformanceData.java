@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.results;
 
+import java.util.Objects;
+
 /**
  * Class that records performance data on a FlowDroid run
  * 
@@ -13,9 +15,13 @@ public class InfoflowPerformanceData {
 	private int pathReconstructionSeconds = -1;
 	private int totalRuntimeSeconds = -1;
 	private int maxMemoryConsumption = -1;
+	private long edgePropagationCount = -1;
 
 	private int sourceCount = -1;
 	private int sinkCount = -1;
+
+	private long infoflowPropagationCount = -1;
+	private long aliasPropagationCount = -1;
 
 	public InfoflowPerformanceData() {
 		//
@@ -215,6 +221,20 @@ public class InfoflowPerformanceData {
 	}
 
 	/**
+	 * Adds the given number of edges to the total number of edges propagated,
+	 * regardless of the solver in which they were propagated
+	 * 
+	 * @param toaAdd The number of edges to add
+	 */
+	public void addEdgePropagationCount(long toAdd) {
+		long edges = this.edgePropagationCount;
+		if (edges < 0)
+			this.edgePropagationCount = toAdd;
+		else
+			this.edgePropagationCount = edges + toAdd;
+	}
+
+	/**
 	 * Sets the number of sources that were identified in the given input program
 	 * 
 	 * @param sourceCount The number of sources that were identified in the given
@@ -252,6 +272,44 @@ public class InfoflowPerformanceData {
 		return sinkCount;
 	}
 
+	/**
+	 * Gets the number of edges that have been propagated in any solver, regardless
+	 * of which solver propagated the edges
+	 * 
+	 * @return The number of edges that have been propagated in any solver
+	 */
+	public long getEdgePropagationCount() {
+		return edgePropagationCount;
+	}
+
+	/**
+	 * Sets the number of edges propagated in the data flow analysis
+	 * 
+	 * @param infoflowPropagationCount The number of edges propagated in the data
+	 *                                 flow analysis
+	 */
+	public void setInfoflowPropagationCount(long infoflowPropagationCount) {
+		this.infoflowPropagationCount = infoflowPropagationCount;
+	}
+
+	/**
+	 * Sets the number of edges propagated in the alias analysis
+	 * 
+	 * @param infoflowPropagationCount The number of edges propagated in the alias
+	 *                                 analysis
+	 */
+	public void setAliasPropagationCount(long aliasPropagationCount) {
+		this.aliasPropagationCount = aliasPropagationCount;
+	}
+
+	public long getInfoflowPropagationCount() {
+		return this.infoflowPropagationCount;
+	}
+
+	public long getAliasPropagationCount() {
+		return this.aliasPropagationCount;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -266,22 +324,17 @@ public class InfoflowPerformanceData {
 			sb.append(String.format("Total Runtime: %d seconds\n", totalRuntimeSeconds));
 		if (maxMemoryConsumption > 0)
 			sb.append(String.format("Max Memory Consumption: %d MB\n", maxMemoryConsumption));
+		if (edgePropagationCount > 0)
+			sb.append(String.format("Edge Propagation Count: %d\n", edgePropagationCount));
 
 		return sb.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + callgraphConstructionSeconds;
-		result = prime * result + maxMemoryConsumption;
-		result = prime * result + pathReconstructionSeconds;
-		result = prime * result + sinkCount;
-		result = prime * result + sourceCount;
-		result = prime * result + taintPropagationSeconds;
-		result = prime * result + totalRuntimeSeconds;
-		return result;
+		return Objects.hash(aliasPropagationCount, callgraphConstructionSeconds, edgePropagationCount,
+				infoflowPropagationCount, maxMemoryConsumption, pathReconstructionSeconds, sinkCount, sourceCount,
+				taintPropagationSeconds, totalRuntimeSeconds);
 	}
 
 	@Override
@@ -293,21 +346,14 @@ public class InfoflowPerformanceData {
 		if (getClass() != obj.getClass())
 			return false;
 		InfoflowPerformanceData other = (InfoflowPerformanceData) obj;
-		if (callgraphConstructionSeconds != other.callgraphConstructionSeconds)
-			return false;
-		if (maxMemoryConsumption != other.maxMemoryConsumption)
-			return false;
-		if (pathReconstructionSeconds != other.pathReconstructionSeconds)
-			return false;
-		if (sinkCount != other.sinkCount)
-			return false;
-		if (sourceCount != other.sourceCount)
-			return false;
-		if (taintPropagationSeconds != other.taintPropagationSeconds)
-			return false;
-		if (totalRuntimeSeconds != other.totalRuntimeSeconds)
-			return false;
-		return true;
+		return aliasPropagationCount == other.aliasPropagationCount
+				&& callgraphConstructionSeconds == other.callgraphConstructionSeconds
+				&& edgePropagationCount == other.edgePropagationCount
+				&& infoflowPropagationCount == other.infoflowPropagationCount
+				&& maxMemoryConsumption == other.maxMemoryConsumption
+				&& pathReconstructionSeconds == other.pathReconstructionSeconds && sinkCount == other.sinkCount
+				&& sourceCount == other.sourceCount && taintPropagationSeconds == other.taintPropagationSeconds
+				&& totalRuntimeSeconds == other.totalRuntimeSeconds;
 	}
 
 }

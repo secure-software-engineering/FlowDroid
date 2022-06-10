@@ -118,6 +118,7 @@ public class TypeUtils {
 		if (!manager.getConfig().getEnableTypeChecking())
 			return true;
 
+		final int fragmentCount = accessPath.getFragmentCount();
 		int fieldStartIdx = 0;
 		if (accessPath.isStaticFieldRef()) {
 			if (!checkCast(type, accessPath.getFirstFieldType()))
@@ -126,7 +127,7 @@ public class TypeUtils {
 			// If the target type is a primitive array, we cannot have any
 			// subsequent field
 			if (isPrimitiveArray(type))
-				if (accessPath.getFieldCount() > 1)
+				if (fragmentCount > 1)
 					return false;
 			fieldStartIdx = 1;
 		} else {
@@ -141,8 +142,8 @@ public class TypeUtils {
 
 		// The next field's base type must also be cast-compatible to the new
 		// base type
-		if (accessPath.isFieldRef() && accessPath.getFieldCount() > fieldStartIdx)
-			if (!checkCast(type, accessPath.getFields()[fieldStartIdx].getDeclaringClass().getType()))
+		if (accessPath.isFieldRef() && fragmentCount > fieldStartIdx)
+			if (!checkCast(type, accessPath.getFragments()[fieldStartIdx].getField().getDeclaringClass().getType()))
 				return false;
 
 		// No type problems found

@@ -98,6 +98,12 @@ public class SummaryReader extends AbstractXMLReader {
 				} else if (localName.equals(TREE_METHOD) && xmlreader.isStartElement()) {
 					if (state == State.methods) {
 						currentMethod = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_METHOD_SIG);
+
+						// Some summaries are full signatures instead of subsignatures. We fix this on
+						// the fly.
+						if (currentMethod.contains(":"))
+							currentMethod = currentMethod.substring(currentMethod.indexOf(":") + 1);
+
 						String sIsExcluded = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUDED);
 						if (sIsExcluded != null && sIsExcluded.equals(XMLConstants.VALUE_TRUE))
 							summary.addExcludedMethod(currentMethod);

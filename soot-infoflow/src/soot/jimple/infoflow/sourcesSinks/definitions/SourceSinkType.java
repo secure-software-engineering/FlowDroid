@@ -107,4 +107,19 @@ public enum SourceSinkType {
 		return this;
 	}
 
+	public static SourceSinkType fromString(String sourceSinkTypeString) {
+		switch (sourceSinkTypeString) {
+			case "NONE":
+				return Neither;
+			case "SOURCE":
+				return Source;
+			case "SINK":
+				return Sink;
+			case "BOTH":
+				return Both;
+		}
+		//return Undefined;
+		throw new RuntimeException("[SourceSinkType.sourceSinkTypeString]error in target definition: " + sourceSinkTypeString);
+	}
+
 }

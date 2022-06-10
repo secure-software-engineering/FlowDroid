@@ -120,8 +120,9 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			scap.path.add(abs);
 
 			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
-					&& scap.path.size() > pathConfig.getMaxPathLength())
+					&& scap.path.size() > pathConfig.getMaxPathLength()) {
 				return null;
+			}
 		}
 
 		// Extend the call stack

@@ -1,7 +1,12 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
-	<hierarchy>
+	<hierarchy superClass="java.util.Vector">
 		<interface name="java.util.List" />
+		<interface name="java.util.Collection" />
+		<interface name="java.util.RandomAccess" />
+		<interface name="java.lang.Iterable" />
+		<interface name="java.lang.Cloneable" />
+		<interface name="java.io.Serializable" />
 	</hierarchy>
     <methods>
 		<method id="void addElement(java.lang.Object)">

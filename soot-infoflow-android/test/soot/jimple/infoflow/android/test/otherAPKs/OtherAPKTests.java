@@ -32,5 +32,4 @@ public class OtherAPKTests extends JUnitTests {
 				("testAPKs/ReturnParameterTest.apk", false, false, false);
 		Assert.assertTrue(res == null || res.isEmpty());
 	}
-
 }

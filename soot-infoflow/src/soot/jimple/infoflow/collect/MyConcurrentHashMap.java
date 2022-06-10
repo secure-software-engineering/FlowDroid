@@ -15,6 +15,7 @@ public class MyConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 	 * @author Steven Arzt
 	 *
 	 */
+	@FunctionalInterface
 	public interface IValueFactory<V> {
 
 		/**
@@ -27,13 +28,11 @@ public class MyConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 	}
 
 	/**
-	 * Puts the new key/value-pair if no mapping for the given key was in the in
-	 * the map before, otherwise it returns the existing mapping.
+	 * Puts the new key/value-pair if no mapping for the given key was in the in the
+	 * map before, otherwise it returns the existing mapping.
 	 * 
-	 * @param key
-	 *            The key to check and put if it is not already in the map
-	 * @param value
-	 *            The value to put
+	 * @param key   The key to check and put if it is not already in the map
+	 * @param value The value to put
 	 * @return The old value if one was present in the map for the given key,
 	 *         otherwise, the newly registered value
 	 */
@@ -43,14 +42,12 @@ public class MyConcurrentHashMap<K, V> extends ConcurrentHashMap<K, V> {
 	}
 
 	/**
-	 * Puts the new key/value-pair if no mapping for the given key was in the in
-	 * the map before, otherwise it returns the existing mapping.
+	 * Puts the new key/value-pair if no mapping for the given key was in the in the
+	 * map before, otherwise it returns the existing mapping.
 	 * 
-	 * @param key
-	 *            The key to check and put if it is not already in the map
-	 * @param valueFactory
-	 *            The factory that creates the value to put into the map on
-	 *            demand
+	 * @param key          The key to check and put if it is not already in the map
+	 * @param valueFactory The factory that creates the value to put into the map on
+	 *                     demand
 	 * @return The old value if one was present in the map for the given key,
 	 *         otherwise, the newly registered value
 	 */
