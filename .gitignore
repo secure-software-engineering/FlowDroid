@@ -4,3 +4,5 @@ soot-infoflow-summaries/target/
 /.recommenders
 .idea/
 *.iml
+*.settings/*
+*/.settings/*
