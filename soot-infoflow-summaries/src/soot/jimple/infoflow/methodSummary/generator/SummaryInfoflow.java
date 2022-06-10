@@ -13,7 +13,7 @@ import soot.options.Options;
  * @author Steven Arzt
  *
  */
-public class SummaryInfoflow extends Infoflow {
+public class SummaryInfoflow extends Infoflow implements ISummaryInfoflow {
 
 	private InfoflowManager cachedManager = null;
 	private String libPath;

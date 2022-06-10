@@ -24,7 +24,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public StatementSourceSinkDefinition(Stmt stmt, Local local, Set<AccessPathTuple> accessPaths) {
 		this.stmt = stmt;
 		this.local = local;
-		this.accessPaths = accessPaths;
+		this.accessPaths = new HashSet<>(accessPaths);
 	}
 
 	@Override

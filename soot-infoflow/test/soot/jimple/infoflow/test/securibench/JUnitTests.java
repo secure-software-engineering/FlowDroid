@@ -23,6 +23,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigSecuriBench;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
@@ -104,7 +106,7 @@ public abstract class JUnitTests {
 
 	}
 
-	protected void checkInfoflow(Infoflow infoflow, int resultCount) {
+	protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 			boolean containsSink = false;
@@ -138,7 +140,7 @@ public abstract class JUnitTests {
 		}
 	}
 
-	protected void negativeCheckInfoflow(Infoflow infoflow) {
+	protected void negativeCheckInfoflow(IInfoflow infoflow) {
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 			for (String sink : sinkArray) {
@@ -152,7 +154,7 @@ public abstract class JUnitTests {
 		}
 	}
 
-	protected Infoflow initInfoflow(List<String> entryPoints) {
+	protected IInfoflow initInfoflow(List<String> entryPoints) {
 		List<String> substClasses = new LinkedList<String>();
 		substClasses.add("soot.jimple.infoflow.test.securibench.supportClasses.DummyHttpRequest");
 		substClasses.add("soot.jimple.infoflow.test.securibench.supportClasses.DummyHttpResponse");
@@ -162,7 +164,8 @@ public abstract class JUnitTests {
 		entryPointCreator.setSubstituteClasses(substClasses);
 		this.entryPointCreator = entryPointCreator;
 
-		Infoflow result = new Infoflow();
+		BackwardsInfoflow result = new BackwardsInfoflow();
+//		Infoflow result = new Infoflow();
 
 		result.setSootConfig(new ConfigSecuriBench());
 		result.getConfig().setInspectSinks(false);

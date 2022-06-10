@@ -63,6 +63,8 @@
 	<xs:sequence>
 		<xs:element name="from" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
 		<xs:element name="to" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
+		<xs:element name="require-context" type="contextDefinition" minOccurs="0" maxOccurs="unbounded" />
+		<xs:element name="provide-context" type="contextDefinition" minOccurs="0" maxOccurs="unbounded" />
 	</xs:sequence>
 	
 	<!-- 
@@ -84,6 +86,11 @@
 	the resulting taint would be on d.c. With this option, it would only be on d.  
 	 -->
 	<xs:attribute name="cutSubfields" type="xs:boolean" use="optional" default="false" />
+</xs:complexType>
+
+<xs:complexType name="contextDefinition">
+	<xs:attribute name="name" type="xs:string" use="required" />	
+	<xs:attribute name="parameterIndex" type="xs:int" use="required" />	
 </xs:complexType>
 
 <xs:complexType name="clearType">

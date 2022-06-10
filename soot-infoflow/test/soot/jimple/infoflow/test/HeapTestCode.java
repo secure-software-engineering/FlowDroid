@@ -20,71 +20,71 @@ import soot.jimple.infoflow.test.utilclasses.ClassWithField;
 import soot.jimple.infoflow.test.utilclasses.ClassWithStatic;
 
 public class HeapTestCode {
-	
-	public class Y{
+
+	public class Y {
 		String f;
-		
-		public void set(String s){
+
+		public void set(String s) {
 			f = s;
 		}
 	}
-	
-	public void simpleTest(){
+
+	public void simpleTest() {
 		String taint = TelephonyManager.getDeviceId();
 		Y a = new Y();
 		Y b = new Y();
-		
+
 		a.set(taint);
 		b.set("notaint");
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(b.f);	
+		cm.publish(b.f);
 	}
-	
-	public void argumentTest(){
+
+	public void argumentTest() {
 		ClassWithField x = new ClassWithField();
 		run(x);
 		x.listField = new ArrayList<String>();
 		x.listField.add(TelephonyManager.getDeviceId());
 	}
-	
-	public static void run(ClassWithField o){
+
+	public static void run(ClassWithField o) {
 		o = new ClassWithField();
 		o.listField = new ArrayList<String>();
 		o.listField.add("empty");
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(o.field);
 	}
-	
-	public void negativeTest(){
+
+	public void negativeTest() {
 		String taint = TelephonyManager.getDeviceId();
-		
+
 		MyArrayList notRelevant = new MyArrayList();
 		MyArrayList list = new MyArrayList();
 		notRelevant.add(taint);
 		list.add("test");
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(list.get());
 	}
-	
-	class MyArrayList{
-		
+
+	class MyArrayList {
+
 		String[] elements;
-		
-		public void add(String obj){
-			if(elements == null){
+
+		public void add(String obj) {
+			if (elements == null) {
 				elements = new String[3];
 			}
 			elements[0] = obj;
 		}
-		
-		public String get(){
+
+		public String get() {
 			return elements[0];
 		}
-		
+
 	}
-	
-	public void doubleCallTest(){
+
+	public void doubleCallTest() {
 		X a = new X();
 		X b = new X();
 		a.save("neutral");
@@ -93,7 +93,7 @@ public class HeapTestCode {
 		cm.publish(String.valueOf(a.e));
 	}
 
-	public void methodTest0(){
+	public void methodTest0() {
 		String taint = TelephonyManager.getDeviceId();
 		X x = new X();
 		A a = new A();
@@ -102,8 +102,8 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(str);
 	}
-	
-	public void methodTest0b(){
+
+	public void methodTest0b() {
 		String taint = TelephonyManager.getDeviceId();
 		A a = new A();
 		String str = a.b;
@@ -111,210 +111,249 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(str);
 	}
-	
-	class A{
+
+	class A {
 		public String b = "Y";
 		public String c = "X";
 		public int i = 0;
 	}
-	
-	class X{
+
+	class X {
 		public char[] e;
-		public String xx(A o){
+
+		public String xx(A o) {
 			return o.b;
 		}
-		
-		public void save(String f){
+
+		public void save(String f) {
 			e = f.toCharArray();
 		}
 	}
-	
-	//########################################################################
 
-	public void methodTest1(){
+	// ########################################################################
+
+	public void methodTest1() {
 		String tainted = TelephonyManager.getDeviceId();
-		 new AsyncTask().execute(tainted);
+		new AsyncTask().execute(tainted);
 	}
-	
-	protected class AsyncTask{
+
+	public void methodTest2() {
+		String tainted = TelephonyManager.getDeviceId();
+		Worker wo = new Worker() {
+			public void call() {
+				ConnectionManager cm = new ConnectionManager();
+				cm.publish(mParams);
+			}
+		};
+		wo.mParams = tainted;
+		new FutureTask(wo).run();
+	}
+
+	public void methodTest3() {
+		String tainted = TelephonyManager.getDeviceId();
+		new AsyncTask2().execute(tainted);
+	}
+
+	protected class AsyncTask {
 		public Worker mWorker;
 		public FutureTask mFuture;
-		
-		public AsyncTask(){
-			mWorker = new Worker(){
-				public void call(){
+
+		public AsyncTask() {
+			mWorker = new Worker() {
+				public void call() {
 					ConnectionManager cm = new ConnectionManager();
 					cm.publish(mParams);
 				}
 			};
 			mFuture = new FutureTask(mWorker);
 		}
-		
-		public void execute(String t){
+
+		public void execute(String t) {
 			mWorker.mParams = t;
-	        //shortcut (no executor used):
-			//exec.execute(mFuture);
+			// shortcut (no executor used):
+			// exec.execute(mFuture);
 			mFuture.run();
 		}
-		
+
 	}
-	
-	protected class Worker{
+
+	protected class AsyncTask2 {
+		public Worker mWorker;
+
+		public AsyncTask2() {
+			mWorker = new Worker() {
+				public void call() {
+					ConnectionManager cm = new ConnectionManager();
+					cm.publish(mParams);
+				}
+			};
+		}
+
+		public void execute(String t) {
+			mWorker.mParams = t;
+			mWorker.call();
+		}
+
+	}
+
+	protected class Worker {
 		public String mParams;
-		
-		public void call(){
+
+		public void call() {
 		}
 	}
-	protected class FutureTask{
+
+	protected class FutureTask {
 		private final Worker wo;
-		public FutureTask(Worker w){
+
+		public FutureTask(Worker w) {
 			wo = w;
 		}
-		public void run(){
+
+		public void run() {
 			wo.call();
 		}
 	}
-	
-	public void testForWrapper(){
+
+	public void testForWrapper() {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish("");
 		ClassWithStatic cws = new ClassWithStatic();
-		int i = 4+3;
-		while(true){
+		int i = 4 + 3;
+		while (true) {
 			cws.getTitle();
-			if(i ==8){
+			if (i == 8) {
 				break;
 			}
 		}
 		ClassWithStatic.staticString = TelephonyManager.getDeviceId();
 	}
-	
-	public void testForLoop(){
-		while(true){
+
+	public void testForLoop() {
+		while (true) {
 			WrapperClass f = new WrapperClass();
 			f.sink();
-			
+
 			WrapperClass w = new WrapperClass();
-			w.callIt();	
-		}	
+			w.callIt();
+		}
 	}
-	
-	public void testForEarlyTermination(){
+
+	public void testForEarlyTermination() {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(ClassWithStatic.staticString);
-		
+
 		@SuppressWarnings("unused")
 		ClassWithStatic c1 = new ClassWithStatic();
-		
+
 		WrapperClass w1 = new WrapperClass();
 		w1.callIt();
 	}
-	
-	class WrapperClass{
-		
-		public void callIt(){
+
+	class WrapperClass {
+
+		public void callIt() {
 			ClassWithStatic.staticString = TelephonyManager.getDeviceId();
 		}
-		
-		public void sink(){
+
+		public void sink() {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(ClassWithStatic.staticString);
 		}
-		
+
 	}
-	
-	
+
 	// ----------------- backward flow on return:
-	
-	public void methodReturn(){
+
+	public void methodReturn() {
 		B b = new B();
 		B b2 = b;
 		b.attr = m();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b2.attr.b);
 	}
-	
-	public class B{
+
+	public class B {
 		public A attr;
-		
+
 		public B() {
 			attr = new A();
 		}
-		
+
 		public void setAttr(A attr) {
 			this.attr = attr;
 		}
 	}
-	
-	public A m(){
+
+	public A m() {
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
 		return a;
 	}
-	
-	public void twoLevelTest(){
+
+	public void twoLevelTest() {
 		SecondLevel l2 = new SecondLevel();
 		FirstLevel l1 = new FirstLevel();
-		
+
 		String x = l1.getValue(l2, TelephonyManager.getDeviceId());
 		String y = l1.getValue(l2, "test");
 		x.toString();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(y);
 	}
-	
-	public class FirstLevel{
-		
-		public String getValue(SecondLevel l, String c){
+
+	public class FirstLevel {
+
+		public String getValue(SecondLevel l, String c) {
 			return l.id(c);
 		}
 	}
-	
-	public class SecondLevel{
-		
-		public String id(String i){
+
+	public class SecondLevel {
+
+		public String id(String i) {
 			return i;
 		}
-		
+
 	}
-	
+
 	private class DataClass {
 		public String data;
 		public DataClass next;
 	}
-	
+
 	public void multiAliasTest() {
 		DataClass dc = new DataClass();
 		DataClass dc2 = null;
 		DataClass dc3 = new DataClass();
-		
+
 		dc2 = dc3;
-		
+
 		dc2.next = dc;
-		
+
 		String a = TelephonyManager.getDeviceId();
 		dc.data = a;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(dc3.next.data);
-	}	
-	
+	}
+
 	public void overwriteAliasTest() {
 		DataClass dc = new DataClass();
 		DataClass dc2 = null;
 		DataClass dc3 = new DataClass();
-		
+
 		dc2 = dc3;
-		
+
 		dc2.next = dc;
 		dc3.next = null;
-		
+
 		String a = TelephonyManager.getDeviceId();
 		dc.data = a;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(dc3.next.data);
-	}	
+	}
 
 	public void arrayAliasTest() {
 		String[] a = new String[1];
@@ -322,9 +361,9 @@ public class HeapTestCode {
 		a[0] = TelephonyManager.getDeviceId();
 		String[] c = b;
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(c[0]);		
+		cm.publish(c[0]);
 	}
-	
+
 	public void arrayAliasTest2() {
 		String tainted = TelephonyManager.getDeviceId();
 		String[] arr = new String[] { "foo", "bar" };
@@ -332,7 +371,7 @@ public class HeapTestCode {
 		int size = arr.length;
 		arr[1] = tainted;
 		String x = arr2[1];
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(x);
 		System.out.println(size);
@@ -345,7 +384,7 @@ public class HeapTestCode {
 		dc1.data = tainted;
 		copy(dc1, dc2);
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(dc2.data);		
+		cm.publish(dc2.data);
 	}
 
 	private void copy(DataClass dc1, DataClass dc2) {
@@ -358,14 +397,14 @@ public class HeapTestCode {
 		taintMe(dc1);
 		copy(dc1, dc2);
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(dc2.data);		
+		cm.publish(dc2.data);
 	}
-	
+
 	public void taintMe(DataClass dc) {
 		String tainted = TelephonyManager.getDeviceId();
 		dc.data = tainted;
 	}
-	
+
 	public void multiLevelTaint() {
 		String tainted = TelephonyManager.getDeviceId();
 		B b = new B();
@@ -374,7 +413,7 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a.b);
 	}
-	
+
 	private void taintLevel1(String data, B b) {
 		taintLevel2(data, b.attr);
 	}
@@ -415,23 +454,23 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 	}
-	
+
 	public void threeLevelTest() {
 		B b = new B();
 		A a = b.attr;
 		taintOnNextLevel(b, a);
 	}
-	
+
 	private void taintMe(B b) {
 		b.attr.b = TelephonyManager.getDeviceId();
 	}
-	
+
 	private void taintOnNextLevel(B b, A a) {
 		taintMe(b);
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(a.b);		
+		cm.publish(a.b);
 	}
-	
+
 	private class RecursiveDataClass {
 		RecursiveDataClass child;
 		String data;
@@ -443,7 +482,7 @@ public class HeapTestCode {
 				child.leakIt();
 		}
 	}
-	
+
 	public void recursionTest() {
 		RecursiveDataClass rdc = new RecursiveDataClass();
 		rdc.data = TelephonyManager.getDeviceId();
@@ -452,7 +491,7 @@ public class HeapTestCode {
 
 	public void activationUnitTest1() {
 		B b = new B();
-		
+
 		A a = b.attr;
 		String tainted = TelephonyManager.getDeviceId();
 		a.b = tainted;
@@ -460,11 +499,11 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 	}
-	
+
 	public void activationUnitTest2() {
 		B b = new B();
 		b.attr = new A();
-		
+
 		A a = b.attr;
 		String tainted = TelephonyManager.getDeviceId();
 
@@ -477,15 +516,15 @@ public class HeapTestCode {
 	public void activationUnitTest3() {
 		B b = new B();
 		b.attr = new A();
-		
+
 		B b2 = new B();
 		b2.attr = new A();
 
 		String tainted = TelephonyManager.getDeviceId();
-		
-		b.attr.b = tainted;	
+
+		b.attr.b = tainted;
 		b2.attr.b = b.attr.b;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b2.attr.b);
 	}
@@ -493,14 +532,14 @@ public class HeapTestCode {
 	public void activationUnitTest4() {
 		B b = new B();
 		b.attr = new A();
-		
+
 		B b2 = new B();
 		b2.attr = new A();
 
 		String tainted = TelephonyManager.getDeviceId();
-		
+
 		b2.attr.b = tainted;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 
@@ -510,14 +549,14 @@ public class HeapTestCode {
 	public void activationUnitTest4b() {
 		B b = new B();
 		b.attr = new A();
-		
+
 		B b2 = new B();
 		b2.attr = new A();
 
 		String tainted = TelephonyManager.getDeviceId();
-		
+
 		b2.attr.b = tainted;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 
@@ -527,24 +566,24 @@ public class HeapTestCode {
 	public void activationUnitTest5() {
 		B b = new B();
 		b.attr = new A();
-		
+
 		B b2 = new B();
 		b2.attr = new A();
 
 		ConnectionManager cm = new ConnectionManager();
 		String tainted = TelephonyManager.getDeviceId();
-		
+
 		cm.publish(b.attr.b);
 		cm.publish(b2.attr.b);
 
 		b.attr = b2.attr;
-		
+
 		cm.publish(b.attr.b);
 		cm.publish(b2.attr.b);
 
 		b.attr.b = tainted;
 	}
-	
+
 	public void returnAliasTest() {
 		String tainted = TelephonyManager.getDeviceId();
 		B b = new B();
@@ -555,11 +594,11 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a.b);
 	}
-	
+
 	private A alias(B b) {
 		return b.attr;
 	}
-	
+
 	public void callPerformanceTest() {
 		A a = new A();
 		a.b = getDeviceId();
@@ -568,7 +607,7 @@ public class HeapTestCode {
 
 		doIt(b);
 	}
-	
+
 	private void doIt(B b) {
 		throwAround(b);
 		System.out.println(b.attr.b);
@@ -582,15 +621,15 @@ public class HeapTestCode {
 	private void throwAround(B b) {
 		throwAround2(b.attr);
 	}
-	
+
 	private void throwAround2(A a) {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a.b);
 	}
-	
+
 	private B b1;
 	private B b2;
-	
+
 	private void foo(B b1, B b2) {
 		this.b1 = b1;
 		this.b2 = b2;
@@ -600,7 +639,7 @@ public class HeapTestCode {
 	private void foo2(B b1, B b2) {
 		//
 	}
-	
+
 	private A bar(A a) {
 		this.b1.attr = a;
 		return this.b2.attr;
@@ -610,16 +649,16 @@ public class HeapTestCode {
 	private A bar2(A a) {
 		return null;
 	}
-	
+
 	public void testAliases() {
 		B b = new B();
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
-		
+
 		// Create the alias
 		foo(b, b);
 		String tainted = bar(a).b;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(tainted);
 	}
@@ -628,11 +667,11 @@ public class HeapTestCode {
 		B b = new B();
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
-		
+
 		// Create the alias
 		foo2(b, b);
 		String tainted = bar2(a).b;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(tainted);
 	}
@@ -641,30 +680,30 @@ public class HeapTestCode {
 		B b = new B();
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
-		
+
 		// Create the alias
 		foo(b, b);
 		String untainted = bar(a).c;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(untainted);
 	}
-	
+
 	private void alias(B b1, B b2) {
 		b2.attr = b1.attr;
 	}
-	
+
 	private void set(B a, String secret, B b) {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 		a.attr.b = secret;
 		cm.publish(b.attr.b);
 	}
-	
+
 	private void foo(B a) {
 		System.out.println(a);
 	}
-	
+
 	public void aliasPerformanceTest() {
 		B a = new B();
 		B b = new B();
@@ -674,19 +713,19 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 	}
-	
+
 	public void backwardsParameterTest() {
 		B b1 = new B();
 		b1.attr = new A();
 		B b2 = new B();
-		
+
 		alias(b1, b2);
-		
+
 		b2.attr.b = TelephonyManager.getDeviceId();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b1.attr.b);
 	}
-	
+
 	public void aliasTaintLeakTaintTest() {
 		B b = new B();
 		b.attr = new A();
@@ -696,7 +735,7 @@ public class HeapTestCode {
 		b.attr.b = TelephonyManager.getDeviceId();
 		cm.publish(a.b);
 	}
-	
+
 	public void fieldBaseOverwriteTest() {
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
@@ -704,11 +743,11 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a2.b);
 	}
-	
+
 	private A alias(A a) {
 		return a;
 	}
-	
+
 	public void doubleAliasTest() {
 		A a = new A();
 		A b = alias(a);
@@ -718,7 +757,7 @@ public class HeapTestCode {
 		cm.publish(b.b);
 		cm.publish(c.b);
 	}
-	
+
 	private A alias2(A a) {
 		A a2 = a;
 		return a2;
@@ -733,7 +772,7 @@ public class HeapTestCode {
 		cm.publish(b.b);
 		cm.publish(c.b);
 	}
-	
+
 	public void tripleAliasTest() {
 		A a = new A();
 		A b = alias(a);
@@ -746,37 +785,45 @@ public class HeapTestCode {
 		cm.publish(d.b);
 	}
 
+	public void singleAliasTest() {
+		A a = new A();
+		A b = alias(a);
+		a.b = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(b.b);
+	}
+
 	private int intData;
-	
+
 	private void setIntData() {
 		this.intData = TelephonyManager.getIMEI();
 	}
-	
+
 	public void intAliasTest() {
 		setIntData();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(intData);
 	}
-	
+
 	private static B staticB1;
 	private static B staticB2;
-	
+
 	private void aliasStatic() {
 		staticB2.attr = staticB1.attr;
 	}
-	
+
 	public void staticAliasTest() {
 		staticB1 = new B();
 		staticB2 = new B();
 
 		aliasStatic();
-		
+
 		staticB1.attr.b = TelephonyManager.getDeviceId();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(staticB2.attr.b);
 	}
-	
+
 	public void staticAliasTest2() {
 		staticB1 = new B();
 		staticB2 = staticB1;
@@ -788,11 +835,11 @@ public class HeapTestCode {
 	public void unAliasParameterTest() {
 		B b1 = new B();
 		B b2 = new B();
-		
+
 		b2.attr = b1.attr;
 		doUnalias(b2);
 		b1.attr.b = TelephonyManager.getDeviceId();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b2.attr.b);
 	}
@@ -804,56 +851,56 @@ public class HeapTestCode {
 	public void overwriteParameterTest() {
 		B b = new B();
 		b.attr.b = TelephonyManager.getDeviceId();
-		
+
 		overwriteParameter(b);
-		
+
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(b.attr.b);		
+		cm.publish(b.attr.b);
 	}
 
 	private void overwriteParameter(B b) {
 		System.out.println(b);
 		b = new B();
 	}
-	
+
 	public void multiAliasBaseTest() {
 		A a = new A();
 		B b1 = new B();
 		B b2 = new B();
-		
+
 		b1.setAttr(a);
 		b2.setAttr(a);
-		
+
 		a.b = TelephonyManager.getDeviceId();
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(b1.attr.b);		
-		cm.publish(b2.attr.b);		
+		cm.publish(b1.attr.b);
+		cm.publish(b2.attr.b);
 	}
-	
+
 	private class Inner1 {
-		
+
 		private class Inner2 {
 			private String data;
-			
+
 			public void set() {
 				data = TelephonyManager.getDeviceId();
 			}
 		}
-		
+
 		private Inner2 obj;
-		
+
 		public String get() {
 			return obj.data;
 		}
 	}
-	
+
 	public void innerClassTest() {
 		Inner1 a = new Inner1();
 		Inner1 b = new Inner1();
-		
+
 		a.obj = a.new Inner2();
 		b.obj = a.new Inner2();
-		
+
 		a.obj.set();
 		String untainted = b.get();
 		ConnectionManager cm = new ConnectionManager();
@@ -861,10 +908,10 @@ public class HeapTestCode {
 	}
 
 	private class Inner1b {
-		
+
 		private class Inner2b {
 			public String data;
-			
+
 			public void set() {
 				obj.data = TelephonyManager.getDeviceId();
 			}
@@ -872,15 +919,15 @@ public class HeapTestCode {
 			public String get() {
 				return obj.data;
 			}
-			
+
 			public String getParent() {
 				return parentData;
 			}
 		}
-		
+
 		public Inner2b obj;
 		public String parentData;
-		
+
 		public String get() {
 			return obj.data;
 		}
@@ -889,10 +936,10 @@ public class HeapTestCode {
 	public void innerClassTest2() {
 		Inner1b a = new Inner1b();
 		Inner1b b = new Inner1b();
-		
+
 		a.obj = a.new Inner2b();
 		b.obj = a.new Inner2b();
-		
+
 		a.obj.set();
 		String untainted = b.get();
 		ConnectionManager cm = new ConnectionManager();
@@ -902,10 +949,10 @@ public class HeapTestCode {
 	public void innerClassTest3() {
 		Inner1b a = new Inner1b();
 		Inner1b b = new Inner1b();
-		
+
 		a.obj = a.new Inner2b();
 		b.obj = a.new Inner2b();
-		
+
 		b.obj.set();
 		String untainted = a.get();
 		ConnectionManager cm = new ConnectionManager();
@@ -915,69 +962,69 @@ public class HeapTestCode {
 	public void innerClassTest4() {
 		Inner1b a = new Inner1b();
 		Inner1b b = new Inner1b();
-		
+
 		a.obj = a.new Inner2b();
 		b.obj = b.new Inner2b();
-				
+
 		a.obj.set();
 		String untainted = b.obj.get();
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(untainted);		
+		cm.publish(untainted);
 	}
-	
+
 	private class Inner3 {
-		
+
 		private class Inner2b {
-			
+
 			private Inner2 foo;
-			
+
 		}
 
 		private String data;
-		
+
 		private class Inner2 {
-			
+
 			public void set() {
 				data = TelephonyManager.getDeviceId();
 			}
 		}
-		
+
 		private Inner2b obj2;
-		
+
 		public String get() {
 			return data;
 		}
 	}
-	
+
 	public void innerClassTest5() {
 		Inner3 a = new Inner3();
 		Inner3 b = new Inner3();
-		
+
 		a.obj2 = b.new Inner2b();
 		a.obj2.foo = b.new Inner2();
-		
+
 		a.obj2.foo.set();
 		String untainted = a.get();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(untainted);
 	}
-	
+
 	public void innerClassTest6() {
 		Inner1b a = new Inner1b();
 		a.obj = a.new Inner2b();
 		a.parentData = TelephonyManager.getDeviceId();
-		
+
 		Inner1b.Inner2b inner = a.obj;
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(inner.getParent());
 	}
-	
+
 	private class SimpleTree {
 		private String data = "";
 		private SimpleTree left;
 		private SimpleTree right;
 	}
-	
+
 	public void datastructureTest() {
 		SimpleTree root = new SimpleTree();
 		root.left = new SimpleTree();
@@ -997,15 +1044,15 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(root.right.data);
 	}
-	
+
 	private class Tree {
 		private Tree left;
 		private Tree right;
 		private String data;
 	}
-	
+
 	private static Tree myTree;
-	
+
 	public void staticAccessPathTest() {
 		myTree = new Tree();
 		myTree.left = new Tree();
@@ -1015,17 +1062,17 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(myTree.left.right.left.data);
 	}
-	
+
 	private class SeparatedTree {
 		private TreeElement left;
 		private TreeElement right;
 	}
-	
+
 	private class TreeElement {
 		private SeparatedTree child;
 		private String data;
 	}
-	
+
 	public void separatedTreeTest() {
 		SeparatedTree myTree = new SeparatedTree();
 		myTree.left = new TreeElement();
@@ -1035,7 +1082,7 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(myTree.left.child.right.data);
 	}
-	
+
 	public void overwriteAliasedVariableTest() {
 		Y y1 = new Y();
 		Y y2 = y1;
@@ -1080,12 +1127,12 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		Object x = TelephonyManager.getDeviceId();
 		Object y = new AccountManager().getPassword();
-		
+
 		String z = "";
-		
+
 		z = (String) x;
 		String z2 = z;
-		
+
 		z = (String) y;
 		String z3 = z;
 
@@ -1093,7 +1140,7 @@ public class HeapTestCode {
 		cm.publish(z3);
 	}
 
-	@SuppressWarnings("null")	// would cause an NPE
+	@SuppressWarnings("null") // would cause an NPE
 	public void overwriteAliasedVariableTest6() {
 		Y y1 = new Y();
 		y1.f = TelephonyManager.getDeviceId();
@@ -1102,22 +1149,21 @@ public class HeapTestCode {
 		y1 = null;
 		cm.publish(y1.f);
 	}
-	
+
 	public void aliasFlowTest() {
 		A b, q, y;
 		B a, p, x;
-		
+
 		a = new B();
 		p = new B();
-		
+
 		b = new A();
 		q = new A();
-		
+
 		if (Math.random() < 0.5) {
 			x = a;
 			y = b;
-		}
-		else {
+		} else {
 			x = p;
 			y = q;
 		}
@@ -1126,24 +1172,24 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a.attr.b);
 	}
-	
+
 	private class Data {
 		public Data next;
 	}
-	
+
 	private Data getSecretData() {
 		return new Data();
 	}
-	
+
 	private void leakData(Data e) {
 		System.out.println(e);
 	}
-	
+
 	public void aliasStrongUpdateTest() {
 		Data d = getSecretData();
 		d = d.next;
 		Data e = d;
-		
+
 		Data x = new Data();
 		x.next = e;
 		Data y = x;
@@ -1151,12 +1197,12 @@ public class HeapTestCode {
 		e = e.next;
 		leakData(e);
 	}
-	
+
 	public void aliasStrongUpdateTest2() {
 		Data d = getSecretData();
 		d = d.next;
 		Data e = d;
-		
+
 		Data x = new Data();
 		Data y = x;
 		x.next = e;
@@ -1164,14 +1210,14 @@ public class HeapTestCode {
 		e = e.next;
 		leakData(e);
 	}
-	
+
 	private Data taintedBySourceSinkManager = null;
-	
+
 	public void aliasStrongUpdateTest3() {
 		Data d = taintedBySourceSinkManager;
 		d = d.next;
 		Data e = d;
-		
+
 		Data x = new Data();
 		Data y = x;
 		x.next = e;
@@ -1179,17 +1225,17 @@ public class HeapTestCode {
 		e = e.next;
 		leakData(y.next);
 	}
-	
+
 	public void arrayLengthAliasTest1() {
 		String tainted = TelephonyManager.getDeviceId();
 		String[] arr = new String[] { "foo", "xx", "bar" };
 		int size = arr.length;
 		arr[1] = tainted;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(size);
 	}
-	
+
 	public void arrayLengthAliasTest2() {
 		String tainted = TelephonyManager.getDeviceId();
 		String[] arr = new String[] { "foo", "xx", "bar" };
@@ -1197,22 +1243,22 @@ public class HeapTestCode {
 		int size = arr.length;
 		arr[1] = tainted;
 		int size2 = arr2.length;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(size2);
 		System.out.println(size);
 	}
-	
+
 	public void arrayLengthAliasTest3() {
 		String tainted = TelephonyManager.getDeviceId();
 		String[] arr = new String[tainted.length()];
 		int size = arr.length;
 		arr[1] = tainted;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(size);
 	}
-	
+
 	public void arrayLengthAliasTest4() {
 		String tainted = TelephonyManager.getDeviceId();
 		String[] arr = new String[tainted.length()];
@@ -1220,20 +1266,20 @@ public class HeapTestCode {
 		int size = arr.length;
 		arr[1] = tainted;
 		int size2 = arr2.length;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(size2);
 		System.out.println(size);
 	}
-	
+
 	public void taintPrimitiveFieldTest1() {
 		A a = new A();
 		A b = a;
 		a.i = TelephonyManager.getIMEI();
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(b.i);		
+		cm.publish(b.i);
 	}
-	
+
 	public void taintPrimitiveFieldTest2() {
 		B b = new B();
 		A a = new A();
@@ -1242,7 +1288,7 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.i);
 	}
-	
+
 	public void multiContextTest1() {
 		A a = new A();
 		a.b = TelephonyManager.getDeviceId();
@@ -1253,70 +1299,69 @@ public class HeapTestCode {
 		cm.publish(data);
 		cm.publish(data2);
 	}
-	
+
 	private String id(String val) {
 		return val;
 	}
-	
+
 	public void recursiveFollowReturnsPastSeedsTest1() {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(doTaintRecursively(new A()));
 	}
-	
+
 	private String doTaintRecursively(A a) {
 		if (new Random().nextBoolean()) {
 			a.b = TelephonyManager.getDeviceId();
 			return "";
-		}
-		else {
+		} else {
 			A a2 = new A();
 			doTaintRecursively(a2);
 			return a2.b;
 		}
 	}
-	
+
 	public void doubleAliasTest1() {
 		A a1 = new A();
 		a1.b = TelephonyManager.getDeviceId();
 		A a2 = new A();
 		a2.b = new AccountManager().getPassword();
-		
+
 		B b = new B();
 		if (new Random().nextBoolean())
 			b.attr = a1;
 		else
 			b.attr = a2;
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 	}
-	
+
 	private class C {
 		private B b;
 	}
-	
+
 	public void longAPAliasTest1() {
 		C c = new C();
 		c.b = new B();
 		c.b.attr = new A();
-		
+
 		A a = c.b.attr;
 		a.b = TelephonyManager.getDeviceId();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(c.b.attr.b);
 	}
-	
+
 	public void simpleFieldTest1() {
 		A a = new A();
 		B b = new B();
 		b.attr = a;
 		a.b = TelephonyManager.getDeviceId();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
 	}
-	
+
 	public void contextTest1() {
 		A a = new A();
 		A b = new A();
@@ -1331,7 +1376,7 @@ public class HeapTestCode {
 		A c = b;
 		c.b = string;
 	}
-	
+
 	public void contextTest2() {
 		String data = TelephonyManager.getDeviceId();
 		A a = copy(data);
@@ -1347,7 +1392,7 @@ public class HeapTestCode {
 		b.b = data;
 		return a;
 	}
-	
+
 	public void contextTest3() {
 		String data = TelephonyManager.getDeviceId();
 		A a = copy(data, new AccountManager().getPassword());
@@ -1356,7 +1401,7 @@ public class HeapTestCode {
 		cm.publish(b.b);
 		System.out.println(a);
 	}
-	
+
 	private A copy(String context, String data) {
 		System.out.println(context);
 		A a = new A();
@@ -1364,37 +1409,37 @@ public class HeapTestCode {
 		b.b = data;
 		return a;
 	}
-	
-    public static class Container1 {
-        String g;
-    }
-    
-    public static class Container2 {
-        Container1 f;
-    }
-	
-    private void doWrite(final Container2 base, final String string) {
-        base.f.g = string;
-    }
-    
-	public void summaryTest1() {
-        final Container2 base1 = new Container2();
-        final Container2 base2 = new Container2();
-        final String tainted = TelephonyManager.getDeviceId();
-        doWrite(base1, tainted);
-        
-        final Container1 z = base2.f;
-        doWrite(base2, tainted);
 
-        ConnectionManager cm = new ConnectionManager();
+	public static class Container1 {
+		String g;
+	}
+
+	public static class Container2 {
+		Container1 f;
+	}
+
+	private void doWrite(final Container2 base, final String string) {
+		base.f.g = string;
+	}
+
+	public void summaryTest1() {
+		final Container2 base1 = new Container2();
+		final Container2 base2 = new Container2();
+		final String tainted = TelephonyManager.getDeviceId();
+		doWrite(base1, tainted);
+
+		final Container1 z = base2.f;
+		doWrite(base2, tainted);
+
+		ConnectionManager cm = new ConnectionManager();
 		cm.publish(z.g);
 	}
-	
+
 	public void delayedReturnTest1() {
 		A a = new A();
 		B b = new B();
 		doAlias(b, a);
-		
+
 		a.b = TelephonyManager.getDeviceId();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(b.attr.b);
@@ -1402,6 +1447,100 @@ public class HeapTestCode {
 
 	private void doAlias(B b, A a) {
 		b.attr = a;
+	}
+
+	class D {
+		E e;
+
+		public void read() {
+			e = new E();
+			e.read();
+		}
+	}
+
+	class E {
+		String str;
+
+		public void read() {
+			str = "";
+			str = TelephonyManager.getDeviceId();
+		}
+	}
+
+	public void aliasWithOverwriteTest1() {
+		D d = new D();
+		d.read();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(d.e.str);
+	}
+
+	class F {
+		G g;
+
+		public void read() {
+			g = new G();
+			g.read();
+		}
+	}
+
+	class G {
+		String str;
+
+		public void read() {
+			str = TelephonyManager.getDeviceId();
+		}
+	}
+
+	public void aliasWithOverwriteTest2() {
+		F f = new F();
+		f.read();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(f.g.str);
+	}
+
+	class H {
+		I i;
+
+		public void read() {
+			i = new I();
+			i.read();
+		}
+	}
+
+	class I {
+		String str;
+		String str2;
+
+		public void read() {
+			str = "";
+			str2 = str;
+			str = TelephonyManager.getDeviceId();
+		}
+	}
+
+	public void aliasWithOverwriteTest3() {
+		H h = new H();
+		h.read();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(h.i.str2);
+	}
+
+	class J {
+		E e;
+		E f;
+
+		public void read() {
+			e = new E();
+			f = e;
+			e.read();
+		}
+	}
+
+	public void aliasWithOverwriteTest4() {
+		J j = new J();
+		j.read();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(j.f.str);
 	}
 
 }

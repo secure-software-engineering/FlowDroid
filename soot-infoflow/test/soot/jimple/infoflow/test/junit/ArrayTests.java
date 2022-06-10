@@ -21,8 +21,8 @@ import soot.jimple.infoflow.IInfoflow;
  * These tests check taint propagation in arrays, for instance the propagation
  * for copied arrays and arrays converted to lists
  */
-public class ArrayTests extends JUnitTests {
-	
+public abstract class ArrayTests extends JUnitTests {
+
 	@Test
 	public void arrayIntReadWriteTest() {
 		IInfoflow infoflow = initInfoflow();
@@ -31,7 +31,7 @@ public class ArrayTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-	
+
 	@Test(timeout = 300000)
 	public void arrayReadWritePos0Test() {
 		IInfoflow infoflow = initInfoflow();
@@ -130,7 +130,7 @@ public class ArrayTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-	
+
 	@Test(timeout = 300000)
 	public void arrayLengthTest2() {
 		IInfoflow infoflow = initInfoflow();
@@ -139,7 +139,7 @@ public class ArrayTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-	
+
 	@Test(timeout = 300000)
 	public void arrayLengthTest3() {
 		IInfoflow infoflow = initInfoflow();
@@ -157,7 +157,7 @@ public class ArrayTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}
-	
+
 	@Test(timeout = 300000)
 	public void arrayLengthTest5() {
 		IInfoflow infoflow = initInfoflow();
@@ -166,5 +166,5 @@ public class ArrayTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}
-	
+
 }

@@ -25,6 +25,6 @@ public interface IPropagationRuleManagerFactory {
 	 * @return The new propagation rule manager
 	 */
 	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results);
+					TaintPropagationResults results);
 
 }

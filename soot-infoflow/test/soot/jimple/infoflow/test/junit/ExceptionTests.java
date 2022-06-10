@@ -20,7 +20,7 @@ import soot.options.Options;
  * 
  * @author Steven Arzt
  */
-public class ExceptionTests extends JUnitTests {
+public abstract class ExceptionTests extends JUnitTests {
 
 	@Test
 	public void exceptionControlFlowTest1() {
@@ -131,6 +131,7 @@ public class ExceptionTests extends JUnitTests {
 	}
 
 	@Test
+	@Ignore("Escaping exceptions are not supported")
 	public void callMethodParamReturnTest2b() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

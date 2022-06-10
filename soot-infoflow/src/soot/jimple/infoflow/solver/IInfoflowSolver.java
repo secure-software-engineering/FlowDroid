@@ -2,7 +2,6 @@ package soot.jimple.infoflow.solver;
 
 import java.util.Set;
 
-import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
@@ -29,7 +28,7 @@ public interface IInfoflowSolver {
 	 * @return The end summary of the given method for the given incoming
 	 *         abstraction
 	 */
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3);
+	public Set<EndSummary<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3);
 
 	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
 			Abstraction d2, Abstraction d1);

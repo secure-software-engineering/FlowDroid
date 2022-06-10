@@ -78,6 +78,8 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 						// Without a name, we cannot really carry on
 						return;
 					}
+					if (tname == null)
+						tname = String.valueOf(resourceId);
 				}
 			} else
 				tname = name.trim();
@@ -146,10 +148,10 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB4) {
 				if (obj instanceof Integer) {
 					int color = (Integer) obj;
-					int b = color & 0x000F;
-					int g = (color & 0x00F0) >> 4;
-					int r = (color & 0x0F00) >> 8;
-					int a = (color & 0xF000) >> 12;
+					int b = color & 0x000F << 4;
+					int g = (color & 0x00F0);
+					int r = (color & 0x0F00) >> 4;
+					int a = (color & 0xF000) >> 8;
 					AXmlColorValue colorVal = new AXmlColorValue(a, r, g, b);
 					this.node.addAttribute(
 							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
@@ -166,12 +168,12 @@ public class AXML20Parser extends AbstractBinaryXMLFileParser {
 							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));
 				} else
 					throw new RuntimeException("Unsupported value type");
-			} else if (type == AXmlConstants.TYPE_INT_COLOR_ARGB4) {
+			} else if (type == AXmlConstants.TYPE_INT_COLOR_RGB4) {
 				if (obj instanceof Integer) {
 					int color = (Integer) obj;
-					int b = color & 0x000F;
-					int g = (color & 0x00F0) >> 4;
-					int r = (color & 0x0F00) >> 8;
+					int b = color & 0x000F << 4;
+					int g = (color & 0x00F0);
+					int r = (color & 0x0F00) >> 4;
 					AXmlColorValue colorVal = new AXmlColorValue(r, g, b);
 					this.node.addAttribute(
 							new AXmlAttribute<AXmlColorValue>(tname, resourceId, type, colorVal, ns, false));

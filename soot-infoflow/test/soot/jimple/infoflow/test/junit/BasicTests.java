@@ -13,7 +13,7 @@ import soot.jimple.infoflow.IInfoflow;
  * @author Steven Arzt
  *
  */
-public class BasicTests extends JUnitTests {
+public abstract class BasicTests extends JUnitTests {
 
 	@Test
 	public void overwriteInCalleeTest1() {
@@ -74,6 +74,24 @@ public class BasicTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.BasicTestCode: void arithmeticLoopTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test
+	public void basicAliasTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.BasicTestCode: void basicAliasTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test
+	public void simpleTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.BasicTestCode: void simpleTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}

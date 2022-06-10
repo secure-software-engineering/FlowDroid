@@ -468,6 +468,32 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	}
 
 	@Override
+	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
+		ISourceSinkDefinition definition = super.getInverseSink(sCallSite, cfg);
+		if (definition != null)
+			return definition;
+
+		if (sCallSite.containsInvokeExpr()) {
+			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
+			final String subSig = callee.getSubSignature();
+			final SootClass sc = callee.getDeclaringClass();
+
+			for (SootClass clazz : iccBaseClasses) {
+				if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
+					SootMethod sm = clazz.getMethodUnsafe(subSig);
+					if (sm != null) {
+						ISourceSinkDefinition def = this.sinkMethods.get(sm);
+						if (def != null)
+							return def;
+						break;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
 	protected CallbackDefinition getCallbackDefinition(SootMethod method) {
 		CallbackDefinition def = super.getCallbackDefinition(method);
 		if (def instanceof AndroidCallbackDefinition) {

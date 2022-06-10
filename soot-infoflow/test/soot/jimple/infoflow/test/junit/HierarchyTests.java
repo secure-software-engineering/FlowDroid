@@ -20,7 +20,7 @@ import soot.jimple.infoflow.IInfoflow;
 /**
  * covers taint propagation of fields with classes from a class hierarchy
  */
-public class HierarchyTests extends JUnitTests {
+public abstract class HierarchyTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void hierarchytaintedTest() {

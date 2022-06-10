@@ -28,7 +28,7 @@ import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
 /**
  * contain tests for Taintwrapper and parameters as sources and sinks
  */
-public class InFunctionTests extends JUnitTests {
+public abstract class InFunctionTests extends JUnitTests {
 
 	private static final String SOURCE_STRING_PARAMETER = "@parameter0: java.lang.String";
 	private static final String SOURCE_STRING_PARAMETER2 = "@parameter1: java.lang.String";

@@ -22,9 +22,9 @@ import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
  */
 public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 
-	private final IAbstractionPathBuilder innerBuilder;
-	private int batchSize = 5;
-	private ISolverTerminationReason terminationReason = null;
+	protected final IAbstractionPathBuilder innerBuilder;
+	protected int batchSize = 5;
+	protected ISolverTerminationReason terminationReason = null;
 
 	public BatchPathBuilder(InfoflowManager manager, IAbstractionPathBuilder innerBuilder) {
 		super(manager);

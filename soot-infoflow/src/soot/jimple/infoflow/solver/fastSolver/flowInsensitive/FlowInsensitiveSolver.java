@@ -43,6 +43,7 @@ import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
@@ -55,9 +56,9 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * the IDESolver implementation in Heros for performance reasons.
  * 
  * @param <N> The type of nodes in the interprocedural control-flow graph.
- *        Typically {@link Unit}.
+ *            Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
- *        problem.
+ *            problem.
  * @param <I> The type of inter-procedural control-flow graph being used.
  * @see IFDSTabulationProblem
  */
@@ -78,7 +79,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	protected int numThreads;
 
 	@SynchronizedBy("thread safe data structure, consistent locking when used")
-	protected MyConcurrentHashMap<PathEdge<SootMethod, D>, D> jumpFunctions = new MyConcurrentHashMap<PathEdge<SootMethod, D>, D>();
+	protected MyConcurrentHashMap<PathEdge<SootMethod, D>, D> jumpFunctions = new MyConcurrentHashMap<>();
 
 	@SynchronizedBy("thread safe data structure, only modified internally")
 	protected final I icfg;
@@ -86,12 +87,12 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	// stores summaries that were queried before they were computed
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on 'incoming'")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Set<Pair<Unit, D>>> endSummary = new MyConcurrentHashMap<Pair<SootMethod, D>, Set<Pair<Unit, D>>>();
+	protected final MyConcurrentHashMap<Pair<SootMethod, D>, Set<EndSummary<N, D>>> endSummary = new MyConcurrentHashMap<>();
 
 	// edges going along calls
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on field")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<Unit, Map<D, D>>> incoming = new MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<Unit, Map<D, D>>>();
+	protected final MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<Unit, Map<D, D>>> incoming = new MyConcurrentHashMap<>();
 
 	@DontSynchronize("stateless")
 	protected final FlowFunctions<Unit, D, SootMethod> flowFunctions;
@@ -344,7 +345,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	protected void applyEndSummaryOnCall(D d1, Unit n, D d2, Collection<Unit> returnSiteNs, SootMethod sCalledProcN,
 			D d3) {
 		// line 15.2
-		Set<Pair<Unit, D>> endSumm = endSummary(sCalledProcN, d3);
+		Set<EndSummary<N, D>> endSumm = endSummary(sCalledProcN, d3);
 
 		// still line 15.2 of Naeem/Lhotak/Rodriguez
 		// for each already-queried exit value <eP,d4> reachable
@@ -352,9 +353,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 		// sites because we have observed a potentially new incoming edge into
 		// <sP,d3>
 		if (endSumm != null && !endSumm.isEmpty()) {
-			for (Pair<Unit, D> entry : endSumm) {
-				Unit eP = entry.getO1();
-				D d4 = entry.getO2();
+			for (EndSummary<N, D> entry : endSumm) {
+				Unit eP = entry.eP;
+				D d4 = entry.d4;
 				// for each return site
 				for (Unit retSiteN : returnSiteNs) {
 					SootMethod retMeth = icfg.getMethodOf(retSiteN);
@@ -681,7 +682,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 		return jumpFunctions.putIfAbsent(edge, edge.factAtTarget());
 	}
 
-	protected Set<Pair<Unit, D>> endSummary(SootMethod m, D d3) {
+	protected Set<EndSummary<N, D>> endSummary(SootMethod m, D d3) {
 		return endSummary.get(new Pair<SootMethod, D>(m, d3));
 	}
 
@@ -689,9 +690,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 		if (d1 == zeroValue)
 			return true;
 
-		Set<Pair<Unit, D>> summaries = endSummary.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d1),
-				new ConcurrentHashSet<Pair<Unit, D>>());
-		return summaries.add(new Pair<Unit, D>(eP, d2));
+		Set<EndSummary<N, D>> summaries = endSummary.computeIfAbsent(new Pair<SootMethod, D>(m, d1),
+				x -> new ConcurrentHashSet<EndSummary<N, D>>());
+		return summaries.add(new EndSummary<N, D>((N) eP, d2, d1));
 	}
 
 	protected Map<Unit, Map<D, D>> incoming(D d1, SootMethod m) {

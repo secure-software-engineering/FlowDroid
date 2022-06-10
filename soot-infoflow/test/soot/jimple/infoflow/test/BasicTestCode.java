@@ -12,11 +12,11 @@ import soot.jimple.infoflow.test.android.TelephonyManager;
  *
  */
 public class BasicTestCode {
-	
+
 	public void overwriteInCalleeTest1() {
 		Location loc = new Location();
 		calleeOverwrite(loc);
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(loc.getLatitude());
 	}
@@ -30,7 +30,7 @@ public class BasicTestCode {
 	public void overwriteInCalleeTest2() {
 		Location loc = LocationManager.getLastKnownLocation();
 		calleeOverwriteNull(loc);
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(loc.getLatitude());
 	}
@@ -39,7 +39,7 @@ public class BasicTestCode {
 		System.out.println(loc);
 		loc = null;
 	}
-	
+
 	public void overwriteBaseObjectTest1() {
 		Location loc = new Location(LocationManager.getLongitude(), 0.0d);
 		loc = loc.clear();
@@ -53,14 +53,14 @@ public class BasicTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(loc.getLongitude());
 	}
-	
+
 	public void simpleArithmeticTest1() {
 		int i = TelephonyManager.getIMEI();
 		i++;
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(i);		
+		cm.publish(i);
 	}
-	
+
 	public void arithmeticLoopTest1() {
 		int i = TelephonyManager.getIMEI();
 		while (i < 100)
@@ -81,7 +81,26 @@ public class BasicTestCode {
 	}
 
 	private int increment(int i) {
-		return i+1;
+		return i + 1;
+	}
+
+	class IntegerRef {
+		int value;
+	}
+
+	public void basicAliasTest() {
+		IntegerRef i = new IntegerRef();
+		IntegerRef j = i;
+		j.value = TelephonyManager.getIMEI();
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(i.value);
+	}
+
+	public void simpleTest() {
+		Location loc = LocationManager.getLastKnownLocation();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(loc.getLatitude());
 	}
 
 }

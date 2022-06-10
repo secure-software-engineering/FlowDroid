@@ -34,6 +34,7 @@ import soot.DoubleType;
 import soot.FloatType;
 import soot.IntType;
 import soot.Local;
+import soot.LocalGenerator;
 import soot.LongType;
 import soot.PrimType;
 import soot.RefType;
@@ -45,7 +46,6 @@ import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.VoidType;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
 import soot.jimple.EqExpr;
@@ -144,7 +144,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 		// We provide some helper objects
 		final Body body = mainMethod.getActiveBody();
-		generator = new LocalGenerator(body);
+		generator = Scene.v().createLocalGenerator(body);
 
 		// Make sure that we have an opaque predicate
 		conditionCounter = 0;
@@ -224,7 +224,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		mainMethod.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
 
 		// Add a parameter reference to the body
-		LocalGenerator lg = new LocalGenerator(body);
+		LocalGenerator lg = Scene.v().createLocalGenerator(body);
 		Local paramLocal = lg.generateLocal(stringArrayType);
 		body.getUnits()
 				.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(stringArrayType, 0)));
@@ -311,6 +311,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
 					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef(), args);
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = Jimple.v().newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
 					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef(), args);
 			}
@@ -321,6 +323,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
 					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef());
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = Jimple.v().newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
 					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef());
 			}
@@ -389,7 +393,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			Set<Local> generatedLocals) {
 		// Depending on the parameter type, we try to find a suitable
 		// concrete substitution
-		if (isSimpleType(tp.toString()))
+		if (isSimpleType(tp))
 			return getSimpleDefaultValue(tp);
 		else if (tp instanceof RefType) {
 			SootClass classToType = ((RefType) tp).getSootClass();
@@ -549,8 +553,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		}
 
 		// if sootClass is simpleClass:
-		if (isSimpleType(createdClass.toString())) {
-			Local varLocal = generator.generateLocal(getSimpleTypeFromType(createdClass.getType()));
+		if (isSimpleType(createdClass.getType())) {
+			Local varLocal = generator.generateLocal(createdClass.getType());
 
 			AssignStmt aStmt = Jimple.v().newAssignStmt(varLocal, getSimpleDefaultValue(createdClass.getType()));
 			body.getUnits().add(aStmt);
@@ -630,7 +634,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 							&& this.localVarsForClasses.containsKey(outerClass))
 						params.add(this.localVarsForClasses.get(outerClass));
 					else if (shallowMode) {
-						if (isSimpleType(type.toString()))
+						if (isSimpleType(type))
 							params.add(getSimpleDefaultValue(type));
 						else
 							params.add(NullConstant.v());
@@ -714,40 +718,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		return null;
 	}
 
-	protected Type getSimpleTypeFromType(Type type) {
-		if (type.toString().equals("java.lang.String")) {
-			assert type instanceof RefType;
-			return RefType.v(((RefType) type).getSootClass());
-		}
-		if (type.toString().equals("void"))
-			return soot.VoidType.v();
-		if (type.toString().equals("char"))
-			return soot.CharType.v();
-		if (type.toString().equals("byte"))
-			return soot.ByteType.v();
-		if (type.toString().equals("short"))
-			return soot.ShortType.v();
-		if (type.toString().equals("int"))
-			return soot.IntType.v();
-		if (type.toString().equals("float"))
-			return soot.FloatType.v();
-		if (type.toString().equals("long"))
-			return soot.LongType.v();
-		if (type.toString().equals("double"))
-			return soot.DoubleType.v();
-		if (type.toString().equals("boolean"))
-			return soot.BooleanType.v();
-		throw new RuntimeException("Unknown simple type: " + type);
-	}
-
-	protected static boolean isSimpleType(String t) {
-		if (t.equals("java.lang.String") || t.equals("void") || t.equals("char") || t.equals("byte")
-				|| t.equals("short") || t.equals("int") || t.equals("float") || t.equals("long") || t.equals("double")
-				|| t.equals("boolean")) {
+	protected static boolean isSimpleType(Type t) {
+		if (t instanceof PrimType)
 			return true;
-		} else {
-			return false;
+		if (t instanceof RefType) {
+			RefType rt = (RefType) t;
+			if (rt.getSootClass().getName().equals("java.lang.String"))
+				return true;
 		}
+		return false;
 	}
 
 	protected Value getSimpleDefaultValue(Type t) {

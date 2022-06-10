@@ -42,11 +42,8 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			return null;
 
 		SootMethod method = findMethod(currentClass, subsignature);
-
-		if (method == null) {
-			logger.warn("Could not find Android entry point method: {}", subsignature);
+		if (method == null)
 			return null;
-		}
 
 		// If the method is in one of the predefined Android classes, it cannot
 		// contain custom code, so we do not need to call it
@@ -58,8 +55,8 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return null;
 
-		assert method.isStatic() || classLocal != null : "Class local was null for non-static method "
-				+ method.getSignature();
+		assert method.isStatic() || classLocal != null
+				: "Class local was null for non-static method " + method.getSignature();
 
 		// write Method
 		return buildMethodCall(method, classLocal, parentClasses);

@@ -2302,7 +2302,6 @@ public class ARSCFileParser extends AbstractResourceParser {
 							if (res.resourceID <= 0) {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
-							logger.debug("resource added: {}", res);
 							config.resources.add(res);
 							resourceIdx++;
 						}
@@ -2898,12 +2897,15 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Android resource database in the given APK file
 	 * 
 	 * @param apkFile The APK file in which to parse the resource database
-	 * @return The new {@link ARSCFileParser} instance
+	 * @return The new {@link ARSCFileParser} instance, or <code>null</code> if the
+	 *         file could not be read
 	 * @throws IOException
 	 */
 	public static ARSCFileParser getInstance(File apkFile) throws IOException {
 		ARSCFileParser parser = new ARSCFileParser();
 		try (ApkHandler handler = new ApkHandler(apkFile); InputStream is = handler.getInputStream("resources.arsc")) {
+			if (is == null)
+				return null;
 			parser.parse(is);
 		}
 		return parser;

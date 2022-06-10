@@ -136,6 +136,18 @@ public class InfoflowConfiguration {
 		GarbageCollecting
 	}
 
+	public static enum DataFlowDirection {
+		/**
+		 * Use the default forwards infoflow search
+		 */
+		Forwards,
+
+		/**
+		 * Use the backwards infoflow search
+		 */
+		Backwards
+	}
+
 	/**
 	 * Enumeration containing the supported modes how the data flow analyzer shall
 	 * handle implicit flows
@@ -1285,6 +1297,7 @@ public class InfoflowConfiguration {
 	private CodeEliminationMode codeEliminationMode = CodeEliminationMode.PropagateConstants;
 	private StaticFieldTrackingMode staticFieldTrackingMode = StaticFieldTrackingMode.ContextFlowSensitive;
 	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstance;
+	private DataFlowDirection dataFlowDirection = DataFlowDirection.Forwards;
 
 	private boolean taintAnalysisEnabled = true;
 	private boolean incrementalResultReporting = false;
@@ -1326,6 +1339,7 @@ public class InfoflowConfiguration {
 		this.codeEliminationMode = config.codeEliminationMode;
 		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
 		this.sootIntegrationMode = config.sootIntegrationMode;
+		this.dataFlowDirection = config.dataFlowDirection;
 
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
@@ -1655,6 +1669,24 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets the data flow direction to be used for the taint analysis
+	 *
+	 * @return The data flow direction to be used for the taint analysis
+	 */
+	public DataFlowDirection getDataFlowDirection() {
+		return this.dataFlowDirection;
+	}
+
+	/**
+	 * Sets the data flow direction to be used for the taint analysis
+	 *
+	 * @param direction The data flow direction to be used for the taint analysis
+	 */
+	public void setDataFlowDirection(DataFlowDirection direction) {
+		this.dataFlowDirection = direction;
+	}
+
+	/**
 	 * Sets whether type checking shall be done on casts and method calls
 	 * 
 	 * @param enableTypeChecking True if type checking shall be performed, otherwise
@@ -1887,6 +1919,7 @@ public class InfoflowConfiguration {
 		this.taintAnalysisEnabled = taintAnalysisEnabled;
 	}
 
+
 	/**
 	 * Gets whether the data flow results shall be reported incrementally instead of
 	 * being only available after the full data flow analysis has been completed.
@@ -2078,6 +2111,7 @@ public class InfoflowConfiguration {
 		result = prime * result + ((aliasingAlgorithm == null) ? 0 : aliasingAlgorithm.hashCode());
 		result = prime * result + ((callgraphAlgorithm == null) ? 0 : callgraphAlgorithm.hashCode());
 		result = prime * result + ((codeEliminationMode == null) ? 0 : codeEliminationMode.hashCode());
+		result = prime * result + ((dataFlowDirection == null) ? 0 : dataFlowDirection.hashCode());
 		result = prime * result + (int) (dataFlowTimeout ^ (dataFlowTimeout >>> 32));
 		result = prime * result + (enableArraySizeTainting ? 1231 : 1237);
 		result = prime * result + (enableArrays ? 1231 : 1237);
@@ -2129,6 +2163,8 @@ public class InfoflowConfiguration {
 		if (callgraphAlgorithm != other.callgraphAlgorithm)
 			return false;
 		if (codeEliminationMode != other.codeEliminationMode)
+			return false;
+		if (dataFlowDirection != other.dataFlowDirection)
 			return false;
 		if (dataFlowTimeout != other.dataFlowTimeout)
 			return false;

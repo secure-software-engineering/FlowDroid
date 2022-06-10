@@ -136,8 +136,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Float: java.lang.Float value]"
-						AccessPathTypes="[java.lang.Float]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Float: float value]"
+						AccessPathTypes="[float]" />
 				</flow>
 			</flows>
 		</method>
@@ -145,8 +145,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Return" AccessPath="[java.lang.Float: java.lang.Float value]"
-						AccessPathTypes="[java.lang.Float]" />
+					<to sourceSinkType="Return" AccessPath="[java.lang.Float: float value]"
+						AccessPathTypes="[float]" />
 				</flow>
 			</flows>
 		</method>

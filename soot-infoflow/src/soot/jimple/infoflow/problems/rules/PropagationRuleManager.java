@@ -1,9 +1,7 @@
 package soot.jimple.infoflow.problems.rules;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import soot.SootMethod;
@@ -11,6 +9,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
+import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -26,33 +25,12 @@ public class PropagationRuleManager {
 	protected final TaintPropagationResults results;
 	protected final ITaintPropagationRule[] rules;
 
-	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue,
+								  TaintPropagationResults results, ITaintPropagationRule[] rules) {
 		this.manager = manager;
 		this.zeroValue = zeroValue;
 		this.results = results;
-
-		List<ITaintPropagationRule> ruleList = new ArrayList<>();
-
-		ruleList.add(new SourcePropagationRule(manager, zeroValue, results));
-		ruleList.add(new SinkPropagationRule(manager, zeroValue, results));
-		ruleList.add(new StaticPropagationRule(manager, zeroValue, results));
-
-		if (manager.getConfig().getEnableArrayTracking())
-			ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
-		if (manager.getConfig().getEnableExceptionTracking())
-			ruleList.add(new ExceptionPropagationRule(manager, zeroValue, results));
-		if (manager.getTaintWrapper() != null)
-			ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));
-		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
-			ruleList.add(new ImplicitPropagtionRule(manager, zeroValue, results));
-		ruleList.add(new StrongUpdatePropagationRule(manager, zeroValue, results));
-		if (manager.getConfig().getEnableTypeChecking())
-			ruleList.add(new TypingPropagationRule(manager, zeroValue, results));
-		ruleList.add(new SkipSystemClassRule(manager, zeroValue, results));
-		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
-			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, zeroValue, results));
-
-		this.rules = ruleList.toArray(new ITaintPropagationRule[ruleList.size()]);
+		this.rules = rules;
 	}
 
 	/**
@@ -114,9 +92,8 @@ public class PropagationRuleManager {
 		if ((killAll == null || !killAll.value) && !killSource.value) {
 			if (res == null) {
 				res = new HashSet<>();
-				res.add(source);
-			} else
-				res.add(source);
+			}
+			res.add(source);
 		}
 		return res;
 	}
@@ -214,6 +191,7 @@ public class PropagationRuleManager {
 	 * 
 	 * @param callerD1s
 	 *            The context abstraction at the caller side
+	 * @param calleeD1
 	 * @param source
 	 *            The incoming taint to propagate over the given statement
 	 * @param stmt
@@ -228,11 +206,11 @@ public class PropagationRuleManager {
 	 *            killed, i.e., nothing shall be propagated
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction source, Stmt stmt,
+	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
 			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		Set<Abstraction> res = null;
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateReturnFlow(callerD1s, source, stmt, retSite, callSite,
+			Collection<Abstraction> ruleOut = rule.propagateReturnFlow(callerD1s, calleeD1, source, stmt, retSite, callSite,
 					killAll);
 			if (killAll != null && killAll.value)
 				return null;

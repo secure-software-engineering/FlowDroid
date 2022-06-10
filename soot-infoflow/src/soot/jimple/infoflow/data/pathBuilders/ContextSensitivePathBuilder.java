@@ -2,6 +2,9 @@ package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -30,12 +33,27 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
 	 * 
-	 * @param manager  The data flow manager that gives access to the icfg and other
-	 *                 objects
-	 * @param executor The executor in which to run the path reconstruction tasks
+	 * @param manager The data flow manager that gives access to the icfg and other
+	 *                objects
 	 */
-	public ContextSensitivePathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
-		super(manager, executor);
+	public ContextSensitivePathBuilder(InfoflowManager manager) {
+		super(manager, createExecutor(manager));
+	}
+
+	private static InterruptableExecutor createExecutor(InfoflowManager manager) {
+		int numThreads = Runtime.getRuntime().availableProcessors();
+		int mtn = manager.getConfig().getMaxThreadNum();
+		InterruptableExecutor executor = new InterruptableExecutor(mtn == -1 ? numThreads : Math.min(mtn, numThreads),
+				Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>());
+		executor.setThreadFactory(new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "Path reconstruction");
+			}
+
+		});
+		return executor;
 	}
 
 	/**
@@ -43,7 +61,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * 
 	 * @author Steven Arzt
 	 */
-	protected class SourceFindingTask implements Runnable {
+	protected class SourceFindingTask implements Runnable, Comparable<SourceFindingTask> {
 		private final Abstraction abstraction;
 
 		public SourceFindingTask(Abstraction abstraction) {
@@ -60,6 +78,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					// Process the predecessor
 					if (processPredecessor(scap, pred)) {
 						// Schedule the predecessor
+						assert pathCache.containsKey(pred);
 						scheduleDependentTask(new SourceFindingTask(pred));
 					}
 
@@ -68,6 +87,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 						for (Abstraction neighbor : pred.getNeighbors()) {
 							if (processPredecessor(scap, neighbor)) {
 								// Schedule the predecessor
+								assert pathCache.containsKey(neighbor);
 								scheduleDependentTask(new SourceFindingTask(neighbor));
 							}
 						}
@@ -86,6 +106,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 				checkForSource(pred, extendedScap);
 				return pathCache.put(pred, extendedScap);
+
 			}
 
 			// If we enter a method, we put it on the stack
@@ -138,9 +159,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (getClass() != obj.getClass())
 				return false;
 			SourceFindingTask other = (SourceFindingTask) obj;
-			if (abstraction != other.abstraction)
-				return false;
-			return true;
+			return abstraction == other.abstraction;
+		}
+
+		@Override
+		public int compareTo(SourceFindingTask arg0) {
+			return Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
 		}
 
 	}
@@ -171,7 +195,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		SourceContext sourceContext = abs.getSourceContext();
 		Pair<ResultSourceInfo, ResultSinkInfo> newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
 				scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-				sourceContext.getUserData(), scap.getAbstractionPath());
+				sourceContext.getUserData(), scap.getAbstractionPath(), manager);
 
 		// Notify our handlers
 		if (resultAvailableHandlers != null)
@@ -200,14 +224,48 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	}
 
 	@Override
+	public void computeTaintPaths(Set<AbstractionAtSink> res) {
+		try {
+			super.computeTaintPaths(res);
+
+			// Wait for the path builder to terminate. The path reconstruction should stop
+			// on time anyway. In case it doesn't, we make sure that we don't get stuck.
+			long pathTimeout = manager.getConfig().getPathConfiguration().getPathReconstructionTimeout();
+			if (pathTimeout > 0)
+				executor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
+			else
+				executor.awaitCompletion();
+		} catch (InterruptedException e) {
+			logger.error("Could not wait for executor termination", e);
+		} finally {
+			onTaintPathsComputed();
+		}
+	}
+
+	/**
+	 * Method that is called when the taint paths have been computed
+	 */
+	protected void onTaintPathsComputed() {
+		shutdown();
+	}
+
+	/**
+	 * Terminates the internal executor and cleans up all resources that were used
+	 */
+	public void shutdown() {
+		executor.shutdown();
+	}
+
+	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
 		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
 		scap = scap.extendPath(abs.getAbstraction(), pathConfig);
 
-		if (pathCache.put(abs.getAbstraction(), scap))
+		if (pathCache.put(abs.getAbstraction(), scap)) {
 			if (!checkForSource(abs.getAbstraction(), scap))
 				return new SourceFindingTask(abs.getAbstraction());
+		}
 		return null;
 	}
 

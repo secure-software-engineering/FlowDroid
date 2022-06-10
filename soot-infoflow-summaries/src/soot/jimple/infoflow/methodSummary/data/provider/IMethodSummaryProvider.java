@@ -3,6 +3,7 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 import java.util.Set;
 
 import soot.SootClass;
+import soot.SootMethod;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 
@@ -69,6 +70,17 @@ public interface IMethodSummaryProvider {
 	 * @return The flow summaries for the given method in the given class
 	 */
 	public ClassMethodSummaries getMethodFlows(String className, String methodSignature);
+
+	/**
+	 * Gets the data flows inside the given method immediately for the class in
+	 * which it is defined.
+	 * 
+	 * @param method The method for which to get the summaries
+	 * @return The flow summaries for the given method
+	 */
+	public default ClassMethodSummaries getMethodFlows(SootMethod method) {
+		return getMethodFlows(method.getDeclaringClass(), method.getSubSignature());
+	}
 
 	/**
 	 * Gets all flows for the given method signature in the given set of classes
