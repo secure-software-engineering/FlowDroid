@@ -40,7 +40,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 	protected IccRedirectionCreator redirectionCreator = null;
 
 	protected final SootMethod smMessengerSend;
-	protected final SootMethod smSendMessenge;
+	protected final SootMethod smSendMessage;
 	protected final Set<SootMethod> processedMethods = new HashSet<>();
 	protected final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
 
@@ -52,7 +52,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 
 		// Fetch some Soot methods
 		smMessengerSend = Scene.v().grabMethod("<android.os.Messenger: void send(android.os.Message)>");
-		smSendMessenge = Scene.v().grabMethod("<android.os.Handler: boolean sendMessage(android.os.Message)>");
+		smSendMessage = Scene.v().grabMethod("<android.os.Handler: boolean sendMessage(android.os.Message)>");
 	}
 
 	@Override
@@ -106,12 +106,12 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		logger.info("Launching Messenger Transformer...");
 
 		Chain<SootClass> applicationClasses = Scene.v().getApplicationClasses();
-		Map<Value,String> handlerClass= new HashMap<>();
+		Map<SootClass,Map<Value,String>> appClasses = new HashMap<>();
 		Map<String,String> handlerInner= new HashMap<>();
 
 		for (Iterator<SootClass> iter = applicationClasses.snapshotIterator(); iter.hasNext();) {
 			SootClass sootClass = iter.next();
-
+			Map<Value,String> handlerClass= new HashMap<>();
 			// We copy the list of methods to emulate a snapshot iterator which
 			// doesn't exist for methods in Soot
 			List<SootMethod> methodCopyList = new ArrayList<>(sootClass.getMethods());
@@ -129,7 +129,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						//+++ collect handler fields signature	
 						if (stmt.containsFieldRef())
 							if(stmt.getFieldRef().getType() instanceof RefType)
-								if(((RefType)stmt.getFieldRef()).getSootClass().getName().contains("android.os.Handler")) {
+								if(((RefType)stmt.getFieldRef().getType()).getSootClass().getName().contains("android.os.Handler")) {
 									if(stmt.getUseBoxes().size() > 1)
 										handlerInner.putIfAbsent(stmt.getFieldRef().getField().getSignature(),stmt.getUseBoxes().get(1).getValue().getType().toString());
 									// use value as locator
@@ -141,21 +141,19 @@ public class IccInstrumenter implements PreAnalysisHandler {
 
 			}
 
-								
+			appClasses.putIfAbsent(sootClass, handlerClass);
+
 		}
 		//instrument the outerclass
-		for(Value v : handlerClass.keySet())
-			if(v!=null)
-				//generateSendMessage(v.getClass(),handlerClass,handlerInner);
-				System.out.println("##" + v + v.getType());
-
+		for(SootClass sc : appClasses.keySet())
+			if(sc!=null)
+				generateSendMessage(sc,appClasses,handlerInner);
 	}
 
-	public void generateSendMessage(String sc,Map<String,String> handlerClass,Map<String,String> handlerInner) {
+	public void generateSendMessage(SootClass sootClass,Map<SootClass,Map<Value,String>> appClasses,Map<String,String> handlerInner) {
 		
-		if(sc == null || handlerClass.isEmpty() || handlerInner.isEmpty())
+		if(appClasses.isEmpty() || handlerInner.isEmpty())
 			return;
-		SootClass sootClass = Scene.v().getSootClass(sc);
 		List<SootMethod> methodCopyList = new ArrayList<>(sootClass.getMethods());
 		for (SootMethod sootMethod : methodCopyList) {
 			if (sootMethod.isConcrete()) {
@@ -169,10 +167,9 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						SootMethod callee = stmt.getInvokeExpr().getMethod();
 						
 						// For sendMessage(), we directly call the respective handler.handleMessage()
-						if (callee == smMessengerSend || callee == smSendMessenge) {
+						if (callee == smMessengerSend || callee == smSendMessage) {
 							//collect the value for sendMessage()
-							String hc = handlerClass.get(sootClass.getName() + ":" + stmt.getInvokeExpr().getUseBoxes().get(1).getValue().toString());
-							//System.out.println("--1: "+hc);
+							String hc = appClasses.get(sootClass).get(stmt.getInvokeExpr().getUseBoxes().get(1).getValue());
 							Set<SootClass> handlers = MessageHandler.v().getAllHandlers();								
 							for (SootClass handler : handlers) {
 								// matching the handler and its signature	
