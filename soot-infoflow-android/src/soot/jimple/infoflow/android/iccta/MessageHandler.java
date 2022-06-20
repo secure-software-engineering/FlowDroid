@@ -28,7 +28,7 @@ public class MessageHandler {
 			for (Iterator<SootClass> iter = Scene.v().getApplicationClasses().snapshotIterator(); iter.hasNext();) {
 				SootClass sootClass = iter.next();
 
-				SootClass tmpClass = sootClass.getSuperclassUnsafe();
+				SootClass tmpClass =  sootClass;
 
 				while (sootClass != null) {
 
