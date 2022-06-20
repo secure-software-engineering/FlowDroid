@@ -18,6 +18,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.RefType;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
@@ -39,6 +40,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 	protected IccRedirectionCreator redirectionCreator = null;
 
 	protected final SootMethod smMessengerSend;
+	protected final SootMethod smSendMessenge;
 	protected final Set<SootMethod> processedMethods = new HashSet<>();
 	protected final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
 
@@ -50,6 +52,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 
 		// Fetch some Soot methods
 		smMessengerSend = Scene.v().grabMethod("<android.os.Messenger: void send(android.os.Message)>");
+		smSendMessenge = Scene.v().grabMethod("<android.os.Handler: boolean sendMessage(android.os.Message)>");
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class IccInstrumenter implements PreAnalysisHandler {
 		logger.info("Launching Messenger Transformer...");
 
 		Chain<SootClass> applicationClasses = Scene.v().getApplicationClasses();
-		Map<String,String> handlerClass= new HashMap<>();
+		Map<Value,String> handlerClass= new HashMap<>();
 		Map<String,String> handlerInner= new HashMap<>();
 
 		for (Iterator<SootClass> iter = applicationClasses.snapshotIterator(); iter.hasNext();) {
@@ -124,31 +127,16 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						Unit unit = unitIter.next();
 						Stmt stmt = (Stmt) unit;
 						//+++ collect handler fields signature	
-						if (stmt.containsFieldRef() && stmt.getFieldRef().getType().toString().contains("android.os.Handler")) {
-							if(stmt.getUseBoxes().size() > 1 && handlerInner.get(stmt.getFieldRef().getField().getSignature()) == null)
-								handlerInner.put(stmt.getFieldRef().getField().getSignature(),stmt.getUseBoxes().get(1).getValue().getType().toString());
-							// use value as locator
-							handlerClass.put(sootClass.getName() + ":" + stmt.getDefBoxes().get(0).getValue(),stmt.getFieldRef().getField().getSignature());
-						}
-							
-						if(stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethodRef().getSignature().contains("android.os.Handler")) {
-							//Soot has a access$XXX method that returns private fields in outer class
-							if(stmt.getInvokeExpr().getMethodRef().getName().contains("access")) {
-								Body b = stmt.getInvokeExpr().getMethod().retrieveActiveBody();
-								for (Iterator<Unit> u = b.getUnits().iterator(); u.hasNext();) {
-									Stmt s = (Stmt) u.next();
-									//if the access method return a handler, collect its signature
-									if(s.containsFieldRef() && s.getFieldRef().getType().toString().contains("android.os.Handler"))
-									{
-										if(!stmt.getDefBoxes().isEmpty())
-											handlerClass.put(sootClass.getName() + ":" + stmt.getDefBoxes().get(0).getValue(),s.getFieldRef().getField().getSignature());
-									}
-								}
-							}
-						}													
+						if (stmt.containsFieldRef())
+							if(stmt.getFieldRef().getType() instanceof RefType)
+								if(((RefType)stmt.getFieldRef()).getSootClass().getName().contains("android.os.Handler")) {
+									if(stmt.getUseBoxes().size() > 1)
+										handlerInner.putIfAbsent(stmt.getFieldRef().getField().getSignature(),stmt.getUseBoxes().get(1).getValue().getType().toString());
+									// use value as locator
+									handlerClass.put(stmt.getDefBoxes().get(0).getValue(),stmt.getFieldRef().getField().getSignature());
+									}													
 					}
 
-					body.validate();
 				}
 
 			}
@@ -156,9 +144,10 @@ public class IccInstrumenter implements PreAnalysisHandler {
 								
 		}
 		//instrument the outerclass
-		for(String sc : handlerClass.keySet())
-			if(sc!=null)
-				generateSendMessage(sc.split(":")[0],handlerClass,handlerInner);
+		for(Value v : handlerClass.keySet())
+			if(v!=null)
+				//generateSendMessage(v.getClass(),handlerClass,handlerInner);
+				System.out.println("##" + v + v.getType());
 
 	}
 
@@ -180,12 +169,11 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						SootMethod callee = stmt.getInvokeExpr().getMethod();
 						
 						// For sendMessage(), we directly call the respective handler.handleMessage()
-						if (callee == smMessengerSend || callee == Scene.v().grabMethod("<android.os.Handler: boolean sendMessage(android.os.Message)>")) {
+						if (callee == smMessengerSend || callee == smSendMessenge) {
 							//collect the value for sendMessage()
 							String hc = handlerClass.get(sootClass.getName() + ":" + stmt.getInvokeExpr().getUseBoxes().get(1).getValue().toString());
 							//System.out.println("--1: "+hc);
 							Set<SootClass> handlers = MessageHandler.v().getAllHandlers();								
-							soot.javaToJimple.InitialResolver.v().getNextPrivateAccessCounter();
 							for (SootClass handler : handlers) {
 								// matching the handler and its signature	
 								if(hc != null && handlerInner.get(hc) == handler.getName()) {
@@ -205,7 +193,6 @@ public class IccInstrumenter implements PreAnalysisHandler {
 					
 				}
 
-				body.validate();
 			}
 		}
 		
