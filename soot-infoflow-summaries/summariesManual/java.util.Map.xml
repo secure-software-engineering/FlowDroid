@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isInterface="true">
 	<methods>
 		<method id="java.lang.Object put(java.lang.Object,java.lang.Object)">
 			<flows>

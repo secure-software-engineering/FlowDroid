@@ -31,7 +31,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
-import soot.jimple.infoflow.util.TypeUtils;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.toolkits.pointer.LocalMustAliasAnalysis;
 import soot.jimple.toolkits.pointer.StrongLocalMustAliasAnalysis;
 import soot.toolkits.graph.UnitGraph;

@@ -33,8 +33,8 @@ import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
-import soot.jimple.infoflow.util.TypeUtils;
 import soot.jimple.infoflow.util.preanalyses.SingleLiveVariableAnalysis;
 
 public class BackwardsWrapperRule extends AbstractTaintPropagationRule {

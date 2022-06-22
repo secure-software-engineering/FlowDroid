@@ -19,7 +19,6 @@ import soot.jimple.infoflow.aliasing.NullAliasStrategy;
 import soot.jimple.infoflow.aliasing.PtsBasedAliasStrategy;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
@@ -85,8 +84,7 @@ public class Infoflow extends AbstractInfoflow {
 	@Override
 	protected InfoflowManager initializeInfoflowManager(final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
 			GlobalTaintManager globalTaintManager) {
-		return new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy,
-				new AccessPathFactory(config), globalTaintManager);
+		return new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy, globalTaintManager);
 	}
 
 	@Override
@@ -99,7 +97,7 @@ public class Infoflow extends AbstractInfoflow {
 		switch (getConfig().getAliasingAlgorithm()) {
 		case FlowSensitive:
 			aliasManager = new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg), sourcesSinks, taintWrapper,
-					hierarchy, manager.getAccessPathFactory(), manager.getGlobalTaintManager());
+					hierarchy, manager);
 			backProblem = new AliasProblem(aliasManager);
 
 			// We need to create the right data flow solver

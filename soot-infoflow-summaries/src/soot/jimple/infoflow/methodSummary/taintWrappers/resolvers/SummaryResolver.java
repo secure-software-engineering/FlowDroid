@@ -246,17 +246,45 @@ public class SummaryResolver {
 		Set<SootClass> doneSet = new HashSet<SootClass>();
 		Set<SootClass> classes = new HashSet<>();
 
+		final Scene scene = Scene.v();
 		while (!workList.isEmpty()) {
 			SootClass curClass = workList.remove(0);
 			if (!doneSet.add(curClass))
 				continue;
 
 			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getImplementersOf(curClass));
-				workList.addAll(hierarchy.getSubinterfacesOf(curClass));
+				List<SootClass> hierarchyImplementers = hierarchy.getImplementersOf(curClass);
+				workList.addAll(hierarchyImplementers);
+				if (curClass.isPhantom() && hierarchyImplementers.isEmpty()) {
+					// Query the hierarchy data in the summaries
+					flows.getImplementersOfInterface(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
+							.filter(c -> c != null).forEach(c -> {
+								workList.add(c);
+							});
+				}
+
+				List<SootClass> subinterfaces = hierarchy.getSubinterfacesOf(curClass);
+				workList.addAll(subinterfaces);
+				if (curClass.isPhantom() && subinterfaces.isEmpty()) {
+					// Query the hierarchy data in the summaries
+					flows.getSubInterfacesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
+							.filter(c -> c != null).forEach(c -> {
+								workList.add(c);
+							});
+				}
 			} else {
-				workList.addAll(hierarchy.getSubclassesOf(curClass));
+				List<SootClass> hierarchyClasses = hierarchy.getSubclassesOf(curClass);
+				workList.addAll(hierarchyClasses);
 				classes.add(curClass);
+
+				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
+					// Query the hierarchy data in the summaries
+					flows.getSubclassesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
+							.filter(c -> c != null).forEach(c -> {
+								workList.add(c);
+								classes.add(c);
+							});
+				}
 			}
 		}
 
@@ -277,16 +305,36 @@ public class SummaryResolver {
 		Set<SootClass> doneSet = new HashSet<SootClass>();
 		Set<SootClass> classes = new HashSet<>();
 
+		final Scene scene = Scene.v();
 		while (!workList.isEmpty()) {
 			SootClass curClass = workList.remove(0);
 			if (!doneSet.add(curClass))
 				continue;
 
 			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getSuperinterfacesOf(curClass));
+				List<SootClass> hierarchyClasses = hierarchy.getSuperinterfacesOf(curClass);
+				workList.addAll(hierarchyClasses);
+
+				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
+					// Query the hierarchy data in the summaries
+					flows.getSuperinterfacesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
+							.filter(c -> c != null).forEach(c -> {
+								workList.add(c);
+							});
+				}
 			} else {
-				workList.addAll(hierarchy.getSuperclassesOf(curClass));
+				List<SootClass> hierarchyClasses = hierarchy.getSuperclassesOf(curClass);
+				workList.addAll(hierarchyClasses);
 				classes.add(curClass);
+
+				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
+					// Query the hierarchy data in the summaries
+					flows.getSuperclassesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
+							.filter(c -> c != null).forEach(c -> {
+								workList.add(c);
+								classes.add(c);
+							});
+				}
 			}
 		}
 

@@ -76,7 +76,8 @@ public abstract class JUnitTests {
 		appendWithSeparator(appPathBuilder, testSrc3);
 		appPath = appPathBuilder.toString();
 
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+//		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		libPath = "C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar";
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);

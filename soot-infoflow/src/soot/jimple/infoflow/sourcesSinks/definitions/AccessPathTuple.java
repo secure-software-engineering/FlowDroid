@@ -14,8 +14,8 @@ import soot.Value;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.data.AccessPathFragment;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * Helper to save an AccessPath with the information about sink and sources.

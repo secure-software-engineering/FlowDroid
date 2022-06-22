@@ -59,8 +59,8 @@ import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.BaseSelector;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * class which contains the flow functions for the backwards solver. This is

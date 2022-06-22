@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 /**
@@ -190,7 +191,7 @@ public abstract class MultiTest extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void multiSinkTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -202,6 +203,7 @@ public abstract class MultiTest extends JUnitTests {
 		List<String> testSources = new ArrayList<>(sources);
 		testSources.add(streamSource);
 
+		InfoflowConfiguration.setPathAgnosticResults(false);
 		infoflow.computeInfoflow(appPath, libPath, epoints, testSources, sinks);
 		InfoflowResults results = infoflow.getResults();
 

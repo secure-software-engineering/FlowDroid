@@ -1,6 +1,7 @@
 package soot.jimple.infoflow;
 
 import soot.FastHierarchy;
+import soot.Scene;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
@@ -9,7 +10,7 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.jimple.infoflow.util.TypeUtils;
+import soot.jimple.infoflow.typing.TypeUtils;
 
 /**
  * Manager class for passing internal data flow objects to interface
@@ -32,9 +33,21 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
+	protected InfoflowManager(InfoflowConfiguration config) {
+		this.config = config;
+		this.forwardSolver = null;
+		this.icfg = null;
+		this.sourceSinkManager = null;
+		this.taintWrapper = null;
+		this.typeUtils = null;
+		this.hierarchy = null;
+		this.accessPathFactory = null;
+		this.globalTaintManager = null;
+	}
+
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
 			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			AccessPathFactory accessPathFactory, GlobalTaintManager globalTaintManager) {
+			GlobalTaintManager globalTaintManager) {
 		this.config = config;
 		this.forwardSolver = forwardSolver;
 		this.icfg = icfg;
@@ -42,8 +55,34 @@ public class InfoflowManager {
 		this.taintWrapper = taintWrapper;
 		this.typeUtils = new TypeUtils(this);
 		this.hierarchy = hierarchy;
-		this.accessPathFactory = accessPathFactory;
+		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = globalTaintManager;
+	}
+
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
+			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
+			InfoflowManager existingManager) {
+		this.config = config;
+		this.forwardSolver = forwardSolver;
+		this.icfg = icfg;
+		this.sourceSinkManager = sourceSinkManager;
+		this.taintWrapper = taintWrapper;
+		this.typeUtils = existingManager.getTypeUtils();
+		this.hierarchy = hierarchy;
+		this.accessPathFactory = existingManager.getAccessPathFactory();
+		this.globalTaintManager = existingManager.getGlobalTaintManager();
+	}
+
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg) {
+		this.config = config;
+		this.forwardSolver = forwardSolver;
+		this.icfg = icfg;
+		this.sourceSinkManager = null;
+		this.taintWrapper = null;
+		this.typeUtils = new TypeUtils(this);
+		this.hierarchy = Scene.v().getOrMakeFastHierarchy();
+		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
+		this.globalTaintManager = null;
 	}
 
 	/**

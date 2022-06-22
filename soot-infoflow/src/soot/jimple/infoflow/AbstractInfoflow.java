@@ -47,7 +47,6 @@ import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
-import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.data.pathBuilders.IAbstractionPathBuilder;
@@ -1250,8 +1249,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 */
 	protected void eliminateDeadCode(ISourceSinkManager sourcesSinks) {
 		InfoflowManager dceManager = new InfoflowManager(config, null,
-				icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(), config.getEnableExceptionTracking()), null,
-				null, null, new AccessPathFactory(config), null);
+				icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(), config.getEnableExceptionTracking()));
 
 		// Dead code elimination may drop the points-to analysis. We need to restore it.
 		final Scene scene = Scene.v();
