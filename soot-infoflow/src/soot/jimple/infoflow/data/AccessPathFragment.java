@@ -25,7 +25,7 @@ public class AccessPathFragment {
 	 */
 	public AccessPathFragment(SootField field, Type fieldType) {
 		this.field = field;
-		this.fieldType = fieldType;
+		this.fieldType = fieldType == null ? field.getType() : fieldType;
 		this.context = null;
 	}
 
