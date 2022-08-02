@@ -3,55 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>soot-infoflow</artifactId>
 	<name>soot-infoflow</name>
-	<version>2.11.0-SNAPSHOT</version>
 	<description>Soot extending data flow tracking components for Java</description>
 	<url>https://github.com/secure-software-engineering/FlowDroid</url>
 
-	<organization>
-		<name>Fraunhofer SIT</name>
-		<url>https://www.sit.fraunhofer.de/</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
-			<url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<name>Steven Arzt</name>
-			<email>steven.arzt@sit.fraunhofer.de</email>
-			<organization>Fraunhofer SIT</organization>
-			<organizationUrl>https://www.sit.fraunhofer.de/en/</organizationUrl>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</connection>
-		<developerConnection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</developerConnection>
-		<url>https://github.com/secure-software-engineering/FlowDroid/tree/develop</url>
-	</scm>
-
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-	</properties>
+	<parent>
+		<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.11.0-SNAPSHOT</version>
+	   	<relativePath>../pom.xml</relativePath>
+	</parent>
 
 	<build>
 		<finalName>soot-infoflow-classes</finalName>
@@ -160,12 +122,12 @@
 		<dependency>
 			<groupId>org.soot-oss</groupId>
 			<artifactId>soot</artifactId>
-			<version>4.4.0-SNAPSHOT</version>
+			<version>${soot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -188,12 +150,12 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.0.1-jre</version>
+			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.5</version>
+			<version>${slf4j.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -207,7 +169,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>

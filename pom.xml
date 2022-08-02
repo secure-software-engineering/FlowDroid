@@ -8,8 +8,26 @@
 	<packaging>pom</packaging>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
+		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+		<maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+		
+		<slf4j.version>1.7.36</slf4j.version>
+		<log4j.version>2.18.0</log4j.version>
+		<junit.version>4.13.2</junit.version>
+		<guava.version>31.1-jre</guava.version>
+
+		<soot.version>4.4.0-SNAPSHOT</soot.version>
 	</properties>
 
 	<developers>
@@ -20,6 +38,7 @@
 			<organizationUrl>https://www.sit.fraunhofer.de/</organizationUrl>
 		</developer>
 	</developers>
+	
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
@@ -27,6 +46,13 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	
+	<scm>
+		<connection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</connection>
+		<developerConnection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</developerConnection>
+		<url>https://github.com/secure-software-engineering/FlowDroid/tree/develop</url>
+	</scm>
+
 	<modules>
 		<module>soot-infoflow</module>
 		<module>soot-infoflow-android</module>
@@ -39,12 +65,12 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
+				<version>${log4j.version}</version>
 				<scope>test</scope>
 				<exclusions>
 					<exclusion>
