@@ -65,6 +65,7 @@ import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
@@ -320,39 +321,14 @@ public abstract class AbstractCallbackAnalyzer {
 						if (arg instanceof Local) {
 							Set<Type> possibleTypes = Scene.v().getPointsToAnalysis().reachingObjects((Local) arg)
 									.possibleTypes();
-							for (Type possibleType : possibleTypes) {
-								RefType baseType;
-								if (possibleType instanceof RefType)
-									baseType = (RefType) possibleType;
-								else if (possibleType instanceof AnySubType)
-									baseType = ((AnySubType) possibleType).getBase();
-								else {
-									logger.warn("Unsupported type detected in callback analysis");
-									continue;
-								}
-
-								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
-									callbackClasses.add(targetClass);
-							}
-
 							// If we don't have pointsTo information, we take
 							// the type of the local
 							if (possibleTypes.isEmpty()) {
 								Type argType = ((Local) arg).getType();
-								RefType baseType;
-								if (argType instanceof RefType)
-									baseType = (RefType) argType;
-								else if (argType instanceof AnySubType)
-									baseType = ((AnySubType) argType).getBase();
-								else {
-									logger.warn("Unsupported type detected in callback analysis");
-									continue;
-								}
-
-								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
-									callbackClasses.add(targetClass);
+								checkAndAddCallback(callbackClasses, argType);
+							} else {
+								for (Type possibleType : possibleTypes)
+									checkAndAddCallback(callbackClasses, possibleType);
 							}
 						}
 					}
@@ -363,6 +339,32 @@ public abstract class AbstractCallbackAnalyzer {
 		// Analyze all found callback classes
 		for (SootClass callbackClass : callbackClasses)
 			analyzeClassInterfaceCallbacks(callbackClass, callbackClass, lifecycleElement);
+	}
+
+	/**
+	 * Adds the class that implements the given type to the set of callback classes.
+	 * This method deals with <code>AnyType</code> types as well.
+	 * 
+	 * @param callbackClasses The set to which to add the callback classes
+	 * @param argType         The type to add
+	 */
+	protected void checkAndAddCallback(Set<SootClass> callbackClasses, Type argType) {
+		RefType baseType;
+		if (argType instanceof RefType) {
+			baseType = (RefType) argType;
+			SootClass targetClass = baseType.getSootClass();
+			if (!SystemClassHandler.v().isClassInSystemPackage(targetClass))
+				callbackClasses.add(targetClass);
+		} else if (argType instanceof AnySubType) {
+			baseType = ((AnySubType) argType).getBase();
+			SootClass baseClass = ((RefType) baseType).getSootClass();
+			for (SootClass sc : TypeUtils.getAllDerivedClasses(baseClass)) {
+				if (!SystemClassHandler.v().isClassInSystemPackage(sc))
+					callbackClasses.add(sc);
+			}
+		} else {
+			logger.warn("Unsupported type detected in callback analysis");
+		}
 	}
 
 	/**
@@ -834,7 +836,7 @@ public abstract class AbstractCallbackAnalyzer {
 					SootMethod parentMethod = systemMethods.get(method.getSubSignature());
 					if (parentMethod != null) {
 						if (checkAndAddMethod(method, parentMethod, sootClass, CallbackType.Default)) {
-							//We only keep the latest override in the class hierarchy
+							// We only keep the latest override in the class hierarchy
 							systemMethods.remove(parentMethod.getSubSignature());
 						}
 					}

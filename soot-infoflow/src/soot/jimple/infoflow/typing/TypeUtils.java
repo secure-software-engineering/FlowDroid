@@ -2,6 +2,7 @@ package soot.jimple.infoflow.typing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import soot.ArrayType;
 import soot.BooleanType;
@@ -10,6 +11,7 @@ import soot.CharType;
 import soot.DoubleType;
 import soot.FastHierarchy;
 import soot.FloatType;
+import soot.Hierarchy;
 import soot.IntType;
 import soot.LongType;
 import soot.PrimType;
@@ -294,6 +296,23 @@ public class TypeUtils {
 	 */
 	public void registerTypeChecker(ITypeChecker checker) {
 		this.typeCheckers.add(checker);
+	}
+
+	/**
+	 * Gets all classes that inherit from the given class or that transitively
+	 * implement the given interface
+	 * 
+	 * @param classOrInterface The class or interface for which to enumerate the
+	 *                         derived classes
+	 * @return The classes derived from the given class or interface
+	 */
+	public static List<SootClass> getAllDerivedClasses(SootClass classOrInterface) {
+		final Hierarchy h = Scene.v().getActiveHierarchy();
+		if (classOrInterface.isInterface()) {
+			return h.getSubinterfacesOfIncluding(classOrInterface).stream()
+					.flatMap(i -> h.getImplementersOf(i).stream()).collect(Collectors.toList());
+		} else
+			return h.getSubclassesOfIncluding(classOrInterface);
 	}
 
 }
