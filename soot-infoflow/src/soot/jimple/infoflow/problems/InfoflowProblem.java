@@ -511,6 +511,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (source == getZeroValue())
 							return null;
 
+						if (callee.getName().equals("sendMessage"))
+							System.out.println("x");
+
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(exitStmt, source, manager,

@@ -634,10 +634,8 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		if (maxAbstractionPathLength >= 0 && targetVal.getPathLength() > maxAbstractionPathLength)
 			return;
 
-		D activeVal = targetVal.getActiveCopy();
-		PathEdge<N, D> activeEdge = new PathEdge<>(sourceVal, target, activeVal);
 		final PathEdge<N, D> edge = new PathEdge<>(sourceVal, target, targetVal);
-		final D existingVal = addFunction(activeEdge);
+		final D existingVal = addFunction(edge);
 		if (existingVal != null) {
 			if (existingVal != targetVal) {
 				// Check whether we need to retain this abstraction
