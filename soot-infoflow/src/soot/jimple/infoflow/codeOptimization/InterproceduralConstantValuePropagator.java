@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +92,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	private boolean excludeSystemClasses = true;
 
 	protected final Map<SootMethod, Boolean> methodSideEffects = new ConcurrentHashMap<>();
-	protected final Cache<SootMethod, Boolean> methodSinks = CacheBuilder.newBuilder()
+	protected final LoadingCache<SootMethod, Boolean> methodSinks = CacheBuilder.newBuilder()
 			.build(new CacheLoader<SootMethod, Boolean>() {
 
 				@Override
@@ -284,7 +285,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						// If this method returns nothing, is side-effect free and does not call a sink,
 						// we can remove it altogether. No data can ever flow out of it.
 						boolean remove = callee.getReturnType() == VoidType.v() && !hasSideEffectsOrReadsThis(callee);
-						remove |= !hasSideEffectsOrCallsSink(callee);
+						remove &= !hasSideEffectsOrCallsSink(callee);
 
 						if (remove) {
 							Scene.v().getCallGraph().removeEdge(edge);
@@ -633,11 +634,11 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 		// Do we already have an entry?
 		Boolean hasSideEffects = methodSideEffects.get(method);
-		if (hasSideEffects != null)
+		if (hasSideEffects != null && hasSideEffects)
 			return hasSideEffects;
 
-		Boolean hasSink = methodSinks.getIfPresent(method);
-		if (hasSink != null)
+		Boolean hasSink = methodSinks.getUnchecked(method);
+		if (hasSink != null && hasSink)
 			return hasSink;
 
 		// Do not process the same method twice
@@ -720,7 +721,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 		// Do we already have an entry?
 		Boolean hasSideEffects = methodSideEffects.get(method);
-		if (hasSideEffects != null)
+		if (hasSideEffects != null && hasSideEffects)
 			return hasSideEffects;
 
 		// Do not process the same method twice
