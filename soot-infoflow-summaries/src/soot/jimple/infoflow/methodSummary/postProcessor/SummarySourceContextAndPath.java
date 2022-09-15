@@ -27,7 +27,7 @@ import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
@@ -78,7 +78,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	}
 
 	@Override
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(Abstraction abs, InfoflowConfiguration pathConfig) {
 		// Do we have data at all?
 		if (abs == null)
 			return this;
