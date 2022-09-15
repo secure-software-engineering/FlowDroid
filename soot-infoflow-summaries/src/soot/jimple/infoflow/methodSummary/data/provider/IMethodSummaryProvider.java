@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.methodSummary.data.provider;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import soot.SootClass;
@@ -125,5 +127,49 @@ public interface IMethodSummaryProvider {
 	 *         analysis, false otherwise
 	 */
 	public boolean isMethodExcluded(String className, String subSignature);
+
+	/**
+	 * Gets all superclasses of the given class, where the first entry in the list
+	 * is the parent of the given class
+	 * 
+	 * @param className The name of the class for which to get the superclasses
+	 * @return A list with all superclasses of the given class
+	 */
+	public List<String> getSuperclassesOf(String className);
+
+	/**
+	 * Gets all super interfaces of the given interface, i.e., the interfaces
+	 * implemented by the given class, and recursively for each interface the
+	 * interfaces implemented by it
+	 * 
+	 * @param className The class name of the interface to start from
+	 * @return The super interfaces of the given interface
+	 */
+	public Collection<String> getSuperinterfacesOf(String className);
+
+	/**
+	 * Gets all subclasses of the given class
+	 * 
+	 * @param className The name of the class for which to get the subclasses
+	 * @return The transitive subclasses of the given class
+	 */
+	public List<String> getSubclassesOf(String className);
+
+	/**
+	 * Gets all classes that implement the given interface
+	 * 
+	 * @param className The class name of the interface for which to get the
+	 *                  implementers
+	 * @return The classes that implement the given interface
+	 */
+	public List<String> getImplementersOfInterface(String className);
+
+	/**
+	 * Gets all interfaces that are derived from the given interface
+	 * 
+	 * @param className The class name of the interface from which to start
+	 * @return The interfaces that transitively implement the given interface
+	 */
+	public Set<String> getSubInterfacesOf(String className);
 
 }

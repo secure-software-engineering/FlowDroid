@@ -11,8 +11,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 
 import heros.solver.Pair;
 import soot.Body;
@@ -87,8 +92,23 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	private boolean excludeSystemClasses = true;
 
 	protected final Map<SootMethod, Boolean> methodSideEffects = new ConcurrentHashMap<>();
-	protected final Map<SootMethod, Boolean> methodSinks = new ConcurrentHashMap<>();
-	protected final Map<SootMethod, Boolean> methodFieldReads = new ConcurrentHashMap<>();
+	protected final LoadingCache<SootMethod, Boolean> methodSinks = CacheBuilder.newBuilder()
+			.build(new CacheLoader<SootMethod, Boolean>() {
+
+				@Override
+				public Boolean load(SootMethod key) throws Exception {
+					if (sourceSinkManager != null && key.hasActiveBody()) {
+						for (Unit u : key.getActiveBody().getUnits()) {
+							Stmt stmt = (Stmt) u;
+							if (stmt.containsInvokeExpr()) {
+								if (sourceSinkManager.getSinkInfo(stmt, manager, null) != null)
+									return true;
+							}
+						}
+					}
+					return false;
+				}
+			});
 
 	protected SootClass exceptionClass = null;
 	protected final Map<SootClass, SootMethod> exceptionThrowers = new HashMap<>();
@@ -126,7 +146,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 	 *                          taints
 	 */
 	public InterproceduralConstantValuePropagator(InfoflowManager manager, Collection<SootMethod> excludedMethods,
-												  ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper) {
+			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper) {
 		this.manager = manager;
 		this.excludedMethods = new HashSet<>(excludedMethods);
 		this.sourceSinkManager = sourceSinkManager;
@@ -265,7 +285,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						// If this method returns nothing, is side-effect free and does not call a sink,
 						// we can remove it altogether. No data can ever flow out of it.
 						boolean remove = callee.getReturnType() == VoidType.v() && !hasSideEffectsOrReadsThis(callee);
-						remove |= !hasSideEffectsOrCallsSink(callee);
+						remove &= !hasSideEffectsOrCallsSink(callee);
 
 						if (remove) {
 							Scene.v().getCallGraph().removeEdge(edge);
@@ -324,16 +344,12 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		SootMethod method = callSite.getInvokeExpr().getMethod();
 
 		// If this method is a source on its own, we must keep it
-		if (sourceSinkManager != null && sourceSinkManager.getSourceInfo((Stmt) callSite, manager) != null) {
-			methodFieldReads.put(method, true);
+		if (sourceSinkManager != null && sourceSinkManager.getSourceInfo((Stmt) callSite, manager) != null)
 			return true;
-		}
 
 		// If this method is a sink, we must keep it as well
-		if (sourceSinkManager != null && sourceSinkManager.getSinkInfo((Stmt) callSite, manager, null) != null) {
-			methodSinks.put(method, true);
+		if (sourceSinkManager != null && sourceSinkManager.getSinkInfo((Stmt) callSite, manager, null) != null)
 			return true;
-		}
 
 		// If this method is wrapped, we need to keep it
 		if (taintWrapper != null && taintWrapper.supportsCallee(method)) {
@@ -618,11 +634,11 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 		// Do we already have an entry?
 		Boolean hasSideEffects = methodSideEffects.get(method);
-		if (hasSideEffects != null)
+		if (hasSideEffects != null && hasSideEffects)
 			return hasSideEffects;
 
-		Boolean hasSink = methodSinks.get(method);
-		if (hasSink != null)
+		Boolean hasSink = methodSinks.getUnchecked(method);
+		if (hasSink != null && hasSink)
 			return hasSink;
 
 		// Do not process the same method twice
@@ -705,7 +721,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 
 		// Do we already have an entry?
 		Boolean hasSideEffects = methodSideEffects.get(method);
-		if (hasSideEffects != null)
+		if (hasSideEffects != null && hasSideEffects)
 			return hasSideEffects;
 
 		// Do not process the same method twice

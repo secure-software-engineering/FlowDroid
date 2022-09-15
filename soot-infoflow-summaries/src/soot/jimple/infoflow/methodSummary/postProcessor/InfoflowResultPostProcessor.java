@@ -87,7 +87,7 @@ public class InfoflowResultPostProcessor {
 	private static class FakeInfoflowManager extends InfoflowManager {
 
 		protected FakeInfoflowManager(InfoflowConfiguration config) {
-			super(config, null, null, null, null, null, null, null);
+			super(config);
 		}
 
 	}

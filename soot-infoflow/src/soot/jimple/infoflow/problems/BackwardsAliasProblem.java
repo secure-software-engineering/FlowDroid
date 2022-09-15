@@ -47,8 +47,8 @@ import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.BaseSelector;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * Class which contains the alias analysis for the backwards analysis.
@@ -693,9 +693,9 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 									// if we find an alias above, which is the an argument of arraycopy,
 									// the native stmt does not create a new alias but we notice that we
 									// missed this argument in the infoflow search.
-									source.setTurnUnit(callSite);
+									Abstraction newSource = source.deriveNewAbstractionWithTurnUnit(callSite);
 									manager.getForwardSolver()
-											.processEdge(new PathEdge<>(d1, callSite, source.getActiveCopy()));
+											.processEdge(new PathEdge<>(d1, callSite, newSource.getActiveCopy()));
 									return null;
 								}
 							}

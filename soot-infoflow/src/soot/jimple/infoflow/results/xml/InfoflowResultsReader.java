@@ -47,6 +47,7 @@ public class InfoflowResultsReader {
 
 			String statement = null;
 			String method = null;
+			String methodSourceSinkDefinition = null;
 			String apValue = null;
 			String apValueType = null;
 			boolean apTaintSubFields = false;
@@ -86,6 +87,7 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
+					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.accessPath) && reader.isStartElement()) {
 					stateStack.push(State.accessPath);
 
@@ -122,6 +124,7 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
+					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.taintPath) && reader.isStartElement()
 						&& stateStack.peek() == State.source) {
 					stateStack.push(State.taintPath);
@@ -135,6 +138,7 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
+					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.performanceData) && reader.isStartElement()
 						&& stateStack.peek() == State.dataFlowResults) {
 					stateStack.push(State.performanceData);
@@ -181,9 +185,9 @@ public class InfoflowResultsReader {
 								apFields.toArray(new String[apFields.size()]),
 								apTypes.toArray(new String[apTypes.size()]));
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.sink)) {
-						sink = new SerializedSinkInfo(ap, statement, method);
+						sink = new SerializedSinkInfo(ap, statement, method, methodSourceSinkDefinition);
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.source)) {
-						source = new SerializedSourceInfo(ap, statement, method, pathElements);
+						source = new SerializedSourceInfo(ap, statement, method, pathElements, methodSourceSinkDefinition);
 						results.addResult(source, sink);
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.pathElement)) {
 						pathElements.add(new SerializedPathElement(ap, statement, method));

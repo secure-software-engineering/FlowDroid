@@ -52,13 +52,15 @@ import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryQuery;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResolver;
 import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResponse;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.typing.ITypeChecker;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.infoflow.util.TypeUtils;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
 
@@ -69,7 +71,7 @@ import soot.util.MultiMap;
  * @author Steven Arzt
  *
  */
-public class SummaryTaintWrapper implements IReversibleTaintWrapper {
+public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecker {
 
 	private InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
@@ -223,6 +225,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// If we have a fallback wrapper, we need to initialize that one as well
 		if (fallbackWrapper != null)
 			fallbackWrapper.initialize(manager);
+
+		// We need to query the summaries in case we have no proper type information
+		manager.getTypeUtils().registerTypeChecker(this);
 	}
 
 	/**
@@ -782,16 +787,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
 		for (Abstraction abs : absSet) {
-			Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
+			Set<EndSummary<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
 			if (endSummary != null && !endSummary.isEmpty()) {
-				for (Pair<Unit, Abstraction> pair : endSummary) {
+				for (EndSummary<Unit, Abstraction> pair : endSummary) {
 					if (outgoingTaints == null)
 						outgoingTaints = new HashSet<>();
 
 					// Create the taint that corresponds to the access path leaving
 					// the user-code method
-					Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.getO2().getAccessPath(),
-							(Stmt) pair.getO1(), propagator.getGap());
+					Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.d4.getAccessPath(), (Stmt) pair.eP,
+							propagator.getGap());
 					if (newTaints != null) {
 						for (Taint newTaint : newTaints) {
 							AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent,
@@ -913,7 +918,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Check the direct callee
 		if (classSummaries == null || classSummaries.isEmpty()) {
-			SootClass declaredClass = getSummaryDeclaringClass(stmt);
+			SootClass declaredClass = getSummaryDeclaringClass(stmt,
+					taintedAbs == null ? null : taintedAbs.getAccessPath());
 			SummaryResponse response = summaryResolver
 					.resolve(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
 			if (response != null) {
@@ -931,25 +937,31 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * Gets the class that likely declares the method that is being called by the
 	 * given statement
 	 * 
-	 * @param stmt The invocation statement
+	 * @param stmt      The invocation statement
+	 * @param taintedAP The tainted access path
 	 * @return The class in which to look for a summary for the called method
 	 */
-	protected SootClass getSummaryDeclaringClass(Stmt stmt) {
-		// We may have a call such as
-		// x = editable.toString();
-		// In that case, the callee is Object.toString(), since in the stub Android
-		// JAR, the class android.text.Editable does not override toString(). On a
-		// real device, it does. Consequently, we have a summary in the "Editable"
-		// class. To handle such weird cases, we walk the class hierarchy based on
-		// the declared type of the base object.
-		SootClass declaredClass = null;
+	protected SootClass getSummaryDeclaringClass(Stmt stmt, AccessPath taintedAP) {
+		Type declaredType = null;
 		if (stmt != null && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+			// If the base object of the call is tainted, we may have a more precise type in
+			// the access path
 			InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+			if (taintedAP != null && iinv.getBase() == taintedAP.getPlainValue()) {
+				declaredType = taintedAP.getBaseType();
+			}
+
+			// We may have a call such as
+			// x = editable.toString();
+			// In that case, the callee is Object.toString(), since in the stub Android
+			// JAR, the class android.text.Editable does not override toString(). On a
+			// real device, it does. Consequently, we have a summary in the "Editable"
+			// class. To handle such weird cases, we walk the class hierarchy based on
+			// the declared type of the base object.
 			Type baseType = iinv.getBase().getType();
-			if (baseType instanceof RefType)
-				declaredClass = ((RefType) baseType).getSootClass();
+			declaredType = manager.getTypeUtils().getMorePreciseType(declaredType, baseType);
 		}
-		return declaredClass;
+		return declaredType instanceof RefType ? ((RefType) declaredType).getSootClass() : null;
 	}
 
 	/**
@@ -1368,7 +1380,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		String sBaseType = sinkType == null ? null : "" + sinkType;
 		if (!flow.getIgnoreTypes()) {
 			// Compute the new base type
-			Type newBaseType = TypeUtils.getMorePreciseType(taintType, sinkType);
+			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
 			if (newBaseType == null)
 				newBaseType = sinkType;
 
@@ -1624,7 +1636,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
 
 		// If we have no data flows, we can abort early
 		if (flowsInCallees == null || flowsInCallees.isEmpty()) {
@@ -1721,7 +1733,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
 
 		// If we have no data flows, we can abort early
 		if (flowsInCallees.isEmpty()) {
@@ -1791,6 +1803,55 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			resAbs.add(newAbs);
 		}
 		return resAbs;
+	}
+
+	@Override
+	public Type getMorePreciseType(Type tp1, Type tp2) {
+		// We query the summaries to establish a type hierarchy beyond the Soot scene
+		if (tp1 instanceof RefType && tp2 instanceof RefType) {
+			RefType rt1 = (RefType) tp1;
+			RefType rt2 = (RefType) tp2;
+
+			SootClass sc1 = rt1.getSootClass();
+			SootClass sc2 = rt2.getSootClass();
+
+			if (sc1.isPhantom() || sc2.isPhantom()) {
+				String sc1Name = sc1.getName();
+				String sc2Name = sc2.getName();
+
+				ClassMethodSummaries cs1 = flows.getClassFlows(sc1.getName());
+				ClassMethodSummaries cs2 = flows.getClassFlows(sc2.getName());
+
+				// Type1 may be a superclass or interface of cs2
+				if (cs2 != null) {
+					ClassMethodSummaries curSummaries = cs2;
+					while (curSummaries != null) {
+						if (sc1Name.equals(curSummaries.getSuperClass()))
+							return tp2;
+						for (String intf : curSummaries.getInterfaces()) {
+							if (intf.equals(sc1Name))
+								return tp2;
+						}
+						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
+					}
+				}
+
+				// Type2 may be a superclass or interface of cs1
+				if (cs1 != null) {
+					ClassMethodSummaries curSummaries = cs1;
+					while (curSummaries != null) {
+						if (sc2Name.equals(curSummaries.getSuperClass()))
+							return tp1;
+						for (String intf : curSummaries.getInterfaces()) {
+							if (intf.equals(sc2Name))
+								return tp1;
+						}
+						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 }

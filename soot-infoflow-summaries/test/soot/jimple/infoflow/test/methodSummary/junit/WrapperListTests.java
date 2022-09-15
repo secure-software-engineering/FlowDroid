@@ -9,13 +9,13 @@ import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
 
-import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 public class WrapperListTests extends JUnitTests {
+
 	private static File files = new File("testSummaries");
 	protected final ITaintPropagationWrapper wrapper;
 
@@ -182,8 +182,8 @@ public class WrapperListTests extends JUnitTests {
 
 	@Override
 	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
-		IInfoflow result = new BackwardsInfoflow();
-//		IInfoflow result = new Infoflow();
+//		IInfoflow result = new BackwardsInfoflow();
+		IInfoflow result = new Infoflow();
 		WrapperListTestConfig testConfig = new WrapperListTestConfig();
 		result.setSootConfig(testConfig);
 		result.setTaintWrapper(wrapper);

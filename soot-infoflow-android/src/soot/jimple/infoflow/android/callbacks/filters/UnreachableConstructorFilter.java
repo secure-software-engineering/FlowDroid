@@ -24,7 +24,7 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 		if (component == callbackHandler)
 			return true;
 		RefType fragmentType = RefType.v("android.app.Fragment");
-		boolean isFragment = Scene.v().getFastHierarchy().canStoreType(callbackHandler.getType(), fragmentType);
+		boolean isFragment = Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), fragmentType);
 		if (isFragment)
 			// we cannot find constructors for these...
 			return true;
@@ -45,7 +45,7 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 		}
 
 		// If the component is a subclass of the callbackHandler
-		if(Scene.v().getFastHierarchy().canStoreClass(component, callbackHandler) && component.isConcrete())
+		if (Scene.v().getOrMakeFastHierarchy().canStoreClass(component, callbackHandler) && component.isConcrete())
 			return true;
 
 		// Is this handler class instantiated in a reachable method?

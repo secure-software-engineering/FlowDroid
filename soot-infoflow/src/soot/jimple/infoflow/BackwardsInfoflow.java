@@ -14,7 +14,6 @@ import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.codeOptimization.AddNopStmt;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.nativeCallHandler.BackwardNativeCallHandler;
@@ -89,8 +88,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 		switch (getConfig().getAliasingAlgorithm()) {
 		case FlowSensitive:
 			// The original icfg is already backwards for the backwards data flow analysis
-			aliasManager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy,
-					manager.getAccessPathFactory(), manager.getGlobalTaintManager());
+			aliasManager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy, manager);
 			aliasProblem = new BackwardsAliasProblem(aliasManager);
 
 			// We need to create the right data flow solver
@@ -105,7 +103,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 			aliasSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
 			aliasSolver.setMaxAbstractionPathLength(solverConfig.getMaxAbstractionPathLength());
 			aliasSolver.setSolverId(false);
-			aliasProblem.setTaintPropagationHandler(backwardsPropagationHandler);
+			aliasProblem.setTaintPropagationHandler(aliasPropagationHandler);
 			aliasProblem.setTaintWrapper(taintWrapper);
 			if (nativeCallHandler != null)
 				aliasProblem.setNativeCallHandler(nativeCallHandler);
@@ -129,7 +127,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	protected InfoflowManager initializeInfoflowManager(final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
 			GlobalTaintManager globalTaintManager) {
 		return new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg), sourcesSinks, taintWrapper, hierarchy,
-				new AccessPathFactory(config), globalTaintManager);
+				globalTaintManager);
 	}
 
 	@Override

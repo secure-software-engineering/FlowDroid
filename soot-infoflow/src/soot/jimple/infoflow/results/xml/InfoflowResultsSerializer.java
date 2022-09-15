@@ -17,6 +17,8 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 
 /**
  * Class for serializing FlowDroid results to XML
@@ -204,6 +206,11 @@ public class InfoflowResultsSerializer {
 					source.getDefinition().getCategory().getHumanReadableDescription());
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(source.getStmt()).getSignature());
+		ISourceSinkDefinition def = source.getDefinition();
+		if (def instanceof MethodSourceSinkDefinition) {
+			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
+			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+		}
 
 		writeAdditionalSourceInfo(source, writer);
 		writeAccessPath(source.getAccessPath(), writer);
@@ -261,6 +268,11 @@ public class InfoflowResultsSerializer {
 					sink.getDefinition().getCategory().getHumanReadableDescription());
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(sink.getStmt()).getSignature());
+		ISourceSinkDefinition def = sink.getDefinition();
+		if (def instanceof MethodSourceSinkDefinition) {
+			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
+			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+		}
 		writeAdditionalSinkInfo(sink, writer);
 		writeAccessPath(sink.getAccessPath(), writer);
 		writer.writeEndElement();

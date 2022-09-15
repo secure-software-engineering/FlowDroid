@@ -24,13 +24,14 @@ import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
-import soot.jimple.infoflow.util.TypeUtils;
+import soot.jimple.infoflow.typing.TypeUtils;
 
 public class AccessPathFactory {
 
 	protected final static Logger logger = LoggerFactory.getLogger(AccessPathFactory.class);
 
 	private final InfoflowConfiguration config;
+	private final TypeUtils typeUtils;
 
 	/**
 	 * Specialized pair class for field bases
@@ -101,8 +102,9 @@ public class AccessPathFactory {
 	 * 
 	 * @param config The FlowDroid configuration object
 	 */
-	public AccessPathFactory(InfoflowConfiguration config) {
+	public AccessPathFactory(InfoflowConfiguration config, TypeUtils typeUtils) {
 		this.config = config;
+		this.typeUtils = typeUtils;
 	}
 
 	private MyConcurrentHashMap<Type, Set<AccessPathFragment[]>> baseRegister = new MyConcurrentHashMap<>();
@@ -244,14 +246,14 @@ public class AccessPathFactory {
 		// ones. If types become incompatible, we drop the whole access path.
 		if (config.getEnableTypeChecking()) {
 			if (value != null && value.getType() != baseType) {
-				baseType = TypeUtils.getMorePreciseType(baseType, value.getType());
+				baseType = typeUtils.getMorePreciseType(baseType, value.getType());
 				if (baseType == null)
 					return null;
 
 				// If we have a more precise base type in the first field, we
 				// take that
 				if (fragments != null && fragments.length > 0 && !(baseType instanceof ArrayType))
-					baseType = TypeUtils.getMorePreciseType(baseType,
+					baseType = typeUtils.getMorePreciseType(baseType,
 							fragments[0].getField().getDeclaringClass().getType());
 				if (baseType == null)
 					return null;
@@ -264,7 +266,7 @@ public class AccessPathFactory {
 					Type curType = curFragment.getFieldType();
 					Type oldType = curType;
 					if (!(curType instanceof ArrayType))
-						curType = TypeUtils.getMorePreciseType(curType,
+						curType = typeUtils.getMorePreciseType(curType,
 								fragments[i + 1].getField().getDeclaringClass().getType());
 					if (curType != oldType)
 						fragments[i] = curFragment.copyWithNewType(curType);

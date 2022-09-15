@@ -1,4 +1,8 @@
-package soot.jimple.infoflow.util;
+package soot.jimple.infoflow.typing;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import soot.ArrayType;
 import soot.BooleanType;
@@ -7,6 +11,7 @@ import soot.CharType;
 import soot.DoubleType;
 import soot.FastHierarchy;
 import soot.FloatType;
+import soot.Hierarchy;
 import soot.IntType;
 import soot.LongType;
 import soot.PrimType;
@@ -27,9 +32,13 @@ import soot.jimple.infoflow.data.AccessPath;
 public class TypeUtils {
 
 	private final InfoflowManager manager;
+	private final List<ITypeChecker> typeCheckers = new ArrayList<>();
 
 	public TypeUtils(InfoflowManager manager) {
 		this.manager = manager;
+
+		// We want to query the standard Soot type hierarchy first
+		typeCheckers.add(new SootBasedTypeChecker());
 	}
 
 	/**
@@ -181,45 +190,11 @@ public class TypeUtils {
 	 * @param tp2 The second type
 	 * @return The more precise one of the two given types
 	 */
-	public static Type getMorePreciseType(Type tp1, Type tp2) {
-		final FastHierarchy fastHierarchy = Scene.v().getOrMakeFastHierarchy();
-
-		if (tp1 == null)
-			return tp2;
-		else if (tp2 == null)
-			return tp1;
-		else if (tp1 == tp2)
-			return tp1;
-		else if (TypeUtils.isObjectLikeType(tp1))
-			return tp2;
-		else if (TypeUtils.isObjectLikeType(tp2))
-			return tp1;
-		else if (tp1 instanceof PrimType && tp2 instanceof PrimType)
-			return tp1; // arbitrary choice
-		else if (fastHierarchy.canStoreType(tp2, tp1))
-			return tp2;
-		else if (fastHierarchy.canStoreType(tp1, tp2))
-			return tp1;
-		else {
-			// If one type is an array type and the other one is the base type,
-			// we still accept the cast
-			if (tp1 instanceof ArrayType && tp2 instanceof ArrayType) {
-				ArrayType at1 = (ArrayType) tp1;
-				ArrayType at2 = (ArrayType) tp2;
-				if (at1.numDimensions != at2.numDimensions)
-					return null;
-				Type preciseType = getMorePreciseType(at1.getElementType(), at2.getElementType());
-				if (preciseType == null)
-					return null;
-
-				return ArrayType.v(preciseType, at1.numDimensions);
-			} else if (tp1 instanceof ArrayType) {
-				ArrayType at = (ArrayType) tp1;
-				return getMorePreciseType(at.getElementType(), tp2);
-			} else if (tp2 instanceof ArrayType) {
-				ArrayType at = (ArrayType) tp2;
-				return getMorePreciseType(tp1, at.getElementType());
-			}
+	public Type getMorePreciseType(Type tp1, Type tp2) {
+		for (ITypeChecker checker : this.typeCheckers) {
+			Type tp = checker.getMorePreciseType(tp1, tp2);
+			if (tp != null)
+				return tp;
 		}
 		return null;
 	}
@@ -231,7 +206,7 @@ public class TypeUtils {
 	 * @param tp2 The second type
 	 * @return The more precise one of the two given types
 	 */
-	public static String getMorePreciseType(String tp1, String tp2) {
+	public String getMorePreciseType(String tp1, String tp2) {
 		Type newType = getMorePreciseType(getTypeFromString(tp1), getTypeFromString(tp2));
 		return newType == null ? null : "" + newType;
 	}
@@ -311,6 +286,33 @@ public class TypeUtils {
 			return array.makeArrayType();
 		} else
 			return ArrayType.v(type, 1);
+	}
+
+	/**
+	 * Registers an additional type checker implementation with the typing
+	 * infrastructure
+	 * 
+	 * @param checker The type checker to register
+	 */
+	public void registerTypeChecker(ITypeChecker checker) {
+		this.typeCheckers.add(checker);
+	}
+
+	/**
+	 * Gets all classes that inherit from the given class or that transitively
+	 * implement the given interface
+	 * 
+	 * @param classOrInterface The class or interface for which to enumerate the
+	 *                         derived classes
+	 * @return The classes derived from the given class or interface
+	 */
+	public static List<SootClass> getAllDerivedClasses(SootClass classOrInterface) {
+		final Hierarchy h = Scene.v().getActiveHierarchy();
+		if (classOrInterface.isInterface()) {
+			return h.getSubinterfacesOfIncluding(classOrInterface).stream()
+					.flatMap(i -> h.getImplementersOf(i).stream()).collect(Collectors.toList());
+		} else
+			return h.getSubclassesOfIncluding(classOrInterface);
 	}
 
 }

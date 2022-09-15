@@ -31,7 +31,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
-import soot.jimple.infoflow.util.TypeUtils;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.toolkits.pointer.LocalMustAliasAnalysis;
 import soot.jimple.toolkits.pointer.StrongLocalMustAliasAnalysis;
 import soot.toolkits.graph.UnitGraph;
@@ -343,7 +343,9 @@ public class Aliasing {
 				&& !source.getAccessPath().getCanHaveImmutableAliases())
 			return false;
 
-		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType);
+		AccessPath ap = source.getAccessPath();
+		return val instanceof FieldRef || (val instanceof Local && ((Local) val).getType() instanceof ArrayType)
+				|| (ap != null && ap.getTaintSubFields());
 	}
 
 	public boolean canHaveAliasesRightSide(Stmt stmt, Value val, Abstraction source) {

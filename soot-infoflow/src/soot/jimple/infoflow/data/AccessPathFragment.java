@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import soot.SootField;
 import soot.Type;
-import soot.jimple.infoflow.util.TypeUtils;
 
 /**
  * A fragment inside an access path
@@ -26,7 +25,7 @@ public class AccessPathFragment {
 	 */
 	public AccessPathFragment(SootField field, Type fieldType) {
 		this.field = field;
-		this.fieldType = TypeUtils.getMorePreciseType(fieldType, field.getType());
+		this.fieldType = fieldType == null ? field.getType() : fieldType;
 		this.context = null;
 	}
 

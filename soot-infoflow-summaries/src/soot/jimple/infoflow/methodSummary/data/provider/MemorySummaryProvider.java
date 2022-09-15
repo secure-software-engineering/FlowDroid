@@ -11,7 +11,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
  * @author Steven Arzt
  *
  */
-public class MemorySummaryProvider implements IMethodSummaryProvider {
+public class MemorySummaryProvider extends AbstractMethodSummaryProvider {
 
 	private final ClassSummaries summaries;
 

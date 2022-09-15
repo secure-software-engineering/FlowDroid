@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isInterface="true">
 	<hierarchy>
 		<interface name="java.util.Collection" />
+		<interface name="java.lang.Iterable" />
 	</hierarchy>
 	<methods>
 		<method id="java.util.Spliterator spliterator()">

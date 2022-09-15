@@ -24,6 +24,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.UnitPatchingChain;
+import soot.Value;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
@@ -339,17 +340,26 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		if (callbacks == null)
 			return false;
 
+		// Many callbacks needs a view. We keep one lying around. This helps us track
+		// state, but at the same time considers all views to be the same.
+		RefType rtView = RefType.v("android.view.View");
+		Value viewVal = getValueForType(rtView, referenceClasses, null, null, true);
+		if (viewVal instanceof Local)
+			localVarsForClasses.put(rtView.getSootClass(), (Local) viewVal);
+
 		// Get all classes in which callback methods are declared
 		MultiMap<SootClass, SootMethod> callbackClasses = getCallbackMethods(callbackSignature);
 
 		// The class for which we are generating the lifecycle always has an
 		// instance.
+		referenceClasses = new HashSet<>();
 		if (referenceClasses == null || referenceClasses.isEmpty())
-			referenceClasses = Collections.singleton(component);
+			referenceClasses.add(component);
 		else {
-			referenceClasses = new HashSet<>(referenceClasses);
+			referenceClasses.addAll(referenceClasses);
 			referenceClasses.add(component);
 		}
+		referenceClasses.add(rtView.getSootClass());
 
 		Stmt beforeCallbacks = Jimple.v().newNopStmt();
 		body.getUnits().add(beforeCallbacks);
