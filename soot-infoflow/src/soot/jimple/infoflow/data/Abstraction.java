@@ -652,6 +652,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	public void setCorrespondingCallSite(Stmt callSite) {
+
+		if (callSite != null && callSite.toString().equals(
+				"virtualinvoke $stack11.<soot.jimple.infoflow.test.android.ConnectionManager: void publish(java.lang.String)>($stack9)"))
+			System.out.println("x");
+
 		this.correspondingCallSite = callSite;
 	}
 
@@ -737,6 +742,11 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	void setCurrentStmt(Stmt currentStmt) {
+
+		if (currentStmt != null && currentStmt.toString().equals(
+				"virtualinvoke $stack11.<soot.jimple.infoflow.test.android.ConnectionManager: void publish(java.lang.String)>($stack9)"))
+			System.out.println("x");
+
 		this.currentStmt = currentStmt;
 	}
 

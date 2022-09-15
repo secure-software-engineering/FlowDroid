@@ -793,9 +793,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								}
 							}
 						}
-
-						setCallSite(source, res, (Stmt) callSite);
-
 						return res;
 					}
 				};
@@ -945,8 +942,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						if (!killSource.value && source != zeroValue)
 							res.add(source);
 
-						setCallSite(source, res, callStmt);
-
 						if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies()
 								&& source.getDominator() == null && res.contains(source)) {
 							IInfoflowCFG.UnitContainer dom = manager.getICFG().getDominatorOf(callSite);
@@ -959,13 +954,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						return res;
 					}
 				};
-			}
-
-			private void setCallSite(Abstraction source, Set<Abstraction> set, Stmt callStmt) {
-				for (Abstraction abs : set) {
-					if (!abs.equals(source))
-						abs.setCorrespondingCallSite(callStmt);
-				}
 			}
 
 			/**

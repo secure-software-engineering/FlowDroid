@@ -59,10 +59,6 @@ public class BackwardsSinkPropagationRule extends AbstractTaintPropagationRule {
 					abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 
 					res.add(abs);
-
-					// Set the corresponding call site
-					if (stmt.containsInvokeExpr())
-						abs.setCorrespondingCallSite(stmt);
 				}
 				return res;
 			}
