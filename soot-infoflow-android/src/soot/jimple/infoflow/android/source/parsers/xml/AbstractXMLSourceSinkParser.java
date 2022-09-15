@@ -26,6 +26,7 @@ import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
@@ -477,9 +478,9 @@ public abstract class AbstractXMLSourceSinkParser {
 			SAXParser parser = pf.newSAXParser();
 			runParse(parser, stream);
 		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
+			logger.error("Could not parse sources/sinks from stream", e);
 		} catch (SAXException e) {
-			e.printStackTrace();
+			logger.error("Could not parse sources/sinks from stream", e);
 		}
 		// Build the source and sink lists
 		buildSourceSinkLists();
@@ -542,6 +543,14 @@ public abstract class AbstractXMLSourceSinkParser {
 			sourcesAndSinks.put(signature, ssd);
 	}
 
+	/**
+	 * Factory method for {@link FieldSourceSinkDefinition} instances
+	 * 
+	 * @param signature The signature of the target field
+	 * @param baseAPs   The access paths that shall be considered as sources or
+	 *                  sinks
+	 * @return The newly created {@link FieldSourceSinkDefinition} instance
+	 */
 	protected abstract ISourceSinkDefinition createFieldSourceSinkDefinition(String signature,
 			Set<AccessPathTuple> baseAPs, List<Set<AccessPathTuple>> paramAPs);
 
