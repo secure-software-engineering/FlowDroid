@@ -72,18 +72,20 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs        The abstraction to put on the taint propagation path
-	 * @param pathConfig The configuration for constructing taint propagation paths
+	 * @param abs    The abstraction to put on the taint propagation path
+	 * @param config The configuration for constructing taint propagation paths
 	 * @return The new taint propagation path. If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(Abstraction abs, InfoflowConfiguration config) {
 		if (abs == null)
 			return this;
 
 		// If we have no data at all, there is nothing we can do here
 		if (abs.getCurrentStmt() == null && abs.getCorrespondingCallSite() == null)
 			return this;
+
+		final PathConfiguration pathConfig = config == null ? null : config.getPathConfiguration();
 
 		// If we don't track paths and have nothing to put on the stack, there
 		// is no need to create a new object
@@ -126,15 +128,32 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		}
 
 		// Extend the call stack
-		if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
-			if (scap == null)
-				scap = this.clone();
-			if (scap.callStack == null)
-				scap.callStack = new ExtensibleList<Stmt>();
-			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
-					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
-				return null;
-			scap.callStack.add(abs.getCorrespondingCallSite());
+		switch (config.getDataFlowDirection()) {
+		case Forwards:
+			if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
+				if (scap == null)
+					scap = this.clone();
+				if (scap.callStack == null)
+					scap.callStack = new ExtensibleList<Stmt>();
+				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
+						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
+					return null;
+				scap.callStack.add(abs.getCorrespondingCallSite());
+			}
+			break;
+		case Backwards:
+			if (abs.getCurrentStmt() != null && abs.getCurrentStmt().containsInvokeExpr()
+					&& abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
+				if (scap == null)
+					scap = this.clone();
+				if (scap.callStack == null)
+					scap.callStack = new ExtensibleList<Stmt>();
+				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
+						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
+					return null;
+				scap.callStack.add(abs.getCurrentStmt());
+			}
+			break;
 		}
 
 		this.neighborCounter = abs.getNeighbors() == null ? 0 : abs.getNeighbors().size();

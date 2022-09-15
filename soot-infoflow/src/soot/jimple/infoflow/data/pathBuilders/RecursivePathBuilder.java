@@ -108,7 +108,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 			if (scanPreds) {
 				// Otherwise, we have to check the predecessor
 				for (SourceContextAndPath curScap : getPaths(taskId, curAbs.getPredecessor(), newCallStack)) {
-					SourceContextAndPath extendedPath = curScap.extendPath(curAbs, pathConfig);
+					SourceContextAndPath extendedPath = curScap.extendPath(curAbs, config);
 					if (extendedPath != null)
 						cacheData.add(extendedPath);
 				}

@@ -6,7 +6,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 
 /**
@@ -19,19 +19,18 @@ public abstract class AbstractAbstractionPathBuilder implements IAbstractionPath
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected final InfoflowManager manager;
-	protected final PathConfiguration pathConfig;
+	protected final InfoflowConfiguration config;
 	protected Set<OnPathBuilderResultAvailable> resultAvailableHandlers = null;
 
 	/**
 	 * Creates a new instance of the {@link AbstractAbstractionPathBuilder} class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
+	 * @param manager The data flow manager that gives access to the icfg and other
+	 *                objects
 	 */
 	public AbstractAbstractionPathBuilder(InfoflowManager manager) {
 		this.manager = manager;
-		this.pathConfig = manager.getConfig().getPathConfiguration();
+		this.config = manager.getConfig();
 	}
 
 	@Override

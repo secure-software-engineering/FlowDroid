@@ -22,7 +22,7 @@
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
 		
-		<slf4j.version>1.7.36</slf4j.version>
+		<slf4j.version>2.0.1</slf4j.version>
 		<log4j.version>2.18.0</log4j.version>
 		<junit.version>4.13.2</junit.version>
 		<guava.version>31.1-jre</guava.version>

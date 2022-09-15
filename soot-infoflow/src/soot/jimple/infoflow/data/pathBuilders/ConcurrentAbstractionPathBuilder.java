@@ -82,7 +82,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 			// If we do sequential path processing, we wait for the current
 			// sink abstraction to be processed before working on the next
-			if (pathConfig.getSequentialPathProcessing()) {
+			if (config.getPathConfiguration().getSequentialPathProcessing()) {
 				try {
 					executor.awaitCompletion();
 					executor.reset();

@@ -1,8 +1,18 @@
 package soot.jimple.infoflow.problems.rules.backward;
 
+import java.util.Collection;
+
 import soot.SootMethod;
 import soot.Value;
-import soot.jimple.*;
+import soot.jimple.AssignStmt;
+import soot.jimple.IdentityStmt;
+import soot.jimple.IfStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.LookupSwitchStmt;
+import soot.jimple.ReturnStmt;
+import soot.jimple.Stmt;
+import soot.jimple.TableSwitchStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -15,12 +25,10 @@ import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
-import java.util.Collection;
-
 /**
- * Rule for recording abstractions that arrive at sources
- * The sources are swapped for the sinks, thats why all the other methods call for sink
- * even though they work on the sources
+ * Rule for recording abstractions that arrive at sources The sources are
+ * swapped for the sinks, thats why all the other methods call for sink even
+ * though they work on the sources
  *
  * @author Steven Arzt
  * @author Tim Lange
@@ -29,7 +37,8 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 
 	private boolean killState = false;
 
-	public BackwardsSourcePropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public BackwardsSourcePropagationRule(InfoflowManager manager, Abstraction zeroValue,
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
@@ -144,7 +153,8 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		final IReversibleSourceSinkManager ssm = (IReversibleSourceSinkManager) manager.getSourceSinkManager();
 
 		// We only report leaks for active taints, not for alias queries
-		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isEmpty()) {
+		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef()
+				&& !source.getAccessPath().isEmpty()) {
 			// Is the taint even visible inside the callee?
 			if (!stmt.containsInvokeExpr() || isTaintVisibleInCallee(stmt, source)) {
 				// Get the sink descriptor
@@ -153,7 +163,8 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 				// If we have already seen the same taint at the same sink, there is no need to
 				// propagate this taint any further.
 				if (sourceInfo != null) {
-					boolean result = getResults().addResult(new AbstractionAtSink(sourceInfo.getDefinition(), source, stmt));
+					boolean result = getResults()
+							.addResult(new AbstractionAtSink(sourceInfo.getDefinition(), source, stmt));
 					if (!result)
 						killState = true;
 				}
@@ -168,8 +179,8 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		// If we are in the kill state, we stop the analysis
 		if (killAll != null)
 			killAll.value |= killState;

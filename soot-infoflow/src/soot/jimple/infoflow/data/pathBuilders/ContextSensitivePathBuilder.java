@@ -100,7 +100,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
-				SourceContextAndPath extendedScap = scap.extendPath(pred, pathConfig);
+				SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 				if (extendedScap == null)
 					return false;
 
@@ -110,30 +110,51 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 
 			// If we enter a method, we put it on the stack
-			SourceContextAndPath extendedScap = scap.extendPath(pred, pathConfig);
+			SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 			if (extendedScap == null)
 				return false;
 
-			// Do we process a method return?
-			if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
-				// Pop the top item off the call stack. This gives us the item
-				// and the new SCAP without the item we popped off.
-				Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
-				if (pathAndItem != null) {
-					Stmt topCallStackItem = pathAndItem.getO2();
-					// Make sure that we don't follow an unrealizable path
-					if (topCallStackItem != pred.getCurrentStmt())
-						return false;
+			// Check if we are in the right context
+			switch (manager.getConfig().getDataFlowDirection()) {
+			case Forwards:
+				if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
+					// Pop the top item off the call stack. This gives us the item
+					// and the new SCAP without the item we popped off.
+					Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
+					if (pathAndItem != null) {
+						Stmt topCallStackItem = pathAndItem.getO2();
+						// Make sure that we don't follow an unrealizable path
+						if (topCallStackItem != pred.getCurrentStmt())
+							return false;
 
-					// We have returned from a function
-					extendedScap = pathAndItem.getO1();
+						// We have returned from a function
+						extendedScap = pathAndItem.getO1();
+					}
 				}
+				break;
+			case Backwards:
+				if (pred.getCorrespondingCallSite() != null
+						&& pred.getCorrespondingCallSite() != pred.getCurrentStmt()) {
+					// Pop the top item off the call stack. This gives us the item
+					// and the new SCAP without the item we popped off.
+					Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
+					if (pathAndItem != null) {
+						Stmt topCallStackItem = pathAndItem.getO2();
+						// Make sure that we don't follow an unrealizable path
+						if (topCallStackItem != pred.getCorrespondingCallSite())
+							return false;
+
+						// We have returned from a function
+						extendedScap = pathAndItem.getO1();
+					}
+				}
+				break;
 			}
 
 			// Add the new path
 			checkForSource(pred, extendedScap);
 
-			final int maxPaths = pathConfig.getMaxPathsPerAbstraction();
+			final int maxPaths = config.getPathConfiguration().getMaxPathsPerAbstraction();
 			if (maxPaths > 0) {
 				Set<SourceContextAndPath> existingPaths = pathCache.get(pred);
 				if (existingPaths != null && existingPaths.size() > maxPaths)
@@ -260,7 +281,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
 		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
-		scap = scap.extendPath(abs.getAbstraction(), pathConfig);
+		scap = scap.extendPath(abs.getAbstraction(), config);
 
 		if (pathCache.put(abs.getAbstraction(), scap)) {
 			if (!checkForSource(abs.getAbstraction(), scap))
