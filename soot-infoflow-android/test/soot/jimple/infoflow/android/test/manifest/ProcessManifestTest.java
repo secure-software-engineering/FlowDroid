@@ -3,6 +3,7 @@ package soot.jimple.infoflow.android.test.manifest;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -11,6 +12,8 @@ import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 
 public class ProcessManifestTest {
+
+	@Ignore("APK file missing")
 	@Test
 	public void testGetVersionCode() {
 		ProcessManifest manifest = null;
@@ -34,6 +37,7 @@ public class ProcessManifestTest {
 		org.junit.Assert.assertFalse(throwsException);
 	}
 
+	@Ignore("APK file missing")
 	@Test
 	public void testSdkVersion() {
 		ProcessManifest manifest = null;
