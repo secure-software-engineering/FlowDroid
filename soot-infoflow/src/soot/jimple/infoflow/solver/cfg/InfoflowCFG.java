@@ -10,8 +10,15 @@
  ******************************************************************************/
 package soot.jimple.infoflow.solver.cfg;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.cache.CacheLoader;
@@ -37,8 +44,11 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
 import soot.toolkits.exceptions.ThrowableSet;
-import soot.toolkits.graph.*;
+import soot.toolkits.graph.DirectedGraph;
+import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph.ExceptionDest;
+import soot.toolkits.graph.MHGDominatorsFinder;
+import soot.toolkits.graph.MHGPostDominatorsFinder;
 
 /**
  * Interprocedural control-flow graph for the infoflow solver
@@ -162,6 +172,8 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 	@Override
 	public SootMethod getMethodOf(Unit u) {
+		if (u == null)
+			throw new RuntimeException("Cannot get the method that contains a null unit");
 		return delegate.getMethodOf(u);
 	}
 
