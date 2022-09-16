@@ -1048,8 +1048,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					if (source.getPath() != null) {
 						logger.info("\ton Path: ");
 						for (Unit p : source.getPath()) {
-							logger.info("\t -> " + iCfg.getMethodOf(p));
-							logger.info("\t\t -> " + p);
+							if (p != null) {
+								logger.info("\t -> " + iCfg.getMethodOf(p));
+								logger.info("\t\t -> " + p);
+							}
 						}
 					}
 				}
