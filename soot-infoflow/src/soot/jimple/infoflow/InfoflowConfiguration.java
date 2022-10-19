@@ -1264,7 +1264,7 @@ public class InfoflowConfiguration {
 
 	}
 
-	private static boolean pathAgnosticResults = true;
+	private boolean pathAgnosticResults = true;
 	private static boolean oneResultPerAccessPath = false;
 	private static boolean mergeNeighbors = false;
 
@@ -1361,8 +1361,8 @@ public class InfoflowConfiguration {
 	 *                            they connect the same source and sink, even if
 	 *                            their propagation paths differ, otherwise false
 	 */
-	public static void setPathAgnosticResults(boolean pathAgnosticResults) {
-		InfoflowConfiguration.pathAgnosticResults = pathAgnosticResults;
+	public void setPathAgnosticResults(boolean pathAgnosticResults) {
+		this.pathAgnosticResults = pathAgnosticResults;
 	}
 
 	/**
@@ -1373,8 +1373,8 @@ public class InfoflowConfiguration {
 	 *         same source and sink, even if their propagation paths differ,
 	 *         otherwise false
 	 */
-	public static boolean getPathAgnosticResults() {
-		return InfoflowConfiguration.pathAgnosticResults;
+	public boolean getPathAgnosticResults() {
+		return pathAgnosticResults;
 	}
 
 	/**
@@ -1918,7 +1918,6 @@ public class InfoflowConfiguration {
 	public void setTaintAnalysisEnabled(boolean taintAnalysisEnabled) {
 		this.taintAnalysisEnabled = taintAnalysisEnabled;
 	}
-
 
 	/**
 	 * Gets whether the data flow results shall be reported incrementally instead of

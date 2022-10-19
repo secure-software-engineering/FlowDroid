@@ -184,6 +184,18 @@ public class TypeTestCode {
 		callIt(b);
 	}
 
+	public void callTargetTest2() {
+		ConnectionManager cm = new ConnectionManager();
+
+		A b2 = new B2();
+		cm.publish(b2.data);
+		b2.data = TelephonyManager.getDeviceId();
+
+		A b = new B();
+		b.data = TelephonyManager.getDeviceId();
+		cm.publish(b.data);
+	}
+
 	public void callTargetTest1Reduced() {
 		ConnectionManager cm = new ConnectionManager();
 		StringBuilder sb = new StringBuilder();

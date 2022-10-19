@@ -15,7 +15,6 @@ import java.util.List;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
@@ -27,6 +26,14 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
  * @author Tim Lange
  */
 public class BackwardsInfoflowResults extends InfoflowResults {
+
+	public BackwardsInfoflowResults() {
+		super();
+	}
+
+	public BackwardsInfoflowResults(boolean pathAgnosticResults) {
+		super(pathAgnosticResults);
+	}
 
 	@Override
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
@@ -41,7 +48,7 @@ public class BackwardsInfoflowResults extends InfoflowResults {
 			Collections.reverse(propagationCallSites);
 		if (propagationPath != null) {
 			Collections.reverse(propagationPath);
-			if (!InfoflowConfiguration.getPathAgnosticResults() && propagationCallSites != null && manager != null) {
+			if (!manager.getConfig().getPathAgnosticResults() && propagationCallSites != null && manager != null) {
 				for (int i = 0; i < propagationPath.size(); i++) {
 					if (manager.getICFG().isExitStmt(propagationPath.get(i)))
 						propagationPath.set(i, propagationCallSites.get(i));
@@ -51,7 +58,7 @@ public class BackwardsInfoflowResults extends InfoflowResults {
 		if (propagationAccessPath != null)
 			Collections.reverse(propagationAccessPath);
 		ResultSourceInfo sinkObj = new ResultSourceInfo(sinkDefinition, sink, sinkStmt, userData, propagationPath,
-				propagationAccessPath, propagationCallSites);
+				propagationAccessPath, propagationCallSites, pathAgnosticResults);
 
 		this.addResult(sourceObj, sinkObj);
 		return new Pair<>(sinkObj, sourceObj);
@@ -63,6 +70,6 @@ public class BackwardsInfoflowResults extends InfoflowResults {
 		// We create a sink info out of a source definition as in backwards analysis the
 		// start(=source def) is a sink
 		this.addResult(new ResultSinkInfo(sourceDefinition, sink, sinkStmt),
-				new ResultSourceInfo(sinkDefinition, source, sourceStmt));
+				new ResultSourceInfo(sinkDefinition, source, sourceStmt, pathAgnosticResults));
 	}
 }

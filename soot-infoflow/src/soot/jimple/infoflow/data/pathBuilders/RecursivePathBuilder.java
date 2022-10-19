@@ -23,7 +23,7 @@ import soot.util.FastStack;
  */
 public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 
-	private final InfoflowResults results = new InfoflowResults();
+	private final InfoflowResults results;
 	private final CountingThreadPoolExecutor executor;
 
 	private static int lastTaskId = 0;
@@ -42,6 +42,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 	public RecursivePathBuilder(InfoflowManager manager, CountingThreadPoolExecutor executor) {
 		super(manager);
 		this.executor = executor;
+		this.results = new InfoflowResults(manager.getConfig().getPathAgnosticResults());
 	}
 
 	/**
@@ -67,9 +68,9 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 		// If the current statement is a source, we have found a path root
 		if (curAbs.getSourceContext() != null) {
 			// Construct the path root
-			SourceContextAndPath sourceAndPath = new SourceContextAndPath(curAbs.getSourceContext().getDefinition(),
-					curAbs.getSourceContext().getAccessPath(), curAbs.getSourceContext().getStmt(),
-					curAbs.getSourceContext().getUserData()).extendPath(curAbs);
+			SourceContextAndPath sourceAndPath = new SourceContextAndPath(config,
+					curAbs.getSourceContext().getDefinition(), curAbs.getSourceContext().getAccessPath(),
+					curAbs.getSourceContext().getStmt(), curAbs.getSourceContext().getUserData()).extendPath(curAbs);
 			cacheData.add(sourceAndPath);
 
 			// Sources may not have predecessors

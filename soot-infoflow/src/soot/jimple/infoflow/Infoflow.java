@@ -160,7 +160,7 @@ public class Infoflow extends AbstractInfoflow {
 
 	@Override
 	protected InfoflowResults createResultsObject() {
-		return new InfoflowResults();
+		return new InfoflowResults(config.getPathAgnosticResults());
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.CategoryMode;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
@@ -223,7 +222,7 @@ public class XMLConfigurationParser {
 					else if (currentElement.equals(XMLConstants.TAG_PATH_RECONSTRUCTION_MODE))
 						pathConfig.setPathReconstructionMode(PathReconstructionMode.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_PATH_AGNOSTIC_RESULTS))
-						InfoflowConfiguration.setPathAgnosticResults(Boolean.valueOf(data));
+						config.setPathAgnosticResults(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_MAX_CALLSTACK_SIZE))
 						pathConfig.setMaxCallStackSize(Integer.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_MAX_PATH_LENGTH))

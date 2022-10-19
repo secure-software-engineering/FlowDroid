@@ -624,7 +624,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			StringWriter stacktrace = new StringWriter();
 			PrintWriter pw = new PrintWriter(stacktrace);
 			ex.printStackTrace(pw);
-			results.addException(ex.getClass().getName() + ": " + ex.getMessage() + "\n" + stacktrace.toString());
+			if (results != null)
+				results.addException(ex.getClass().getName() + ": " + ex.getMessage() + "\n" + stacktrace.toString());
 			logger.error("Exception during data flow analysis", ex);
 			if (throwExceptions)
 				throw ex;

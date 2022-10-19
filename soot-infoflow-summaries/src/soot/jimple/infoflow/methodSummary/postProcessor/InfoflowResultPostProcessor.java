@@ -119,11 +119,11 @@ public class InfoflowResultPostProcessor {
 				if (a.getSourceContext() != null) {
 					for (Stmt stmt : collectedAbstractions.get(a)) {
 						processFlowSource(flows, m, a.getAccessPath(), stmt,
-								new SummarySourceInfo(
-										a.getAccessPath(), a.getCurrentStmt(), a.getSourceContext().getUserData(),
-										a.getAccessPath(), isAliasedField(a.getAccessPath(),
-												a.getSourceContext().getAccessPath(), a.getSourceContext().getStmt()),
-										false));
+								new SummarySourceInfo(a.getAccessPath(), a.getCurrentStmt(),
+										a.getSourceContext().getUserData(), a.getAccessPath(),
+										isAliasedField(a.getAccessPath(), a.getSourceContext().getAccessPath(),
+												a.getSourceContext().getStmt()),
+										false, config.getPathAgnosticResults()));
 					}
 				} else {
 					// Get the source info and process the flow

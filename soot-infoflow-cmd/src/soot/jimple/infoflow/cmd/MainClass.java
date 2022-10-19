@@ -21,18 +21,17 @@ import org.slf4j.LoggerFactory;
 import soot.Modifier;
 import soot.Scene;
 import soot.SootClass;
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
+import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
-import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
 import soot.jimple.infoflow.android.SetupApplication;
@@ -835,7 +834,7 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_MERGE_DEX_FILES))
 			config.setMergeDexFiles(true);
 		if (cmd.hasOption(OPTION_PATH_SPECIFIC_RESULTS))
-			InfoflowConfiguration.setPathAgnosticResults(false);
+			config.setPathAgnosticResults(false);
 		if (cmd.hasOption(OPTION_SINGLE_JOIN_POINT))
 			config.getSolverConfiguration().setSingleJoinPointAbstraction(true);
 		{

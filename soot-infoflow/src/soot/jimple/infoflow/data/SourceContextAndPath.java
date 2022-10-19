@@ -19,17 +19,23 @@ import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
  * @author Steven Arzt
  */
 public class SourceContextAndPath extends SourceContext implements Cloneable {
+
 	protected ExtensibleList<Abstraction> path = null;
 	protected ExtensibleList<Stmt> callStack = null;
 	protected int neighborCounter = 0;
+	protected InfoflowConfiguration config;
+
 	private int hashCode = 0;
 
-	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt) {
-		this(definition, value, stmt, null);
+	public SourceContextAndPath(InfoflowConfiguration config, ISourceSinkDefinition definition, AccessPath value,
+			Stmt stmt) {
+		this(config, definition, value, stmt, null);
 	}
 
-	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
+	public SourceContextAndPath(InfoflowConfiguration config, ISourceSinkDefinition definition, AccessPath value,
+			Stmt stmt, Object userData) {
 		super(definition, value, stmt, userData);
+		this.config = config;
 	}
 
 	public List<Stmt> getPath() {
@@ -214,8 +220,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.hashCode != 0 && scap.hashCode != 0 && this.hashCode != scap.hashCode)
 			return false;
 
-		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults() && path != null
-				&& scap.path != null;
+		boolean mergeDifferentPaths = !config.getPathAgnosticResults() && path != null && scap.path != null;
 		if (mergeDifferentPaths) {
 			if (path.size() != scap.path.size()) {
 				// Quick check: they cannot be equal
@@ -249,7 +254,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 		final int prime = 31;
 		int result = super.hashCode();
-		if (!InfoflowConfiguration.getPathAgnosticResults())
+		if (!config.getPathAgnosticResults())
 			result = prime * result + ((path == null) ? 0 : path.hashCode());
 		result = prime * result + ((callStack == null) ? 0 : callStack.hashCode());
 		this.hashCode = result;
@@ -258,7 +263,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 	@Override
 	public SourceContextAndPath clone() {
-		final SourceContextAndPath scap = new SourceContextAndPath(definition, accessPath, stmt, userData);
+		final SourceContextAndPath scap = new SourceContextAndPath(config, definition, accessPath, stmt, userData);
 		if (path != null)
 			scap.path = new ExtensibleList<Abstraction>(this.path);
 		if (callStack != null)

@@ -279,7 +279,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
-		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
+		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinition(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
 		scap = scap.extendPath(abs.getAbstraction(), config);
 

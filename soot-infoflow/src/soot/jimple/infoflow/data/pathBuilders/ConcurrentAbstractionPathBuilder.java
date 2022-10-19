@@ -23,11 +23,13 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	public ConcurrentAbstractionPathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
 		super(manager);
 		this.executor = executor;
+
+		boolean pathAgnostic = manager.getConfig().getPathAgnosticResults();
 		InfoflowConfiguration.DataFlowDirection direction = manager.getConfig().getDataFlowDirection();
 		if (direction == InfoflowConfiguration.DataFlowDirection.Backwards)
-			results = new BackwardsInfoflowResults();
+			results = new BackwardsInfoflowResults(pathAgnostic);
 		else
-			results = new InfoflowResults();
+			results = new InfoflowResults(pathAgnostic);
 	}
 
 	/**
@@ -45,6 +47,8 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 			return;
 
 		logger.info("Obtainted {} connections between sources and sinks", res.size());
+		if (!manager.getConfig().getPathAgnosticResults())
+			logger.info("Path-agnostic results are disabled, i.e., there will be one result per path");
 
 		// Notify the listeners that the solver has been started
 		for (IMemoryBoundedSolverStatusNotification listener : notificationListeners)

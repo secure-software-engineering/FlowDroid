@@ -58,7 +58,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, boolean isAlias,
 			AccessPath curAP, List<SootMethod> callees, SummaryPathBuilderContext context) {
-		super(null, value, stmt);
+		super(manager.getConfig(), null, value, stmt);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;
@@ -68,7 +68,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, AccessPath curAP,
 			boolean isAlias, int depth, List<SootMethod> callees, Object userData, SummaryPathBuilderContext context) {
-		super(null, value, stmt, userData);
+		super(manager.getConfig(), null, value, stmt, userData);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;

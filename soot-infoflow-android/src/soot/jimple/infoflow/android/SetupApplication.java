@@ -10,14 +10,40 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android;
 
-import heros.solver.Pair;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParserException;
-import soot.*;
+
+import heros.solver.Pair;
+import soot.G;
+import soot.Main;
+import soot.PackManager;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
@@ -84,11 +110,6 @@ import soot.options.Options;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
-import javax.xml.stream.XMLStreamException;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -140,9 +161,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	private static class MultiRunResultAggregator implements ResultsAvailableHandler {
 
-		private final InfoflowResults aggregatedResults = new InfoflowResults();
+		private final InfoflowResults aggregatedResults;
 		private InfoflowResults lastResults = null;
 		private IInfoflowCFG lastICFG = null;
+
+		public MultiRunResultAggregator(boolean pathAgnosticResults) {
+			aggregatedResults = new InfoflowResults(pathAgnosticResults);
+		}
 
 		@Override
 		public void onResultsAvailable(IInfoflowCFG cfg, InfoflowResults results) {
@@ -1308,7 +1333,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		 *                                    ypoints on their own
 		 */
 		public InPlaceBackwardsInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
-							   Collection<SootMethod> additionalEntryPointMethods) {
+				Collection<SootMethod> additionalEntryPointMethods) {
 			super(androidPath, forceAndroidJar, icfgFactory);
 			this.additionalEntryPointMethods = additionalEntryPointMethods;
 		}
@@ -1484,7 +1509,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throw new RuntimeException("Parse app resource failed", e);
 		}
 
-		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
+		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator(config.getPathAgnosticResults());
 
 		// We need at least one entry point
 		if (entrypoints == null || entrypoints.isEmpty()) {

@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import heros.solver.Pair;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
@@ -53,7 +52,13 @@ public class InfoflowResults {
 	protected volatile List<String> exceptions = null;
 	protected int terminationState = TERMINATION_SUCCESS;
 
+	protected volatile boolean pathAgnosticResults = true;
+
 	public InfoflowResults() {
+	}
+
+	public InfoflowResults(boolean pathAgnosticResults) {
+		this.pathAgnosticResults = pathAgnosticResults;
 	}
 
 	/**
@@ -145,7 +150,7 @@ public class InfoflowResults {
 	public void addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
 			ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
 		this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
-				new ResultSourceInfo(sourceDefinition, source, sourceStmt));
+				new ResultSourceInfo(sourceDefinition, source, sourceStmt, pathAgnosticResults));
 	}
 
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
@@ -165,7 +170,7 @@ public class InfoflowResults {
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
 			apPath = new ArrayList<>(propagationPath.size());
-			if (!InfoflowConfiguration.getPathAgnosticResults())
+			if (!manager.getConfig().getPathAgnosticResults())
 				csPath = new ArrayList<>(propagationPath.size());
 			for (Abstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
@@ -212,7 +217,7 @@ public class InfoflowResults {
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
 			InfoflowManager manager) {
 		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
-				propagationPath, propagationAccessPath, propagationCallSites);
+				propagationPath, propagationAccessPath, propagationCallSites, pathAgnosticResults);
 		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
 
 		this.addResult(sinkObj, sourceObj);

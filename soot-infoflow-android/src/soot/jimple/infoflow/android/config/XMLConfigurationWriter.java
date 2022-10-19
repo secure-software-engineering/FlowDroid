@@ -18,7 +18,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CategoryMode;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
@@ -124,7 +123,7 @@ public class XMLConfigurationWriter {
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_PATH_RECONSTRUCTION_MODE,
 				pathConfig.getPathReconstructionMode().toString());
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_PATH_AGNOSTIC_RESULTS,
-				Boolean.toString(InfoflowConfiguration.getPathAgnosticResults()));
+				Boolean.toString(config.getPathAgnosticResults()));
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_MAX_CALLSTACK_SIZE,
 				Integer.toString(pathConfig.getMaxCallStackSize()));
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_MAX_PATH_LENGTH,

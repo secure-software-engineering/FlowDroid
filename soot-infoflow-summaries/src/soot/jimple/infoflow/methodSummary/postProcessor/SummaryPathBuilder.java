@@ -51,8 +51,8 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		}
 
 		public SummarySourceInfo(AccessPath source, Stmt context, Object userData, AccessPath sourceAP, boolean isAlias,
-				boolean isInCallee) {
-			super(null, source, context, userData, null, null, null);
+				boolean isInCallee, boolean pathAgnosticResults) {
+			super(null, source, context, userData, null, null, null, pathAgnosticResults);
 			this.sourceAP = sourceAP;
 			this.isAlias = isAlias;
 			this.isInCallee = isInCallee;
@@ -206,7 +206,7 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		SummarySourceContextAndPath sscap = (SummarySourceContextAndPath) scap;
 		SummarySourceInfo ssi = new SummarySourceInfo(abs.getSourceContext().getAccessPath(),
 				abs.getSourceContext().getStmt(), abs.getSourceContext().getUserData(), sscap.getCurrentAccessPath(),
-				sscap.getIsAlias(), !scap.isCallStackEmpty() || sscap.getDepth() != 0);
+				sscap.getIsAlias(), !scap.isCallStackEmpty() || sscap.getDepth() != 0, config.getPathAgnosticResults());
 		ResultSinkInfo rsi = new ResultSinkInfo(null, scap.getAccessPath(), scap.getStmt());
 
 		this.resultInfos.add(new SummaryResultInfo(ssi, rsi));
