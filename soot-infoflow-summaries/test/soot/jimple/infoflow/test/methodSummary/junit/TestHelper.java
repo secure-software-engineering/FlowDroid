@@ -59,7 +59,11 @@ public abstract class TestHelper {
 		appendWithSeparator(appPathBuilder, testSrc2);
 		appPath = appPathBuilder.toString();
 
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
 	}
 
 	/**
