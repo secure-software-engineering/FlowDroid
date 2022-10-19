@@ -23,7 +23,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
@@ -79,7 +78,11 @@ public abstract class JUnitTests {
 		appendWithSeparator(appPathBuilder, testSrc5);
 		appPath = appPathBuilder.toString();
 
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
