@@ -1166,7 +1166,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param icfg The interprocedural control flow graph
 	 * @return The methods that may contain seeds
 	 */
-	private Collection<SootMethod> getMethodsForSeeds(IInfoflowCFG icfg) {
+	protected Collection<SootMethod> getMethodsForSeeds(IInfoflowCFG icfg) {
 		List<SootMethod> seeds = new LinkedList<>();
 		// If we have a callgraph, we retrieve the reachable methods. Otherwise,
 		// we have no choice but take all application methods as an
