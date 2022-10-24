@@ -25,7 +25,6 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
@@ -319,7 +318,11 @@ public class SummaryTaintWrapperTests {
 		appendWithSeparator(appPathBuilder, testSrc4);
 		appPath = appPathBuilder.toString();
 
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
 	}
 
 	/**
