@@ -196,6 +196,16 @@ public class TypeTestCode {
 		cm.publish(b.data);
 	}
 
+	public void callTargetTest3() {
+		A b2 = new B2();
+		b2.leak();
+		b2.data = TelephonyManager.getDeviceId();
+
+		A b = new B();
+		b.data = TelephonyManager.getDeviceId();
+		b.leak();
+	}
+
 	public void callTargetTest1Reduced() {
 		ConnectionManager cm = new ConnectionManager();
 		StringBuilder sb = new StringBuilder();
