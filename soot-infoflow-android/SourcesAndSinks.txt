@@ -75,7 +75,7 @@
 <org.springframework.security.config.http.CsrfBeanDefinitionParser: org.springframework.beans.factory.config.BeanDefinition getCsrfLogoutHandler)> -> _SOURCE_
 <org.springframework.security.config.authentication.CachingUserDetailsService: org.springframework.security.core.userdetails.UserDetails loadUserByUsername(java.lang.String)> -> _SOURCE_
 <org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper: org.springframework.security.core.userdetails.UserDetails loadUserDetails(org.springframework.security.core.Authentication)> -> _SOURCE_
-<java.io.File: java.io.File getAbsoluteFile)> -> _SOURCE_
+<java.io.File: java.io.File getAbsoluteFile()> -> _SOURCE_
 <org.apache.commons.jxpath.ri.parser.XPathParser: java.lang.String unescape(java.lang.String)> -> _SOURCE_
 <org.springframework.security.config.http.FormLoginBeanDefinitionParser: java.lang.String getLoginPage)> -> _SOURCE_
 <org.apache.xmlrpc.webserver.HttpServletRequestImpl: java.lang.String getRealPath(java.lang.String)> -> _SOURCE_
@@ -83,7 +83,7 @@
 <org.springframework.web.servlet.tags.UrlTag: java.lang.String createQueryString(java.util.List,java.util.Set,boolean)> -> _SOURCE_
 <org.springframework.messaging.simp.stomp.StompDecoder: java.lang.String unescape(java.lang.String)> -> _SOURCE_
 <org.springframework.web.servlet.tags.UrlTag: java.lang.String createUrl)> -> _SOURCE_
-<java.io.File: java.io.File getCanonicalFile)> -> _SOURCE_
+<java.io.File: java.io.File getCanonicalFile()> -> _SOURCE_
 <org.apache.commons.jxpath.ri.JXPathContextReferenceImpl: java.lang.Object getValue(java.lang.String)> -> _SOURCE_
 <org.apache.xmlrpc.webserver.RequestData: java.lang.String getMethod)> -> _SOURCE_
 <com.google.auth.oauth2.DefaultCredentialsProvider: com.google.auth.oauth2.GoogleCredentials getDefaultCredentials(com.google.api.client.http.HttpTransport)> -> _SOURCE_
@@ -112,7 +112,7 @@
 <org.apache.xmlrpc.webserver.RequestData: java.lang.String getHttpVersion)> -> _SOURCE_
 <com.novell.ldap.rfc2251.RfcFilter: byte[] unescapeString(java.lang.String)> -> _SOURCE_
 <org.springframework.web.socket.config.HandlersBeanDefinitionParser: org.springframework.beans.factory.config.BeanDefinition parse(org.w3c.dom.Element,org.springframework.beans.factory.xml.ParserContext)> -> _SOURCE_
-<com.google.auth.oauth2.DefaultCredentialsProvider: java.io.File getWellKnownCredentialsFile)> -> _SOURCE_
+<com.google.auth.oauth2.DefaultCredentialsProvider: java.io.File getWellKnownCredentialsFile()> -> _SOURCE_
 <org.apache.xmlrpc.webserver.HttpServletRequestImpl: void parseParameters)> -> _SOURCE_
 <org.jsoup.parser.Parser: org.jsoup.nodes.Document parse(java.lang.String,java.lang.String)> -> _SOURCE_
 <javax.servlet.ServletRequestWrapper: java.lang.String getParameter(java.lang.String)> -> _SOURCE_
