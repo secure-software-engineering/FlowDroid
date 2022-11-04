@@ -65,6 +65,85 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	}
 
 	/**
+	 * Return the last abstraction on the taint propagation path
+	 *
+	 * @return the last abstraction
+	 */
+	public Abstraction getLastAbstraction() {
+		return path.getLast();
+	}
+
+	private int getCallStackSize() {
+		if (isCallStackEmpty())
+			return 0;
+		return callStack.size();
+	}
+
+	/**
+	 * Extends the taint propagation path of THIS with the additional abstractions from OTHER
+	 *
+	 * @param other longer taint propagation path
+	 * @return The new taint propagation path
+	 */
+	public SourceContextAndPath extendPath(SourceContextAndPath other) {
+		// Bail out if the cached path is shorter than the current one
+		if (this.path == null || other.path == null || other.path.size() <= this.path.size())
+			return null;
+
+		ArrayList<Abstraction> buf = new ArrayList<>(other.path.size() - this.path.size());
+		Abstraction lastAbs = this.getLastAbstraction();
+		boolean foundCommonAbs = false;
+
+		// Collect all additional abstractions on the cached path
+		Iterator<Abstraction> pathIt = other.path.reverseIterator();
+		while (pathIt.hasNext()) {
+			Abstraction next = pathIt.next();
+			if (next == lastAbs) {
+				foundCommonAbs = true;
+				break;
+			}
+			buf.add(next);
+		}
+
+		// If the paths do not have a common abstraction, there's probably something wrong...
+		if (!foundCommonAbs)
+			return null;
+
+		// Append the additional abstractions to the new taint propagation path
+		SourceContextAndPath extendedScap = clone();
+		for (Abstraction abs : buf)
+			extendedScap.path.add(abs);
+
+		int newCallStackCapacity = other.getCallStackSize() - this.getCallStackSize();
+		// Sanity Check: The callStack of other should always be larger than the one of this
+		if (newCallStackCapacity < 0)
+			return null;
+		if (newCallStackCapacity > 0) {
+			ArrayList<Stmt> callStackBuf = new ArrayList<>(newCallStackCapacity);
+			Stmt topStmt = this.callStack == null ? null : this.callStack.getLast();
+
+			// Collect all additional statements on the call stack...
+			Iterator<Stmt> callStackIt = other.callStack.reverseIterator();
+			while (callStackIt.hasNext()) {
+				Stmt next = callStackIt.next();
+				if (next == topStmt)
+					break;
+				callStackBuf.add(next);
+			}
+
+			if (callStackBuf.size() > 0) {
+				if (extendedScap.callStack == null)
+					extendedScap.callStack = new ExtensibleList<>();
+				// ...and append them.
+				for (Stmt stmt : callStackBuf)
+					extendedScap.callStack.add(stmt);
+			}
+		}
+
+		return extendedScap;
+	}
+
+	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
 	 * @param abs The abstraction to put on the taint propagation path

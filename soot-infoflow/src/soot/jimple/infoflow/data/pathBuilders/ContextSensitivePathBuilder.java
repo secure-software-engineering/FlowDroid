@@ -56,6 +56,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		return executor;
 	}
 
+
 	/**
 	 * Task for tracking back the path from sink to source.
 	 * 
@@ -76,43 +77,84 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
 					// Process the predecessor
-					if (processPredecessor(scap, pred)) {
-						// Schedule the predecessor
-						assert pathCache.containsKey(pred);
-						scheduleDependentTask(new SourceFindingTask(pred));
-					}
+					processAndQueue(pred, scap);
 
 					// Process the predecessor's neighbors
 					if (pred.getNeighbors() != null) {
 						for (Abstraction neighbor : pred.getNeighbors()) {
-							if (processPredecessor(scap, neighbor)) {
-								// Schedule the predecessor
-								assert pathCache.containsKey(neighbor);
-								scheduleDependentTask(new SourceFindingTask(neighbor));
-							}
+							processAndQueue(neighbor, scap);
 						}
 					}
 				}
 			}
 		}
 
-		private boolean processPredecessor(SourceContextAndPath scap, Abstraction pred) {
+		/**
+		 * Uses the cached paths to extend the current path
+		 *
+		 * @param scap SourceContextAndPath of the current abstraction
+		 * @param cachedScap cached SourceContextAndPath to extend scap
+		 */
+		private void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
+			// Try to extend scap with cachedScap
+			SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
+			if (extendedScap != null) {
+				Abstraction last = extendedScap.getLastAbstraction();
+				if (pathCache.put(last, extendedScap)) {
+					// If the new path wasn't seen before, queue it
+					scheduleDependentTask(new SourceFindingTask(last));
+				} else {
+					// Otherwise, try to build the path further using the cache
+					if (!checkForSource(last, extendedScap))
+						for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
+							buildFullPathFromCache(extendedScap, preds);
+				}
+			}
+		}
+
+		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
+			// Skip abstractions that don't contain any new information. This might
+			// be the case when a turn unit was added to the abstraction.
+			if (pred.getCorrespondingCallSite() == null && pred.getCurrentStmt() == null && pred.getTurnUnit() != null) {
+				processAndQueue(pred.getPredecessor(), scap);
+				return;
+			}
+
+			ProcessingResult p = processPredecessor(scap, pred);
+			switch (p.getResult()) {
+				case NEW:
+					// Schedule the predecessor
+					assert pathCache.containsKey(pred);
+					scheduleDependentTask(new SourceFindingTask(pred));
+					break;
+				case CACHED:
+					// In case we already know the subpath, append it to the path and queue it
+					buildFullPathFromCache(scap, p.getScap());
+					break;
+				case INFEASIBLE_OR_MAX_PATHS_REACHED:
+					// Nothing to do
+					break;
+				default:
+					assert false;
+			}
+		}
+
+		private ProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
 				SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 				if (extendedScap == null)
-					return false;
+					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 				checkForSource(pred, extendedScap);
-				return pathCache.put(pred, extendedScap);
-
+				return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW() : ProcessingResult.CACHED(extendedScap);
 			}
 
 			// If we enter a method, we put it on the stack
 			SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 			if (extendedScap == null)
-				return false;
+				return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 			// Check if we are in the right context
 			switch (manager.getConfig().getDataFlowDirection()) {
@@ -125,7 +167,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 						Stmt topCallStackItem = pathAndItem.getO2();
 						// Make sure that we don't follow an unrealizable path
 						if (topCallStackItem != pred.getCurrentStmt())
-							return false;
+							return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 						// We have returned from a function
 						extendedScap = pathAndItem.getO1();
@@ -142,7 +184,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 						Stmt topCallStackItem = pathAndItem.getO2();
 						// Make sure that we don't follow an unrealizable path
 						if (topCallStackItem != pred.getCorrespondingCallSite())
-							return false;
+							return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 						// We have returned from a function
 						extendedScap = pathAndItem.getO1();
@@ -158,9 +200,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (maxPaths > 0) {
 				Set<SourceContextAndPath> existingPaths = pathCache.get(pred);
 				if (existingPaths != null && existingPaths.size() > maxPaths)
-					return false;
+					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 			}
-			return pathCache.put(pred, extendedScap);
+			return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW() : ProcessingResult.CACHED(extendedScap);
 		}
 
 		@Override
