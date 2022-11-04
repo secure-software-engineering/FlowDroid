@@ -793,6 +793,12 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								}
 							}
 						}
+
+						for (Abstraction abs : res) {
+							if (abs != source)
+								abs.setCorrespondingCallSite(callStmt);
+						}
+
 						return res;
 					}
 				};
