@@ -33,10 +33,9 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 		}
 
 		@Override
-		protected void onTaintPathsComputed() {
+		protected void cleanupExecutor() {
 			// Do not terminate the executor
 		}
-
 	}
 
 	/**

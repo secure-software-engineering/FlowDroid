@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import heros.solver.Pair;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.ConcurrentIdentityHashMultiMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
@@ -29,6 +30,9 @@ import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilder {
 
 	protected ConcurrentIdentityHashMultiMap<Abstraction, SourceContextAndPath> pathCache = new ConcurrentIdentityHashMultiMap<>();
+
+	// Set holds all paths that reach an already cached subpath
+	protected ConcurrentHashSet<Pair<SourceContextAndPath, SourceContextAndPath>> deferredPaths = new ConcurrentHashSet<>();
 
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
@@ -89,29 +93,6 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 		}
 
-		/**
-		 * Uses the cached paths to extend the current path
-		 *
-		 * @param scap SourceContextAndPath of the current abstraction
-		 * @param cachedScap cached SourceContextAndPath to extend scap
-		 */
-		private void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
-			// Try to extend scap with cachedScap
-			SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
-			if (extendedScap != null) {
-				Abstraction last = extendedScap.getLastAbstraction();
-				if (pathCache.put(last, extendedScap)) {
-					// If the new path wasn't seen before, queue it
-					scheduleDependentTask(new SourceFindingTask(last));
-				} else {
-					// Otherwise, try to build the path further using the cache
-					if (!checkForSource(last, extendedScap))
-						for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
-							buildFullPathFromCache(extendedScap, preds);
-				}
-			}
-		}
-
 		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
 			// Skip abstractions that don't contain any new information. This might
 			// be the case when a turn unit was added to the abstraction.
@@ -128,8 +109,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					scheduleDependentTask(new SourceFindingTask(pred));
 					break;
 				case CACHED:
-					// In case we already know the subpath, append it to the path and queue it
-					buildFullPathFromCache(scap, p.getScap());
+					// In case we already know the subpath, we do append the path after the path builder terminated
+					deferredPaths.add(new Pair<>(scap, p.getScap()));
 					break;
 				case INFEASIBLE_OR_MAX_PATHS_REACHED:
 					// Nothing to do
@@ -302,6 +283,25 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			logger.error("Could not wait for executor termination", e);
 		} finally {
 			onTaintPathsComputed();
+			cleanupExecutor();
+		}
+	}
+
+	/**
+	 * Uses the cached path to extend the current path
+	 *
+	 * @param scap SourceContextAndPath of the current abstraction
+	 * @param cachedScap cached SourceContextAndPath to extend scap
+	 */
+	protected void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
+		// Try to extend scap with cachedScap
+		SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
+		if (extendedScap != null) {
+			Abstraction last = extendedScap.getLastAbstraction();
+			// Try to build the path further using the cache if we didn't reach a source
+			if (!checkForSource(last, extendedScap))
+				for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
+					buildFullPathFromCache(extendedScap, preds);
 		}
 	}
 
@@ -309,6 +309,15 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * Method that is called when the taint paths have been computed
 	 */
 	protected void onTaintPathsComputed() {
+		for (Pair<SourceContextAndPath, SourceContextAndPath> deferredPair : deferredPaths) {
+			buildFullPathFromCache(deferredPair.getO1(), deferredPair.getO2());
+		}
+	}
+
+	/**
+	 * Method that is called to shut down the executor
+	 */
+	protected void cleanupExecutor() {
 		shutdown();
 	}
 
