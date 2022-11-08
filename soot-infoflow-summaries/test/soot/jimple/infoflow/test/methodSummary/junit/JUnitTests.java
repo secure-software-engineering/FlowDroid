@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
@@ -152,13 +153,14 @@ public abstract class JUnitTests {
 		}
 	}
 
+	protected abstract AbstractInfoflow createInfoflowInstance();
+
 	protected IInfoflow initInfoflow() {
 		return initInfoflow(false);
 	}
 
 	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
-//		IInfoflow result = new BackwardsInfoflow();
-		Infoflow result = new Infoflow();
+		IInfoflow result = createInfoflowInstance();
 		ConfigForTest testConfig = new ConfigForTest();
 		result.setSootConfig(testConfig);
 		if (useTaintWrapper) {

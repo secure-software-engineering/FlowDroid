@@ -23,9 +23,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.jimple.infoflow.BackwardsInfoflow;
-import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.*;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
@@ -34,7 +32,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.options.Options;
 
-public class SummaryTaintWrapperTests {
+public abstract class SummaryTaintWrapperTests {
 	private static String appPath, libPath;
 
 	private String[] source = new String[] {
@@ -262,9 +260,10 @@ public class SummaryTaintWrapperTests {
 		}
 	}
 
+	protected abstract AbstractInfoflow createInfoflowInstance();
+
 	protected IInfoflow initInfoflow() throws FileNotFoundException, XMLStreamException {
-		IInfoflow result = new BackwardsInfoflow();
-//		Infoflow result = new Infoflow();
+		IInfoflow result = createInfoflowInstance();
 		result.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 		IInfoflowConfig testConfig = new IInfoflowConfig() {
 
