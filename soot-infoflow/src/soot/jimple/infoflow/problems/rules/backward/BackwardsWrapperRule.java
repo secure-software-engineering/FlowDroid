@@ -141,8 +141,8 @@ public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
 						addAbstraction = false;
 				}
 
-				// Primitive Assignment -> set turn unit
-				boolean performAliasSearch = false;
+				// Set the turn unit on primitive assignment. Otherwise, perform an alias search.
+				boolean performAliasSearch = true;
 				if (retValTainted && leftOp != null) {
 					Type t;
 					if (leftOp instanceof FieldRef)
