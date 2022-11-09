@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 
@@ -20,7 +21,7 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 
 	protected Set<File> files = new HashSet<>();
 	protected Set<Path> pathes = new HashSet<>();
-	protected Set<String> loadableClasses = new HashSet<String>();
+	protected Set<String> loadableClasses = new ConcurrentHashSet<>();
 
 	/**
 	 * Loads a summary from a folder within the StubDroid jar file.

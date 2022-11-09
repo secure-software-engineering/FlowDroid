@@ -38,7 +38,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.preanalyses.SingleLiveVariableAnalysis;
 
 public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
-	public static boolean DEBUG_TW = false;
 
 	public BackwardsWrapperRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
@@ -141,8 +140,8 @@ public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
 						addAbstraction = false;
 				}
 
-				// Primitive Assignment -> set turn unit
-				boolean performAliasSearch = false;
+				// Set the turn unit on primitive assignment. Otherwise, perform an alias search.
+				boolean performAliasSearch = true;
 				if (retValTainted && leftOp != null) {
 					Type t;
 					if (leftOp instanceof FieldRef)
@@ -195,10 +194,6 @@ public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
 			for (Abstraction abs : res)
 				if (abs != source)
 					abs.setCorrespondingCallSite(stmt);
-
-		if (DEBUG_TW)
-			System.out.println("In: " + source.toString() + "\n" + "Stmt:" + stmt.toString() + "\n"
-					+ (res == null ? "[]" : res.toString()) + "\n");
 
 		return res;
 	}

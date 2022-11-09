@@ -14,12 +14,12 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
-public class WrapperListTests extends JUnitTests {
+public abstract class WrapperListTests extends JUnitTests {
 
 	private static File files = new File("testSummaries");
 	protected final ITaintPropagationWrapper wrapper;
 
-	public WrapperListTests() throws FileNotFoundException, XMLStreamException {
+	public WrapperListTests() {
 		wrapper = (ITaintPropagationWrapper) TaintWrapperFactory.createTaintWrapper(files);
 	}
 
