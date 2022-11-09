@@ -20,7 +20,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import java.io.IOException;
 
 @Ignore("Buggy, call graph problem")
-public class ReflectionICCTest extends JUnitTests {
+public abstract class ReflectionICCTest extends JUnitTests {
 	
 	private AnalysisConfigurationCallback enableReflectionCallback = new AnalysisConfigurationCallback() {
 		@Override

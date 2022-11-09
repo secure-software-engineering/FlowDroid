@@ -20,7 +20,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.results.InfoflowResults;
 
 @Ignore("Buggy, call graph problem")
-public class InterComponentCommunicationTest extends JUnitTests {
+public abstract class InterComponentCommunicationTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestActivityCommunication1() throws IOException, XmlPullParserException {

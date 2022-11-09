@@ -185,11 +185,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedPath);
 
-		final Set<AccessPath> taints = new HashSet<AccessPath>();
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-
-		// We always keep the incoming taint
-		taints.add(taintedPath);
 
 		// For the moment, we don't implement static taints on wrappers. Pass it on not
 		// to break anything
@@ -216,7 +212,9 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 					break;
 				}
 		if (!isSupported && !aggressiveMode && !taintEqualsHashCode)
-			return taints;
+			return null;
+
+		final Set<AccessPath> taints = new HashSet<>();
 
 		// Check for a cached wrap type
 		final MethodWrapType wrapType = methodWrapCache.getUnchecked(method);
@@ -242,6 +240,9 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				}
 			}
 		}
+
+		// We always keep the incoming taint on supported methods
+		taints.add(taintedPath);
 
 		// if param is tainted && classList contains classname && if list.
 		// contains

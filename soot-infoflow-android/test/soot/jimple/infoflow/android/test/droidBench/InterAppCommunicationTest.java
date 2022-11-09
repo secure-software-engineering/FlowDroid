@@ -9,7 +9,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import java.io.IOException;
 
 @Ignore("Buggy, call graph problem")
-public class InterAppCommunicationTest extends JUnitTests {
+public abstract class InterAppCommunicationTest extends JUnitTests {
     @Test(timeout=300000)
     public void runTestEchoer() throws IOException, XmlPullParserException {
         InfoflowResults res = analyzeAPKFile("InterAppCommunication/Echoer.apk");

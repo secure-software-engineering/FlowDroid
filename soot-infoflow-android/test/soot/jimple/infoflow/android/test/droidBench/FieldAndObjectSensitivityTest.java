@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class FieldAndObjectSensitivityTest extends JUnitTests {
+public abstract class FieldAndObjectSensitivityTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestFieldSensitivity1() throws IOException, XmlPullParserException {

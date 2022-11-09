@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class AliasingTest extends JUnitTests {
+public abstract class AliasingTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestFlowSensitivity1() throws IOException, XmlPullParserException {

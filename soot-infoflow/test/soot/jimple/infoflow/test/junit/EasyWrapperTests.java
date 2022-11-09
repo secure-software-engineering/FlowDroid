@@ -185,4 +185,13 @@ public abstract class EasyWrapperTests extends JUnitTests {
 		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, sourcePwd));
 	}
 
+	@Test(timeout = 300000)
+	public void wrapperMissAndCalleeOverwritesTaint() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.EasyWrapperTestCode: void wrapperMissAndCalleeOverwritesTaint()>");
+		infoflow.setTaintWrapper(easyWrapper);
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
 }

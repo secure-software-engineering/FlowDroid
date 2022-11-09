@@ -22,7 +22,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class CallbackTest extends JUnitTests {
+public abstract class CallbackTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestAnonymousClass1() throws IOException, XmlPullParserException {

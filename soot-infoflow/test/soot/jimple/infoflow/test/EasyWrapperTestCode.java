@@ -176,4 +176,19 @@ public class EasyWrapperTestCode {
 		cm.publish(tainted + tainted2);
 	}
 
+	class Wrapper {
+		String str;
+
+		void overwrite() {
+			str = "";
+		}
+	}
+
+	public void wrapperMissAndCalleeOverwritesTaint() {
+		Wrapper w = new Wrapper();
+		w.str = TelephonyManager.getDeviceId();
+		w.overwrite();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(w.str);
+	}
 }

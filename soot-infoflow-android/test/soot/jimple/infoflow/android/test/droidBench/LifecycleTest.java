@@ -21,7 +21,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class LifecycleTest extends JUnitTests {
+public abstract class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestActivityEventSequence1() throws IOException, XmlPullParserException {
@@ -31,22 +31,20 @@ public class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	 // Test case broken?
 	public void runTestActivityEventSequence2() throws IOException, XmlPullParserException {
-		int expected = 1;
-		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
-			expected = 0;
+		// Quote from Steven's Thesis:
+		// "This test case was contributed by a different research group. We were unable to reproduce the data flow
+		//  claimed in the test case's documentation during our tests with the app. We therefore do not count a false
+		//  positive even though FLOWDROID does not find the proclaimed leak."
+		int expected = 0;
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout = 300000)
-	
 	public void runTestActivityEventSequence3() throws IOException, XmlPullParserException {
 		int expected = 1;
-		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
-			expected = 0;
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(expected, res.size());
