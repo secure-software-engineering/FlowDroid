@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodClear;
@@ -54,9 +55,9 @@ public abstract class XMLSummaryProvider extends AbstractMethodSummaryProvider {
 
 	protected ClassSummaries summaries = createClassSummaries();
 
-	protected Set<String> loadedClasses = new HashSet<String>();
+	protected Set<String> loadedClasses = new ConcurrentHashSet<>();
 
-	protected Set<String> subsigMethodsWithSummaries = new HashSet<String>();
+	protected Set<String> subsigMethodsWithSummaries = new ConcurrentHashSet<String>();
 	protected boolean hasLoadingErrors;
 
 	protected XMLSummaryProvider() {
