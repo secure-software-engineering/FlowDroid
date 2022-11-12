@@ -32,25 +32,33 @@ public abstract class InterComponentCommunicationTest extends JUnitTests {
 	@Test(timeout=300000)
 	
 	public void runTestActivityCommunication2() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication2.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
-	
 	public void runTestActivityCommunication3() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication3.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
 	
 	public void runTestActivityCommunication4() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication4.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
@@ -64,25 +72,32 @@ public abstract class InterComponentCommunicationTest extends JUnitTests {
 	@Test(timeout=300000)
 	
 	public void runTestActivityCommunication6() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication6.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
-	
 	public void runTestActivityCommunication7() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication7.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
-	
 	public void runTestActivityCommunication8() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ActivityCommunication8.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
@@ -119,29 +134,37 @@ public abstract class InterComponentCommunicationTest extends JUnitTests {
 	@Test(timeout=300000)
 	//("startActivity() is no longer a sink")
 	public void runTestIntentSink2() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/IntentSink2.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 	
 	@Test(timeout=300000)
 	
 	public void runTestIntentSource1() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/IntentSource1.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
 	
 	public void runTestServiceCommunication1() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/ServiceCommunication1.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 	@Test(timeout=300000)
-	
 	public void runTestSharedPreferences1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/SharedPreferences1.apk");
 		Assert.assertNotNull(res);
@@ -159,9 +182,12 @@ public abstract class InterComponentCommunicationTest extends JUnitTests {
 	@Test(timeout=300000)
 	
 	public void runTestUnresolvableIntent1() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode != TestResultMode.DROIDBENCH)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("InterComponentCommunication/UnresolvableIntent1.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(2, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 
 }

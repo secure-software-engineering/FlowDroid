@@ -156,7 +156,6 @@ public abstract class JUnitTests {
 			configCallback.configureAnalyzer(setupApplication.getConfig());
 		setupApplication.getConfig().setEnableArraySizeTainting(true);
 		setupApplication.setTaintWrapper(new EasyTaintWrapper(taintWrapperFile));
-
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS)
 			setupApplication.getConfig().setDataFlowDirection(InfoflowConfiguration.DataFlowDirection.Backwards);
 

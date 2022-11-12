@@ -86,7 +86,8 @@ public abstract class LifecycleTest extends JUnitTests {
 					@Override
 					public void configureAnalyzer(InfoflowAndroidConfiguration config) {
 						config.getSourceSinkConfig().setEnableLifecycleSources(true);
-						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
+						// TODO: why shouldn't it get two results here?
+//						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
 					}
 
 				});
