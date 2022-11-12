@@ -187,11 +187,6 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
 
-		// For the moment, we don't implement static taints on wrappers. Pass it on not
-		// to break anything
-		if (taintedPath.isStaticFieldRef())
-			return Collections.singleton(taintedPath);
-
 		// Do we handle equals() and hashCode() separately?
 		final String subSig = stmt.getInvokeExpr().getMethodRef().getSubSignature().getString();
 		boolean taintEqualsHashCode = alwaysModelEqualsHashCode
@@ -214,6 +209,11 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		if (!isSupported && !aggressiveMode && !taintEqualsHashCode)
 			return null;
 
+		// For the moment, we don't implement static taints on wrappers. Pass it on not
+		// to break anything
+		if (taintedPath.isStaticFieldRef())
+			return Collections.singleton(taintedPath);
+
 		final Set<AccessPath> taints = new HashSet<>();
 
 		// Check for a cached wrap type
@@ -225,7 +225,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				// If the base object is tainted, we have to check whether we
 				// must kill the taint
 				if (wrapType == MethodWrapType.KillTaint)
-					return Collections.emptySet();
+					return null;
 
 				// If the base object is tainted, all calls to its methods
 				// always return
