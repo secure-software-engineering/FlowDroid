@@ -12,6 +12,7 @@ package soot.jimple.infoflow.test.junit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,5 +194,17 @@ public abstract class EasyWrapperTests extends JUnitTests {
 		infoflow.setTaintWrapper(easyWrapper);
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void wrapperHitAndCalleeOverwritesTaint() throws IOException {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.EasyWrapperTestCode: void wrapperMissAndCalleeOverwritesTaint()>");
+		infoflow.setTaintWrapper(new EasyTaintWrapper(new StringReader("^soot.jimple.infoflow.test.EasyWrapperTestCode$Wrapper")));
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		// We do expect one result here because the declaring class is included in the
+		// EasyTaintWrapper and thus, the include check does keep the taint alive.
+		checkInfoflow(infoflow, 1);
 	}
 }
