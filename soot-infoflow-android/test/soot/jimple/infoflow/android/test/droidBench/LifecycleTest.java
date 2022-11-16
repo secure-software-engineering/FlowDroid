@@ -36,18 +36,16 @@ public abstract class LifecycleTest extends JUnitTests {
 		// "This test case was contributed by a different research group. We were unable to reproduce the data flow
 		//  claimed in the test case's documentation during our tests with the app. We therefore do not count a false
 		//  positive even though FLOWDROID does not find the proclaimed leak."
-		int expected = 0;
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence2.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(expected, res.size());
+		Assert.assertEquals(0, res.size());
 	}
 
 	@Test(timeout = 300000)
 	public void runTestActivityEventSequence3() throws IOException, XmlPullParserException {
-		int expected = 1;
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence3.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(expected, res.size());
+		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
@@ -86,14 +84,14 @@ public abstract class LifecycleTest extends JUnitTests {
 					@Override
 					public void configureAnalyzer(InfoflowAndroidConfiguration config) {
 						config.getSourceSinkConfig().setEnableLifecycleSources(true);
-						// TODO: why shouldn't it get two results here?
-//						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
+						config.getSourceSinkConfig().setCallbackSourceMode(CallbackSourceMode.AllParametersAsSources);
 					}
 
 				});
 		Assert.assertNotNull(res);
-		// increased precision: We don't consider Bundles as sinks in general anymore
-		Assert.assertEquals(1, res.size());
+		// DroidBench does expect 1 leak here but due to the configuration
+		// above, two is actually the ground truth here.
+		Assert.assertEquals(2, res.size());
 	}
 
 	@Test(timeout = 300000)
