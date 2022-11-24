@@ -293,7 +293,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	/**
 	 * Uses the cached path to extend the current path
 	 *
-	 * @param scapStart  SourceContextAndPath of the current abstraction
+	 * @param scap SourceContextAndPath of the current abstraction
 	 * @param cachedScap cached SourceContextAndPath to extend scap
 	 */
 	protected void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
