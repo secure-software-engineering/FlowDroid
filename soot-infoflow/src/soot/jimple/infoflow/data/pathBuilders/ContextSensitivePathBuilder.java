@@ -2,6 +2,7 @@ package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,6 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		return executor;
 	}
 
-
 	/**
 	 * Task for tracking back the path from sink to source.
 	 * 
@@ -96,27 +96,29 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
 			// Skip abstractions that don't contain any new information. This might
 			// be the case when a turn unit was added to the abstraction.
-			if (pred.getCorrespondingCallSite() == null && pred.getCurrentStmt() == null && pred.getTurnUnit() != null) {
+			if (pred.getCorrespondingCallSite() == null && pred.getCurrentStmt() == null
+					&& pred.getTurnUnit() != null) {
 				processAndQueue(pred.getPredecessor(), scap);
 				return;
 			}
 
 			ProcessingResult p = processPredecessor(scap, pred);
 			switch (p.getResult()) {
-				case NEW:
-					// Schedule the predecessor
-					assert pathCache.containsKey(pred);
-					scheduleDependentTask(new SourceFindingTask(pred));
-					break;
-				case CACHED:
-					// In case we already know the subpath, we do append the path after the path builder terminated
-					deferredPaths.add(new Pair<>(scap, p.getScap()));
-					break;
-				case INFEASIBLE_OR_MAX_PATHS_REACHED:
-					// Nothing to do
-					break;
-				default:
-					assert false;
+			case NEW:
+				// Schedule the predecessor
+				assert pathCache.containsKey(pred);
+				scheduleDependentTask(new SourceFindingTask(pred));
+				break;
+			case CACHED:
+				// In case we already know the subpath, we do append the path after the path
+				// builder terminated
+				deferredPaths.add(new Pair<>(scap, p.getScap()));
+				break;
+			case INFEASIBLE_OR_MAX_PATHS_REACHED:
+				// Nothing to do
+				break;
+			default:
+				assert false;
 			}
 		}
 
@@ -129,7 +131,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 				checkForSource(pred, extendedScap);
-				return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW() : ProcessingResult.CACHED(extendedScap);
+				return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW()
+						: ProcessingResult.CACHED(extendedScap);
 			}
 
 			// If we enter a method, we put it on the stack
@@ -290,18 +293,26 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	/**
 	 * Uses the cached path to extend the current path
 	 *
-	 * @param scap SourceContextAndPath of the current abstraction
+	 * @param scapStart  SourceContextAndPath of the current abstraction
 	 * @param cachedScap cached SourceContextAndPath to extend scap
 	 */
 	protected void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
 		// Try to extend scap with cachedScap
-		SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
-		if (extendedScap != null) {
-			Abstraction last = extendedScap.getLastAbstraction();
-			// Try to build the path further using the cache if we didn't reach a source
-			if (!checkForSource(last, extendedScap))
-				for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
-					buildFullPathFromCache(extendedScap, preds);
+		Stack<Pair<SourceContextAndPath, SourceContextAndPath>> workStack = new Stack<>();
+		workStack.push(new Pair<>(scap, cachedScap));
+		while (!workStack.isEmpty()) {
+			Pair<SourceContextAndPath, SourceContextAndPath> p = workStack.pop();
+			scap = p.getO1();
+			cachedScap = p.getO2();
+
+			SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
+			if (extendedScap != null) {
+				Abstraction last = extendedScap.getLastAbstraction();
+				// Try to build the path further using the cache if we didn't reach a source
+				if (!checkForSource(last, extendedScap))
+					for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
+						workStack.push(new Pair<>(extendedScap, preds));
+			}
 		}
 	}
 
