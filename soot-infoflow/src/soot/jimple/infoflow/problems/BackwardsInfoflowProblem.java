@@ -81,8 +81,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(srcUnit, source, manager,
 									TaintPropagationHandler.FlowFunctionType.NormalFlowFunction);
 
-						Set<Abstraction> res = computeTargetsInternal(d1,
-								source.isAbstractionActive() ? source : source.getActiveCopy());
+						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						return notifyOutFlowHandlers(srcUnit, d1, source, res,
 								TaintPropagationHandler.FlowFunctionType.NormalFlowFunction);
 					}
@@ -430,8 +429,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									TaintPropagationHandler.FlowFunctionType.CallFlowFunction);
 
-						Set<Abstraction> res = computeTargetsInternal(d1,
-								source.isAbstractionActive() ? source : source.getActiveCopy());
+						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						if (res != null) {
 							for (Abstraction abs : res)
 								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, callStmt, source,
@@ -658,8 +656,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									TaintPropagationHandler.FlowFunctionType.ReturnFlowFunction);
 
-						Set<Abstraction> res = computeTargetsInternal(
-								source.isAbstractionActive() ? source : source.getActiveCopy(), calleeD1, callerD1s);
+						Set<Abstraction> res = computeTargetsInternal(source, calleeD1, callerD1s);
 						return notifyOutFlowHandlers(exitSite, calleeD1, source, res,
 								TaintPropagationHandler.FlowFunctionType.ReturnFlowFunction);
 					}
@@ -843,8 +840,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(callSite, source, manager,
 									TaintPropagationHandler.FlowFunctionType.CallToReturnFlowFunction);
 
-						Set<Abstraction> res = computeTargetsInternal(d1,
-								source.isAbstractionActive() ? source : source.getActiveCopy());
+						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						return notifyOutFlowHandlers(callSite, d1, source, res,
 								TaintPropagationHandler.FlowFunctionType.CallToReturnFlowFunction);
 					}

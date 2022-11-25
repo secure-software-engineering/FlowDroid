@@ -30,11 +30,10 @@ public class BackwardsFlowSensitiveAliasStrategy extends AbstractBulkAliasStrate
 	public void computeAliasTaints(final Abstraction d1, final Stmt src, final Value targetValue,
 			Set<Abstraction> taintSet, SootMethod method, Abstraction newAbs) {
 		// Start the backwards solver
-		Abstraction bwAbs = newAbs.deriveInactiveAbstraction(src);
 		assert manager.getICFG() instanceof BackwardsInfoflowCFG;
 		// sometimes we need to revisit the statement itself, so
 		// looping through predecessors isn't always needed
-		bSolver.processEdge(new PathEdge<Unit, Abstraction>(d1, src, bwAbs));
+		bSolver.processEdge(new PathEdge<Unit, Abstraction>(d1, src, newAbs));
 	}
 
 	@Override

@@ -1,10 +1,6 @@
 package soot.jimple.infoflow.problems;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import heros.FlowFunction;
 import heros.FlowFunctions;
@@ -140,6 +136,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						AccessPath ap = source.getAccessPath();
 						Value sourceBase = ap.getPlainValue();
 						boolean handoverLeftValue = false;
+						boolean leftSideOverwritten = false;
 						if (leftOp instanceof StaticFieldRef) {
 							if (manager.getConfig()
 									.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
@@ -171,11 +168,10 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						if (handoverLeftValue) {
 							// We found a missed path upwards
 							// inject same stmt in infoflow solver
-							manager.getForwardSolver()
-									.processEdge(new PathEdge<Unit, Abstraction>(d1, srcUnit, source.getActiveCopy()));
+							handOver(d1, srcUnit, source);
 						}
 
-						boolean leftSideOverwritten = !(leftOp instanceof ArrayRef) && !(leftOp instanceof FieldRef)
+						leftSideOverwritten = !(leftOp instanceof ArrayRef) && !(leftOp instanceof FieldRef)
 								&& Aliasing.baseMatches(leftOp, source);
 						if (leftSideOverwritten)
 							return null;
@@ -203,7 +199,6 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 										.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
 										&& ap.firstFieldMatches(((StaticFieldRef) rightVal).getField())) {
 									addLeftValue = true;
-//                                    leftType = source.getAccessPath().getBaseType();
 								}
 							} else if (rightVal instanceof InstanceFieldRef) {
 								InstanceFieldRef instRef = (InstanceFieldRef) rightVal;
@@ -408,10 +403,9 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							}
 						}
 
-						if (res != null) {
-							for (Abstraction d3 : res)
-								manager.getForwardSolver().injectContext(solver, dest, d3, callSite, source, d1);
-						}
+						for (Abstraction d3 : res)
+							manager.getForwardSolver().injectContext(solver, dest, d3, callSite, source, d1);
+
 						return res;
 					}
 				};
@@ -635,8 +629,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						if (taintWrapper != null) {
 							if (taintWrapper.isExclusive(callStmt, source)) {
-								manager.getForwardSolver().processEdge(
-										new PathEdge<Unit, Abstraction>(d1, callStmt, source.getActiveCopy()));
+								handOver(d1, callSite, source);
 							}
 
 							Set<Abstraction> wrapperAliases = taintWrapper.getAliasesForMethod(callStmt, d1, source);
@@ -648,8 +641,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 										abs.setCorrespondingCallSite(callStmt);
 
 									for (Unit u : manager.getICFG().getPredsOf(callSite))
-										manager.getForwardSolver().processEdge(
-												new PathEdge<Unit, Abstraction>(d1, u, abs.getActiveCopy()));
+										handOver(d1, u, abs);
 								}
 								return passOnSet;
 							}
@@ -682,8 +674,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 									&& arg == source.getAccessPath().getPlainValue())) {
 								// non standard source sink manager might need this
 								if (isSource)
-									manager.getForwardSolver()
-											.processEdge(new PathEdge<>(d1, callSite, source.getActiveCopy()));
+									handOver(d1, callSite, source);
 								return null;
 							}
 						} else {
@@ -694,8 +685,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 									// the native stmt does not create a new alias but we notice that we
 									// missed this argument in the infoflow search.
 									Abstraction newSource = source.deriveNewAbstractionWithTurnUnit(callSite);
-									manager.getForwardSolver()
-											.processEdge(new PathEdge<>(d1, callSite, newSource.getActiveCopy()));
+									handOver(d1, callSite, newSource);
 									return null;
 								}
 							}
@@ -710,6 +700,27 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				Type t = abs.getAccessPath().getBaseType();
 				return t instanceof PrimType
 						|| (TypeUtils.isStringType(t) && !abs.getAccessPath().getCanHaveImmutableAliases());
+			}
+
+			private void handOver(Abstraction d1, Unit unit, Abstraction in) {
+				in = in.getActiveCopy();
+
+				if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies()) {
+					// We maybe turned around inside a conditional, so we reconstruct the condition
+					// dominator. Also, we lost track of the dominators in the alias search. Thus,
+					// we derive interprocedural wildcards.
+					// See ImplicitTests#conditionalAliasingTest
+					List<Unit> condUnits = manager.getOriginalICFG().getConditionalBranchesInterprocedural(unit);
+					// No condition path -> no need to search for one
+					for (Unit condUnit : condUnits) {
+						Abstraction abs = in.deriveNewAbstractionWithDominator(condUnit);
+						if (abs != null)
+							manager.getForwardSolver().processEdge(new PathEdge<>(d1, unit, abs));
+					}
+				} else {
+					manager.getForwardSolver()
+							.processEdge(new PathEdge<>(d1, unit, in));
+				}
 			}
 		};
 	}
