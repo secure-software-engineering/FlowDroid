@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import com.google.common.cache.LoadingCache;
 
 import heros.solver.IDESolver;
 import heros.solver.Pair;
+import soot.Hierarchy;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
@@ -111,19 +114,35 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected SootMethod currentSource = null;
 	protected IValueProvider valueProvider = new SimpleConstantValueProvider();
 
-	protected final LoadingCache<SootClass, Collection<SootClass>> interfacesOf = IDESolver.DEFAULT_CACHE_BUILDER
+	protected final LoadingCache<SootClass, Collection<SootClass>> parentClassesAndInterfaces = IDESolver.DEFAULT_CACHE_BUILDER
 			.build(new CacheLoader<SootClass, Collection<SootClass>>() {
 
 				@Override
 				public Collection<SootClass> load(SootClass sc) throws Exception {
-					Set<SootClass> set = new HashSet<SootClass>(sc.getInterfaceCount());
-					for (SootClass i : sc.getInterfaces()) {
-						set.add(i);
-						set.addAll(interfacesOf.getUnchecked(i));
-					}
-					if (sc.hasSuperclass())
-						set.addAll(interfacesOf.getUnchecked(sc.getSuperclass()));
-					return set;
+					Hierarchy h = Scene.v().getActiveHierarchy();
+
+					// Don't try to find sources or sinks in irrelevant classes
+					if (sc.isPhantom() || sc.hasTag(SimulatedCodeElementTag.TAG_NAME))
+						return Collections.emptySet();
+
+					// For interfaces, we compute the transitive list of parent interfaces
+					if (sc.isInterface())
+						return h.getSuperinterfacesOfIncluding(sc);
+
+					// We need to collect all interfaces of all superclasses. First, we take the
+					// superclasses, and then we call this method recursively on all interfaces
+					// declared on these classes.
+					Set<SootClass> res = new HashSet<>();
+					res.addAll(h.getSuperclassesOfIncluding(sc));
+
+					res.addAll(res.stream().flatMap(c -> c.getInterfaces().stream()).flatMap(i -> {
+						try {
+							return parentClassesAndInterfaces.get(i).stream();
+						} catch (ExecutionException e) {
+							throw new RuntimeException(e);
+						}
+					}).collect(Collectors.toSet()));
+					return res;
 				}
 
 			});
@@ -227,7 +246,8 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 			final String subSig = callee.getSubSignature();
 
 			// Check whether we have any of the interfaces on the list
-			for (SootClass i : interfacesOf.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
+			for (SootClass i : parentClassesAndInterfaces
+					.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
 				if (i.declaresMethod(subSig)) {
 					ISourceSinkDefinition def = this.sinkMethods.get(i.getMethod(subSig));
 					if (def != null)
@@ -242,16 +262,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 					return def;
 			}
 
-			// If the target method is in a phantom class, we scan the hierarchy
-			// upwards to see whether we have a sink definition for a parent
-			// class
-			if (callee.getDeclaringClass().isPhantom()) {
-				ISourceSinkDefinition def = findDefinitionInHierarchy(callee, this.sinkMethods);
-				if (def != null)
-					return def;
-			}
 			return null;
-
 		} else if (sCallSite instanceof AssignStmt) {
 			// Check if the target is a sink field
 			AssignStmt assignStmt = (AssignStmt) sCallSite;
@@ -291,7 +302,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 			// Check whether we have any of the interfaces on the list
 			final String subSig = callee.getSubSignature();
-			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
+			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				SootMethod m = i.getMethodUnsafe(subSig);
 				if (m != null) {
 					def = getSourceDefinition(m);
@@ -303,15 +314,6 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
 				def = getSourceDefinition(sm);
-				if (def != null)
-					return def;
-			}
-
-			// If the target method is in a phantom class, we scan the hierarchy
-			// upwards
-			// to see whether we have a sink definition for a parent class
-			if (callee.getDeclaringClass().isPhantom()) {
-				def = findDefinitionInHierarchy(callee, this.sourceMethods);
 				if (def != null)
 					return def;
 			}
@@ -332,42 +334,6 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		def = checkFieldSource(sCallSite, manager.getICFG());
 		if (def != null)
 			return def;
-
-		return null;
-	}
-
-	/**
-	 * Scans the hierarchy of the class containing the given method to find any
-	 * implementations of the same method further up in the hierarchy for which
-	 * there is a SourceSinkDefinition in the given map
-	 *
-	 * @param callee The method for which to look for a SourceSinkDefinition
-	 * @param map    A map from methods to their corresponding SourceSinkDefinitions
-	 * @return A SourceSinKDefinition for an implementation of the given method
-	 *         somewhere up in the class hiearchy if it exists, otherwise null.
-	 */
-	private static ISourceSinkDefinition findDefinitionInHierarchy(SootMethod callee,
-			Map<SootMethod, ISourceSinkDefinition> map) {
-		final String subSig = callee.getSubSignature();
-		SootClass curClass = callee.getDeclaringClass();
-		while (curClass != null) {
-			// Does the current class declare the requested method?
-			SootMethod curMethod = curClass.getMethodUnsafe(subSig);
-			if (curMethod != null) {
-				ISourceSinkDefinition def = map.get(curMethod);
-				if (def != null) {
-					// Patch the map to contain a direct link
-					map.put(callee, def);
-					return def;
-				}
-			}
-
-			// Try the next class up the hierarchy
-			if (curClass.hasSuperclass() && (curClass.isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)))
-				curClass = curClass.getSuperclass();
-			else
-				curClass = null;
-		}
 
 		return null;
 	}
@@ -582,7 +548,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 			// Check whether we have any of the interfaces on the list
 			final String subSig = callee.getSubSignature();
-			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
+			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				SootMethod m = i.getMethodUnsafe(subSig);
 				if (m != null) {
 					def = getSourceDefinition(m);
@@ -594,15 +560,6 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : cfg.getCalleesOfCallAt(sCallSite)) {
 				def = getSourceDefinition(sm);
-				if (def != null)
-					return def;
-			}
-
-			// If the target method is in a phantom class, we scan the hierarchy
-			// upwards
-			// to see whether we have a sink definition for a parent class
-			if (callee.getDeclaringClass().isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
-				def = findDefinitionInHierarchy(callee, this.sourceMethods);
 				if (def != null)
 					return def;
 			}
@@ -651,7 +608,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 			final String subSig = callee.getSubSignature();
 
 			// Check whether we have any of the interfaces on the list
-			for (SootClass i : interfacesOf.getUnchecked(callee.getDeclaringClass())) {
+			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				if (i.declaresMethod(subSig)) {
 					ISourceSinkDefinition def = this.sinkMethods.get(i.getMethod(subSig));
 					if (def != null)
@@ -666,16 +623,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 					return def;
 			}
 
-			// If the target method is in a phantom class, we scan the hierarchy
-			// upwards to see whether we have a sink definition for a parent
-			// class
-			if (callee.getDeclaringClass().isPhantom() || callee.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
-				ISourceSinkDefinition def = findDefinitionInHierarchy(callee, this.sinkMethods);
-				if (def != null)
-					return def;
-			}
 			return null;
-
 		} else if (sCallSite instanceof AssignStmt) {
 			// Check if the target is a sink field
 			AssignStmt assignStmt = (AssignStmt) sCallSite;
