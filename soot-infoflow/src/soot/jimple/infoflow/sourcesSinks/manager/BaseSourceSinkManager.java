@@ -122,7 +122,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 					Hierarchy h = Scene.v().getActiveHierarchy();
 
 					// Don't try to find sources or sinks in irrelevant classes
-					if (sc.isPhantom() || sc.hasTag(SimulatedCodeElementTag.TAG_NAME))
+					if (sc.hasTag(SimulatedCodeElementTag.TAG_NAME))
 						return Collections.emptySet();
 
 					// For interfaces, we compute the transitive list of parent interfaces
