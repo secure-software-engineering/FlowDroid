@@ -91,7 +91,7 @@ public class BackwardsInfoflowCFG extends InfoflowCFG {
 				conditionals.add(item);
 			}
 
-			List<Unit> preds = sameLevelPredecessors(graph, item);
+			List<Unit> preds = new ArrayList<>(sameLevelPredecessors(graph, item));
 			preds.removeIf(doneSet::contains);
 			worklist.addAll(preds);
 		}

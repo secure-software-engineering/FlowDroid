@@ -15,7 +15,6 @@ import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 
@@ -381,6 +380,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		// Fix the callgraph
 		if (Scene.v().hasCallGraph())
 			Scene.v().getCallGraph().removeAllEdgesOutOf(callSite);
+
+		manager.getICFG().notifyMethodChanged(caller);
 	}
 
 	/**
@@ -491,6 +492,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						// Fix the callgraph
 						if (Scene.v().hasCallGraph())
 							Scene.v().getCallGraph().swapEdgesOutOf(assign, inv);
+
+						icfg.notifyMethodChanged(caller);
 					}
 				}
 	}

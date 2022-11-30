@@ -254,7 +254,7 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 	}
 
 	@Override
-	protected void onTaintPathsComputed() {
+	protected void cleanupExecutor() {
 		// Don't shut down the executor, because we reset it and run several iterations
 		// on the same path builder.
 	}
