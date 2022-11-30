@@ -1636,17 +1636,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param cfg     The control flow graph to use for writing out the results
 	 */
 	protected void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
-		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
-		if (resultsFile != null && !resultsFile.isEmpty()) {
-			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
-			try {
-				serializer.serialize(results, resultsFile);
-			} catch (IOException ex) {
-				System.err.println("Could not write data flow results to file: " + ex.getMessage());
-				ex.printStackTrace();
-			} catch (XMLStreamException ex) {
-				System.err.println("Could not write data flow results to file: " + ex.getMessage());
-				ex.printStackTrace();
+		if (results != null && !results.isEmpty()) {
+			String resultsFile = config.getAnalysisFileConfig().getOutputFile();
+			if (resultsFile != null && !resultsFile.isEmpty()) {
+				InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
+				try {
+					serializer.serialize(results, resultsFile);
+				} catch (IOException ex) {
+					System.err.println("Could not write data flow results to file: " + ex.getMessage());
+					ex.printStackTrace();
+				} catch (XMLStreamException ex) {
+					System.err.println("Could not write data flow results to file: " + ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
