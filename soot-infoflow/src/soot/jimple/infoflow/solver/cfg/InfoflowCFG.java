@@ -284,7 +284,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
-	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
+	protected StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
 		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
