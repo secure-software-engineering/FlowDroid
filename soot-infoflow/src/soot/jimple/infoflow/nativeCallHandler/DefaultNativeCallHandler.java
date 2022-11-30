@@ -76,7 +76,18 @@ public class DefaultNativeCallHandler extends AbstractNativeCallHandler {
 
 	@Override
 	public boolean supportsCall(Stmt call) {
-		return call.containsInvokeExpr() && call.getInvokeExpr().getMethod().getSignature().equals(SIG_ARRAYCOPY);
+		if (!call.containsInvokeExpr())
+			return false;
+		String sig = call.getInvokeExpr().getMethod().getSignature();
+		switch (sig) {
+		case SIG_ARRAYCOPY:
+		case SIG_COMPARE_AND_SWAP_OBJECT:
+		case SIG_NEW_ARRAY:
+			return true;
+
+		default:
+			return false;
+		}
 	}
 
 }
