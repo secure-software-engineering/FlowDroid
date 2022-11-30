@@ -2,6 +2,12 @@ package soot.jimple.infoflow.solver.fastSolver;
 
 import java.util.ArrayDeque;
 
+/**
+ * This special task may run multiple tasks on the same thread if they are
+ * scheduled using {@link #scheduleLocal(Runnable)}
+ * 
+ * @author Marc Miltenberger
+ */
 public abstract class LocalWorklistTask implements Runnable {
 	private ArrayDeque<Runnable> localTaskList = new ArrayDeque<>();
 	private static final ThreadLocal<LocalWorklistTask> TASKS = new ThreadLocal<>();
