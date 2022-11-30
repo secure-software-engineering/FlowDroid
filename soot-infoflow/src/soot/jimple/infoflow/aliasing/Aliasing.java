@@ -30,6 +30,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.toolkits.pointer.LocalMustAliasAnalysis;
@@ -116,9 +117,13 @@ public class Aliasing {
 	 */
 	public static AccessPath getReferencedAPBase(AccessPath taintedAP, SootField[] referencedFields,
 			InfoflowManager manager) {
+		final AccessPathFactory af = manager.getAccessPathFactory();
 		final Collection<AccessPathFragment[]> bases = taintedAP.isStaticFieldRef()
-				? manager.getAccessPathFactory().getBaseForType(taintedAP.getFirstFieldType())
-				: manager.getAccessPathFactory().getBaseForType(taintedAP.getBaseType());
+				? af.getBaseForType(taintedAP.getFirstFieldType())
+				: af.getBaseForType(taintedAP.getBaseType());
+		if (bases != null && bases.size() > manager.getConfig().getMaxAliasingBases())
+			// Too much stuff, possibly overtainted
+			return null;
 
 		int fieldIdx = 0;
 		while (fieldIdx < referencedFields.length) {
