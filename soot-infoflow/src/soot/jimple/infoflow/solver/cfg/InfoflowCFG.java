@@ -383,8 +383,10 @@ public class InfoflowCFG implements IInfoflowCFG {
 		}
 
 		// Merge the temporary results into the global cache
-		for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
-			registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+		synchronized (tempUses) {
+			for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
+				registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+			}
 		}
 
 		StaticFieldUse outerUse = tempUses.get(smethod);
