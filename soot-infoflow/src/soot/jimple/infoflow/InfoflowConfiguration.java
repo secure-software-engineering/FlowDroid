@@ -1304,6 +1304,7 @@ public class InfoflowConfiguration {
 	private long dataFlowTimeout = 0;
 	private double memoryThreshold = 0.9d;
 	private boolean oneSourceAtATime = false;
+	private int maxAliasingBases = Integer.MAX_VALUE;
 
 	private static String baseDirectory = "";
 
@@ -2238,6 +2239,14 @@ public class InfoflowConfiguration {
 	 */
 	public SourceSinkConfiguration getSourceSinkConfig() {
 		return sourceSinkConfig;
+	}
+
+	public int getMaxAliasingBases() {
+		return maxAliasingBases;
+	}
+
+	public void setMaxAliasingBases(int value) {
+		maxAliasingBases = value;
 	}
 
 }

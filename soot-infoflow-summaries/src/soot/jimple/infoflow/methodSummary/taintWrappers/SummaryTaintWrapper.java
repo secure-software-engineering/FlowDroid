@@ -1425,13 +1425,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 	 */
 	protected boolean isCutSubFields(MethodFlow flow) {
 		Boolean cut = flow.getCutSubFields();
-		Boolean typeChecking = flow.getTypeChecking();
-		if (cut == null) {
-			if (typeChecking != null)
-				return !typeChecking.booleanValue();
-			return false;
-		}
-		return cut.booleanValue();
+		return cut != null && cut.booleanValue();
 	}
 
 	/**

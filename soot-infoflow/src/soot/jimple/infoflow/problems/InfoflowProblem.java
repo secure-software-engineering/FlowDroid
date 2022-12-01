@@ -501,6 +501,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					public Set<Abstraction> computeTargets(Abstraction source, Abstraction d1,
 							Collection<Abstraction> callerD1s) {
 						Set<Abstraction> res = computeTargetsInternal(source, d1, callerD1s);
+
 						return notifyOutFlowHandlers(exitStmt, d1, source, res, FlowFunctionType.ReturnFlowFunction);
 					}
 
@@ -510,9 +511,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return null;
 						if (source == getZeroValue())
 							return null;
-
-						if (callee.getName().equals("sendMessage"))
-							System.out.println("x");
 
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)

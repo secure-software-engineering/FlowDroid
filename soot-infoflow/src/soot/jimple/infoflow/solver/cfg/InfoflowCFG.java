@@ -284,7 +284,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
-	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
+	protected StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
 		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
@@ -383,8 +383,10 @@ public class InfoflowCFG implements IInfoflowCFG {
 		}
 
 		// Merge the temporary results into the global cache
-		for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
-			registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+		synchronized (tempUses) {
+			for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
+				registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+			}
 		}
 
 		StaticFieldUse outerUse = tempUses.get(smethod);

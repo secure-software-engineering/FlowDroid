@@ -65,6 +65,18 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiInterproceduralCFG<N, SootMethod>>
 		implements IMemoryBoundedSolver {
 
+	public enum ScheduleTarget {
+		/**
+		 * Try to run on the same thread within the executor
+		 */
+		LOCAL,
+
+		/**
+		 * Run possibly on another executor
+		 */
+		EXECUTOR;
+	}
+
 	public static CacheBuilder<Object, Object> DEFAULT_CACHE_BUILDER = CacheBuilder.newBuilder()
 			.concurrencyLevel(Runtime.getRuntime().availableProcessors()).initialCapacity(10000).softValues();
 
@@ -200,7 +212,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		for (Entry<N, Set<D>> seed : initialSeeds.entrySet()) {
 			N startPoint = seed.getKey();
 			for (D val : seed.getValue())
-				propagate(zeroValue, startPoint, val, null, false);
+				propagate(zeroValue, startPoint, val, null, false, ScheduleTarget.EXECUTOR);
 			addFunction(new PathEdge<N, D>(zeroValue, startPoint, zeroValue));
 		}
 	}
@@ -253,15 +265,21 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Dispatch the processing of a given edge. It may be executed in a different
 	 * thread.
 	 * 
-	 * @param edge the edge to process
+	 * @param edge           the edge to process
+	 * @param scheduleTarget
 	 */
-	protected void scheduleEdgeProcessing(PathEdge<N, D> edge) {
+	protected void scheduleEdgeProcessing(PathEdge<N, D> edge, ScheduleTarget scheduleTarget) {
 		// If the executor has been killed, there is little point
 		// in submitting new tasks
 		if (killFlag != null || executor.isTerminating() || executor.isTerminated())
 			return;
 
-		executor.execute(new PathEdgeProcessingTask(edge, solverId));
+		IFDSSolver<N, D, I>.PathEdgeProcessingTask task = new PathEdgeProcessingTask(edge, solverId);
+		if (scheduleTarget == ScheduleTarget.EXECUTOR)
+			executor.execute(task);
+		else {
+			LocalWorklistTask.scheduleLocal(task);
+		}
 		propagationCount++;
 	}
 
@@ -309,7 +327,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 								// for each callee's start point(s)
 								for (N sP : startPointsOf) {
 									// create initial self-loop
-									propagate(d3, sP, d3, n, false); // line 15
+									propagate(d3, sP, d3, n, false, ScheduleTarget.EXECUTOR); // line 15
 								}
 
 								// register the fact that <sp,d3> has an incoming edge from
@@ -337,7 +355,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					if (memoryManager != null)
 						d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
 					if (d3 != null)
-						propagate(d1, returnSiteN, d3, n, false);
+						propagate(d1, returnSiteN, d3, n, false, ScheduleTarget.EXECUTOR);
 				}
 			}
 		}
@@ -401,7 +419,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 									d5p = d2;
 								break;
 							}
-							propagate(d1, retSiteN, d5p, n, false);
+							propagate(d1, retSiteN, d5p, n, false, ScheduleTarget.EXECUTOR);
 						}
 					}
 				}
@@ -503,7 +521,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 										d5p = predVal;
 									break;
 								}
-								propagate(d4, retSiteC, d5p, c, false);
+								propagate(d4, retSiteC, d5p, c, false, ScheduleTarget.EXECUTOR);
 							}
 						}
 					}
@@ -528,7 +546,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 							if (memoryManager != null)
 								d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
 							if (d5 != null)
-								propagate(zeroValue, retSiteC, d5, c, true);
+								propagate(zeroValue, retSiteC, d5, c, true, ScheduleTarget.EXECUTOR);
 						}
 					}
 				}
@@ -585,7 +603,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					if (memoryManager != null && d2 != d3)
 						d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
 					if (d3 != null)
-						propagate(d1, m, d3, null, false);
+						propagate(d1, m, d3, null, false, ScheduleTarget.LOCAL);
 				}
 			}
 		}
@@ -618,10 +636,11 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 *                           unbalanced return (this value is not used within
 	 *                           this implementation but may be useful for
 	 *                           subclasses of {@link IFDSSolver})
+	 * @param local
 	 */
 	protected void propagate(D sourceVal, N target, D targetVal,
 			/* deliberately exposed to clients */ N relatedCallSite,
-			/* deliberately exposed to clients */ boolean isUnbalancedReturn) {
+			/* deliberately exposed to clients */ boolean isUnbalancedReturn, ScheduleTarget scheduleTarget) {
 		// Let the memory manager run
 		if (memoryManager != null) {
 			sourceVal = memoryManager.handleMemoryObject(sourceVal);
@@ -651,7 +670,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 				}
 			}
 		} else {
-			scheduleEdgeProcessing(edge);
+			scheduleEdgeProcessing(edge, scheduleTarget);
 		}
 	}
 
@@ -733,7 +752,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		}
 	}
 
-	private class PathEdgeProcessingTask implements Runnable {
+	private class PathEdgeProcessingTask extends LocalWorklistTask {
 
 		private final PathEdge<N, D> edge;
 		private final boolean solverId;
@@ -743,7 +762,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			this.solverId = solverId;
 		}
 
-		public void run() {
+		public void runInternal() {
 			final N target = edge.getTarget();
 			if (icfg.isCallStmt(target)) {
 				processCall(edge);
