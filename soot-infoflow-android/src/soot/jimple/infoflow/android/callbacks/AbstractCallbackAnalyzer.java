@@ -586,10 +586,6 @@ public abstract class AbstractCallbackAnalyzer {
 
 		Body body = method.retrieveActiveBody();
 
-		if (method.getDeclaringClass().getName().equals("org.liberty.android.fantastischmemo.ui.AnyMemo")
-				&& method.getName().equals("initDrawer"))
-			System.out.println("x");
-
 		// look for invocations of ViewPager.setAdapter
 		for (Unit u : body.getUnits()) {
 			Stmt stmt = (Stmt) u;
