@@ -1304,7 +1304,7 @@ public class InfoflowConfiguration {
 	private long dataFlowTimeout = 0;
 	private double memoryThreshold = 0.9d;
 	private boolean oneSourceAtATime = false;
-	private int maxAliasingBases = 500;
+	private int maxAliasingBases = Integer.MAX_VALUE;
 
 	private static String baseDirectory = "";
 
