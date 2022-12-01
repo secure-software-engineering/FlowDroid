@@ -162,7 +162,9 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 								}
 							}
 						} else if (leftVal == sourceBase) {
-							handoverLeftValue = true;
+							// Either the alias is overwritten here or a write to an array element
+							handoverLeftValue = leftOp instanceof ArrayRef;
+							leftSideOverwritten = !handoverLeftValue;
 						}
 
 						if (handoverLeftValue) {
@@ -171,8 +173,6 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							handOver(d1, srcUnit, source);
 						}
 
-						leftSideOverwritten = !(leftOp instanceof ArrayRef) && !(leftOp instanceof FieldRef)
-								&& Aliasing.baseMatches(leftOp, source);
 						if (leftSideOverwritten)
 							return null;
 						res.add(source);
