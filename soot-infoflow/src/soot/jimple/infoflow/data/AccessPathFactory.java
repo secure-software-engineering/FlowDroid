@@ -7,6 +7,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import gnu.trove.set.hash.TCustomHashSet;
+import gnu.trove.strategy.HashingStrategy;
 import soot.ArrayType;
 import soot.Local;
 import soot.PrimType;
@@ -21,7 +23,6 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
-import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.typing.TypeUtils;
@@ -415,7 +416,20 @@ public class AccessPathFactory {
 	}
 
 	private void registerBase(Type eiType, AccessPathFragment[] base) {
-		Set<AccessPathFragment[]> bases = baseRegister.computeIfAbsent(eiType, t -> new ConcurrentHashSet<>());
+		Set<AccessPathFragment[]> bases = baseRegister.computeIfAbsent(eiType,
+				t -> new TCustomHashSet<>(new HashingStrategy<AccessPathFragment[]>() {
+
+					@Override
+					public int computeHashCode(AccessPathFragment[] arg0) {
+						return Arrays.hashCode(arg0);
+					}
+
+					@Override
+					public boolean equals(AccessPathFragment[] arg0, AccessPathFragment[] arg1) {
+						return Arrays.equals(arg0, arg1);
+					}
+
+				}));
 		bases.add(base);
 	}
 
