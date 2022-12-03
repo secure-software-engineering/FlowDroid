@@ -76,7 +76,13 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		@Override
 		public void run() {
 			final Set<SourceContextAndPath> paths = pathCache.get(abstraction);
-			final Abstraction pred = abstraction.getPredecessor();
+			Abstraction pred = abstraction.getPredecessor();
+
+			// Skip abstractions that don't contain any new information. This might
+			// be the case when a turn unit was added to the abstraction.
+			while (pred != null && pred.getCurrentStmt() == null && pred.getCorrespondingCallSite() == null) {
+				pred = pred.getPredecessor();
+			}
 
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
@@ -94,14 +100,6 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		}
 
 		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
-			// Skip abstractions that don't contain any new information. This might
-			// be the case when a turn unit was added to the abstraction.
-			if (pred.getCorrespondingCallSite() == null && pred.getCurrentStmt() == null
-					&& pred.getTurnUnit() != null) {
-				processAndQueue(pred.getPredecessor(), scap);
-				return;
-			}
-
 			ProcessingResult p = processPredecessor(scap, pred);
 			switch (p.getResult()) {
 			case NEW:
