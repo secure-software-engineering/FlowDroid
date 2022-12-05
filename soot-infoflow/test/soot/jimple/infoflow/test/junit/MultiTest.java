@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
@@ -160,6 +161,7 @@ public abstract class MultiTest extends JUnitTests {
 		Assert.assertEquals(2, infoflow.getResults().numConnections());
 	}
 
+	@Ignore("Race condition by design")
 	@Test(timeout = 300000)
 	public void stopAfterFirstKFlowsTest0() {
 		IInfoflow infoflow = initInfoflow();
@@ -180,6 +182,7 @@ public abstract class MultiTest extends JUnitTests {
 		checkInfoflow(infoflow, 2);
 	}
 
+	@Ignore("Race condition by design")
 	@Test(timeout = 300000)
 	public void stopAfterFirstKFlowsTest2() {
 		IInfoflow infoflow = initInfoflow();
