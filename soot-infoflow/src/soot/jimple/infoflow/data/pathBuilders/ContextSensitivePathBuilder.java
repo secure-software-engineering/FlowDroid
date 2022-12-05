@@ -33,7 +33,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	protected ConcurrentIdentityHashMultiMap<Abstraction, SourceContextAndPath> pathCache = new ConcurrentIdentityHashMultiMap<>();
 
 	// Set holds all paths that reach an already cached subpath
-	protected ConcurrentHashSet<Pair<SourceContextAndPath, SourceContextAndPath>> deferredPaths = new ConcurrentHashSet<>();
+	protected ConcurrentHashSet<SourceContextAndPath> deferredPaths = new ConcurrentHashSet<>();
+	// Set holds all paths that reach a source
+	protected ConcurrentHashSet<SourceContextAndPath> sourceReachingScaps = new ConcurrentHashSet<>();
 
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
@@ -78,12 +80,6 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			final Set<SourceContextAndPath> paths = pathCache.get(abstraction);
 			Abstraction pred = abstraction.getPredecessor();
 
-			// Skip abstractions that don't contain any new information. This might
-			// be the case when a turn unit was added to the abstraction.
-			while (pred != null && pred.getCurrentStmt() == null && pred.getCorrespondingCallSite() == null) {
-				pred = pred.getPredecessor();
-			}
-
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
 					// Process the predecessor
@@ -110,7 +106,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			case CACHED:
 				// In case we already know the subpath, we do append the path after the path
 				// builder terminated
-				deferredPaths.add(new Pair<>(scap, p.getScap()));
+				deferredPaths.add(scap);
 				break;
 			case INFEASIBLE_OR_MAX_PATHS_REACHED:
 				// Nothing to do
@@ -128,7 +124,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 				if (extendedScap == null)
 					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
-				checkForSource(pred, extendedScap);
+				if (checkForSource(pred, extendedScap))
+					sourceReachingScaps.add(extendedScap);
 				return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW()
 						: ProcessingResult.CACHED(extendedScap);
 			}
@@ -176,7 +173,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 
 			// Add the new path
-			checkForSource(pred, extendedScap);
+			if (checkForSource(pred, extendedScap))
+				sourceReachingScaps.add(extendedScap);
 
 			final int maxPaths = config.getPathConfiguration().getMaxPathsPerAbstraction();
 			if (maxPaths > 0) {
@@ -289,27 +287,14 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	}
 
 	/**
-	 * Uses the cached path to extend the current path
-	 *
-	 * @param scap SourceContextAndPath of the current abstraction
-	 * @param cachedScap cached SourceContextAndPath to extend scap
+	 * Tries to fill up deferred paths toward a source.
 	 */
-	protected void buildFullPathFromCache(SourceContextAndPath scap, SourceContextAndPath cachedScap) {
-		// Try to extend scap with cachedScap
-		Stack<Pair<SourceContextAndPath, SourceContextAndPath>> workStack = new Stack<>();
-		workStack.push(new Pair<>(scap, cachedScap));
-		while (!workStack.isEmpty()) {
-			Pair<SourceContextAndPath, SourceContextAndPath> p = workStack.pop();
-			scap = p.getO1();
-			cachedScap = p.getO2();
-
-			SourceContextAndPath extendedScap = scap.extendPath(cachedScap);
-			if (extendedScap != null) {
-				Abstraction last = extendedScap.getLastAbstraction();
-				// Try to build the path further using the cache if we didn't reach a source
-				if (!checkForSource(last, extendedScap))
-					for (SourceContextAndPath preds : pathCache.get(last.getPredecessor()))
-						workStack.push(new Pair<>(extendedScap, preds));
+	protected void buildPathsFromCache() {
+		for (SourceContextAndPath deferredScap : deferredPaths) {
+			for (SourceContextAndPath sourceScap : sourceReachingScaps) {
+				SourceContextAndPath fullScap = deferredScap.extendPath(sourceScap);
+				if (fullScap != null)
+					checkForSource(fullScap.getLastAbstraction(), fullScap);
 			}
 		}
 	}
@@ -318,9 +303,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * Method that is called when the taint paths have been computed
 	 */
 	protected void onTaintPathsComputed() {
-		for (Pair<SourceContextAndPath, SourceContextAndPath> deferredPair : deferredPaths) {
-			buildFullPathFromCache(deferredPair.getO1(), deferredPair.getO2());
-		}
+		buildPathsFromCache();
 	}
 
 	/**
