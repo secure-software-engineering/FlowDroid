@@ -2,6 +2,7 @@ package soot.jimple.infoflow.data;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -417,7 +418,7 @@ public class AccessPathFactory {
 
 	private void registerBase(Type eiType, AccessPathFragment[] base) {
 		Set<AccessPathFragment[]> bases = baseRegister.computeIfAbsent(eiType,
-				t -> new TCustomHashSet<>(new HashingStrategy<AccessPathFragment[]>() {
+				t -> Collections.synchronizedSet(new TCustomHashSet<>(new HashingStrategy<AccessPathFragment[]>() {
 
 					@Override
 					public int computeHashCode(AccessPathFragment[] arg0) {
@@ -429,7 +430,7 @@ public class AccessPathFactory {
 						return Arrays.equals(arg0, arg1);
 					}
 
-				}));
+				})));
 		bases.add(base);
 	}
 
