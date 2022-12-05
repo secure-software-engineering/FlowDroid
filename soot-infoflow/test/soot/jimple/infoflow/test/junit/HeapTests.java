@@ -1017,7 +1017,7 @@ public abstract class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-		onlyForwards(infoflow);
+		onlyForwards(infoflow, "not supported backward");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasStrongUpdateTest3()>");
 		ISourceSinkManager ssm = null;
@@ -1233,6 +1233,8 @@ public abstract class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void innerFieldReductionTestNegative() {
 		IInfoflow infoflow = initInfoflow();
+		onlyForwards(infoflow, "We lose the object sensitivity here due to the recursive data structure" +
+								"reduction. See also the comment above the code of innerFieldReductionTestNegative.");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative()>");
 		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
@@ -1242,6 +1244,8 @@ public abstract class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void innerFieldReductionTestNegative2() {
 		IInfoflow infoflow = initInfoflow();
+		onlyBackwards(infoflow, "We lose the object sensitivity here due to the recursive data structure" +
+								"reduction. See also the comment above the code of innerFieldReductionTestNegative.");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative2()>");
 		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
