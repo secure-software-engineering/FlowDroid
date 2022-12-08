@@ -24,10 +24,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import soot.jimple.infoflow.AbstractInfoflow;
-import soot.jimple.infoflow.BackwardsInfoflow;
-import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.*;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;

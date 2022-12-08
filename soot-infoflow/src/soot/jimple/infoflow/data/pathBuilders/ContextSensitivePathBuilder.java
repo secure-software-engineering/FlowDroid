@@ -136,40 +136,19 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 				return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
 			// Check if we are in the right context
-			switch (manager.getConfig().getDataFlowDirection()) {
-			case Forwards:
-				if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
-					// Pop the top item off the call stack. This gives us the item
-					// and the new SCAP without the item we popped off.
-					Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
-					if (pathAndItem != null) {
-						Stmt topCallStackItem = pathAndItem.getO2();
-						// Make sure that we don't follow an unrealizable path
-						if (topCallStackItem != pred.getCurrentStmt())
-							return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
+			if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
+				// Pop the top item off the call stack. This gives us the item
+				// and the new SCAP without the item we popped off.
+				Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
+				if (pathAndItem != null) {
+					Stmt topCallStackItem = pathAndItem.getO2();
+					// Make sure that we don't follow an unrealizable path
+					if (topCallStackItem != pred.getCurrentStmt())
+						return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
 
-						// We have returned from a function
-						extendedScap = pathAndItem.getO1();
-					}
+					// We have returned from a function
+					extendedScap = pathAndItem.getO1();
 				}
-				break;
-			case Backwards:
-				if (pred.getCorrespondingCallSite() != null
-						&& pred.getCorrespondingCallSite() != pred.getCurrentStmt()) {
-					// Pop the top item off the call stack. This gives us the item
-					// and the new SCAP without the item we popped off.
-					Pair<SourceContextAndPath, Stmt> pathAndItem = extendedScap.popTopCallStackItem();
-					if (pathAndItem != null) {
-						Stmt topCallStackItem = pathAndItem.getO2();
-						// Make sure that we don't follow an unrealizable path
-						if (topCallStackItem != pred.getCorrespondingCallSite())
-							return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
-
-						// We have returned from a function
-						extendedScap = pathAndItem.getO1();
-					}
-				}
-				break;
 			}
 
 			// Add the new path

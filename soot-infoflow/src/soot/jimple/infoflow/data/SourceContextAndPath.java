@@ -210,32 +210,15 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		}
 
 		// Extend the call stack
-		switch (config.getDataFlowDirection()) {
-		case Forwards:
-			if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
-				if (scap == null)
-					scap = this.clone();
-				if (scap.callStack == null)
-					scap.callStack = new ExtensibleList<Stmt>();
-				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
-						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
-					return null;
-				scap.callStack.add(abs.getCorrespondingCallSite());
-			}
-			break;
-		case Backwards:
-			if (abs.getCurrentStmt() != null && abs.getCurrentStmt().containsInvokeExpr()
-					&& abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
-				if (scap == null)
-					scap = this.clone();
-				if (scap.callStack == null)
-					scap.callStack = new ExtensibleList<Stmt>();
-				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
-						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
-					return null;
-				scap.callStack.add(abs.getCurrentStmt());
-			}
-			break;
+		if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
+			if (scap == null)
+				scap = this.clone();
+			if (scap.callStack == null)
+				scap.callStack = new ExtensibleList<Stmt>();
+			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
+					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
+				return null;
+			scap.callStack.add(abs.getCorrespondingCallSite());
 		}
 
 		this.neighborCounter = abs.getNeighbors() == null ? 0 : abs.getNeighbors().size();
