@@ -570,7 +570,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								if (abs != null)
 									res.add(abs);
 							}
-						} else if (ie != null && dest.getParameterCount() > 0) {
+						} else if (ie != null && dest.getParameterCount() > 0
+									&& (isReflectiveCallSite || ie.getArgCount() == dest.getParameterCount())) {
 							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
 								if (!aliasing.mayAlias(ie.getArg(i), source.getAccessPath().getPlainValue()))
 									continue;
@@ -588,8 +589,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								if (interproceduralCFG().methodWritesValue(dest, paramLocals[i]))
 									continue;
 
-								// taint all parameters if reflective call site
 								if (isReflectiveCallSite) {
+									// taint all parameters if the arg array of an reflective
+									// call site is tainted
 									for (Value param : paramLocals) {
 										AccessPath ap = manager.getAccessPathFactory()
 												.copyWithNewValue(source.getAccessPath(), param, null, false);
@@ -597,8 +599,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 										if (abs != null)
 											res.add(abs);
 									}
-									// taint just the tainted parameter
 								} else {
+									// taint just the tainted parameter
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), paramLocals[i]);
 									Abstraction abs = source.deriveNewAbstraction(ap, stmt);
@@ -608,6 +610,12 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								}
 							}
 						}
+
+						// Sometimes callers have more arguments than the callee parameters, e.g.
+						// because one argument is resolved in native code. A concrete example is
+						// sendMessageDelayed(android.os.Message, int)
+						//   -> handleMessage(android.os.Message message)
+						// TODO: handle argument/parameter mismatch for some special cases
 
 						return res;
 					}

@@ -1007,14 +1007,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (newAP != null)
 											res.add(newAP);
 									}
-								} else if (i < paramLocals.length) {
-									// Sometimes callers have more arguments than the callee parameters. For
-									// example, this is the case on a call from
-									// sendMessageDelayed(android.os.Message, int)
-									// to the callee handler handleMessage(android.os.Message message). The delay is
-									// handled native and not present in the call-graph. In this case, we just break
-									// out of the loop as no more params are left to be mapped into the callee
-
+								} else {
 									// Taint the corresponding parameter local in the callee
 									AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
 											paramLocals[i]);
@@ -1024,6 +1017,12 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							}
 						}
 					}
+
+					// Sometimes callers have more arguments than the callee parameters, e.g.
+					// because one argument is resolved in native code. A concrete example is
+					// sendMessageDelayed(android.os.Message, int)
+					//   -> handleMessage(android.os.Message message)
+					// TODO: handle argument/parameter mismatch for some special cases
 				}
 				return res;
 			}
