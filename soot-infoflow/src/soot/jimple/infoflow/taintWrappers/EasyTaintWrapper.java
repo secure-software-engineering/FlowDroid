@@ -354,10 +354,6 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				if (wrapType == MethodWrapType.KillTaint)
 					return Collections.emptySet();
 
-				// If the base was tainted, one parameter could be responsible for this but we don't know,
-				// maybe it also was tainted before. So we have to keep it.
-				taints.add(taintedPath);
-
 				if (wrapType == MethodWrapType.CreateTaint && taintedAbs.getDominator() != null
 						&& taintedAbs.getDominator() != null)
 					taints.add(AccessPath.getEmptyAccessPath());
@@ -375,6 +371,10 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				}
 			}
 		}
+
+		// Keep the incoming taint if it is not the lhs
+		if (!taintedObj)
+			taints.add(taintedPath);
 
 		// if base object is tainted, we need to taint all parameters
 		if (isSupported && wrapType == MethodWrapType.CreateTaint) {
