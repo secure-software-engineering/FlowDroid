@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import com.sun.istack.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -765,12 +766,13 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 						String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef).getMethod()
 								.getSubSignature());
+
 						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
 
 						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
 					} else {
-						SootMethod sm = Scene.v().grabMethod(entry.getO1());
+						SootMethod sm = grabMethod(entry.getO1());
 						if (sm != null)
 							sourceMethods.put(sm, sourceSinkDef);
 					}
@@ -806,6 +808,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 						SootMethodAndClass method = methodSourceSinkDef.getMethod();
 						String returnType = method.getReturnType();
 						boolean isMethodWithoutReturnType = returnType == null || returnType.isEmpty();
+
 						if (isMethodWithoutReturnType) {
 							String className = method.getClassName();
 							String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef)
@@ -814,7 +817,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 							if (sootMethod != null)
 								sinkMethods.put(sootMethod, sourceSinkDef);
 						} else {
-							SootMethod sm = Scene.v().grabMethod(entry.getO1());
+							SootMethod sm = grabMethod(entry.getO1());
 							if (sm != null)
 								sinkMethods.put(sm, entry.getO2());
 						}
@@ -834,6 +837,31 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	}
 
 	/**
+	 * Get the method of a class without matching the return type.
+	 *
+	 * @param sootClass The class of the method
+	 * @param subSignature  The sub signature of the method which is the method name
+	 *                      and its parameters
+	 * @return The soot method of the given class and sub signature or null
+	 */
+	private SootMethod matchMethodWithoutReturn(@NotNull SootClass sootClass, String subSignature) {
+		if (sootClass.resolvingLevel() == DANGLING) {
+			List<SootMethod> sootMethods = sootClass.getMethods();
+
+			for (SootMethod s : sootMethods) {
+				String[] tempSignature = s.getSubSignature().split(" ");
+
+				if (tempSignature.length == 2) {
+					if (tempSignature[1].equals(subSignature))
+						return s;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Gets a soot method defined by class name and its sub signature from the
 	 * loaded methods in the Scene object
 	 *
@@ -847,19 +875,40 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		if (sootClass == null)
 			return null;
 
-		List<SootMethod> sootMethods = null;
-		if (sootClass.resolvingLevel() != DANGLING) {
-			sootMethods = sootClass.getMethods();
+		SootMethod sootMethod = matchMethodWithoutReturn(sootClass, subSignature);
+		if (sootMethod != null)
+			return sootMethod;
 
-			for (SootMethod s : sootMethods) {
-				String[] tempSignature = s.getSubSignature().split(" ");
+		for (SootClass i : parentClassesAndInterfaces.getUnchecked(sootClass)) {
+			sootMethod = matchMethodWithoutReturn(i, subSignature);
+			if (sootMethod != null)
+				return sootMethod;
+		}
 
-				if (tempSignature.length == 2) {
-					if (tempSignature[1].equals(subSignature))
-						return s;
-				}
+		return null;
+	}
 
-			}
+	/**
+	 * Gets a soot method defined by the class name or one of its superclasses.
+	 *
+	 * @param signature method signature
+	 * @return The soot method of the given class or above in the hierarchy. Null if the method doesn't exist.
+	 */
+	private SootMethod grabMethod(String signature) {
+		String sootClassName = Scene.signatureToClass(signature);
+		SootClass sootClass = Scene.v().getSootClassUnsafe(sootClassName);
+		if (sootClass == null)
+			return null;
+
+		String subSignature = Scene.signatureToSubsignature(signature);
+		SootMethod sootMethod = sootClass.getMethodUnsafe(subSignature);
+		if (sootMethod != null)
+			return sootMethod;
+
+		for (SootClass i : parentClassesAndInterfaces.getUnchecked(sootClass)) {
+			sootMethod = i.getMethodUnsafe(subSignature);
+			if (sootMethod != null)
+				return sootMethod;
 		}
 
 		return null;
