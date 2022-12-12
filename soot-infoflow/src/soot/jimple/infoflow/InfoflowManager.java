@@ -25,6 +25,7 @@ public class InfoflowManager {
 	private IInfoflowSolver forwardSolver;
 	private IInfoflowSolver backwardSolver;
 	private final IInfoflowCFG icfg;
+	private final IInfoflowCFG originalIcfg;
 	private final ISourceSinkManager sourceSinkManager;
 	private final ITaintPropagationWrapper taintWrapper;
 	private final TypeUtils typeUtils;
@@ -37,6 +38,7 @@ public class InfoflowManager {
 		this.config = config;
 		this.forwardSolver = null;
 		this.icfg = null;
+		this.originalIcfg = null;
 		this.sourceSinkManager = null;
 		this.taintWrapper = null;
 		this.typeUtils = null;
@@ -51,6 +53,7 @@ public class InfoflowManager {
 		this.config = config;
 		this.forwardSolver = forwardSolver;
 		this.icfg = icfg;
+		this.originalIcfg = null;
 		this.sourceSinkManager = sourceSinkManager;
 		this.taintWrapper = taintWrapper;
 		this.typeUtils = new TypeUtils(this);
@@ -65,6 +68,7 @@ public class InfoflowManager {
 		this.config = config;
 		this.forwardSolver = forwardSolver;
 		this.icfg = icfg;
+		this.originalIcfg = existingManager.getICFG();
 		this.sourceSinkManager = sourceSinkManager;
 		this.taintWrapper = taintWrapper;
 		this.typeUtils = existingManager.getTypeUtils();
@@ -77,6 +81,7 @@ public class InfoflowManager {
 		this.config = config;
 		this.forwardSolver = forwardSolver;
 		this.icfg = icfg;
+		this.originalIcfg = null;
 		this.sourceSinkManager = null;
 		this.taintWrapper = null;
 		this.typeUtils = new TypeUtils(this);
@@ -137,6 +142,15 @@ public class InfoflowManager {
 	 */
 	public IInfoflowCFG getICFG() {
 		return this.icfg;
+	}
+
+	/**
+	 * Gets the interprocedural control flow graph for the other direction. Only available in the alias search.
+	 *
+	 * @return The inversed interprocedural control flow graph
+	 */
+	public IInfoflowCFG getOriginalICFG() {
+		return this.originalIcfg;
 	}
 
 	/**

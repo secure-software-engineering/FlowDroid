@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class AndroidSpecificTest extends JUnitTests {
+public abstract class AndroidSpecificTest extends JUnitTests {
 
 	@Test // (timeout=300000)
 	public void runTestApplicationModeling1() throws IOException, XmlPullParserException {

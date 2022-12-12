@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class ArrayAndListTest extends JUnitTests {
+public abstract class ArrayAndListTest extends JUnitTests {
 		
 	@Test(timeout=300000)
 	public void runTestArrayAccess1() throws IOException, XmlPullParserException {
