@@ -145,7 +145,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 					for (SourceContextAndPath context : getPaths(lastTaskId++, abs.getAbstraction(), initialStack)) {
 						results.addResult(abs.getSinkDefinition(), abs.getAbstraction().getAccessPath(),
 								abs.getSinkStmt(), context.getDefinition(), context.getAccessPath(), context.getStmt(),
-								context.getUserData(), context.getAbstractionPath());
+								context.getUserData(), context.getAbstractionPath(), manager);
 					}
 				}
 

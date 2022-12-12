@@ -243,6 +243,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				for (Unit condUnit : condUnits) {
 					Abstraction abs = new Abstraction(sink.getDefinition(), AccessPath.getEmptyAccessPath(), stmt,
 							sink.getUserData(), false, false);
+					abs.setCorrespondingCallSite(stmt);
 					abs.setDominator(condUnit);
 					res.add(abs);
 				}
@@ -252,6 +253,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 							.createAccessPath(sm.getActiveBody().getThisLocal(), false);
 					Abstraction thisTaint = new Abstraction(sink.getDefinition(), thisAp, stmt, sink.getUserData(),
 							false, false);
+					thisTaint.setCorrespondingCallSite(stmt);
 					res.add(thisTaint);
 				}
 

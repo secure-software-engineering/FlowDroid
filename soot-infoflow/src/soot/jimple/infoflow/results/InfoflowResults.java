@@ -155,13 +155,6 @@ public class InfoflowResults {
 
 	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
 			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-			List<Abstraction> propagationPath) {
-		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData,
-				propagationPath, null);
-	}
-
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Abstraction> propagationPath, InfoflowManager manager) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;

@@ -1,9 +1,6 @@
 package soot.jimple.infoflow.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -90,7 +87,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.path == null || other.path == null || other.path.size() <= this.path.size())
 			return null;
 
-		ArrayList<Abstraction> buf = new ArrayList<>(other.path.size() - this.path.size());
+		Stack<Abstraction> pathStack = new Stack<>();
 		Abstraction lastAbs = this.getLastAbstraction();
 		boolean foundCommonAbs = false;
 
@@ -98,11 +95,11 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		Iterator<Abstraction> pathIt = other.path.reverseIterator();
 		while (pathIt.hasNext()) {
 			Abstraction next = pathIt.next();
-			if (next == lastAbs) {
+			if (next == lastAbs || (next.neighbors != null && next.neighbors.contains(lastAbs))) {
 				foundCommonAbs = true;
 				break;
 			}
-			buf.add(next);
+			pathStack.push(next);
 		}
 
 		// If the paths do not have a common abstraction, there's probably something wrong...
@@ -111,15 +108,15 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 		// Append the additional abstractions to the new taint propagation path
 		SourceContextAndPath extendedScap = clone();
-		for (Abstraction abs : buf)
-			extendedScap.path.add(abs);
+		while (!pathStack.isEmpty())
+			extendedScap.path.add(pathStack.pop());
 
 		int newCallStackCapacity = other.getCallStackSize() - this.getCallStackSize();
 		// Sanity Check: The callStack of other should always be larger than the one of this
 		if (newCallStackCapacity < 0)
 			return null;
 		if (newCallStackCapacity > 0) {
-			ArrayList<Stmt> callStackBuf = new ArrayList<>(newCallStackCapacity);
+			Stack<Stmt> callStackBuf = new Stack<>();
 			Stmt topStmt = this.callStack == null ? null : this.callStack.getLast();
 
 			// Collect all additional statements on the call stack...
@@ -128,15 +125,15 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 				Stmt next = callStackIt.next();
 				if (next == topStmt)
 					break;
-				callStackBuf.add(next);
+				callStackBuf.push(next);
 			}
 
 			if (callStackBuf.size() > 0) {
 				if (extendedScap.callStack == null)
 					extendedScap.callStack = new ExtensibleList<>();
 				// ...and append them.
-				for (Stmt stmt : callStackBuf)
-					extendedScap.callStack.add(stmt);
+				while (!callStackBuf.isEmpty())
+					extendedScap.callStack.add(callStackBuf.pop());
 			}
 		}
 
@@ -213,32 +210,15 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		}
 
 		// Extend the call stack
-		switch (config.getDataFlowDirection()) {
-		case Forwards:
-			if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
-				if (scap == null)
-					scap = this.clone();
-				if (scap.callStack == null)
-					scap.callStack = new ExtensibleList<Stmt>();
-				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
-						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
-					return null;
-				scap.callStack.add(abs.getCorrespondingCallSite());
-			}
-			break;
-		case Backwards:
-			if (abs.getCurrentStmt() != null && abs.getCurrentStmt().containsInvokeExpr()
-					&& abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
-				if (scap == null)
-					scap = this.clone();
-				if (scap.callStack == null)
-					scap.callStack = new ExtensibleList<Stmt>();
-				else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
-						&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
-					return null;
-				scap.callStack.add(abs.getCurrentStmt());
-			}
-			break;
+		if (abs.getCorrespondingCallSite() != null && abs.getCorrespondingCallSite() != abs.getCurrentStmt()) {
+			if (scap == null)
+				scap = this.clone();
+			if (scap.callStack == null)
+				scap.callStack = new ExtensibleList<Stmt>();
+			else if (pathConfig != null && pathConfig.getMaxCallStackSize() > 0
+					&& scap.callStack.size() >= pathConfig.getMaxCallStackSize())
+				return null;
+			scap.callStack.add(abs.getCorrespondingCallSite());
 		}
 
 		this.neighborCounter = abs.getNeighbors() == null ? 0 : abs.getNeighbors().size();

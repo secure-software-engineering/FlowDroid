@@ -129,7 +129,7 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 		SourceContext sourceContext = abs.getSourceContext();
 		results.addResult(scap.getDefinition(), scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinition(),
 				sourceContext.getAccessPath(), sourceContext.getStmt(), sourceContext.getUserData(),
-				scap.getAbstractionPath());
+				scap.getAbstractionPath(), manager);
 		return true;
 	}
 
