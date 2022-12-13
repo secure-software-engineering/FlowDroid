@@ -315,4 +315,21 @@ public class TypeUtils {
 			return h.getSubclassesOfIncluding(classOrInterface);
 	}
 
+	/**
+	 * Checks whether a value of type "child" can be stored in a variable of type
+	 * "parent". If one of the types is <code>null</code>, we assume that the value
+	 * cannot be stored.
+	 * 
+	 * @param fh     The {@link FastHierarchy}
+	 * @param child  The actual type of the value
+	 * @param parent The declared type of the variable
+	 * @return True if a value of type "child" can be stored in a variable of type
+	 *         "parent", false otherwise
+	 */
+	public static boolean canStoreType(FastHierarchy fh, Type child, Type parent) {
+		if (child == null || parent == null)
+			return false;
+		return fh.canStoreType(child, parent);
+	}
+
 }

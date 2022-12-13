@@ -8,6 +8,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.typing.TypeUtils;
 
 /**
  * A callback filter that restricts application callbacks to ComponentCallbacks
@@ -70,9 +71,9 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 				&& !callbackHandler.getName().equals(applicationClass)) {
 			final FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
 			final RefType callbackType = callbackHandler.getType();
-			if (!fh.canStoreType(callbackType, this.activityLifecycleCallbacks)
-					&& !fh.canStoreType(callbackType, this.provideAssistDataListener)
-					&& !fh.canStoreType(callbackType, this.componentCallbacks))
+			if (!TypeUtils.canStoreType(fh, callbackType, this.activityLifecycleCallbacks)
+					&& !TypeUtils.canStoreType(fh, callbackType, this.provideAssistDataListener)
+					&& !TypeUtils.canStoreType(fh, callbackType, this.componentCallbacks))
 				return false;
 		}
 
@@ -81,10 +82,24 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 
 	@Override
 	public void reset() {
-		this.activityLifecycleCallbacks = RefType.v(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACKSINTERFACE);
-		this.provideAssistDataListener = RefType.v("android.app.Application$OnProvideAssistDataListener");
-		this.componentCallbacks = RefType.v(AndroidEntryPointConstants.COMPONENTCALLBACKSINTERFACE);
-		this.componentCallbacks2 = RefType.v(AndroidEntryPointConstants.COMPONENTCALLBACKS2INTERFACE);
+		this.activityLifecycleCallbacks = getRefTypeUnsafe(
+				AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACKSINTERFACE);
+		this.provideAssistDataListener = getRefTypeUnsafe("android.app.Application$OnProvideAssistDataListener");
+		this.componentCallbacks = getRefTypeUnsafe(AndroidEntryPointConstants.COMPONENTCALLBACKSINTERFACE);
+		this.componentCallbacks2 = getRefTypeUnsafe(AndroidEntryPointConstants.COMPONENTCALLBACKS2INTERFACE);
+	}
+
+	/**
+	 * Gets the {@link RefType} that corresponds to the given class name, or
+	 * <code>null</code> if the class is unknown
+	 * 
+	 * @param className The class name for which to get the reference type
+	 * @return The reference type for the given class name, or <code>null</code> if
+	 *         the class is unknown
+	 */
+	private RefType getRefTypeUnsafe(String className) {
+		SootClass sc = Scene.v().getSootClassUnsafe(className);
+		return sc == null ? null : sc.getType();
 	}
 
 	@Override
