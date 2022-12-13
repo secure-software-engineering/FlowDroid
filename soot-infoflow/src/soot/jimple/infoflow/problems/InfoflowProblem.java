@@ -976,6 +976,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// special treatment for clinit methods - no param mapping
 				// possible
+				final int calleeParamCount = callee.getParameterCount();
 				if (isExecutorExecute) {
 					if (aliasing.mayAlias(ie.getArg(0), ap.getPlainValue())) {
 						if (res == null)
@@ -983,11 +984,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						res.add(manager.getAccessPathFactory().copyWithNewValue(ap,
 								callee.getActiveBody().getThisLocal()));
 					}
-				} else if (callee.getParameterCount() > 0) {
+				} else if (calleeParamCount > 0) {
 					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 					// check if param is tainted:
-					if (isReflectiveCallSite || ie.getArgCount() == callee.getParameterCount()) {
+					if (isReflectiveCallSite || ie.getArgCount() == calleeParamCount) {
 						for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
 							if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
 								if (res == null)
@@ -996,7 +997,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								// Get the parameter locals if we don't have them yet
 								if (paramLocals == null)
 									paramLocals = callee.getActiveBody().getParameterLocals()
-											.toArray(new Local[callee.getParameterCount()]);
+											.toArray(new Local[calleeParamCount]);
 
 								if (isReflectiveCallSite) {
 									// Taint all parameters in the callee if the argument array of a reflective
@@ -1021,7 +1022,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					// Sometimes callers have more arguments than the callee parameters, e.g.
 					// because one argument is resolved in native code. A concrete example is
 					// sendMessageDelayed(android.os.Message, int)
-					//   -> handleMessage(android.os.Message message)
+					// -> handleMessage(android.os.Message message)
 					// TODO: handle argument/parameter mismatch for some special cases
 				}
 				return res;
