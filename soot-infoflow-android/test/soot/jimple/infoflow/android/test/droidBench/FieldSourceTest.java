@@ -8,7 +8,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class FieldSourceTest extends JUnitTests {
+public abstract class FieldSourceTest extends JUnitTests {
 
 	@Test
 	public void runTestFlowSensitivity1() throws IOException, XmlPullParserException {

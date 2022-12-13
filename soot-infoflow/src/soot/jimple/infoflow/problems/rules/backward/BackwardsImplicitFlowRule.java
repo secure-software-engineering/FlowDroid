@@ -122,23 +122,6 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 			return null;
 
 		UnitContainer dominator = manager.getICFG().getDominatorOf(stmt);
-		// When a taint which just has been handed over
-		if (source.isAbstractionActive() && source.getPredecessor() != null
-				&& !source.getPredecessor().isAbstractionActive()) {
-			// We maybe turned around inside a conditional, so we reconstruct the condition
-			// dominator
-			// Also, we lost track of the dominators in the alias search. Thus, we derive
-			// interprocedural wildcards.
-			// See ImplicitTests#conditionalAliasingTest
-			List<Unit> condUnits = manager.getICFG().getConditionalBranchesInterprocedural(stmt);
-			// No condition path -> no need to search for one
-			for (Unit condUnit : condUnits) {
-				Abstraction abs = source.deriveNewAbstractionWithDominator(condUnit);
-				if (abs != null)
-					manager.getForwardSolver().processEdge(new PathEdge<>(d1, stmt, abs));
-			}
-			return null;
-		}
 
 		// Taint enters a conditional branch
 		// Only handle cases where the taint is not part of the statement
@@ -256,8 +239,6 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 					thisTaint.setCorrespondingCallSite(stmt);
 					res.add(thisTaint);
 				}
-
-				System.out.println(res.size());
 
 				return res;
 			}

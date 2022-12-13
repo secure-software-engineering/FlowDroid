@@ -18,7 +18,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class ThreadingTest extends JUnitTests {
+public abstract class ThreadingTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestAsyncTask1() throws IOException, XmlPullParserException {

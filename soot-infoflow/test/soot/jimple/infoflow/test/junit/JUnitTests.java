@@ -192,7 +192,8 @@ public abstract class JUnitTests {
 	 *
 	 * @param infoflow infoflow object
 	 */
-	protected void onlyForwards(IInfoflow infoflow) {
-		Assume.assumeTrue("Test is only applicable on forwards analysis", infoflow instanceof Infoflow);
+	protected void onlyForwards(IInfoflow infoflow, String message) {
+		Assume.assumeTrue("Test is only applicable on forwards analysis: " + message,
+				infoflow instanceof Infoflow);
 	}
 }

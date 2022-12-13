@@ -192,5 +192,4 @@ public abstract class EasyWrapperListTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-
 }

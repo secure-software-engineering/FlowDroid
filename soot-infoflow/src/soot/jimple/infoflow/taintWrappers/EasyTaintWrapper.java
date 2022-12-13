@@ -185,16 +185,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedPath);
 
-		final Set<AccessPath> taints = new HashSet<AccessPath>();
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-
-		// We always keep the incoming taint
-		taints.add(taintedPath);
-
-		// For the moment, we don't implement static taints on wrappers. Pass it on not
-		// to break anything
-		if (taintedPath.isStaticFieldRef())
-			return Collections.singleton(taintedPath);
 
 		// Do we handle equals() and hashCode() separately?
 		final String subSig = stmt.getInvokeExpr().getMethodRef().getSubSignature().getString();
@@ -216,7 +207,14 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 					break;
 				}
 		if (!isSupported && !aggressiveMode && !taintEqualsHashCode)
-			return taints;
+			return null;
+
+		// For the moment, we don't implement static taints on wrappers. Pass it on not
+		// to break anything
+		if (taintedPath.isStaticFieldRef())
+			return Collections.singleton(taintedPath);
+
+		final Set<AccessPath> taints = new HashSet<>();
 
 		// Check for a cached wrap type
 		final MethodWrapType wrapType = methodWrapCache.getUnchecked(method);
@@ -227,7 +225,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				// If the base object is tainted, we have to check whether we
 				// must kill the taint
 				if (wrapType == MethodWrapType.KillTaint)
-					return Collections.emptySet();
+					return null;
 
 				// If the base object is tainted, all calls to its methods
 				// always return
@@ -242,6 +240,9 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				}
 			}
 		}
+
+		// We always keep the incoming taint on supported methods
+		taints.add(taintedPath);
 
 		// if param is tainted && classList contains classname && if list.
 		// contains
