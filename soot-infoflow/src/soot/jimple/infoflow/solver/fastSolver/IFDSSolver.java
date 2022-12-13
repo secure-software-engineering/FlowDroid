@@ -141,6 +141,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	private int maxCalleesPerCallSite = 75;
 	private int maxAbstractionPathLength = 100;
 
+	protected ISchedulingStrategy<N, D> schedulingStrategy = new DefaultSchedulingStrategy<N, D, I>(
+			this).EACH_EDGE_INDIVIDUALLY;
+
 	/**
 	 * Creates a solver for the given problem, which caches flow functions and edge
 	 * functions. The solver must then be started by calling {@link #solve()}.
@@ -212,7 +215,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		for (Entry<N, Set<D>> seed : initialSeeds.entrySet()) {
 			N startPoint = seed.getKey();
 			for (D val : seed.getValue())
-				propagate(zeroValue, startPoint, val, null, false, ScheduleTarget.EXECUTOR);
+				schedulingStrategy.propagateInitialSeeds(zeroValue, startPoint, val, null, false);
 			addFunction(new PathEdge<N, D>(zeroValue, startPoint, zeroValue));
 		}
 	}
@@ -327,7 +330,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 								// for each callee's start point(s)
 								for (N sP : startPointsOf) {
 									// create initial self-loop
-									propagate(d3, sP, d3, n, false, ScheduleTarget.EXECUTOR); // line 15
+									schedulingStrategy.propagateCallFlow(d3, sP, d3, n, false); // line 15
 								}
 
 								// register the fact that <sp,d3> has an incoming edge from
@@ -355,7 +358,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					if (memoryManager != null)
 						d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
 					if (d3 != null)
-						propagate(d1, returnSiteN, d3, n, false, ScheduleTarget.EXECUTOR);
+						schedulingStrategy.propagateCallToReturnFlow(d1, returnSiteN, d3, n, false);
 				}
 			}
 		}
@@ -419,7 +422,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 									d5p = d2;
 								break;
 							}
-							propagate(d1, retSiteN, d5p, n, false, ScheduleTarget.EXECUTOR);
+							schedulingStrategy.propagateReturnFlow(d1, retSiteN, d5p, n, false);
 						}
 					}
 				}
@@ -521,7 +524,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 										d5p = predVal;
 									break;
 								}
-								propagate(d4, retSiteC, d5p, c, false, ScheduleTarget.EXECUTOR);
+								schedulingStrategy.propagateReturnFlow(d4, retSiteC, d5p, c, false);
 							}
 						}
 					}
@@ -546,7 +549,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 							if (memoryManager != null)
 								d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
 							if (d5 != null)
-								propagate(zeroValue, retSiteC, d5, c, true, ScheduleTarget.EXECUTOR);
+								schedulingStrategy.propagateReturnFlow(zeroValue, retSiteC, d5, c, true);
 						}
 					}
 				}
@@ -603,7 +606,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 					if (memoryManager != null && d2 != d3)
 						d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
 					if (d3 != null)
-						propagate(d1, m, d3, null, false, ScheduleTarget.LOCAL);
+						schedulingStrategy.propagateNormalFlow(d1, m, d3, null, false);
 				}
 			}
 		}
@@ -886,6 +889,15 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	public void setMaxAbstractionPathLength(int maxAbstractionPathLength) {
 		this.maxAbstractionPathLength = maxAbstractionPathLength;
+	}
+
+	/**
+	 * Sets the strategy for scheduling edges
+	 * 
+	 * @param strategy The strategy for scheduling edges
+	 */
+	public void setSchedulingStrategy(ISchedulingStrategy<N, D> strategy) {
+		this.schedulingStrategy = strategy;
 	}
 
 }
