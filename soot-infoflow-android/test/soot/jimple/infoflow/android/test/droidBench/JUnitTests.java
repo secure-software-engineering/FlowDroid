@@ -162,6 +162,6 @@ public class JUnitTests {
 		if (iccModel != null && iccModel.length() > 0) {
 			setupApplication.getConfig().getIccConfig().setIccModel(iccModel);
 		}
-		return  setupApplication.runInfoflow("SourcesAndSinks.txt");
+		return setupApplication.runInfoflow("SourcesAndSinks.txt");
 	}
 }
