@@ -7,11 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import soot.ArrayType;
-import soot.Local;
-import soot.Scene;
-import soot.SootMethod;
-import soot.Value;
+import soot.*;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
@@ -32,6 +28,7 @@ import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.Summa
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryPathBuilder.SummarySourceInfo;
 import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.util.MultiMap;
 
@@ -331,15 +328,21 @@ public class InfoflowResultPostProcessor {
 
 		// The sink may be a parameter
 		if (!isInCallee) {
-			if (!apAtReturn.isLocal() || apAtReturn.getTaintSubFields()
-					|| apAtReturn.getBaseType() instanceof ArrayType)
-				for (int i = 0; i < m.getParameterCount(); i++) {
-					Local p = m.getActiveBody().getParameterLocal(i);
-					if (apAtReturn.getPlainValue() == p) {
-						FlowSink sink = sourceSinkFactory.createParameterSink(i, apAtReturn);
-						addFlow(source, sink, isAlias, flows);
+			if (apAtReturn.getPlainValue() != null
+					&& (apAtReturn.getTaintSubFields() || apAtReturn.getFragmentCount() > 0)) {
+				boolean isString = TypeUtils.isStringType(apAtReturn.getBaseType())
+						&& !apAtReturn.getCanHaveImmutableAliases();
+				if (apAtReturn.getBaseType() instanceof ArrayType
+						|| (apAtReturn.getBaseType() instanceof RefType && !isString)) {
+					for (int i = 0; i < m.getParameterCount(); i++) {
+						Local p = m.getActiveBody().getParameterLocal(i);
+						if (apAtReturn.getPlainValue() == p) {
+							FlowSink sink = sourceSinkFactory.createParameterSink(i, apAtReturn);
+							addFlow(source, sink, isAlias, flows);
+						}
 					}
 				}
+			}
 		}
 
 		// The sink may be a local field

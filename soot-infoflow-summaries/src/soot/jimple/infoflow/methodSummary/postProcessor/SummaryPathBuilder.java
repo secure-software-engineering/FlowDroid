@@ -221,6 +221,8 @@ class SummaryPathBuilder extends ContextSensitivePathBuilder {
 		resultInfos.clear();
 		visitedAbstractions.clear();
 		pathCache.clear();
+		deferredPaths.clear();
+		sourceReachingScaps.clear();
 	}
 
 	/**
