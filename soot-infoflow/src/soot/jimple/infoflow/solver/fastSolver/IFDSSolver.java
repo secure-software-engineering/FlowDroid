@@ -45,6 +45,7 @@ import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.solver.EndSummary;
+import soot.jimple.infoflow.solver.IStrategyBasedParallelSolver;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
@@ -63,7 +64,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * @see IFDSTabulationProblem
  */
 public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiInterproceduralCFG<N, SootMethod>>
-		implements IMemoryBoundedSolver {
+		implements IMemoryBoundedSolver, IStrategyBasedParallelSolver<N, D> {
 
 	public enum ScheduleTarget {
 		/**
@@ -891,11 +892,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		this.maxAbstractionPathLength = maxAbstractionPathLength;
 	}
 
-	/**
-	 * Sets the strategy for scheduling edges
-	 * 
-	 * @param strategy The strategy for scheduling edges
-	 */
+	@Override
 	public void setSchedulingStrategy(ISchedulingStrategy<N, D> strategy) {
 		this.schedulingStrategy = strategy;
 	}
