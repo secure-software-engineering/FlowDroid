@@ -704,9 +704,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			IInfoflowSolver forwardSolver = createDataFlowSolver(executor, forwardProblem);
 
 			// Set the options
-			manager.setForwardSolver(forwardSolver);
+			manager.setMainSolver(forwardSolver);
 			if (aliasingStrategy.getSolver() != null)
-				aliasingStrategy.getSolver().getTabulationProblem().getManager().setForwardSolver(forwardSolver);
+				aliasingStrategy.getSolver().getTabulationProblem().getManager().setMainSolver(forwardSolver);
 			solvers.add(forwardSolver);
 
 			memoryWatcher.addSolver((IMemoryBoundedSolver) forwardSolver);
@@ -1570,14 +1570,14 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 		if (manager != null) {
 			// Stop the forward taint analysis
-			IInfoflowSolver forwardSolver = manager.getForwardSolver();
+			IInfoflowSolver forwardSolver = manager.getMainSolver();
 			if (forwardSolver instanceof IMemoryBoundedSolver) {
 				IMemoryBoundedSolver boundedSolver = (IMemoryBoundedSolver) forwardSolver;
 				boundedSolver.forceTerminate(reason);
 			}
 
 			// Stop the alias analysis
-			IInfoflowSolver backwardSolver = manager.getBackwardSolver();
+			IInfoflowSolver backwardSolver = manager.getAliasSolver();
 			if (backwardSolver instanceof IMemoryBoundedSolver) {
 				IMemoryBoundedSolver boundedSolver = (IMemoryBoundedSolver) backwardSolver;
 				boundedSolver.forceTerminate(reason);

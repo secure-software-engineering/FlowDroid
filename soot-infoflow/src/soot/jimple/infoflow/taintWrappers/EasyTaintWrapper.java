@@ -576,7 +576,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		// In aggressive mode, we always taint the return value if the base
 		// object is tainted.
 		if (aggressiveMode && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			if (manager.getForwardSolver().getTabulationProblem() instanceof BackwardsInfoflowProblem) {
+			if (manager.getMainSolver().getTabulationProblem() instanceof BackwardsInfoflowProblem) {
 				if (stmt instanceof DefinitionStmt) {
 					if (((DefinitionStmt) stmt).getLeftOp().equals(taintedPath.getPlainValue())) {
 						return true;

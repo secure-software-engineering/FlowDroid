@@ -113,7 +113,7 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 						absCallee = absCallee.deriveInactiveAbstraction(actStmt);
 					else
 						absCallee = absCallee.getActiveCopy();
-					manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, absCallee));
+					manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, absCallee));
 
 					// One alias is enough
 					break;
@@ -150,7 +150,7 @@ public class PtsBasedAliasStrategy extends AbstractBulkAliasStrategy {
 							aliasAbsRight = aliasAbsRight.deriveInactiveAbstraction(actStmt);
 						else
 							aliasAbsRight = aliasAbsRight.getActiveCopy();
-						manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, aliasAbsRight));
+						manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, aliasAbsRight));
 					}
 				}
 			}
