@@ -256,7 +256,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	 * Code adapted from FlowDroid v2.0.
 	 */
 	public void assignIntent(SootClass hostComponent, SootMethod method, int indexOfArgs) {
-		if (!method.isStatic()) {
+		if (method.isConcrete() && !method.isStatic()) {
 			JimpleBody body = (JimpleBody) method.retrieveActiveBody();
 
 			// Some component types such as fragments don't have a getIntent() method
