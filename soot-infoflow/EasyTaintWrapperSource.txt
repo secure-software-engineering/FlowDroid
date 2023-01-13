@@ -251,6 +251,8 @@
 
 <java.io.ObjectOutputStream: void writeObject(java.lang.Object>
 
+<java.io.BufferedOutputStream: void <init>(java.io.OutputStream)>
+
 <java.io.ObjectInputStream: void <init>(java.io.InputStream)>
 
 <java.io.File: void <init>(java.lang.String)>

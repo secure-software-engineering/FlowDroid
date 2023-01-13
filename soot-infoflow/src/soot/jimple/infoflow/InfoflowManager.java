@@ -34,6 +34,8 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
+	public InfoflowManager reverseManager;
+
 	protected InfoflowManager(InfoflowConfiguration config) {
 		this.config = config;
 		this.mainSolver = null;
@@ -145,7 +147,8 @@ public class InfoflowManager {
 	}
 
 	/**
-	 * Gets the interprocedural control flow graph for the other direction. Only available in the alias search.
+	 * Gets the interprocedural control flow graph for the other direction. Only
+	 * available in the alias search.
 	 *
 	 * @return The inversed interprocedural control flow graph
 	 */

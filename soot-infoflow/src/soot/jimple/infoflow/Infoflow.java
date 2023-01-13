@@ -12,6 +12,7 @@ package soot.jimple.infoflow;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
+import soot.jimple.infoflow.aliasing.BackwardsFlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.FlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.aliasing.LazyAliasingStrategy;
@@ -23,7 +24,10 @@ import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
 import soot.jimple.infoflow.problems.AliasProblem;
+import soot.jimple.infoflow.problems.BackwardsAliasProblem;
+import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
+import soot.jimple.infoflow.river.BackwardNoSourceSinkRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.DefaultPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -31,6 +35,7 @@ import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
+import soot.jimple.infoflow.sourcesSinks.manager.EmptySourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
@@ -143,8 +148,58 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	@Override
+	protected IAliasingStrategy createReverseAliasAnalysis(InfoflowManager reverseManager, final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
+			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
+		IAliasingStrategy aliasingStrategy;
+		IInfoflowSolver aliasSolver = null;
+		BackwardsAliasProblem aliasProblem = null;
+		InfoflowManager aliasManager = null;
+		switch (getConfig().getAliasingAlgorithm()) {
+		case FlowSensitive:
+			// The original icfg is already backwards for the backwards data flow analysis
+			aliasManager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy, reverseManager);
+			aliasProblem = new BackwardsAliasProblem(aliasManager);
+
+			// We need to create the right data flow solver
+			SolverConfiguration solverConfig = config.getSolverConfiguration();
+			aliasSolver = createDataFlowSolver(executor, aliasProblem, solverConfig);
+
+			aliasSolver.setMemoryManager(memoryManager);
+			aliasSolver.setPredecessorShorteningMode(
+					pathConfigToShorteningMode(reverseManager.getConfig().getPathConfiguration()));
+			// aliasSolver.setEnableMergePointChecking(true);
+			aliasSolver.setMaxJoinPointAbstractions(solverConfig.getMaxJoinPointAbstractions());
+			aliasSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
+			aliasSolver.setMaxAbstractionPathLength(solverConfig.getMaxAbstractionPathLength());
+			aliasSolver.setSolverId(false);
+			aliasProblem.setTaintPropagationHandler(reverseAliasPropagationHandler);
+			aliasProblem.setTaintWrapper(taintWrapper);
+			if (nativeCallHandler != null)
+				aliasProblem.setNativeCallHandler(nativeCallHandler);
+
+			memoryWatcher.addSolver((IMemoryBoundedSolver) aliasSolver);
+
+			aliasingStrategy = new BackwardsFlowSensitiveAliasStrategy(reverseManager, aliasSolver);
+			break;
+		case None:
+			aliasProblem = null;
+			aliasSolver = null;
+			aliasingStrategy = new NullAliasStrategy();
+			break;
+		default:
+			throw new RuntimeException("Unsupported aliasing algorithm: " + getConfig().getAliasingAlgorithm());
+		}
+		return aliasingStrategy;
+	}
+
+	@Override
 	protected InfoflowProblem createInfoflowProblem(Abstraction zeroValue) {
 		return new InfoflowProblem(manager, zeroValue, ruleManagerFactory);
+	}
+
+	@Override
+	protected BackwardsInfoflowProblem createReverseInfoflowProblem(InfoflowManager manager, Abstraction zeroValue) {
+		return new BackwardsInfoflowProblem(manager, zeroValue, reverseRuleManagerFactory);
 	}
 
 	@Override
@@ -168,4 +223,15 @@ public class Infoflow extends AbstractInfoflow {
 		return new DefaultPropagationRuleManagerFactory();
 	}
 
+	@Override
+	protected BackwardNoSourceSinkRuleManagerFactory initializeReverseRuleManagerFactory() {
+		return new BackwardNoSourceSinkRuleManagerFactory();
+	}
+
+	@Override
+	protected InfoflowManager initializeReverseInfoflowManager(IInfoflowCFG iCfg,
+															   GlobalTaintManager globalTaintManager) {
+		return new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg),
+				new EmptySourceSinkManager(), taintWrapper, hierarchy, globalTaintManager);
+	}
 }

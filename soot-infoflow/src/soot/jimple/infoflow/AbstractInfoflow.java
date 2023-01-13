@@ -55,11 +55,7 @@ import soot.jimple.infoflow.data.pathBuilders.IPathBuilderFactory;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
-import soot.jimple.infoflow.handlers.PostAnalysisHandler;
-import soot.jimple.infoflow.handlers.PreAnalysisHandler;
-import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
-import soot.jimple.infoflow.handlers.ResultsAvailableHandler2;
-import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.handlers.*;
 import soot.jimple.infoflow.ipc.DefaultIPCManager;
 import soot.jimple.infoflow.ipc.IIPCManager;
 import soot.jimple.infoflow.memory.FlowDroidMemoryWatcher;
@@ -78,6 +74,8 @@ import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
+import soot.jimple.infoflow.river.SecondaryFlowGenerator;
+import soot.jimple.infoflow.river.SecondaryFlowListener;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.SolverPeerGroup;
@@ -93,6 +91,7 @@ import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
 import soot.jimple.infoflow.threading.IExecutorFactory;
+import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
@@ -131,6 +130,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected IMemoryManagerFactory memoryManagerFactory = new DefaultMemoryManagerFactory();
 	protected IExecutorFactory executorFactory = new DefaultExecutorFactory();
 	protected IPropagationRuleManagerFactory ruleManagerFactory = initializeRuleManagerFactory();
+	protected IPropagationRuleManagerFactory reverseRuleManagerFactory = initializeReverseRuleManagerFactory();
 
 	protected Set<Stmt> collectedSources;
 	protected Set<Stmt> collectedSinks;
@@ -143,6 +143,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected Set<ResultsAvailableHandler> onResultsAvailable = new HashSet<>();
 	protected TaintPropagationHandler taintPropagationHandler = null;
 	protected TaintPropagationHandler aliasPropagationHandler = null;
+	protected TaintPropagationHandler reverseTaintPropagationHandler = null;
+	protected TaintPropagationHandler reverseAliasPropagationHandler = null;
 
 	protected FlowDroidMemoryWatcher memoryWatcher = null;
 
@@ -723,6 +725,45 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				aliasingStrategy.getSolver().getTabulationProblem().setActivationUnitsToCallSites(forwardProblem);
 			}
 
+			// Initialize reverse direction
+			InfoflowManager reverseManager = initializeReverseInfoflowManager(iCfg, globalTaintManager);
+			if (reverseManager != null) {
+				forwardProblem.setTaintPropagationHandler(new SecondaryFlowGenerator());
+
+				AbstractInfoflowProblem reverseProblem = createReverseInfoflowProblem(reverseManager, zeroValue);
+				IInfoflowSolver reverseSolver = createDataFlowSolver(executor, reverseProblem);
+				reverseManager.setMainSolver(reverseSolver);
+				memoryWatcher.addSolver((IMemoryBoundedSolver) reverseSolver);
+				reverseSolver.setMemoryManager(memoryManager);
+
+				SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
+				seqTpg.addHandler(new DebugFlowFunctionTaintPropagationHandler());
+				seqTpg.addHandler(new SecondaryFlowListener());
+				reverseProblem.setTaintPropagationHandler(seqTpg);
+
+				reverseProblem.setTaintWrapper(taintWrapper);
+				if (nativeCallHandler != null)
+					reverseProblem.setNativeCallHandler(nativeCallHandler);
+
+				// Initialize the alias analysis
+				IAliasingStrategy revereAliasingStrategy = createReverseAliasAnalysis(reverseManager, sourcesSinks, iCfg, executor,
+						memoryManager);
+				if (revereAliasingStrategy.getSolver() != null)
+					revereAliasingStrategy.getSolver().getTabulationProblem().getManager().setMainSolver(reverseSolver);
+
+				IInfoflowSolver reverseAliasSolver = revereAliasingStrategy.getSolver();
+
+				// Initialize the aliasing infrastructure
+				Aliasing reverseAliasing = createAliasController(revereAliasingStrategy);
+				if (dummyMainMethod != null)
+					reverseAliasing.excludeMethodFromMustAlias(dummyMainMethod);
+				reverseManager.setAliasing(reverseAliasing);
+				reverseManager.setAliasSolver(reverseAliasSolver);
+
+				manager.reverseManager = reverseManager;
+				reverseManager.reverseManager = manager;
+			}
+
 			// Start a thread for enforcing the timeout
 			FlowDroidTimeoutWatcher timeoutWatcher = null;
 			FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
@@ -1067,6 +1108,16 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @return The IDFS problem
 	 */
 	protected abstract AbstractInfoflowProblem createInfoflowProblem(Abstraction zeroValue);
+
+	/**
+	 * Creates the reverse problem for the IFDS taint propagation problem
+	 * 
+	 * @param zeroValue The taint abstraction for the tautology
+	 * @return The IDFS problem
+	 */
+	protected AbstractInfoflowProblem createReverseInfoflowProblem(InfoflowManager manager, Abstraction zeroValue) {
+		return null;
+	}
 
 	/**
 	 * Creates the instance of the data flow solver
@@ -1521,6 +1572,21 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager);
 
 	/**
+	 * Initializes the alias analysis for the reverse direction
+	 * 
+	 * @param sourcesSinks  The set of sources and sinks
+	 * @param iCfg          The interprocedural control flow graph
+	 * @param executor      The executor in which to run concurrent tasks
+	 * @param memoryManager The memory manager for rducing the memory load during
+	 *                      IFDS propagation
+	 * @return The alias analysis implementation to use for the data flow analysis
+	 */
+	protected IAliasingStrategy createReverseAliasAnalysis(InfoflowManager reverseManager, final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
+			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
+		return null;
+	}
+
+	/**
 	 * Creates the controller object that handles aliasing operations. Derived
 	 * classes can override this method to supply custom aliasing implementations.
 	 * 
@@ -1607,6 +1673,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected abstract InfoflowManager initializeInfoflowManager(final ISourceSinkManager sourcesSinks,
 			IInfoflowCFG iCfg, GlobalTaintManager globalTaintManager);
 
+	protected InfoflowManager initializeReverseInfoflowManager(IInfoflowCFG iCfg,
+															   GlobalTaintManager globalTaintManager) {
+		return null;
+	}
+
 	/**
 	 * Callback that is invoked when the main taint propagation is about to start
 	 * 
@@ -1625,7 +1696,26 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param backwardSolver The backward data flow solver
 	 */
 	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
-		//
+		logger.info("Filtering conditional results...");
+		HashSet<AbstractionAtSink> tbr = new HashSet<>();
+		for (AbstractionAtSink absAtSink : forwardSolver.getTabulationProblem().getResults().getResults()) {
+			// TODO: do not hardcode
+			if (absAtSink.getSinkStmt().toString().contains("write")) {
+				TaintPropagationResults res = manager.reverseManager.getMainSolver().getTabulationProblem().getResults();
+
+				if (res.getResults().stream().noneMatch(absAtSource -> absAtSource.getSinkStmt().toString().contains("openConnection")
+						&& getSource(absAtSource.getAbstraction()).getCurrentStmt().toString().contains("write")))
+					tbr.add(absAtSink);
+			}
+		}
+
+		forwardSolver.getTabulationProblem().getResults().getResults().removeAll(tbr);
+	}
+
+	private Abstraction getSource(Abstraction abs) {
+		while (abs.getPredecessor() != null)
+			abs = abs.getPredecessor();
+		return abs;
 	}
 
 	/**
@@ -1646,4 +1736,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 */
 	protected abstract IPropagationRuleManagerFactory initializeRuleManagerFactory();
 
+	/**
+	 * Initializes an appropriate instance of the rule manager factory
+	 * 
+	 * @return The rule manager factory
+	 */
+	protected IPropagationRuleManagerFactory initializeReverseRuleManagerFactory() {
+		return null;
+	};
 }

@@ -20,6 +20,8 @@ import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
+import soot.jimple.infoflow.river.IComplexFlowSourcePropagationRule;
+import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -33,7 +35,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Steven Arzt
  * @author Tim Lange
  */
-public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule {
+public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule implements IComplexFlowSourcePropagationRule {
 
 	private boolean killState = false;
 
@@ -188,4 +190,16 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		return null;
 	}
 
+	@Override
+	public void processComplexFlowSource(Abstraction d1, Abstraction source, Stmt stmt) {
+		// Static fields are not part of the complex flow model.
+		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
+			return;
+
+		// Only proceed if stmt could influence the taint
+		if (stmt.containsInvokeExpr() && !isTaintVisibleInCallee(stmt, source))
+			return;
+
+		getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
+	}
 }
