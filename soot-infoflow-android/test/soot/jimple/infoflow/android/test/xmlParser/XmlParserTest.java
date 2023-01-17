@@ -13,8 +13,10 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
+import soot.jimple.infoflow.river.AdditionalFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -177,5 +179,33 @@ public class XmlParserTest {
 			} else
 				Assert.fail("should never happen");
 		}
+	}
+
+	/**
+	 * Test that additional flows are parsed correctly.
+	 *
+	 * @throws IOException
+	 */
+	@Test
+	public void additionalFlowsXMLTest() throws IOException {
+		String xmlFile = "testXmlParser/additionalFlows.xml";
+		XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile(xmlFile);
+		Set<ISourceSinkDefinition> sinkSet = parser.getSinks();
+		Assert.assertEquals(2, sinkSet.size());
+
+		sinkSet.forEach(sink -> {
+			if (sink.toString().contains("java.io.PrintWriter: void write(java.lang.String)")) {
+				Assert.assertEquals(1, sink.getConditions().size());
+				Assert.assertTrue(sink.getConditions().toString().equals("[AdditionalFlowCondition: classNamesOnPath=[], signaturesOnPath=[<java.net.URL: java.net.URLConnection openConnection()>]]"));
+			} else if (sink.toString().contains("java.io.PrintWriter: void write(int)")) {
+				Assert.assertEquals(1, sink.getConditions().size());
+				Assert.assertTrue(
+						sink.getConditions().toString().equals("[AdditionalFlowCondition: classNamesOnPath=[], signaturesOnPath=[<javax.servlet.ServletResponse: java.io.PrintWriter getWriter()>, <javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()>]]")
+						|| sink.getConditions().toString().equals("[AdditionalFlowCondition: classNamesOnPath=[], signaturesOnPath=[<javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()>, <javax.servlet.ServletResponse: java.io.PrintWriter getWriter()>]]"));
+			} else if (sink.toString().contains("java.io.PrintWriter: void write(char[])")) {
+				Assert.assertEquals(2, sink.getConditions().size());
+			} else
+				Assert.fail();
+		});
 	}
 }

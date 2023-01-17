@@ -21,15 +21,8 @@ import org.xml.sax.SAXException;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
-import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
-import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.*;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
  * Parses informations from the new Dataformat (XML) with the help of SAX.
@@ -188,6 +181,15 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 		return null;
 	}
 
+	protected ISourceSinkDefinition createMethodSourceSinkDefinition(AbstractMethodAndClass method,
+																			  Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
+																			  CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions) {
+		ISourceSinkDefinition ssdef = createMethodSourceSinkDefinition(method, baseAPs, paramAPs, returnAPs, callType, category);
+		if (ssdef != null)
+			ssdef.setConditions(conditions);
+		return ssdef;
+	}
+
 	/**
 	 * Factory method for {@link FieldSourceSinkDefinition} instances
 	 * 
@@ -201,6 +203,15 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 			Set<AccessPathTuple> baseAPs, List<Set<AccessPathTuple>> paramAPs) {
 		return new FieldSourceSinkDefinition(signature, baseAPs);
 	}
+
+	@Override
+	protected IAccessPathBasedSourceSinkDefinition createFieldSourceSinkDefinition(String signature, Set<AccessPathTuple> baseAPs,
+																			 List<Set<AccessPathTuple>> paramAPs, Set<SourceSinkCondition> conditions) {
+		IAccessPathBasedSourceSinkDefinition ssdef = createFieldSourceSinkDefinition(signature, baseAPs, paramAPs);
+		ssdef.setConditions(conditions);
+		return ssdef;
+	}
+
 
 	/**
 	 * Run parse method on given parser
