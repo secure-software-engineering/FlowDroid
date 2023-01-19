@@ -228,6 +228,15 @@ public abstract class AbstractInfoflowProblem
 		this.taintPropagationHandler = handler;
 	}
 
+	/**
+	 * Gets the taint propagation handler
+	 *
+	 * @return taint propagation handler
+	 */
+	public TaintPropagationHandler getTaintPropagationHandler() {
+		return this.taintPropagationHandler;
+	}
+
 	@Override
 	public Abstraction createZeroValue() {
 		if (zeroValue == null)

@@ -73,7 +73,7 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @param postprocessors The post-processors to execute on the results
 	 */
-	public void setPostProcessors(Collection<? extends PostAnalysisHandler> postprocessors);
+	public void setPostProcessors(Collection<PostAnalysisHandler> postprocessors);
 
 	/**
 	 * Computes the information flow on a list of entry point methods. This list is

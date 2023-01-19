@@ -12,12 +12,7 @@ package soot.jimple.infoflow.results;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +43,7 @@ public class InfoflowResults {
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
 	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
+	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults = null;
 	protected volatile InfoflowPerformanceData performanceData = null;
 	protected volatile List<String> exceptions = null;
 	protected int terminationState = TERMINATION_SUCCESS;
@@ -180,6 +176,39 @@ public class InfoflowResults {
 				apPath, csPath, manager);
 	}
 
+	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ResultSinkInfo sinkObj, ResultSourceInfo sourceObj) {
+		if (additionalResults == null) {
+			synchronized (this) {
+				if (additionalResults == null)
+					additionalResults = new ConcurrentHashMultiMap<>();
+			}
+		}
+		boolean put = this.additionalResults.put(sinkObj, sourceObj);
+			if (!put)
+				logger.debug("Found two equal paths");
+		return new Pair<>(sourceObj, sinkObj);
+	}
+
+	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Abstraction> propagationPath, InfoflowManager manager) {
+		List<Stmt> stmtPath = null;
+		if (propagationPath != null) {
+			stmtPath = new ArrayList<>(propagationPath.size());
+			for (Abstraction pathAbs : propagationPath) {
+				if (pathAbs.getCurrentStmt() != null) {
+					stmtPath.add(pathAbs.getCurrentStmt());
+				}
+			}
+		}
+
+		ResultSourceInfo sourceObj = new ResultSourceInfo(sinkDefinition, sink, sinkStmt, userData,
+				stmtPath, null, null, pathAgnosticResults);
+		ResultSinkInfo sinkObj = new ResultSinkInfo(sourceDefinition, source, sourceStmt);
+
+		return addConditionalResult(sinkObj, sourceObj);
+	}
+
 	/**
 	 * Adds the given result to this data structure
 	 *
@@ -268,6 +297,12 @@ public class InfoflowResults {
 					addResult(sink, source);
 		}
 
+		if (!results.getAdditionalResults().isEmpty()) {
+			for (ResultSinkInfo sink : results.getAdditionalResults().keySet())
+				for (ResultSourceInfo source : results.getAdditionalResults().get(sink))
+					addConditionalResult(sink, source);
+		}
+
 		// Sum up the performance data
 		if (results.performanceData != null) {
 			if (this.performanceData == null)
@@ -300,6 +335,10 @@ public class InfoflowResults {
 	 */
 	public MultiMap<ResultSinkInfo, ResultSourceInfo> getResults() {
 		return this.results;
+	}
+
+	public MultiMap<ResultSinkInfo, ResultSourceInfo> getAdditionalResults() {
+		return this.additionalResults == null ? new ConcurrentHashMultiMap<>() : additionalResults;
 	}
 
 	/**
@@ -545,6 +584,36 @@ public class InfoflowResults {
 	public void remove(DataFlowResult result) {
 		results.remove(result.getSink(), result.getSource());
 	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sink
+	 * @param source
+	 */
+	public void remove(ResultSourceInfo source, ResultSinkInfo sink) {
+		results.remove(sink, source);
+	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sink
+	 */
+	public void remove(ResultSinkInfo sink) {
+		results.remove(sink);
+	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sinks
+	 */
+	public void removeAll(Collection<ResultSinkInfo> sinks) {
+		for (ResultSinkInfo sink : sinks)
+			remove(sink);
+	}
+
 
 	@Override
 	public String toString() {

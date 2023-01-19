@@ -34,7 +34,7 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
-	public InfoflowManager reverseManager;
+	public InfoflowManager additionalManager;
 
 	protected InfoflowManager(InfoflowConfiguration config) {
 		this.config = config;

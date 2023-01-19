@@ -19,12 +19,10 @@ public abstract class SourceSinkCondition {
     /**
      * Evaluates the condition on the given data flow result
      *
-     * @param result
-     *            The data flow result
-     * @param results
-     *            All results of this data flow analysis
+     * @param result  The data flow result
+     * @param results All results of this data flow analysis
      * @return True if the given data flow result matches the condition, otherwise
-     *         false
+     * false
      */
     public abstract boolean evaluate(DataFlowResult result, InfoflowResults results);
 

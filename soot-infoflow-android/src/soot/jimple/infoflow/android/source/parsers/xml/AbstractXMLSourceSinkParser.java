@@ -390,11 +390,14 @@ public abstract class AbstractXMLSourceSinkParser {
 			// Check whether we have data
 			if (!baseAPs.isEmpty() || !paramAPs.isEmpty() || !returnAPs.isEmpty()) {
 				AndroidMethod tempMeth = AndroidMethod.createFromSignature(methodSignature);
-
-				@SuppressWarnings("unchecked")
-				ISourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
-						paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions);
-				addSourceSinkDefinition(methodSignature, ssd);
+				if (tempMeth != null) {
+					@SuppressWarnings("unchecked")
+					ISourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
+							paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions);
+					addSourceSinkDefinition(methodSignature, ssd);
+				} else {
+					logger.error("Invalid method signature: " + methodSignature);
+				}
 			}
 
 			// Start a new method and discard our old data

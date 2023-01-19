@@ -27,7 +27,7 @@ import soot.jimple.infoflow.problems.AliasProblem;
 import soot.jimple.infoflow.problems.BackwardsAliasProblem;
 import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
-import soot.jimple.infoflow.river.BackwardNoSourceSinkRuleManagerFactory;
+import soot.jimple.infoflow.river.BackwardNoSinkRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.DefaultPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -224,8 +224,8 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected BackwardNoSourceSinkRuleManagerFactory initializeReverseRuleManagerFactory() {
-		return new BackwardNoSourceSinkRuleManagerFactory();
+	protected BackwardNoSinkRuleManagerFactory initializeReverseRuleManagerFactory() {
+		return new BackwardNoSinkRuleManagerFactory();
 	}
 
 	@Override

@@ -2,40 +2,42 @@ package soot.jimple.infoflow.river;
 
 import java.util.Set;
 
-import soot.Local;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 
 /**
- * TaintPropagationHandler to record which statements secondary flows reach
+ * TaintPropagationHandler to record which statements secondary flows reach.
+ * Attach to the backward analysis.
  */
 public class SecondaryFlowListener implements TaintPropagationHandler {
-	private IComplexFlowSourcePropagationRule sourceRule = null;
+	private IConditionalFlowSinkPropagationRule sourceRule = null;
 
 	/**
-	 * Ensures that the field sinkRule is always set
+	 * Ensures that the field sourceRule is always set.
 	 * 
 	 * @param manager
 	 */
-	private void ensureSinkPropagationRule(InfoflowManager manager) {
+	private void ensureSourcePropagationRule(InfoflowManager manager) {
 		if (sourceRule != null)
 			return;
 
+		if (!manager.getConfig().getAdditionalFlowsEnabled())
+			throw new IllegalStateException("Additional flows are not enabled!");
+
 		PropagationRuleManager ruleManager = manager.getMainSolver().getTabulationProblem().getPropagationRules();
 		for (ITaintPropagationRule rule : ruleManager.getRules()) {
-			if (rule instanceof IComplexFlowSourcePropagationRule) {
-				sourceRule = (IComplexFlowSourcePropagationRule) rule;
+			if (rule instanceof IConditionalFlowSinkPropagationRule) {
+				sourceRule = (IConditionalFlowSinkPropagationRule) rule;
 				return;
 			}
 		}
 
-		throw new IllegalStateException("Enabled complex flows but no IComplexFlowSourcePropagationRule in place!");
+		throw new IllegalStateException("Enabled additional flows but no IConditionalFlowSinkPropagationRule in place!");
 	}
 
 	@Override
@@ -43,15 +45,9 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 		if (type != FlowFunctionType.CallToReturnFlowFunction)
 			return;
 
-		Local taintedLocal = incoming.getAccessPath().getPlainValue();
-		// Check whether the taint flows into the sink
-		// TODO: duplicate check?
-//		if (stmt.getUseBoxes().stream().noneMatch(paramBox -> paramBox.getValue() == taintedLocal))
-//			return;
-
-		ensureSinkPropagationRule(manager);
+		ensureSourcePropagationRule(manager);
 		// Record the statement
-		sourceRule.processComplexFlowSource(null, incoming, (Stmt) stmt);
+		sourceRule.processSecondaryFlowSink(null, incoming, (Stmt) stmt);
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import soot.jimple.infoflow.problems.rules.backward.BackwardsArrayPropagationRul
 import soot.jimple.infoflow.problems.rules.backward.BackwardsClinitRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsExceptionPropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsImplicitFlowRule;
-import soot.jimple.infoflow.problems.rules.backward.BackwardsSinkPropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsSourcePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsStrongUpdatePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsWrapperRule;
@@ -21,11 +20,12 @@ import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
 
 /**
- * PropagationRuleManagerFactory used for the backward direction in River
+ * PropagationRuleManagerFactory used for the backward direction in River.
+ * Expects an empty source sink manager.
  * 
  * @author Tim Lange
  */
-public class BackwardNoSourceSinkRuleManagerFactory implements IPropagationRuleManagerFactory {
+public class BackwardNoSinkRuleManagerFactory implements IPropagationRuleManagerFactory {
 
 	@Override
 	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
@@ -33,7 +33,6 @@ public class BackwardNoSourceSinkRuleManagerFactory implements IPropagationRuleM
 		List<ITaintPropagationRule> ruleList = new ArrayList<>();
 
 		// backwards only
-//		ruleList.add(new BackwardsSinkPropagationRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsSourcePropagationRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsClinitRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsStrongUpdatePropagationRule(manager, zeroValue, results));

@@ -1305,6 +1305,7 @@ public class InfoflowConfiguration {
 	private double memoryThreshold = 0.9d;
 	private boolean oneSourceAtATime = false;
 	private int maxAliasingBases = Integer.MAX_VALUE;
+	private boolean additionalFlowsEnabled = false;
 
 	private static String baseDirectory = "";
 
@@ -1345,7 +1346,8 @@ public class InfoflowConfiguration {
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
 
-		this.taintAnalysisEnabled = config.writeOutputFiles;
+		this.taintAnalysisEnabled = config.taintAnalysisEnabled;
+		this.additionalFlowsEnabled = config.additionalFlowsEnabled;
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
 		this.memoryThreshold = config.memoryThreshold;
@@ -1921,6 +1923,26 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets whether additional flows are enabled. If it is disabled,
+	 * conditional sinks won't be filtered.
+	 *
+	 * @return True if additional flows are enabled
+	 */
+	public boolean getAdditionalFlowsEnabled() {
+		return additionalFlowsEnabled;
+	}
+
+	/**
+	 * Sets whether additional flows are enabled. If it is disabled,
+	 * conditional sinks won't be filtered.
+	 *
+	 * @param additionalFlowsEnabled True if additional flows shall be enabled
+	 */
+	public void setAdditionalFlowsEnabled(boolean additionalFlowsEnabled) {
+		this.additionalFlowsEnabled = additionalFlowsEnabled;
+	}
+
+	/**
 	 * Gets whether the data flow results shall be reported incrementally instead of
 	 * being only available after the full data flow analysis has been completed.
 	 * 
@@ -2101,6 +2123,8 @@ public class InfoflowConfiguration {
 		if (oneSourceAtATime)
 			logger.info("Running with one source at a time");
 		logger.info("Using alias algorithm " + aliasingAlgorithm);
+		if (additionalFlowsEnabled)
+			logger.info("Additional flows enabled.");
 	}
 
 	@Override
@@ -2140,6 +2164,7 @@ public class InfoflowConfiguration {
 		result = prime * result + ((sootIntegrationMode == null) ? 0 : sootIntegrationMode.hashCode());
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
+		result = prime * result + (additionalFlowsEnabled ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
 		return result;
 	}
@@ -2227,6 +2252,7 @@ public class InfoflowConfiguration {
 			return false;
 		if (taintAnalysisEnabled != other.taintAnalysisEnabled)
 			return false;
+		if (additionalFlowsEnabled != other.additionalFlowsEnabled)
 		if (writeOutputFiles != other.writeOutputFiles)
 			return false;
 		return true;

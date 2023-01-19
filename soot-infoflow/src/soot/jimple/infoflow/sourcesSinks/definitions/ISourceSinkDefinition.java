@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Set;
+
 /**
  * Abstract interface for soure/sink definitions
  * 
@@ -52,5 +54,22 @@ public interface ISourceSinkDefinition {
 	 * @return The boolean if this definition is empty
 	 */
 	public abstract boolean isEmpty();
+
+	/**
+	 * Gets the conditions under which the source/sink definition is valid
+	 *
+	 * @return A set with the conditions under which the source/sink definition is
+	 *         valid, optionally <code>null</code> if no such conditions exist
+	 */
+	public Set<SourceSinkCondition> getConditions();
+
+	/**
+	 * Sets the conditions under which the source/sink definition is valid
+	 *
+	 * @param conditions
+	 *            A set with the conditions under which the source/sink definition
+	 *            is valid, optionally <code>null</code> if no such conditions exist
+	 */
+	public void setConditions(Set<SourceSinkCondition> conditions);
 
 }

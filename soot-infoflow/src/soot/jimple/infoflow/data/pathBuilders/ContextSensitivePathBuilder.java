@@ -19,6 +19,7 @@ import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
+import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 
 /**
@@ -215,10 +216,17 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		Pair<ResultSourceInfo, ResultSinkInfo> newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
-				scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-				sourceContext.getUserData(), scap.getAbstractionPath(), manager);
-
+		Pair<ResultSourceInfo, ResultSinkInfo> newResult;
+		if (scap.getDefinition() instanceof SecondarySinkDefinition) {
+			// TODO: assert river enabled
+			newResult = results.addConditionalResult(scap.getDefinition(), scap.getAccessPath(),
+					scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
+					sourceContext.getUserData(), scap.getAbstractionPath(), manager);
+		} else {
+			newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
+					scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
+					sourceContext.getUserData(), scap.getAbstractionPath(), manager);
+		}
 		// Notify our handlers
 		if (resultAvailableHandlers != null)
 			for (OnPathBuilderResultAvailable handler : resultAvailableHandlers)
