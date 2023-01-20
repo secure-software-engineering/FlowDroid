@@ -16,6 +16,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SimpleSourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
+import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 import soot.toolkits.scalar.Pair;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class RiverTests {
 
     protected static List<String> primarySinks;
     protected static final String osWrite = "<java.io.OutputStream: void write(byte[])>";
-
+    protected static final String writerWrite = "<java.io.Writer: void write(java.lang.String)>";
     private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
         if (f.exists()) {
             if (sb.length() > 0)
@@ -69,6 +70,7 @@ public class RiverTests {
 
         primarySinks = new ArrayList<String>();
         primarySinks.add(osWrite);
+        primarySinks.add(writerWrite);
     }
 
     protected IInfoflow initInfoflow() {
@@ -77,6 +79,11 @@ public class RiverTests {
         EasyTaintWrapper easyWrapper;
         try {
             easyWrapper = EasyTaintWrapper.getDefault();
+            // Add methods used in the test cases
+            easyWrapper.addMethodForWrapping("java.io.BufferedOutputStream", "void <init>(java.io.OutputStream)");
+            easyWrapper.addMethodForWrapping("java.io.BufferedWriter", "void <init>(java.io.Writer)");
+            easyWrapper.addMethodForWrapping("java.io.OutputStreamWriter", "void <init>(java.io.OutputStream)");
+            easyWrapper.addMethodForWrapping("java.io.Writer", "void write(java.lang.String)");
             result.setTaintWrapper(easyWrapper);
         } catch (IOException e) {
             System.err.println("Could not initialized Taintwrapper:");
@@ -170,4 +177,40 @@ public class RiverTests {
         this.negativeCheckInfoflow(infoflow);
     }
 
+    // Test condition met
+    @Test(timeout = 300000)
+    public void riverTest5() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest5()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    // Test condition not met
+    @Test(timeout = 300000)
+    public void riverTest6() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest6()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.negativeCheckInfoflow(infoflow);
+    }
+
+    // Example from the paper
+    @Test(timeout = 300000)
+    public void riverTest7() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest7()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.checkInfoflow(infoflow, 2);
+    }
 }

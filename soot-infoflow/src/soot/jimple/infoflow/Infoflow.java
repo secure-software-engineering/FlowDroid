@@ -148,58 +148,8 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected IAliasingStrategy createReverseAliasAnalysis(InfoflowManager reverseManager, final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
-			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
-		IAliasingStrategy aliasingStrategy;
-		IInfoflowSolver aliasSolver = null;
-		BackwardsAliasProblem aliasProblem = null;
-		InfoflowManager aliasManager = null;
-		switch (getConfig().getAliasingAlgorithm()) {
-		case FlowSensitive:
-			// The original icfg is already backwards for the backwards data flow analysis
-			aliasManager = new InfoflowManager(config, null, iCfg, sourcesSinks, taintWrapper, hierarchy, reverseManager);
-			aliasProblem = new BackwardsAliasProblem(aliasManager);
-
-			// We need to create the right data flow solver
-			SolverConfiguration solverConfig = config.getSolverConfiguration();
-			aliasSolver = createDataFlowSolver(executor, aliasProblem, solverConfig);
-
-			aliasSolver.setMemoryManager(memoryManager);
-			aliasSolver.setPredecessorShorteningMode(
-					pathConfigToShorteningMode(reverseManager.getConfig().getPathConfiguration()));
-			// aliasSolver.setEnableMergePointChecking(true);
-			aliasSolver.setMaxJoinPointAbstractions(solverConfig.getMaxJoinPointAbstractions());
-			aliasSolver.setMaxCalleesPerCallSite(solverConfig.getMaxCalleesPerCallSite());
-			aliasSolver.setMaxAbstractionPathLength(solverConfig.getMaxAbstractionPathLength());
-			aliasSolver.setSolverId(false);
-			aliasProblem.setTaintPropagationHandler(reverseAliasPropagationHandler);
-			aliasProblem.setTaintWrapper(taintWrapper);
-			if (nativeCallHandler != null)
-				aliasProblem.setNativeCallHandler(nativeCallHandler);
-
-			memoryWatcher.addSolver((IMemoryBoundedSolver) aliasSolver);
-
-			aliasingStrategy = new BackwardsFlowSensitiveAliasStrategy(reverseManager, aliasSolver);
-			break;
-		case None:
-			aliasProblem = null;
-			aliasSolver = null;
-			aliasingStrategy = new NullAliasStrategy();
-			break;
-		default:
-			throw new RuntimeException("Unsupported aliasing algorithm: " + getConfig().getAliasingAlgorithm());
-		}
-		return aliasingStrategy;
-	}
-
-	@Override
 	protected InfoflowProblem createInfoflowProblem(Abstraction zeroValue) {
 		return new InfoflowProblem(manager, zeroValue, ruleManagerFactory);
-	}
-
-	@Override
-	protected BackwardsInfoflowProblem createReverseInfoflowProblem(InfoflowManager manager, Abstraction zeroValue) {
-		return new BackwardsInfoflowProblem(manager, zeroValue, reverseRuleManagerFactory);
 	}
 
 	@Override

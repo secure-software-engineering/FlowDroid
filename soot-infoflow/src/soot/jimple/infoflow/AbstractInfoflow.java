@@ -743,11 +743,16 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				logger.error("Invalid configuration: River is only supported with forward taint analysis");
 			} else if (config.getAdditionalFlowsEnabled()) {
 				// Add the SecondaryFlowGenerator to the main forward taint analysis
-				if (forwardProblem.getTaintPropagationHandler() != null) {
-					SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
-					seqTpg.addHandler(forwardProblem.getTaintPropagationHandler());
-					seqTpg.addHandler(new SecondaryFlowGenerator());
-					forwardProblem.setTaintPropagationHandler(seqTpg);
+				TaintPropagationHandler forwardHandler = forwardProblem.getTaintPropagationHandler();
+				if (forwardHandler != null) {
+					if (forwardHandler instanceof SequentialTaintPropagationHandler) {
+						((SequentialTaintPropagationHandler) forwardHandler).addHandler(new SecondaryFlowGenerator());
+					} else {
+						SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
+						seqTpg.addHandler(forwardHandler);
+						seqTpg.addHandler(new SecondaryFlowGenerator());
+						forwardProblem.setTaintPropagationHandler(seqTpg);
+					}
 				} else {
 					forwardProblem.setTaintPropagationHandler(new SecondaryFlowGenerator());
 				}
@@ -785,7 +790,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				additionalManager.setAliasSolver(reverseAliasSolver);
 
 				manager.additionalManager = additionalManager;
-				additionalManager.additionalManager = manager;
 
 				// Add the post processor
 				ConditionalFlowPostProcessor cfpp = new ConditionalFlowPostProcessor(manager);
@@ -1609,20 +1613,16 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager);
 
 	/**
-	 * Initializes the alias analysis for the reverse direction
-	 * 
-	 * @param sourcesSinks  The set of sources and sinks
-	 * @param iCfg          The interprocedural control flow graph
-	 * @param executor      The executor in which to run concurrent tasks
-	 * @param memoryManager The memory manager for rducing the memory load during
+	 * Initializes the alias analysis for the backward direction
+	 *
+	 * @param manager The infoflow manager
+	 * @param sourcesSinks The set of sources and sinks
+	 * @param iCfg The interprocedural control flow graph
+	 * @param executor The executor in which to run concurrent tasks
+	 * @param memoryManager The memory manager for reducing the memory load during
 	 *                      IFDS propagation
-	 * @return The alias analysis implementation to use for the data flow analysis
+	 * @return The backward alias analysis implementation
 	 */
-	protected IAliasingStrategy createReverseAliasAnalysis(InfoflowManager reverseManager, final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
-			InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
-		return null;
-	}
-
 	protected IAliasingStrategy createBackwardAliasAnalysis(InfoflowManager manager, final ISourceSinkManager sourcesSinks, IInfoflowCFG iCfg,
 													InterruptableExecutor executor, IMemoryManager<Abstraction, Unit> memoryManager) {
 		IAliasingStrategy aliasingStrategy;
@@ -1777,21 +1777,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param backwardSolver The backward data flow solver
 	 */
 	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
-//		logger.info("Filtering conditional flows...");
-//		HashSet<AbstractionAtSink> tbr = new HashSet<>();
-//		for (AbstractionAtSink absAtSink : forwardSolver.getTabulationProblem().getResults().getResults()) {
-//			// TODO: do not hardcode
-//			if (absAtSink.getSinkStmt().toString().contains("write")) {
-//				TaintPropagationResults res = manager.reverseManager.getMainSolver().getTabulationProblem().getResults();
-//
-//				if (res.getResults().stream().noneMatch(absAtSource -> absAtSource.getSinkStmt().toString().contains("openConnection")
-//						&& getSource(absAtSource.getAbstraction()).getCurrentStmt().toString().contains("write")))
-//					tbr.add(absAtSink);
-//			}
-//		}
-//
-//		logger.info(String.format("Removed %d conditional flows", tbr.size()));
-//		forwardSolver.getTabulationProblem().getResults().getResults().removeAll(tbr);
+		//
 	}
 
 	/**

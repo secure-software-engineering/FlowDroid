@@ -5,17 +5,15 @@
                 <accessPath isSource="true" isSink="false" />
             </return>
         </method>
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: java.lang.String userInput()">
-            <return type="java.lang.String">
-                <accessPath isSource="true" isSink="false" />
-            </return>
-        </method>
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: byte[] encrypt(java.lang.String, java.lang.String)">
-            <return type="byte[]">
-                <accessPath isSource="false" isSink="true" />
-            </return>
-        </method>
         <method signature="java.io.OutputStream: void write(byte[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="java.net.URL: java.net.URLConnection openConnection()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.BufferedWriter: void write(java.lang.String)">
             <param index="0" description="Output Data">
                 <accessPath isSource="false" isSink="true" />
             </param>

@@ -1,11 +1,10 @@
 package soot.jimple.infoflow.android.test.river;
 
+import fj.data.IO;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -74,36 +73,54 @@ public class RiverTestCode {
         }
     }
 
-    public static String userInput() {
-        return "untrusted";
+    public void riverTest5() {
+        try {
+            String src = source();
+
+            URL url = new URL("http://some.url");
+            URLConnection con = url.openConnection();
+
+            OutputStream os = con.getOutputStream();
+
+            new BufferedWriter(new OutputStreamWriter(os)).write(src);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static byte[] encrypt(String key, String message) {
-        return new byte[42];
+    public void riverTest6() {
+        try {
+            String src = source();
+
+            OutputStream os = new ByteArrayOutputStream();
+
+            new BufferedWriter(new OutputStreamWriter(os)).write(src);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-//    public void riverTest3() {
-//        String key = userInput();
-//        byte[] encrypted = encrypt(key, "my super secret message");
-//        try {
-//            URL url = new URL("http://some.url");
-//            URLConnection con = url.openConnection();
-//
-//            OutputStream os = con.getOutputStream();
-//            os.write(encrypted);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    public void riverTest4() {
-//        String key = userInput();
-//        byte[] encrypted = encrypt(key, "my super secret message");
-//        try {
-//            OutputStream os = new ByteArrayOutputStream();
-//            os.write(encrypted);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    public void riverTest7() {
+        try {
+            String src1 = source();
+            String src2 = source();
+
+            URL url = new URL("http://some.url");
+            URLConnection con = url.openConnection();
+
+            OutputStream os1 = con.getOutputStream();
+            OutputStream os2 = new ByteArrayOutputStream();
+
+            OutputStream os1b = new BufferedOutputStream(os1);
+            OutputStream os2b = new BufferedOutputStream(os2);
+
+            os1b.write(src1.getBytes());
+            os2.write(src2.getBytes());
+
+            new BufferedWriter(new OutputStreamWriter(os1b)).write(src1);
+            new BufferedWriter(new OutputStreamWriter(os2b)).write(src2);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
