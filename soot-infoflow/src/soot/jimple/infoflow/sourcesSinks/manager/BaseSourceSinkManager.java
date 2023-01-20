@@ -41,12 +41,8 @@ import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
-import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.*;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
@@ -97,6 +93,8 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected Map<Stmt, ISourceSinkDefinition> sinkStatements;
 
 	protected Set<SootMethod> conditionalSinks = new HashSet<>();
+	protected Set<SootMethod> secondarySourceMethods = new HashSet<>();
+	protected Set<SootClass> secondarySourceClasses = new HashSet<>();
 
 	protected final SourceSinkConfiguration sourceSinkConfig;
 
@@ -739,6 +737,17 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		return null;
 	}
 
+	private void initializeConditions(SootMethod m, ISourceSinkDefinition def) {
+		if (m == null || def.getConditions() == null || def.getConditions().isEmpty())
+			return;
+
+		conditionalSinks.add(m);
+		for (SourceSinkCondition cond : def.getConditions()) {
+			secondarySourceMethods.addAll(cond.getReferencedMethods());
+			secondarySourceClasses.addAll(cond.getReferencedClasses());
+		}
+	}
+
 	@Override
 	public void initialize() {
 		// Get the Soot method or field for the source signatures we have
@@ -797,8 +806,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 						SootMethod m = Scene.v().grabMethod(method.getSignature());
 						if (m != null) {
 							sinkReturnMethods.put(m, methodSourceSinkDef);
-							if (sourceSinkDef.getConditions() != null && sourceSinkDef.getConditions().size() > 0)
-								conditionalSinks.add(m);
+							initializeConditions(m, methodSourceSinkDef);
 						}
 					} else {
 						SootMethodAndClass method = methodSourceSinkDef.getMethod();
@@ -812,15 +820,13 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 							SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
 							if (sootMethod != null) {
 								sinkMethods.put(sootMethod, sourceSinkDef);
-								if (sourceSinkDef.getConditions() != null && sourceSinkDef.getConditions().size() > 0)
-									conditionalSinks.add(sootMethod);
+								initializeConditions(sootMethod, methodSourceSinkDef);
 							}
 						} else {
 							SootMethod sm = grabMethod(entry.getO1());
 							if (sm != null) {
 								sinkMethods.put(sm, entry.getO2());
-								if (sourceSinkDef.getConditions() != null && sourceSinkDef.getConditions().size() > 0)
-									conditionalSinks.add(sm);
+								initializeConditions(sm, methodSourceSinkDef);
 							}
 						}
 					}
@@ -970,6 +976,28 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	 */
 	public void excludeMethod(SootMethod toExclude) {
 		this.excludedMethods.add(toExclude);
+	}
+
+	public boolean isSecondarySink(Stmt stmt) {
+		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
+			return false;
+
+		SootMethod callee = stmt.getInvokeExpr().getMethod();
+		SootClass dc = callee.getDeclaringClass();
+		if (secondarySourceMethods.contains(callee) || secondarySourceClasses.contains(dc))
+			return true;
+
+		// Check if the current method inherits from a conditional sink
+		for (SootClass superClass : parentClassesAndInterfaces.getUnchecked(dc)) {
+			if (secondarySourceClasses.contains(superClass))
+				return true;
+
+			SootMethod superMethod = superClass.getMethodUnsafe(callee.getSubSignature());
+			if (secondarySourceMethods.contains(superMethod))
+				return true;
+		}
+
+		return false;
 	}
 
 	public boolean isConditionalSink(Stmt stmt) {

@@ -22,6 +22,7 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.river.IConditionalFlowSinkPropagationRule;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -197,9 +198,14 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 			return;
 
 		// Only proceed if stmt could influence the taint
-		if (stmt.containsInvokeExpr() && !isTaintVisibleInCallee(stmt, source))
+		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
 			return;
 
-		getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
+		if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
+			return;
+		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
+
+		if (ssm.isSecondarySink(stmt))
+			getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
 	}
 }

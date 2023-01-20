@@ -72,12 +72,14 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
      * initialized
      */
     private void ensureSootMethodsOnPath() {
-        if (methodsOnPath == null && signaturesOnPath != null && !signaturesOnPath.isEmpty()) {
+        if (methodsOnPath == null) {
             methodsOnPath = new HashSet<>();
-            for (String sig : signaturesOnPath) {
-                SootMethod sm = Scene.v().grabMethod(sig);
-                if (sm != null)
-                    methodsOnPath.add(sm);
+            if (signaturesOnPath != null && !signaturesOnPath.isEmpty()) {
+                for (String sig : signaturesOnPath) {
+                    SootMethod sm = Scene.v().grabMethod(sig);
+                    if (sm != null)
+                        methodsOnPath.add(sm);
+                }
             }
         }
     }
@@ -87,12 +89,14 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
      * initialized
      */
     private void ensureSootClassesOnPath() {
-        if (classesOnPath == null && classNamesOnPath != null && !classNamesOnPath.isEmpty()) {
+        if (classesOnPath == null) {
             classesOnPath = new HashSet<>();
-            for (String className : classNamesOnPath) {
-                SootClass sc = Scene.v().getSootClassUnsafe(className);
-                if (sc != null)
-                    classesOnPath.add(sc);
+            if (classNamesOnPath != null && !classNamesOnPath.isEmpty()) {
+                for (String className : classNamesOnPath) {
+                    SootClass sc = Scene.v().getSootClassUnsafe(className);
+                    if (sc != null)
+                        classesOnPath.add(sc);
+                }
             }
         }
     }

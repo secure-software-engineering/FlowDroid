@@ -80,6 +80,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.river.ConditionalFlowPostProcessor;
+import soot.jimple.infoflow.river.ConditionalFlowSourceSinkManagerWrapper;
 import soot.jimple.infoflow.river.SecondaryFlowGenerator;
 import soot.jimple.infoflow.river.SecondaryFlowListener;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -93,7 +94,7 @@ import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
-import soot.jimple.infoflow.sourcesSinks.manager.EmptySourceSinkManager;
+import soot.jimple.infoflow.sourcesSinks.manager.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -757,10 +758,15 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					forwardProblem.setTaintPropagationHandler(new SecondaryFlowGenerator());
 				}
 
+				if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
+					throw new IllegalStateException("Additional Flows enabled but no ConditionalFlowManager in place!");
+
 				// Additional flows get their taints injected dependent on the flow of the taint anlaysis.
 				// Thus, we don't have any taints before.
 				InfoflowManager additionalManager = new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg),
-						new EmptySourceSinkManager(), taintWrapper, hierarchy, globalTaintManager);
+						new ConditionalFlowSourceSinkManagerWrapper((IConditionalFlowManager) manager.getSourceSinkManager()),
+						taintWrapper, hierarchy, globalTaintManager);
+
 
 				AbstractInfoflowProblem additionalProblem = new BackwardsInfoflowProblem(additionalManager, zeroValue, reverseRuleManagerFactory);
 
