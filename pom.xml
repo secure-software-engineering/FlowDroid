@@ -93,7 +93,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
 	<!-- Do not deploy parent module -->
+	<!--
 	<build>
 		<plugins>
 			<plugin>
@@ -106,4 +108,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	-->
 </project>
