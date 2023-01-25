@@ -12,8 +12,8 @@ package soot.jimple.infoflow.test.securibench.supportClasses;
 
 import java.io.IOException;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
 
 public class DummyServletInputStream extends ServletInputStream {
 

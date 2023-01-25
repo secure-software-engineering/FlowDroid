@@ -19,37 +19,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.descriptor.JspConfigDescriptor;
 
 public class DummyServletContext implements ServletContext {
 
 	@Override
 	public Object getAttribute(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Enumeration getAttributeNames() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public ServletContext getContext(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
@@ -200,167 +197,111 @@ public class DummyServletContext implements ServletContext {
 
 	@Override
 	public int getMajorVersion() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public String getMimeType(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int getMinorVersion() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public RequestDispatcher getNamedDispatcher(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getRealPath(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public RequestDispatcher getRequestDispatcher(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public URL getResource(String arg0) throws MalformedURLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public InputStream getResourceAsStream(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return new DummyServletInputStream();
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Set getResourcePaths(String arg0) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getServerInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Servlet getServlet(String arg0) throws ServletException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getServletContextName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Enumeration getServletNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Enumeration getServlets() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void log(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void log(Exception arg0, String arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void log(String arg0, Throwable arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void removeAttribute(String arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void setAttribute(String arg0, Object arg1) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String getVirtualServerName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "default-server";
 	}
 
 	@Override
 	public Dynamic addJspFile(String servletName, String jspFile) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public int getSessionTimeout() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setSessionTimeout(int sessionTimeout) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String getRequestCharacterEncoding() {
-		// TODO Auto-generated method stub
-		return null;
+		return "UTF-8";
 	}
 
 	@Override
 	public void setRequestCharacterEncoding(String encoding) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public String getResponseCharacterEncoding() {
-		// TODO Auto-generated method stub
-		return null;
+		return "UTF-8";
 	}
 
 	@Override
 	public void setResponseCharacterEncoding(String encoding) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

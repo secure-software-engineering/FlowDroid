@@ -13,12 +13,12 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import com.sun.istack.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.sun.istack.NotNull;
 
 import heros.solver.IDESolver;
 import heros.solver.Pair;
@@ -532,6 +532,9 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		assert cfg != null;
 		assert cfg instanceof BiDiInterproceduralCFG;
 
+		if (sCallSite.toString().contains("toString()"))
+			System.out.println("x");
+
 		// Do we have a statement-specific definition?
 		{
 			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
@@ -769,12 +772,22 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
 
-						if (sootMethod != null)
+						if (sootMethod != null) {
+							if (sootMethod.toString().equals("<java.lang.Object: java.lang.String toString()>"))
+								System.out.println("x");
+
 							sourceMethods.put(sootMethod, sourceSinkDef);
+						}
 					} else {
 						SootMethod sm = grabMethod(entry.getO1());
-						if (sm != null)
+						if (sm != null) {
+							if (sm.toString().equals("<java.lang.Object: java.lang.String toString()>")) {
+								System.out.println("x");
+								grabMethod(entry.getO1());
+							}
+
 							sourceMethods.put(sm, sourceSinkDef);
+						}
 					}
 
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
@@ -839,9 +852,9 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	/**
 	 * Get the method of a class without matching the return type.
 	 *
-	 * @param sootClass The class of the method
-	 * @param subSignature  The sub signature of the method which is the method name
-	 *                      and its parameters
+	 * @param sootClass    The class of the method
+	 * @param subSignature The sub signature of the method which is the method name
+	 *                     and its parameters
 	 * @return The soot method of the given class and sub signature or null
 	 */
 	private SootMethod matchMethodWithoutReturn(@NotNull SootClass sootClass, String subSignature) {
@@ -892,7 +905,8 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	 * Gets a soot method defined by the class name or one of its superclasses.
 	 *
 	 * @param signature method signature
-	 * @return The soot method of the given class or above in the hierarchy. Null if the method doesn't exist.
+	 * @return The soot method of the given class or above in the hierarchy. Null if
+	 *         the method doesn't exist.
 	 */
 	private SootMethod grabMethod(String signature) {
 		String sootClassName = Scene.signatureToClass(signature);

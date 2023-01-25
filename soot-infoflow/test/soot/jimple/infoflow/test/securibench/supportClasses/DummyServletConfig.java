@@ -13,10 +13,10 @@ package soot.jimple.infoflow.test.securibench.supportClasses;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 
-public class DummyServletConfig implements ServletConfig{
+public class DummyServletConfig implements ServletConfig {
 
 	@Override
 	public String getInitParameter(String arg0) {
