@@ -439,9 +439,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * Constructs the callgraph
 	 */
 	protected void constructCallgraph() {
-		if (!Scene.v().hasFastHierarchy())
-			Scene.v().setFastHierarchy(new FastHierarchy());
-
 		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			// Allow the ICC manager to change the Soot Scene before we continue
 			if (ipcManager != null)
