@@ -532,9 +532,6 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		assert cfg != null;
 		assert cfg instanceof BiDiInterproceduralCFG;
 
-		if (sCallSite.toString().contains("toString()"))
-			System.out.println("x");
-
 		// Do we have a statement-specific definition?
 		{
 			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
@@ -772,22 +769,12 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 						SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
 
-						if (sootMethod != null) {
-							if (sootMethod.toString().equals("<java.lang.Object: java.lang.String toString()>"))
-								System.out.println("x");
-
+						if (sootMethod != null)
 							sourceMethods.put(sootMethod, sourceSinkDef);
-						}
 					} else {
 						SootMethod sm = grabMethod(entry.getO1());
-						if (sm != null) {
-							if (sm.toString().equals("<java.lang.Object: java.lang.String toString()>")) {
-								System.out.println("x");
-								grabMethod(entry.getO1());
-							}
-
+						if (sm != null)
 							sourceMethods.put(sm, sourceSinkDef);
-						}
 					}
 
 				} else if (sourceSinkDef instanceof FieldSourceSinkDefinition) {
