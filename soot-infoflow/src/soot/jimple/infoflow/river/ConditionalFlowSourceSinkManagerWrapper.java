@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.river;
 
+import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
@@ -22,6 +23,16 @@ public class ConditionalFlowSourceSinkManagerWrapper implements IReversibleSourc
     @Override
     public boolean isSecondarySink(Stmt stmt) {
         return inner.isSecondarySink(stmt);
+    }
+
+    @Override
+    public void registerSecondarySource(Stmt stmt) {
+        // NO-OP
+    }
+
+    @Override
+    public void registerSecondarySource(SootMethod sm) {
+        // NO-OP
     }
 
     @Override

@@ -1,14 +1,8 @@
 package soot.jimple.infoflow.android.test.river;
 
-import fj.data.IO;
-
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.NoSuchAlgorithmException;
 
 public class RiverTestCode {
     public static String source() {
@@ -119,6 +113,21 @@ public class RiverTestCode {
 
             new BufferedWriter(new OutputStreamWriter(os1b)).write(src1);
             new BufferedWriter(new OutputStreamWriter(os2b)).write(src2);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void sendToUrl(URL url, String data) {
+        System.out.println("leak");
+    }
+
+    public void riverTest8() {
+        try {
+            URL url = new URL("http://some.url");
+
+            String source = source();
+            sendToUrl(url, source);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

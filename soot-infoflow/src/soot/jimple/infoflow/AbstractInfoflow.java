@@ -79,10 +79,7 @@ import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
-import soot.jimple.infoflow.river.ConditionalFlowPostProcessor;
-import soot.jimple.infoflow.river.ConditionalFlowSourceSinkManagerWrapper;
-import soot.jimple.infoflow.river.SecondaryFlowGenerator;
-import soot.jimple.infoflow.river.SecondaryFlowListener;
+import soot.jimple.infoflow.river.*;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.SolverPeerGroup;
@@ -94,7 +91,6 @@ import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
-import soot.jimple.infoflow.sourcesSinks.manager.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -153,6 +149,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected TaintPropagationHandler aliasPropagationHandler = null;
 	protected TaintPropagationHandler reverseTaintPropagationHandler = null;
 	protected TaintPropagationHandler reverseAliasPropagationHandler = null;
+
+	protected IUsageContextProvider usageContextProvider = null;
 
 	protected FlowDroidMemoryWatcher memoryWatcher = null;
 
@@ -800,6 +798,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					this.postProcessors.add(cfpp);
 				else
 					this.postProcessors = Collections.singleton(cfpp);
+
+				// If the user did not provide an UsageContextProvider, provide the default implementation
+				if (usageContextProvider == null)
+					manager.setUsageContextProvider(new EmptyUsageContextProvider());
+				else
+					manager.setUsageContextProvider(usageContextProvider);
 			}
 
 			// Start a thread for enforcing the timeout
@@ -1809,4 +1813,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected IPropagationRuleManagerFactory initializeReverseRuleManagerFactory() {
 		return null;
 	};
+
+	@Override
+	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
+		this.usageContextProvider = usageContextProvider;
+	}
 }

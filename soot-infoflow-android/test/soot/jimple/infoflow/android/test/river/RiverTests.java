@@ -1,9 +1,10 @@
 package soot.jimple.infoflow.android.test.river;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import soot.FastHierarchy;
+import soot.Local;
 import soot.Scene;
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
@@ -12,7 +13,10 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
+import soot.jimple.infoflow.river.AdditionalFlowInfoSpecification;
+import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SimpleSourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -21,8 +25,7 @@ import soot.toolkits.scalar.Pair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -36,6 +39,7 @@ public class RiverTests {
     protected static List<String> primarySinks;
     protected static final String osWrite = "<java.io.OutputStream: void write(byte[])>";
     protected static final String writerWrite = "<java.io.Writer: void write(java.lang.String)>";
+    protected static final String sendToUrl = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL,java.lang.String)>";
     private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
         if (f.exists()) {
             if (sb.length() > 0)
@@ -71,6 +75,7 @@ public class RiverTests {
         primarySinks = new ArrayList<String>();
         primarySinks.add(osWrite);
         primarySinks.add(writerWrite);
+        primarySinks.add(sendToUrl);
     }
 
     protected IInfoflow initInfoflow() {
@@ -212,5 +217,47 @@ public class RiverTests {
         ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
         this.checkInfoflow(infoflow, 2);
+    }
+
+    // Test Usage Contexts
+    @Test(timeout = 300000)
+    public void riverTest8() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest8()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        IConditionalFlowManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+
+        infoflow.setPreProcessors(Collections.singleton(new PreAnalysisHandler() {
+            @Override
+            public void onBeforeCallgraphConstruction() {
+
+            }
+
+            @Override
+            public void onAfterCallgraphConstruction() {
+                ssm.registerSecondarySource(Scene.v().grabMethod("<java.net.URL: void <init>(java.lang.String)>"));
+            }
+        }));
+
+        infoflow.setUsageContextProvider(stmt -> {
+            if (stmt.containsInvokeExpr()) {
+                String sig = stmt.getInvokeExpr().getMethod().getSignature();
+                if (sig.equals(sendToUrl)) {
+                    Local local = (Local) stmt.getInvokeExpr().getArg(0);
+                    return Collections.singleton(new AdditionalFlowInfoSpecification(local, stmt));
+                }
+            }
+            return Collections.emptySet();
+        });
+
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), (ISourceSinkManager) ssm);
+        this.checkInfoflow(infoflow, 1);
+
+        // Check that the usage context was found
+        Assert.assertTrue(infoflow.getResults().getAdditionalResultSet().stream().anyMatch(dfResult ->
+                dfResult.getSink().getStmt().toString().contains("sendToUrl")
+                && dfResult.getSource().getStmt().toString().contains("java.net.URL: void <init>")));
     }
 }

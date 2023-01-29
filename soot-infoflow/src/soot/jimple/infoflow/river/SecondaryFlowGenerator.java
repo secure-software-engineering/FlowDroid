@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.river;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import heros.solver.PathEdge;
@@ -10,12 +11,11 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
-import soot.jimple.infoflow.sourcesSinks.manager.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
- * TaintPropagationHandler querying the backward analysis when reaching a
- * conditional sink. Attach to the forward analysis.
+ * TaintPropagationHandler querying the backward analysis when reaching an
+ * additional sink. Attach to the forward analysis.
  * 
  * @author Tim Lange
  */
@@ -61,22 +61,28 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 			return outgoing;
 
 		ensureCondFlowManager(manager);
-		// Check whether the statement is an instance call suitable for complex flows.
-		// isConditionalSink implicitly
+
 		Stmt stmt = (Stmt) unit;
-		if (!condFlowManager.isConditionalSink(stmt))
-			return outgoing;
+		HashSet<Abstraction> additionalAbsSet = new HashSet<>();
 
-		// Is the base tainted in the outgoing set?
-		Abstraction baseTaint = getTaintFromLocal(outgoing, ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
-		if (baseTaint == null)
-			return outgoing;
+		// Check for sink contexts
+		if (condFlowManager.isConditionalSink(stmt)) {
+			// Is the base tainted in the outgoing set?
+			Abstraction baseTaint = getTaintFromLocal(outgoing, ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
+			if (baseTaint != null) {
+				Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
+				additionalAbsSet.add(newAbs);
+			}
+		}
 
-		Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
+		// Check for usage contexts
+		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt))
+			additionalAbsSet.add(createAdditionalFlowAbstraction(spec, stmt, manager));
 
 		// Query the backward analysis
-		for (Unit pred : manager.getICFG().getPredsOf(unit))
-			manager.additionalManager.getMainSolver().processEdge(new PathEdge<>(d1, pred, newAbs));
+		for (Abstraction addAbs : additionalAbsSet)
+			for (Unit pred : manager.getICFG().getPredsOf(unit))
+				manager.additionalManager.getMainSolver().processEdge(new PathEdge<>(d1, pred, addAbs));
 
 		return outgoing;
 	}
@@ -84,12 +90,26 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	/**
 	 * Creates a new abstraction that is injected into the backward direction.
 	 *
-	 * @param baseTaint taint of the base local
-	 * @param stmt current statement
-	 * @return new abstraction
+	 * @param baseTaint Taint of the base local
+	 * @param stmt Current statement
+	 * @return New abstraction
 	 */
 	protected Abstraction createAdditionalFlowAbstraction(Abstraction baseTaint, Stmt stmt) {
 		Abstraction newAbs = new Abstraction(null, baseTaint.getAccessPath(), stmt, null, false, false);
+		newAbs.setCorrespondingCallSite(stmt);
+		return newAbs;
+	}
+
+	/**
+	 * Creates a new abstraction that is injected into the backward direction.
+	 *
+	 * @param spec Flow Specification
+	 * @param stmt Current statement
+	 * @param manager Infoflow Manager
+	 * @return New abstraction
+	 */
+	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt, InfoflowManager manager) {
+		Abstraction newAbs = new Abstraction(null, spec.toAccessPath(manager), stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
 		return newAbs;
 	}

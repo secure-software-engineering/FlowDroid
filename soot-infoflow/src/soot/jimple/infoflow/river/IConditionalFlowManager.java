@@ -1,7 +1,13 @@
-package soot.jimple.infoflow.sourcesSinks.manager;
+package soot.jimple.infoflow.river;
 
+import soot.SootMethod;
 import soot.jimple.Stmt;
 
+/**
+ * A source sink manager that is able to manage sinks with conditions, i.e. the sink context.
+ *
+ * @author Tim Lange
+ */
 public interface IConditionalFlowManager {
     /**
      * Checks if a sink is reached in the secondary flow
@@ -19,4 +25,19 @@ public interface IConditionalFlowManager {
      * @return true if stmt is a conditional sink
      */
     boolean isConditionalSink(Stmt stmt);
+
+    /**
+     * Register a secondary source at runtime.
+     *
+     * @param stmt Secondary source statement
+     */
+    void registerSecondarySource(Stmt stmt);
+
+    /**
+     * Register a secondary source at runtime.
+     *
+     * @param sm Secondary source method
+     */
+    void registerSecondarySource(SootMethod sm);
+
 }

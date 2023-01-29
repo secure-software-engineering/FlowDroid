@@ -341,6 +341,18 @@ public class InfoflowResults {
 		return this.additionalResults == null ? new ConcurrentHashMultiMap<>() : additionalResults;
 	}
 
+	private Set<DataFlowResult> convertToFlatSet(MultiMap<ResultSinkInfo, ResultSourceInfo> multiMap) {
+		if (multiMap == null || multiMap.isEmpty())
+			return null;
+
+		Set<DataFlowResult> set = new HashSet<>(multiMap.size() * 10);
+		for (ResultSinkInfo sink : multiMap.keySet()) {
+			for (ResultSourceInfo source : multiMap.get(sink))
+				set.add(new DataFlowResult(source, sink));
+		}
+		return set;
+	}
+
 	/**
 	 * Gets the data flow results in a flat set
 	 *
@@ -348,15 +360,17 @@ public class InfoflowResults {
 	 *         the return value is null.
 	 */
 	public Set<DataFlowResult> getResultSet() {
-		if (results == null || results.isEmpty())
-			return null;
+		return convertToFlatSet(results);
+	}
 
-		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
-		for (ResultSinkInfo sink : results.keySet()) {
-			for (ResultSourceInfo source : results.get(sink))
-				set.add(new DataFlowResult(source, sink));
-		}
-		return set;
+	/**
+	 * Gets the additional data flow results in a flat set
+	 *
+	 * @return The additional data flow results in a flat set. If no data flows are available,
+	 *         the return value is null.
+	 */
+	public Set<DataFlowResult> getAdditionalResultSet() {
+		return convertToFlatSet(additionalResults);
 	}
 
 	/**

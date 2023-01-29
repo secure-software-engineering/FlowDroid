@@ -40,6 +40,7 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.definitions.*;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
@@ -978,6 +979,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		this.excludedMethods.add(toExclude);
 	}
 
+	@Override
 	public boolean isSecondarySink(Stmt stmt) {
 		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
 			return false;
@@ -1000,6 +1002,17 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		return false;
 	}
 
+	@Override
+	public void registerSecondarySource(Stmt stmt) {
+		secondarySourceMethods.add(stmt.getInvokeExpr().getMethod());
+	}
+
+	@Override
+	public void registerSecondarySource(SootMethod sm) {
+		secondarySourceMethods.add(sm);
+	}
+
+	@Override
 	public boolean isConditionalSink(Stmt stmt) {
 		// River only supports InstanceInvokeExprs
 		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))

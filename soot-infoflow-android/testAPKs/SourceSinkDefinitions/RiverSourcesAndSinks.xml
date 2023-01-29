@@ -5,6 +5,11 @@
                 <accessPath isSource="true" isSink="false" />
             </return>
         </method>
+        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL, java.lang.String)">
+            <param index="1" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+        </method>
         <method signature="java.io.OutputStream: void write(byte[])">
             <param index="0" description="Output Data">
                 <accessPath isSource="false" isSink="true" />

@@ -6,6 +6,7 @@ import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -34,7 +35,10 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
+	// The infoflow manager for the on-demand analysis that computes additional flows
 	public InfoflowManager additionalManager;
+
+	private IUsageContextProvider usageContextProvider;
 
 	protected InfoflowManager(InfoflowConfiguration config) {
 		this.config = config;
@@ -47,6 +51,8 @@ public class InfoflowManager {
 		this.hierarchy = null;
 		this.accessPathFactory = null;
 		this.globalTaintManager = null;
+		this.additionalManager = null;
+		this.usageContextProvider = null;
 	}
 
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
@@ -62,6 +68,7 @@ public class InfoflowManager {
 		this.hierarchy = hierarchy;
 		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = globalTaintManager;
+		this.usageContextProvider = null;
 	}
 
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
@@ -77,6 +84,7 @@ public class InfoflowManager {
 		this.hierarchy = hierarchy;
 		this.accessPathFactory = existingManager.getAccessPathFactory();
 		this.globalTaintManager = existingManager.getGlobalTaintManager();
+		this.usageContextProvider = null;
 	}
 
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg) {
@@ -90,6 +98,7 @@ public class InfoflowManager {
 		this.hierarchy = Scene.v().getOrMakeFastHierarchy();
 		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = null;
+		this.usageContextProvider = null;
 	}
 
 	/**
@@ -241,4 +250,21 @@ public class InfoflowManager {
 		return globalTaintManager;
 	}
 
+	/**
+	 * Set the additional flow manager
+	 *
+	 * @param usageContextProvider The manager object for usage contexts
+	 */
+	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
+		this.usageContextProvider = usageContextProvider;
+	}
+
+	/**
+	 * Get the additional information flow manager
+	 *
+	 * @return The manager object for usage contexts
+	 */
+	public IUsageContextProvider getUsageContextProvider() {
+		return this.usageContextProvider;
+	}
 }
