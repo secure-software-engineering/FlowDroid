@@ -801,9 +801,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// If the user did not provide an UsageContextProvider, provide the default implementation
 				if (usageContextProvider == null)
-					manager.setUsageContextProvider(new EmptyUsageContextProvider());
-				else
-					manager.setUsageContextProvider(usageContextProvider);
+					usageContextProvider = new EmptyUsageContextProvider();
+
+				manager.setUsageContextProvider(usageContextProvider);
+				additionalManager.setUsageContextProvider(usageContextProvider);
 			}
 
 			// Start a thread for enforcing the timeout

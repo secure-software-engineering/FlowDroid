@@ -20,9 +20,8 @@ import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
-import soot.jimple.infoflow.river.IConditionalFlowSinkPropagationRule;
+import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
-import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -36,7 +35,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Steven Arzt
  * @author Tim Lange
  */
-public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule implements IConditionalFlowSinkPropagationRule {
+public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule implements IAdditionalFlowSinkPropagationRule {
 
 	private boolean killState = false;
 

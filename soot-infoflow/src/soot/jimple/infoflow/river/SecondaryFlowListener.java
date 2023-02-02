@@ -15,7 +15,7 @@ import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
  * Attach to the backward analysis.
  */
 public class SecondaryFlowListener implements TaintPropagationHandler {
-	private IConditionalFlowSinkPropagationRule sourceRule = null;
+	private IAdditionalFlowSinkPropagationRule sinkRule = null;
 
 	/**
 	 * Ensures that the field sourceRule is always set.
@@ -23,7 +23,7 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 	 * @param manager
 	 */
 	private void ensureSourcePropagationRule(InfoflowManager manager) {
-		if (sourceRule != null)
+		if (sinkRule != null)
 			return;
 
 		if (!manager.getConfig().getAdditionalFlowsEnabled())
@@ -31,8 +31,8 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 
 		PropagationRuleManager ruleManager = manager.getMainSolver().getTabulationProblem().getPropagationRules();
 		for (ITaintPropagationRule rule : ruleManager.getRules()) {
-			if (rule instanceof IConditionalFlowSinkPropagationRule) {
-				sourceRule = (IConditionalFlowSinkPropagationRule) rule;
+			if (rule instanceof IAdditionalFlowSinkPropagationRule) {
+				sinkRule = (IAdditionalFlowSinkPropagationRule) rule;
 				return;
 			}
 		}
@@ -54,7 +54,7 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 		if (ssm.isSecondarySink(stmt)
 				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt)) {
 			// Record the statement
-			sourceRule.processSecondaryFlowSink(null, incoming, stmt);
+			sinkRule.processSecondaryFlowSink(null, incoming, stmt);
 		}
 	}
 

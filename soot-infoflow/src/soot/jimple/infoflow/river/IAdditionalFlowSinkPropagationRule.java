@@ -10,7 +10,7 @@ import soot.jimple.infoflow.data.Abstraction;
  * 
  * @author Tim Lange
  */
-public interface IConditionalFlowSinkPropagationRule {
+public interface IAdditionalFlowSinkPropagationRule {
 	/**
 	 * Records a secondary flow taint reaching a statement.
 	 * 
