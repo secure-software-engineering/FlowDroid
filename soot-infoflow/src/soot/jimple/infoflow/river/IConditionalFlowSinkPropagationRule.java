@@ -12,7 +12,7 @@ import soot.jimple.infoflow.data.Abstraction;
  */
 public interface IConditionalFlowSinkPropagationRule {
 	/**
-	 * Processes a secondary flow taint reaching a statement.
+	 * Records a secondary flow taint reaching a statement.
 	 * 
 	 * @param d1     The calling context
 	 * @param source The current taint abstraction

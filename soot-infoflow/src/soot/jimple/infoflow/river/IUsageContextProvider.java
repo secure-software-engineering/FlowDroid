@@ -16,4 +16,12 @@ public interface IUsageContextProvider {
      * @return Flow specifications if a usage context shall be computed. Always non-null.
      */
     Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt);
+
+    /**
+     * Whether the flow reaching the statement should be recorded.
+     *
+     * @param stmt current statement in the analysis
+     * @return true if the flow should be recorded
+     */
+    boolean isStatementWithAdditionalInformation(Stmt stmt);
 }

@@ -16,4 +16,9 @@ public class EmptyUsageContextProvider implements IUsageContextProvider {
     public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt) {
         return Collections.emptySet();
     }
+
+    @Override
+    public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+        return false;
+    }
 }

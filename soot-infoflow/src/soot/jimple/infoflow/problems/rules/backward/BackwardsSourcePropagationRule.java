@@ -201,11 +201,6 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
 			return;
 
-		if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
-			return;
-		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
-
-		if (ssm.isSecondarySink(stmt))
-			getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
+		getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
 	}
 }

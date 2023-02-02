@@ -41,13 +41,21 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 	}
 
 	@Override
-	public void notifyFlowIn(Unit stmt, Abstraction incoming, InfoflowManager manager, FlowFunctionType type) {
+	public void notifyFlowIn(Unit unit, Abstraction incoming, InfoflowManager manager, FlowFunctionType type) {
 		if (type != FlowFunctionType.CallToReturnFlowFunction)
 			return;
 
 		ensureSourcePropagationRule(manager);
-		// Record the statement
-		sourceRule.processSecondaryFlowSink(null, incoming, (Stmt) stmt);
+		if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
+			return;
+		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
+
+		Stmt stmt = (Stmt) unit;
+		if (ssm.isSecondarySink(stmt)
+				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt)) {
+			// Record the statement
+			sourceRule.processSecondaryFlowSink(null, incoming, stmt);
+		}
 	}
 
 	@Override
