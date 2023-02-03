@@ -218,7 +218,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		SourceContext sourceContext = abs.getSourceContext();
 		Pair<ResultSourceInfo, ResultSinkInfo> newResult;
 		if (scap.getDefinition() instanceof SecondarySinkDefinition) {
-			// TODO: assert river enabled
+			assert manager.getConfig().getAdditionalFlowsEnabled();
+
 			newResult = results.addConditionalResult(scap.getDefinition(), scap.getAccessPath(),
 					scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
 					sourceContext.getUserData(), scap.getAbstractionPath(), manager);
