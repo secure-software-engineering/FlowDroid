@@ -8,7 +8,11 @@ import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
+
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Checks whether conditional sinks met their condition and filter those which did not.
@@ -33,8 +37,9 @@ public class ConditionalFlowPostProcessor implements PostAnalysisHandler {
         HashSet<ResultSinkInfo> tbr = new HashSet<>();
 
         for (DataFlowResult dfRes : results.getResultSet()) {
-            if (!dfRes.getSink().getDefinition().getConditions()
-                    .stream().allMatch(cond -> cond.evaluate(dfRes, results)))
+            Set<SourceSinkCondition> conditions = dfRes.getSink().getDefinition().getConditions();
+            if (conditions != null
+                    && !conditions.stream().allMatch(cond -> cond.evaluate(dfRes, results)))
                 tbr.add(dfRes.getSink());
         }
 
