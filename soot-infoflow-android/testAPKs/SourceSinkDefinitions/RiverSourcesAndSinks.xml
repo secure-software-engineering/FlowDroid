@@ -5,6 +5,11 @@
                 <accessPath isSource="true" isSink="false" />
             </return>
         </method>
+        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: void unconditionalSink(java.lang.String)">
+            <return type="java.lang.String">
+                <accessPath isSource="false" isSink="true" />
+            </return>
+        </method>
         <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL, java.lang.String)">
             <param index="1" description="Output Data">
                 <accessPath isSource="false" isSink="true" />

@@ -42,6 +42,7 @@ public class RiverTests {
     protected static final String osWrite = "<java.io.OutputStream: void write(byte[])>";
     protected static final String writerWrite = "<java.io.Writer: void write(java.lang.String)>";
     protected static final String sendToUrl = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL,java.lang.String)>";
+    protected static final String uncondSink = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void unconditionalSink(java.lang.String)>";
     private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
         if (f.exists()) {
             if (sb.length() > 0)
@@ -78,6 +79,7 @@ public class RiverTests {
         primarySinks.add(osWrite);
         primarySinks.add(writerWrite);
         primarySinks.add(sendToUrl);
+        primarySinks.add(uncondSink);
     }
 
     protected IInfoflow initInfoflow() {
@@ -311,4 +313,15 @@ public class RiverTests {
                         && dfResult.getSource().getStmt().toString().contains("java.net.URL: void <init>")));
     }
 
+    // Test that unconditional sinks still work
+    @Test(timeout = 300000)
+    public void riverTest9() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest9()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.checkInfoflow(infoflow, 1);
+    }
 }

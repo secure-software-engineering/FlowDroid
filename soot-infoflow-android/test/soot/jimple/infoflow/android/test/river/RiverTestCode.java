@@ -132,4 +132,12 @@ public class RiverTestCode {
             throw new RuntimeException(e);
         }
     }
+
+    void unconditionalSink(String str) {
+        System.out.println("leak");
+    }
+
+    public void riverTest9() {
+        unconditionalSink(source());
+    }
 }
