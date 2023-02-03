@@ -794,9 +794,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// Add the post processor
 				ConditionalFlowPostProcessor cfpp = new ConditionalFlowPostProcessor(manager);
-				if (this.postProcessors.size() > 0)
-					this.postProcessors.add(cfpp);
-				else
+				if (this.postProcessors != null) {
+					List<PostAnalysisHandler> postProcessors = new ArrayList<>(this.postProcessors);
+					postProcessors.add(cfpp);
+					this.postProcessors = postProcessors;
+				} else
 					this.postProcessors = Collections.singleton(cfpp);
 
 				// If the user did not provide an UsageContextProvider, provide the default implementation
