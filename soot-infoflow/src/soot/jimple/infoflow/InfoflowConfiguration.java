@@ -1306,6 +1306,7 @@ public class InfoflowConfiguration {
 	private boolean oneSourceAtATime = false;
 	private int maxAliasingBases = Integer.MAX_VALUE;
 	private boolean additionalFlowsEnabled = false;
+	private boolean filterConditionalSinks = true;
 
 	private static String baseDirectory = "";
 
@@ -1348,6 +1349,7 @@ public class InfoflowConfiguration {
 
 		this.taintAnalysisEnabled = config.taintAnalysisEnabled;
 		this.additionalFlowsEnabled = config.additionalFlowsEnabled;
+		this.filterConditionalSinks = filterConditionalSinks;
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
 		this.memoryThreshold = config.memoryThreshold;
@@ -1923,8 +1925,7 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether additional flows are enabled. If it is disabled,
-	 * conditional sinks won't be filtered.
+	 * Gets whether additional flows are enabled.
 	 *
 	 * @return True if additional flows are enabled
 	 */
@@ -1933,13 +1934,32 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether additional flows are enabled. If it is disabled,
-	 * conditional sinks won't be filtered.
+	 * Sets whether additional flows are enabled.
 	 *
 	 * @param additionalFlowsEnabled True if additional flows shall be enabled
 	 */
 	public void setAdditionalFlowsEnabled(boolean additionalFlowsEnabled) {
 		this.additionalFlowsEnabled = additionalFlowsEnabled;
+	}
+
+	/**
+	 * Gets whether conditional sinks should be filtered if the condition was not met.
+	 * If false, conditional sinks won't be filtered.
+	 *
+	 * @return True if conditional flows will be filtered
+	 */
+	public boolean getFilterConditionalSinks() {
+		return filterConditionalSinks;
+	}
+
+	/**
+	 * Sets whether conditional sinks should be filtered if the condition was not met.
+	 * If false, conditional sinks won't be filtered.
+	 *
+	 * @param filterConditionalSinks True if conditional sinks should be filtered
+	 */
+	public void setFilterConditionalSinks(boolean filterConditionalSinks) {
+		this.filterConditionalSinks = filterConditionalSinks;
 	}
 
 	/**
@@ -2165,6 +2185,7 @@ public class InfoflowConfiguration {
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
 		result = prime * result + (additionalFlowsEnabled ? 1231 : 1237);
+		result = prime * result + (filterConditionalSinks ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
 		return result;
 	}
@@ -2253,6 +2274,9 @@ public class InfoflowConfiguration {
 		if (taintAnalysisEnabled != other.taintAnalysisEnabled)
 			return false;
 		if (additionalFlowsEnabled != other.additionalFlowsEnabled)
+			return false;
+		if (filterConditionalSinks != other.filterConditionalSinks)
+			return false;
 		if (writeOutputFiles != other.writeOutputFiles)
 			return false;
 		return true;
