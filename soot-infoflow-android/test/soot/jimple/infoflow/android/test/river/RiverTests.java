@@ -22,7 +22,6 @@ import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SimpleSourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
-import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 import soot.toolkits.scalar.Pair;
 
 import java.io.File;
@@ -190,7 +189,6 @@ public class RiverTests {
     @Test(timeout = 300000)
     public void riverTest5() throws IOException {
         IInfoflow infoflow = this.initInfoflow();
-        infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest5()>");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
