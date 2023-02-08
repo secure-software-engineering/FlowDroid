@@ -124,7 +124,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	protected final BiDirICFGFactory icfgFactory;
 	protected Collection<? extends PreAnalysisHandler> preProcessors = Collections.emptyList();
-	protected Collection<PostAnalysisHandler> postProcessors = Collections.emptyList();
+	protected Collection<? extends PostAnalysisHandler> postProcessors = Collections.emptyList();
 
 	protected final String androidPath;
 	protected final boolean forceAndroidJar;
@@ -217,7 +217,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	@Override
-	public void setPostProcessors(Collection<PostAnalysisHandler> postprocessors) {
+	public void setPostProcessors(Collection<? extends PostAnalysisHandler> postprocessors) {
 		this.postProcessors = postprocessors;
 	}
 
@@ -734,10 +734,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				aliasingStrategy.getSolver().getTabulationProblem().setActivationUnitsToCallSites(forwardProblem);
 			}
 
-			if (config.getAdditionalFlowsEnabled()
-					&& config.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards) {
-				logger.error("Invalid configuration: River is only supported with forward taint analysis");
-			} else if (config.getAdditionalFlowsEnabled()) {
+			if (config.getAdditionalFlowsEnabled()) {
 				// Add the SecondaryFlowGenerator to the main forward taint analysis
 				TaintPropagationHandler forwardHandler = forwardProblem.getTaintPropagationHandler();
 				if (forwardHandler != null) {
@@ -796,7 +793,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				if (config.getFilterConditionalSinks()) {
 					ConditionalFlowPostProcessor cfpp = new ConditionalFlowPostProcessor(manager);
 					if (this.postProcessors != null) {
-						List<PostAnalysisHandler> postProcessors = new ArrayList<>(this.postProcessors);
+						Collection<PostAnalysisHandler> postProcessors = new ArrayList<>(this.postProcessors);
 						postProcessors.add(cfpp);
 						this.postProcessors = postProcessors;
 					} else
@@ -1494,6 +1491,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			logger.warn("Disabled flow-sensitive aliasing because we are running with "
 					+ "a flow-insensitive data flow solver");
 		}
+		if (config.getAdditionalFlowsEnabled()
+				&& config.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards)
+			throw new RuntimeException("Invalid configuration: the backward direction does not support additional flows");
 	}
 
 	/**
