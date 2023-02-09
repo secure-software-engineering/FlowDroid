@@ -36,9 +36,11 @@ public class RiverTests {
 
     protected static List<String> sources;
     protected static final String localSource = "<soot.jimple.infoflow.android.test.river.RiverTestCode: java.lang.String source()>";
+    protected static final String localIntSource = "<soot.jimple.infoflow.android.test.river.RiverTestCode: int intSource()>";
 
     protected static List<String> primarySinks;
     protected static final String osWrite = "<java.io.OutputStream: void write(byte[])>";
+    protected static final String osWriteInt = "<java.io.OutputStream: void write(int)>";
     protected static final String writerWrite = "<java.io.Writer: void write(java.lang.String)>";
     protected static final String sendToUrl = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL,java.lang.String)>";
     protected static final String uncondSink = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void unconditionalSink(java.lang.String)>";
@@ -73,9 +75,11 @@ public class RiverTests {
 
         sources = new ArrayList<String>();
         sources.add(localSource);
+        sources.add(localIntSource);
 
         primarySinks = new ArrayList<String>();
         primarySinks.add(osWrite);
+        primarySinks.add(osWriteInt);
         primarySinks.add(writerWrite);
         primarySinks.add(sendToUrl);
         primarySinks.add(uncondSink);
@@ -317,6 +321,31 @@ public class RiverTests {
         IInfoflow infoflow = this.initInfoflow();
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest9()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    // Test className not on path
+    @Test(timeout = 300000)
+    public void riverTest10() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest10()>");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
+        ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
+        this.negativeCheckInfoflow(infoflow);
+    }
+
+
+    // Test className on path
+    @Test(timeout = 300000)
+    public void riverTest11() throws IOException {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest11()>");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
         ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);

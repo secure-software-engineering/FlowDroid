@@ -8,6 +8,9 @@ public class RiverTestCode {
     public static String source() {
         return "secret";
     }
+    public static int intSource() {
+        return 1337;
+    }
 
     public void riverTest1() {
         try {
@@ -139,5 +142,30 @@ public class RiverTestCode {
 
     public void riverTest9() {
         unconditionalSink(source());
+    }
+
+
+    void classConditionalSink(String data) {
+        System.out.println("leak");
+    }
+
+    static class T {
+        void injectSensitiveData(OutputStream os) {
+            //
+        }
+    }
+
+    public void riverTest10() throws IOException {
+        int secret = intSource();
+        OutputStream os = new ByteArrayOutputStream();
+        os.write(secret);
+    }
+
+    public void riverTest11() throws IOException {
+        int secret = intSource();
+        OutputStream os = new ByteArrayOutputStream();
+        T t = new T();
+        t.injectSensitiveData(os);
+        os.write(secret);
     }
 }
