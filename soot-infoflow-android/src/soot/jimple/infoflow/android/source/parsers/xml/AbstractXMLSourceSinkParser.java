@@ -372,6 +372,10 @@ public abstract class AbstractXMLSourceSinkParser {
 				if (!classNamesOnPath.isEmpty() || !signaturesOnPath.isEmpty()) {
 					AdditionalFlowCondition additionalFlowCondition = new AdditionalFlowCondition(classNamesOnPath,
 							signaturesOnPath);
+					// Reset both for a new condition
+					classNamesOnPath = new HashSet<>();
+					signaturesOnPath = new HashSet<>();
+
 					if (conditions == null)
 						conditions = new HashSet<>();
 					conditions.add(additionalFlowCondition);
@@ -408,8 +412,6 @@ public abstract class AbstractXMLSourceSinkParser {
 			returnAPs = new HashSet<>();
 			description = null;
 
-			classNamesOnPath = new HashSet<>();
-			signaturesOnPath = new HashSet<>();
 			conditions = new HashSet<>();
 		}
 

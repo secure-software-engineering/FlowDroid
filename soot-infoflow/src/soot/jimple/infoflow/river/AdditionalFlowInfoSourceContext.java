@@ -9,7 +9,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
  * Source context implementation for additional data flow information on a
  * vulnerability, i.e. for finding which data is encrypted with a hard-coded key
  * 
- * @author Steven Arzti
+ * @author Steven Arzt
  *
  */
 public class AdditionalFlowInfoSourceContext extends SourceContext {

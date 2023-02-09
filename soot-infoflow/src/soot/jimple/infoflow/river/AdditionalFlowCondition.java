@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.river;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +66,24 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
     public Set<SootClass> getReferencedClasses() {
         ensureSootClassesOnPath();
         return classesOnPath;
+    }
+
+    /**
+     * Return the signatures that should be on the path
+     *
+     * @return unmodifiable set of signatures
+     */
+    public Set<String> getSignaturesOnPath() {
+        return Collections.unmodifiableSet(signaturesOnPath);
+    }
+
+    /**
+     * Return the class names that should be on the path
+     *
+     * @return unmodifiable set of class names
+     */
+    public Set<String> getClassNamesOnPath() {
+        return Collections.unmodifiableSet(classNamesOnPath);
     }
 
     /**
