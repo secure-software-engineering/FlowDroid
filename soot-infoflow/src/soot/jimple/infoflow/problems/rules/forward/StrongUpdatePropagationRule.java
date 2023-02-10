@@ -2,8 +2,15 @@ package soot.jimple.infoflow.problems.rules.forward;
 
 import java.util.Collection;
 
-import soot.*;
-import soot.jimple.*;
+import soot.Local;
+import soot.SootMethod;
+import soot.Value;
+import soot.ValueBox;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -41,7 +48,6 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 		if (assignStmt.getLeftOp() instanceof ArrayRef)
 			return null;
 
-
 		// If this is a newly created alias at this statement, we don't kill it right
 		// away
 		if (!source.isAbstractionActive() && source.getCurrentStmt() == stmt)
@@ -53,20 +59,22 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 				&& source.getAccessPath().equals(source.getPredecessor().getAccessPath()))
 			return null;
 
-		if (source.getAccessPath().isInstanceFieldRef()) {
+		Value lhs = assignStmt.getLeftOp();
+		Aliasing aliasing = getAliasing();
+		if (aliasing != null && source.getAccessPath().isInstanceFieldRef()) {
 			// Data Propagation: x.f = y && x.f tainted --> no taint propagated
 			// Alias Propagation: Only kill the alias if we directly overwrite it,
 			// otherwise it might just be the creation of yet another alias
-			if (assignStmt.getLeftOp() instanceof InstanceFieldRef) {
-				InstanceFieldRef leftRef = (InstanceFieldRef) assignStmt.getLeftOp();
+			if (lhs instanceof InstanceFieldRef) {
+				InstanceFieldRef leftRef = (InstanceFieldRef) lhs;
 				boolean baseAliases;
 				if (source.isAbstractionActive())
-					baseAliases = getAliasing().mustAlias((Local) leftRef.getBase(),
-							source.getAccessPath().getPlainValue(), assignStmt);
+					baseAliases = aliasing.mustAlias((Local) leftRef.getBase(), source.getAccessPath().getPlainValue(),
+							assignStmt);
 				else
 					baseAliases = leftRef.getBase() == source.getAccessPath().getPlainValue();
 				if (baseAliases) {
-					if (getAliasing().mustAlias(leftRef.getField(), source.getAccessPath().getFirstField())) {
+					if (aliasing.mustAlias(leftRef.getField(), source.getAccessPath().getFirstField())) {
 						killAll.value = true;
 						return null;
 					}
@@ -74,9 +82,8 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 			}
 			// x = y && x.f tainted -> no taint propagated. This must only check the precise
 			// variable which gets replaced, but not any potential strong aliases
-			else if (assignStmt.getLeftOp() instanceof Local) {
-				if (getAliasing().mustAlias((Local) assignStmt.getLeftOp(), source.getAccessPath().getPlainValue(),
-						stmt)) {
+			else if (lhs instanceof Local) {
+				if (aliasing.mustAlias((Local) lhs, source.getAccessPath().getPlainValue(), stmt)) {
 					killAll.value = true;
 					return null;
 				}
@@ -84,9 +91,9 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 		}
 		// X.f = y && X.f tainted -> no taint propagated. Kills are allowed even if
 		// static field tracking is disabled
-		else if (source.getAccessPath().isStaticFieldRef()) {
-			if (assignStmt.getLeftOp() instanceof StaticFieldRef && getAliasing().mustAlias(
-					((StaticFieldRef) assignStmt.getLeftOp()).getField(), source.getAccessPath().getFirstField())) {
+		else if (aliasing != null && source.getAccessPath().isStaticFieldRef()) {
+			if (lhs instanceof StaticFieldRef
+					&& aliasing.mustAlias(((StaticFieldRef) lhs).getField(), source.getAccessPath().getFirstField())) {
 				killAll.value = true;
 				return null;
 			}
@@ -95,8 +102,8 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 		// when the fields of an object are tainted, but the base object is overwritten
 		// then the fields should not be tainted any more
 		// x = y && x.f tainted -> no taint propagated
-		else if (source.getAccessPath().isLocal() && assignStmt.getLeftOp() instanceof Local
-				&& assignStmt.getLeftOp() == source.getAccessPath().getPlainValue()) {
+		else if (source.getAccessPath().isLocal() && lhs instanceof Local
+				&& lhs == source.getAccessPath().getPlainValue()) {
 			// If there is also a reference to the tainted value on the right side, we
 			// must only kill the source, but give the other rules the possibility to
 			// re-create the taint
@@ -141,8 +148,8 @@ public class StrongUpdatePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 
