@@ -4,7 +4,6 @@ import soot.Local;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 
 /**
  * Specification for searching backwards for additional information on a data
@@ -15,25 +14,16 @@ import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
  */
 public class AdditionalFlowInfoSpecification {
 
-    private final AccessPath accessPath;
     private final Local local;
     private final Stmt stmt;
 
     public AdditionalFlowInfoSpecification() {
-        accessPath = null;
         local = null;
         stmt = null;
     }
 
     public AdditionalFlowInfoSpecification(Local base, Stmt stmt) {
-        this.accessPath = null;
         this.local = base;
-        this.stmt = stmt;
-    }
-
-    public AdditionalFlowInfoSpecification(AccessPath accessPath, Stmt stmt) {
-        this.accessPath = accessPath;
-        this.local = null;
         this.stmt = stmt;
     }
 
@@ -52,22 +42,18 @@ public class AdditionalFlowInfoSpecification {
      * @return The generated access path
      */
     public AccessPath toAccessPath(InfoflowManager manager) {
-        if (accessPath == null) {
-            return manager.getAccessPathFactory().createAccessPath(local, true);
-        }
-        return accessPath;
+        return manager.getAccessPathFactory().createAccessPath(local, true);
     }
 
     @Override
     public String toString() {
-        return String.format("%s.%s", local.toString(), accessPath.toString());
+        return String.format("%s @ %s", local.toString(), stmt.toString());
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((accessPath == null) ? 0 : accessPath.hashCode());
         result = prime * result + ((local == null) ? 0 : local.hashCode());
         result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
         return result;
@@ -82,11 +68,6 @@ public class AdditionalFlowInfoSpecification {
         if (getClass() != obj.getClass())
             return false;
         AdditionalFlowInfoSpecification other = (AdditionalFlowInfoSpecification) obj;
-        if (accessPath == null) {
-            if (other.accessPath != null)
-                return false;
-        } else if (!accessPath.equals(other.accessPath))
-            return false;
         if (local == null) {
             if (other.local != null)
                 return false;
