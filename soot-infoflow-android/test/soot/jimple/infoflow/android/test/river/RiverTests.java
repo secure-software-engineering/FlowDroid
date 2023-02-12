@@ -42,8 +42,14 @@ public class RiverTests {
     protected static final String osWrite = "<java.io.OutputStream: void write(byte[])>";
     protected static final String osWriteInt = "<java.io.OutputStream: void write(int)>";
     protected static final String writerWrite = "<java.io.Writer: void write(java.lang.String)>";
+    protected static final String bufosWrite = "<java.io.FilterOutputStream: void write(byte[])>";
+
     protected static final String sendToUrl = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL,java.lang.String)>";
     protected static final String uncondSink = "<soot.jimple.infoflow.android.test.river.RiverTestCode: void unconditionalSink(java.lang.String)>";
+
+
+    protected static final String urlInit = "<java.net.URL: void <init>(java.lang.String)>";
+
     private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
         if (f.exists()) {
             if (sb.length() > 0)
@@ -83,6 +89,7 @@ public class RiverTests {
         primarySinks.add(writerWrite);
         primarySinks.add(sendToUrl);
         primarySinks.add(uncondSink);
+        primarySinks.add(bufosWrite);
     }
 
     protected IInfoflow initInfoflow() {
@@ -170,7 +177,7 @@ public class RiverTests {
     public void riverTest3() throws IOException {
         IInfoflow infoflow = this.initInfoflow();
         List<String> epoints = new ArrayList();
-        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest1()>");
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest3()>");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
         ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
@@ -182,7 +189,7 @@ public class RiverTests {
     public void riverTest4() throws IOException {
         IInfoflow infoflow = this.initInfoflow();
         List<String> epoints = new ArrayList();
-        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest2()>");
+        epoints.add("<soot.jimple.infoflow.android.test.river.RiverTestCode: void riverTest4()>");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("testAPKs/SourceSinkDefinitions/RiverSourcesAndSinks.xml");
         ISourceSinkManager ssm = new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
@@ -271,8 +278,10 @@ public class RiverTests {
 
         // Check that the usage context was found
         Assert.assertTrue(infoflow.getResults().getAdditionalResultSet().stream().anyMatch(dfResult ->
-                dfResult.getSink().getStmt().toString().contains("sendToUrl")
-                && dfResult.getSource().getStmt().toString().contains("java.net.URL: void <init>")));
+                dfResult.getSource().getStmt().containsInvokeExpr()
+                        && dfResult.getSource().getStmt().getInvokeExpr().getMethod().getSignature().equals(sendToUrl)
+                        && dfResult.getSink().getStmt().containsInvokeExpr()
+                        && dfResult.getSink().getStmt().getInvokeExpr().getMethod().getSignature().equals(urlInit)));
     }
 
     @Test(timeout = 300000)
@@ -311,8 +320,10 @@ public class RiverTests {
 
         // Check that the usage context was found
         Assert.assertTrue(infoflow.getResults().getAdditionalResultSet().stream().anyMatch(dfResult ->
-                dfResult.getSink().getStmt().toString().contains("sendToUrl")
-                        && dfResult.getSource().getStmt().toString().contains("java.net.URL: void <init>")));
+                dfResult.getSource().getStmt().containsInvokeExpr()
+                && dfResult.getSource().getStmt().getInvokeExpr().getMethod().getSignature().equals(sendToUrl)
+                && dfResult.getSink().getStmt().containsInvokeExpr()
+                && dfResult.getSink().getStmt().getInvokeExpr().getMethod().getSignature().equals(urlInit)));
     }
 
     // Test that unconditional sinks still work

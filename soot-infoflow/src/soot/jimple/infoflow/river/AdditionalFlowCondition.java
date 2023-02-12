@@ -38,7 +38,7 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
         if (isEmpty())
             return true;
 
-        MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults = results.getAdditionalResults();
+        MultiMap<ResultSourceInfo, ResultSinkInfo> additionalResults = results.getAdditionalResults();
         if (additionalResults == null || additionalResults.isEmpty())
             return false;
 
@@ -121,29 +121,29 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
     }
 
     /**
-     * Retrieves the signatures and classes that can be reached from the sink
+     * Retrieves the signatures and classes that can be reached from the primary sink/secondary source
      *
      * @param additionalResults MultiMap containing the additional results
-     * @param sinkStmt Sink of interest
+     * @param primarySinkStmt Sink of interest
      * @return A list of all callee signatures and a list of declaring classes on the path from the sink on
      */
     private Pair<Set<String>, Set<String>>
-    getSignaturesAndClassNamesReachedFromSink(MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults,
-                                              Stmt sinkStmt) {
+    getSignaturesAndClassNamesReachedFromSink(MultiMap<ResultSourceInfo, ResultSinkInfo> additionalResults,
+                                              Stmt primarySinkStmt) {
         Set<String> sigSet = new HashSet<>();
         Set<String> classSet = new HashSet<>();
 
-        for (ResultSinkInfo rsi : additionalResults.keySet()) {
-            // Match sink with sink of interest
-            if (rsi.getStmt() == sinkStmt) {
-                for (ResultSourceInfo sourceInfo : additionalResults.get(rsi)) {
-                    if (sourceInfo.getPath() == null) {
+        for (ResultSourceInfo secondarySourceInfo : additionalResults.keySet()) {
+            // Match secondary source with primary sink of interest
+            if (secondarySourceInfo.getStmt() == primarySinkStmt) {
+                for (ResultSinkInfo secondarySinkInfo : additionalResults.get(secondarySourceInfo)) {
+                    if (secondarySourceInfo.getPath() == null) {
                         // Fall back if path reconstruction is not enabled
-                        SootMethod callee = sourceInfo.getStmt().getInvokeExpr().getMethod();
+                        SootMethod callee = secondarySinkInfo.getStmt().getInvokeExpr().getMethod();
                         sigSet.add(callee.getSignature());
                         classSet.add(callee.getDeclaringClass().getName());
                     } else {
-                        Stmt[] path = sourceInfo.getPath();
+                        Stmt[] path = secondarySourceInfo.getPath();
                         for (Stmt stmt : path) {
                             if (stmt.containsInvokeExpr()) {
                                 // Register all calls on the path

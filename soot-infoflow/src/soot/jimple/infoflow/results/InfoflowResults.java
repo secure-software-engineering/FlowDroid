@@ -43,7 +43,7 @@ public class InfoflowResults {
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
 	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
-	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults = null;
+	protected volatile MultiMap<ResultSourceInfo, ResultSinkInfo> additionalResults = null;
 	protected volatile InfoflowPerformanceData performanceData = null;
 	protected volatile List<String> exceptions = null;
 	protected int terminationState = TERMINATION_SUCCESS;
@@ -176,16 +176,15 @@ public class InfoflowResults {
 				apPath, csPath, manager);
 	}
 
-	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ResultSinkInfo sinkObj, ResultSourceInfo sourceObj) {
+	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ResultSourceInfo sourceObj, ResultSinkInfo sinkObj) {
 		if (additionalResults == null) {
 			synchronized (this) {
 				if (additionalResults == null)
 					additionalResults = new ConcurrentHashMultiMap<>();
 			}
 		}
-		boolean put = this.additionalResults.put(sinkObj, sourceObj);
-			if (!put)
-				logger.debug("Found two equal paths");
+		if (!this.additionalResults.put(sourceObj, sinkObj))
+			logger.debug("Found two equal paths");
 		return new Pair<>(sourceObj, sinkObj);
 	}
 
@@ -193,20 +192,29 @@ public class InfoflowResults {
 															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
 															List<Abstraction> propagationPath, InfoflowManager manager) {
 		List<Stmt> stmtPath = null;
+		List<AccessPath> apPath = null;
+		List<Stmt> csPath = null;
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
+			apPath = new ArrayList<>(propagationPath.size());
+			if (!manager.getConfig().getPathAgnosticResults())
+				csPath = new ArrayList<>(propagationPath.size());
 			for (Abstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
 					stmtPath.add(pathAbs.getCurrentStmt());
+					apPath.add(pathAbs.getAccessPath());
+					if (csPath != null)
+						csPath.add(pathAbs.getCorrespondingCallSite());
 				}
 			}
 		}
 
-		ResultSourceInfo sourceObj = new ResultSourceInfo(sinkDefinition, sink, sinkStmt, userData,
-				stmtPath, null, null, pathAgnosticResults);
-		ResultSinkInfo sinkObj = new ResultSinkInfo(sourceDefinition, source, sourceStmt);
 
-		return addConditionalResult(sinkObj, sourceObj);
+		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
+				stmtPath, apPath, csPath, pathAgnosticResults);
+		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
+
+		return addConditionalResult(sourceObj, sinkObj);
 	}
 
 	/**
@@ -298,9 +306,9 @@ public class InfoflowResults {
 		}
 
 		if (!results.getAdditionalResults().isEmpty()) {
-			for (ResultSinkInfo sink : results.getAdditionalResults().keySet())
-				for (ResultSourceInfo source : results.getAdditionalResults().get(sink))
-					addConditionalResult(sink, source);
+			for (ResultSourceInfo source : results.getAdditionalResults().keySet())
+				for (ResultSinkInfo sink : results.getAdditionalResults().get(source))
+					addConditionalResult(source, sink);
 		}
 
 		// Sum up the performance data
@@ -337,20 +345,8 @@ public class InfoflowResults {
 		return this.results;
 	}
 
-	public MultiMap<ResultSinkInfo, ResultSourceInfo> getAdditionalResults() {
+	public MultiMap<ResultSourceInfo, ResultSinkInfo> getAdditionalResults() {
 		return this.additionalResults == null ? new ConcurrentHashMultiMap<>() : additionalResults;
-	}
-
-	private Set<DataFlowResult> convertToFlatSet(MultiMap<ResultSinkInfo, ResultSourceInfo> multiMap) {
-		if (multiMap == null || multiMap.isEmpty())
-			return null;
-
-		Set<DataFlowResult> set = new HashSet<>(multiMap.size() * 10);
-		for (ResultSinkInfo sink : multiMap.keySet()) {
-			for (ResultSourceInfo source : multiMap.get(sink))
-				set.add(new DataFlowResult(source, sink));
-		}
-		return set;
 	}
 
 	/**
@@ -360,7 +356,15 @@ public class InfoflowResults {
 	 *         the return value is null.
 	 */
 	public Set<DataFlowResult> getResultSet() {
-		return convertToFlatSet(results);
+		if (results == null || results.isEmpty())
+			return null;
+
+		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
+		for (ResultSinkInfo sink : results.keySet()) {
+			for (ResultSourceInfo source : results.get(sink))
+				set.add(new DataFlowResult(source, sink));
+		}
+		return set;
 	}
 
 	/**
@@ -370,7 +374,15 @@ public class InfoflowResults {
 	 *         the return value is null.
 	 */
 	public Set<DataFlowResult> getAdditionalResultSet() {
-		return convertToFlatSet(additionalResults);
+		if (additionalResults == null || additionalResults.isEmpty())
+			return null;
+
+		Set<DataFlowResult> set = new HashSet<>(additionalResults.size() * 10);
+		for (ResultSourceInfo source : additionalResults.keySet()) {
+			for (ResultSinkInfo sink : additionalResults.get(source))
+				set.add(new DataFlowResult(source, sink));
+		}
+		return set;
 	}
 
 	/**
