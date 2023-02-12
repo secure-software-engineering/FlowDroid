@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import soot.Local;
 import soot.Scene;
+import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
@@ -21,8 +22,8 @@ import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.BaseSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
-import soot.jimple.infoflow.sourcesSinks.manager.SimpleSourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.toolkits.scalar.Pair;
 
@@ -34,6 +35,19 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 public class RiverTests {
+    static class SimpleSourceSinkManager extends BaseSourceSinkManager {
+        public SimpleSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+                                       Collection<? extends ISourceSinkDefinition> sinks,
+                                       InfoflowConfiguration config) {
+            super(sources, sinks, config);
+        }
+
+        @Override
+        protected boolean isEntryPointMethod(SootMethod method) {
+            return false;
+        }
+    }
+
     protected static String appPath, libPath;
 
     protected static List<String> sources;
