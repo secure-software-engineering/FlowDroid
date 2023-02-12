@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.river;
 
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 import java.util.Collections;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class EmptyUsageContextProvider implements IUsageContextProvider {
     }
 
     @Override
-    public boolean isStatementWithAdditionalInformation(Stmt stmt) {
-        return false;
+    public Set<ISourceSinkDefinition> isStatementWithAdditionalInformation(Stmt stmt) {
+        return Collections.emptySet();
     }
 }

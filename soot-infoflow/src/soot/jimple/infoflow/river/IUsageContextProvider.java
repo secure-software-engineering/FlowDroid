@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.river;
 
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 import java.util.Set;
 
@@ -23,5 +24,5 @@ public interface IUsageContextProvider {
      * @param stmt current statement in the analysis
      * @return true if the flow should be recorded
      */
-    boolean isStatementWithAdditionalInformation(Stmt stmt);
+    Set<ISourceSinkDefinition> isStatementWithAdditionalInformation(Stmt stmt);
 }

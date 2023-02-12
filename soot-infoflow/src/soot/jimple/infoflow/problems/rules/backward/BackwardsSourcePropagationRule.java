@@ -22,6 +22,7 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -191,7 +192,7 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 	}
 
 	@Override
-	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt) {
+	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt, ISourceSinkDefinition def) {
 		// Static fields are not part of the conditional flow model.
 		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
 			return;
