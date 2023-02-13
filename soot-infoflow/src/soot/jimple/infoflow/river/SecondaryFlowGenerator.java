@@ -77,7 +77,7 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		}
 
 		// Check for usage contexts
-		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt))
+		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt, outgoing))
 			additionalAbsSet.add(createAdditionalFlowAbstraction(spec, stmt, manager));
 
 		// Query the backward analysis

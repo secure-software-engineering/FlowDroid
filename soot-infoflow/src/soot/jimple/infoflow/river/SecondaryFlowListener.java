@@ -52,7 +52,7 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 
 		Stmt stmt = (Stmt) unit;
 		if (ssm.isSecondarySink(stmt)
-				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt)) {
+				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt, incoming)) {
 			// Record the statement
 			sinkRule.processSecondaryFlowSink(null, incoming, stmt);
 		}

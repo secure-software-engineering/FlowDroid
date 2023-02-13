@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.river;
 
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.data.Abstraction;
 
 import java.util.Collections;
 import java.util.Set;
@@ -13,12 +14,12 @@ import java.util.Set;
 public class EmptyUsageContextProvider implements IUsageContextProvider {
 
     @Override
-    public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt) {
+    public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt, Set<Abstraction> taints) {
         return Collections.emptySet();
     }
 
     @Override
-    public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+    public boolean isStatementWithAdditionalInformation(Stmt stmt, Abstraction abs) {
         return false;
     }
 }

@@ -14,6 +14,7 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
+import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -271,7 +272,7 @@ public class RiverTests {
 
         infoflow.setUsageContextProvider(new IUsageContextProvider() {
             @Override
-            public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt) {
+            public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt, Set<Abstraction> taints) {
                 if (stmt.containsInvokeExpr()) {
                     String sig = stmt.getInvokeExpr().getMethod().getSignature();
                     if (sig.equals(sendToUrl)) {
@@ -283,7 +284,7 @@ public class RiverTests {
             }
 
             @Override
-            public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+            public boolean isStatementWithAdditionalInformation(Stmt stmt, Abstraction abs) {
                 return false;
             }
         });
@@ -310,7 +311,7 @@ public class RiverTests {
 
         infoflow.setUsageContextProvider(new IUsageContextProvider() {
             @Override
-            public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt) {
+            public Set<AdditionalFlowInfoSpecification> needsAdditionalInformation(Stmt stmt, Set<Abstraction> taints) {
                 if (stmt.containsInvokeExpr()) {
                     String sig = stmt.getInvokeExpr().getMethod().getSignature();
                     if (sig.equals(sendToUrl)) {
@@ -322,7 +323,7 @@ public class RiverTests {
             }
 
             @Override
-            public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+            public boolean isStatementWithAdditionalInformation(Stmt stmt, Abstraction abs) {
                 if (!stmt.containsInvokeExpr())
                     return false;
 
