@@ -2,7 +2,6 @@ package soot.jimple.infoflow.river;
 
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Interface for Backward SourcePropagationRules that support conditional flows.
@@ -14,11 +13,11 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 public interface IAdditionalFlowSinkPropagationRule {
 	/**
 	 * Records a secondary flow taint reaching a statement.
-	 *
+	 * Important: This method does not check whether the secondary flow should be recorded.
+	 * 
 	 * @param d1     The calling context
 	 * @param source The current taint abstraction
 	 * @param stmt   The current statement, which is assumed to be a sink
-	 * @param def	 The definition of the source sink.
 	 */
-	void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt, ISourceSinkDefinition def);
+	void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt);
 }

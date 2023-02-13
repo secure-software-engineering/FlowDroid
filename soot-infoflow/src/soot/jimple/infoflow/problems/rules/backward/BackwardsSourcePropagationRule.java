@@ -22,7 +22,6 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -191,8 +190,13 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		return null;
 	}
 
+	// Note: Do not get confused with on the terms source/sink. In the general case, the backward
+	// analysis starts the analysis at sinks and records results at the source. For secondary flows,
+	// the secondary source is equal to the primary sink and the secondary sink is an interesting
+	// statement (an additional flow condition or a usage context) at which we record a result.
+	// That's why the backward source rule is also the secondary flow sink rule. */
 	@Override
-	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt, ISourceSinkDefinition def) {
+	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt) {
 		// Static fields are not part of the conditional flow model.
 		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
 			return;

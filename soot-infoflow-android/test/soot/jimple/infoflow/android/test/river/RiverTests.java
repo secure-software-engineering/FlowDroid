@@ -20,7 +20,6 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.river.AdditionalFlowInfoSpecification;
 import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.river.IUsageContextProvider;
-import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.BaseSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -284,8 +283,8 @@ public class RiverTests {
             }
 
             @Override
-            public Set<ISourceSinkDefinition> isStatementWithAdditionalInformation(Stmt stmt) {
-                return Collections.emptySet();
+            public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+                return false;
             }
         });
 
@@ -323,11 +322,11 @@ public class RiverTests {
             }
 
             @Override
-            public Set<ISourceSinkDefinition> isStatementWithAdditionalInformation(Stmt stmt) {
-                if (stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethod().getSignature().equals(urlInit))
-                    return Collections.singleton(SecondarySinkDefinition.INSTANCE);
+            public boolean isStatementWithAdditionalInformation(Stmt stmt) {
+                if (!stmt.containsInvokeExpr())
+                    return false;
 
-                return Collections.emptySet();
+                return stmt.getInvokeExpr().getMethod().getSignature().contains("java.net.URL: void <init>");
             }
         });
 

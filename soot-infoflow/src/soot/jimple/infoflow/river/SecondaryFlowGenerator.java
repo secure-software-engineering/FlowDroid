@@ -11,6 +11,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
@@ -111,9 +112,10 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	 */
 	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt, InfoflowManager manager) {
 		AccessPath ap = spec.toAccessPath(manager);
-		Abstraction newAbs = new Abstraction(null, ap, stmt, null, false, false);
+		ISourceSinkDefinition def = spec.getDefinition();
+		Abstraction newAbs = new Abstraction(def, ap, stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
-		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(null, ap, stmt));
+		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(def, ap, stmt));
 		return newAbs;
 	}
 

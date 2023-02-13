@@ -9,7 +9,6 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * TaintPropagationHandler to record which statements secondary flows reach.
@@ -52,15 +51,10 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
 
 		Stmt stmt = (Stmt) unit;
-		if (ssm.isSecondarySink(stmt)) {
+		if (ssm.isSecondarySink(stmt)
+				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt)) {
 			// Record the statement
-			sinkRule.processSecondaryFlowSink(null, incoming, stmt, SecondarySinkDefinition.INSTANCE);
-		}
-
-		Set<ISourceSinkDefinition> defs = manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt);
-		for (ISourceSinkDefinition def : defs) {
-			// Record the statement
-			sinkRule.processSecondaryFlowSink(null, incoming, stmt, def);
+			sinkRule.processSecondaryFlowSink(null, incoming, stmt);
 		}
 	}
 

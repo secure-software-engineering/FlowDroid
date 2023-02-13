@@ -4,6 +4,7 @@ import soot.Local;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Specification for searching backwards for additional information on a data
@@ -17,14 +18,18 @@ public class AdditionalFlowInfoSpecification {
     private final Local local;
     private final Stmt stmt;
 
-    public AdditionalFlowInfoSpecification() {
-        local = null;
-        stmt = null;
-    }
+    private final ISourceSinkDefinition def;
 
     public AdditionalFlowInfoSpecification(Local base, Stmt stmt) {
         this.local = base;
         this.stmt = stmt;
+        this.def = null;
+    }
+
+    public AdditionalFlowInfoSpecification(Local base, Stmt stmt, ISourceSinkDefinition def) {
+        this.local = base;
+        this.stmt = stmt;
+        this.def = def;
     }
 
     public Local getLocal() {
@@ -43,6 +48,10 @@ public class AdditionalFlowInfoSpecification {
      */
     public AccessPath toAccessPath(InfoflowManager manager) {
         return manager.getAccessPathFactory().createAccessPath(local, true);
+    }
+
+    public ISourceSinkDefinition getDefinition() {
+        return def;
     }
 
     @Override
