@@ -26,8 +26,15 @@ import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
 import soot.jimple.infoflow.river.AdditionalFlowCondition;
-import soot.jimple.infoflow.sourcesSinks.definitions.*;
+import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
  * Abstract class for all Flowdroid XML parsers. Returns a Set of Methods when
@@ -382,7 +389,7 @@ public abstract class AbstractXMLSourceSinkParser {
 				}
 				break;
 
-				case XMLConstants.PATHELEMENT_TAG:
+			case XMLConstants.PATHELEMENT_TAG:
 				break;
 			}
 		}
@@ -418,7 +425,7 @@ public abstract class AbstractXMLSourceSinkParser {
 		protected void handleEndtagField() {
 			// Create the field source
 			if (!baseAPs.isEmpty()) {
-				ISourceSinkDefinition ssd = createFieldSourceSinkDefinition(fieldSignature, baseAPs, paramAPs, conditions);
+				ISourceSinkDefinition ssd = createFieldSourceSinkDefinition(fieldSignature, baseAPs, conditions);
 				ssd.setCategory(category);
 				addSourceSinkDefinition(fieldSignature, ssd);
 			}
@@ -613,20 +620,20 @@ public abstract class AbstractXMLSourceSinkParser {
 	 * @return The newly created {@link FieldSourceSinkDefinition} instance
 	 */
 	protected abstract ISourceSinkDefinition createFieldSourceSinkDefinition(String signature,
-			Set<AccessPathTuple> baseAPs, List<Set<AccessPathTuple>> paramAPs);
+			Set<AccessPathTuple> baseAPs);
 
 	/**
 	 * Factory method for {@link FieldSourceSinkDefinition} instances
 	 *
-	 * @param signature The signature of the target field
-	 * @param baseAPs   The access paths that shall be considered as sources or
-	 *                  sinks
-	 * @param paramAPs Parameter access paths
-	 * @param conditions Conditions which has to be true for the definition to be valid
+	 * @param signature  The signature of the target field
+	 * @param baseAPs    The access paths that shall be considered as sources or
+	 *                   sinks
+	 * @param conditions Conditions which has to be true for the definition to be
+	 *                   valid
 	 * @return The newly created {@link FieldSourceSinkDefinition} instance
 	 */
-	protected abstract ISourceSinkDefinition createFieldSourceSinkDefinition(String signature, Set<AccessPathTuple> baseAPs,
-																			 List<Set<AccessPathTuple>> paramAPs, Set<SourceSinkCondition> conditions);
+	protected abstract ISourceSinkDefinition createFieldSourceSinkDefinition(String signature,
+			Set<AccessPathTuple> baseAPs, Set<SourceSinkCondition> conditions);
 
 	/**
 	 * Factory method for {@link MethodSourceSinkDefinition} instances
@@ -650,22 +657,23 @@ public abstract class AbstractXMLSourceSinkParser {
 	/**
 	 * Factory method for {@link MethodSourceSinkDefinition} instances
 	 *
-	 * @param method    The method that is to be defined as a source or sink
-	 * @param baseAPs   The access paths rooted in the base object that shall be
-	 *                  considered as sources or sinks
-	 * @param paramAPs  The access paths rooted in parameters that shall be
-	 *                  considered as sources or sinks. The index in the set
-	 *                  corresponds to the index of the formal parameter to which
-	 *                  the respective set of access paths belongs.
-	 * @param returnAPs The access paths rooted in the return object that shall be
-	 *                  considered as sources or sinks
-	 * @param callType  The type of call (normal call, callback, etc.)
-	 * @param conditions Conditions which has to be true for the definition to be valid
+	 * @param method     The method that is to be defined as a source or sink
+	 * @param baseAPs    The access paths rooted in the base object that shall be
+	 *                   considered as sources or sinks
+	 * @param paramAPs   The access paths rooted in parameters that shall be
+	 *                   considered as sources or sinks. The index in the set
+	 *                   corresponds to the index of the formal parameter to which
+	 *                   the respective set of access paths belongs.
+	 * @param returnAPs  The access paths rooted in the return object that shall be
+	 *                   considered as sources or sinks
+	 * @param callType   The type of call (normal call, callback, etc.)
+	 * @param conditions Conditions which has to be true for the definition to be
+	 *                   valid
 	 * @return The newly created {@link MethodSourceSinkDefinition} instance
 	 */
 	protected abstract ISourceSinkDefinition createMethodSourceSinkDefinition(AbstractMethodAndClass method,
-																			  Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
-																			  CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions);
+			Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
+			CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions);
 
 	/**
 	 * Reads the method or field signature from the given attribute map
