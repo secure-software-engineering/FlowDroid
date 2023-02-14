@@ -26,12 +26,12 @@ public class ConditionalFlowSourceSinkManagerWrapper implements IReversibleSourc
     }
 
     @Override
-    public void registerSecondarySource(Stmt stmt) {
+    public void registerSecondarySink(Stmt stmt) {
         // NO-OP
     }
 
     @Override
-    public void registerSecondarySource(SootMethod sm) {
+    public void registerSecondarySink(SootMethod sm) {
         // NO-OP
     }
 

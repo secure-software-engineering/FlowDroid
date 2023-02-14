@@ -94,8 +94,8 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected Map<Stmt, ISourceSinkDefinition> sinkStatements;
 
 	protected Set<SootMethod> conditionalSinks = new HashSet<>();
-	protected Set<SootMethod> secondarySourceMethods = new HashSet<>();
-	protected Set<SootClass> secondarySourceClasses = new HashSet<>();
+	protected Set<SootMethod> secondarySinkMethods = new HashSet<>();
+	protected Set<SootClass> secondarySinkClasses = new HashSet<>();
 
 	protected final SourceSinkConfiguration sourceSinkConfig;
 
@@ -744,8 +744,8 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 		conditionalSinks.add(m);
 		for (SourceSinkCondition cond : def.getConditions()) {
-			secondarySourceMethods.addAll(cond.getReferencedMethods());
-			secondarySourceClasses.addAll(cond.getReferencedClasses());
+			secondarySinkMethods.addAll(cond.getReferencedMethods());
+			secondarySinkClasses.addAll(cond.getReferencedClasses());
 		}
 	}
 
@@ -986,16 +986,16 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 		SootMethod callee = stmt.getInvokeExpr().getMethod();
 		SootClass dc = callee.getDeclaringClass();
-		if (secondarySourceMethods.contains(callee) || secondarySourceClasses.contains(dc))
+		if (secondarySinkMethods.contains(callee) || secondarySinkClasses.contains(dc))
 			return true;
 
 		// Check if the current method inherits from a conditional sink
 		for (SootClass superClass : parentClassesAndInterfaces.getUnchecked(dc)) {
-			if (secondarySourceClasses.contains(superClass))
+			if (secondarySinkClasses.contains(superClass))
 				return true;
 
 			SootMethod superMethod = superClass.getMethodUnsafe(callee.getSubSignature());
-			if (secondarySourceMethods.contains(superMethod))
+			if (secondarySinkMethods.contains(superMethod))
 				return true;
 		}
 
@@ -1003,13 +1003,13 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	}
 
 	@Override
-	public void registerSecondarySource(Stmt stmt) {
-		secondarySourceMethods.add(stmt.getInvokeExpr().getMethod());
+	public void registerSecondarySink(Stmt stmt) {
+		secondarySinkMethods.add(stmt.getInvokeExpr().getMethod());
 	}
 
 	@Override
-	public void registerSecondarySource(SootMethod sm) {
-		secondarySourceMethods.add(sm);
+	public void registerSecondarySink(SootMethod sm) {
+		secondarySinkMethods.add(sm);
 	}
 
 	@Override

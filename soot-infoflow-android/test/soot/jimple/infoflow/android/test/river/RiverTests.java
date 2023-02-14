@@ -266,7 +266,7 @@ public class RiverTests {
 
             @Override
             public void onAfterCallgraphConstruction() {
-                ssm.registerSecondarySource(Scene.v().grabMethod("<java.net.URL: void <init>(java.lang.String)>"));
+                ssm.registerSecondarySink(Scene.v().grabMethod("<java.net.URL: void <init>(java.lang.String)>"));
             }
         }));
 

@@ -27,17 +27,17 @@ public interface IConditionalFlowManager {
     boolean isConditionalSink(Stmt stmt);
 
     /**
-     * Register a secondary source at runtime.
+     * Register a secondary sink at runtime.
      *
-     * @param stmt Secondary source statement
+     * @param stmt Secondary sink statement
      */
-    void registerSecondarySource(Stmt stmt);
+    void registerSecondarySink(Stmt stmt);
 
     /**
-     * Register a secondary source at runtime.
+     * Register a secondary sink at runtime.
      *
-     * @param sm Secondary source method
+     * @param sm Secondary sink method
      */
-    void registerSecondarySource(SootMethod sm);
+    void registerSecondarySink(SootMethod sm);
 
 }
