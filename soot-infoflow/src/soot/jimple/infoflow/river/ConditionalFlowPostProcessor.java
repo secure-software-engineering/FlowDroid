@@ -38,8 +38,9 @@ public class ConditionalFlowPostProcessor implements PostAnalysisHandler {
 
         for (DataFlowResult dfRes : results.getResultSet()) {
             Set<SourceSinkCondition> conditions = dfRes.getSink().getDefinition().getConditions();
-            if (conditions != null
-                    && !conditions.stream().allMatch(cond -> cond.evaluate(dfRes, results)))
+            // One of the conditions must match. Within both, a class name and a signature must match.
+            if (conditions != null && !conditions.isEmpty()
+                    && conditions.stream().noneMatch(cond -> cond.evaluate(dfRes, results)))
                 tbr.add(dfRes.getSink());
         }
 
