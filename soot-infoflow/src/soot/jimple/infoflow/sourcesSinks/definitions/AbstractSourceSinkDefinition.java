@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Set;
+
 /**
  * A class to handle all access paths of sources and sinks for a certain method.
  * 
@@ -10,6 +12,7 @@ package soot.jimple.infoflow.sourcesSinks.definitions;
 public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinition {
 
 	protected ISourceSinkCategory category;
+	protected Set<SourceSinkCondition> conditions;
 
 	public AbstractSourceSinkDefinition() {
 	}
@@ -26,6 +29,16 @@ public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinit
 	@Override
 	public ISourceSinkCategory getCategory() {
 		return category;
+	}
+
+	@Override
+	public Set<SourceSinkCondition> getConditions() {
+		return conditions;
+	}
+
+	@Override
+	public void setConditions(Set<SourceSinkCondition> conditions) {
+		this.conditions = conditions;
 	}
 
 	@Override
@@ -50,6 +63,11 @@ public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinit
 				return false;
 		} else if (!category.equals(other.category))
 			return false;
+		if (conditions == null) {
+			if (other.conditions != null)
+				return false;
+		} else if (!conditions.equals(other.conditions))
+				return false;
 		return true;
 	}
 

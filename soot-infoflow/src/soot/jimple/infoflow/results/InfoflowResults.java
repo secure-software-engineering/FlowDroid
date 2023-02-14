@@ -12,12 +12,7 @@ package soot.jimple.infoflow.results;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +43,7 @@ public class InfoflowResults {
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
 	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
+	protected volatile MultiMap<ResultSourceInfo, ResultSinkInfo> additionalResults = null;
 	protected volatile InfoflowPerformanceData performanceData = null;
 	protected volatile List<String> exceptions = null;
 	protected int terminationState = TERMINATION_SUCCESS;
@@ -180,6 +176,47 @@ public class InfoflowResults {
 				apPath, csPath, manager);
 	}
 
+	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ResultSourceInfo sourceObj, ResultSinkInfo sinkObj) {
+		if (additionalResults == null) {
+			synchronized (this) {
+				if (additionalResults == null)
+					additionalResults = new ConcurrentHashMultiMap<>();
+			}
+		}
+		if (!this.additionalResults.put(sourceObj, sinkObj))
+			logger.debug("Found two equal paths");
+		return new Pair<>(sourceObj, sinkObj);
+	}
+
+	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
+															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+															List<Abstraction> propagationPath, InfoflowManager manager) {
+		List<Stmt> stmtPath = null;
+		List<AccessPath> apPath = null;
+		List<Stmt> csPath = null;
+		if (propagationPath != null) {
+			stmtPath = new ArrayList<>(propagationPath.size());
+			apPath = new ArrayList<>(propagationPath.size());
+			if (!manager.getConfig().getPathAgnosticResults())
+				csPath = new ArrayList<>(propagationPath.size());
+			for (Abstraction pathAbs : propagationPath) {
+				if (pathAbs.getCurrentStmt() != null) {
+					stmtPath.add(pathAbs.getCurrentStmt());
+					apPath.add(pathAbs.getAccessPath());
+					if (csPath != null)
+						csPath.add(pathAbs.getCorrespondingCallSite());
+				}
+			}
+		}
+
+
+		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
+				stmtPath, apPath, csPath, pathAgnosticResults);
+		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
+
+		return addConditionalResult(sourceObj, sinkObj);
+	}
+
 	/**
 	 * Adds the given result to this data structure
 	 *
@@ -268,6 +305,12 @@ public class InfoflowResults {
 					addResult(sink, source);
 		}
 
+		if (!results.getAdditionalResults().isEmpty()) {
+			for (ResultSourceInfo source : results.getAdditionalResults().keySet())
+				for (ResultSinkInfo sink : results.getAdditionalResults().get(source))
+					addConditionalResult(source, sink);
+		}
+
 		// Sum up the performance data
 		if (results.performanceData != null) {
 			if (this.performanceData == null)
@@ -302,6 +345,10 @@ public class InfoflowResults {
 		return this.results;
 	}
 
+	public MultiMap<ResultSourceInfo, ResultSinkInfo> getAdditionalResults() {
+		return this.additionalResults == null ? new ConcurrentHashMultiMap<>() : additionalResults;
+	}
+
 	/**
 	 * Gets the data flow results in a flat set
 	 *
@@ -315,6 +362,24 @@ public class InfoflowResults {
 		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
 		for (ResultSinkInfo sink : results.keySet()) {
 			for (ResultSourceInfo source : results.get(sink))
+				set.add(new DataFlowResult(source, sink));
+		}
+		return set;
+	}
+
+	/**
+	 * Gets the additional data flow results in a flat set
+	 *
+	 * @return The additional data flow results in a flat set. If no data flows are available,
+	 *         the return value is null.
+	 */
+	public Set<DataFlowResult> getAdditionalResultSet() {
+		if (additionalResults == null || additionalResults.isEmpty())
+			return null;
+
+		Set<DataFlowResult> set = new HashSet<>(additionalResults.size() * 10);
+		for (ResultSourceInfo source : additionalResults.keySet()) {
+			for (ResultSinkInfo sink : additionalResults.get(source))
 				set.add(new DataFlowResult(source, sink));
 		}
 		return set;
@@ -545,6 +610,36 @@ public class InfoflowResults {
 	public void remove(DataFlowResult result) {
 		results.remove(result.getSink(), result.getSource());
 	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sink
+	 * @param source
+	 */
+	public void remove(ResultSourceInfo source, ResultSinkInfo sink) {
+		results.remove(sink, source);
+	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sink
+	 */
+	public void remove(ResultSinkInfo sink) {
+		results.remove(sink);
+	}
+
+	/**
+	 * Removes the given data flow result from this result set
+	 *
+	 * @param sinks
+	 */
+	public void removeAll(Collection<ResultSinkInfo> sinks) {
+		for (ResultSinkInfo sink : sinks)
+			remove(sink);
+	}
+
 
 	@Override
 	public String toString() {

@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.problems.rules;
+package soot.jimple.infoflow.river;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,18 +6,26 @@ import java.util.List;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
-import soot.jimple.infoflow.problems.rules.backward.*;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsArrayPropagationRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsClinitRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsExceptionPropagationRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsImplicitFlowRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsSourcePropagationRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsStrongUpdatePropagationRule;
+import soot.jimple.infoflow.problems.rules.backward.BackwardsWrapperRule;
 import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
 
 /**
- * Backward implementation of the {@link IPropagationRuleManagerFactory} class
+ * PropagationRuleManagerFactory used for the backward direction in River.
+ * Expects an empty source sink manager.
  * 
  * @author Tim Lange
- *
  */
-public class BackwardPropagationRuleManagerFactory implements IPropagationRuleManagerFactory {
+public class BackwardNoSinkRuleManagerFactory implements IPropagationRuleManagerFactory {
 
 	@Override
 	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
@@ -25,7 +33,6 @@ public class BackwardPropagationRuleManagerFactory implements IPropagationRuleMa
 		List<ITaintPropagationRule> ruleList = new ArrayList<>();
 
 		// backwards only
-		ruleList.add(new BackwardsSinkPropagationRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsSourcePropagationRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsClinitRule(manager, zeroValue, results));
 		ruleList.add(new BackwardsStrongUpdatePropagationRule(manager, zeroValue, results));

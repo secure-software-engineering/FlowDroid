@@ -404,7 +404,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						for (Abstraction d3 : res)
-							manager.getForwardSolver().injectContext(solver, dest, d3, callSite, source, d1);
+							manager.getMainSolver().injectContext(solver, dest, d3, callSite, source, d1);
 
 						return res;
 					}
@@ -715,10 +715,10 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 					for (Unit condUnit : condUnits) {
 						Abstraction abs = in.deriveNewAbstractionWithDominator(condUnit);
 						if (abs != null)
-							manager.getForwardSolver().processEdge(new PathEdge<>(d1, unit, abs));
+							manager.getMainSolver().processEdge(new PathEdge<>(d1, unit, abs));
 					}
 				} else {
-					manager.getForwardSolver()
+					manager.getMainSolver()
 							.processEdge(new PathEdge<>(d1, unit, in));
 				}
 			}

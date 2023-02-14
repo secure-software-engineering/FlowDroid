@@ -62,7 +62,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				// chose to killAll and inject the taint again.
 				Abstraction abs = source.removeDominator(stmt);
 				if (abs != null)
-					manager.getForwardSolver().processEdge(new PathEdge<>(d1, stmt, abs));
+					manager.getMainSolver().processEdge(new PathEdge<>(d1, stmt, abs));
 
 				killAll.value = true;
 				return null;
@@ -159,7 +159,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				// chose to killAll and inject the taint again.
 				Abstraction abs = source.removeDominator(stmt);
 				if (abs != null)
-					manager.getForwardSolver().processEdge(new PathEdge<>(d1, stmt, abs));
+					manager.getMainSolver().processEdge(new PathEdge<>(d1, stmt, abs));
 			}
 			return null;
 		}
@@ -257,7 +257,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				// chose to killAll and inject the taint again.
 				Abstraction abs = source.removeDominator(stmt);
 				if (abs != null)
-					manager.getForwardSolver().processEdge(new PathEdge<>(d1, stmt, abs));
+					manager.getMainSolver().processEdge(new PathEdge<>(d1, stmt, abs));
 			}
 			return null;
 		}
@@ -302,7 +302,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				// chose to killAll and inject the taint again.
 				Abstraction abs = source.removeDominator(stmt);
 				if (abs != null)
-					manager.getForwardSolver().processEdge(new PathEdge<>(calleeD1, stmt, abs));
+					manager.getMainSolver().processEdge(new PathEdge<>(calleeD1, stmt, abs));
 			}
 			return null;
 		}

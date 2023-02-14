@@ -139,7 +139,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 							Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap,
 									rootPropagator.getStmt());
 							for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
-								manager.getForwardSolver().processEdge(
+								manager.getMainSolver().processEdge(
 										new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
 						}
 					}
@@ -220,7 +220,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		this.fastHierarchy = scene.getOrMakeFastHierarchy();
 
 		// Register the taint propagation handler
-		manager.getForwardSolver().setFollowReturnsPastSeedsHandler(new SummaryFRPSHandler());
+		manager.getMainSolver().setFollowReturnsPastSeedsHandler(new SummaryFRPSHandler());
 
 		// If we have a fallback wrapper, we need to initialize that one as well
 		if (fallbackWrapper != null)
@@ -787,7 +787,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
 		for (Abstraction abs : absSet) {
-			Set<EndSummary<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
+			Set<EndSummary<Unit, Abstraction>> endSummary = manager.getMainSolver().endSummary(implementor, abs);
 			if (endSummary != null && !endSummary.isEmpty()) {
 				for (EndSummary<Unit, Abstraction> pair : endSummary) {
 					if (outgoingTaints == null)
@@ -813,7 +813,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 			// if we don't have a summary, we need to inject the taints into the solver
 			for (Unit sP : manager.getICFG().getStartPointsOf(implementor)) {
 				PathEdge<Unit, Abstraction> edge = new PathEdge<>(abs, sP, abs);
-				manager.getForwardSolver().processEdge(edge);
+				manager.getMainSolver().processEdge(edge);
 			}
 
 			// Register the new context so that we can get the taints back

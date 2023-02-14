@@ -12,6 +12,7 @@ package soot.jimple.infoflow;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
+import soot.jimple.infoflow.aliasing.BackwardsFlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.FlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.aliasing.LazyAliasingStrategy;
@@ -23,7 +24,10 @@ import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
 import soot.jimple.infoflow.problems.AliasProblem;
+import soot.jimple.infoflow.problems.BackwardsAliasProblem;
+import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
+import soot.jimple.infoflow.river.BackwardNoSinkRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.DefaultPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -31,6 +35,7 @@ import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
+import soot.jimple.infoflow.sourcesSinks.manager.EmptySourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
@@ -168,4 +173,15 @@ public class Infoflow extends AbstractInfoflow {
 		return new DefaultPropagationRuleManagerFactory();
 	}
 
+	@Override
+	protected BackwardNoSinkRuleManagerFactory initializeReverseRuleManagerFactory() {
+		return new BackwardNoSinkRuleManagerFactory();
+	}
+
+	@Override
+	protected InfoflowManager initializeReverseInfoflowManager(IInfoflowCFG iCfg,
+															   GlobalTaintManager globalTaintManager) {
+		return new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg),
+				new EmptySourceSinkManager(), taintWrapper, hierarchy, globalTaintManager);
+	}
 }

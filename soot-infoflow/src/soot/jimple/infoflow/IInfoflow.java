@@ -26,6 +26,7 @@ import soot.jimple.infoflow.ipc.IIPCManager;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
@@ -267,4 +268,10 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 */
 	public void setPropagationRuleManagerFactory(IPropagationRuleManagerFactory ruleManagerFactory);
 
+	/**
+	 * Sets the usage context provider
+	 *
+	 * @param usageContextProvider The usage context provider object
+	 */
+	void setUsageContextProvider(IUsageContextProvider usageContextProvider);
 }

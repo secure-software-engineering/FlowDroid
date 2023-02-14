@@ -6,6 +6,7 @@ import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -22,8 +23,8 @@ import soot.jimple.infoflow.typing.TypeUtils;
 public class InfoflowManager {
 
 	private final InfoflowConfiguration config;
-	private IInfoflowSolver forwardSolver;
-	private IInfoflowSolver backwardSolver;
+	private IInfoflowSolver mainSolver;
+	private IInfoflowSolver aliasSolver;
 	private final IInfoflowCFG icfg;
 	private final IInfoflowCFG originalIcfg;
 	private final ISourceSinkManager sourceSinkManager;
@@ -34,9 +35,14 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
+	// The infoflow manager for the on-demand analysis that computes additional flows
+	public InfoflowManager additionalManager;
+
+	private IUsageContextProvider usageContextProvider;
+
 	protected InfoflowManager(InfoflowConfiguration config) {
 		this.config = config;
-		this.forwardSolver = null;
+		this.mainSolver = null;
 		this.icfg = null;
 		this.originalIcfg = null;
 		this.sourceSinkManager = null;
@@ -45,13 +51,15 @@ public class InfoflowManager {
 		this.hierarchy = null;
 		this.accessPathFactory = null;
 		this.globalTaintManager = null;
+		this.additionalManager = null;
+		this.usageContextProvider = null;
 	}
 
-	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
-			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			GlobalTaintManager globalTaintManager) {
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
+							  ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
+							  GlobalTaintManager globalTaintManager) {
 		this.config = config;
-		this.forwardSolver = forwardSolver;
+		this.mainSolver = mainSolver;
 		this.icfg = icfg;
 		this.originalIcfg = null;
 		this.sourceSinkManager = sourceSinkManager;
@@ -60,13 +68,14 @@ public class InfoflowManager {
 		this.hierarchy = hierarchy;
 		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = globalTaintManager;
+		this.usageContextProvider = null;
 	}
 
-	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg,
-			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			InfoflowManager existingManager) {
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
+							  ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
+							  InfoflowManager existingManager) {
 		this.config = config;
-		this.forwardSolver = forwardSolver;
+		this.mainSolver = mainSolver;
 		this.icfg = icfg;
 		this.originalIcfg = existingManager.getICFG();
 		this.sourceSinkManager = sourceSinkManager;
@@ -75,11 +84,12 @@ public class InfoflowManager {
 		this.hierarchy = hierarchy;
 		this.accessPathFactory = existingManager.getAccessPathFactory();
 		this.globalTaintManager = existingManager.getGlobalTaintManager();
+		this.usageContextProvider = null;
 	}
 
-	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver forwardSolver, IInfoflowCFG icfg) {
+	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg) {
 		this.config = config;
-		this.forwardSolver = forwardSolver;
+		this.mainSolver = mainSolver;
 		this.icfg = icfg;
 		this.originalIcfg = null;
 		this.sourceSinkManager = null;
@@ -88,6 +98,7 @@ public class InfoflowManager {
 		this.hierarchy = Scene.v().getOrMakeFastHierarchy();
 		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = null;
+		this.usageContextProvider = null;
 	}
 
 	/**
@@ -100,12 +111,12 @@ public class InfoflowManager {
 	}
 
 	/**
-	 * Sets the IFDS solver that propagates edges forward
+	 * Sets the IFDS solver that propagates edges in the main direction
 	 * 
-	 * @param solver The IFDS solver that propagates edges forward
+	 * @param solver The IFDS solver that propagates edges in the main direction
 	 */
-	public void setForwardSolver(IInfoflowSolver solver) {
-		this.forwardSolver = solver;
+	public void setMainSolver(IInfoflowSolver solver) {
+		this.mainSolver = solver;
 	}
 
 	/**
@@ -113,17 +124,17 @@ public class InfoflowManager {
 	 * 
 	 * @return The IFDS solver that propagates edges forward
 	 */
-	public IInfoflowSolver getForwardSolver() {
-		return this.forwardSolver;
+	public IInfoflowSolver getMainSolver() {
+		return this.mainSolver;
 	}
 
 	/**
-	 * Gets the IFDS solver that propagates edges forward
+	 * Gets the IFDS solver that propagates alias edges
 	 *
-	 * @return The IFDS solver that propagates edges forward
+	 * @return The IFDS solver that propagates alias edges
 	 */
-	public IInfoflowSolver getBackwardSolver() {
-		return this.backwardSolver;
+	public IInfoflowSolver getAliasSolver() {
+		return this.aliasSolver;
 	}
 
 	/**
@@ -131,8 +142,8 @@ public class InfoflowManager {
 	 *
 	 * @param solver The IFDS solver that propagates edges forward
 	 */
-	public void setBackwardSolver(IInfoflowSolver solver) {
-		this.backwardSolver = solver;
+	public void setAliasSolver(IInfoflowSolver solver) {
+		this.aliasSolver = solver;
 	}
 
 	/**
@@ -145,7 +156,8 @@ public class InfoflowManager {
 	}
 
 	/**
-	 * Gets the interprocedural control flow graph for the other direction. Only available in the alias search.
+	 * Gets the interprocedural control flow graph for the other direction. Only
+	 * available in the alias search.
 	 *
 	 * @return The inversed interprocedural control flow graph
 	 */
@@ -206,8 +218,8 @@ public class InfoflowManager {
 	 * @return True if the analysis has been aborted, otherwise false
 	 */
 	public boolean isAnalysisAborted() {
-		if (forwardSolver instanceof IMemoryBoundedSolver)
-			return ((IMemoryBoundedSolver) forwardSolver).isKilled();
+		if (mainSolver instanceof IMemoryBoundedSolver)
+			return ((IMemoryBoundedSolver) mainSolver).isKilled();
 		return false;
 	}
 
@@ -216,7 +228,7 @@ public class InfoflowManager {
 	 * data flow analysis
 	 */
 	public void cleanup() {
-		forwardSolver = null;
+		mainSolver = null;
 		aliasing = null;
 	}
 
@@ -238,4 +250,21 @@ public class InfoflowManager {
 		return globalTaintManager;
 	}
 
+	/**
+	 * Set the additional flow manager
+	 *
+	 * @param usageContextProvider The manager object for usage contexts
+	 */
+	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
+		this.usageContextProvider = usageContextProvider;
+	}
+
+	/**
+	 * Get the additional information flow manager
+	 *
+	 * @return The manager object for usage contexts
+	 */
+	public IUsageContextProvider getUsageContextProvider() {
+		return this.usageContextProvider;
+	}
 }

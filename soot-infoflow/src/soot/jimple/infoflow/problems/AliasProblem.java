@@ -132,7 +132,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 					// taint, all taint propagations must be below that point,
 					// so this is the right point to turn around.
 					for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-						manager.getForwardSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, source));
+						manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, source));
 				}
 
 				// We only handle assignments and identity statements
@@ -253,7 +253,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 							// Inject the new alias into the forward solver
 							for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-								manager.getForwardSolver()
+								manager.getMainSolver()
 										.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
 						}
 					}
@@ -378,7 +378,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 									// Inject the new alias into the forward solver
 									for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-										manager.getForwardSolver()
+										manager.getMainSolver()
 												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newAbs));
 								}
 							}
@@ -615,7 +615,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 						// Inject our calling context into the other solver
 						if (res != null && !res.isEmpty())
 							for (Abstraction d3 : res)
-								manager.getForwardSolver().injectContext(solver, dest, d3, src, source, d1);
+								manager.getMainSolver().injectContext(solver, dest, d3, src, source, d1);
 
 						return notifyOutFlowHandlers(src, d1, source, res, FlowFunctionType.CallFlowFunction);
 					}
@@ -818,7 +818,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									// Do not pass on this taint, but
 									// trigger the forward analysis
 									for (Unit u : interproceduralCFG().getPredsOf(call))
-										manager.getForwardSolver()
+										manager.getMainSolver()
 												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
 								}
 								return notifyOutFlowHandlers(call, d1, source, passOnSet,

@@ -23,7 +23,7 @@ public class BackwardsClinitRule extends AbstractTaintPropagationRule {
         Collection<Unit> startPoints = manager.getICFG().getStartPointsOf(callee);
         // Most likely |startPoints|=1 but just to be safe
         for (Unit startPoint : startPoints)
-            manager.getForwardSolver().processEdge(new PathEdge<>(d1, startPoint, abs));
+            manager.getMainSolver().processEdge(new PathEdge<>(d1, startPoint, abs));
     }
 
     private boolean containsStaticField(SootMethod callee, Abstraction abs) {

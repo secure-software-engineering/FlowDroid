@@ -95,6 +95,7 @@ import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
@@ -149,6 +150,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
 	protected TaintPropagationHandler taintPropagationHandler = null;
 	protected TaintPropagationHandler aliasPropagationHandler = null;
+
+	protected IUsageContextProvider usageContextProvider = null;
 
 	protected IInPlaceInfoflow infoflow = null;
 
@@ -1685,6 +1688,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		info.setTaintWrapper(taintWrapper);
 		info.setTaintPropagationHandler(taintPropagationHandler);
 		info.setAliasPropagationHandler(aliasPropagationHandler);
+		info.setUsageContextProvider(usageContextProvider);
 
 		// We use a specialized memory manager that knows about Android
 		info.setMemoryManagerFactory(new IMemoryManagerFactory() {
@@ -1980,4 +1984,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 	}
 
+	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
+		this.usageContextProvider = usageContextProvider;
+	}
 }

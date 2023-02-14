@@ -67,7 +67,7 @@ public class TaintPropagationResults {
 		abs.setCorrespondingCallSite(resultAbs.getSinkStmt());
 
 		// Reduce the incoming abstraction
-		IMemoryManager<Abstraction, Unit> memoryManager = manager.getForwardSolver().getMemoryManager();
+		IMemoryManager<Abstraction, Unit> memoryManager = manager.getMainSolver().getMemoryManager();
 		if (memoryManager != null) {
 			abs = memoryManager.handleMemoryObject(abs);
 			if (abs == null)

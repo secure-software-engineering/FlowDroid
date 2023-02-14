@@ -17,6 +17,10 @@ public class XMLConstants {
 	public static final String PARAM_TAG = "param";
 	public static final String ACCESSPATH_TAG = "accesspath";
 	public static final String PATHELEMENT_TAG = "pathelement";
+	public static final String ADDITIONAL_FLOW_CONDITION_TAG = "additionalflowcondition";
+	public static final String SIGNATURE_ON_PATH_TAG = "signatureonpath";
+	public static final String CLASS_NAME_ON_PATH_TAG = "classnameonpath";
+	public static final String CLASS_NAME_ATTRIBUTE = "className";
 
 	public static final String ID_ATTRIBUTE = "id";
 	public static final String CUSTOM_ID_ATTRIBUTE = "customId";

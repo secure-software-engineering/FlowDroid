@@ -30,16 +30,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.AssignStmt;
-import soot.jimple.Constant;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.FieldRef;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.ParameterRef;
-import soot.jimple.ReturnStmt;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.SourceSinkConfiguration;
@@ -49,13 +40,10 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
-import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.*;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
-import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
@@ -64,7 +52,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
-public abstract class BaseSourceSinkManager implements IReversibleSourceSinkManager, IOneSourceAtATimeManager {
+public abstract class BaseSourceSinkManager implements IReversibleSourceSinkManager, IOneSourceAtATimeManager, IConditionalFlowManager {
 	private final static String GLOBAL_SIG = "--GLOBAL--";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -104,6 +92,10 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected Map<SootField, ISourceSinkDefinition> sourceFields;
 	protected Map<SootField, ISourceSinkDefinition> sinkFields;
 	protected Map<Stmt, ISourceSinkDefinition> sinkStatements;
+
+	protected Set<SootMethod> conditionalSinks = new HashSet<>();
+	protected Set<SootMethod> secondarySinkMethods = new HashSet<>();
+	protected Set<SootClass> secondarySinkClasses = new HashSet<>();
 
 	protected final SourceSinkConfiguration sourceSinkConfig;
 
@@ -746,6 +738,17 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		return null;
 	}
 
+	private void initializeConditions(SootMethod m, ISourceSinkDefinition def) {
+		if (m == null || def.getConditions() == null || def.getConditions().isEmpty())
+			return;
+
+		conditionalSinks.add(m);
+		for (SourceSinkCondition cond : def.getConditions()) {
+			secondarySinkMethods.addAll(cond.getReferencedMethods());
+			secondarySinkClasses.addAll(cond.getReferencedClasses());
+		}
+	}
+
 	@Override
 	public void initialize() {
 		// Get the Soot method or field for the source signatures we have
@@ -802,8 +805,10 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 					if (methodSourceSinkDef.getCallType() == CallType.Return) {
 						SootMethodAndClass method = methodSourceSinkDef.getMethod();
 						SootMethod m = Scene.v().grabMethod(method.getSignature());
-						if (m != null)
+						if (m != null) {
 							sinkReturnMethods.put(m, methodSourceSinkDef);
+							initializeConditions(m, methodSourceSinkDef);
+						}
 					} else {
 						SootMethodAndClass method = methodSourceSinkDef.getMethod();
 						String returnType = method.getReturnType();
@@ -814,12 +819,16 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 							String subSignatureWithoutReturnType = (((MethodSourceSinkDefinition) sourceSinkDef)
 									.getMethod().getSubSignature());
 							SootMethod sootMethod = grabMethodWithoutReturn(className, subSignatureWithoutReturnType);
-							if (sootMethod != null)
+							if (sootMethod != null) {
 								sinkMethods.put(sootMethod, sourceSinkDef);
+								initializeConditions(sootMethod, methodSourceSinkDef);
+							}
 						} else {
 							SootMethod sm = grabMethod(entry.getO1());
-							if (sm != null)
+							if (sm != null) {
 								sinkMethods.put(sm, entry.getO2());
+								initializeConditions(sm, methodSourceSinkDef);
+							}
 						}
 					}
 
@@ -971,4 +980,57 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		this.excludedMethods.add(toExclude);
 	}
 
+	@Override
+	public boolean isSecondarySink(Stmt stmt) {
+		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
+			return false;
+
+		SootMethod callee = stmt.getInvokeExpr().getMethod();
+		SootClass dc = callee.getDeclaringClass();
+		if (secondarySinkMethods.contains(callee) || secondarySinkClasses.contains(dc))
+			return true;
+
+		// Check if the current method inherits from a conditional sink
+		for (SootClass superClass : parentClassesAndInterfaces.getUnchecked(dc)) {
+			if (secondarySinkClasses.contains(superClass))
+				return true;
+
+			SootMethod superMethod = superClass.getMethodUnsafe(callee.getSubSignature());
+			if (secondarySinkMethods.contains(superMethod))
+				return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void registerSecondarySink(Stmt stmt) {
+		secondarySinkMethods.add(stmt.getInvokeExpr().getMethod());
+	}
+
+	@Override
+	public void registerSecondarySink(SootMethod sm) {
+		secondarySinkMethods.add(sm);
+	}
+
+	@Override
+	public boolean isConditionalSink(Stmt stmt) {
+		// River only supports InstanceInvokeExprs
+		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
+			return false;
+
+		// Check if we have a direct hit
+		SootMethod callee = stmt.getInvokeExpr().getMethod();
+		if (conditionalSinks.contains(callee))
+			return true;
+
+		// Check if the current method inherits from a conditional sink
+		for (SootClass sc : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
+			SootMethod superMethod = sc.getMethodUnsafe(callee.getSubSignature());
+			if (conditionalSinks.contains(superMethod))
+				return true;
+		}
+
+		return false;
+	}
 }
