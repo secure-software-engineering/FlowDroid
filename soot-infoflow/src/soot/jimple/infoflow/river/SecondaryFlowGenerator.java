@@ -96,9 +96,11 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	 * @return New abstraction
 	 */
 	protected Abstraction createAdditionalFlowAbstraction(Abstraction baseTaint, Stmt stmt) {
-		Abstraction newAbs = new Abstraction(null, baseTaint.getAccessPath(), stmt, null, false, false);
+		Abstraction newAbs = new Abstraction(ConditionalSecondarySourceDefinition.INSTANCE, baseTaint.getAccessPath(), stmt,
+				null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
-		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(null, baseTaint.getAccessPath(), stmt));
+		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(ConditionalSecondarySourceDefinition.INSTANCE,
+				baseTaint.getAccessPath(), stmt));
 		return newAbs;
 	}
 

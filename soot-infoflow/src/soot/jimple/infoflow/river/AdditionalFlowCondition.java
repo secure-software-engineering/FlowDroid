@@ -135,7 +135,8 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
 
         for (ResultSourceInfo secondarySourceInfo : additionalResults.keySet()) {
             // Match secondary source with primary sink of interest
-            if (secondarySourceInfo.getStmt() == primarySinkStmt) {
+            if (secondarySourceInfo.getStmt() == primarySinkStmt
+                    && secondarySourceInfo.getDefinition() instanceof ConditionalSecondarySourceDefinition) {
                 for (ResultSinkInfo secondarySinkInfo : additionalResults.get(secondarySourceInfo)) {
                     if (secondarySourceInfo.getPath() == null) {
                         // Fall back if path reconstruction is not enabled
