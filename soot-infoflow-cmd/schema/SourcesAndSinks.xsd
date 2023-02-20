@@ -29,6 +29,11 @@
 			<xs:element name="return" type="apElement" minOccurs="0" maxOccurs="1" />
 			<xs:element name="param" type="apElementWithIndex" minOccurs="0" maxOccurs="unbounded" />
 		</xs:choice>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="additionalFlowCondition" type="additionalFlowConditionType" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:choice>
 	</xs:sequence>
 	<xs:attribute name="signature" type="xs:string" use="required"/>
 	<xs:attribute name="callType" type="callType" use="optional" default="methodCall" />
@@ -79,6 +84,7 @@
     </xs:sequence>
     <xs:attribute name="isSource" type="xs:boolean" default="false"/>
     <xs:attribute name="isSink" type="xs:boolean" default="false"/>
+    <xs:attribute name="description" type="xs:string" use="optional" />
 </xs:complexType>
 
 <xs:complexType name="pathElementType">
@@ -90,7 +96,22 @@
     </xs:simpleContent>
 </xs:complexType>
 
-
+<xs:complexType name="additionalFlowConditionType">
+	<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="signatureOnPath">
+				<xs:complexType>
+					<xs:attribute name="signature" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="classNameOnPath">
+				<xs:complexType>
+					<xs:attribute name="className" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:sequence>
+</xs:complexType>
 
 
 
