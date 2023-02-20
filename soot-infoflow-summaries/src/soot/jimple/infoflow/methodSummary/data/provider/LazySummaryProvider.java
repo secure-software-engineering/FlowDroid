@@ -143,7 +143,7 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 
 	@Override
 	public ClassMethodSummaries getClassFlows(String className) {
-		if (loadableClasses != null && loadableClasses.contains(className))
+		if (loadableClasses != null && className != null && loadableClasses.contains(className))
 			loadClass(className);
 		return super.getClassFlows(className);
 	}
