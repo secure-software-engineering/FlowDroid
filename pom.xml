@@ -64,7 +64,8 @@
 		<module>soot-infoflow-android</module>
 		<module>soot-infoflow-summaries</module>
 		<module>soot-infoflow-cmd</module>
-	</modules>
+        <module>soot-infoflow-integration</module>
+    </modules>
 
 	<dependencyManagement>
 		<dependencies>
