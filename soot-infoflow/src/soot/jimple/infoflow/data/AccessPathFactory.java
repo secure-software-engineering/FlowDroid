@@ -420,6 +420,8 @@ public class AccessPathFactory {
 		Set<AccessPathFragment[]> bases = baseRegister.computeIfAbsent(eiType,
 				t -> Collections.synchronizedSet(new TCustomHashSet<>(new HashingStrategy<AccessPathFragment[]>() {
 
+					private static final long serialVersionUID = 3017690689067651070L;
+
 					@Override
 					public int computeHashCode(AccessPathFragment[] arg0) {
 						return Arrays.hashCode(arg0);
