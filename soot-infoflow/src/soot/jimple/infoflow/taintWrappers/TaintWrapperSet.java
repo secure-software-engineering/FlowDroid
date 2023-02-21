@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import soot.SootMethod;
+import soot.Type;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -97,6 +98,14 @@ public class TaintWrapperSet implements IReversibleTaintWrapper {
 	@Override
 	public int getWrapperMisses() {
 		return misses.get();
+	}
+
+	@Override
+	public boolean isSubType(Type t1, Type t2) {
+		for (ITaintPropagationWrapper w : this.wrappers)
+			if (w.isSubType(t1, t2))
+				return true;
+		return false;
 	}
 
 	@Override

@@ -27,12 +27,7 @@ import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.ReturnStmt;
-import soot.jimple.StaticInvokeExpr;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -1848,4 +1843,26 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		return null;
 	}
 
+	@Override
+	public boolean isSubType(Type t1, Type t2) {
+		if (!(t1 instanceof RefType) || !(t2 instanceof RefType))
+			return false;
+
+		SootClass sc1 = ((RefType) t1).getSootClass();
+		SootClass sc2 = ((RefType) t2).getSootClass();
+		// If we do not have a phantom class, soot already resolved the hierarchy
+		if (!sc1.isPhantom() && !sc2.isPhantom())
+			return false;
+
+		if (sc1.isInterface()) {
+			if (flows.getImplementersOfInterface(sc1.getName()).stream()
+					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2))
+				return true;
+			return flows.getSubInterfacesOf(sc1.getName()).stream()
+					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
+		} else {
+			return flows.getSubclassesOf(sc1.getName()).stream()
+					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
+		}
+	}
 }

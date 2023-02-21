@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import soot.Type;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -90,5 +91,9 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 	public int getWrapperMisses() {
 		return wrapperMisses.get();
 	}
-	
+
+	@Override
+	public boolean isSubType(Type t1, Type t2) {
+		return false;
+	}
 }
