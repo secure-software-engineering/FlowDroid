@@ -5,10 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import soot.Scene;
-import soot.SootMethod;
-import soot.SootMethodRef;
-import soot.Value;
+import soot.*;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -240,6 +237,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	public int getWrapperMisses() {
 		// Statics reporting is not supported by this taint wrapper
 		return -1;
+	}
+
+	@Override
+	public boolean isSubType(Type t1, Type t2) {
+		return false;
 	}
 
 	@Override

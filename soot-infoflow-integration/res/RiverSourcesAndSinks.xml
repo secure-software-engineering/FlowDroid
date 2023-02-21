@@ -1,21 +1,21 @@
 <sinkSources>
     <category id="NO_CATEGORY">
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: java.lang.String source()">
+        <method signature="soot.jimple.infoflow.integration.test.RiverTestCode: java.lang.String source()">
             <return type="java.lang.String">
                 <accessPath isSource="true" isSink="false" />
             </return>
         </method>
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: int intSource()">
+        <method signature="soot.jimple.infoflow.integration.test.RiverTestCode: int intSource()">
             <return type="int">
                 <accessPath isSource="true" isSink="false" />
             </return>
         </method>
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: void unconditionalSink(java.lang.String)">
+        <method signature="soot.jimple.infoflow.integration.test.RiverTestCode: void unconditionalSink(java.lang.String)">
             <param index="0" description="Output Data">
                 <accessPath isSource="false" isSink="true" />
             </param>
         </method>
-        <method signature="soot.jimple.infoflow.android.test.river.RiverTestCode: void sendToUrl(java.net.URL, java.lang.String)">
+        <method signature="soot.jimple.infoflow.integration.test.RiverTestCode: void sendToUrl(java.net.URL, java.lang.String)">
             <param index="1" description="Output Data">
                 <accessPath isSource="false" isSink="true" />
             </param>
@@ -33,7 +33,7 @@
                 <accessPath isSource="false" isSink="true" />
             </param>
             <additionalFlowCondition>
-                <classNameOnPath className="soot.jimple.infoflow.android.test.river.RiverTestCode$T" />
+                <classNameOnPath className="soot.jimple.infoflow.integration.test.RiverTestCode$T" />
             </additionalFlowCondition>
         </method>
         <method signature="java.io.BufferedWriter: void write(java.lang.String)">

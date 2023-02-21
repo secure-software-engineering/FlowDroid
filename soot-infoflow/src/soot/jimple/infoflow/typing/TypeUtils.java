@@ -22,6 +22,7 @@ import soot.SootClass;
 import soot.Type;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 /**
  * Class containing various utility methods for dealing with type information
@@ -92,6 +93,10 @@ public class TypeUtils {
 		if (sourceType == destType)
 			return true;
 
+		// If both types are primitive, they can be cast.
+		if (destType instanceof PrimType && sourceType instanceof PrimType)
+			return true;
+
 		// If we have a reference type, we use the Soot hierarchy
 		FastHierarchy hierarchy = manager.getHierarchy();
 		if (hierarchy != null) {
@@ -108,9 +113,14 @@ public class TypeUtils {
 				return true;
 		}
 
-		// If both types are primitive, they can be cast.
-		if (destType instanceof PrimType && sourceType instanceof PrimType)
-			return true;
+		// Taint wrappers might provide further information about the hierarchy if the
+		// classes are phantom.
+		ITaintPropagationWrapper taintWrapper = manager.getTaintWrapper();
+		if (taintWrapper != null) {
+			if (taintWrapper.isSubType(destType, sourceType)
+				|| taintWrapper.isSubType(sourceType, destType))
+				return true;
+		}
 
 		return false;
 	}

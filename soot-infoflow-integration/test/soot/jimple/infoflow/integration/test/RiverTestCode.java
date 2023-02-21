@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.android.test.river;
+package soot.jimple.infoflow.integration.test;
 
 import java.io.*;
 import java.net.URL;
