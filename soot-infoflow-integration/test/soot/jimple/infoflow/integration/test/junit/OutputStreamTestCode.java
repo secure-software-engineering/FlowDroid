@@ -45,10 +45,6 @@ public class OutputStreamTestCode extends RiverJUnitTests {
     @BeforeClass
     public static void setUp() throws IOException {
         commonSetup();
-
-        StringBuilder libPathBuilder = new StringBuilder(libPath);
-        appendWithSeparator(libPathBuilder, new File(System.getProperty("user.dir") + "/build/classes/res/kryo-5.4.0.jar"));
-        libPath = libPathBuilder.toString();
     }
 
     @Override
