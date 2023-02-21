@@ -583,6 +583,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		MethodSourceSinkDefinition def = buildNewDefinition(method, filteredBaseObjects, filteredParameters,
 				filteredReturnValues, callType);
 		def.setCategory(category);
+		def.setConditions(conditions);
 		return def;
 	}
 
