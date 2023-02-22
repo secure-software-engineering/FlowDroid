@@ -7,6 +7,7 @@ import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.BaseSourceSinkManager;
@@ -77,7 +78,21 @@ public abstract class RiverJUnitTests {
         return result;
     }
 
-    protected abstract void checkInfoflow(IInfoflow infoflow, int resultCount);
+    protected SetupApplication initApplication(String fileName) {
+        String androidJars = System.getenv("ANDROID_JARS");
+        if (androidJars == null)
+            androidJars = System.getProperty("ANDROID_JARS");
+        if (androidJars == null)
+            throw new RuntimeException("Android JAR dir not set");
+        System.out.println("Loading Android.jar files from " + androidJars);
 
-    protected abstract void negativeCheckInfoflow(IInfoflow infoflow);
+        SetupApplication setupApplication = new SetupApplication(androidJars, fileName);
+
+        setupApplication.getConfig().setMergeDexFiles(true);
+        setupApplication.setTaintWrapper(getTaintWrapper());
+        setupApplication.getConfig().setAdditionalFlowsEnabled(true);
+        setupApplication.getConfig().getPathConfiguration().setPathReconstructionMode(InfoflowConfiguration.PathReconstructionMode.Fast);
+
+        return setupApplication;
+    }
 }

@@ -63,7 +63,6 @@ public abstract class RiverTests extends RiverJUnitTests {
         primarySinks.add(bufosWrite);
     }
 
-    @Override
     protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
         if (infoflow.isResultAvailable()) {
             InfoflowResults map = infoflow.getResults();
@@ -77,7 +76,6 @@ public abstract class RiverTests extends RiverJUnitTests {
         }
     }
 
-    @Override
     protected void negativeCheckInfoflow(IInfoflow infoflow) {
         if (infoflow.isResultAvailable()) {
             InfoflowResults map = infoflow.getResults();
