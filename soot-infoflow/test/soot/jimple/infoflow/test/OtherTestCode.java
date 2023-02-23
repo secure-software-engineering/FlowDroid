@@ -649,4 +649,19 @@ public class OtherTestCode {
 		cm.publish(a.field1);
 	}
 
+	int id(int i) {
+		return i;
+	}
+
+	public void alwaysShortenTest(int x) {
+		ConnectionManager cm = new ConnectionManager();
+		int i;
+		if (x == 42) {
+			i = TelephonyManager.getIMEI();
+		} else {
+			i = TelephonyManager.getIMEI();
+		}
+		cm.publish(id(i));
+	}
+
 }

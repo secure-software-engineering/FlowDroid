@@ -437,4 +437,14 @@ public abstract class OtherTests extends JUnitTests {
 		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, sourceDeviceId));
 	}
 
+	@Test
+	public void alwaysShortenTest() {
+		// Tests that always shortens doesn't break neighbors at the call site. See also issue 583.
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.OtherTestCode: void alwaysShortenTest(int)>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
 }
