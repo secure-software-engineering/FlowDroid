@@ -817,7 +817,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * @param mode The strategy to use for shortening predecessor paths
 	 */
 	public void setPredecessorShorteningMode(PredecessorShorteningMode mode) {
-		// this.shorteningMode = mode;
+		this.shorteningMode = mode;
 	}
 
 	/**
