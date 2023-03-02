@@ -485,6 +485,18 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	}
 
 	@Override
+	public Abstraction clone(Unit currentUnit, Unit callSite) {
+		Abstraction abs = new Abstraction(accessPath, this);
+		abs.predecessor = this;
+		abs.neighbors = null;
+		abs.currentStmt = (Stmt) currentUnit;
+		abs.correspondingCallSite = (Stmt) callSite;
+		abs.propagationPathLength = propagationPathLength + 1;
+		assert abs.equals(this);
+		return abs;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -623,8 +635,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 			return false;
 
 		// We should not add identical nodes as neighbors
-		if (this.predecessor == originalAbstraction.predecessor && this.currentStmt == originalAbstraction.currentStmt
-				&& this.predecessor == originalAbstraction.predecessor
+		if (this.predecessor == originalAbstraction.predecessor
+				&& this.currentStmt == originalAbstraction.currentStmt
 				&& this.correspondingCallSite == originalAbstraction.correspondingCallSite)
 			return false;
 
