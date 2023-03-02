@@ -649,19 +649,40 @@ public class OtherTestCode {
 		cm.publish(a.field1);
 	}
 
-	int id(int i) {
-		return i;
+
+	int source1() {
+		return TelephonyManager.getIMEI();
 	}
 
-	public void alwaysShortenTest(int x) {
+	int source2() {
+		return TelephonyManager.getIMEI();
+	}
+
+	int add42(int i) {
+		return i + 42;
+	}
+
+	public void alwaysShortenTest1(int x) {
 		ConnectionManager cm = new ConnectionManager();
 		int i;
 		if (x == 42) {
-			i = TelephonyManager.getIMEI();
+			i = source1();
 		} else {
-			i = TelephonyManager.getIMEI();
+			i = source2();
 		}
-		cm.publish(id(i));
+		// add42 call can be shortened at processExit()
+		cm.publish(add42(i));
+	}
+
+	public void alwaysShortenTest2(int x) {
+		int k = TelephonyManager.getIMEI();
+		System.out.println(add42(k));
+		k = 0;
+
+		ConnectionManager cm = new ConnectionManager();
+		int i = source1();
+		// add42 call can be shortened at applyEndSummaryOnCall()
+		cm.publish(add42(i));
 	}
 
 }
