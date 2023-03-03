@@ -51,7 +51,7 @@ abstract class AbstractSourceSinkInfo {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SourceInfo other = (SourceInfo) obj;
+		AbstractSourceSinkInfo other = (AbstractSourceSinkInfo) obj;
 		if (definition == null) {
 			if (other.definition != null)
 				return false;

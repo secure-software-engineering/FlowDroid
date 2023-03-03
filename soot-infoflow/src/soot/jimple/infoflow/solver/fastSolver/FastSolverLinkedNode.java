@@ -45,6 +45,13 @@ public interface FastSolverLinkedNode<D, N> extends Cloneable {
 	public D clone();
 
 	/**
+	 * Clones this data flow abstraction with the current statement and corresponding call site set
+	 *
+	 * @return A clone of the current data flow abstraction
+	 */
+	public D clone(N currentUnit, N callSite);
+
+	/**
 	 * If this abstraction supports alias analysis, this returns the active copy of
 	 * the current abstraction. Otherwise, "this" is returned.
 	 * 
