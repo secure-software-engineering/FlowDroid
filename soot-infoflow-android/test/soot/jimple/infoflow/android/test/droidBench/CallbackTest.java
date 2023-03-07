@@ -29,6 +29,7 @@ public abstract class CallbackTest extends JUnitTests {
 		InfoflowResults res = analyzeAPKFile("Callbacks/AnonymousClass1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size()); // loc + lat, but single parameter
+		Assert.assertEquals(2, res.getResultSet().size());
 	}
 
 	@Test(timeout = 300000)

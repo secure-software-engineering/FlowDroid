@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+    <hierarchy superClass="java.io.OutputStream">
+        <interface name="com.esotericsoftware.kryo.util.Pool$Poolable" />
+    </hierarchy>
+</summary>

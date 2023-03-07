@@ -44,8 +44,8 @@ import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.solver.AbstractIFDSSolver;
 import soot.jimple.infoflow.solver.EndSummary;
-import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 import soot.jimple.infoflow.solver.SolverPeerGroup;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
@@ -66,7 +66,7 @@ import soot.util.ConcurrentHashMultiMap;
  * @see IFDSTabulationProblem
  */
 public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiInterproceduralCFG<N, SootMethod>>
-		implements IMemoryBoundedSolver {
+		extends AbstractIFDSSolver<N, D> implements IMemoryBoundedSolver {
 
 	public static CacheBuilder<Object, Object> DEFAULT_CACHE_BUILDER = CacheBuilder.newBuilder()
 			.concurrencyLevel(Runtime.getRuntime().availableProcessors()).initialCapacity(10000).softValues();
@@ -117,9 +117,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	@DontSynchronize("readOnly")
 	protected final boolean followReturnsPastSeeds;
-
-	@DontSynchronize("readOnly")
-	protected PredecessorShorteningMode shorteningMode = PredecessorShorteningMode.NeverShorten;
 
 	@DontSynchronize("readOnly")
 	private int maxJoinPointAbstractions = -1;
@@ -411,19 +408,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 							// If we don't need the concrete path,
 							// we can skip the callee in the predecessor
 							// chain
-							D d5p = d5;
-							switch (shorteningMode) {
-							case AlwaysShorten:
-								if (d5p != d2) {
-									d5p = d5p.clone();
-									d5p.setPredecessor(d2);
-								}
-								break;
-							case ShortenIfEqual:
-								if (d5.equals(d2))
-									d5p = d2;
-								break;
-							}
+							D d5p = shortenPredecessors(d5, d2, d3, eP, n);
 							propagate(d1, retSiteN, d5p, n, false);
 						}
 					}
@@ -513,19 +498,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 							// If we have not changed anything in the callee, we do not need the facts from
 							// there. Even if we change something: If we don't need the concrete path, we
 							// can skip the callee in the predecessor chain
-							D d5p = d5;
-							switch (shorteningMode) {
-							case AlwaysShorten:
-								if (d5p != predVal) {
-									d5p = d5p.clone();
-									d5p.setPredecessor(predVal);
-								}
-								break;
-							case ShortenIfEqual:
-								if (d5.equals(predVal))
-									d5p = predVal;
-								break;
-							}
+							D d5p = shortenPredecessors(d5, predVal, d1, n, c);
 							propagate(d4, retSiteC, d5p, c, false);
 
 							// Make sure all of the incoming edges are registered with the edge from the new
@@ -872,16 +845,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			return true;
 		}
 
-	}
-
-	/**
-	 * Sets whether abstractions on method returns shall be connected to the
-	 * respective call abstractions to shortcut paths.
-	 * 
-	 * @param mode The strategy to use for shortening predecessor paths
-	 */
-	public void setPredecessorShorteningMode(PredecessorShorteningMode mode) {
-		// this.shorteningMode = mode;
 	}
 
 	/**
