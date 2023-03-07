@@ -358,13 +358,15 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		Collection<SootMethod> callbacks = callbackFunctions.get(applicationClass);
 		if (callbacks != null) {
 			for (SootMethod smCallback : callbacks) {
-				// Is this a special callback class? We have callbacks that model activity
-				// lifecycle events and ones that model generic events (e.g., low memory)
-				if (scActCallbacks != null && Scene.v().getOrMakeFastHierarchy()
-						.canStoreType(smCallback.getDeclaringClass().getType(), scActCallbacks.getType()))
-					activityLifecycleCallbacks.put(smCallback.getDeclaringClass(), smCallback.getSignature());
-				else
-					applicationCallbackClasses.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+				if (smCallback != null) {
+					// Is this a special callback class? We have callbacks that model activity
+					// lifecycle events and ones that model generic events (e.g., low memory)
+					if (scActCallbacks != null && Scene.v().getOrMakeFastHierarchy()
+							.canStoreType(smCallback.getDeclaringClass().getType(), scActCallbacks.getType()))
+						activityLifecycleCallbacks.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+					else
+						applicationCallbackClasses.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+				}
 			}
 		}
 
