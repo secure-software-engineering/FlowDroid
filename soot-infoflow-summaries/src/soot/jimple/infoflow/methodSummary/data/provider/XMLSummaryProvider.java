@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -256,9 +255,10 @@ public abstract class XMLSummaryProvider extends AbstractMethodSummaryProvider {
 	 * @param path  The path from which to load the summary
 	 */
 	protected void loadClass(String clazz, Path path) {
-		try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ)) {
+		try (InputStream inputStream = Files.newInputStream(path, StandardOpenOption.READ);
+				Reader rdr = new InputStreamReader(inputStream)) {
 			ClassMethodSummaries classSummaries = new ClassMethodSummaries(clazz);
-			summaryReader.read(new InputStreamReader(inputStream), classSummaries);
+			summaryReader.read(rdr, classSummaries);
 			addMethodSummaries(classSummaries);
 			onClassSummariesLoaded(clazz);
 		} catch (Exception e) {
