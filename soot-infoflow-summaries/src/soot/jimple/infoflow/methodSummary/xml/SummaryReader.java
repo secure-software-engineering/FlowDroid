@@ -249,8 +249,6 @@ public class SummaryReader extends AbstractXMLReader {
 
 	public void read(File fileName, ClassMethodSummaries summaries)
 			throws XMLStreamException, SummaryXMLException, IOException {
-		if (fileName.getName().contains("ByteArrayInputS"))
-			System.out.println();
 		if (validateSummariesOnRead) {
 			try (FileReader rdr = new FileReader(fileName)) {
 				if (!verifyXML(rdr, XSD_FILE_PATH)) {
