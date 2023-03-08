@@ -142,21 +142,23 @@ public class Aliasing {
 				// must be excluded from base matching.
 				if (bases != null && !(taintedAP.isStaticFieldRef() && fieldIdx == 0)) {
 					// Check the base. Handles A.y (taint) ~ A.[x].y (ref)
-					for (AccessPathFragment[] base : bases) {
-						if (base[0].getField() == referencedFields[fieldIdx]) {
-							// Build the access path against which we have
-							// actually matched
-							AccessPathFragment[] cutFragments = new AccessPathFragment[taintedAP.getFragmentCount()
-									+ base.length];
+					synchronized (bases) {
+						for (AccessPathFragment[] base : bases) {
+							if (base[0].getField() == referencedFields[fieldIdx]) {
+								// Build the access path against which we have
+								// actually matched
+								AccessPathFragment[] cutFragments = new AccessPathFragment[taintedAP.getFragmentCount()
+										+ base.length];
 
-							System.arraycopy(taintedAP.getFragments(), 0, cutFragments, 0, fieldIdx);
-							System.arraycopy(base, 0, cutFragments, fieldIdx, base.length);
-							System.arraycopy(taintedAP.getFragments(), fieldIdx, cutFragments, fieldIdx + base.length,
-									taintedAP.getFragmentCount() - fieldIdx);
+								System.arraycopy(taintedAP.getFragments(), 0, cutFragments, 0, fieldIdx);
+								System.arraycopy(base, 0, cutFragments, fieldIdx, base.length);
+								System.arraycopy(taintedAP.getFragments(), fieldIdx, cutFragments, fieldIdx + base.length,
+										taintedAP.getFragmentCount() - fieldIdx);
 
-							return manager.getAccessPathFactory().createAccessPath(taintedAP.getPlainValue(),
-									taintedAP.getBaseType(), cutFragments, taintedAP.getTaintSubFields(), false, false,
-									taintedAP.getArrayTaintType());
+								return manager.getAccessPathFactory().createAccessPath(taintedAP.getPlainValue(),
+										taintedAP.getBaseType(), cutFragments, taintedAP.getTaintSubFields(), false, false,
+										taintedAP.getArrayTaintType());
+							}
 						}
 					}
 

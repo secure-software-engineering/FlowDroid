@@ -344,20 +344,22 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				final Collection<AccessPathFragment[]> bases = manager.getAccessPathFactory()
 						.getBaseForType(base.getType());
 				if (bases != null) {
-					for (AccessPathFragment[] xbase : bases) {
-						if (xbase[0].getField() == field) {
-							// Build the access path against which we have
-							// actually matched
-							AccessPathFragment[] cutFragments = new AccessPathFragment[curAP.getFragmentCount()
-									+ xbase.length];
+					synchronized (bases) {
+						for (AccessPathFragment[] xbase : bases) {
+							if (xbase[0].getField() == field) {
+								// Build the access path against which we have
+								// actually matched
+								AccessPathFragment[] cutFragments = new AccessPathFragment[curAP.getFragmentCount()
+										+ xbase.length];
 
-							System.arraycopy(xbase, 0, cutFragments, 0, xbase.length);
-							System.arraycopy(curAP.getFragments(), 0, cutFragments, xbase.length,
-									curAP.getFragmentCount());
+								System.arraycopy(xbase, 0, cutFragments, 0, xbase.length);
+								System.arraycopy(curAP.getFragments(), 0, cutFragments, xbase.length,
+										curAP.getFragmentCount());
 
-							return manager.getAccessPathFactory().createAccessPath(curAP.getPlainValue(),
-									curAP.getBaseType(), cutFragments, curAP.getTaintSubFields(), false, false,
-									curAP.getArrayTaintType());
+								return manager.getAccessPathFactory().createAccessPath(curAP.getPlainValue(),
+										curAP.getBaseType(), cutFragments, curAP.getTaintSubFields(), false, false,
+										curAP.getArrayTaintType());
+							}
 						}
 					}
 				}
