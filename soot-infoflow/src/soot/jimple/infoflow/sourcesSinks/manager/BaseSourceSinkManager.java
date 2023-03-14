@@ -191,7 +191,6 @@ public abstract class BaseSourceSinkManager
 			this.sourceDefs.put(getSignature(am), am);
 
 		this.sourceCallbackMethods = new HashMap<>();
-		collectSourceCallbacks();
 
 		this.sinkDefs = new HashMultiMap<>();
 		for (ISourceSinkDefinition am : sinks)
@@ -205,6 +204,9 @@ public abstract class BaseSourceSinkManager
 				this.sourceDefs.size(), this.sinkDefs.size(), this.callbackMethods.size()));
 	}
 
+	/**
+	 * Collects the sources that are parameters of callback methods
+	 */
 	private void collectSourceCallbacks() {
 		MultiMap<String, MethodSourceSinkDefinition> subsigs = new HashMultiMap<>();
 		for (ISourceSinkDefinition ssd : sourceDefs.values()) {
@@ -801,6 +803,8 @@ public abstract class BaseSourceSinkManager
 	public void initialize() {
 		// Get the Soot method or field for the source signatures we have
 		if (sourceDefs != null) {
+			collectSourceCallbacks();
+
 			sourceMethods = new HashMap<>();
 			sourceFields = new HashMap<>();
 			sourceStatements = new HashMap<>();
