@@ -12,7 +12,6 @@ import java.util.Set;
 import heros.solver.Pair;
 import soot.MethodOrMethodContext;
 import soot.PackManager;
-import soot.RefType;
 import soot.Scene;
 import soot.SceneTransformer;
 import soot.SootClass;
@@ -255,7 +254,6 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 				continue;
 			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
 				continue;
-			RefType fragmentType = RefType.v("android.app.Fragment");
 			for (Unit u : sm.retrieveActiveBody().getUnits()) {
 				if (u instanceof Stmt) {
 					Stmt stmt = (Stmt) u;
