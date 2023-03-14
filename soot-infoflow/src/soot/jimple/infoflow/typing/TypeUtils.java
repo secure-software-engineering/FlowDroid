@@ -117,8 +117,7 @@ public class TypeUtils {
 		// classes are phantom.
 		ITaintPropagationWrapper taintWrapper = manager.getTaintWrapper();
 		if (taintWrapper != null) {
-			if (taintWrapper.isSubType(destType, sourceType)
-				|| taintWrapper.isSubType(sourceType, destType))
+			if (taintWrapper.isSubType(destType, sourceType) || taintWrapper.isSubType(sourceType, destType))
 				return true;
 		}
 

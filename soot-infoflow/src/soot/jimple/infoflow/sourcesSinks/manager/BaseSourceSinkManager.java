@@ -22,6 +22,7 @@ import com.sun.istack.NotNull;
 
 import heros.solver.IDESolver;
 import heros.solver.Pair;
+import soot.FastHierarchy;
 import soot.Hierarchy;
 import soot.Scene;
 import soot.SootClass;
@@ -30,7 +31,16 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.jimple.*;
+import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.FieldRef;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.ParameterRef;
+import soot.jimple.ReturnStmt;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.SourceSinkConfiguration;
@@ -42,8 +52,13 @@ import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.sourcesSinks.definitions.*;
+import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
+import soot.jimple.infoflow.sourcesSinks.definitions.StatementSourceSinkDefinition;
 import soot.jimple.infoflow.util.BaseSelector;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
@@ -52,7 +67,8 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
-public abstract class BaseSourceSinkManager implements IReversibleSourceSinkManager, IOneSourceAtATimeManager, IConditionalFlowManager {
+public abstract class BaseSourceSinkManager
+		implements IReversibleSourceSinkManager, IOneSourceAtATimeManager, IConditionalFlowManager {
 	private final static String GLOBAL_SIG = "--GLOBAL--";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -85,6 +101,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected MultiMap<String, ISourceSinkDefinition> sinkDefs;
 
 	protected Map<SootMethod, ISourceSinkDefinition> sourceMethods;
+	protected Map<SootMethod, ISourceSinkDefinition> sourceCallbackMethods;
 	protected Map<Stmt, ISourceSinkDefinition> sourceStatements;
 	protected Map<SootMethod, ISourceSinkDefinition> sinkMethods;
 	protected Map<SootMethod, ISourceSinkDefinition> sinkReturnMethods;
@@ -173,6 +190,9 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		for (ISourceSinkDefinition am : sources)
 			this.sourceDefs.put(getSignature(am), am);
 
+		this.sourceCallbackMethods = new HashMap<>();
+		collectSourceCallbacks();
+
 		this.sinkDefs = new HashMultiMap<>();
 		for (ISourceSinkDefinition am : sinks)
 			this.sinkDefs.put(getSignature(am), am);
@@ -183,6 +203,35 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 		logger.info(String.format("Created a SourceSinkManager with %d sources, %d sinks, and %d callback methods.",
 				this.sourceDefs.size(), this.sinkDefs.size(), this.callbackMethods.size()));
+	}
+
+	private void collectSourceCallbacks() {
+		MultiMap<String, MethodSourceSinkDefinition> subsigs = new HashMultiMap<>();
+		for (ISourceSinkDefinition ssd : sourceDefs.values()) {
+			if (ssd instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition mssd = (MethodSourceSinkDefinition) ssd;
+				if (mssd.getCallType() == CallType.Callback)
+					subsigs.put(mssd.getMethod().getSubSignature(), mssd);
+			}
+		}
+
+		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		for (SootClass sc : Scene.v().getApplicationClasses()) {
+			for (SootMethod sm : sc.getMethods()) {
+				if (sm.isConcrete()) {
+					final String subsig = sm.getSubSignature();
+					Set<MethodSourceSinkDefinition> defs = subsigs.get(subsig);
+					if (defs != null && !defs.isEmpty()) {
+						for (MethodSourceSinkDefinition mssd : defs) {
+							SootClass sourceClass = Scene.v().getSootClassUnsafe(mssd.getMethod().getClassName());
+							if (sourceClass != null && fh.canStoreClass(sc, sourceClass)) {
+								this.sourceCallbackMethods.put(sm, mssd);
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -684,18 +733,17 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		if (!sourceSinkConfig.getEnableLifecycleSources() && isEntryPointMethod(parentMethod))
 			return null;
 
-		// Obtain the callback definition for the method in which this parameter
-		// access occurs
-		CallbackDefinition def = getCallbackDefinition(parentMethod);
-		if (def == null)
-			return null;
-
 		// Do we match all callbacks?
-		if (sourceSinkConfig.getCallbackSourceMode() == CallbackSourceMode.AllParametersAsSources)
-			return MethodSourceSinkDefinition.createParameterSource(paramRef.getIndex(), CallType.Callback);
+		if (sourceSinkConfig.getCallbackSourceMode() == CallbackSourceMode.AllParametersAsSources) {
+			// Obtain the callback definition for the method in which this parameter
+			// access occurs
+			CallbackDefinition def = getCallbackDefinition(parentMethod);
+			if (def != null)
+				return MethodSourceSinkDefinition.createParameterSource(paramRef.getIndex(), CallType.Callback);
+		}
 
 		// Do we only match registered callback methods?
-		ISourceSinkDefinition sourceSinkDef = this.sourceMethods.get(def.getParentMethod());
+		ISourceSinkDefinition sourceSinkDef = this.sourceCallbackMethods.get(parentMethod);
 		if (sourceSinkDef instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) sourceSinkDef;
 			if (sourceSinkConfig.getCallbackSourceMode() == CallbackSourceMode.SourceListOnly
