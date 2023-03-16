@@ -110,6 +110,13 @@
 				</xs:complexType>
 			</xs:element>
 		</xs:choice>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="excludeClassName">
+				<xs:complexType>
+					<xs:attribute name="className" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
 	</xs:sequence>
 </xs:complexType>
 

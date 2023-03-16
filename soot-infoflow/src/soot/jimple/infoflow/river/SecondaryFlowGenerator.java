@@ -67,12 +67,16 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		HashSet<Abstraction> additionalAbsSet = new HashSet<>();
 
 		// Check for sink contexts
-		if (condFlowManager.isConditionalSink(stmt)) {
-			// Is the base tainted in the outgoing set?
+		if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 			Abstraction baseTaint = getTaintFromLocal(outgoing, ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
-			if (baseTaint != null) {
-				Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
-				additionalAbsSet.add(newAbs);
+
+			// Is the base tainted in the outgoing set?
+			if (baseTaint != null && baseTaint.getAccessPath().getBaseType() instanceof RefType) {
+				RefType ref = (RefType) baseTaint.getAccessPath().getBaseType();
+				if (condFlowManager.isConditionalSink(stmt, ref.getSootClass())) {
+					Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
+					additionalAbsSet.add(newAbs);
+				}
 			}
 		}
 

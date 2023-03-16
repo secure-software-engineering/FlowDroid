@@ -114,6 +114,8 @@ public abstract class AbstractXMLSourceSinkParser {
 
 		private Set<String> signaturesOnPath = new HashSet<>();
 		private Set<String> classNamesOnPath = new HashSet<>();
+
+		private Set<String> excludedClassNames = new HashSet<>();
 		private Set<SourceSinkCondition> conditions = new HashSet<>();
 
 		public SAXHandler() {
@@ -177,6 +179,10 @@ public abstract class AbstractXMLSourceSinkParser {
 
 			case XMLConstants.CLASS_NAME_ON_PATH_TAG:
 				handleStarttagClassNameOnPath(attributes);
+				break;
+
+			case XMLConstants.EXCLUDE_CLASS_NAME_TAG:
+				handleStarttagExcludeClassName(attributes);
 				break;
 			}
 		}
@@ -290,6 +296,15 @@ public abstract class AbstractXMLSourceSinkParser {
 			}
 		}
 
+		protected void handleStarttagExcludeClassName(Attributes attributes) {
+			String className = getStringAttribute(attributes, XMLConstants.CLASS_NAME_ATTRIBUTE);
+			if (className != null) {
+				if (excludedClassNames == null)
+					excludedClassNames = new HashSet<>();
+				excludedClassNames.add(className);
+			}
+		}
+
 		/**
 		 * Reads the method or field signature from the given attribute map
 		 * 
@@ -378,10 +393,12 @@ public abstract class AbstractXMLSourceSinkParser {
 			case XMLConstants.ADDITIONAL_FLOW_CONDITION_TAG:
 				if (!classNamesOnPath.isEmpty() || !signaturesOnPath.isEmpty()) {
 					AdditionalFlowCondition additionalFlowCondition = new AdditionalFlowCondition(classNamesOnPath,
-							signaturesOnPath);
+							signaturesOnPath, excludedClassNames);
 					// Reset both for a new condition
 					classNamesOnPath = new HashSet<>();
 					signaturesOnPath = new HashSet<>();
+
+					excludedClassNames = new HashSet<>();
 
 					if (conditions == null)
 						conditions = new HashSet<>();

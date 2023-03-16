@@ -94,6 +94,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 	protected Map<Stmt, ISourceSinkDefinition> sinkStatements;
 
 	protected Set<SootMethod> conditionalSinks = new HashSet<>();
+	protected MultiMap<SootMethod, SootClass> conditionalSinkToExcludedClasses = new HashMultiMap<>();
 	protected Set<SootMethod> secondarySinkMethods = new HashSet<>();
 	protected Set<SootClass> secondarySinkClasses = new HashSet<>();
 
@@ -744,6 +745,7 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 
 		conditionalSinks.add(m);
 		for (SourceSinkCondition cond : def.getConditions()) {
+			conditionalSinkToExcludedClasses.putAll(m, cond.getExcludedClasses());
 			secondarySinkMethods.addAll(cond.getReferencedMethods());
 			secondarySinkClasses.addAll(cond.getReferencedClasses());
 		}
@@ -1013,8 +1015,27 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		secondarySinkMethods.add(sm);
 	}
 
+	/**
+	 * Returns whether the callee is excluded from the additional flow condition for the matched sink.
+	 *
+	 * @param matchedSink Sink method
+	 * @return true if class is excluded in the condition
+	 */
+	private boolean isExcludedInCondition(SootMethod matchedSink, SootClass baseClass) {
+		Set<SootClass> excludedClasses = conditionalSinkToExcludedClasses.get(matchedSink);
+		if (excludedClasses.contains(baseClass))
+			return true;
+
+		for (SootClass sc : parentClassesAndInterfaces.getUnchecked(matchedSink.getDeclaringClass())) {
+			if (excludedClasses.contains(sc))
+				return true;
+		}
+
+		return false;
+	}
+
 	@Override
-	public boolean isConditionalSink(Stmt stmt) {
+	public boolean isConditionalSink(Stmt stmt, SootClass baseClass) {
 		// River only supports InstanceInvokeExprs
 		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
 			return false;
@@ -1022,13 +1043,13 @@ public abstract class BaseSourceSinkManager implements IReversibleSourceSinkMana
 		// Check if we have a direct hit
 		SootMethod callee = stmt.getInvokeExpr().getMethod();
 		if (conditionalSinks.contains(callee))
-			return true;
+			return !isExcludedInCondition(callee, baseClass);
 
 		// Check if the current method inherits from a conditional sink
 		for (SootClass sc : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 			SootMethod superMethod = sc.getMethodUnsafe(callee.getSubSignature());
 			if (conditionalSinks.contains(superMethod))
-				return true;
+				return !isExcludedInCondition(superMethod, baseClass);
 		}
 
 		return false;

@@ -21,6 +21,7 @@ public class XMLConstants {
 	public static final String SIGNATURE_ON_PATH_TAG = "signatureonpath";
 	public static final String CLASS_NAME_ON_PATH_TAG = "classnameonpath";
 	public static final String CLASS_NAME_ATTRIBUTE = "className";
+	public static final String EXCLUDE_CLASS_NAME_TAG = "excludeclassname";
 
 	public static final String ID_ATTRIBUTE = "id";
 	public static final String CUSTOM_ID_ATTRIBUTE = "customId";
