@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,9 +23,22 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	private Set<AccessPathTuple> accessPaths;
 
 	public StatementSourceSinkDefinition(Stmt stmt, Local local, Set<AccessPathTuple> accessPaths) {
+		if (accessPaths == null || accessPaths.isEmpty())
+			throw new IllegalArgumentException("Access Paths must not be empty");
 		this.stmt = stmt;
 		this.local = local;
 		this.accessPaths = new HashSet<>(accessPaths);
+	}
+
+	public static StatementSourceSinkDefinition createBlankStatementSourceDefinition(Stmt stmt, Local local) {
+		return new StatementSourceSinkDefinition(stmt, local,
+				Collections.singleton(AccessPathTuple.getBlankSourceTuple()));
+
+	}
+
+	public static StatementSourceSinkDefinition createBlankStatementSinkDefinition(Stmt stmt, Local local) {
+		return new StatementSourceSinkDefinition(stmt, local,
+				Collections.singleton(AccessPathTuple.getBlankSinkTuple()));
 	}
 
 	@Override
