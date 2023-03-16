@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.ConcurrentIdentityHashMultiMap;
@@ -107,7 +108,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			case CACHED:
 				// In case we already know the subpath, we do append the path after the path
 				// builder terminated
-				deferredPaths.add(scap);
+				if (config.getPathConfiguration().getPathReconstructionMode()
+						!= InfoflowConfiguration.PathReconstructionMode.NoPaths)
+					deferredPaths.add(scap);
 				break;
 			case INFEASIBLE_OR_MAX_PATHS_REACHED:
 				// Nothing to do

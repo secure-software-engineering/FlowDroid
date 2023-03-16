@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Collections;
 import java.util.Set;
 
 import soot.SootClass;
@@ -29,21 +30,27 @@ public abstract class SourceSinkCondition {
     /**
      * Gets all methods referenced by this condition
      *
-     * @return The methods referenced by this condition, or null if this condition
-     *         does not reference any methods
+     * @return The methods referenced by this condition
      */
     public Set<SootMethod> getReferencedMethods() {
-        return null;
+        return Collections.emptySet();
     }
 
     /**
      * Gets all classes referenced by this condition
      *
-     * @return The classes referenced by this condition, or null if this condition
-     *         does not reference any classes
+     * @return The classes referenced by this condition
      */
     public Set<SootClass> getReferencedClasses() {
-        return null;
+        return Collections.emptySet();
     }
 
+    /**
+     * Gets all classes excluded by this condition
+     *
+     * @return The classes excluded by this condition
+     */
+    public Set<SootClass> getExcludedClasses() {
+        return Collections.emptySet();
+    }
 }

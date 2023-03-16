@@ -195,4 +195,41 @@ public class OutputStreamTests extends RiverJUnitTests {
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
     }
+
+    @Test(timeout = 300000)
+    public void testByteArrayExcludedTest1() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testByteArrayExcludedTest1()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.negativeCheckInfoflow(infoflow);
+        Assert.assertNull(infoflow.getResults().getAdditionalResultSet());
+    }
+
+    @Test(timeout = 300000)
+    public void testExternalFile1() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testExternalFile1()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    @Test(timeout = 300000)
+    public void testExternalFile2() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testExternalFile2()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    @Test(timeout = 300000)
+    public void testInternalFile1() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testInternalFile1()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.negativeCheckInfoflow(infoflow);
+    }
 }

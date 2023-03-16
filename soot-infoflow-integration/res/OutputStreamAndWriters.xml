@@ -407,6 +407,18 @@
             <additionalFlowCondition>
                 <classNameOnPath className="java.net.URLConnection" />
             </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.OutputStream id(java.io.OutputStream)" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.lang.String getExternalDirLoc()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.File getExternalDir()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
         </method>
         <method signature="java.io.OutputStream: void write(byte[],int,int)">
             <param index="0" description="Output Data">

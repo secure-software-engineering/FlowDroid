@@ -23,9 +23,12 @@
             </param>
             <additionalFlowCondition>
                 <signatureOnPath signature="javax.servlet.ServletResponse: java.io.PrintWriter getWriter()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+                <excludeClassName className="java.lang.Object" />
             </additionalFlowCondition>
             <additionalFlowCondition>
                 <signatureOnPath signature="javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()" />
+                <excludeClassName className="java.lang.String" />
             </additionalFlowCondition>
         </method>
         <method signature="java.io.PrintWriter: void write(java.lang.String,int,int)">

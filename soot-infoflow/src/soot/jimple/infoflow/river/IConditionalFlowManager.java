@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.river;
 
+import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 
@@ -21,10 +22,11 @@ public interface IConditionalFlowManager {
      * Checks whether stmt is a conditional sink and needs a secondary flow.
      * Ensures that the statement contains a InstanceInvokeExpr.
      *
-     * @param stmt Sink Statement
+     * @param stmt      Sink Statement
+     * @param baseClass Class of the tainted base
      * @return true if stmt is a conditional sink
      */
-    boolean isConditionalSink(Stmt stmt);
+    boolean isConditionalSink(Stmt stmt, SootClass baseClass);
 
     /**
      * Register a secondary sink at runtime.
