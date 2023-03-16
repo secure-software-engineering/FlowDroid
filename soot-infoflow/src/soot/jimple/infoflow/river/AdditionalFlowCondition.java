@@ -57,38 +57,41 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
         final Stmt sinkStmt = result.getSink().getStmt();
         final Type baseType = result.getSource().getAccessPath().getBaseType();
         // Shortcut: There won't be a path if the class is excluded anyway
-        if (this.classMatches(baseType.toString(), excludedClassNames))
+        ensureSootClassesOfExcludedClasses();
+        if (this.classMatches(baseType.toString(), excludedClasses))
             return false;
 
         // Because we injected the taint in the SecondaryFlowGenerator with a SecondarySinkDefinition,
         // if there is a flow containing the sink, it is always also in the MultiMap.
         Pair<Set<String>, Set<String>> flows = getSignaturesAndClassNamesReachedFromSink(additionalResults, sinkStmt);
+        ensureSootMethodsOnPath();
         boolean sigMatch = signaturesOnPath == null || signaturesOnPath.isEmpty()
                 || flows.getO1().stream().anyMatch(this::signatureMatches);
+        ensureSootClassesOnPath();
         boolean classMatch = classesOnPath == null || classesOnPath.isEmpty()
-                || flows.getO2().stream().anyMatch(c -> this.classMatches(c, classNamesOnPath));
+                || flows.getO2().stream().anyMatch(c -> this.classMatches(c, classesOnPath));
 
         return sigMatch && classMatch;
     }
 
     private boolean signatureMatches(String sig) {
-        if (signaturesOnPath.contains(sig))
-            return true;
-
         SootMethod sm = Scene.v().grabMethod(sig);
         if (sm == null)
             return false;
 
+        if (methodsOnPath.contains(sm))
+            return true;
+
         for (SootClass ifc : sm.getDeclaringClass().getInterfaces()) {
             SootMethod superMethod = ifc.getMethodUnsafe(sm.getSubSignature());
-            if (superMethod != null && signaturesOnPath.contains(superMethod.getSignature()))
+            if (superMethod != null && methodsOnPath.contains(superMethod))
                 return true;
         }
 
         SootClass superClass = sm.getDeclaringClass().getSuperclassUnsafe();
         while (superClass != null) {
             SootMethod superMethod = superClass.getMethodUnsafe(sm.getSubSignature());
-            if (superMethod != null && signaturesOnPath.contains(superMethod.getSignature()))
+            if (superMethod != null && methodsOnPath.contains(superMethod))
                 return true;
             superClass = superClass.getSuperclassUnsafe();
         }
@@ -97,21 +100,21 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
     }
 
 
-    private boolean classMatches(String sig, Set<String> classes) {
-        if (classes.contains(sig))
-            return true;
-
+    private boolean classMatches(String sig, Set<SootClass> classes) {
         SootClass sc = Scene.v().getSootClassUnsafe(sig);
         if (sc == null)
             return false;
 
+        if (classes.contains(sc))
+            return true;
+
         for (SootClass ifc : sc.getInterfaces())
-            if (classes.contains(ifc.getName()))
+            if (classes.contains(ifc))
                 return true;
 
         SootClass superClass = sc.getSuperclassUnsafe();
         while (superClass != null) {
-            if (classes.contains(superClass.getName()))
+            if (classes.contains(superClass))
                 return true;
             superClass = superClass.getSuperclassUnsafe();
         }
@@ -121,22 +124,19 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
 
     @Override
     public Set<SootMethod> getReferencedMethods() {
-        if (methodsOnPath == null)
-            methodsOnPath = ensureSootMethodsOnPath(signaturesOnPath);
+        ensureSootMethodsOnPath();
         return methodsOnPath;
     }
 
     @Override
     public Set<SootClass> getReferencedClasses() {
-        if (classesOnPath == null)
-            classesOnPath = ensureSootClassesOnPath(classNamesOnPath);
+        ensureSootClassesOnPath();
         return classesOnPath;
     }
 
     @Override
     public Set<SootClass> getExcludedClasses() {
-        if (excludedClasses == null)
-            excludedClasses = ensureSootClassesOnPath(excludedClassNames);
+        ensureSootClassesOfExcludedClasses();
         return excludedClasses;
     }
 
@@ -170,26 +170,38 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
     /**
      * Ensures that the set of Soot methods on the data flow path has been
      * initialized
-     *
-     * @param signatureSet signatures to resolve
      */
-    private Set<SootMethod> ensureSootMethodsOnPath(Set<String> signatureSet) {
-        Set<SootMethod> resolved = new HashSet<>();
-        if (signatureSet != null && !signatureSet.isEmpty()) {
-            for (String sig : signatureSet) {
-                SootMethod sm = Scene.v().grabMethod(sig);
-                if (sm != null)
-                    resolved.add(sm);
+    private void ensureSootMethodsOnPath() {
+        if (methodsOnPath == null) {
+            methodsOnPath = new HashSet<>();
+            if (signaturesOnPath != null && !signaturesOnPath.isEmpty()) {
+                for (String sig : signaturesOnPath) {
+                    SootMethod sm = Scene.v().grabMethod(sig);
+                    if (sm != null)
+                        methodsOnPath.add(sm);
+                }
             }
         }
-        return resolved;
     }
 
     /**
      * Ensures that the set of Soot classeson the data flow path has been
      * initialized
      */
-    private Set<SootClass> ensureSootClassesOnPath(Set<String> classNameSet) {
+    private void ensureSootClassesOnPath() {
+        if (classesOnPath == null)
+            classesOnPath = resolveSootClassesToSet(classNamesOnPath);
+    }
+
+    /**
+     * Ensures that the set of excluded classes for the condition
+     */
+    private void ensureSootClassesOfExcludedClasses() {
+        if (excludedClasses == null)
+            excludedClasses = resolveSootClassesToSet(excludedClassNames);
+    }
+
+    private Set<SootClass> resolveSootClassesToSet(Set<String> classNameSet) {
         Set<SootClass> resolved = new HashSet<>();
         if (classNameSet != null && !classNameSet.isEmpty()) {
             for (String className : classNameSet) {
