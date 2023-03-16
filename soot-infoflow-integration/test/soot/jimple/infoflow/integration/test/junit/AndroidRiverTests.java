@@ -18,6 +18,8 @@ import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AndroidRiverTests extends RiverJUnitTests {
     @Override
@@ -42,11 +44,16 @@ public class AndroidRiverTests extends RiverJUnitTests {
         SetupApplication app = initApplication("testAPKs/conditionalTest.apk");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
         InfoflowResults results = app.runInfoflow(parser);
-        Assert.assertEquals(1, results.size());
+        Assert.assertEquals(2, results.size());
 
         // Check that the flow is in the right activity
-        SootMethod sm = Scene.v().grabMethod("<com.example.conditionalflowtestapp.KeepFlow: void onCreate(android.os.Bundle)>");
-        Chain<Unit> units = sm.getActiveBody().getUnits();
+        SootMethod sm1 = Scene.v().grabMethod("<com.example.conditionalflowtestapp.KeepFlow: void onCreate(android.os.Bundle)>");
+        SootMethod sm2 = Scene.v().grabMethod("<com.example.conditionalflowtestapp.KeepFlow: void leakToInternet(byte[])>");
+        SootMethod sm3 = Scene.v().grabMethod("<com.example.conditionalflowtestapp.KeepFlow: void leakToExternalFile(byte[])>");
+        Set<Unit> units = new HashSet<>();
+        units.addAll(sm1.getActiveBody().getUnits());;
+        units.addAll(sm2.getActiveBody().getUnits());;
+        units.addAll(sm3.getActiveBody().getUnits());
         for (DataFlowResult result : results.getResultSet())
             Assert.assertTrue(Arrays.stream(result.getSource().getPath()).allMatch(units::contains));
     }

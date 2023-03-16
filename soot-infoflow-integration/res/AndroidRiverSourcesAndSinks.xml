@@ -6,7 +6,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void write(char[],int,int)">
@@ -14,7 +21,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void write(char[])">
@@ -22,7 +36,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void write(java.lang.String,int,int)">
@@ -30,7 +51,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void write(java.lang.String)">
@@ -38,7 +66,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(boolean)">
@@ -46,7 +81,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(char)">
@@ -54,7 +96,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(int)">
@@ -62,7 +111,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(long)">
@@ -70,7 +126,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(float)">
@@ -78,7 +141,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(double)">
@@ -86,7 +156,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(char[])">
@@ -94,7 +171,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(java.lang.String)">
@@ -102,7 +186,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void print(java.lang.Object)">
@@ -110,15 +201,29 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
-		</method>	
+		</method>
 		<method signature="java.io.PrintWriter: void println(boolean)">
 			<param index="0" description="Output Data">
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(char)">
@@ -126,7 +231,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(int)">
@@ -134,7 +246,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(long)">
@@ -142,7 +261,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(float)">
@@ -150,7 +276,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(double)">
@@ -158,7 +291,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(char[])">
@@ -166,7 +306,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(java.lang.String)">
@@ -174,7 +321,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: void println(java.lang.Object)">
@@ -182,7 +336,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.lang.String,java.lang.Object[])">
@@ -190,7 +351,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
@@ -198,7 +366,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter format(java.lang.String,java.lang.Object[])">
@@ -206,7 +381,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter format(java.util.Locale,java.lang.String,java.lang.Object[])">
@@ -214,7 +396,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence)">
@@ -222,7 +411,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence,int,int)">
@@ -230,7 +426,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(char)">
@@ -238,7 +441,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.Writer append(char)">
@@ -246,7 +456,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.Writer append(java.lang.CharSequence,int,int)">
@@ -254,7 +471,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.Writer append(java.lang.CharSequence)">
@@ -262,7 +486,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(char)">
@@ -270,7 +501,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence,int,int)">
@@ -278,7 +516,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence)">
@@ -286,7 +531,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 
@@ -295,7 +547,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: java.io.Writer append(java.lang.CharSequence,int,int)">
@@ -303,7 +562,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: java.io.Writer append(char)">
@@ -311,7 +577,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: void write(char[])">
@@ -319,7 +592,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: void write(char[],int,int)">
@@ -327,7 +607,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: void write(java.lang.String)">
@@ -335,7 +622,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: void write(java.lang.String,int,int)">
@@ -343,7 +637,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.Writer: void write(int)">
@@ -351,7 +652,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 
@@ -360,7 +668,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStreamWriter: java.io.Writer append(java.lang.CharSequence)">
@@ -368,7 +683,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStreamWriter: void write(java.lang.String,int,int)">
@@ -376,7 +698,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStreamWriter: void write(char[],int,int)">
@@ -384,7 +713,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStreamWriter: void write(int)">
@@ -392,7 +728,14 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
 			</additionalFlowCondition>
 		</method>
 
@@ -401,7 +744,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStream: void write(byte[],int,int)">
@@ -409,7 +758,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.OutputStream: void write(int)">
@@ -417,7 +772,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 
@@ -426,7 +787,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void write(byte[],int,int)">
@@ -434,7 +801,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void write(int)">
@@ -442,7 +815,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeBoolean(boolean)">
@@ -450,7 +829,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeByte(int)">
@@ -458,7 +843,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeBytes(java.lang.String)">
@@ -466,7 +857,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeChar(int)">
@@ -474,7 +871,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeChars(java.lang.String)">
@@ -482,7 +885,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeDouble(double)">
@@ -490,7 +899,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeFloat(float)">
@@ -498,7 +913,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeInt(int)">
@@ -506,7 +927,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeLong(long)">
@@ -514,7 +941,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeObject(java.lang.Object)">
@@ -522,7 +955,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeShort(int)">
@@ -530,7 +969,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeUnshared(java.lang.Object)">
@@ -538,7 +983,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="java.io.ObjectOutputStream: void writeUTF(java.lang.String)">
@@ -546,7 +997,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 
@@ -555,7 +1012,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void write(byte[],int)">
@@ -563,7 +1026,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void write(byte[],int,int)">
@@ -571,7 +1040,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void write(int)">
@@ -579,7 +1054,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeAscii(java.lang.String)">
@@ -587,7 +1068,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBoolean(boolean)">
@@ -595,7 +1082,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBooleans(boolean[],int,int)">
@@ -603,7 +1096,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(byte)">
@@ -611,7 +1110,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(int)">
@@ -619,7 +1124,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[])">
@@ -627,7 +1138,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[],int,int)">
@@ -635,7 +1152,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChar(char)">
@@ -643,7 +1166,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChars(char[],int,int)">
@@ -651,7 +1180,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double)">
@@ -659,7 +1194,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double[],int,int)">
@@ -667,7 +1208,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloat(float)">
@@ -675,7 +1222,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloat(float[],int,int)">
@@ -683,7 +1236,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInt(int)">
@@ -691,7 +1250,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInts(int[],int,int)">
@@ -699,7 +1264,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLong(long)">
@@ -707,7 +1278,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLongs(long[],int,int)">
@@ -715,7 +1292,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShort(int)">
@@ -723,7 +1306,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShorts(short[],int,int)">
@@ -731,7 +1320,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeString(java.lang.String)">
@@ -739,7 +1334,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarInt(int,boolean)">
@@ -747,7 +1348,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarIntFlag(boolean,int,boolean)">
@@ -755,7 +1362,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarLong(long,boolean)">
@@ -763,7 +1376,13 @@
 				<accessPath isSource="false" isSink="true" />
 			</param>
 			<additionalFlowCondition>
-				<classNameOnPath className="java.net.URLConnection" />
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
 			</additionalFlowCondition>
 		</method>
 	</category>
@@ -1241,7 +1860,7 @@
 				<accessPath isSource="true" isSink="false" />
 			</return>
 		</method>
-		
+
 		<method signature="android.telephony.ServiceState: int getCdmaNetworkId()">
 			<return description="Operator">
 				<accessPath isSource="true" isSink="false" />
@@ -1338,7 +1957,7 @@
 				<accessPath isSource="true" isSink="false" />
 			</return>
 		</method>
-		
+
 		<!-- Cell Identity -->
 		<method signature="android.telephony.CellIdentityCdma: int getBasestationId()">
 			<return description="Cell information">
@@ -1680,7 +2299,7 @@
 				<accessPath isSource="true" isSink="false" />
 			</param>
 		</method>
-		
+
 		<!-- Countries -->
 		<method signature="android.location.Country: java.lang.String getCountryIso()">
 			<return description="Country Iso">
@@ -2151,7 +2770,7 @@
 				<accessPath isSource="true" isSink="false" />
 			</return>
 		</method>
-		
+
 		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor query(boolean,java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
 			<return description="SQL Result">
 				<accessPath isSource="true" isSink="false" />

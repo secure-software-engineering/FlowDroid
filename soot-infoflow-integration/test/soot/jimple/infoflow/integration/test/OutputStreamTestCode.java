@@ -251,4 +251,68 @@ public class OutputStreamTestCode {
             throw new RuntimeException(e);
         }
     }
+
+    public Object id(Object os) {
+        return os;
+    }
+
+    public void testByteArrayExcludedTest1() {
+        try {
+            String src = source();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            id(bos);
+            bos.write(src.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public String externalLocation = "external/";
+    public String getExternalDirLoc() {
+        return externalLocation;
+    }
+
+    public File getExternalDir() {
+        return new File("external/");
+    }
+
+    public File getInternalDir() {
+        return new File("internal/");
+    }
+
+    public void testExternalFile1() {
+        try {
+            String src = source();
+            File f = new File(getExternalDirLoc(), "my.txt");
+            OutputStream fos = new FileOutputStream(f);
+            fos.write(src.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void testExternalFile2() {
+        try {
+            String src = source();
+            OutputStream fos = new FileOutputStream(getExternalDir());
+            fos.write(src.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void testInternalFile1() {
+        try {
+            String src = source();
+            File f = new File(getInternalDir(), "my.txt");
+            OutputStream fos = new FileOutputStream(f);
+            fos.write(src.getBytes());
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
