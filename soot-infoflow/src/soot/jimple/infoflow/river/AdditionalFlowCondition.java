@@ -269,6 +269,7 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
         int result = 1;
         result = prime * result + ((classNamesOnPath == null) ? 0 : classNamesOnPath.hashCode());
         result = prime * result + ((signaturesOnPath == null) ? 0 : signaturesOnPath.hashCode());
+        result = prime * result + ((excludedClassNames == null) ? 0 : excludedClassNames.hashCode());
         return result;
     }
 
@@ -291,6 +292,11 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
                 return false;
         } else if (!signaturesOnPath.equals(other.signaturesOnPath))
             return false;
+        if (excludedClassNames == null) {
+            if (other.excludedClassNames != null)
+                return false;
+        } else if (!excludedClassNames.equals(other.excludedClassNames))
+            return false;
         return true;
     }
 
@@ -298,6 +304,7 @@ public class AdditionalFlowCondition extends SourceSinkCondition {
     public String toString() {
         return "AdditionalFlowCondition: " +
                 "classNamesOnPath=" + classNamesOnPath +
-                ", signaturesOnPath=" + signaturesOnPath;
+                ", signaturesOnPath=" + signaturesOnPath +
+                ", excludedClasses=" + excludedClassNames;
     }
 }
