@@ -91,10 +91,12 @@ FlowDroid is supported on Windows, Mac OS, and Linux.
 If you want to use the command-line tool to run the data flow tracker, you can use the following command:
 
 ```
-java -jar soot-infoflow-cmd/target/soot-infoflow-cmd-jar-with-dependencies.jar \
-    -a <APK File> \
-    -p <Android JAR folder> \
+java -jar soot-infoflow-cmd/target/soot-infoflow-cmd-jar-with-dependencies.jar 
+    -a <APK File> 
+    -p <Android JAR folder> 
     -s <SourcesSinks file>
+    -sink-precise
+    -o <resultfile.txt>
 ```
 
 The Android JAR folder is the "platforms" directory inside your Android SDK installation folder. The definition file for sources
