@@ -100,13 +100,13 @@ public abstract class BaseSourceSinkManager
 	protected MultiMap<String, ISourceSinkDefinition> sourceDefs;
 	protected MultiMap<String, ISourceSinkDefinition> sinkDefs;
 
-	protected Map<SootMethod, ISourceSinkDefinition> sourceMethods;
+	protected MultiMap<SootMethod, ISourceSinkDefinition> sourceMethods;
 	protected Map<SootMethod, ISourceSinkDefinition> sourceCallbackMethods;
-	protected Map<Stmt, ISourceSinkDefinition> sourceStatements;
+	protected MultiMap<Stmt, ISourceSinkDefinition> sourceStatements;
 	protected MultiMap<SootMethod, ISourceSinkDefinition> sinkMethods;
 	protected MultiMap<SootMethod, ISourceSinkDefinition> sinkReturnMethods;
 	protected Map<SootMethod, CallbackDefinition> callbackMethods;
-	protected Map<SootField, ISourceSinkDefinition> sourceFields;
+	protected MultiMap<SootField, ISourceSinkDefinition> sourceFields;
 	protected MultiMap<SootField, ISourceSinkDefinition> sinkFields;
 	protected MultiMap<Stmt, ISourceSinkDefinition> sinkStatements;
 
@@ -323,15 +323,14 @@ public abstract class BaseSourceSinkManager
 		return Collections.emptySet();
 	}
 
-	protected ISourceSinkDefinition getInverseSource(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+	protected Collection<ISourceSinkDefinition> getInverseSourceDefinition(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
 		// Do we have a statement-specific definition?
 		{
-			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
-			if (def != null)
-				return def;
+			Collection<ISourceSinkDefinition> defs = sourceStatements.get(sCallSite);
+			if (defs.size() > 0)
+				return defs;
 		}
 
-		ISourceSinkDefinition def = null;
 		if (sCallSite.containsInvokeExpr()) {
 			// This might be a normal source method
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
@@ -340,46 +339,46 @@ public abstract class BaseSourceSinkManager
 			if (!SystemClassHandler.v().isTaintVisible(ap, callee))
 				return null;
 
-			def = getSourceDefinition(callee);
-			if (def != null)
-				return def;
+			Collection<ISourceSinkDefinition> defs = getSourceDefinition(callee);
+			if (defs.size() > 0)
+				return defs;
 
 			// Check whether we have any of the interfaces on the list
 			final String subSig = callee.getSubSignature();
 			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				SootMethod m = i.getMethodUnsafe(subSig);
 				if (m != null) {
-					def = getSourceDefinition(m);
-					if (def != null)
-						return def;
+					defs = getSourceDefinition(m);
+					if (defs.size() > 0)
+						return defs;
 				}
 			}
 
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
-				def = getSourceDefinition(sm);
-				if (def != null)
-					return def;
+				defs = getSourceDefinition(sm);
+				if (defs.size() > 0)
+					return defs;
 			}
 		}
 
 		// This call might read out sensitive data from the UI
-		def = getUISourceDefinition(sCallSite, manager.getICFG());
-		if (def != null)
-			return def;
+		ISourceSinkDefinition uiDef = getUISourceDefinition(sCallSite, manager.getICFG());
+		if (uiDef != null)
+			return Collections.singleton(uiDef);
 
 		// This statement might access a sensitive parameter in a callback
 		// method
-		def = checkCallbackParamSource(sCallSite, manager.getICFG());
-		if (def != null)
-			return def;
+		ISourceSinkDefinition callbackDef = checkCallbackParamSource(sCallSite, manager.getICFG());
+		if (callbackDef != null)
+			return Collections.singleton(callbackDef);
 
 		// This statement may read sensitive data from a field
-		def = checkFieldSource(sCallSite, manager.getICFG());
-		if (def != null)
-			return def;
+		Collection<ISourceSinkDefinition> fieldDefs = checkFieldSource(sCallSite, manager.getICFG());
+		if (fieldDefs != null)
+			return fieldDefs;
 
-		return null;
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -401,10 +400,8 @@ public abstract class BaseSourceSinkManager
 			return null;
 		}
 
-		ISourceSinkDefinition def = getInverseSource(sCallSite, manager, ap);
-		// TODO: Fix later
-		return null;
-//		return def == null ? null : new SinkInfo(def);
+		Collection<ISourceSinkDefinition> defs = getInverseSourceDefinition(sCallSite, manager, ap);
+		return defs.size() > 0 ? new SinkInfo(defs) : null;
 	}
 
 	@Override
@@ -415,11 +412,12 @@ public abstract class BaseSourceSinkManager
 		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
-		ISourceSinkDefinition def = getSource(sCallSite, manager.getICFG());
-		return createSourceInfo(sCallSite, manager, def);
+		Collection<ISourceSinkDefinition> defs = getSource(sCallSite, manager.getICFG());
+		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createSourceInfoPairs(sCallSite, manager, defs);
+		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}
 
-	@Override
+		@Override
 	public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
 		if (oneSourceAtATime) {
 			logger.error("This does not support one source at a time for inverse methods.");
@@ -432,77 +430,93 @@ public abstract class BaseSourceSinkManager
 		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
-		ISourceSinkDefinition def = getInverseSink(sCallSite, manager.getICFG());
-		return createInverseSinkInfo(sCallSite, manager, def);
+		Collection<ISourceSinkDefinition> defs = getInverseSinkDefinition(sCallSite, manager.getICFG());
+		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createInverseSinkInfoPairs(sCallSite, manager, defs);
+		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}
 
-	protected SourceInfo createSourceInfo(Stmt sCallSite, InfoflowManager manager, ISourceSinkDefinition def) {
-		// Do we have data at all?
-		if (def == null)
-			return null;
+	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createSourceInfoPairs(Stmt sCallSite, InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
+		HashSet<Pair<AccessPath, ISourceSinkDefinition>> sourcePairs = new HashSet<>();
+		for (ISourceSinkDefinition def : defs) {
+			// If we don't have an invocation, we just taint the left side of the
+			// assignment
+			if (!sCallSite.containsInvokeExpr()) {
+				if (sCallSite instanceof DefinitionStmt) {
+					DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null,
+							null, true, false, true,
+							ArrayTaintType.ContentsAndLength, false);
+					sourcePairs.add(new Pair<>(ap, def));
+				}
+				continue;
+			}
 
-		// If we don't have an invocation, we just taint the left side of the
-		// assignment
-		if (!sCallSite.containsInvokeExpr()) {
-			if (sCallSite instanceof DefinitionStmt) {
+			// If this is a method call and we have a return value, we taint it.
+			// Otherwise, if we have an instance invocation, we taint the base
+			// object
+			final InvokeExpr iexpr = sCallSite.getInvokeExpr();
+			final Type returnType = iexpr.getMethod().getReturnType();
+			if (sCallSite instanceof DefinitionStmt && returnType != null && returnType != VoidType.v()) {
 				DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
-				return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null,
-						null, true, false, true, ArrayTaintType.ContentsAndLength, false));
+				// no immutable aliases, we overwrite the return values as a whole
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
+						true, false, true, ArrayTaintType.ContentsAndLength, false);
+				sourcePairs.add(new Pair<>(ap, def));
+			} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true);
+				sourcePairs.add(new Pair<>(ap, def));
 			}
-			return null;
 		}
-
-		// If this is a method call and we have a return value, we taint it.
-		// Otherwise, if we have an instance invocation, we taint the base
-		// object
-		final InvokeExpr iexpr = sCallSite.getInvokeExpr();
-		final Type returnType = iexpr.getMethod().getReturnType();
-		if (sCallSite instanceof DefinitionStmt && returnType != null && returnType != VoidType.v()) {
-			DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
-			// no immutable aliases, we overwrite the return values as a whole
-			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
-					true, false, true, ArrayTaintType.ContentsAndLength, false));
-		} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
-			InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
-			return new SourceInfo(def, manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true));
-		} else
-			return null;
+		return sourcePairs;
 	}
 
-	protected SourceInfo createInverseSinkInfo(Stmt sCallSite, InfoflowManager manager, ISourceSinkDefinition def) {
-		if (def == null)
-			return null;
+	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createInverseSinkInfoPairs(Stmt sCallSite, InfoflowManager manager,
+																							 Collection<ISourceSinkDefinition> defs) {
+		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = new HashSet<>();
+		for (ISourceSinkDefinition def : defs) {
+			HashSet<AccessPath> aps = new HashSet<>();
 
-		HashSet<AccessPath> aps = new HashSet<>();
+			if (sCallSite.containsInvokeExpr()) {
+				InvokeExpr iExpr = sCallSite.getInvokeExpr();
 
-		if (sCallSite.containsInvokeExpr()) {
-			InvokeExpr iExpr = sCallSite.getInvokeExpr();
+				// taint parameters
+				for (Value arg : iExpr.getArgs()) {
+					if (!(arg instanceof Constant))
+						aps.add(manager.getAccessPathFactory().createAccessPath(arg, true));
+				}
 
-			// taint parameters
-			for (Value arg : iExpr.getArgs()) {
-				if (!(arg instanceof Constant))
-					aps.add(manager.getAccessPathFactory().createAccessPath(arg, true));
+				// taint base object
+				if (iExpr instanceof InstanceInvokeExpr) {
+					InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iExpr;
+					aps.add(manager.getAccessPathFactory().createAccessPath(iiExpr.getBase(), true));
+				}
+			} else if (sCallSite instanceof AssignStmt) {
+				AssignStmt assignStmt = (AssignStmt) sCallSite;
+
+				// Taint rhs in case of lhs being a sink field
+				for (Value rightVal : BaseSelector.selectBaseList(assignStmt.getRightOp(), true))
+					aps.add(manager.getAccessPathFactory().createAccessPath(rightVal, true));
+			} else if (sCallSite instanceof ReturnStmt) {
+				ReturnStmt retStmt = (ReturnStmt) sCallSite;
+
+				// taint return value
+				aps.add(manager.getAccessPathFactory().createAccessPath(retStmt.getOp(), true));
 			}
 
-			// taint base object
-			if (iExpr instanceof InstanceInvokeExpr) {
-				InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iExpr;
-				aps.add(manager.getAccessPathFactory().createAccessPath(iiExpr.getBase(), true));
+			for (AccessPath ap : aps)
+				pairs.add(new Pair<>(ap, def));
+
+			if (manager.getConfig().getImplicitFlowMode() != InfoflowConfiguration.ImplicitFlowMode.NoImplicitFlows
+					&& aps.size() == 0) {
+				// We have to create at least one pair regardless whether we could find any access path
+				// if implicit flows are enabled. Think of a method with only constant arguments but
+				// is influenced by a tainted condition.
+				pairs.add(new Pair<>(null, def));
 			}
-		} else if (sCallSite instanceof AssignStmt) {
-			AssignStmt assignStmt = (AssignStmt) sCallSite;
-
-			// Taint rhs in case of lhs being a sink field
-			for (Value rightVal : BaseSelector.selectBaseList(assignStmt.getRightOp(), true))
-				aps.add(manager.getAccessPathFactory().createAccessPath(rightVal, true));
-		} else if (sCallSite instanceof ReturnStmt) {
-			ReturnStmt retStmt = (ReturnStmt) sCallSite;
-
-			// taint return value
-			aps.add(manager.getAccessPathFactory().createAccessPath(retStmt.getOp(), true));
 		}
 
-		return new SourceInfo(def, aps);
+		return pairs;
 	}
 
 	/**
@@ -513,16 +527,16 @@ public abstract class BaseSourceSinkManager
 	 * @return The respective source definition if the given method is a source
 	 *         method, otherwise null
 	 */
-	protected ISourceSinkDefinition getSourceMethod(SootMethod method) {
+	protected Collection<ISourceSinkDefinition> getSourceMethod(SootMethod method) {
 		if (oneSourceAtATime && (osaatType != SourceType.MethodCall || currentSource != method))
 			return null;
 		return this.sourceMethods.get(method);
 	}
 
-	protected ISourceSinkDefinition getInverseSourceMethod(SootMethod method) {
+	protected Collection<ISourceSinkDefinition> getInverseSourceMethod(SootMethod method) {
 		if (oneSourceAtATime && (osaatType != SourceType.MethodCall || currentSource != method))
 			return null;
-		return getFirstEl(this.sinkMethods.get(method));
+		return this.sinkMethods.get(method);
 	}
 
 	/**
@@ -531,11 +545,11 @@ public abstract class BaseSourceSinkManager
 	 * @param method The method to check
 	 * @return True if the given method is a source method, otherwise false
 	 */
-	protected ISourceSinkDefinition getSourceDefinition(SootMethod method) {
-		return getDefFromMap(this.sourceMethods, method);
+	protected Collection<ISourceSinkDefinition> getSourceDefinition(SootMethod method) {
+		return getDefsFromMap(this.sourceMethods, method);
 	}
 
-	private ISourceSinkDefinition getDefFromMap(Map<SootMethod, ISourceSinkDefinition> map, SootMethod method) {
+	private Collection<ISourceSinkDefinition> getDefsFromMap(MultiMap<SootMethod, ISourceSinkDefinition> map, SootMethod method) {
 		if (oneSourceAtATime) {
 			if (osaatType == SourceType.MethodCall && currentSource == method)
 				return map.get(method);
@@ -571,77 +585,72 @@ public abstract class BaseSourceSinkManager
 	 * @param sCallSite The statement to check for a source
 	 * @param cfg       An interprocedural CFG containing the statement
 	 * @return The definition of the discovered source if the given statement is a
-	 *         source, null otherwise
+	 * source, null otherwise
 	 */
-	protected ISourceSinkDefinition getSource(Stmt sCallSite, IInfoflowCFG cfg) {
+	protected Collection<ISourceSinkDefinition> getSource(Stmt sCallSite, IInfoflowCFG cfg) {
 		assert cfg != null;
 		assert cfg instanceof BiDiInterproceduralCFG;
 
 		// Do we have a statement-specific definition?
 		{
-			ISourceSinkDefinition def = sourceStatements.get(sCallSite);
-			if (def != null)
-				return def;
+			Collection<ISourceSinkDefinition> defs = sourceStatements.get(sCallSite);
+			if (defs.size() > 0)
+				return defs;
 		}
 
-		ISourceSinkDefinition def = null;
 		if ((!oneSourceAtATime || osaatType == SourceType.MethodCall) && sCallSite.containsInvokeExpr()) {
 			// This might be a normal source method
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
-			def = getSourceDefinition(callee);
-			if (def != null)
-				return def;
+			Collection<ISourceSinkDefinition> defs = getSourceDefinition(callee);
+			if (defs.size() > 0)
+				return defs;
 
 			// Check whether we have any of the interfaces on the list
 			final String subSig = callee.getSubSignature();
 			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				SootMethod m = i.getMethodUnsafe(subSig);
 				if (m != null) {
-					def = getSourceDefinition(m);
-					if (def != null)
-						return def;
+					defs = getSourceDefinition(m);
+					if (defs.size() > 0)
+						return defs;
 				}
 			}
 
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : cfg.getCalleesOfCallAt(sCallSite)) {
-				def = getSourceDefinition(sm);
-				if (def != null)
-					return def;
+				defs = getSourceDefinition(sm);
+				if (defs.size() > 0)
+					return defs;
 			}
 		}
 
 		// This call might read out sensitive data from the UI
 		if ((!oneSourceAtATime || osaatType == SourceType.UISource)) {
-			def = getUISourceDefinition(sCallSite, cfg);
-			if (def != null)
-				return def;
+			ISourceSinkDefinition uiDef = getUISourceDefinition(sCallSite, cfg);
+			if (uiDef != null)
+				return Collections.singleton(uiDef);
 		}
 
 		// This statement might access a sensitive parameter in a callback
 		// method
-		def = checkCallbackParamSource(sCallSite, cfg);
-		if (def != null)
-			return def;
+		ISourceSinkDefinition callbackDef = checkCallbackParamSource(sCallSite, cfg);
+		if (callbackDef != null)
+			return Collections.singleton(callbackDef);
 
 		// This statement may read sensitive data from a field
-		def = checkFieldSource(sCallSite, cfg);
-		if (def != null)
-			return def;
+		Collection<ISourceSinkDefinition> fieldDefs = checkFieldSource(sCallSite, cfg);
+		if (fieldDefs.size() > 0)
+			return fieldDefs;
 
-		return null;
+		return Collections.emptySet();
 	}
 
-	protected <T> T getFirstEl(Collection<T> c) {
-		return c.stream().findFirst().orElse(null);
-	}
-
-	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
+	protected Collection<ISourceSinkDefinition> getInverseSinkDefinition(Stmt sCallSite, IInfoflowCFG cfg) {
 		// Do we have a statement-specific definition?
 		{
-			ISourceSinkDefinition def = getFirstEl(this.sinkStatements.get(sCallSite));
-			if (def != null)
-				return def;
+			Collection<ISourceSinkDefinition> defs = this.sinkStatements.get(sCallSite);
+			if (defs.size() > 0)
+				return defs;
 		}
 
 		if ((!oneSourceAtATime || osaatType == SourceType.MethodCall) && sCallSite.containsInvokeExpr()) {
@@ -650,9 +659,9 @@ public abstract class BaseSourceSinkManager
 
 			// Do we have a direct hit?
 			{
-				ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(callee));
-				if (def != null)
-					return def;
+				Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(callee);
+				if (defs.size() > 0)
+					return defs;
 			}
 
 			final String subSig = callee.getSubSignature();
@@ -660,34 +669,32 @@ public abstract class BaseSourceSinkManager
 			// Check whether we have any of the interfaces on the list
 			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				if (i.declaresMethod(subSig)) {
-					ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(i.getMethod(subSig)));
-					if (def != null)
-						return def;
+					Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(i.getMethod(subSig));
+					if (defs.size() > 0)
+						return defs;
 				}
 			}
 
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : cfg.getCalleesOfCallAt(sCallSite)) {
-				ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(sm));
-				if (def != null)
-					return def;
+				Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(sm);
+				if (defs.size() > 0)
+					return defs;
 			}
-
-			return null;
 		} else if (sCallSite instanceof AssignStmt) {
 			// Check if the target is a sink field
 			AssignStmt assignStmt = (AssignStmt) sCallSite;
 			if (assignStmt.getLeftOp() instanceof FieldRef) {
 				FieldRef fieldRef = (FieldRef) assignStmt.getLeftOp();
-				ISourceSinkDefinition def = getFirstEl(this.sinkFields.get(fieldRef.getField()));
-				if (def != null)
-					return def;
+				Collection<ISourceSinkDefinition> defs = this.sinkFields.get(fieldRef.getField());
+				if (defs.size() > 0)
+					return defs;
 			}
 		} else if (sCallSite instanceof ReturnStmt) {
-			return getFirstEl(sinkReturnMethods.get(cfg.getMethodOf(sCallSite)));
+			return sinkReturnMethods.get(cfg.getMethodOf(sCallSite));
 		}
 
-		return null;
+		return Collections.emptySet();
 	}
 
 	/**
@@ -699,7 +706,7 @@ public abstract class BaseSourceSinkManager
 	 * @return The source and sink definition that corresponds to the detected field
 	 *         source if the given statement is a source, otherwise null
 	 */
-	private ISourceSinkDefinition checkFieldSource(Stmt stmt, IInfoflowCFG cfg) {
+	private Collection<ISourceSinkDefinition> checkFieldSource(Stmt stmt, IInfoflowCFG cfg) {
 		if (stmt instanceof AssignStmt) {
 			AssignStmt assignStmt = (AssignStmt) stmt;
 			if (assignStmt.getRightOp() instanceof FieldRef) {
@@ -707,7 +714,7 @@ public abstract class BaseSourceSinkManager
 				return sourceFields.get(fieldRef.getField());
 			}
 		}
-		return null;
+		return Collections.emptySet();
 	}
 
 	/**
@@ -812,9 +819,9 @@ public abstract class BaseSourceSinkManager
 		if (sourceDefs != null) {
 			collectSourceCallbacks();
 
-			sourceMethods = new HashMap<>();
-			sourceFields = new HashMap<>();
-			sourceStatements = new HashMap<>();
+			sourceMethods = new HashMultiMap<>();
+			sourceFields = new HashMultiMap<>();
+			sourceStatements = new HashMultiMap<>();
 			for (Pair<String, ISourceSinkDefinition> entry : sourceDefs) {
 				ISourceSinkDefinition sourceSinkDef = entry.getO2();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {

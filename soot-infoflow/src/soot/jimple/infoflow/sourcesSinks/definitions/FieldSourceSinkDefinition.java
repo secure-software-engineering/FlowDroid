@@ -120,7 +120,7 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	}
 
 	@Override
-	public IAccessPathBasedSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
+	public FieldSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
 		// Filter the access paths
 		Set<AccessPathTuple> filteredAPs = null;
 		if (accessPaths != null && !accessPaths.isEmpty()) {

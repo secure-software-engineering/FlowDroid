@@ -10,10 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.strategy.HashingStrategy;
@@ -146,9 +143,9 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 	}
 
-	public Abstraction(ISourceSinkDefinition definition, AccessPath sourceVal, Stmt sourceStmt, Object userData,
-			boolean exceptionThrown, boolean isImplicit) {
-		this(sourceVal, new SourceContext(definition, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
+	public Abstraction(Collection<ISourceSinkDefinition> definitions, AccessPath sourceVal, Stmt sourceStmt, Object userData,
+					   boolean exceptionThrown, boolean isImplicit) {
+		this(sourceVal, new SourceContext(definitions, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
 	}
 
 	Abstraction(AccessPath apToTaint, SourceContext sourceContext, boolean exceptionThrown, boolean isImplicit) {

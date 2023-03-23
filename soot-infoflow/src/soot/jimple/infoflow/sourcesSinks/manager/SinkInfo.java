@@ -4,6 +4,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Class containing additional information about a sink. Users of FlowDroid can
@@ -13,6 +14,7 @@ import java.util.Collections;
  * @author Steven Arzt, Daniel Magin
  */
 public class SinkInfo extends AbstractSourceSinkInfo {
+	private Collection<ISourceSinkDefinition> definitions;
 
 	/**
 	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class.
@@ -21,7 +23,9 @@ public class SinkInfo extends AbstractSourceSinkInfo {
 	 * @param userData    Additional user data to be propagated with the source
 	 */
 	public SinkInfo(Collection<ISourceSinkDefinition> definitions, Object userData) {
-		super(definitions, userData);
+		super(userData);
+		assert definitions != null;
+		this.definitions = definitions;
 	}
 
 	/**
@@ -30,7 +34,7 @@ public class SinkInfo extends AbstractSourceSinkInfo {
 	 * @param definitions The original definition of the source or sink
 	 */
 	public SinkInfo(Collection<ISourceSinkDefinition> definitions) {
-		super(definitions);
+		this(definitions, null);
 	}
 
 	/**
@@ -39,7 +43,7 @@ public class SinkInfo extends AbstractSourceSinkInfo {
 	 * @param definition The original definition of the source or sink
 	 */
 	public SinkInfo(ISourceSinkDefinition definition) {
-		super(Collections.singleton(definition));
+		this(Collections.singleton(definition));
 	}
 
 	/**
@@ -47,5 +51,41 @@ public class SinkInfo extends AbstractSourceSinkInfo {
 	 */
 	public SinkInfo() {
 		super(null);
+		this.definitions = Collections.singleton(null);
+	}
+
+	/**
+	 * Gets the original definition of this data flow source or sink
+	 *
+	 * @return The original definition of the source or sink. The return value may
+	 *         be null if this source is not modeled for a specific method or field.
+	 */
+	public Collection<ISourceSinkDefinition> getDefinitions() {
+		return definitions;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((definitions == null) ? 0 : definitions.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SinkInfo other = (SinkInfo) obj;
+		if (definitions == null) {
+			if (other.definitions != null)
+				return false;
+		} else if (!definitions.equals(other.definitions))
+			return false;
+		return true;
 	}
 }

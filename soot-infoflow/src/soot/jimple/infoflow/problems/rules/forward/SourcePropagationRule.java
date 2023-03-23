@@ -47,7 +47,7 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 				Set<Abstraction> res = new HashSet<>();
 				for (AccessPath ap : sourceInfo.getAccessPaths()) {
 					// Create the new taint abstraction
-					Abstraction abs = new Abstraction(sourceInfo.getDefinition(), ap, stmt, sourceInfo.getUserData(),
+					Abstraction abs = new Abstraction(sourceInfo.getDefinitionsForAccessPath(ap), ap, stmt, sourceInfo.getUserData(),
 							false, false);
 					res.add(abs);
 
@@ -102,7 +102,8 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 		// Normally, we don't inspect source methods
 		if (!getManager().getConfig().getInspectSources() && getManager().getSourceSinkManager() != null) {
 			final SourceInfo sourceInfo = getManager().getSourceSinkManager().getSourceInfo(stmt, getManager());
-			if (sourceInfo != null && !isCallbackOrReturn(sourceInfo.getDefinition()))
+			// TODO:
+			if (sourceInfo != null && !isCallbackOrReturn(sourceInfo.getAllDefinitions()))
 				killAll.value = true;
 		}
 
@@ -125,11 +126,14 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 	 * @return True if the given source/sink definition references a callback or a
 	 *         method return value
 	 */
-	private boolean isCallbackOrReturn(ISourceSinkDefinition definition) {
-		if (definition instanceof MethodSourceSinkDefinition) {
-			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
-			CallType callType = methodDef.getCallType();
-			return callType == CallType.Callback || callType == CallType.Return;
+	private boolean isCallbackOrReturn(Collection<ISourceSinkDefinition> definitions) {
+		for (ISourceSinkDefinition definition : definitions) {
+			if (definition instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
+				CallType callType = methodDef.getCallType();
+				if (callType == CallType.Callback || callType == CallType.Return)
+					return true;
+			}
 		}
 		return false;
 	}

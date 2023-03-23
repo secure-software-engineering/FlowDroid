@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -429,8 +428,10 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	@Override
 	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
 		Collection<ISourceSinkDefinition> definitions = super.getSinkDefinitions(sCallSite, manager, ap);
+		if (definitions.size() > 0)
+			return definitions;
 
-		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>(definitions);
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>();
 		if (sCallSite.containsInvokeExpr()) {
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 			final String subSig = callee.getSubSignature();
@@ -456,8 +457,7 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 						SootMethod sm = clazz.getMethodUnsafe(subSig);
 						if (sm != null) {
 							Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(sm);
-							if (defs != null)
-								sinkDefs.addAll(defs);
+							sinkDefs.addAll(defs);
 							break;
 						}
 					}
@@ -468,11 +468,12 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	}
 
 	@Override
-	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
-		ISourceSinkDefinition definition = super.getInverseSink(sCallSite, cfg);
-		if (definition != null)
+	protected Collection<ISourceSinkDefinition> getInverseSinkDefinition(Stmt sCallSite, IInfoflowCFG cfg) {
+		Collection<ISourceSinkDefinition> definition = super.getInverseSinkDefinition(sCallSite, cfg);
+		if (definition.size() > 0)
 			return definition;
 
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>();
 		if (sCallSite.containsInvokeExpr()) {
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 			final String subSig = callee.getSubSignature();
@@ -482,17 +483,15 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 				if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
 					SootMethod sm = clazz.getMethodUnsafe(subSig);
 					if (sm != null) {
-						// TODO: fix later
-//						ISourceSinkDefinition def = this.sinkMethods.get(sm);
-						ISourceSinkDefinition def = null;
-						if (def != null)
-							return def;
+						Collection<ISourceSinkDefinition> adefs = this.sinkMethods.get(sm);
+						sinkDefs.addAll(adefs);
 						break;
 					}
 				}
 			}
 		}
-		return null;
+
+		return sinkDefs;
 	}
 
 	@Override

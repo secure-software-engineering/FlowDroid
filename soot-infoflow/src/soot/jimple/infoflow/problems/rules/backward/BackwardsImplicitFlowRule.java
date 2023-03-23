@@ -224,7 +224,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 
 				List<Unit> condUnits = manager.getICFG().getConditionalBranchesInterprocedural(stmt);
 				for (Unit condUnit : condUnits) {
-					Abstraction abs = new Abstraction(sink.getDefinition(), AccessPath.getEmptyAccessPath(), stmt,
+					Abstraction abs = new Abstraction(sink.getAllDefinitions(), AccessPath.getEmptyAccessPath(), stmt,
 							sink.getUserData(), false, false);
 					abs.setCorrespondingCallSite(stmt);
 					abs.setDominator(condUnit);
@@ -234,7 +234,7 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 				if (!sm.isStatic()) {
 					AccessPath thisAp = manager.getAccessPathFactory()
 							.createAccessPath(sm.getActiveBody().getThisLocal(), false);
-					Abstraction thisTaint = new Abstraction(sink.getDefinition(), thisAp, stmt, sink.getUserData(),
+					Abstraction thisTaint = new Abstraction(sink.getAllDefinitions(), thisAp, stmt, sink.getUserData(),
 							false, false);
 					thisTaint.setCorrespondingCallSite(stmt);
 					res.add(thisTaint);
