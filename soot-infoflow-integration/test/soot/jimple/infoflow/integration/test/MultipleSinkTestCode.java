@@ -48,6 +48,12 @@ public class MultipleSinkTestCode {
         System.out.println(obj.fieldA + obj.fieldB);
     }
 
+    // A of objA and B of objB is leaked
+    public static void objectSink(ReturnObject objA, ReturnObject objB) {
+        System.out.println(objA.fieldA + objB.fieldB);
+    }
+
+
     public void testNoCondition() {
         String secret = source();
         MyClass c = new MyClass();
@@ -91,6 +97,14 @@ public class MultipleSinkTestCode {
 
     public void testBothReturns() {
         objectSink(objectSource());
+    }
+
+    public void testMatchingAccessPaths() {
+        objectSink(objectSourceA(), objectSourceB());
+    }
+
+    public void testMismatchingAccessPaths() {
+        objectSink(objectSourceB(), objectSourceA());
     }
 
     // Field taints both A and B with different categories

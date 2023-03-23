@@ -46,6 +46,13 @@
                 </accessPath>
             </param>
         </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject,soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="0">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldA" />
+                </accessPath>
+            </param>
+        </method>
         <field signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject source">
             <accessPath isSource="true" isSink="false">
                 <pathElement type="java.lang.String" field="fieldA" />
@@ -80,6 +87,13 @@
         </method>
         <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
             <param index="0">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldB" />
+                </accessPath>
+            </param>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject,soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="1">
                 <accessPath isSource="false" isSink="true">
                     <pathElement type="java.lang.String" field="fieldB" />
                 </accessPath>

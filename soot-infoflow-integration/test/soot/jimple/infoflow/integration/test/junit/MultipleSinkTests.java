@@ -13,7 +13,6 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 
 import java.io.IOException;
 import java.util.*;
@@ -128,6 +127,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testOneCondition()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
+        Assert.assertEquals(1, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK" }, SourceOrSink.SINK);
     }
 
@@ -138,6 +138,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testBothConditions()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 2);
+        Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SINK);
     }
 
@@ -148,6 +149,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testParam1()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
+        Assert.assertEquals(1, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "VOIP" }, SourceOrSink.SINK);
     }
 
@@ -158,6 +160,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testParam2()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
+        Assert.assertEquals(1, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK" }, SourceOrSink.SINK);
     }
 
@@ -168,6 +171,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testBothParams()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 2);
+        Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SINK);
     }
 
@@ -178,6 +182,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testReturn1()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
+        Assert.assertEquals(1, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK" }, SourceOrSink.BOTH);
     }
 
@@ -188,6 +193,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testReturn2()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
+        Assert.assertEquals(1, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "VOIP" }, SourceOrSink.BOTH);
     }
 
@@ -195,11 +201,31 @@ public class MultipleSinkTests extends RiverJUnitTests {
     public void testBothReturns() {
         IInfoflow infoflow = this.initInfoflow();
         List<String> epoints = new ArrayList();
-        infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testBothReturns()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 2);
+        Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SINK);
+    }
+
+    @Test(timeout = 30000)
+    public void testMatchingAccessPaths() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testMatchingAccessPaths()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 2);
+        Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
+        containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.BOTH);
+    }
+
+    @Test(timeout = 30000)
+    public void testMismatchingAccessPaths() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testMismatchingAccessPaths()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.negativeCheckInfoflow(infoflow);
     }
 
     @Test(timeout = 300000)
@@ -210,7 +236,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 2);
         Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
-        containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SOURCE);
+        containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.BOTH);
     }
 
     @Test(timeout = 300000)
@@ -220,6 +246,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testParamAsSink()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 2);
+        Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SINK);
     }
 }
