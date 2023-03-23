@@ -13,22 +13,24 @@ package soot.jimple.infoflow.data;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
+import java.util.Collection;
+
 public class AbstractionAtSink {
 
-	private final ISourceSinkDefinition sinkDefinition;
+	private final Collection<ISourceSinkDefinition> sinkDefinitions;
 	private final Abstraction abstraction;
 	private final Stmt sinkStmt;
 
 	/**
 	 * Creates a new instance of the {@link AbstractionAtSink} class
 	 * 
-	 * @param sinkDefinition The original definition of the sink that has been
-	 *                       reached
-	 * @param abstraction    The abstraction with which the sink has been reached
-	 * @param sinkStmt       The statement that triggered the sink
+	 * @param sinkDefinitions The original definition of the sink that has been
+	 *                        reached
+	 * @param abstraction     The abstraction with which the sink has been reached
+	 * @param sinkStmt        The statement that triggered the sink
 	 */
-	public AbstractionAtSink(ISourceSinkDefinition sinkDefinition, Abstraction abstraction, Stmt sinkStmt) {
-		this.sinkDefinition = sinkDefinition;
+	public AbstractionAtSink(Collection<ISourceSinkDefinition> sinkDefinitions, Abstraction abstraction, Stmt sinkStmt) {
+		this.sinkDefinitions = sinkDefinitions;
 		this.abstraction = abstraction;
 		this.sinkStmt = sinkStmt;
 	}
@@ -38,8 +40,8 @@ public class AbstractionAtSink {
 	 * 
 	 * @return The original definition of the sink that has been reached
 	 */
-	public ISourceSinkDefinition getSinkDefinition() {
-		return sinkDefinition;
+	public Collection<ISourceSinkDefinition> getSinkDefinitions() {
+		return sinkDefinitions;
 	}
 
 	/**
@@ -65,7 +67,7 @@ public class AbstractionAtSink {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((abstraction == null) ? 0 : abstraction.hashCode());
-		result = prime * result + ((sinkDefinition == null) ? 0 : sinkDefinition.hashCode());
+		result = prime * result + ((sinkDefinitions == null) ? 0 : sinkDefinitions.hashCode());
 		result = prime * result + ((sinkStmt == null) ? 0 : sinkStmt.hashCode());
 		return result;
 	}
@@ -84,10 +86,10 @@ public class AbstractionAtSink {
 				return false;
 		} else if (!abstraction.equals(other.abstraction))
 			return false;
-		if (sinkDefinition == null) {
-			if (other.sinkDefinition != null)
+		if (sinkDefinitions == null) {
+			if (other.sinkDefinitions != null)
 				return false;
-		} else if (!sinkDefinition.equals(other.sinkDefinition))
+		} else if (!sinkDefinitions.equals(other.sinkDefinitions))
 			return false;
 		if (sinkStmt == null) {
 			if (other.sinkStmt != null)

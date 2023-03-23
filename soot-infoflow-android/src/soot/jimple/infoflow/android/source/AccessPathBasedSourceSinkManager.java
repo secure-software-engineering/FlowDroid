@@ -182,76 +182,106 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 	@Override
 	public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath sourceAccessPath) {
-		ISourceSinkDefinition def = getSinkDefinition(sCallSite, manager, sourceAccessPath);
-		if (def == null)
-			return null;
+		Collection<ISourceSinkDefinition> defs = getSinkDefinitions(sCallSite, manager, sourceAccessPath);
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>();
+		for (ISourceSinkDefinition def : defs) {
+			// We need the access paths
+			if (!(def instanceof IAccessPathBasedSourceSinkDefinition)) {
+				SinkInfo superSinkInfo = super.getSinkInfo(sCallSite, manager, sourceAccessPath);
+				// Note: we lose the user data here
+				sinkDefs.addAll(superSinkInfo.getDefinitions());
+				continue;
+			}
 
-		// We need the access paths
-		if (!(def instanceof IAccessPathBasedSourceSinkDefinition))
-			return super.getSinkInfo(sCallSite, manager, sourceAccessPath);
-		IAccessPathBasedSourceSinkDefinition apDef = (IAccessPathBasedSourceSinkDefinition) def;
+			IAccessPathBasedSourceSinkDefinition apDef = (IAccessPathBasedSourceSinkDefinition) def;
+			// If we have no precise information, we conservatively assume that
+			// everything is tainted without looking at the access path. Only
+			// exception: separate compilation assumption
+			if (apDef.isEmpty() && sCallSite.containsInvokeExpr()) {
+				if (SystemClassHandler.v().isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
+					sinkDefs.add(def);
+				continue;
+			}
 
-		// If we have no precise information, we conservatively assume that
-		// everything is tainted without looking at the access path. Only
-		// exception: separate compilation assumption
-		if (apDef.isEmpty() && sCallSite.containsInvokeExpr()) {
-			if (SystemClassHandler.v().isTaintVisible(sourceAccessPath, sCallSite.getInvokeExpr().getMethod()))
-				return new SinkInfo(def);
-			else
-				return null;
-		}
+			// If we are only checking whether this statement can be a sink in
+			// general, we know this by now
+			if (sourceAccessPath == null) {
+				sinkDefs.add(def);
+				continue;
+			}
 
-		// If we are only checking whether this statement can be a sink in
-		// general, we know this by now
-		if (sourceAccessPath == null)
-			return new SinkInfo(def);
-
-		if (def instanceof MethodSourceSinkDefinition) {
-			MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
-			if (methodDef.getCallType() == CallType.Return)
-				return new SinkInfo(def);
-
-			// Check whether the base object matches our definition
-			InvokeExpr iexpr = sCallSite.getInvokeExpr();
-			if (iexpr instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
-				InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
-				if (iiexpr.getBase() == sourceAccessPath.getPlainValue()) {
-					for (AccessPathTuple apt : methodDef.getBaseObjects())
-						if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-							return new SinkInfo(apDef.filter(Collections.singleton(apt)));
+			if (def instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) def;
+				if (methodDef.getCallType() == CallType.Return) {
+					sinkDefs.add(def);
+					continue;
 				}
-			}
 
-			// Check whether a parameter matches our definition
-			if (methodDef.getParameters() != null && methodDef.getParameters().length > 0) {
-				// Get the tainted parameter index
-				for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++)
-					if (sCallSite.getInvokeExpr().getArg(i) == sourceAccessPath.getPlainValue()) {
-						// Check whether we have a sink on that parameter
-						if (methodDef.getParameters().length > i)
-							for (AccessPathTuple apt : methodDef.getParameters()[i])
-								if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-									return new SinkInfo(apDef.filter(Collections.singleton(apt)));
+				// Check whether the base object matches our definition
+				InvokeExpr iexpr = sCallSite.getInvokeExpr();
+				if (iexpr instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
+					InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+					if (iiexpr.getBase() == sourceAccessPath.getPlainValue()) {
+						boolean addedDef = false;
+						for (AccessPathTuple apt : methodDef.getBaseObjects())
+							if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt)) {
+								sinkDefs.add(apDef.filter(Collections.singleton(apt)));
+								addedDef = true;
+								break;
+							}
+						if (addedDef)
+							continue;
 					}
-			}
-		} else if (def instanceof FieldSourceSinkDefinition) {
-			FieldSourceSinkDefinition fieldDef = (FieldSourceSinkDefinition) def;
+				}
 
-			// Check whether we need to taint the right side of the assignment
-			if (sCallSite instanceof AssignStmt && fieldDef.getAccessPaths() != null) {
-				for (AccessPathTuple apt : fieldDef.getAccessPaths())
-					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-						return new SinkInfo(apDef.filter(Collections.singleton(apt)));
+				// Check whether a parameter matches our definition
+				if (methodDef.getParameters() != null && methodDef.getParameters().length > 0) {
+					boolean addedDef = false;
+					// Get the tainted parameter index
+					for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++)
+						if (sCallSite.getInvokeExpr().getArg(i) == sourceAccessPath.getPlainValue()) {
+							// Check whether we have a sink on that parameter
+							if (methodDef.getParameters().length > i)
+								for (AccessPathTuple apt : methodDef.getParameters()[i])
+									if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt)) {
+										sinkDefs.add(apDef.filter(Collections.singleton(apt)));
+										addedDef = true;
+										break;
+									}
+						}
+					if (addedDef)
+						continue;
+				}
+			} else if (def instanceof FieldSourceSinkDefinition) {
+				FieldSourceSinkDefinition fieldDef = (FieldSourceSinkDefinition) def;
+
+				// Check whether we need to taint the right side of the assignment
+				if (sCallSite instanceof AssignStmt && fieldDef.getAccessPaths() != null) {
+					boolean addedDef = false;
+					for (AccessPathTuple apt : fieldDef.getAccessPaths())
+						if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt)) {
+							sinkDefs.add(apDef.filter(Collections.singleton(apt)));
+							addedDef = true;
+							break;
+						}
+					if (addedDef)
+						continue;
+				}
+			} else if (def instanceof StatementSourceSinkDefinition) {
+				StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
+				boolean addedDef = false;
+				for (AccessPathTuple apt : ssdef.getAccessPaths())
+					if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt)) {
+						sinkDefs.add(apDef.filter(Collections.singleton(apt)));
+						addedDef = true;
+						break;
+					}
+				if (addedDef)
+					continue;
 			}
-		} else if (def instanceof StatementSourceSinkDefinition) {
-			StatementSourceSinkDefinition ssdef = (StatementSourceSinkDefinition) def;
-			for (AccessPathTuple apt : ssdef.getAccessPaths())
-				if (apt.getSourceSinkType().isSink() && accessPathMatches(sourceAccessPath, apt))
-					return new SinkInfo(apDef.filter(Collections.singleton(apt)));
 		}
 
-		// No matching access path found
-		return null;
+		return sinkDefs.size() > 0 ? new SinkInfo(sinkDefs) : null;
 	}
 
 	/**

@@ -69,7 +69,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 		if (curAbs.getSourceContext() != null) {
 			// Construct the path root
 			SourceContextAndPath sourceAndPath = new SourceContextAndPath(config,
-					curAbs.getSourceContext().getDefinition(), curAbs.getSourceContext().getAccessPath(),
+					curAbs.getSourceContext().getDefinitions(), curAbs.getSourceContext().getAccessPath(),
 					curAbs.getSourceContext().getStmt(), curAbs.getSourceContext().getUserData()).extendPath(curAbs);
 			cacheData.add(sourceAndPath);
 
@@ -143,8 +143,8 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 					initialStack.push(new Pair<Stmt, Set<Abstraction>>(null,
 							Collections.newSetFromMap(new IdentityHashMap<Abstraction, Boolean>())));
 					for (SourceContextAndPath context : getPaths(lastTaskId++, abs.getAbstraction(), initialStack)) {
-						results.addResult(abs.getSinkDefinition(), abs.getAbstraction().getAccessPath(),
-								abs.getSinkStmt(), context.getDefinition(), context.getAccessPath(), context.getStmt(),
+						results.addResult(abs.getSinkDefinitions(), abs.getAbstraction().getAccessPath(),
+								abs.getSinkStmt(), context.getDefinitions(), context.getAccessPath(), context.getStmt(),
 								context.getUserData(), context.getAbstractionPath(), manager);
 					}
 				}

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.checkerframework.checker.units.qual.C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -426,11 +427,10 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	}
 
 	@Override
-	protected ISourceSinkDefinition getSinkDefinition(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
-		ISourceSinkDefinition definition = super.getSinkDefinition(sCallSite, manager, ap);
-		if (definition != null)
-			return definition;
+	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		Collection<ISourceSinkDefinition> definitions = super.getSinkDefinitions(sCallSite, manager, ap);
 
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>(definitions);
 		if (sCallSite.containsInvokeExpr()) {
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 			final String subSig = callee.getSubSignature();
@@ -455,16 +455,16 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 					if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
 						SootMethod sm = clazz.getMethodUnsafe(subSig);
 						if (sm != null) {
-							ISourceSinkDefinition def = this.sinkMethods.get(sm);
-							if (def != null)
-								return def;
+							Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(sm);
+							if (defs != null)
+								sinkDefs.addAll(defs);
 							break;
 						}
 					}
 				}
 			}
 		}
-		return null;
+		return sinkDefs;
 	}
 
 	@Override
@@ -482,7 +482,9 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 				if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
 					SootMethod sm = clazz.getMethodUnsafe(subSig);
 					if (sm != null) {
-						ISourceSinkDefinition def = this.sinkMethods.get(sm);
+						// TODO: fix later
+//						ISourceSinkDefinition def = this.sinkMethods.get(sm);
+						ISourceSinkDefinition def = null;
 						if (def != null)
 							return def;
 						break;

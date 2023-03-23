@@ -22,11 +22,6 @@ public class ConditionalSecondarySourceDefinition extends AbstractSourceSinkDefi
     }
 
     @Override
-    public void merge(ISourceSinkDefinition other) {
-        // NO-OP
-    }
-
-    @Override
     public boolean isEmpty() {
         return false;
     }

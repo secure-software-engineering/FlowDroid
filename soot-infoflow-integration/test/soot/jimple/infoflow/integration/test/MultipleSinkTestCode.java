@@ -10,14 +10,15 @@ public class MultipleSinkTestCode {
         String fieldB;
     }
 
+    // Taints both fields
     public static ReturnObject objectSource() {
         return new ReturnObject();
     }
-
+    // Taints only field A
     public static ReturnObject objectSourceA() {
         return new ReturnObject();
     }
-
+    // Taints only field B
     public static ReturnObject objectSourceB() {
         return new ReturnObject();
     }
@@ -42,6 +43,7 @@ public class MultipleSinkTestCode {
         System.out.println(param1 + param2);
     }
 
+    // Leaks both fields
     public static void objectSink(ReturnObject obj) {
         System.out.println(obj.fieldA + obj.fieldB);
     }
@@ -91,11 +93,13 @@ public class MultipleSinkTestCode {
         objectSink(objectSource());
     }
 
+    // Field taints both A and B with different categories
     ReturnObject source;
     public void testParamAsSource() {
         objectSink(source);
     }
 
+    // Field leaks both A and B in different categories
     ReturnObject sink;
     public void testParamAsSink() {
         sink = objectSource();

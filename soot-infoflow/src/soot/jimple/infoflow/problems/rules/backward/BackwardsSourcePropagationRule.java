@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.problems.rules.backward;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import soot.SootMethod;
 import soot.Value;
@@ -93,7 +94,7 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sourceInfo = ssm.getInverseSourceInfo(stmt, getManager(), source.getAccessPath());
 					if (sourceInfo != null
-							&& !getResults().addResult(new AbstractionAtSink(sourceInfo.getDefinition(), source, stmt)))
+							&& !getResults().addResult(new AbstractionAtSink(sourceInfo.getDefinitions(), source, stmt)))
 						killState = true;
 				}
 			}
@@ -166,7 +167,7 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 				// propagate this taint any further.
 				if (sourceInfo != null) {
 					boolean result = getResults()
-							.addResult(new AbstractionAtSink(sourceInfo.getDefinition(), source, stmt));
+							.addResult(new AbstractionAtSink(sourceInfo.getDefinitions(), source, stmt));
 					if (!result)
 						killState = true;
 				}
@@ -205,6 +206,6 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
 			return;
 
-		getResults().addResult(new AbstractionAtSink(SecondarySinkDefinition.INSTANCE, source, stmt));
+		getResults().addResult(new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
 	}
 }

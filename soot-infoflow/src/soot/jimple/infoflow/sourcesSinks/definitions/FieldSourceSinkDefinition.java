@@ -110,21 +110,6 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 	}
 
 	@Override
-	public void merge(ISourceSinkDefinition other) {
-		if (other instanceof FieldSourceSinkDefinition) {
-			FieldSourceSinkDefinition otherField = (FieldSourceSinkDefinition) other;
-
-			// Merge the base object definitions
-			if (otherField.accessPaths != null && !otherField.accessPaths.isEmpty()) {
-				if (this.accessPaths == null)
-					this.accessPaths = new HashSet<>();
-				for (AccessPathTuple apt : otherField.accessPaths)
-					this.accessPaths.add(apt);
-			}
-		}
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return accessPaths == null || accessPaths.isEmpty();
 	}

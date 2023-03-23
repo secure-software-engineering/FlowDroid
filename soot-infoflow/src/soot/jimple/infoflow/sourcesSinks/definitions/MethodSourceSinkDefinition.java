@@ -334,39 +334,6 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				filteredReturnValues, callType);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void merge(ISourceSinkDefinition other) {
-		if (other instanceof MethodSourceSinkDefinition) {
-			MethodSourceSinkDefinition otherMethod = (MethodSourceSinkDefinition) other;
-
-			// Merge the base object definitions
-			if (otherMethod.baseObjects != null && !otherMethod.baseObjects.isEmpty()) {
-				if (this.baseObjects == null)
-					this.baseObjects = new HashSet<>();
-				for (AccessPathTuple apt : otherMethod.baseObjects)
-					this.baseObjects.add(apt);
-			}
-
-			// Merge the parameter definitions
-			if (otherMethod.parameters != null && otherMethod.parameters.length > 0) {
-				if (this.parameters == null)
-					this.parameters = new Set[this.method.getParameters().size()];
-				for (int i = 0; i < otherMethod.parameters.length; i++) {
-					addParameterDefinition(i, otherMethod.parameters[i]);
-				}
-			}
-
-			// Merge the return value definitions
-			if (otherMethod.returnValues != null && !otherMethod.returnValues.isEmpty()) {
-				if (this.returnValues == null)
-					this.returnValues = new HashSet<>();
-				for (AccessPathTuple apt : otherMethod.returnValues)
-					this.returnValues.add(apt);
-			}
-		}
-	}
-
 	/**
 	 * Adds the given access path tuples to this source/sink definition for the
 	 * given parameter index

@@ -103,12 +103,12 @@ public abstract class BaseSourceSinkManager
 	protected Map<SootMethod, ISourceSinkDefinition> sourceMethods;
 	protected Map<SootMethod, ISourceSinkDefinition> sourceCallbackMethods;
 	protected Map<Stmt, ISourceSinkDefinition> sourceStatements;
-	protected Map<SootMethod, ISourceSinkDefinition> sinkMethods;
-	protected Map<SootMethod, ISourceSinkDefinition> sinkReturnMethods;
+	protected MultiMap<SootMethod, ISourceSinkDefinition> sinkMethods;
+	protected MultiMap<SootMethod, ISourceSinkDefinition> sinkReturnMethods;
 	protected Map<SootMethod, CallbackDefinition> callbackMethods;
 	protected Map<SootField, ISourceSinkDefinition> sourceFields;
-	protected Map<SootField, ISourceSinkDefinition> sinkFields;
-	protected Map<Stmt, ISourceSinkDefinition> sinkStatements;
+	protected MultiMap<SootField, ISourceSinkDefinition> sinkFields;
+	protected MultiMap<Stmt, ISourceSinkDefinition> sinkStatements;
 
 	protected Set<SootMethod> conditionalSinks = new HashSet<>();
 	protected MultiMap<SootMethod, SootClass> conditionalSinkToExcludedClasses = new HashMultiMap<>();
@@ -265,13 +265,13 @@ public abstract class BaseSourceSinkManager
 	 *                  the interprocedural control flow graph
 	 * @param ap        The incoming tainted access path
 	 * @return The sink definition of the method that is called at the given call
-	 *         site if such a definition exists, otherwise null
+	 * site if such a definition exists, otherwise null
 	 */
-	protected ISourceSinkDefinition getSinkDefinition(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
 		// Do we have a statement-specific definition?
 		{
-			ISourceSinkDefinition def = sinkStatements.get(sCallSite);
-			if (def != null)
+			Collection<ISourceSinkDefinition> def = sinkStatements.get(sCallSite);
+			if (def.size() > 0)
 				return def;
 		}
 
@@ -279,12 +279,12 @@ public abstract class BaseSourceSinkManager
 			// Check whether the taint is even visible inside the callee
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 			if (!SystemClassHandler.v().isTaintVisible(ap, callee))
-				return null;
+				return Collections.emptySet();
 
 			// Do we have a direct hit?
 			{
-				ISourceSinkDefinition def = this.sinkMethods.get(sCallSite.getInvokeExpr().getMethod());
-				if (def != null)
+				Collection<ISourceSinkDefinition> def = this.sinkMethods.get(sCallSite.getInvokeExpr().getMethod());
+				if (def.size() > 0)
 					return def;
 			}
 
@@ -294,34 +294,33 @@ public abstract class BaseSourceSinkManager
 			for (SootClass i : parentClassesAndInterfaces
 					.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
 				if (i.declaresMethod(subSig)) {
-					ISourceSinkDefinition def = this.sinkMethods.get(i.getMethod(subSig));
-					if (def != null)
+					Collection<ISourceSinkDefinition> def = this.sinkMethods.get(i.getMethod(subSig));
+					if (def.size() > 0)
 						return def;
 				}
 			}
 
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : manager.getICFG().getCalleesOfCallAt(sCallSite)) {
-				ISourceSinkDefinition def = this.sinkMethods.get(sm);
-				if (def != null)
+				Collection<ISourceSinkDefinition> def = this.sinkMethods.get(sm);
+				if (def.size() > 0)
 					return def;
 			}
-
-			return null;
 		} else if (sCallSite instanceof AssignStmt) {
 			// Check if the target is a sink field
 			AssignStmt assignStmt = (AssignStmt) sCallSite;
 			if (assignStmt.getLeftOp() instanceof FieldRef) {
 				FieldRef fieldRef = (FieldRef) assignStmt.getLeftOp();
-				ISourceSinkDefinition def = sinkFields.get(fieldRef.getField());
-				if (def != null)
+				Collection<ISourceSinkDefinition> def = sinkFields.get(fieldRef.getField());
+				if (def.size() > 0)
 					return def;
 			}
 		} else if (sCallSite instanceof ReturnStmt) {
 			return sinkReturnMethods.get(manager.getICFG().getMethodOf(sCallSite));
 		}
 
-		return null;
+		// nothing found
+		return Collections.emptySet();
 	}
 
 	protected ISourceSinkDefinition getInverseSource(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
@@ -391,7 +390,7 @@ public abstract class BaseSourceSinkManager
 		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
-		ISourceSinkDefinition def = getSinkDefinition(sCallSite, manager, ap);
+		Collection<ISourceSinkDefinition> def = getSinkDefinitions(sCallSite, manager, ap);
 		return def == null ? null : new SinkInfo(def);
 	}
 
@@ -403,7 +402,9 @@ public abstract class BaseSourceSinkManager
 		}
 
 		ISourceSinkDefinition def = getInverseSource(sCallSite, manager, ap);
-		return def == null ? null : new SinkInfo(def);
+		// TODO: Fix later
+		return null;
+//		return def == null ? null : new SinkInfo(def);
 	}
 
 	@Override
@@ -521,7 +522,7 @@ public abstract class BaseSourceSinkManager
 	protected ISourceSinkDefinition getInverseSourceMethod(SootMethod method) {
 		if (oneSourceAtATime && (osaatType != SourceType.MethodCall || currentSource != method))
 			return null;
-		return this.sinkMethods.get(method);
+		return getFirstEl(this.sinkMethods.get(method));
 	}
 
 	/**
@@ -631,10 +632,14 @@ public abstract class BaseSourceSinkManager
 		return null;
 	}
 
+	protected <T> T getFirstEl(Collection<T> c) {
+		return c.stream().findFirst().orElse(null);
+	}
+
 	protected ISourceSinkDefinition getInverseSink(Stmt sCallSite, IInfoflowCFG cfg) {
 		// Do we have a statement-specific definition?
 		{
-			ISourceSinkDefinition def = this.sinkStatements.get(sCallSite);
+			ISourceSinkDefinition def = getFirstEl(this.sinkStatements.get(sCallSite));
 			if (def != null)
 				return def;
 		}
@@ -645,7 +650,7 @@ public abstract class BaseSourceSinkManager
 
 			// Do we have a direct hit?
 			{
-				ISourceSinkDefinition def = this.sinkMethods.get(callee);
+				ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(callee));
 				if (def != null)
 					return def;
 			}
@@ -655,7 +660,7 @@ public abstract class BaseSourceSinkManager
 			// Check whether we have any of the interfaces on the list
 			for (SootClass i : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 				if (i.declaresMethod(subSig)) {
-					ISourceSinkDefinition def = this.sinkMethods.get(i.getMethod(subSig));
+					ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(i.getMethod(subSig)));
 					if (def != null)
 						return def;
 				}
@@ -663,7 +668,7 @@ public abstract class BaseSourceSinkManager
 
 			// Ask the CFG in case we don't know any better
 			for (SootMethod sm : cfg.getCalleesOfCallAt(sCallSite)) {
-				ISourceSinkDefinition def = this.sinkMethods.get(sm);
+				ISourceSinkDefinition def = getFirstEl(this.sinkMethods.get(sm));
 				if (def != null)
 					return def;
 			}
@@ -674,12 +679,12 @@ public abstract class BaseSourceSinkManager
 			AssignStmt assignStmt = (AssignStmt) sCallSite;
 			if (assignStmt.getLeftOp() instanceof FieldRef) {
 				FieldRef fieldRef = (FieldRef) assignStmt.getLeftOp();
-				ISourceSinkDefinition def = this.sinkFields.get(fieldRef.getField());
+				ISourceSinkDefinition def = getFirstEl(this.sinkFields.get(fieldRef.getField()));
 				if (def != null)
 					return def;
 			}
 		} else if (sCallSite instanceof ReturnStmt) {
-			return sinkReturnMethods.get(cfg.getMethodOf(sCallSite));
+			return getFirstEl(sinkReturnMethods.get(cfg.getMethodOf(sCallSite)));
 		}
 
 		return null;
@@ -848,10 +853,10 @@ public abstract class BaseSourceSinkManager
 
 		// Get the Soot method or field for the sink signatures we have
 		if (sinkDefs != null) {
-			sinkMethods = new HashMap<>();
-			sinkFields = new HashMap<>();
-			sinkReturnMethods = new HashMap<>();
-			sinkStatements = new HashMap<>();
+			sinkMethods = new HashMultiMap<>();
+			sinkFields = new HashMultiMap<>();
+			sinkReturnMethods = new HashMultiMap<>();
+			sinkStatements = new HashMultiMap<>();
 			for (Pair<String, ISourceSinkDefinition> entry : sinkDefs) {
 				ISourceSinkDefinition sourceSinkDef = entry.getO2();
 				if (sourceSinkDef instanceof MethodSourceSinkDefinition) {

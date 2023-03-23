@@ -150,11 +150,11 @@ public class SummarySourceSinkManager implements IReversibleSourceSinkManager {
 				if (debug)
 					System.out.println("source: " + sCallSite + " " + currentMethod.getSignature());
 
-				return new SinkInfo(null);
+				return new SinkInfo();
 			} else if (rightOp instanceof ThisRef) {
 				if (debug)
 					System.out.println("source: (this)" + sCallSite + " " + currentMethod.getSignature());
-				return new SinkInfo(null);
+				return new SinkInfo();
 			}
 		}
 		return null;
@@ -187,7 +187,7 @@ public class SummarySourceSinkManager implements IReversibleSourceSinkManager {
 		if (!isMethodToSummarize(currentMethod))
 			return null;
 
-		return sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt ? new SinkInfo(null) : null;
+		return sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt ? new SinkInfo() : null;
 	}
 
 	@Override

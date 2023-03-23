@@ -30,6 +30,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
+import soot.util.HashMultiMap;
 
 /**
  * Parses informations from the new Dataformat (XML) with the help of SAX.
@@ -94,7 +95,7 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 	 * @param filter A filter for excluding certain categories of sources and sinks
 	 */
 	protected XMLSourceSinkParser(ICategoryFilter categoryFilter) {
-		this.sourcesAndSinks = new HashMap<>();
+		this.sourcesAndSinks = new HashMultiMap<>();
 		this.categoryFilter = categoryFilter;
 	}
 

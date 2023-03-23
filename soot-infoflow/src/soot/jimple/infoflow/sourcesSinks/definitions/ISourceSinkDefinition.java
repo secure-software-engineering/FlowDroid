@@ -41,14 +41,6 @@ public interface ISourceSinkDefinition {
 	public abstract ISourceSinkDefinition getSinkOnlyDefinition();
 
 	/**
-	 * Merges the source and sink definitions of the given definition object into
-	 * this definition object
-	 * 
-	 * @param other The definition object to merge
-	 */
-	public abstract void merge(ISourceSinkDefinition other);
-
-	/**
 	 * Indicates if the definition contains any sources or sinks
 	 * 
 	 * @return The boolean if this definition is empty

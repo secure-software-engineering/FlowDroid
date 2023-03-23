@@ -198,7 +198,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 
 		@Override
 		public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
-			return sCallSite instanceof IfStmt ? new SinkInfo(null) : null;
+			return sCallSite instanceof IfStmt ? new SinkInfo() : null;
 		}
 
 		@Override
@@ -206,7 +206,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 			if (sCallSite instanceof DefinitionStmt && sCallSite.containsInvokeExpr()
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("currentTimeMillis")
 					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
-				return new SinkInfo(null);
+				return new SinkInfo();
 			}
 			return null;
 		}
@@ -279,7 +279,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 				boolean includeExistingImmutableAliases = name.equals("annotatedSource");
 				if ((name.equals("source") || includeExistingImmutableAliases) && iexpr.getArgCount() > 0) {
 					if (ap == null)
-						return new SinkInfo(null);
+						return new SinkInfo();
 					else if (iexpr.getArg(0) == ap.getPlainValue()) {
 						SootMethod target = sCallSite.getInvokeExpr().getMethod();
 						return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));

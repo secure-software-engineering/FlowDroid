@@ -86,7 +86,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         Set<String> categories = new HashSet<>();
         for (String category : categoriesArray)
             categories.add(category);
-        Set<String> seenCategories = new HashSet(categories.size());
+        Set<String> seenCategories = new HashSet<>(categories.size());
 
         for (DataFlowResult res : results) {
             String categoryID;
@@ -208,7 +208,7 @@ public class MultipleSinkTests extends RiverJUnitTests {
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void testParamAsSource()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
-        this.checkInfoflow(infoflow, 1);
+        this.checkInfoflow(infoflow, 2);
         Assert.assertEquals(2, infoflow.getResults().getResultSet().size());
         containsCategoriesOnce(infoflow.getResults().getResultSet(), new String[] { "NETWORK", "VOIP" }, SourceOrSink.SOURCE);
     }

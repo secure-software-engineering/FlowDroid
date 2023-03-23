@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	 * @param userData   Additional user data to be propagated with the source
 	 */
 	public SourceInfo(ISourceSinkDefinition definition, Set<AccessPath> bundle, Object userData) {
-		super(definition, userData);
+		super(Collections.singleton(definition), userData);
 		this.accessPaths = bundle;
 	}
 
@@ -70,6 +71,10 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	 */
 	public Set<AccessPath> getAccessPaths() {
 		return this.accessPaths;
+	}
+
+	public ISourceSinkDefinition getDefinition() {
+		return (ISourceSinkDefinition) definitions.toArray()[0];
 	}
 
 	@Override
