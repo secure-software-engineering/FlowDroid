@@ -266,7 +266,7 @@ public abstract class AbstractXMLSourceSinkParser {
 		}
 
 		protected void handleStarttagPathelement(Attributes attributes) {
-			if (methodSignature != null && attributes != null) {
+			if (attributes != null) {
 				String tempStr = attributes.getValue(XMLConstants.FIELD_ATTRIBUTE);
 				if (tempStr != null && !tempStr.isEmpty()) {
 					pathElements.add(tempStr);
