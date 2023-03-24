@@ -503,12 +503,12 @@ public abstract class BaseSourceSinkManager
 			for (AccessPath ap : aps)
 				pairs.add(new Pair<>(ap, def));
 
-			if (manager.getConfig().getImplicitFlowMode() != InfoflowConfiguration.ImplicitFlowMode.NoImplicitFlows
-					&& aps.size() == 0) {
+			if (pairs.isEmpty() && manager.getConfig().getImplicitFlowMode()
+									!= InfoflowConfiguration.ImplicitFlowMode.NoImplicitFlows) {
 				// We have to create at least one pair regardless whether we could find any access path
 				// if implicit flows are enabled. Think of a method with only constant arguments but
 				// is influenced by a tainted condition.
-				pairs.add(new Pair<>(null, def));
+				pairs.add(new Pair<>(AccessPath.getEmptyAccessPath(), def));
 			}
 		}
 
