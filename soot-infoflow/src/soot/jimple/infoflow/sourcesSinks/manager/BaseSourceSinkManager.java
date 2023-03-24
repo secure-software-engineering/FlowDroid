@@ -2,14 +2,7 @@ package soot.jimple.infoflow.sourcesSinks.manager;
 
 import static soot.SootClass.DANGLING;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -143,7 +136,10 @@ public abstract class BaseSourceSinkManager
 					// We need to collect all interfaces of all superclasses. First, we take the
 					// superclasses, and then we call this method recursively on all interfaces
 					// declared on these classes.
-					Set<SootClass> res = new HashSet<>();
+					// This has to be a list such that an iterator walks the hierarchy upwards.
+					// Otherwise, iterating on it might return an interface with more callees
+					// than the nearest superclass leading to more definitions.
+					ArrayList<SootClass> res = new ArrayList<>();
 					res.addAll(h.getSuperclassesOfIncluding(sc));
 
 					res.addAll(res.stream().flatMap(c -> c.getInterfaces().stream()).flatMap(i -> {
@@ -152,7 +148,7 @@ public abstract class BaseSourceSinkManager
 						} catch (ExecutionException e) {
 							throw new RuntimeException(e);
 						}
-					}).collect(Collectors.toSet()));
+					}).collect(Collectors.toList()));
 					return res;
 				}
 
