@@ -75,7 +75,12 @@ public abstract class RiverJUnitTests {
         result.setTaintWrapper(getTaintWrapper());
         result.getConfig().setAdditionalFlowsEnabled(true);
         result.getConfig().getPathConfiguration().setPathReconstructionMode(InfoflowConfiguration.PathReconstructionMode.Fast);
+        setConfiguration(result.getConfig());
         return result;
+    }
+
+    protected void setConfiguration(InfoflowConfiguration config) {
+
     }
 
     protected SetupApplication initApplication(String fileName) {

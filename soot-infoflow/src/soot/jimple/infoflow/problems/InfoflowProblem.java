@@ -601,9 +601,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (originalCallArg == leftOp)
 											continue;
 									}
-
 									// Propagate over the parameter taint
-									if (aliasing.mayAlias(paramLocals[i], sourceBase)) {
+									// skip if the callee has more parameter than the iCallStmt.
+									// can happen by virtual edges added by soot (`virtualedges.xml`)
+									if (i < iCallStmt.getInvokeExpr().getArgCount() && aliasing.mayAlias(paramLocals[i], sourceBase)) {
 										parameterAliases = true;
 										originalCallArg = iCallStmt.getInvokeExpr()
 												.getArg(isReflectiveCallSite ? 1 : i);

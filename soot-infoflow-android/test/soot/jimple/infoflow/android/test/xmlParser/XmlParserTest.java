@@ -203,6 +203,8 @@ public class XmlParserTest {
 		final String servletSig = "<javax.servlet.ServletResponse: java.io.PrintWriter getWriter()>";
 		final String httpSrvSig = "<javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()>";
 
+		final String byteArrayClass = "java.io.ByteArrayOutputStream";
+
 		Assert.assertEquals(4, sinkSet.size());
 		boolean foundStrSig = false, foundStrOffsetSig = false, foundIntSig = false, foundByteSig = false;
 		for (ISourceSinkDefinition sink : sinkSet) {
@@ -219,6 +221,7 @@ public class XmlParserTest {
 					Assert.assertEquals(1, mRefs.size());
 					Assert.assertTrue(mRefs.contains(openConSig));
 					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
 					foundStrSig = true;
 					break;
 				}
@@ -229,6 +232,7 @@ public class XmlParserTest {
 					Set<String> cRefs = cond.getClassNamesOnPath();
 					Assert.assertEquals(1, cRefs.size());
 					Assert.assertTrue(cRefs.contains("java.lang.String"));
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
 					foundStrOffsetSig = true;
 					break;
 				}
@@ -240,6 +244,7 @@ public class XmlParserTest {
 					Assert.assertTrue(mRefs.contains(servletSig));
 					Assert.assertTrue(mRefs.contains(httpSrvSig));
 					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
 					foundIntSig = true;
 					break;
 				}
@@ -249,9 +254,21 @@ public class XmlParserTest {
 					for (SourceSinkCondition cond : conds) {
 						Set<String> mRefs = ((AdditionalFlowCondition) cond).getSignaturesOnPath();
 						Assert.assertEquals(1, mRefs.size());
-						foundServlet |= mRefs.contains(servletSig);
-						foundHttpServlet |= mRefs.contains(httpSrvSig);
 						Assert.assertEquals(0, ((AdditionalFlowCondition) cond).getClassNamesOnPath().size());
+
+						if (mRefs.contains(servletSig)) {
+							foundServlet = true;
+							Assert.assertEquals(2, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
+									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.Object")));
+						} else if (mRefs.contains(httpSrvSig)) {
+							foundHttpServlet = true;
+							Assert.assertEquals(1, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
+									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.String")));
+						} else {
+							Assert.fail();
+						}
 					}
 					Assert.assertTrue(foundServlet && foundHttpServlet);
 					foundByteSig = true;
