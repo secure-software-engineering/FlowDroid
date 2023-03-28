@@ -159,7 +159,7 @@ public class Infoflow extends AbstractInfoflow {
 			return SourceSinkState.SOURCE;
 		else if (sinkInfo != null && sourceInfo == null)
 			return SourceSinkState.SINK;
-		else if (sourceInfo != null && sinkInfo == null)
+		else if (sourceInfo != null && sinkInfo != null)
 			return SourceSinkState.BOTH;
 		return SourceSinkState.NEITHER;
 	}
