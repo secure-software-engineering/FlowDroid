@@ -107,6 +107,7 @@ import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
 import soot.jimple.infoflow.threading.IExecutorFactory;
+import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
@@ -784,6 +785,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// Set all handlers to the additional problem
 				additionalProblem.setTaintPropagationHandler(new SecondaryFlowListener());
+//				SequentialTaintPropagationHandler tpg = new SequentialTaintPropagationHandler();
+//				tpg.addHandler(new DebugFlowFunctionTaintPropagationHandler());
+//				tpg.addHandler(new SecondaryFlowListener());
+				additionalProblem.setTaintPropagationHandler(tpg);
 				additionalProblem.setTaintWrapper(taintWrapper);
 				additionalNativeCallHandler = new BackwardNativeCallHandler();
 				additionalProblem.setNativeCallHandler(additionalNativeCallHandler);
@@ -964,7 +969,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// Give derived classes a chance to do whatever they need before we remove stuff
 				// from memory
-				onTaintPropagationCompleted(forwardSolver, backwardSolver);
+				onTaintPropagationCompleted(forwardSolver, backwardSolver, additionalSolver, additionalAliasSolver);
 
 				// Get the result abstractions
 				Set<AbstractionAtSink> res = propagationResults.getResults();
@@ -1855,7 +1860,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param forwardSolver  The forward data flow solver
 	 * @param backwardSolver The backward data flow solver
 	 */
-	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
+	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver aliasSolver,
+											   IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
 		//
 	}
 
