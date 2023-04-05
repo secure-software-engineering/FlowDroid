@@ -152,7 +152,6 @@ public class AliasProblem extends AbstractInfoflowProblem {
 					// not track, we can stop here.
 					if (!(rightValue instanceof Local || rightValue instanceof FieldRef
 							|| rightValue instanceof ArrayRef)) {
-						res.add(source);
 						return res;
 					}
 				}

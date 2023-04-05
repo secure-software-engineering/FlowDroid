@@ -649,6 +649,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 										if (abs != null) {
 											res.add(abs);
+											for (Abstraction callerD1 : callerD1s)
+												manager.getAliasing().computeAliases(callerD1, iCallStmt, originalCallArg,
+														res, interproceduralCFG().getMethodOf(callSite), abs);
+
 										}
 									}
 								}
@@ -686,6 +690,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 									if (abs != null) {
 										res.add(abs);
+										for (Abstraction callerD1 : callerD1s)
+											manager.getAliasing().computeAliases(callerD1, iCallStmt, callerBaseLocal,
+													res, interproceduralCFG().getMethodOf(callSite), abs);
 									}
 								}
 							}
