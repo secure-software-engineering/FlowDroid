@@ -1183,7 +1183,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 						for (Unit p : source.getPath()) {
 							if (p != null) {
 								logger.info("\t -> " + iCfg.getMethodOf(p));
-								logger.info("\t\t -> " + p);
+								int ln = p.getJavaSourceStartLineNumber();
+								logger.info("\t\t -> " + p + (ln != -1 ? " in line " + ln : ""));
 							}
 						}
 					}
