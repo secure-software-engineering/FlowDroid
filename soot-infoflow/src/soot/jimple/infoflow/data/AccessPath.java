@@ -298,7 +298,7 @@ public class AccessPath implements Cloneable {
 	public String toString() {
 		String str = "";
 		if (value != null)
-			str += value.toString() + "(" + value.getType() + ")";
+			str += value.toString() + "(" + baseType + ")";
 		if (fragments != null && fragments.length > 0) {
 			for (int i = 0; i < fragments.length; i++)
 				if (fragments[i] != null) {
