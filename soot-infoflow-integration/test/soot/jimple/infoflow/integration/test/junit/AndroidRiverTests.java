@@ -12,7 +12,6 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.util.Chain;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -21,7 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AndroidRiverTests extends RiverJUnitTests {
+public class AndroidRiverTests extends RiverBaseJUnitTests {
     @Override
     protected ITaintPropagationWrapper getTaintWrapper() {
         try {

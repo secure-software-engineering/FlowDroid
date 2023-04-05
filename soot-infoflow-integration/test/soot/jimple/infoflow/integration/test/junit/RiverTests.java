@@ -30,7 +30,7 @@ import java.util.Set;
  *
  * @author Tim Lange
  */
-public abstract class RiverTests extends RiverJUnitTests {
+public abstract class RiverTests extends RiverBaseJUnitTests {
     protected static List<String> sources;
     protected static final String localSource = "<soot.jimple.infoflow.integration.test.RiverTestCode: java.lang.String source()>";
     protected static final String localIntSource = "<soot.jimple.infoflow.integration.test.RiverTestCode: int intSource()>";

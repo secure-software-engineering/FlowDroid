@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Tim Lange
  */
-public class OutputStreamTests extends RiverJUnitTests {
+public class OutputStreamTests extends RiverBaseJUnitTests {
     private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
         try {
         	File sourcesSinks =new File("./build/classes/res/OutputStreamAndWriters.xml");
