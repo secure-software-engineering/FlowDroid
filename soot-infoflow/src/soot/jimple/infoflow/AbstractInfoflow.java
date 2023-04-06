@@ -1292,6 +1292,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					sinkCount++;
 					break;
 				}
+				case NEITHER:
+					break;
 			}
 
 		}
