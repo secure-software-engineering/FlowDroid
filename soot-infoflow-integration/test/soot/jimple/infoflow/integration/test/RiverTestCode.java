@@ -168,4 +168,18 @@ public class RiverTestCode {
         t.injectSensitiveData(os);
         os.write(secret);
     }
+
+    private void writeToStream(OutputStream os) throws IOException {
+        URL url = new URL("some.url");
+        URLConnection con = url.openConnection();
+        OutputStream internet = con.getOutputStream();
+        internet.write(1337);
+        int secret = intSource() + con.getContentLength();
+        os.write(secret);
+    }
+
+    public void riverTest12() throws IOException {
+        OutputStream os = new ByteArrayOutputStream();
+        writeToStream(os);
+    }
 }

@@ -239,4 +239,22 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.negativeCheckInfoflow(infoflow);
     }
+
+    @Test(timeout = 300000)
+    public void testPrintWriter3() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testPrintWriter3()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    @Test(timeout = 300000)
+    public void testFileWriter1() {
+        IInfoflow infoflow = this.initInfoflow();
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testFileWriter1()>");
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 1);
+    }
 }
