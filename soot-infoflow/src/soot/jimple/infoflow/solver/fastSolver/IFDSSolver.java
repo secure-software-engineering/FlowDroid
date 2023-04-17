@@ -613,7 +613,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 *                           unbalanced return (this value is not used within
 	 *                           this implementation but may be useful for
 	 *                           subclasses of {@link IFDSSolver})
-	 * @param local
 	 */
 	protected void propagate(D sourceVal, N target, D targetVal,
 			/* deliberately exposed to clients */ N relatedCallSite,

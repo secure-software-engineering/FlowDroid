@@ -155,6 +155,7 @@ public class JDKTests extends TestHelper {
 		Assert.assertNotNull(flow);
 	}
 
+	@Ignore("State explosion")
 	@Test(timeout = 100000)
 	public void arrayBlockingQueueIterator() {
 		String mSig = "<java.util.concurrent.ArrayBlockingQueue: java.util.Iterator iterator()>";

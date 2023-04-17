@@ -28,11 +28,23 @@ public final class DebugAbstractionTree {
 	/**
 	 * Creates a dot graph with indices as labels for the abstractions (otherwise, it would be way too large).
 	 * The correspondence is printed to log.
-	 * @param absStart start abstraction of the tree (root) 
+	 * @param absStart start abstraction of the tree (root)
 	 * @param printNeighbors whether to print neighbors
 	 * @return the dot graph
 	 */
 	public static String createDotGraph(Abstraction absStart, boolean printNeighbors) {
+		return createDotGraph(absStart, printNeighbors, false);
+	}
+
+	/**
+	 * Creates a dot graph with indices as labels for the abstractions (otherwise, it would be way too large).
+	 * The correspondence is printed to log.
+	 * @param absStart start abstraction of the tree (root) 
+	 * @param printNeighbors whether to print neighbors
+	 * @param verbose whether to print the access path and statement
+	 * @return the dot graph
+	 */
+	public static String createDotGraph(Abstraction absStart, boolean printNeighbors, boolean verbose) {
 		IdentityHashMap<Abstraction, Integer> absToId = new IdentityHashMap<>();
 		ArrayDeque<Abstraction> workQueue = new ArrayDeque<>();
 		StringBuilder sbNodes = new StringBuilder();
@@ -47,7 +59,21 @@ public final class DebugAbstractionTree {
 			if (id == null) {
 				idCounter++;
 				absToId.put(p, idCounter);
-				String absName = String.valueOf(idCounter); // escape(p.toString());
+				String absName = String.valueOf(idCounter);
+				if (p.getSourceContext() != null)
+					absName += " [source]";
+				if (verbose) {
+					absName += "<br>";
+					absName += escape(p.toString());
+					if (p.getCurrentStmt() != null) {
+						absName += "<br>@ ";
+						absName += p.getCurrentStmt().toString();
+						int ln = p.getCurrentStmt().getJavaSourceStartLineNumber();
+						if (ln != -1)
+							absName += " in line ";
+					}
+				}
+				absName = p.isAbstractionActive() ? absName : "-" + absName;
 				logger.info(idCounter + ": " + p);
 				StringBuilder neighbors = new StringBuilder();
 				for (int i = 0; i < p.getNeighborCount(); i++) {
@@ -57,10 +83,7 @@ public final class DebugAbstractionTree {
 					workQueue.addAll(p.getNeighbors());
 				if (p.getPredecessor() != null)
 					workQueue.add(p.getPredecessor());
-				else {
-					if (p.getSourceContext() != null)
-						absName += " [source]";
-				}
+
 				sbNodes.append(String.format("    abs%d[label=\"{%s|{<a> A%s}}\"];\n", idCounter, absName,
 						neighbors.toString()));
 			}
@@ -93,7 +116,7 @@ public final class DebugAbstractionTree {
 	}
 
 	private static String escape(String string) {
-		return HtmlEscapers.htmlEscaper().escape(string);
+		return HtmlEscapers.htmlEscaper().escape(string).replace("|", "\\|");
 	}
 
 }

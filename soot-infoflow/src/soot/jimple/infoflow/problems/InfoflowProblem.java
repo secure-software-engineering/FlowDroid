@@ -129,7 +129,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					if (rightValue instanceof CastExpr) {
 						// For casts, we must update our typing information
 						CastExpr cast = (CastExpr) assignStmt.getRightOp();
-						targetType = cast.getType();
+						if (!manager.getHierarchy().canStoreType(targetType, cast.getCastType()))
+							targetType = cast.getType();
 					}
 					// Special type handling for certain operations
 					else if (rightValue instanceof InstanceOfExpr)
@@ -435,10 +436,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							taintPropagationHandler.notifyFlowIn(stmt, source, manager,
 									FlowFunctionType.CallFlowFunction);
 
-						// We might need to activate the abstraction
-						if (!source.isAbstractionActive() && source.getActivationUnit() == src)
-							source = source.getActiveCopy();
-
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
 						Set<Abstraction> res = propagationRules.applyCallFlowFunction(d1, source, stmt, dest, killAll);
 						if (killAll.value)
@@ -649,6 +646,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 										if (abs != null) {
 											res.add(abs);
+											for (Abstraction callerD1 : callerD1s)
+												manager.getAliasing().computeAliases(callerD1, iCallStmt, originalCallArg,
+													res, interproceduralCFG().getMethodOf(callSite), abs);
 										}
 									}
 								}
@@ -686,6 +686,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 									if (abs != null) {
 										res.add(abs);
+										if (!abs.equals(calleeD1))
+											for (Abstraction callerD1 : callerD1s)
+												manager.getAliasing().computeAliases(callerD1, iCallStmt, callerBaseLocal,
+														res, interproceduralCFG().getMethodOf(iCallStmt), abs);
 									}
 								}
 							}
