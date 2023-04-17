@@ -19,7 +19,6 @@
 
     <build>
         <finalName>soot-infoflow-integration-classes</finalName>
-        <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
         <outputDirectory>build/classes</outputDirectory>
         <testOutputDirectory>build/testclasses</testOutputDirectory>
@@ -38,14 +37,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>${maven-jar-plugin.version}</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>soot.jimple.infoflow.methodSummary.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -91,6 +82,11 @@
                 <targetPath>schema</targetPath>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>soot-infoflow-summaries/res</directory>
+            </testResource>
+        </testResources>
     </build>
 
     <dependencies>
