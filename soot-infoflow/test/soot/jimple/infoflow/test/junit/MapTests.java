@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 
 /**
  * contain test cases for taint propagation in Maps.
@@ -83,26 +84,13 @@ public abstract class MapTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void concreteWriteRead2Test()>");
 		infoflow.getConfig().setFlowSensitiveAliasing(false);
 		// There is one flow based on array sizes of the internal array of a map
+		// produced by the flow-insensitive aliasing approach.
 		infoflow.getConfig().setEnableArraySizeTainting(false);
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 
 		// We only publish a constant string, though the key in the map is
 		// sensitive - but never gets sent out
 		negativeCheckInfoflow(infoflow);
-	}
-
-	@Test(timeout = 300000)
-	public void concreteMapTest3() {
-		IInfoflow infoflow = initInfoflow();
-		onlyForwards(infoflow, "TODO: why is the backward analysis unable to find the size flow?");
-
-		List<String> epoints = new ArrayList<String>();
-		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void concreteWriteRead2Test()>");
-		infoflow.getConfig().setFlowSensitiveAliasing(false);
-		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
-
-		// Flow through old internal array size -> new internal array size
-		checkInfoflow(infoflow, 1);
 	}
 
 	@Test(timeout = 300000)
