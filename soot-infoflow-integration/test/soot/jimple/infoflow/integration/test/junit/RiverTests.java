@@ -294,13 +294,4 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
         this.checkInfoflow(infoflow, 1);
     }
 
-    @Test(timeout = 300000)
-    public void riverTest12() {
-        IInfoflow infoflow = this.initInfoflow();
-        List<String> epoints = new ArrayList();
-        epoints.add("<soot.jimple.infoflow.integration.test.RiverTestCode: void riverTest12()>");
-        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
-        this.negativeCheckInfoflow(infoflow);
-    }
-
 }

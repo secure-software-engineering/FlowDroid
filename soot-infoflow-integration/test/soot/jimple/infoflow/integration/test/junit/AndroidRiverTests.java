@@ -85,7 +85,7 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
     @Test
     public void externalCacheDirTest() throws IOException {
         // Test flow with getExternalCacheDir wrapped in another File constructor
-        SetupApplication app = initApplication("/home/lange/apps/ExternalCacheDirTest.apk");
+        SetupApplication app = initApplication("testAPKs/ExternalCacheDirTest.apk");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
         InfoflowResults results = app.runInfoflow(parser);
         Assert.assertEquals(1, results.size());

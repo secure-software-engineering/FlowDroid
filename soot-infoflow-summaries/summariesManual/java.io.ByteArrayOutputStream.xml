@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+  <hierarchy superClass="java.io.OutputStream" />
   <methods>
     <method id="void write(byte[])">
       <flows>
