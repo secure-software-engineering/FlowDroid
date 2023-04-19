@@ -21,7 +21,7 @@ import java.util.*;
  * Tests the merging and separating of SourceSinkDefinitions referecing the same statement or method
  * with path reconstruction enabled
  */
-public class MultipleSinkTests extends RiverJUnitTests {
+public class MultipleSinkTests extends RiverBaseJUnitTests {
     private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
         try {
             XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/MultipleSinkDefs.xml");
