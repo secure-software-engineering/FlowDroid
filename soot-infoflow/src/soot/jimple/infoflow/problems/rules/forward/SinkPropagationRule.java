@@ -5,10 +5,7 @@ import java.util.Collection;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.AssignStmt;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.FieldRef;
 import soot.jimple.IfStmt;
-import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.LookupSwitchStmt;
@@ -84,7 +81,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
 					if (sinkInfo != null) {
-						if (getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt)))
+						if (!getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt)))
 							killState = true;
 					}
 				}

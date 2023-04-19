@@ -12,6 +12,8 @@ import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 import javax.xml.stream.XMLStreamException;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,10 +24,15 @@ import java.util.List;
  *
  * @author Tim Lange
  */
-public class OutputStreamTests extends RiverJUnitTests {
+public class OutputStreamTests extends RiverBaseJUnitTests {
     private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
         try {
-            XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/OutputStreamAndWriters.xml");
+        	File sourcesSinks =new File("./build/classes/res/OutputStreamAndWriters.xml");
+        	if (!sourcesSinks.exists())
+        		sourcesSinks = new File("./res/OutputStreamAndWriters.xml");
+        	if (!sourcesSinks.exists())
+        		throw new RuntimeException("Source/sink definition file not found");
+            XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile(sourcesSinks.getAbsolutePath());
             return new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
         } catch (IOException e) {
             throw new RuntimeException(e);

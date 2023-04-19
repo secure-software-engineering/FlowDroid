@@ -152,7 +152,6 @@ public class AliasProblem extends AbstractInfoflowProblem {
 					// not track, we can stop here.
 					if (!(rightValue instanceof Local || rightValue instanceof FieldRef
 							|| rightValue instanceof ArrayRef)) {
-						res.add(source);
 						return res;
 					}
 				}
@@ -583,8 +582,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 								if (abs != null)
 									res.add(abs);
 							}
-						} else if (ie != null && dest.getParameterCount() > 0) {
-							assert dest.getParameterCount() == ie.getArgCount();
+						} else if (ie != null && dest.getParameterCount() > 0
+									&& (isReflectiveCallSite || dest.getParameterCount() == ie.getArgCount())) {
 							// check if param is tainted:
 							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
 								if (ie.getArg(i) == source.getAccessPath().getPlainValue()) {

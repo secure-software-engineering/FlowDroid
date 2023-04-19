@@ -47,7 +47,7 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
                 typeString = "Normal";
                 break;
         }
-            if (type == FlowFunctionType.ReturnFlowFunction) {
+            if (type == FlowFunctionType.ReturnFlowFunction && outgoing != null) {
                 Unit out = stmt;
                 for (Abstraction abs : outgoing) {
                     if (abs.getCorrespondingCallSite() != null) {
@@ -55,7 +55,7 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
                         break;
                     }
                 }
-                    System.out.println(this.prefix + " " + typeString + " @ " + out + ":\n\tIn: " + incoming + "\n\tOut: " + outgoing + "\n");
+                System.out.println(this.prefix + " " + typeString + " @ " + out + ":\n\tIn: " + incoming + "\n\tOut: " + outgoing + "\n");
             } else
                 System.out.println(this.prefix + " " + typeString + " @ " + stmt + ":\n\tIn: " + incoming + "\n\tOut: " + outgoing + "\n");
 

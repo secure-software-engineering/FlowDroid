@@ -1230,6 +1230,15 @@ public abstract class HeapTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest5() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest5()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
 	public void innerFieldReductionTestNegative() {
 		IInfoflow infoflow = initInfoflow();
 		onlyForwards(infoflow, "We lose the object sensitivity here due to the recursive data structure" +

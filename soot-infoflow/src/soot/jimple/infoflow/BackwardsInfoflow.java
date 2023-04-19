@@ -6,29 +6,25 @@ import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
-import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
-import soot.jimple.infoflow.aliasing.BackwardsFlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.IAliasingStrategy;
-import soot.jimple.infoflow.aliasing.NullAliasStrategy;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.codeOptimization.AddNopStmt;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
-import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.nativeCallHandler.BackwardNativeCallHandler;
-import soot.jimple.infoflow.problems.BackwardsAliasProblem;
 import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
 import soot.jimple.infoflow.problems.rules.BackwardPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.BackwardsInfoflowResults;
 import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
+import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
+import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 
 public class BackwardsInfoflow extends AbstractInfoflow {
 
@@ -99,12 +95,15 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	@Override
 	protected SourceSinkState scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s) {
 		IReversibleSourceSinkManager ssm = (IReversibleSourceSinkManager) sourcesSinks;
-		if (ssm.getInverseSinkInfo(s, manager) != null) {
+
+		SourceInfo sinkInfo = ssm.getInverseSinkInfo(s, manager);
+		SinkInfo sourceInfo = ssm.getInverseSourceInfo(s, manager, null);
+		if (sinkInfo != null && sourceInfo == null)
 			return SourceSinkState.SOURCE;
-		}
-		if (ssm.getInverseSourceInfo(s, manager, null) != null) {
+		else if (sourceInfo != null && sinkInfo == null)
 			return SourceSinkState.SINK;
-		}
+		else if (sourceInfo != null && sinkInfo != null)
+			return SourceSinkState.BOTH;
 		return SourceSinkState.NEITHER;
 	}
 

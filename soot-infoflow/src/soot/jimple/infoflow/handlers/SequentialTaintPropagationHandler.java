@@ -65,6 +65,9 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	@Override
 	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
+		if (innerHandlers.isEmpty())
+			return outgoing;
+
 		Set<Abstraction> resultSet = new HashSet<>();
 		for (TaintPropagationHandler handler : innerHandlers) {
 			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type);
