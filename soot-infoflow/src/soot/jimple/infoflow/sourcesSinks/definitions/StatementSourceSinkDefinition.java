@@ -18,9 +18,9 @@ import soot.jimple.Stmt;
 public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 		implements IAccessPathBasedSourceSinkDefinition {
 
-	private final Stmt stmt;
-	private final Local local;
-	private Set<AccessPathTuple> accessPaths;
+	protected final Stmt stmt;
+	protected final Local local;
+	protected Set<AccessPathTuple> accessPaths;
 
 	public StatementSourceSinkDefinition(Stmt stmt, Local local, Set<AccessPathTuple> accessPaths) {
 		if (accessPaths == null || accessPaths.isEmpty())
