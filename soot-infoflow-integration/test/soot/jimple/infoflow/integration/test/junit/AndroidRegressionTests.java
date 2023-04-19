@@ -20,7 +20,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
     @Override
     protected ITaintPropagationWrapper getTaintWrapper() {
         try {
-            return new SummaryTaintWrapper(new EagerSummaryProvider("./summariesManual"));
+            return new SummaryTaintWrapper(new EagerSummaryProvider("../soot-infoflow-summaries/summariesManual"));
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException("Could not initialize taint wrapper!");
         }
