@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -127,7 +129,7 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		results.addResult(scap.getDefinition(), scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinition(),
+		results.addResult(scap.getDefinitions(), scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinitions(),
 				sourceContext.getAccessPath(), sourceContext.getStmt(), sourceContext.getUserData(),
 				scap.getAbstractionPath(), manager);
 		return true;
@@ -135,7 +137,7 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 
 	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
-		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinition(),
+		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinitions(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
 		scap = scap.extendPath(abs.getAbstraction(), config);
 		if (pathCache.put(abs.getAbstraction(), scap))
@@ -158,9 +160,8 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 					// This is a path for which we have to process the new
 					// neighbors
 					scap.setNeighborCounter(abs.getNeighbors().size());
-
 					for (Abstraction neighbor : abs.getNeighbors())
-						incrementalAbs.add(new AbstractionAtSink(scap.getDefinition(), neighbor, scap.getStmt()));
+						incrementalAbs.add(new AbstractionAtSink(scap.getDefinitions(), neighbor, scap.getStmt()));
 				}
 			}
 

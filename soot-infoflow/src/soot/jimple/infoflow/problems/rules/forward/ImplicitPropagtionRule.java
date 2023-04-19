@@ -200,14 +200,14 @@ public class ImplicitPropagtionRule extends AbstractTaintPropagationRule {
 			if (source.getAccessPath().isEmpty() || source.getTopPostdominator() != null) {
 				SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(), null);
 				if (sinkInfo != null)
-					getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt));
+					getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt));
 			} else {
 				SootMethod curMethod = getManager().getICFG().getMethodOf(stmt);
 				if (!curMethod.isStatic() && source.getAccessPath().getFirstField() == null && getAliasing()
 						.mayAlias(curMethod.getActiveBody().getThisLocal(), source.getAccessPath().getPlainValue())) {
 					SinkInfo sinkInfo = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(), null);
 					if (sinkInfo != null)
-						getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt));
+						getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt));
 				}
 			}
 		}

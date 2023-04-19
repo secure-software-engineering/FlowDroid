@@ -76,7 +76,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 			// Also build paths for the neighbors of our result abstraction
 			if (triggerComputationForNeighbors() && abs.getAbstraction().getNeighbors() != null) {
 				for (Abstraction neighbor : abs.getAbstraction().getNeighbors()) {
-					AbstractionAtSink neighborAtSink = new AbstractionAtSink(abs.getSinkDefinition(), neighbor,
+					AbstractionAtSink neighborAtSink = new AbstractionAtSink(abs.getSinkDefinitions(), neighbor,
 							abs.getSinkStmt());
 					task = getTaintPathTask(neighborAtSink);
 					if (task != null)

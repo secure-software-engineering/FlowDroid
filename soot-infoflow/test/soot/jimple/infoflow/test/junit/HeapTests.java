@@ -1039,8 +1039,7 @@ public abstract class HeapTests extends JUnitTests {
 					if (sCallSite instanceof AssignStmt) {
 						AssignStmt assignStmt = (AssignStmt) sCallSite;
 						if (assignStmt.getRightOp().toString().contains("taintedBySourceSinkManager"))
-							return new SourceInfo(null,
-									manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
+							return new SourceInfo(manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
 						else
 							return null;
 					}

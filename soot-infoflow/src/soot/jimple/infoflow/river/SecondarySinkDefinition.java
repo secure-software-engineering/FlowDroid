@@ -27,11 +27,6 @@ public class SecondarySinkDefinition extends AbstractSourceSinkDefinition {
 	}
 
 	@Override
-	public void merge(ISourceSinkDefinition other) {
-		// NO-OP
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return false;
 	}

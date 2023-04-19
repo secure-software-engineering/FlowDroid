@@ -306,10 +306,6 @@
 <java.io.OutputStream: void write(byte[],int,int)> -> _SINK_
 <java.io.OutputStream: void write(int)> -> _SINK_
 
-<java.io.FileOutputStream: void write(byte[])> -> _SINK_
-<java.io.FileOutputStream: void write(byte[],int,int)> -> _SINK_
-<java.io.FileOutputStream: void write(int)> -> _SINK_
-
 <java.io.Writer: void write(char[])> -> _SINK_
 <java.io.Writer: void write(char[],int,int)> -> _SINK_
 <java.io.Writer: void write(int)> -> _SINK_

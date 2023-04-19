@@ -10,8 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.results;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -36,13 +35,12 @@ public class BackwardsInfoflowResults extends InfoflowResults {
 	}
 
 	@Override
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
-			InfoflowManager manager) {
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
+																		Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
+																		List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
+																		InfoflowManager manager) {
 		// We create a sink info out of a source definition as in backwards analysis the
 		// start(=source def) is a sink
-		ResultSinkInfo sourceObj = new ResultSinkInfo(sourceDefinition, source, sourceStmt);
 
 		if (propagationCallSites != null)
 			Collections.reverse(propagationCallSites);
@@ -57,19 +55,31 @@ public class BackwardsInfoflowResults extends InfoflowResults {
 		}
 		if (propagationAccessPath != null)
 			Collections.reverse(propagationAccessPath);
-		ResultSourceInfo sinkObj = new ResultSourceInfo(sinkDefinition, sink, sinkStmt, userData, propagationPath,
-				propagationAccessPath, propagationCallSites, pathAgnosticResults);
 
-		this.addResult(sourceObj, sinkObj);
-		return new Pair<>(sinkObj, sourceObj);
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> resultPairs = new HashSet<>(sinkDefinitions.size() * sourceDefinitions.size());
+		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
+			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
+				ResultSinkInfo sourceObj = new ResultSinkInfo(sourceDefinition, source, sourceStmt);
+				ResultSourceInfo sinkObj = new ResultSourceInfo(sinkDefinition, sink, sinkStmt, userData, propagationPath,
+						propagationAccessPath, propagationCallSites, pathAgnosticResults);
+
+				this.addResult(sourceObj, sinkObj);
+				resultPairs.add(new Pair<>(sinkObj, sourceObj));
+			}
+		}
+		return resultPairs;
 	}
 
 	@Override
-	public void addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
-			ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
-		// We create a sink info out of a source definition as in backwards analysis the
-		// start(=source def) is a sink
-		this.addResult(new ResultSinkInfo(sourceDefinition, sink, sinkStmt),
-				new ResultSourceInfo(sinkDefinition, source, sourceStmt, pathAgnosticResults));
+	public void addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
+						  Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt) {
+		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
+			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
+				// We create a sink info out of a source definition as in backwards analysis the
+				// start(=source def) is a sink
+				this.addResult(new ResultSinkInfo(sourceDefinition, sink, sinkStmt),
+						new ResultSourceInfo(sinkDefinition, source, sourceStmt, pathAgnosticResults));
+			}
+		}
 	}
 }

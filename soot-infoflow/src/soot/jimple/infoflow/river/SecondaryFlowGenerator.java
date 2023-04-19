@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.river;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -100,8 +101,8 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	 * @return New abstraction
 	 */
 	protected Abstraction createAdditionalFlowAbstraction(Abstraction baseTaint, Stmt stmt) {
-		Abstraction newAbs = new Abstraction(ConditionalSecondarySourceDefinition.INSTANCE, baseTaint.getAccessPath(), stmt,
-				null, false, false);
+		Abstraction newAbs = new Abstraction(Collections.singleton(ConditionalSecondarySourceDefinition.INSTANCE),
+				baseTaint.getAccessPath(), stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
 		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(ConditionalSecondarySourceDefinition.INSTANCE,
 				baseTaint.getAccessPath(), stmt));
@@ -119,7 +120,7 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt, InfoflowManager manager) {
 		AccessPath ap = spec.toAccessPath(manager);
 		ISourceSinkDefinition def = spec.getDefinition();
-		Abstraction newAbs = new Abstraction(def, ap, stmt, null, false, false);
+		Abstraction newAbs = new Abstraction(Collections.singleton(def), ap, stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
 		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(def, ap, stmt));
 		return newAbs;

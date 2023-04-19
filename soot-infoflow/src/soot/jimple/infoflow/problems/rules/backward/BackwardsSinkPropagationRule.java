@@ -56,9 +56,13 @@ public class BackwardsSinkPropagationRule extends AbstractTaintPropagationRule {
 
 				Set<Abstraction> res = new HashSet<>();
 				for (AccessPath ap : sinkInfo.getAccessPaths()) {
+					// Implicit flows are introduced in the corresponding rule
+					if (ap.isEmpty())
+						continue;
+
 					// Create the new taint abstraction
-					Abstraction abs = new Abstraction(sinkInfo.getDefinition(), ap, stmt, sinkInfo.getUserData(), false,
-							false);
+					Abstraction abs = new Abstraction(sinkInfo.getDefinitionsForAccessPath(ap), ap, stmt,
+							sinkInfo.getUserData(), false, false);
 					abs.setCorrespondingCallSite(stmt);
 					abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 

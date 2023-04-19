@@ -35,6 +35,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
+import soot.util.MultiMap;
 
 /**
  * Abstract class for all Flowdroid XML parsers. Returns a Set of Methods when
@@ -265,7 +266,7 @@ public abstract class AbstractXMLSourceSinkParser {
 		}
 
 		protected void handleStarttagPathelement(Attributes attributes) {
-			if (methodSignature != null && attributes != null) {
+			if (attributes != null) {
 				String tempStr = attributes.getValue(XMLConstants.FIELD_ATTRIBUTE);
 				if (tempStr != null && !tempStr.isEmpty()) {
 					pathElements.add(tempStr);
@@ -519,7 +520,7 @@ public abstract class AbstractXMLSourceSinkParser {
 
 	}
 
-	protected Map<String, ISourceSinkDefinition> sourcesAndSinks;
+	protected MultiMap<String, ISourceSinkDefinition> sourcesAndSinks;
 
 	protected Set<ISourceSinkDefinition> sources = new HashSet<>();
 	protected Set<ISourceSinkDefinition> sinks = new HashSet<>();
@@ -592,10 +593,7 @@ public abstract class AbstractXMLSourceSinkParser {
 	 * @param ssd       The source or sink definition
 	 */
 	protected void addSourceSinkDefinition(String signature, IAccessPathBasedSourceSinkDefinition ssd) {
-		if (sourcesAndSinks.containsKey(signature))
-			sourcesAndSinks.get(signature).merge(ssd);
-		else
-			sourcesAndSinks.put(signature, ssd);
+		sourcesAndSinks.put(signature, ssd);
 	}
 
 	public Set<ISourceSinkDefinition> getSources() {
@@ -622,10 +620,7 @@ public abstract class AbstractXMLSourceSinkParser {
 	}
 
 	protected void addSourceSinkDefinition(String signature, ISourceSinkDefinition ssd) {
-		if (sourcesAndSinks.containsKey(signature))
-			sourcesAndSinks.get(signature).merge(ssd);
-		else
-			sourcesAndSinks.put(signature, ssd);
+		sourcesAndSinks.put(signature, ssd);
 	}
 
 	/**

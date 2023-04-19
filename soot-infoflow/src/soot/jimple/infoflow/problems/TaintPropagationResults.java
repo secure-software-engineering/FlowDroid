@@ -75,7 +75,7 @@ public class TaintPropagationResults {
 		}
 
 		// Record the result
-		resultAbs = new AbstractionAtSink(resultAbs.getSinkDefinition(), abs, resultAbs.getSinkStmt());
+		resultAbs = new AbstractionAtSink(resultAbs.getSinkDefinitions(), abs, resultAbs.getSinkStmt());
 		Abstraction newAbs = this.results.putIfAbsentElseGet(resultAbs, resultAbs.getAbstraction());
 		if (newAbs != resultAbs.getAbstraction())
 			newAbs.addNeighbor(resultAbs.getAbstraction());
