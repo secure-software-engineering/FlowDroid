@@ -81,7 +81,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
 					if (sinkInfo != null) {
-						if (!getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt)))
+						if (!getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt)))
 							killState = true;
 					}
 				}
@@ -152,7 +152,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 					// If we have already seen the same taint at the same sink, there is no need to
 					// propagate this taint any further.
 					if (sinkInfo != null
-							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, stmt))) {
+							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt))) {
 						killState = true;
 					}
 				}
@@ -181,7 +181,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 					&& aliasing.mayAlias(source.getAccessPath().getPlainValue(), returnStmt.getOp())) {
 				SinkInfo sinkInfo = ssm.getSinkInfo(returnStmt, getManager(), source.getAccessPath());
 				if (sinkInfo != null
-						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinition(), source, returnStmt)))
+						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, returnStmt)))
 					killState = true;
 			}
 		}

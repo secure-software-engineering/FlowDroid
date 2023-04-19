@@ -1,8 +1,9 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,15 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		return executor;
 	}
 
+	private enum PathProcessingResult {
+		// Describes that the predecessor should be queued
+		NEW,
+		// Describes that the predecessor was already queued, but we might need to merge paths
+		CACHED,
+		// Describes that nothing further should be queued
+		INFEASIBLE_OR_MAX_PATHS_REACHED
+	}
+
 	/**
 	 * Task for tracking back the path from sink to source.
 	 * 
@@ -98,8 +108,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		}
 
 		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
-			ProcessingResult p = processPredecessor(scap, pred);
-			switch (p.getResult()) {
+			PathProcessingResult p = processPredecessor(scap, pred);
+			switch (p) {
 			case NEW:
 				// Schedule the predecessor
 				assert pathCache.containsKey(pred);
@@ -120,24 +130,24 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 		}
 
-		private ProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
+		private PathProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
 				SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 				if (extendedScap == null)
-					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
+					return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
 				if (checkForSource(pred, extendedScap))
 					sourceReachingScaps.add(extendedScap);
-				return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW()
-						: ProcessingResult.CACHED(extendedScap);
+				return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW
+						: PathProcessingResult.CACHED;
 			}
 
 			// If we enter a method, we put it on the stack
 			SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 			if (extendedScap == null)
-				return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
+				return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
 			// Check if we are in the right context
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
@@ -148,7 +158,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					Stmt topCallStackItem = pathAndItem.getO2();
 					// Make sure that we don't follow an unrealizable path
 					if (topCallStackItem != pred.getCurrentStmt())
-						return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
+						return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
 					// We have returned from a function
 					extendedScap = pathAndItem.getO1();
@@ -163,9 +173,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (maxPaths > 0) {
 				Set<SourceContextAndPath> existingPaths = pathCache.get(pred);
 				if (existingPaths != null && existingPaths.size() > maxPaths)
-					return ProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED();
+					return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 			}
-			return pathCache.put(pred, extendedScap) ? ProcessingResult.NEW() : ProcessingResult.CACHED(extendedScap);
+			return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW : PathProcessingResult.CACHED;
 		}
 
 		@Override
@@ -219,22 +229,16 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		Pair<ResultSourceInfo, ResultSinkInfo> newResult;
-		if (scap.getDefinition() instanceof SecondarySinkDefinition) {
-			assert manager.getConfig().getAdditionalFlowsEnabled();
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> newResults =
+				results.addResult(scap.getDefinitions(), scap.getAccessPath(), scap.getStmt(),
+								  sourceContext.getDefinitions(), sourceContext.getAccessPath(), sourceContext.getStmt(),
+								  sourceContext.getUserData(), scap.getAbstractionPath(), manager);
 
-			newResult = results.addConditionalResult(scap.getDefinition(), scap.getAccessPath(),
-					scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-					sourceContext.getUserData(), scap.getAbstractionPath(), manager);
-		} else {
-			newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
-					scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-					sourceContext.getUserData(), scap.getAbstractionPath(), manager);
-		}
 		// Notify our handlers
 		if (resultAvailableHandlers != null)
 			for (OnPathBuilderResultAvailable handler : resultAvailableHandlers)
-				handler.onResultAvailable(newResult.getO1(), newResult.getO2());
+				for (Pair<ResultSourceInfo, ResultSinkInfo> newResult : newResults)
+					handler.onResultAvailable(newResult.getO1(), newResult.getO2());
 
 		return true;
 	}
@@ -250,7 +254,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					scap.setNeighborCounter(abs.getNeighbors().size());
 
 					for (Abstraction neighbor : abs.getNeighbors())
-						incrementalAbs.add(new AbstractionAtSink(scap.getDefinition(), neighbor, scap.getStmt()));
+						incrementalAbs.add(new AbstractionAtSink(scap.getDefinitions(), neighbor, scap.getStmt()));
 				}
 			}
 		if (!incrementalAbs.isEmpty())
@@ -313,7 +317,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
-		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinition(),
+		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinitions(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
 		scap = scap.extendPath(abs.getAbstraction(), config);
 

@@ -23,15 +23,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
-import soot.jimple.AssignStmt;
-import soot.jimple.Constant;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.ParameterRef;
-import soot.jimple.ReturnStmt;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
@@ -364,7 +356,8 @@ public class DefaultSourceSinkManager implements IReversibleSourceSinkManager {
 			SootMethod sm = manager.getICFG().getMethodOf(sCallSite);
 			if (this.returnTaintMethods != null && this.returnTaintMethods.contains(sm)) {
 				Value op = ((ReturnStmt) sCallSite).getOp();
-				aps.add(manager.getAccessPathFactory().createAccessPath(op, true));
+				if (!(op instanceof Constant))
+					aps.add(manager.getAccessPathFactory().createAccessPath(op, true));
 			}
 		}
 
@@ -384,11 +377,12 @@ public class DefaultSourceSinkManager implements IReversibleSourceSinkManager {
 			}
 		}
 
-		if (aps.isEmpty())
-			return null;
 
 		// Removes possible null ap's which shouldn't exist but just to be sure
 		aps.remove(null);
+
+		if (aps.isEmpty())
+			return null;
 
 		// Create the source information data structure
 		return new SourceInfo(callee == null ? null : new MethodSourceSinkDefinition(new SootMethodAndClass(callee)),

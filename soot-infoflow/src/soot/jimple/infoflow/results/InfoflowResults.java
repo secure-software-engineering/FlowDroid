@@ -23,6 +23,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
@@ -43,7 +44,7 @@ public class InfoflowResults {
 	private static final Logger logger = LoggerFactory.getLogger(InfoflowResults.class);
 
 	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> results = null;
-	protected volatile MultiMap<ResultSourceInfo, ResultSinkInfo> additionalResults = null;
+	protected volatile MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults = null;
 	protected volatile InfoflowPerformanceData performanceData = null;
 	protected volatile List<String> exceptions = null;
 	protected int terminationState = TERMINATION_SUCCESS;
@@ -143,14 +144,18 @@ public class InfoflowResults {
 		return !findSinkByMethodSignature(sinkSignature).isEmpty();
 	}
 
-	public void addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink, Stmt sinkStmt,
-			ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt) {
-		this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
-				new ResultSourceInfo(sourceDefinition, source, sourceStmt, pathAgnosticResults));
+	public void addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
+						  Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt) {
+		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
+			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
+				this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
+						new ResultSourceInfo(sourceDefinition, source, sourceStmt, pathAgnosticResults));
+			}
+		}
 	}
 
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
+			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Abstraction> propagationPath, InfoflowManager manager) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;
@@ -172,59 +177,18 @@ public class InfoflowResults {
 		}
 
 		// Add the result
-		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData, stmtPath,
+		return addResult(sinkDefinitions, sink, sinkStmt, sourceDefinitions, source, sourceStmt, userData, stmtPath,
 				apPath, csPath, manager);
-	}
-
-	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ResultSourceInfo sourceObj, ResultSinkInfo sinkObj) {
-		if (additionalResults == null) {
-			synchronized (this) {
-				if (additionalResults == null)
-					additionalResults = new ConcurrentHashMultiMap<>();
-			}
-		}
-		if (!this.additionalResults.put(sourceObj, sinkObj))
-			logger.debug("Found two equal paths");
-		return new Pair<>(sourceObj, sinkObj);
-	}
-
-	public Pair<ResultSourceInfo, ResultSinkInfo> addConditionalResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-															Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
-															List<Abstraction> propagationPath, InfoflowManager manager) {
-		List<Stmt> stmtPath = null;
-		List<AccessPath> apPath = null;
-		List<Stmt> csPath = null;
-		if (propagationPath != null) {
-			stmtPath = new ArrayList<>(propagationPath.size());
-			apPath = new ArrayList<>(propagationPath.size());
-			if (!manager.getConfig().getPathAgnosticResults())
-				csPath = new ArrayList<>(propagationPath.size());
-			for (Abstraction pathAbs : propagationPath) {
-				if (pathAbs.getCurrentStmt() != null) {
-					stmtPath.add(pathAbs.getCurrentStmt());
-					apPath.add(pathAbs.getAccessPath());
-					if (csPath != null)
-						csPath.add(pathAbs.getCorrespondingCallSite());
-				}
-			}
-		}
-
-
-		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
-				stmtPath, apPath, csPath, pathAgnosticResults);
-		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
-
-		return addConditionalResult(sourceObj, sinkObj);
 	}
 
 	/**
 	 * Adds the given result to this data structure
 	 *
-	 * @param sinkDefinition        The definition of the sink
+	 * @param sinkDefinitions       The definition of the sink
 	 * @param sink                  The access path that arrived at the sink
-	 *                              statement
+ *                                  statement
 	 * @param sinkStmt              The sink statement
-	 * @param sourceDefinition      The definition of the source
+	 * @param sourceDefinitions     The definition of the source
 	 * @param source                The access path that originated from the source
 	 *                              statement
 	 * @param sourceStmt            The source statement
@@ -235,23 +199,28 @@ public class InfoflowResults {
 	 *                              path
 	 * @return The new data flow result
 	 */
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
+			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites) {
-		return addResult(sinkDefinition, sink, sinkStmt, sourceDefinition, source, sourceStmt, userData,
+		return addResult(sinkDefinitions, sink, sinkStmt, sourceDefinitions, source, sourceStmt, userData,
 				propagationPath, propagationAccessPath, propagationCallSites, null);
 	}
 
-	public Pair<ResultSourceInfo, ResultSinkInfo> addResult(ISourceSinkDefinition sinkDefinition, AccessPath sink,
-			Stmt sinkStmt, ISourceSinkDefinition sourceDefinition, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
+			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
 			InfoflowManager manager) {
-		ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
-				propagationPath, propagationAccessPath, propagationCallSites, pathAgnosticResults);
-		ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
-
-		this.addResult(sinkObj, sourceObj);
-		return new Pair<>(sourceObj, sinkObj);
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> results = new HashSet<>(sinkDefinitions.size() * sourceDefinitions.size());
+		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
+			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
+				ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
+						propagationPath, propagationAccessPath, propagationCallSites, pathAgnosticResults);
+				ResultSinkInfo sinkObj = new ResultSinkInfo(sinkDefinition, sink, sinkStmt);
+				this.addResult(sinkObj, sourceObj);
+				results.add(new Pair<>(sourceObj, sinkObj));
+			}
+		}
+		return results;
 	}
 
 	/**
@@ -272,13 +241,24 @@ public class InfoflowResults {
 	 * @param source The source from which the taint originated
 	 */
 	public void addResult(ResultSinkInfo sink, ResultSourceInfo source) {
-		if (results == null) {
-			synchronized (this) {
-				if (results == null)
-					results = new ConcurrentHashMultiMap<>();
+		boolean put;
+		if (sink.getDefinition() instanceof SecondarySinkDefinition) {
+			if (additionalResults == null) {
+				synchronized (this) {
+					if (additionalResults == null)
+						additionalResults = new ConcurrentHashMultiMap<>();
+				}
 			}
+			put = !this.additionalResults.put(sink, source);
+		} else {
+			if (results == null) {
+				synchronized (this) {
+					if (results == null)
+						results = new ConcurrentHashMultiMap<>();
+				}
+			}
+			put = this.results.put(sink, source);
 		}
-		boolean put = this.results.put(sink, source);
 		if (!put)
 			logger.debug("Found two equal paths");
 	}
@@ -306,9 +286,9 @@ public class InfoflowResults {
 		}
 
 		if (!results.getAdditionalResults().isEmpty()) {
-			for (ResultSourceInfo source : results.getAdditionalResults().keySet())
-				for (ResultSinkInfo sink : results.getAdditionalResults().get(source))
-					addConditionalResult(source, sink);
+			for (ResultSinkInfo sink : results.getAdditionalResults().keySet())
+				for (ResultSourceInfo source : results.getAdditionalResults().get(sink))
+					addResult(sink, source);
 		}
 
 		// Sum up the performance data
@@ -345,7 +325,7 @@ public class InfoflowResults {
 		return this.results;
 	}
 
-	public MultiMap<ResultSourceInfo, ResultSinkInfo> getAdditionalResults() {
+	public MultiMap<ResultSinkInfo, ResultSourceInfo> getAdditionalResults() {
 		return this.additionalResults == null ? new ConcurrentHashMultiMap<>() : additionalResults;
 	}
 
@@ -378,8 +358,8 @@ public class InfoflowResults {
 			return null;
 
 		Set<DataFlowResult> set = new HashSet<>(additionalResults.size() * 10);
-		for (ResultSourceInfo source : additionalResults.keySet()) {
-			for (ResultSinkInfo sink : additionalResults.get(source))
+		for (ResultSinkInfo sink : additionalResults.keySet()) {
+			for (ResultSourceInfo source : additionalResults.get(sink))
 				set.add(new DataFlowResult(source, sink));
 		}
 		return set;
