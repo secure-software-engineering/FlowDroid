@@ -107,7 +107,6 @@ import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
 import soot.jimple.infoflow.threading.IExecutorFactory;
-import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
@@ -1857,7 +1856,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param backwardSolver The backward data flow solver
 	 */
 	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver aliasSolver,
-											   IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
+			IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
 		//
 	}
 
