@@ -293,4 +293,5 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
     }
+
 }

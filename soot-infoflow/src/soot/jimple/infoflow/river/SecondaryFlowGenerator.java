@@ -106,7 +106,7 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		newAbs.setCorrespondingCallSite(stmt);
 		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(ConditionalSecondarySourceDefinition.INSTANCE,
 				baseTaint.getAccessPath(), stmt));
-		return newAbs;
+		return newAbs.deriveNewAbstractionWithTurnUnit(stmt);
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		Abstraction newAbs = new Abstraction(Collections.singleton(def), ap, stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
 		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(def, ap, stmt));
-		return newAbs;
+		return newAbs.deriveNewAbstractionWithTurnUnit(stmt);
 	}
 
 	/**
