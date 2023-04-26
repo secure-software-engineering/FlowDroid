@@ -275,4 +275,13 @@ public class ApiClassClient {
 		sink(collection.get());
 	}
 
+	public void taintedFieldToString() {
+		Data d = new Data();
+		d.objectField = source();
+		// in: d.objectField
+		// expected out: str (not str.objectField!)
+		String str = d.toString();
+		char c = str.charAt(2);
+		sink(c);
+	}
 }
