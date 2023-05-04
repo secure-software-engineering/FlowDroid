@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <summary fileFormatVersion="101">
-	<hierarchy superClass="java.util.Vector$ListItr">
+	<hierarchy superClass="java.util.Vector$Itr">
 		<interface name="java.util.ListIterator" />
     </hierarchy>
     <methods>
