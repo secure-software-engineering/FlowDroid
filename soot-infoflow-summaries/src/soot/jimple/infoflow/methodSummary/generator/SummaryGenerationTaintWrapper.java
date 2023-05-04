@@ -2,7 +2,6 @@ package soot.jimple.infoflow.methodSummary.generator;
 
 import java.util.*;
 
-import org.checkerframework.checker.units.qual.C;
 import soot.*;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
@@ -21,8 +20,6 @@ import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguratio
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
-import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.toolkits.callgraph.Edge;
 
