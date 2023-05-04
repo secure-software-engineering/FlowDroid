@@ -38,7 +38,6 @@ import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.jimple.infoflow.typing.ITypeChecker;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
@@ -53,7 +52,7 @@ import soot.util.MultiMap;
  * @author Steven Arzt
  *
  */
-public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecker {
+public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	private InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
@@ -207,9 +206,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		// If we have a fallback wrapper, we need to initialize that one as well
 		if (fallbackWrapper != null)
 			fallbackWrapper.initialize(manager);
-
-		// We need to query the summaries in case we have no proper type information
-		manager.getTypeUtils().registerTypeChecker(this);
 	}
 
 	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
@@ -1824,55 +1820,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 			resAbs.add(newAbs);
 		}
 		return resAbs;
-	}
-
-	@Override
-	public Type getMorePreciseType(Type tp1, Type tp2) {
-		// We query the summaries to establish a type hierarchy beyond the Soot scene
-		if (tp1 instanceof RefType && tp2 instanceof RefType) {
-			RefType rt1 = (RefType) tp1;
-			RefType rt2 = (RefType) tp2;
-
-			SootClass sc1 = rt1.getSootClass();
-			SootClass sc2 = rt2.getSootClass();
-
-			if (sc1.isPhantom() || sc2.isPhantom()) {
-				String sc1Name = sc1.getName();
-				String sc2Name = sc2.getName();
-
-				ClassMethodSummaries cs1 = flows.getClassFlows(sc1.getName());
-				ClassMethodSummaries cs2 = flows.getClassFlows(sc2.getName());
-
-				// Type1 may be a superclass or interface of cs2
-				if (cs2 != null) {
-					ClassMethodSummaries curSummaries = cs2;
-					while (curSummaries != null) {
-						if (sc1Name.equals(curSummaries.getSuperClass()))
-							return tp2;
-						for (String intf : curSummaries.getInterfaces()) {
-							if (intf.equals(sc1Name))
-								return tp2;
-						}
-						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
-					}
-				}
-
-				// Type2 may be a superclass or interface of cs1
-				if (cs1 != null) {
-					ClassMethodSummaries curSummaries = cs1;
-					while (curSummaries != null) {
-						if (sc2Name.equals(curSummaries.getSuperClass()))
-							return tp1;
-						for (String intf : curSummaries.getInterfaces()) {
-							if (intf.equals(sc2Name))
-								return tp1;
-						}
-						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 }

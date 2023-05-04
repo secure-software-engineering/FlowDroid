@@ -593,7 +593,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Initialize the abstraction configuration
 			Abstraction.initialize(config);
 
-			preProcessors.addAll(getTaintWrapper().getPreAnalysisHandlers());
+			if (taintWrapper != null)
+				preProcessors.addAll(taintWrapper.getPreAnalysisHandlers());
 
 			// Build the callgraph
 			long beforeCallgraph = System.nanoTime();
