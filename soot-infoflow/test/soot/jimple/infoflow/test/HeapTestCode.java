@@ -1456,6 +1456,11 @@ public class HeapTestCode {
 			e = new E();
 			e.read();
 		}
+
+		public void setF(E e) {
+			this.e = e;
+			this.e.setF(e);
+		}
 	}
 
 	class E {
@@ -1464,6 +1469,11 @@ public class HeapTestCode {
 		public void read() {
 			str = "";
 			str = TelephonyManager.getDeviceId();
+		}
+
+		public void setF(E e) {
+			e.str = "";
+			e.str = TelephonyManager.getDeviceId();
 		}
 	}
 
@@ -1541,6 +1551,14 @@ public class HeapTestCode {
 		j.read();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(j.f.str);
+	}
+
+	public void aliasWithOverwriteTest5() {
+		D d = new D();
+		E e = new E();
+		d.setF(e);
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(d.e.str);
 	}
 
 	class Inner {

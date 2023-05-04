@@ -12,7 +12,6 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.util.Chain;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -21,7 +20,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AndroidRiverTests extends RiverJUnitTests {
+public class AndroidRiverTests extends RiverBaseJUnitTests {
     @Override
     protected ITaintPropagationWrapper getTaintWrapper() {
         try {
@@ -41,7 +40,7 @@ public class AndroidRiverTests extends RiverJUnitTests {
         // The test apk has two java.io.OutputStream: void write(byte[]) sinks.
         // One is located in the KeepFlow activity and is a stream to the internet.
         // The other one is in the DiscardFlow activity and is a ByteArrayOutputStream.
-        SetupApplication app = initApplication("testAPKs/conditionalTest.apk");
+        SetupApplication app = initApplication("testAPKs/ConditionalFlowTest.apk");
         XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
         InfoflowResults results = app.runInfoflow(parser);
         Assert.assertEquals(2, results.size());
@@ -57,4 +56,39 @@ public class AndroidRiverTests extends RiverJUnitTests {
         for (DataFlowResult result : results.getResultSet())
             Assert.assertTrue(Arrays.stream(result.getSource().getPath()).allMatch(units::contains));
     }
+
+    @Test(timeout = 300000)
+    public void externalFileWithNativeNameApk() throws IOException {
+        // The test apk logs to an external file that is constructed with getExternalDir(null). The flow looks as follows:
+        // path = getExternalDir(null).getAbsolutePath()
+        // f = new File(path + jniCall);
+        // FileWriter fw = new FileWriter(f);
+        // BufferedWriter bw = new BufferedWriter(fw);
+        // fw.append(tainted);
+        SetupApplication app = initApplication("testAPKs/ExternalFileWithNativeName.apk");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+        InfoflowResults results = app.runInfoflow(parser);
+        Assert.assertEquals(1, results.size());
+    }
+
+    @Test(timeout = 300000)
+    public void printWriterTestApk() throws IOException {
+        // Also see OutputStreamTestCode#testPrintWriter3 but this time in Android
+        // because Soot generates different jimple for Android and Java.
+        SetupApplication app = initApplication("testAPKs/PrintWriterTest.apk");
+        app.getConfig().setWriteOutputFiles(true);
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+        InfoflowResults results = app.runInfoflow(parser);
+        Assert.assertEquals(1, results.size());
+    }
+
+    @Test
+    public void externalCacheDirTest() throws IOException {
+        // Test flow with getExternalCacheDir wrapped in another File constructor
+        SetupApplication app = initApplication("testAPKs/ExternalCacheDirTest.apk");
+        XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+        InfoflowResults results = app.runInfoflow(parser);
+        Assert.assertEquals(1, results.size());
+    }
+
 }

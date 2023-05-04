@@ -98,7 +98,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")) {
 				AccessPath ap = manager.getAccessPathFactory()
 						.createAccessPath(((DefinitionStmt) sCallSite).getLeftOp(), true);
-				return new SourceInfo(null, ap);
+				return new SourceInfo(ap);
 			}
 			return null;
 		}
@@ -124,7 +124,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 							|| (sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret2")))) {
 				AccessPath ap = manager.getAccessPathFactory()
 						.createAccessPath(((DefinitionStmt) sCallSite).getLeftOp(), true);
-				return new SourceInfo(null, ap);
+				return new SourceInfo(ap);
 			}
 			return null;
 		}
@@ -150,7 +150,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")) {
 				AccessPath ap = manager.getAccessPathFactory()
 						.createAccessPath(((DefinitionStmt) sCallSite).getLeftOp(), false);
-				return new SourceInfo(null, ap);
+				return new SourceInfo(ap);
 			}
 			return null;
 		}
@@ -191,14 +191,14 @@ public abstract class SourceSinkTests extends JUnitTests {
 			if (sCallSite instanceof DefinitionStmt && sCallSite.containsInvokeExpr()
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("currentTimeMillis")) {
 				Value val = ((DefinitionStmt) sCallSite).getLeftOp();
-				return new SourceInfo(null, manager.getAccessPathFactory().createAccessPath(val, true));
+				return new SourceInfo(manager.getAccessPathFactory().createAccessPath(val, true));
 			}
 			return null;
 		}
 
 		@Override
 		public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
-			return sCallSite instanceof IfStmt ? new SinkInfo(null) : null;
+			return sCallSite instanceof IfStmt ? new SinkInfo() : null;
 		}
 
 		@Override
@@ -206,7 +206,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 			if (sCallSite instanceof DefinitionStmt && sCallSite.containsInvokeExpr()
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("currentTimeMillis")
 					&& (ap == null || ((DefinitionStmt) sCallSite).getLeftOp() == ap.getPlainValue())) {
-				return new SinkInfo(null);
+				return new SinkInfo();
 			}
 			return null;
 		}
@@ -220,7 +220,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 				return null;
 			LeExpr le = (LeExpr) cond;
 			AccessPath ap = manager.getAccessPathFactory().createAccessPath(le.getOp1(), true);
-			return ap != null ? new SourceInfo(null, ap) : null;
+			return ap != null ? new SourceInfo(ap) : null;
 		}
 
 		@Override
@@ -237,7 +237,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 			if (sCallSite instanceof DefinitionStmt && sCallSite.containsInvokeExpr()
 					&& sCallSite.getInvokeExpr().getMethod().getName().equals("getSecret")) {
 				Value val = ((DefinitionStmt) sCallSite).getLeftOp();
-				return new SourceInfo(null, manager.getAccessPathFactory().createAccessPath(val, true));
+				return new SourceInfo(manager.getAccessPathFactory().createAccessPath(val, true));
 			}
 			return null;
 		}
@@ -265,7 +265,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 				if ((name.equals("source") || includeExistingImmutableAliases) && iexpr.getArgCount() > 0) {
 					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iexpr.getArg(0), null, null, true,
 							false, true, AccessPath.ArrayTaintType.ContentsAndLength, true);
-					return new SourceInfo(null, ap);
+					return new SourceInfo(ap);
 				}
 			}
 			return null;
@@ -279,7 +279,7 @@ public abstract class SourceSinkTests extends JUnitTests {
 				boolean includeExistingImmutableAliases = name.equals("annotatedSource");
 				if ((name.equals("source") || includeExistingImmutableAliases) && iexpr.getArgCount() > 0) {
 					if (ap == null)
-						return new SinkInfo(null);
+						return new SinkInfo();
 					else if (iexpr.getArg(0) == ap.getPlainValue()) {
 						SootMethod target = sCallSite.getInvokeExpr().getMethod();
 						return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(target)));

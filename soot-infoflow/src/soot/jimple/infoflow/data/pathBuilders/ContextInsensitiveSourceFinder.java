@@ -84,8 +84,8 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 				Abstraction abstraction = abstractionQueue.remove(0);
 				if (abstraction.getSourceContext() != null) {
 					// Register the result
-					results.addResult(flagAbs.getSinkDefinition(), flagAbs.getAbstraction().getAccessPath(),
-							flagAbs.getSinkStmt(), abstraction.getSourceContext().getDefinition(),
+					results.addResult(flagAbs.getSinkDefinitions(), flagAbs.getAbstraction().getAccessPath(),
+							flagAbs.getSinkStmt(), abstraction.getSourceContext().getDefinitions(),
 							abstraction.getSourceContext().getAccessPath(), abstraction.getSourceContext().getStmt(),
 							abstraction.getSourceContext().getUserData(), null, manager);
 

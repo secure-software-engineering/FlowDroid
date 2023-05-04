@@ -219,28 +219,30 @@ public class BackwardsImplicitFlowRule extends AbstractTaintPropagationRule {
 
 			SourceInfo sink = ssm.getInverseSinkInfo(stmt, manager);
 			if (sink != null) {
-				HashSet<Abstraction> res = new HashSet<>();
-				SootMethod sm = manager.getICFG().getMethodOf(stmt);
+				for (AccessPath ap : sink.getAccessPaths()) {
+					HashSet<Abstraction> res = new HashSet<>();
+					SootMethod sm = manager.getICFG().getMethodOf(stmt);
 
-				List<Unit> condUnits = manager.getICFG().getConditionalBranchesInterprocedural(stmt);
-				for (Unit condUnit : condUnits) {
-					Abstraction abs = new Abstraction(sink.getDefinition(), AccessPath.getEmptyAccessPath(), stmt,
-							sink.getUserData(), false, false);
-					abs.setCorrespondingCallSite(stmt);
-					abs.setDominator(condUnit);
-					res.add(abs);
+					List<Unit> condUnits = manager.getICFG().getConditionalBranchesInterprocedural(stmt);
+					for (Unit condUnit : condUnits) {
+						Abstraction abs = new Abstraction(sink.getAllDefinitions(), AccessPath.getEmptyAccessPath(), stmt,
+								sink.getUserData(), false, false);
+						abs.setCorrespondingCallSite(stmt);
+						abs.setDominator(condUnit);
+						res.add(abs);
+					}
+
+					if (!sm.isStatic()) {
+						AccessPath thisAp = manager.getAccessPathFactory()
+								.createAccessPath(sm.getActiveBody().getThisLocal(), false);
+						Abstraction thisTaint = new Abstraction(sink.getDefinitionsForAccessPath(ap), thisAp, stmt, sink.getUserData(),
+								false, false);
+						thisTaint.setCorrespondingCallSite(stmt);
+						res.add(thisTaint);
+					}
+
+					return res;
 				}
-
-				if (!sm.isStatic()) {
-					AccessPath thisAp = manager.getAccessPathFactory()
-							.createAccessPath(sm.getActiveBody().getThisLocal(), false);
-					Abstraction thisTaint = new Abstraction(sink.getDefinition(), thisAp, stmt, sink.getUserData(),
-							false, false);
-					thisTaint.setCorrespondingCallSite(stmt);
-					res.add(thisTaint);
-				}
-
-				return res;
 			}
 		}
 

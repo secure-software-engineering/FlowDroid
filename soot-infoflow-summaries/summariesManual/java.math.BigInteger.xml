@@ -470,8 +470,7 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" AccessPath="[java.math.BigInteger: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
-					<to sourceSinkType="Return" AccessPath="[java.math.BigInteger: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>

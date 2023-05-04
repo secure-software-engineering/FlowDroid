@@ -1,9 +1,6 @@
 package soot.jimple.infoflow.methodSummary.generator;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import soot.*;
 import soot.jimple.DefinitionStmt;
@@ -21,6 +18,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration.TaintCondition;
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -172,7 +170,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 		newOutAbs.setPredecessor(null);
 
 		// If no longer have a predecessor, we must fake a source context
-		newOutAbs.setSourceContext(new SourceContext(null, accessPath, stmt, getFlowSource(accessPath, stmt, gap)));
+		newOutAbs.setSourceContext(new SourceContext((Collection<ISourceSinkDefinition>) null, accessPath, stmt, getFlowSource(accessPath, stmt, gap)));
 
 		return newOutAbs;
 	}

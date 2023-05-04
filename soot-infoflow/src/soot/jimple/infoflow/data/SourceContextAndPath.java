@@ -24,14 +24,14 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 	private int hashCode = 0;
 
-	public SourceContextAndPath(InfoflowConfiguration config, ISourceSinkDefinition definition, AccessPath value,
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions, AccessPath value,
 			Stmt stmt) {
-		this(config, definition, value, stmt, null);
+		this(config, definitions, value, stmt, null);
 	}
 
-	public SourceContextAndPath(InfoflowConfiguration config, ISourceSinkDefinition definition, AccessPath value,
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions, AccessPath value,
 			Stmt stmt, Object userData) {
-		super(definition, value, stmt, userData);
+		super(definitions, value, stmt, userData);
 		this.config = config;
 	}
 
@@ -322,7 +322,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 	@Override
 	public SourceContextAndPath clone() {
-		final SourceContextAndPath scap = new SourceContextAndPath(config, definition, accessPath, stmt, userData);
+		final SourceContextAndPath scap = new SourceContextAndPath(config, definitions, accessPath, stmt, userData);
 		if (path != null)
 			scap.path = new ExtensibleList<Abstraction>(this.path);
 		if (callStack != null)

@@ -3,7 +3,7 @@
 	<methods>
 		<method id="java.lang.String toString()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>

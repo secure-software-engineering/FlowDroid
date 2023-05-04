@@ -315,4 +315,33 @@ public class OutputStreamTestCode {
             throw new RuntimeException(e);
         }
     }
+
+
+    public void testPrintWriter3() {
+        try {
+            URL url = new URL("http://some.url");
+            URLConnection con = url.openConnection();
+            OutputStream os = con.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(os, "UTF8");
+            PrintWriter pw = new PrintWriter(osw);
+
+            String src = source();
+            pw.print(src);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void testFileWriter1() {
+        try {
+            File f = new File(getExternalDir(), "myfile.txt");
+            FileWriter osw = new FileWriter(f);
+            PrintWriter pw = new PrintWriter(osw);
+
+            String src = source();
+            pw.print(src.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

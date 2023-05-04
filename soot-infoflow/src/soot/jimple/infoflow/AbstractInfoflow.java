@@ -964,7 +964,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// Give derived classes a chance to do whatever they need before we remove stuff
 				// from memory
-				onTaintPropagationCompleted(forwardSolver, backwardSolver);
+				onTaintPropagationCompleted(forwardSolver, backwardSolver, additionalSolver, additionalAliasSolver);
 
 				// Get the result abstractions
 				Set<AbstractionAtSink> res = propagationResults.getResults();
@@ -1183,7 +1183,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 						for (Unit p : source.getPath()) {
 							if (p != null) {
 								logger.info("\t -> " + iCfg.getMethodOf(p));
-								logger.info("\t\t -> " + p);
+								int ln = p.getJavaSourceStartLineNumber();
+								logger.info("\t\t -> " + p + (ln != -1 ? " in line " + ln : ""));
 							}
 						}
 					}
@@ -1290,6 +1291,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 						collectedSinks.add(s);
 					}
 					sinkCount++;
+					break;
+				case NEITHER:
 					break;
 				}
 			}
@@ -1852,7 +1855,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param forwardSolver  The forward data flow solver
 	 * @param backwardSolver The backward data flow solver
 	 */
-	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver backwardSolver) {
+	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver aliasSolver,
+			IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
 		//
 	}
 
