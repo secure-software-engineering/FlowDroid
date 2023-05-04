@@ -1548,14 +1548,21 @@ public class HeapTestCode {
 	}
 
 	Inner field = new Inner();
+
 	public void innerFieldReductionTestNegative() {
-		// Inner class constructor has this has an implicit parameter. Backward, here this.field.secret is tainted and
-		// propagated into the inner constructor. Then, inside the constructor at the following line
-		//      this(HeapTestCode$Inner).<soot.jimple.infoflow.test.HeapTestCode$Inner: soot.jimple.infoflow.test.HeapTestCode this$0> = this$0;
-		// the access path this$0.<HeapTestCode: Inner field>.<Inner: String secret> is first extended to
-		//      this(HeapTestCode$Inner).<HeapTestCode$Inner: HeapTestCode this$0>.<HeapTestCode: HeapTestCode$Inner field>.<HeapTestCode$Inner: String secret>
+		// Inner class constructor has this has an implicit parameter. Backward, here
+		// this.field.secret is tainted and
+		// propagated into the inner constructor. Then, inside the constructor at the
+		// following line
+		// this(HeapTestCode$Inner).<soot.jimple.infoflow.test.HeapTestCode$Inner:
+		// soot.jimple.infoflow.test.HeapTestCode this$0> = this$0;
+		// the access path this$0.<HeapTestCode: Inner field>.<Inner: String secret> is
+		// first extended to
+		// this(HeapTestCode$Inner).<HeapTestCode$Inner: HeapTestCode
+		// this$0>.<HeapTestCode: HeapTestCode$Inner field>.<HeapTestCode$Inner: String
+		// secret>
 		// and then reduced due to recursive types to
-		//      this(HeapTestCode$Inner).<HeapTestCode$Inner: String secret>
+		// this(HeapTestCode$Inner).<HeapTestCode$Inner: String secret>
 		// but that case is definitely not a recursive data structure and wrong.
 		Inner local = new Inner();
 		local.secret = TelephonyManager.getDeviceId();
@@ -1571,4 +1578,19 @@ public class HeapTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(local.secret);
 	}
+
+	private static class Book {
+
+		public String name;
+	}
+
+	public void activationStatementTest1() {
+		Book b = new Book();
+		Book a = b;
+		String specialName = b.name + "123";
+		a.name = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(specialName);
+	}
+
 }

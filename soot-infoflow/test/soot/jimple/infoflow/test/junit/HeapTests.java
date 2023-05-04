@@ -1233,8 +1233,8 @@ public abstract class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void innerFieldReductionTestNegative() {
 		IInfoflow infoflow = initInfoflow();
-		onlyForwards(infoflow, "We lose the object sensitivity here due to the recursive data structure" +
-								"reduction. See also the comment above the code of innerFieldReductionTestNegative.");
+		onlyForwards(infoflow, "We lose the object sensitivity here due to the recursive data structure"
+				+ "reduction. See also the comment above the code of innerFieldReductionTestNegative.");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative()>");
 		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
@@ -1244,11 +1244,21 @@ public abstract class HeapTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void innerFieldReductionTestNegative2() {
 		IInfoflow infoflow = initInfoflow();
-		onlyBackwards(infoflow, "We lose the object sensitivity here due to the recursive data structure" +
-								"reduction. See also the comment above the code of innerFieldReductionTestNegative.");
+		onlyBackwards(infoflow, "We lose the object sensitivity here due to the recursive data structure"
+				+ "reduction. See also the comment above the code of innerFieldReductionTestNegative.");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative2()>");
 		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}
+
+	@Test(timeout = 300000)
+	public void activationStatementTest1() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void activationStatementTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
 }
