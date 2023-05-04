@@ -182,7 +182,7 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.integration.test.RiverTestCode: void riverTest8()>");
         ISourceSinkManager ssm = getSourceSinkManager(infoflow);
-        infoflow.setPreProcessors(Collections.singleton(new PreAnalysisHandler() {
+        infoflow.addPreprocessor(new PreAnalysisHandler() {
             @Override
             public void onBeforeCallgraphConstruction() {
 
@@ -192,7 +192,7 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
             public void onAfterCallgraphConstruction() {
                 ((IConditionalFlowManager) ssm).registerSecondarySink(Scene.v().grabMethod("<java.net.URL: void <init>(java.lang.String)>"));
             }
-        }));
+        });
 
         infoflow.setUsageContextProvider(new IUsageContextProvider() {
             @Override

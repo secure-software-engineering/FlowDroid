@@ -12,21 +12,7 @@ import java.util.regex.Pattern;
 
 import heros.solver.Pair;
 import heros.solver.PathEdge;
-import soot.ArrayType;
-import soot.FastHierarchy;
-import soot.Hierarchy;
-import soot.Local;
-import soot.PrimType;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootFieldRef;
-import soot.SootMethod;
-import soot.Type;
-import soot.Unit;
-import soot.Value;
-import soot.VoidType;
+import soot.*;
 import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
@@ -34,6 +20,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
@@ -223,6 +210,51 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 
 		// We need to query the summaries in case we have no proper type information
 		manager.getTypeUtils().registerTypeChecker(this);
+	}
+
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.singleton(new PreAnalysisHandler() {
+			@Override
+			public void onBeforeCallgraphConstruction() {
+				// Inject the hierarchy
+				for (String className : flows.getAllClassesWithSummaries()) {
+					SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
+					if (sc.isPhantom()) {
+						ClassMethodSummaries summaries = flows.getClassFlows(className);
+						if (summaries != null) {
+							// Some phantom classes are actually interfaces
+							if (summaries.hasInterfaceInfo()) {
+								if (summaries.isInterface())
+									sc.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
+								else
+									sc.setModifiers(sc.getModifiers() & ~Modifier.INTERFACE);
+							}
+
+							// Set the correct superclass
+							if (summaries.hasSuperclass()) {
+								final String superclassName = summaries.getSuperClass();
+								SootClass scSuperclass = Scene.v().forceResolve(superclassName, SootClass.SIGNATURES);
+								sc.setSuperclass(scSuperclass);
+							}
+
+							// Register the interfaces
+							if (summaries.hasInterfaces()) {
+								for (String intfName : summaries.getInterfaces()) {
+									SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
+									if (!sc.implementsInterface(intfName))
+										sc.addInterface(scIntf);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			@Override
+			public void onAfterCallgraphConstruction() {
+
+			}
+		});
 	}
 
 	/**
@@ -1843,26 +1875,4 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		return null;
 	}
 
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		if (!(t1 instanceof RefType) || !(t2 instanceof RefType))
-			return false;
-
-		SootClass sc1 = ((RefType) t1).getSootClass();
-		SootClass sc2 = ((RefType) t2).getSootClass();
-		// If we do not have a phantom class, soot already resolved the hierarchy
-		if (!sc1.isPhantom() && !sc2.isPhantom())
-			return false;
-
-		if (sc1.isInterface()) {
-			if (flows.getImplementersOfInterface(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2))
-				return true;
-			return flows.getSubInterfacesOf(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
-		} else {
-			return flows.getSubclassesOf(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
-		}
-	}
 }

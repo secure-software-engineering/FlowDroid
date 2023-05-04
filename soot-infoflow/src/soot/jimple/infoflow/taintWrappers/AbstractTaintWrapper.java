@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.taintWrappers;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,6 +11,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 
 /**
  * Abstract base class for all taint propagation wrappers
@@ -28,6 +31,11 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 	@Override
 	public void initialize(InfoflowManager manager) {
 		this.manager = manager;
+	}
+
+	@Override
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.emptyList();
 	}
 	
 	/**
@@ -92,8 +100,4 @@ public abstract class AbstractTaintWrapper implements ITaintPropagationWrapper {
 		return wrapperMisses.get();
 	}
 
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		return false;
-	}
 }

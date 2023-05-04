@@ -2,6 +2,7 @@ package soot.jimple.infoflow.methodSummary.generator;
 
 import java.util.*;
 
+import org.checkerframework.checker.units.qual.C;
 import soot.*;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
@@ -11,6 +12,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SourceContext;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
@@ -47,6 +49,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	@Override
 	public void initialize(InfoflowManager manager) {
 		this.manager = manager;
+	}
+
+	@Override
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -235,11 +242,6 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	public int getWrapperMisses() {
 		// Statics reporting is not supported by this taint wrapper
 		return -1;
-	}
-
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		return false;
 	}
 
 	@Override

@@ -1703,7 +1703,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		info.setMemoryManagerFactory(null);
 
 		// Inject additional post-processors
-		info.setPostProcessors(Collections.singleton(new PostAnalysisHandler() {
+		info.addPostProcessor(new PostAnalysisHandler() {
 
 			@Override
 			public InfoflowResults onResultsAvailable(InfoflowResults results, IInfoflowCFG cfg) {
@@ -1717,7 +1717,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				return results;
 			}
 
-		}));
+		});
 
 		return info;
 	}

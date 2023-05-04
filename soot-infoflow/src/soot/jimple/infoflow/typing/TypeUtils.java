@@ -113,14 +113,6 @@ public class TypeUtils {
 				return true;
 		}
 
-		// Taint wrappers might provide further information about the hierarchy if the
-		// classes are phantom.
-		ITaintPropagationWrapper taintWrapper = manager.getTaintWrapper();
-		if (taintWrapper != null) {
-			if (taintWrapper.isSubType(destType, sourceType) || taintWrapper.isSubType(sourceType, destType))
-				return true;
-		}
-
 		return false;
 	}
 
