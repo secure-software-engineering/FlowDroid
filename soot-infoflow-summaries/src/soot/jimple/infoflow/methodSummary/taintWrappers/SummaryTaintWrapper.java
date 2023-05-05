@@ -12,21 +12,7 @@ import java.util.regex.Pattern;
 
 import heros.solver.Pair;
 import heros.solver.PathEdge;
-import soot.ArrayType;
-import soot.FastHierarchy;
-import soot.Hierarchy;
-import soot.Local;
-import soot.PrimType;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootFieldRef;
-import soot.SootMethod;
-import soot.Type;
-import soot.Unit;
-import soot.Value;
-import soot.VoidType;
+import soot.*;
 import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
@@ -34,6 +20,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
@@ -51,7 +38,6 @@ import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.jimple.infoflow.typing.ITypeChecker;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
@@ -66,7 +52,7 @@ import soot.util.MultiMap;
  * @author Steven Arzt
  *
  */
-public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecker {
+public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	private InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
@@ -220,9 +206,55 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		// If we have a fallback wrapper, we need to initialize that one as well
 		if (fallbackWrapper != null)
 			fallbackWrapper.initialize(manager);
+	}
 
-		// We need to query the summaries in case we have no proper type information
-		manager.getTypeUtils().registerTypeChecker(this);
+	class HierarchyInjector implements PreAnalysisHandler {
+		@Override
+		public void onBeforeCallgraphConstruction() {
+			// Inject the hierarchy
+			for (String className : flows.getAllClassesWithSummaries()) {
+				SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
+				if (!sc.isPhantom())
+					return;
+
+				ClassMethodSummaries summaries = flows.getClassFlows(className);
+				if (summaries == null)
+					return;
+
+				// Some phantom classes are actually interfaces
+				if (summaries.hasInterfaceInfo()) {
+					if (summaries.isInterface())
+						sc.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
+					else
+						sc.setModifiers(sc.getModifiers() & ~Modifier.INTERFACE);
+				}
+
+				// Set the correct superclass
+				if (summaries.hasSuperclass()) {
+					final String superclassName = summaries.getSuperClass();
+					SootClass scSuperclass = Scene.v().forceResolve(superclassName, SootClass.SIGNATURES);
+					sc.setSuperclass(scSuperclass);
+				}
+
+				// Register the interfaces
+				if (summaries.hasInterfaces()) {
+					for (String intfName : summaries.getInterfaces()) {
+						SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
+						if (!sc.implementsInterface(intfName))
+							sc.addInterface(scIntf);
+					}
+				}
+			}
+		}
+
+		@Override
+		public void onAfterCallgraphConstruction() {
+			// NO-OP
+		}
+	}
+
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.singleton(new HierarchyInjector());
 	}
 
 	/**
@@ -1794,75 +1826,4 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ITypeChecke
 		return resAbs;
 	}
 
-	@Override
-	public Type getMorePreciseType(Type tp1, Type tp2) {
-		// We query the summaries to establish a type hierarchy beyond the Soot scene
-		if (tp1 instanceof RefType && tp2 instanceof RefType) {
-			RefType rt1 = (RefType) tp1;
-			RefType rt2 = (RefType) tp2;
-
-			SootClass sc1 = rt1.getSootClass();
-			SootClass sc2 = rt2.getSootClass();
-
-			if (sc1.isPhantom() || sc2.isPhantom()) {
-				String sc1Name = sc1.getName();
-				String sc2Name = sc2.getName();
-
-				ClassMethodSummaries cs1 = flows.getClassFlows(sc1.getName());
-				ClassMethodSummaries cs2 = flows.getClassFlows(sc2.getName());
-
-				// Type1 may be a superclass or interface of cs2
-				if (cs2 != null) {
-					ClassMethodSummaries curSummaries = cs2;
-					while (curSummaries != null) {
-						if (sc1Name.equals(curSummaries.getSuperClass()))
-							return tp2;
-						for (String intf : curSummaries.getInterfaces()) {
-							if (intf.equals(sc1Name))
-								return tp2;
-						}
-						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
-					}
-				}
-
-				// Type2 may be a superclass or interface of cs1
-				if (cs1 != null) {
-					ClassMethodSummaries curSummaries = cs1;
-					while (curSummaries != null) {
-						if (sc2Name.equals(curSummaries.getSuperClass()))
-							return tp1;
-						for (String intf : curSummaries.getInterfaces()) {
-							if (intf.equals(sc2Name))
-								return tp1;
-						}
-						curSummaries = flows.getClassFlows(curSummaries.getSuperClass());
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		if (!(t1 instanceof RefType) || !(t2 instanceof RefType))
-			return false;
-
-		SootClass sc1 = ((RefType) t1).getSootClass();
-		SootClass sc2 = ((RefType) t2).getSootClass();
-		// If we do not have a phantom class, soot already resolved the hierarchy
-		if (!sc1.isPhantom() && !sc2.isPhantom())
-			return false;
-
-		if (sc1.isInterface()) {
-			if (flows.getImplementersOfInterface(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2))
-				return true;
-			return flows.getSubInterfacesOf(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
-		} else {
-			return flows.getSubclassesOf(sc1.getName()).stream()
-					.map(name -> Scene.v().getSootClassUnsafe(name)).anyMatch(c -> c == sc2);
-		}
-	}
 }

@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.typing;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import soot.SootClass;
 import soot.Type;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 /**
  * Class containing various utility methods for dealing with type information
@@ -33,13 +31,9 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 public class TypeUtils {
 
 	private final InfoflowManager manager;
-	private final List<ITypeChecker> typeCheckers = new ArrayList<>();
 
 	public TypeUtils(InfoflowManager manager) {
 		this.manager = manager;
-
-		// We want to query the standard Soot type hierarchy first
-		typeCheckers.add(new SootBasedTypeChecker());
 	}
 
 	/**
@@ -110,14 +104,6 @@ public class TypeUtils {
 																					// String
 																					// to
 																					// Object
-				return true;
-		}
-
-		// Taint wrappers might provide further information about the hierarchy if the
-		// classes are phantom.
-		ITaintPropagationWrapper taintWrapper = manager.getTaintWrapper();
-		if (taintWrapper != null) {
-			if (taintWrapper.isSubType(destType, sourceType) || taintWrapper.isSubType(sourceType, destType))
 				return true;
 		}
 
@@ -200,10 +186,44 @@ public class TypeUtils {
 	 * @return The more precise one of the two given types
 	 */
 	public Type getMorePreciseType(Type tp1, Type tp2) {
-		for (ITypeChecker checker : this.typeCheckers) {
-			Type tp = checker.getMorePreciseType(tp1, tp2);
-			if (tp != null)
-				return tp;
+		final FastHierarchy fastHierarchy = Scene.v().getOrMakeFastHierarchy();
+
+		if (tp1 == null)
+			return tp2;
+		else if (tp2 == null)
+			return tp1;
+		else if (tp1 == tp2)
+			return tp1;
+		else if (TypeUtils.isObjectLikeType(tp1))
+			return tp2;
+		else if (TypeUtils.isObjectLikeType(tp2))
+			return tp1;
+		else if (tp1 instanceof PrimType && tp2 instanceof PrimType)
+			return tp1; // arbitrary choice
+		else if (fastHierarchy.canStoreType(tp2, tp1))
+			return tp2;
+		else if (fastHierarchy.canStoreType(tp1, tp2))
+			return tp1;
+		else {
+			// If one type is an array type and the other one is the base type,
+			// we still accept the cast
+			if (tp1 instanceof ArrayType && tp2 instanceof ArrayType) {
+				ArrayType at1 = (ArrayType) tp1;
+				ArrayType at2 = (ArrayType) tp2;
+				if (at1.numDimensions != at2.numDimensions)
+					return null;
+				Type preciseType = getMorePreciseType(at1.getElementType(), at2.getElementType());
+				if (preciseType == null)
+					return null;
+
+				return ArrayType.v(preciseType, at1.numDimensions);
+			} else if (tp1 instanceof ArrayType) {
+				ArrayType at = (ArrayType) tp1;
+				return getMorePreciseType(at.getElementType(), tp2);
+			} else if (tp2 instanceof ArrayType) {
+				ArrayType at = (ArrayType) tp2;
+				return getMorePreciseType(tp1, at.getElementType());
+			}
 		}
 		return null;
 	}
@@ -295,16 +315,6 @@ public class TypeUtils {
 			return array.makeArrayType();
 		} else
 			return ArrayType.v(type, 1);
-	}
-
-	/**
-	 * Registers an additional type checker implementation with the typing
-	 * infrastructure
-	 * 
-	 * @param checker The type checker to register
-	 */
-	public void registerTypeChecker(ITypeChecker checker) {
-		this.typeCheckers.add(checker);
 	}
 
 	/**

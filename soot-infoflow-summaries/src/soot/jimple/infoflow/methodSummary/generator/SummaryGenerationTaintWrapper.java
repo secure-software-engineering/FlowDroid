@@ -11,6 +11,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SourceContext;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
@@ -19,8 +20,6 @@ import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguratio
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
-import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.toolkits.callgraph.Edge;
 
@@ -47,6 +46,11 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	@Override
 	public void initialize(InfoflowManager manager) {
 		this.manager = manager;
+	}
+
+	@Override
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -235,11 +239,6 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	public int getWrapperMisses() {
 		// Statics reporting is not supported by this taint wrapper
 		return -1;
-	}
-
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		return false;
 	}
 
 	@Override

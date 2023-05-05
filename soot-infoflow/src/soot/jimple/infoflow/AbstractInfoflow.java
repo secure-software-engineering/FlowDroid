@@ -134,8 +134,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected IIPCManager ipcManager = new DefaultIPCManager(new ArrayList<String>());
 
 	protected final BiDirICFGFactory icfgFactory;
-	protected Collection<? extends PreAnalysisHandler> preProcessors = Collections.emptyList();
-	protected Collection<? extends PostAnalysisHandler> postProcessors = Collections.emptyList();
+	protected Collection<PreAnalysisHandler> preProcessors = new ArrayList<>();
+	protected Collection<PostAnalysisHandler> postProcessors = new ArrayList<>();
 
 	protected final String androidPath;
 	protected final boolean forceAndroidJar;
@@ -222,13 +222,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	@Override
-	public void setPreProcessors(Collection<? extends PreAnalysisHandler> preprocessors) {
-		this.preProcessors = preprocessors;
+	public void addPreprocessor(PreAnalysisHandler preprocessor) {
+		this.preProcessors.add(preprocessor);
 	}
 
 	@Override
-	public void setPostProcessors(Collection<? extends PostAnalysisHandler> postprocessors) {
-		this.postProcessors = postprocessors;
+	public void addPostProcessor(PostAnalysisHandler postprocessor) {
+		this.postProcessors.add(postprocessor);
 	}
 
 	@Override
@@ -593,6 +593,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Initialize the abstraction configuration
 			Abstraction.initialize(config);
 
+			if (taintWrapper != null)
+				preProcessors.addAll(taintWrapper.getPreAnalysisHandlers());
+
 			// Build the callgraph
 			long beforeCallgraph = System.nanoTime();
 			constructCallgraph();
@@ -807,15 +810,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				manager.additionalManager = additionalManager;
 
 				// Add the post processor if necessary
-				if (config.getFilterConditionalSinks()) {
-					ConditionalFlowPostProcessor cfpp = new ConditionalFlowPostProcessor(manager);
-					if (this.postProcessors != null) {
-						Collection<PostAnalysisHandler> postProcessors = new ArrayList<>(this.postProcessors);
-						postProcessors.add(cfpp);
-						this.postProcessors = postProcessors;
-					} else
-						this.postProcessors = Collections.singleton(cfpp);
-				}
+				if (config.getFilterConditionalSinks())
+					addPostProcessor(new ConditionalFlowPostProcessor(manager));
 
 				// If the user did not provide an UsageContextProvider, provide the default
 				// implementation
@@ -987,11 +983,23 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				if (additionalNativeCallHandler != null)
 					additionalNativeCallHandler.shutdown();
 
-				logger.info(
-						"IFDS problem with {} forward and {} backward edges solved in {} seconds, processing {} results...",
-						forwardSolver.getPropagationCount(),
-						aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
-						taintPropagationSeconds, res == null ? 0 : res.size());
+				if (config.getAdditionalFlowsEnabled()) {
+					logger.info(
+							"IFDS problem with {} forward, {} backward, {} additional backward and {} additional" +
+									" forward edges, solved in {} seconds, processing {} results...",
+							forwardSolver.getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
+							additionalSolver == null ? 0 : additionalSolver.getPropagationCount(),
+							additionalAliasSolver == null ? 0 : additionalAliasSolver.getPropagationCount(),
+							taintPropagationSeconds, res == null ? 0 : res.size());
+				} else {
+					logger.info(
+							"IFDS problem with {} forward and {} backward edges solved in {} seconds, " +
+									"processing {} results...",
+							forwardSolver.getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
+							taintPropagationSeconds, res == null ? 0 : res.size());
+				}
 
 				// Update the statistics
 				{

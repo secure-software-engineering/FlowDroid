@@ -10,6 +10,7 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -255,6 +256,20 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testFileWriter1()>");
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
+        this.checkInfoflow(infoflow, 1);
+    }
+
+    @Test(timeout = 30000)
+    public void testCastWithSummaryTypeInformation1() {
+        IInfoflow infoflow = this.initInfoflow();
+        infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
+        infoflow.getConfig().setAdditionalFlowsEnabled(false);
+        List<String> epoints = new ArrayList();
+        epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testCastWithSummaryTypeInformation1()>");
+        final String source = "<java.io.FileOutputStream: void <init>(java.lang.String)>";
+        final String sink = "<java.io.OutputStream: void write(int)>";
+        infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints),
+                Collections.singletonList(source), Collections.singletonList(sink));
         this.checkInfoflow(infoflow, 1);
     }
 }

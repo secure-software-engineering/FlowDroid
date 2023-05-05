@@ -269,6 +269,7 @@ public class OutputStreamTestCode {
 
 
     public String externalLocation = "external/";
+
     public String getExternalDirLoc() {
         return externalLocation;
     }
@@ -343,5 +344,11 @@ public class OutputStreamTestCode {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void testCastWithSummaryTypeInformation1() throws IOException {
+        OutputStream os = new FileOutputStream("myfile.txt");
+        OutputStream bbo = (OutputStream) new ByteBufferOutput(os);
+        bbo.write(1337);
     }
 }

@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.taintWrappers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,6 +21,7 @@ import soot.Type;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 
 /**
  * List of taint wrappers. The wrappers at the beginning of the list are asked
@@ -48,9 +50,17 @@ public class TaintWrapperList implements IReversibleTaintWrapper {
 			w.initialize(manager);
 	}
 
+	@Override
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		List<PreAnalysisHandler> lst = new ArrayList<>();
+		for (ITaintPropagationWrapper wrapper : this.wrappers)
+			lst.addAll(wrapper.getPreAnalysisHandlers());
+		return lst;
+	}
+
 	/**
 	 * Adds the given wrapper to the chain of wrappers.
-	 * 
+	 *
 	 * @param wrapper The wrapper to add to the chain.
 	 */
 	public void addWrapper(ITaintPropagationWrapper wrapper) {
@@ -104,14 +114,6 @@ public class TaintWrapperList implements IReversibleTaintWrapper {
 	@Override
 	public int getWrapperMisses() {
 		return misses.get();
-	}
-
-	@Override
-	public boolean isSubType(Type t1, Type t2) {
-		for (ITaintPropagationWrapper w : this.wrappers)
-			if (w.isSubType(t1, t2))
-				return true;
-		return false;
 	}
 
 	@Override

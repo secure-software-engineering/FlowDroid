@@ -76,7 +76,7 @@ public abstract class BytecodeTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.junit.BytecodeTests: void dummy()>");
-		infoflow.setPreProcessors(Collections.singleton(new PreAnalysisHandler() {
+		infoflow.addPreprocessor(new PreAnalysisHandler() {
 
 			@Override
 			public void onBeforeCallgraphConstruction() {
@@ -89,7 +89,7 @@ public abstract class BytecodeTests extends JUnitTests {
 				// nothing to do here
 			}
 
-		}));
+		});
 		infoflow.getConfig().setCodeEliminationMode(CodeEliminationMode.NoCodeElimination);
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);

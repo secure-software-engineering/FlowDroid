@@ -638,7 +638,7 @@ public class SummaryGenerator {
 		final SummaryTaintPropagationHandler listener = new SummaryTaintPropagationHandler(methodSig, parentClass,
 				gapManager);
 		infoflow.setTaintPropagationHandler(listener);
-		infoflow.setPreProcessors(Collections.singleton(new PreAnalysisHandler() {
+		infoflow.addPreprocessor(new PreAnalysisHandler() {
 
 			@Override
 			public void onBeforeCallgraphConstruction() {
@@ -649,7 +649,7 @@ public class SummaryGenerator {
 				listener.addExcludedMethod(Scene.v().getMethod(DUMMY_MAIN_SIG));
 			}
 
-		}));
+		});
 
 		infoflow.addResultsAvailableHandler(new ResultsAvailableHandler() {
 
