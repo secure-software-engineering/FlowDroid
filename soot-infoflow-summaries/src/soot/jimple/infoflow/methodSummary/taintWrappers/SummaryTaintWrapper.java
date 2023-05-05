@@ -208,49 +208,53 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			fallbackWrapper.initialize(manager);
 	}
 
-	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
-		return Collections.singleton(new PreAnalysisHandler() {
-			@Override
-			public void onBeforeCallgraphConstruction() {
-				// Inject the hierarchy
-				for (String className : flows.getAllClassesWithSummaries()) {
-					SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
-					if (sc.isPhantom()) {
-						ClassMethodSummaries summaries = flows.getClassFlows(className);
-						if (summaries != null) {
-							// Some phantom classes are actually interfaces
-							if (summaries.hasInterfaceInfo()) {
-								if (summaries.isInterface())
-									sc.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
-								else
-									sc.setModifiers(sc.getModifiers() & ~Modifier.INTERFACE);
-							}
+	class HierarchyInjector implements PreAnalysisHandler {
+		@Override
+		public void onBeforeCallgraphConstruction() {
+			// Inject the hierarchy
+			for (String className : flows.getAllClassesWithSummaries()) {
+				SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
+				if (!sc.isPhantom())
+					return;
 
-							// Set the correct superclass
-							if (summaries.hasSuperclass()) {
-								final String superclassName = summaries.getSuperClass();
-								SootClass scSuperclass = Scene.v().forceResolve(superclassName, SootClass.SIGNATURES);
-								sc.setSuperclass(scSuperclass);
-							}
+				ClassMethodSummaries summaries = flows.getClassFlows(className);
+				if (summaries == null)
+					return;
 
-							// Register the interfaces
-							if (summaries.hasInterfaces()) {
-								for (String intfName : summaries.getInterfaces()) {
-									SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
-									if (!sc.implementsInterface(intfName))
-										sc.addInterface(scIntf);
-								}
-							}
-						}
+				// Some phantom classes are actually interfaces
+				if (summaries.hasInterfaceInfo()) {
+					if (summaries.isInterface())
+						sc.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
+					else
+						sc.setModifiers(sc.getModifiers() & ~Modifier.INTERFACE);
+				}
+
+				// Set the correct superclass
+				if (summaries.hasSuperclass()) {
+					final String superclassName = summaries.getSuperClass();
+					SootClass scSuperclass = Scene.v().forceResolve(superclassName, SootClass.SIGNATURES);
+					sc.setSuperclass(scSuperclass);
+				}
+
+				// Register the interfaces
+				if (summaries.hasInterfaces()) {
+					for (String intfName : summaries.getInterfaces()) {
+						SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
+						if (!sc.implementsInterface(intfName))
+							sc.addInterface(scIntf);
 					}
 				}
 			}
+		}
 
-			@Override
-			public void onAfterCallgraphConstruction() {
+		@Override
+		public void onAfterCallgraphConstruction() {
+			// NO-OP
+		}
+	}
 
-			}
-		});
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.singleton(new HierarchyInjector());
 	}
 
 	/**

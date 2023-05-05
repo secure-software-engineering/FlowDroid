@@ -259,7 +259,7 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
         this.checkInfoflow(infoflow, 1);
     }
 
-    @Test//(timeout = 30000)
+    @Test(timeout = 30000)
     public void testCastWithSummaryTypeInformation1() {
         IInfoflow infoflow = this.initInfoflow();
         infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
