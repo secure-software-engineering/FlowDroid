@@ -215,11 +215,11 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			for (String className : flows.getAllClassesWithSummaries()) {
 				SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
 				if (!sc.isPhantom())
-					return;
+					continue;
 
 				ClassMethodSummaries summaries = flows.getClassFlows(className);
 				if (summaries == null)
-					return;
+					continue;
 
 				// Some phantom classes are actually interfaces
 				if (summaries.hasInterfaceInfo()) {
