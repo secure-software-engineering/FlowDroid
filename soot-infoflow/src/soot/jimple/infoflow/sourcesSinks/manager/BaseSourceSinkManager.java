@@ -333,7 +333,7 @@ public abstract class BaseSourceSinkManager
 
 			// Only difference to getSource
 			if (!SystemClassHandler.v().isTaintVisible(ap, callee))
-				return null;
+				return Collections.emptySet();
 
 			Collection<ISourceSinkDefinition> defs = getSourceDefinition(callee);
 			if (defs.size() > 0)
