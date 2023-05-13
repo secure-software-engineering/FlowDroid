@@ -12,6 +12,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
+import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -209,7 +210,8 @@ public class InfoflowResultsSerializer {
 		ISourceSinkDefinition def = source.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
-			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+			if (ms.getMethod() != null)
+				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
 		}
 
 		writeAdditionalSourceInfo(source, writer);
@@ -271,7 +273,8 @@ public class InfoflowResultsSerializer {
 		ISourceSinkDefinition def = sink.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
-			writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+			if (ms.getMethod() != null)
+				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
 		}
 		writeAdditionalSinkInfo(sink, writer);
 		writeAccessPath(sink.getAccessPath(), writer);
