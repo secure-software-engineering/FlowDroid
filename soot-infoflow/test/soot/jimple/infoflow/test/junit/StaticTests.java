@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.PathBuildingAlgorithm;
-import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 
 /**
  * contain tests which check taint propagation for static variables
@@ -110,7 +109,6 @@ public abstract class StaticTests extends JUnitTests {
 	@Test(timeout = 300000)
 	public void staticCalleeOverwritesTaintTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.StaticTestCode: void staticCalleeOverwritesTaint()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
