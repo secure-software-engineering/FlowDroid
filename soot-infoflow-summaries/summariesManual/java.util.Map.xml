@@ -65,9 +65,9 @@
 		<method id="void clear()">
 			<clears>
 				<clear sourceSinkType="Field"
-					AccessPath="[java.util.Set: java.lang.Object[] keys]" />
+					AccessPath="[java.util.Map: java.lang.Object[] keys]" />
 				<clear sourceSinkType="Field"
-					AccessPath="[java.util.Set: java.lang.Object[] values]" />
+					AccessPath="[java.util.Map: java.lang.Object[] values]" />
 			</clears>
 		</method>
 		<method id="java.lang.Object remove(java.lang.Object)">
