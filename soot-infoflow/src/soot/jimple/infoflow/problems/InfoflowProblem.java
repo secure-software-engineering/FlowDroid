@@ -812,8 +812,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (passOn && invExpr instanceof InstanceInvokeExpr
 								&& (manager.getConfig().getInspectSources() || !isSource)
 								&& (manager.getConfig().getInspectSinks() || !isSink) && !isPrimitiveOrString
-								&& newSource.getAccessPath().isInstanceFieldRef() && (hasValidCallees
-										|| (taintWrapper != null && taintWrapper.isExclusive(iCallStmt, newSource)))) {
+								&& newSource.getAccessPath().isInstanceFieldRef() && hasValidCallees) {
 							// If one of the callers does not read the value, we
 							// must pass it on in any case
 							Collection<SootMethod> callees = interproceduralCFG().getCalleesOfCallAt(call);

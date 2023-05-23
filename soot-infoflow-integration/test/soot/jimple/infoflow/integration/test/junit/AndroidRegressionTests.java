@@ -88,4 +88,15 @@ public class AndroidRegressionTests extends BaseJUnitTests {
         Assert.assertEquals(4, results.size());
         Assert.assertEquals(4, results.getResultSet().size());
     }
+
+    /**
+     * Tests that the CallToReturnFunction does not pass on taints that were killed
+     * by a taint wrapper that marked the method as exclusive.
+     */
+    @Test
+    public void testMapClear() throws XmlPullParserException, IOException {
+        SetupApplication app = initApplication("testAPKs/MapClearTest.apk");
+        InfoflowResults results = app.runInfoflow("../soot-infoflow-android/SourcesAndSinks.txt");
+        Assert.assertEquals(0, results.size());
+    }
 }

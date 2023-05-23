@@ -179,9 +179,6 @@ public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
 							abs = abs.deriveNewAbstractionWithTurnUnit(stmt);
 						}
 					}
-
-					if (!killSource.value && absAp.equals(sourceAp))
-						killSource.value = source != abs;
 				}
 
 				if (addAbstraction)
@@ -189,6 +186,10 @@ public class BackwardsWrapperRule extends AbstractTaintPropagationRule {
 			}
 			res = resWAliases;
 		}
+
+		// We assume that a taint wrapper returns the complete set of taints for exclusive methods. Thus, if the
+		// incoming taint should be kept alive, the taint wrapper needs to add it to the outgoing set.
+		killSource.value |= wrapper.isExclusive(stmt, source);
 
 		if (res != null)
 			for (Abstraction abs : res)
