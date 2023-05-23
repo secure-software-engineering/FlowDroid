@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1591,14 +1592,22 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	@Override
 	public boolean supportsCallee(SootMethod method) {
-		// Check whether we directly support that class. We assume that if we
-		// have some summary for that class, we have all summaries for that
-		// class.
+		// Check whether we directly support that class
 		SootClass declClass = method.getDeclaringClass();
-		if (declClass != null && flows.supportsClass(declClass.getName()))
+		if (declClass == null)
+			return false;
+
+		ClassMethodSummaries cms = flows.getClassFlows(declClass.getName());
+		if (cms == null)
+			return false;
+
+		// We assume for exclusive classes that we have all summaries for that class.
+		if (cms.isExclusiveForClass())
 			return true;
 
-		return false;
+		// Otherwise, we check whether we have a summary for the method.
+		MethodSummaries summaries = cms.getMethodSummaries().filterForMethod(method.getSubSignature());
+		return summaries != null && !summaries.isEmpty();
 	}
 
 	@Override
@@ -1754,12 +1763,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
 
 		// If we have no data flows, we can abort early
-		if (flowsInCallees.isEmpty()) {
+		if (flowsInCallees.isEmpty())
 			if (fallbackWrapper != null && fallbackWrapper instanceof IReversibleTaintWrapper)
 				return ((IReversibleTaintWrapper) fallbackWrapper).getInverseTaintsForMethod(stmt, d1, taintedAbs);
-			else
-				return null;
-		}
 
 		// Create a level-0 propagator for the initially tainted access path
 		ByReferenceBoolean killIncomingTaint = new ByReferenceBoolean();

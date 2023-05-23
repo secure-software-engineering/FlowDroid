@@ -41,6 +41,7 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_MATCH_STRICT = "matchStrict";
 	public static final String ATTRIBUTE_NAME = "name";
 	public static final String ATTRIBUTE_SUPERCLASS = "superClass";
+	public static final String ATTRIBUTE_IS_EXCLUSIVE = "isExclusive";
 
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";

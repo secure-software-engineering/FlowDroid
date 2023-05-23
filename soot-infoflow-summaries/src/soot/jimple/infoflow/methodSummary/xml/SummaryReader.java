@@ -90,6 +90,10 @@ public class SummaryReader extends AbstractXMLReader {
 					// not call setInterface()!
 					if (isInterface != null && !isInterface.isEmpty())
 						summaries.setInterface(isInterface.equals(XMLConstants.VALUE_TRUE));
+
+					String isExclusive = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUSIVE);
+					if (isExclusive != null && !isExclusive.isEmpty())
+						summaries.setExclusiveForClass(isExclusive.equals(XMLConstants.VALUE_TRUE));
 				} else if (localName.equals(XMLConstants.TREE_METHODS) && xmlreader.isStartElement()) {
 					if (state == State.summary)
 						state = State.methods;
