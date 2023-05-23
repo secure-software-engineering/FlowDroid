@@ -491,6 +491,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
+				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr() : null;
+				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
 				return new SolverReturnFlowFunction() {
 
@@ -668,28 +670,38 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// check if it is not one of the params
 							// (then we have already fixed it)
 							if (!parameterAliases && !thisAliases && source.getAccessPath().getTaintSubFields()
-									&& iCallStmt.getInvokeExpr() instanceof InstanceInvokeExpr
 									&& aliasing.mayAlias(thisLocal, sourceBase)) {
-								// Type check
-								if (manager.getTypeUtils().checkCast(source.getAccessPath(), thisLocal.getType())) {
-									InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) iCallStmt.getInvokeExpr();
+								if (isExecutorExecute) {
+									if (manager.getTypeUtils().checkCast(source.getAccessPath(),
+																		 ie.getArg(0).getType())) {
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
+												ie.getArg(0));
+										Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
+										if (abs != null)
+											res.add(abs);
+									}
+								} else if (iCallStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+									// Type check
+									if (manager.getTypeUtils().checkCast(source.getAccessPath(), thisLocal.getType())) {
+										InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) iCallStmt.getInvokeExpr();
 
-									// Get the caller-side base local
-									// and create a new access path for it
-									Value callerBaseLocal = interproceduralCFG().isReflectiveCallSite(iIExpr)
-											? iIExpr.getArg(0)
-											: iIExpr.getBase();
-									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-											newSource.getAccessPath(), callerBaseLocal,
-											isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
-											false);
-									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
-									if (abs != null) {
-										res.add(abs);
-										if (!abs.equals(calleeD1))
-											for (Abstraction callerD1 : callerD1s)
-												manager.getAliasing().computeAliases(callerD1, iCallStmt, callerBaseLocal,
-														res, interproceduralCFG().getMethodOf(iCallStmt), abs);
+										// Get the caller-side base local
+										// and create a new access path for it
+										Value callerBaseLocal = isReflectiveCallSite
+												? iIExpr.getArg(0)
+												: iIExpr.getBase();
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+												newSource.getAccessPath(), callerBaseLocal,
+												isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
+												false);
+										Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
+										if (abs != null) {
+											res.add(abs);
+											if (!abs.equals(calleeD1))
+												for (Abstraction callerD1 : callerD1s)
+													manager.getAliasing().computeAliases(callerD1, iCallStmt, callerBaseLocal,
+															res, interproceduralCFG().getMethodOf(iCallStmt), abs);
+										}
 									}
 								}
 							}
