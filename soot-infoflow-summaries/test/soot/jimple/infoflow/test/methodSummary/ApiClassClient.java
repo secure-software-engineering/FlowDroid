@@ -4,8 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectOutputStream.PutField;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class ApiClassClient {
 	public Object source() {
@@ -301,5 +300,13 @@ public class ApiClassClient {
 		String str = map.toString();
 		char c = str.charAt(2);
 		sink(c);
+	}
+
+	public void iterator() {
+		List<String> lst = new ArrayList<>();
+		lst.add(stringSource());
+		Iterator<String> it = lst.iterator();
+		if (it.hasNext())
+			sink(it.next());
 	}
 }
