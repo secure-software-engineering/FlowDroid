@@ -809,10 +809,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// call/return edges
 						// otherwise we will loose taint - see
 						// ArrayTests/arrayCopyTest
-						if (passOn && invExpr instanceof InstanceInvokeExpr
+						if (passOn && hasValidCallees && !isPrimitiveOrString
 								&& (manager.getConfig().getInspectSources() || !isSource)
-								&& (manager.getConfig().getInspectSinks() || !isSink) && !isPrimitiveOrString
-								&& newSource.getAccessPath().isInstanceFieldRef() && hasValidCallees) {
+								&& (manager.getConfig().getInspectSinks() || !isSink)
+								&& newSource.getAccessPath().isInstanceFieldRef()) {
 							// If one of the callers does not read the value, we
 							// must pass it on in any case
 							Collection<SootMethod> callees = interproceduralCFG().getCalleesOfCallAt(call);
@@ -843,23 +843,19 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							}
 
 							if (allCalleesRead) {
-								if (aliasing.mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
-										newSource.getAccessPath().getPlainValue())) {
+								if (invExpr instanceof InstanceInvokeExpr
+										&& aliasing.mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
+															 newSource.getAccessPath().getPlainValue())) {
 									passOn = false;
 								}
-								if (passOn)
-									for (int i = 0; i < callArgs.length; i++)
+								if (passOn) {
+									for (int i = 0; i < callArgs.length; i++) {
 										if (aliasing.mayAlias(callArgs[i], newSource.getAccessPath().getPlainValue())) {
 											passOn = false;
 											break;
 										}
-								// static variables are always propagated if
-								// they are not overwritten. So if we have at
-								// least one call/return edge pair,
-								// we can be sure that the value does not get
-								// "lost" if we do not pass it on:
-								if (newSource.getAccessPath().isStaticFieldRef())
-									passOn = false;
+									}
+								}
 							}
 						}
 
