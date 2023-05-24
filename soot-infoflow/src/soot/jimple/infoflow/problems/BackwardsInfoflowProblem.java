@@ -884,17 +884,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// overwrite them. This is needed e.g. if an heap object
 						// is an argument and leaked twice in the same path.
 						// See also Android Source Sink Tests
-						if (isSink && !manager.getConfig().getInspectSinks()) {
-							if (source != zeroValue)
-								res.add(source);
-						}
+						if (isSink && !manager.getConfig().getInspectSinks() && source != zeroValue && !killSource.value)
+							res.add(source);
 
-						// If method is excluded, add the taint to not
-						// break anything
-						if (isExcluded(callee)) {
-							if (source != zeroValue)
-								res.add(source);
-						}
+						// If method is excluded, add the taint to not break anything
+						// unless one of the rules doesn't want so
+						if (isExcluded(callee) && source != zeroValue && !killSource.value)
+							res.add(source);
 
 						// Static values can be propagated over methods if
 						// the value isn't written inside the method.

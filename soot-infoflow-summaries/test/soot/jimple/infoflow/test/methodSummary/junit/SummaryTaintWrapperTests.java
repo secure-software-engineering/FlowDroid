@@ -227,6 +227,11 @@ public abstract class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void mapToString()>");
 	}
 
+	@Test(timeout = 30000)
+	public void iterator() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void iterator()>");
+	}
+
 	@Test
 	public void testAllSummaries() throws URISyntaxException, IOException {
 		EagerSummaryProvider provider = new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);

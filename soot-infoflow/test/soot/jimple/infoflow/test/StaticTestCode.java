@@ -131,4 +131,15 @@ public class StaticTestCode {
 		cm.publish(t);
 	}
 
+	public static void overwrite(StaticDataClass2 dc) {
+		dc.data = "";
+	}
+
+	public void staticCalleeOverwritesTaint() {
+		StaticDataClass2 dc = new StaticDataClass2();
+		dc.data = TelephonyManager.getDeviceId();
+		overwrite(dc);
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(dc.data);
+	}
 }

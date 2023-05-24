@@ -814,11 +814,11 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									if (defStmt == null || defStmt.getLeftOp() != abs.getAccessPath().getPlainValue())
 										passOnSet.add(abs);
 
-									// Do not pass on this taint, but
-									// trigger the forward analysis
-									for (Unit u : interproceduralCFG().getPredsOf(call))
-										manager.getMainSolver()
-												.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
+									// Trigger the forward analysis only on new aliases
+									if (!source.equals(abs))
+										for (Unit u : interproceduralCFG().getPredsOf(call))
+											manager.getMainSolver()
+													.processEdge(new PathEdge<Unit, Abstraction>(d1, u, abs));
 								}
 								return notifyOutFlowHandlers(call, d1, source, passOnSet,
 										FlowFunctionType.CallToReturnFlowFunction);

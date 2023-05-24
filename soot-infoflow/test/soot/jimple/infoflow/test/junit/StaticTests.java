@@ -106,4 +106,13 @@ public abstract class StaticTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
+	@Test(timeout = 300000)
+	public void staticCalleeOverwritesTaintTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.StaticTestCode: void staticCalleeOverwritesTaint()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
 }

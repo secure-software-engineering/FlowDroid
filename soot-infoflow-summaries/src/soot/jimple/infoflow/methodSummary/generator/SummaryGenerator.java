@@ -53,7 +53,6 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.taintWrappers.TaintWrapperList;
 import soot.options.Options;
 
 /**
@@ -75,8 +74,8 @@ public class SummaryGenerator {
 
 	protected List<String> substitutedWith = new LinkedList<String>();
 
-	protected SummaryTaintWrapper fallbackWrapper;
-	protected boolean fallbackWrapperInitialized = false;
+	protected SummaryTaintWrapper summaryTaintWrapper;
+	protected boolean summaryTaintWrapperInitialized = false;
 	protected MemorySummaryProvider onFlySummaryProvider = null;
 
 	public SummaryGenerator() {
@@ -86,10 +85,10 @@ public class SummaryGenerator {
 	/**
 	 * Initializes the fallback taint wrapper
 	 */
-	protected void initializeFallbackWrapper() {
-		if (fallbackWrapperInitialized)
+	protected void initializeSummaryTaintWrapper() {
+		if (summaryTaintWrapperInitialized)
 			return;
-		fallbackWrapperInitialized = true;
+		summaryTaintWrapperInitialized = true;
 
 		try {
 			// Do we want to integrate summaries on the fly?
@@ -113,7 +112,7 @@ public class SummaryGenerator {
 
 			// Combine our summary providers
 			IMethodSummaryProvider provider = new MergingSummaryProvider(innerProviders);
-			fallbackWrapper = new SummaryTaintWrapper(provider);
+			summaryTaintWrapper = new SummaryTaintWrapper(provider);
 		} catch (Exception e) {
 			LoggerFactory.getLogger(getClass()).error(
 					"An error occurred while loading the fallback taint wrapper, proceeding without fallback", e);
@@ -125,9 +124,9 @@ public class SummaryGenerator {
 	 * new summaries. Call this method after changing pre-existing summary files on
 	 * disk.
 	 */
-	public void releaseFallbackTaintWrapper() {
-		this.fallbackWrapper = null;
-		this.fallbackWrapperInitialized = false;
+	public void releaseSummaryTaintWrapper() {
+		this.summaryTaintWrapper = null;
+		this.summaryTaintWrapperInitialized = false;
 	}
 
 	/**
@@ -625,7 +624,7 @@ public class SummaryGenerator {
 			final IGapManager gapManager, final ResultsAvailableHandler resultHandler) {
 		// We need to construct a fallback taint wrapper based on the current
 		// configuration
-		initializeFallbackWrapper();
+		initializeSummaryTaintWrapper();
 
 		logger.info(String.format("Computing method summary for %s...", methodSig));
 		long nanosBeforeMethod = System.nanoTime();
@@ -761,8 +760,12 @@ public class SummaryGenerator {
 		else
 			iFlow.setNativeCallHandler(new SummaryNativeCallHandler(nativeCallHandler));
 
-		final SummaryGenerationTaintWrapper summaryWrapper = createTaintWrapper(summaries, gapManager);
-		iFlow.setTaintWrapper(new TaintWrapperList(fallbackWrapper, summaryWrapper));
+		final SummaryGenerationTaintWrapper summaryGenWrapper = createTaintWrapper(summaries, gapManager);
+		// We only want to compute summaries for methods we do not have summaries. Thus, we register the
+		// summary generation wrapper as a fallback to the SummaryTaintWrapper such that it is only queried
+		// when the SummaryTaintWrapper doesn't know the method.
+		summaryTaintWrapper.setFallbackTaintWrapper(summaryGenWrapper);
+		iFlow.setTaintWrapper(summaryTaintWrapper);
 
 		// Set the Soot configuration
 		if (sootConfig == null)

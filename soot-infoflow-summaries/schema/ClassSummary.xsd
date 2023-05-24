@@ -35,6 +35,7 @@
 		</xs:sequence>
 		<xs:attribute name="fileFormatVersion" type="xs:int" />
 		<xs:attribute name="isInterface" type="xs:boolean" />
+		<xs:attribute name="isExclusive" type="xs:boolean" />
 	</xs:complexType>
 </xs:element>
 
