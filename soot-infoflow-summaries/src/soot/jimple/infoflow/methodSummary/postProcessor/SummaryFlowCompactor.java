@@ -58,13 +58,18 @@ public class SummaryFlowCompactor {
 				MethodFlow flow = flowIt.next();
 
 				// Check if there is a more precise flow
-				for (MethodFlow flow2 : summaries)
-					if (flow != flow2 && flow.isCoarserThan(flow2)) {
+				for (MethodFlow flow2 : summaries) {
+					if (flow == flow2)
+						continue;
+
+					if (flow.isCoarserThan(flow2)
+							|| (flow.isAlias() && flow2.isAlias() && flow.reverse().isCoarserThan(flow2))) {
 						flowIt.remove();
 						flowsRemoved++;
 						hasChanged = true;
 						break;
 					}
+				}
 
 				if (hasChanged)
 					break;
