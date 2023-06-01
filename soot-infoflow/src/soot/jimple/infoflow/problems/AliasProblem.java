@@ -120,21 +120,6 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 				final Set<Abstraction> res = new MutableTwoElementSet<Abstraction>();
 
-				// Check whether the left side of the assignment matches our
-				// current taint abstraction
-				final boolean leftSideMatches = Aliasing.baseMatches(leftValue, source);
-				if (!leftSideMatches)
-					res.add(source);
-				else {
-					// The left side is overwritten completely
-
-					// If we have an assignment to the base local of the current
-					// taint, all taint propagations must be below that point,
-					// so this is the right point to turn around.
-					for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-						manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, source));
-				}
-
 				// We only handle assignments and identity statements
 				if (defStmt instanceof IdentityStmt) {
 					res.add(source);
@@ -142,6 +127,12 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				}
 				if (!(defStmt instanceof AssignStmt))
 					return res;
+
+				// Check whether the left side of the assignment matches our
+				// current taint abstraction
+				final boolean leftSideMatches = Aliasing.baseMatches(leftValue, source);
+				if (!leftSideMatches)
+					res.add(source);
 
 				// Get the right side of the assignment
 				final Value rightValue = BaseSelector.selectBase(defStmt.getRightOp(), false);
@@ -240,21 +231,12 @@ public class AliasProblem extends AbstractInfoflowProblem {
 						newLeftAbs = checkAbstraction(source.deriveNewAbstraction(ap, defStmt));
 					}
 
-					if (newLeftAbs != null) {
-						// If we ran into a new abstraction that points to a
-						// primitive value, we can remove it
-						if (newLeftAbs.getAccessPath().getLastFieldType() instanceof PrimType)
-							return res;
-
-						if (!newLeftAbs.getAccessPath().equals(source.getAccessPath())) {
-							// Propagate the new alias upwards
-							res.add(newLeftAbs);
-
-							// Inject the new alias into the forward solver
-							for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-								manager.getMainSolver()
-										.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
-						}
+					if (newLeftAbs != null && !newLeftAbs.getAccessPath().equals(source.getAccessPath())) {
+						// Only inject the new alias into the forward solver but never propagate it upwards
+						// because the alias was created at this program point and won't be valid above.
+						for (Unit u : interproceduralCFG().getPredsOf(defStmt))
+							manager.getMainSolver()
+									.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
 					}
 				}
 
@@ -734,6 +716,42 @@ public class AliasProblem extends AbstractInfoflowProblem {
 										if (abs != null) {
 											res.add(abs);
 											registerActivationCallSite(callSite, callee, abs);
+
+											// Check whether the call site created an alias by having two equal
+											// arguments, e.g. caller(o, o);. If yes, inject the other parameter
+											// back into the callee.
+											for (int argIndex = 0; !isReflectiveCallSite && argIndex < ie.getArgCount(); argIndex++) {
+												if (i != argIndex && originalCallArg == ie.getArg(argIndex)) {
+													AccessPath aliasAp = manager.getAccessPathFactory().copyWithNewValue(
+															source.getAccessPath(), paramLocals[argIndex],
+															source.getAccessPath().getBaseType(),
+																false);
+													Abstraction aliasAbs = checkAbstraction(
+															source.deriveNewAbstraction(aliasAp, (Stmt) exitStmt));
+
+													manager.getMainSolver()
+															.processEdge(new PathEdge<>(d1, exitStmt, aliasAbs));
+												}
+											}
+
+											// A foo(A a) {
+											//   return a;
+											// }
+											// A b = foo(a);
+											// An alias is created using the returned value. If no assignment
+											// happen inside the method, also no handover is triggered. Thus,
+											// for this special case, we hand over the current taint and let the
+											// forward analysis find out whether the return value actually created
+											// an alias or not.
+											for (Unit u : manager.getICFG().getStartPointsOf(callee)) {
+												if (!(u instanceof ReturnStmt))
+													continue;
+
+												if (paramLocals[i] == ((ReturnStmt) u).getOp()) {
+													manager.getMainSolver().processEdge(new PathEdge<>(d1, exitStmt, source));
+													break;
+												}
+											}
 										}
 									}
 								}
