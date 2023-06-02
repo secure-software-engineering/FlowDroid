@@ -20,10 +20,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.RefType;
-import soot.Scene;
-import soot.SootField;
-import soot.SootMethod;
+import soot.*;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
@@ -38,6 +35,7 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SequentialEntryPointCreator;
+import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -675,6 +673,18 @@ public abstract class HeapTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
+	public void negativeSingleAliasTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void negativeSingleAliasTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
 	public void intAliasTest() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
@@ -1269,4 +1279,42 @@ public abstract class HeapTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
+
+	@Test(timeout = 300000)
+	public void callSiteCreatesAlias() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void callSiteCreatesAlias()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void lhsNotUpwardsInAliasFlow() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void lhsNotUpwardsInAliasFlow()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void identityStmtIsNotAGoodHandoverPoint() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		infoflow.setTaintPropagationHandler(new TaintPropagationHandler() {
+			@Override
+			public void notifyFlowIn(Unit stmt, Abstraction taint, InfoflowManager manager, FlowFunctionType type) {
+				Assert.assertTrue(taint.isAbstractionActive());
+			}
+
+			@Override
+			public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+				return outgoing;
+			}
+		});
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void identityStmtIsNotAGoodHandoverPoint()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
 }

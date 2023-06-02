@@ -793,6 +793,24 @@ public class HeapTestCode {
 		cm.publish(b.b);
 	}
 
+	public void negativeSingleAliasTest() {
+		A a = new A();
+		A b = fakeAlias(a);
+		a.b = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(b.b);
+	}
+
+	public A doNotFold() {
+		A a = new A();
+		System.out.println("XXX");
+		return a;
+	}
+
+	private A fakeAlias(A a) {
+		return doNotFold();
+	}
+
 	private int intData;
 
 	private void setIntData() {
@@ -1611,4 +1629,43 @@ public class HeapTestCode {
 		cm.publish(specialName);
 	}
 
+	public void callSiteCreatesAlias() {
+		String tainted = TelephonyManager.getDeviceId();
+
+		Book book1 = new Book();
+		leakingCallee(tainted, new Book(), book1);
+		leakingCallee(tainted, book1, book1);
+	}
+
+	void leakingCallee(String tainted, Book book1, Book book2) {
+		book1.name = tainted;
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(book2.name);
+	}
+
+	public Book alias;
+	public void lhsNotUpwardsInAliasFlow() {
+		alias = new Book();
+
+		Book book = new Book();
+		Book alias2 = alias;
+		alias = book; // alias only aliases book downwards from this program point
+		book.name = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(alias2.name);
+	}
+
+	public void identityStmtIsNotAGoodHandoverPoint() {
+		Book book = new Book();
+		// No need to propagate book forward again
+		callee(book);
+		book.name = TelephonyManager.getDeviceId();
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(book.name);
+	}
+
+	void callee(Book b) {
+		System.out.println(b);
+	}
 }

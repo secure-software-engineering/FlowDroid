@@ -15,22 +15,7 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
-import soot.jimple.ArrayRef;
-import soot.jimple.AssignStmt;
-import soot.jimple.BinopExpr;
-import soot.jimple.CastExpr;
-import soot.jimple.DefinitionStmt;
-import soot.jimple.FieldRef;
-import soot.jimple.IdentityStmt;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InstanceOfExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.NewArrayExpr;
-import soot.jimple.ReturnStmt;
-import soot.jimple.StaticFieldRef;
-import soot.jimple.Stmt;
-import soot.jimple.UnopExpr;
+import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
@@ -135,42 +120,57 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						AccessPath ap = source.getAccessPath();
 						Value sourceBase = ap.getPlainValue();
+						Type rightType = rightOp.getType();
 						boolean handoverLeftValue = false;
+						boolean cutSubfield = false;
 						boolean leftSideOverwritten = false;
 						if (leftOp instanceof StaticFieldRef) {
 							if (manager.getConfig()
 									.getStaticFieldTrackingMode() != InfoflowConfiguration.StaticFieldTrackingMode.None
 									&& ap.firstFieldMatches(((StaticFieldRef) leftOp).getField())) {
 								handoverLeftValue = true;
+								cutSubfield = true;
 							}
 						} else if (leftOp instanceof InstanceFieldRef) {
 							InstanceFieldRef instRef = (InstanceFieldRef) leftOp;
 
 							// base matches
 							if (instRef.getBase() == sourceBase) {
-								// field matches
-								if (ap.firstFieldMatches(instRef.getField())) {
+								AccessPath mappedAp = Aliasing.getReferencedAPBase(ap,
+										new SootField[] { instRef.getField() }, manager);
+								if (mappedAp != null) {
 									handoverLeftValue = true;
-								}
-								// whole object matches
-								else if (ap.getTaintSubFields() && ap.getFragmentCount() == 0) {
-									handoverLeftValue = true;
-								}
-								// due to cut down access path we can not know better
-								else if (source.dependsOnCutAP() || isCircularType(leftVal)) {
-									handoverLeftValue = true;
+									cutSubfield = true;
+									if (!mappedAp.equals(ap))
+										ap = mappedAp;
 								}
 							}
 						} else if (leftVal == sourceBase) {
 							// Either the alias is overwritten here or a write to an array element
-							handoverLeftValue = leftOp instanceof ArrayRef;
+							handoverLeftValue = leftOp instanceof ArrayRef
+									&& ap.getArrayTaintType() != AccessPath.ArrayTaintType.Length;
 							leftSideOverwritten = !handoverLeftValue;
 						}
 
 						if (handoverLeftValue) {
-							// We found a missed path upwards
-							// inject same stmt in infoflow solver
-							handOver(d1, srcUnit, source);
+							Abstraction newAbs = null;
+							if (rightVal instanceof Constant) {
+								if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies()) {
+									newAbs = source.deriveConditionalUpdate(assignStmt);
+									for (Unit pred : manager.getICFG().getPredsOf(srcUnit))
+										handOver(d1, pred, newAbs);
+								}
+							} else {
+								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightOp, rightType, cutSubfield);
+								newAbs = source.deriveNewAbstraction(newAp, assignStmt);
+							}
+
+							if (newAbs != null && !newAbs.equals(source)) {
+								// We found a missed path upwards
+								// inject same stmt in infoflow solver
+								for (Unit pred : manager.getICFG().getPredsOf(srcUnit))
+									handOver(d1, pred, newAbs);
+							}
 						}
 
 						if (leftSideOverwritten)
