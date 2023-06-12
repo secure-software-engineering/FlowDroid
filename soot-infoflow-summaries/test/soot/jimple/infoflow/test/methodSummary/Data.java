@@ -52,5 +52,8 @@ public class Data {
 		this.stringField = i;
 	}
 	
-	
+	public void identity() {
+		// NO-OP but do something to make sure that this won't get removed by optimizations
+		System.out.println("Hello World");
+	}
 }

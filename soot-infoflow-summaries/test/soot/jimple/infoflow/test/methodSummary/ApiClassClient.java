@@ -320,4 +320,11 @@ public class ApiClassClient {
 		overwrite(d);
 		sink(d.stringField);
 	}
+
+	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		d.identity();
+		sink(d.stringField);
+	}
 }
