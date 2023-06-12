@@ -1756,12 +1756,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
 
+		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
 
 		// If we have no data flows, we can abort early
 		if (flowsInCallees.isEmpty()) {
+			if (classSupported.value)
+				return Collections.singleton(taintedAbs);
+
 			if (fallbackWrapper != null && fallbackWrapper instanceof IReversibleTaintWrapper)
 				return ((IReversibleTaintWrapper) fallbackWrapper).getInverseTaintsForMethod(stmt, d1, taintedAbs);
 			else
