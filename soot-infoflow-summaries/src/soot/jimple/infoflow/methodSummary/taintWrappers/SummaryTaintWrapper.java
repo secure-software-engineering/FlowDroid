@@ -527,9 +527,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 					return Collections.singleton(taintedAbs);
 				else {
 					reportMissingSummary(callee, stmt, taintedAbs);
-					if (fallbackWrapper != null) {
-						return fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
-					}
+					return fallbackWrapper != null ? fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs) : null;
 				}
 			}
 		}
@@ -1758,14 +1756,21 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
 
+		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
 
 		// If we have no data flows, we can abort early
-		if (flowsInCallees.isEmpty())
+		if (flowsInCallees.isEmpty()) {
+			if (classSupported.value)
+				return Collections.singleton(taintedAbs);
+
 			if (fallbackWrapper != null && fallbackWrapper instanceof IReversibleTaintWrapper)
 				return ((IReversibleTaintWrapper) fallbackWrapper).getInverseTaintsForMethod(stmt, d1, taintedAbs);
+			else
+				return null;
+		}
 
 		// Create a level-0 propagator for the initially tainted access path
 		ByReferenceBoolean killIncomingTaint = new ByReferenceBoolean();

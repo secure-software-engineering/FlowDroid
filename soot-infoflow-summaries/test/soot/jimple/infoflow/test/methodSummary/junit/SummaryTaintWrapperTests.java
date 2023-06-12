@@ -232,6 +232,16 @@ public abstract class SummaryTaintWrapperTests {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void iterator()>");
 	}
 
+	@Test(timeout = 30000)
+	public void noPropagationOverUnhandledCallee() {
+		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void noPropagationOverUnhandledCallee()>");
+	}
+
+	@Test(timeout = 30000)
+	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void identityIsStillAppliedOnUnhandledMethodButExclusiveClass()>");
+	}
+
 	@Test
 	public void testAllSummaries() throws URISyntaxException, IOException {
 		EagerSummaryProvider provider = new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);

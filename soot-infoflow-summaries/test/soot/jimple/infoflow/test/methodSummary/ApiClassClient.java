@@ -309,4 +309,22 @@ public class ApiClassClient {
 		if (it.hasNext())
 			sink(it.next());
 	}
+
+	private static void overwrite(Data d) {
+		d.stringField = "";
+	}
+
+	public void noPropagationOverUnhandledCallee() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		overwrite(d);
+		sink(d.stringField);
+	}
+
+	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		d.identity();
+		sink(d.stringField);
+	}
 }
