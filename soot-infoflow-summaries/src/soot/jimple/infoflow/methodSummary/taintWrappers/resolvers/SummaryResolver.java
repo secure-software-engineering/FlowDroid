@@ -94,25 +94,6 @@ public class SummaryResolver {
 						}
 					}
 
-					// In case we don't have a real hierarchy, we must reconstruct one from the
-					// summaries
-					String curClass = clazz.getName();
-					while (curClass != null) {
-						ClassMethodSummaries classSummaries = flows.getClassFlows(curClass);
-						if (classSummaries != null) {
-							// Check for flows in the current class
-							if (summaries.merge(flows.getMethodFlows(curClass, methodSig)))
-								return true;
-
-							// Check for interfaces
-							if (checkInterfacesFromSummary(methodSig, summaries, curClass))
-								return true;
-
-							curClass = classSummaries.getSuperClass();
-						} else
-							break;
-					}
-
 					return false;
 				}
 
@@ -180,39 +161,8 @@ public class SummaryResolver {
 						}
 					}
 
-					// We might not have hierarchy information in the scene, so let's check the
-					// summary itself
-					return checkInterfacesFromSummary(methodSig, summaries, clazz.getName());
-				}
-
-				/**
-				 * Checks for summaries on the interfaces implemented by the given class. This
-				 * method relies on the hierarchy data from the summary XML files, rather than
-				 * the Soot scene
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param className The interface for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				protected boolean checkInterfacesFromSummary(String methodSig, ClassSummaries summaries,
-						String className) {
-					List<String> interfaces = new ArrayList<>();
-					interfaces.add(className);
-					while (!interfaces.isEmpty()) {
-						final String intfName = interfaces.remove(0);
-						ClassMethodSummaries classSummaries = flows.getClassFlows(intfName);
-						if (classSummaries != null && classSummaries.hasInterfaces()) {
-							for (String intf : classSummaries.getInterfaces()) {
-								// Do we have a summary on the current interface?
-								if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-									return true;
-
-								// Recursively check for more interfaces
-								interfaces.add(intf);
-							}
-						}
-					}
+					// We inject the hierarchy from summaries before the data flow analysis, thus the
+					// soot hierarchy already contains the manual information provided in the xmls.
 					return false;
 				}
 
@@ -246,7 +196,6 @@ public class SummaryResolver {
 		Set<SootClass> doneSet = new HashSet<SootClass>();
 		Set<SootClass> classes = new HashSet<>();
 
-		final Scene scene = Scene.v();
 		while (!workList.isEmpty()) {
 			SootClass curClass = workList.remove(0);
 			if (!doneSet.add(curClass))
@@ -255,36 +204,13 @@ public class SummaryResolver {
 			if (curClass.isInterface()) {
 				List<SootClass> hierarchyImplementers = hierarchy.getImplementersOf(curClass);
 				workList.addAll(hierarchyImplementers);
-				if (curClass.isPhantom() && hierarchyImplementers.isEmpty()) {
-					// Query the hierarchy data in the summaries
-					flows.getImplementersOfInterface(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
-							.filter(c -> c != null).forEach(c -> {
-								workList.add(c);
-							});
-				}
 
 				List<SootClass> subinterfaces = hierarchy.getSubinterfacesOf(curClass);
 				workList.addAll(subinterfaces);
-				if (curClass.isPhantom() && subinterfaces.isEmpty()) {
-					// Query the hierarchy data in the summaries
-					flows.getSubInterfacesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
-							.filter(c -> c != null).forEach(c -> {
-								workList.add(c);
-							});
-				}
 			} else {
 				List<SootClass> hierarchyClasses = hierarchy.getSubclassesOf(curClass);
 				workList.addAll(hierarchyClasses);
 				classes.add(curClass);
-
-				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
-					// Query the hierarchy data in the summaries
-					flows.getSubclassesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
-							.filter(c -> c != null).forEach(c -> {
-								workList.add(c);
-								classes.add(c);
-							});
-				}
 			}
 		}
 
@@ -305,7 +231,6 @@ public class SummaryResolver {
 		Set<SootClass> doneSet = new HashSet<SootClass>();
 		Set<SootClass> classes = new HashSet<>();
 
-		final Scene scene = Scene.v();
 		while (!workList.isEmpty()) {
 			SootClass curClass = workList.remove(0);
 			if (!doneSet.add(curClass))
@@ -314,27 +239,10 @@ public class SummaryResolver {
 			if (curClass.isInterface()) {
 				List<SootClass> hierarchyClasses = hierarchy.getSuperinterfacesOf(curClass);
 				workList.addAll(hierarchyClasses);
-
-				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
-					// Query the hierarchy data in the summaries
-					flows.getSuperinterfacesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
-							.filter(c -> c != null).forEach(c -> {
-								workList.add(c);
-							});
-				}
 			} else {
 				List<SootClass> hierarchyClasses = hierarchy.getSuperclassesOf(curClass);
 				workList.addAll(hierarchyClasses);
 				classes.add(curClass);
-
-				if (curClass.isPhantom() && hierarchyClasses.isEmpty()) {
-					// Query the hierarchy data in the summaries
-					flows.getSuperclassesOf(curClass.getName()).stream().map(c -> scene.getSootClassUnsafe(c))
-							.filter(c -> c != null).forEach(c -> {
-								workList.add(c);
-								classes.add(c);
-							});
-				}
 			}
 		}
 
