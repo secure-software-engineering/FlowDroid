@@ -133,7 +133,12 @@ public class InfoflowConfiguration {
 		/**
 		 * Use the garbage-collecting solver
 		 */
-		GarbageCollecting
+		GarbageCollecting,
+
+		/**
+		 * Use the fine-grained GC solver
+		 * */
+		FineGrainedGC,
 	}
 
 	public static enum DataFlowDirection {

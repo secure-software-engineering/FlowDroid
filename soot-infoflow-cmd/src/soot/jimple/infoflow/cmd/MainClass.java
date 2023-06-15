@@ -593,6 +593,8 @@ public class MainClass {
 			return DataFlowSolver.FlowInsensitive;
 		else if (solver.equalsIgnoreCase("GC"))
 			return DataFlowSolver.GarbageCollecting;
+		else if (solver.equalsIgnoreCase("FPC"))
+			return DataFlowSolver.FineGrainedGC;
 		else {
 			System.err.println(String.format("Invalid data flow solver: %s", solver));
 			throw new AbortAnalysisException();
