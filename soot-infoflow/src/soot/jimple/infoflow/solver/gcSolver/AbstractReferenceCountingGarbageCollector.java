@@ -18,17 +18,17 @@ import soot.util.ConcurrentHashMultiMap;
  * @author Steven Arzt
  *
  */
-public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends AbstractGarbageCollector<N, D>
-		implements IGarbageCollectorPeer {
+public abstract class AbstractReferenceCountingGarbageCollector<N, D, A> extends AbstractGarbageCollector<N, D, A>
+		implements IGarbageCollectorPeer<A> {
 
-	private ConcurrentCountingMap<SootMethod> jumpFnCounter = new ConcurrentCountingMap<>();
-	private final Set<SootMethod> gcScheduleSet = new ConcurrentHashSet<>();
-	private final AtomicInteger gcedMethods = new AtomicInteger();
-	private final AtomicInteger gcedEdges = new AtomicInteger();
-	private final ExtendedAtomicInteger edgeCounterForThreshold = new ExtendedAtomicInteger();
-	private GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
-	private GarbageCollectorPeerGroup peerGroup = null;
-	private boolean checkChangeCounter = false;
+	protected ConcurrentCountingMap<A> jumpFnCounter = new ConcurrentCountingMap<>();
+	protected final Set<A> gcScheduleSet = new ConcurrentHashSet<>();
+	protected final AtomicInteger gcedAbstractions = new AtomicInteger();
+	protected final AtomicInteger gcedEdges = new AtomicInteger();
+	protected final ExtendedAtomicInteger edgeCounterForThreshold = new ExtendedAtomicInteger();
+	protected GarbageCollectionTrigger trigger = GarbageCollectionTrigger.Immediate;
+	protected GarbageCollectorPeerGroup<A> peerGroup = null;
+	protected boolean checkChangeCounter = false;
 
 	protected boolean validateEdges = false;
 	protected Set<PathEdge<N, D>> oldEdges = new HashSet<>();
@@ -44,21 +44,23 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	protected int edgeThreshold = 0;
 
 	public AbstractReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
-			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
-			IGCReferenceProvider<D, N> referenceProvider) {
+			ConcurrentHashMultiMap<A, PathEdge<N, D>> jumpFunctions,
+			IGCReferenceProvider<A> referenceProvider) {
 		super(icfg, jumpFunctions, referenceProvider);
 	}
 
 	public AbstractReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
-			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
+			ConcurrentHashMultiMap<A, PathEdge<N, D>> jumpFunctions) {
 		super(icfg, jumpFunctions);
 	}
 
+	protected abstract A genAbstraction(PathEdge<N, D> edge);
+
 	@Override
 	public void notifyEdgeSchedule(PathEdge<N, D> edge) {
-		SootMethod sm = icfg.getMethodOf(edge.getTarget());
-		jumpFnCounter.increment(sm);
-		gcScheduleSet.add(sm);
+		A abstraction = genAbstraction(edge);
+		jumpFnCounter.increment(abstraction);
+		gcScheduleSet.add(abstraction);
 		if (trigger == GarbageCollectionTrigger.EdgeThreshold)
 			edgeCounterForThreshold.incrementAndGet();
 
@@ -70,42 +72,8 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 
 	@Override
 	public void notifyTaskProcessed(PathEdge<N, D> edge) {
-		jumpFnCounter.decrement(icfg.getMethodOf(edge.getTarget()));
-	}
-
-	/**
-	 * Checks whether the given method has any open dependencies that prevent its
-	 * jump functions from being garbage collected
-	 * 
-	 * @param method           The method to check
-	 * @param referenceCounter The counter that keeps track of active references to
-	 *                         taint abstractions
-	 * @return True it the method has active dependencies and thus cannot be
-	 *         garbage-collected, false otherwise
-	 */
-	private boolean hasActiveDependencies(SootMethod method, ConcurrentCountingMap<SootMethod> referenceCounter) {
-		int changeCounter = -1;
-		do {
-			// Update the change counter for the next round
-			changeCounter = referenceCounter.getChangeCounter();
-
-			// Check the method itself
-			if (referenceCounter.get(method) > 0)
-				return true;
-
-			// Check the transitive callees
-			Set<SootMethod> references = referenceProvider.getMethodReferences(method, null);
-			for (SootMethod ref : references) {
-				if (referenceCounter.get(ref) > 0)
-					return true;
-			}
-		} while (checkChangeCounter && changeCounter != referenceCounter.getChangeCounter());
-		return false;
-	}
-
-	@Override
-	public boolean hasActiveDependencies(SootMethod method) {
-		return hasActiveDependencies(method, jumpFnCounter);
+		A abstraction = genAbstraction(edge);
+		jumpFnCounter.decrement(abstraction);
 	}
 
 	/**
@@ -120,18 +88,17 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 
 			// Perform the garbage collection if required
 			if (gc) {
-				int tempMethods = 0;
 				onBeforeRemoveEdges();
-				for (SootMethod sm : gcScheduleSet) {
+				for (A abst : gcScheduleSet) {
 					// Is it safe to remove this method?
 					if (peerGroup != null) {
-						if (peerGroup.hasActiveDependencies(sm))
+						if (peerGroup.hasActiveDependencies(abst))
 							continue;
-					} else if (hasActiveDependencies(sm))
+					} else if (hasActiveDependencies(abst))
 						continue;
 
 					// Get stats for the stuff we are about to remove
-					Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(sm);
+					Set<PathEdge<N, D>> oldFunctions = jumpFunctions.get(abst);
 					if (oldFunctions != null) {
 						int gcedSize = oldFunctions.size();
 						gcedEdges.addAndGet(gcedSize);
@@ -142,15 +109,14 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 					// First unregister the method, then delete the edges. In case some other thread
 					// concurrently schedules a new edge, the method gets back into the GC work list
 					// this way.
-					gcScheduleSet.remove(sm);
-					if (jumpFunctions.remove(sm)) {
-						gcedMethods.incrementAndGet();
-						tempMethods++;
+					gcScheduleSet.remove(abst);
+					if (jumpFunctions.remove(abst)) {
+						gcedAbstractions.incrementAndGet();
 						if (validateEdges)
 							oldEdges.addAll(oldFunctions);
 					}
 				}
-				onAfterRemoveEdges(tempMethods);
+				onAfterRemoveEdges();
 			}
 		}
 	}
@@ -168,12 +134,12 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 * 
 	 * @param gcedMethods The number of methods for which edges have been removed
 	 */
-	protected void onAfterRemoveEdges(int gcedMethods) {
+	protected void onAfterRemoveEdges() {
 	}
 
 	@Override
-	public int getGcedMethods() {
-		return gcedMethods.get();
+	public int getGcedAbstractions() {
+		return gcedAbstractions.get();
 	}
 
 	@Override
@@ -219,7 +185,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D> extends Ab
 	 * 
 	 * @param peerGroup The peer group
 	 */
-	public void setPeerGroup(GarbageCollectorPeerGroup peerGroup) {
+	public void setPeerGroup(GarbageCollectorPeerGroup<A> peerGroup) {
 		this.peerGroup = peerGroup;
 		peerGroup.addGarbageCollector(this);
 	}

@@ -704,7 +704,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			manager = initializeInfoflowManager(sourcesSinks, iCfg, globalTaintManager);
 
 			// Create the solver peer group
-			solverPeerGroup = new GCSolverPeerGroup();
+			solverPeerGroup = new GCSolverPeerGroup<SootMethod>();
 
 			// Initialize the alias analysis
 			Abstraction zeroValue = Abstraction.getZeroAbstraction(manager.getConfig().getFlowSensitiveAliasing());
@@ -1238,7 +1238,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			return new soot.jimple.infoflow.solver.fastSolver.flowInsensitive.InfoflowSolver(problem, executor);
 		case GarbageCollecting:
 			logger.info("Using garbage-collecting solver");
-			IInfoflowSolver solver = new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(problem, executor);
+			IInfoflowSolver solver = new soot.jimple.infoflow.solver.gcSolver.InfoflowSolver(problem, executor,
+					solverConfig.getSleepTime());
 			solverPeerGroup.addSolver(solver);
 			solver.setPeerGroup(solverPeerGroup);
 			return solver;

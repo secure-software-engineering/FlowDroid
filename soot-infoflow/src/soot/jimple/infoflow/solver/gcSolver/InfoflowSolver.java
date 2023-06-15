@@ -42,8 +42,8 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	private IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
 	private final AbstractInfoflowProblem problem;
 
-	public InfoflowSolver(AbstractInfoflowProblem problem, InterruptableExecutor executor) {
-		super(problem);
+	public InfoflowSolver(AbstractInfoflowProblem problem, InterruptableExecutor executor, int sleepTime) {
+		super(problem, sleepTime);
 		this.problem = problem;
 		this.executor = executor;
 		problem.setSolver(this);
