@@ -1,9 +1,7 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-
-import soot.SootMethod;
 
 /**
  * Set of multiple garbage collectors that share a set of active dependencies
@@ -11,25 +9,32 @@ import soot.SootMethod;
  * @author Steven Arzt
  *
  */
-public class GarbageCollectorPeerGroup implements IGarbageCollectorPeer {
+public class GarbageCollectorPeerGroup<A> implements IGarbageCollectorPeer<A> {
 
-	private final Collection<IGarbageCollectorPeer> peers;
+	private final Collection<IGarbageCollectorPeer<A>> peers;
 
 	public GarbageCollectorPeerGroup() {
-		this.peers = new HashSet<>();
+		this.peers = new ArrayList<>();
 	}
 
-	public GarbageCollectorPeerGroup(Collection<IGarbageCollectorPeer> peers) {
+	public GarbageCollectorPeerGroup(Collection<IGarbageCollectorPeer<A>> peers) {
 		this.peers = peers;
 	}
 
 	@Override
-	public boolean hasActiveDependencies(SootMethod method) {
-		for (IGarbageCollectorPeer peer : peers) {
-			if (peer.hasActiveDependencies(method))
+	public boolean hasActiveDependencies(A abstraction) {
+		for (IGarbageCollectorPeer<A> peer : peers) {
+			if (peer.hasActiveDependencies(abstraction))
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void notifySolverTerminated() {
+		for(IGarbageCollectorPeer<A> peer : peers) {
+			peer.notifySolverTerminated();
+		}
 	}
 
 	/**
@@ -37,7 +42,7 @@ public class GarbageCollectorPeerGroup implements IGarbageCollectorPeer {
 	 * 
 	 * @param peer The garbage collector to add
 	 */
-	public void addGarbageCollector(IGarbageCollectorPeer peer) {
+	public void addGarbageCollector(IGarbageCollectorPeer<A> peer) {
 		this.peers.add(peer);
 	}
 

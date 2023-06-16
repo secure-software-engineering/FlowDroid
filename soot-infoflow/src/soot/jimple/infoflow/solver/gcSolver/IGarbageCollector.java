@@ -37,7 +37,7 @@ public interface IGarbageCollector<N, D> {
 	 * @return The number of methods for which taint abstractions were removed
 	 *         during garbage collection
 	 */
-	public int getGcedMethods();
+	public int getGcedAbstractions();
 
 	/**
 	 * Gets the number of taint abstractions that were removed during garbage

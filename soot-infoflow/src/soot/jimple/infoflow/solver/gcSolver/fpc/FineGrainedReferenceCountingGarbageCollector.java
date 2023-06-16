@@ -1,31 +1,36 @@
-package soot.jimple.infoflow.solver.gcSolver;
+package soot.jimple.infoflow.solver.gcSolver.fpc;
 
+import heros.solver.Pair;
+import heros.solver.PathEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import heros.solver.PathEdge;
 import soot.SootMethod;
+import soot.jimple.infoflow.solver.gcSolver.AbstractReferenceCountingGarbageCollector;
+import soot.jimple.infoflow.solver.gcSolver.IGCReferenceProvider;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.ConcurrentHashMultiMap;
 
-/**
- * Garbage collector that performs its tasks in a separate thread
- * 
- * @author Steven Arzt
- *
- * @param <N>
- * @param <D>
- */
-public class ThreadedGarbageCollector<N, D> extends MethodLevelReferenceCountingGarbageCollector<N, D> {
+public abstract class FineGrainedReferenceCountingGarbageCollector<N, D>
+		extends AbstractReferenceCountingGarbageCollector<N, D, Pair<SootMethod, D>> {
+	protected static final Logger logger = LoggerFactory.getLogger(FineGrainedReferenceCountingGarbageCollector.class);
 
-	protected static final Logger logger = LoggerFactory.getLogger(ThreadedGarbageCollector.class);
+	public FineGrainedReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
+			ConcurrentHashMultiMap<Pair<SootMethod, D>, PathEdge<N, D>> jumpFunctions,
+			IGCReferenceProvider<Pair<SootMethod, D>> referenceProvider) {
+		super(icfg, jumpFunctions, referenceProvider);
+	}
+
+	public FineGrainedReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
+			ConcurrentHashMultiMap<Pair<SootMethod, D>, PathEdge<N, D>> jumpFunctions) {
+		super(icfg, jumpFunctions);
+	}
 
 	private class GCThread extends Thread {
 
 		private boolean finished = false;
 
 		public GCThread() {
-			setName("IFDS Garbage Collector");
+			setName("Fine-grained aggressive IFDS Garbage Collector");
 		}
 
 		@Override
@@ -54,22 +59,11 @@ public class ThreadedGarbageCollector<N, D> extends MethodLevelReferenceCounting
 
 	}
 
-	private int sleepTimeSeconds = 1;
-	private int maxPathEdgeCount = 0;
-	private int maxMemoryConsumption = 0;
+	protected int sleepTimeSeconds = 1;
+	protected int maxPathEdgeCount = 0;
+	protected int maxMemoryConsumption = 0;
 
-	private GCThread gcThread;
-
-	public ThreadedGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
-			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
-			IGCReferenceProvider<SootMethod> referenceProvider) {
-		super(icfg, jumpFunctions, referenceProvider);
-	}
-
-	public ThreadedGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
-			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
-		super(icfg, jumpFunctions);
-	}
+	protected GCThread gcThread;
 
 	@Override
 	protected void initialize() {
@@ -99,7 +93,7 @@ public class ThreadedGarbageCollector<N, D> extends MethodLevelReferenceCounting
 
 	/**
 	 * Sets the time to wait between garbage collection cycles in seconds
-	 * 
+	 *
 	 * @param sleepTimeSeconds The time to wait between GC cycles in seconds
 	 */
 	public void setSleepTimeSeconds(int sleepTimeSeconds) {
@@ -122,11 +116,16 @@ public class ThreadedGarbageCollector<N, D> extends MethodLevelReferenceCounting
 	@Override
 	protected void onAfterRemoveEdges() {
 		int pec = 0;
-		for(Integer i : jumpFnCounter.values()) {
+		for (Integer i : jumpFnCounter.values()) {
 			pec += i;
 		}
 		this.maxPathEdgeCount = Math.max(this.maxPathEdgeCount, pec);
 		this.maxMemoryConsumption = Math.max(this.maxMemoryConsumption, getUsedMemory());
 	}
 
+	@Override
+	protected Pair<SootMethod, D> genAbstraction(PathEdge<N, D> edge) {
+		SootMethod method = icfg.getMethodOf(edge.getTarget());
+		return new Pair<>(method, edge.factAtSource());
+	}
 }

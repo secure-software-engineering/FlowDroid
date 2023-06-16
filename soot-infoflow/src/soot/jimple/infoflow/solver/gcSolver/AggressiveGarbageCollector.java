@@ -17,7 +17,7 @@ import soot.util.ConcurrentHashMultiMap;
  * @author Steven Arzt
  *
  */
-public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N, D> {
+public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N, D, SootMethod> {
 
 	private final AtomicInteger gcedMethods = new AtomicInteger();
 
@@ -55,7 +55,7 @@ public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N
 	}
 
 	@Override
-	public int getGcedMethods() {
+	public int getGcedAbstractions() {
 		return gcedMethods.get();
 	}
 
@@ -63,6 +63,11 @@ public class AggressiveGarbageCollector<N, D> extends AbstractGarbageCollector<N
 	public int getGcedEdges() {
 		// We don't keep track of individual edges
 		return 0;
+	}
+
+	@Override
+	protected IGCReferenceProvider<SootMethod> createReferenceProvider() {
+		return new OnDemandReferenceProvider<>(icfg);
 	}
 
 	/**

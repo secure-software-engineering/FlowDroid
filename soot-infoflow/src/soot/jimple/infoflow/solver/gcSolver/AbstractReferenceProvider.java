@@ -14,7 +14,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * @author Steven Arzt
  *
  */
-public abstract class AbstractReferenceProvider<D, N> implements IGCReferenceProvider<D, N> {
+public abstract class AbstractReferenceProvider<A, N> implements IGCReferenceProvider<A> {
 
 	protected final BiDiInterproceduralCFG<N, SootMethod> icfg;
 

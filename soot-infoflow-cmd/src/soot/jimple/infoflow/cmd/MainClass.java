@@ -108,6 +108,7 @@ public class MainClass {
 	private static final String OPTION_MAX_CALLBACKS_COMPONENT = "mc";
 	private static final String OPTION_MAX_CALLBACKS_DEPTH = "md";
 	private static final String OPTION_PATH_SPECIFIC_RESULTS = "ps";
+	private static final String OPTION_MAX_THREAD_NUMBER = "mt";
 
 	// Inter-component communication
 	private static final String OPTION_ICC_MODEL = "im";
@@ -126,6 +127,7 @@ public class MainClass {
 	private static final String OPTION_IMPLICIT_FLOW_MODE = "i";
 	private static final String OPTION_STATIC_FLOW_TRACKING_MODE = "sf";
 	private static final String OPTION_DATA_FLOW_DIRECTION = "dir";
+	private static final String OPTION_GC_SLEEP_TIME = "st";
 
 	// Evaluation-specific options
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
@@ -193,7 +195,8 @@ public class MainClass {
 				"Compute the taint propagation paths and not just source-to-sink connections. This is a shorthand notation for -pr fast.");
 		options.addOption(OPTION_LOG_SOURCES_SINKS, "logsourcesandsinks", false,
 				"Write the discovered sources and sinks to the log output");
-		options.addOption("mt", "maxthreadnum", true, "Limit the maximum number of threads to the given value");
+		options.addOption(OPTION_MAX_THREAD_NUMBER, "maxthreadnum", true,
+				"Limit the maximum number of threads to the given value");
 		options.addOption(OPTION_ONE_COMPONENT, "onecomponentatatime", false,
 				"Analyze one Android component at a time");
 		options.addOption(OPTION_ONE_SOURCE, "onesourceatatime", false, "Analyze one source at a time");
@@ -241,6 +244,8 @@ public class MainClass {
 				"Use the specified mode when tracking static data flows (CONTEXTFLOWSENSITIVE, CONTEXTFLOWINSENSITIVE, NONE)");
 		options.addOption(OPTION_DATA_FLOW_DIRECTION, "direction", true,
 				"Specifies the direction of the infoflow analysis (FORWARDS, BACKWARDS)");
+		options.addOption(OPTION_GC_SLEEP_TIME, "gcsleeptime", true, 
+				"Specifies the sleep time for path edge collectors in seconds");
 
 		// Evaluation-specific options
 		options.addOption(OPTION_ANALYZE_FRAMEWORKS, "analyzeframeworks", false,
@@ -588,6 +593,8 @@ public class MainClass {
 			return DataFlowSolver.FlowInsensitive;
 		else if (solver.equalsIgnoreCase("GC"))
 			return DataFlowSolver.GarbageCollecting;
+		else if (solver.equalsIgnoreCase("FPC"))
+			return DataFlowSolver.FineGrainedGC;
 		else {
 			System.err.println(String.format("Invalid data flow solver: %s", solver));
 			throw new AbortAnalysisException();
@@ -790,6 +797,12 @@ public class MainClass {
 			if (maxDepth != null)
 				config.getCallbackConfig().setMaxAnalysisCallbackDepth(maxDepth);
 		}
+		{
+			Integer maxthreadnum = getIntOption(cmd, OPTION_MAX_THREAD_NUMBER);
+			if (maxthreadnum != null) {
+				config.setMaxThreadNum(maxthreadnum);
+			}
+		}
 
 		// Inter-component communication
 		if (cmd.hasOption(OPTION_ICC_NO_PURIFY))
@@ -885,6 +898,13 @@ public class MainClass {
 			if (callgraphFile != null && !callgraphFile.isEmpty()) {
 				config.getCallbackConfig().setSerializeCallbacks(true);
 				config.getCallbackConfig().setCallbacksFile(callgraphFile);
+			}
+		}
+
+		{
+			Integer sleepTime = getIntOption(cmd, OPTION_GC_SLEEP_TIME);
+			if (sleepTime != null) {
+				config.getSolverConfiguration().setSleepTime(sleepTime);
 			}
 		}
 	}

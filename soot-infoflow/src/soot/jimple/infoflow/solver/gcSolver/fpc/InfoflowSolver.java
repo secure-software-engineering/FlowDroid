@@ -8,7 +8,7 @@
  * Contributors: Christian Fritz, Steven Arzt, Siegfried Rasthofer, Eric
  * Bodden, and others.
  ******************************************************************************/
-package soot.jimple.infoflow.solver.gcSolver;
+package soot.jimple.infoflow.solver.gcSolver.fpc;
 
 import java.util.Collection;
 import java.util.Set;
@@ -64,7 +64,7 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 			}
 		}
 
-		propagate(edge.factAtSource(), edge.getTarget(), edge.factAtTarget(), null, false);
+		propagate(edge.factAtSource(), edge.getTarget(), edge.factAtTarget(), null, false, null);
 		return true;
 	}
 
@@ -153,7 +153,7 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 
 	@Override
 	public long getPropagationCount() {
-		return propagationCount;
+		return propagationCount.sum();
 	}
 
 	@Override

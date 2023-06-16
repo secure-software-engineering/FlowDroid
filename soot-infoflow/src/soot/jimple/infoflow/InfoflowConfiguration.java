@@ -133,7 +133,12 @@ public class InfoflowConfiguration {
 		/**
 		 * Use the garbage-collecting solver
 		 */
-		GarbageCollecting
+		GarbageCollecting,
+
+		/**
+		 * Use the fine-grained GC solver
+		 * */
+		FineGrainedGC,
 	}
 
 	public static enum DataFlowDirection {
@@ -971,6 +976,7 @@ public class InfoflowConfiguration {
 		private int maxJoinPointAbstractions = 10;
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;
+		private int sleepTime = 1;
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -1082,6 +1088,24 @@ public class InfoflowConfiguration {
 		 */
 		public void setMaxAbstractionPathLength(int maxAbstractionPathLength) {
 			this.maxAbstractionPathLength = maxAbstractionPathLength;
+		}
+
+		/**
+		 * Sets the sleep time of garbage colletors
+		 * 
+		 * @param sleeptime The interval in second for the path edge collection
+		 */
+		public void setSleepTime(int sleeptime) {
+			this.sleepTime = sleeptime;
+		}
+
+		/**
+		 * Gets the sleep time of garbage colletors
+		 * 
+		 * @return The interval in second for the path edge collection
+		 */
+		public int getSleepTime() {
+			return this.sleepTime;
 		}
 
 		@Override

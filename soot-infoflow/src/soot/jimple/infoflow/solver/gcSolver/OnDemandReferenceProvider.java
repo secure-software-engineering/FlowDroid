@@ -8,7 +8,6 @@ import com.google.common.cache.LoadingCache;
 import heros.SynchronizedBy;
 import heros.solver.IDESolver;
 import soot.SootMethod;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 /**
@@ -20,7 +19,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * @param <D>
  * @param <N>
  */
-public class OnDemandReferenceProvider<D, N> extends AbstractReferenceProvider<D, N> {
+public class OnDemandReferenceProvider<N> extends AbstractReferenceProvider<SootMethod, N> {
 
 	@SynchronizedBy("by use of synchronized LoadingCache class")
 	protected final LoadingCache<SootMethod, Set<SootMethod>> methodToReferences = IDESolver.DEFAULT_CACHE_BUILDER
@@ -38,7 +37,7 @@ public class OnDemandReferenceProvider<D, N> extends AbstractReferenceProvider<D
 	}
 
 	@Override
-	public Set<SootMethod> getMethodReferences(SootMethod method, FastSolverLinkedNode<D, N> context) {
+	public Set<SootMethod> getAbstractionReferences(SootMethod method) {
 		return methodToReferences.getUnchecked(method);
 	}
 

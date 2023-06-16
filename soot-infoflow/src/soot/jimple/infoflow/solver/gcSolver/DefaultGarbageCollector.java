@@ -11,7 +11,7 @@ import soot.util.ConcurrentHashMultiMap;
  * @author Steven Arzt
  *
  */
-public class DefaultGarbageCollector<N, D> extends AbstractReferenceCountingGarbageCollector<N, D> {
+public class DefaultGarbageCollector<N, D> extends MethodLevelReferenceCountingGarbageCollector<N, D> {
 
 	public DefaultGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions) {
@@ -20,7 +20,7 @@ public class DefaultGarbageCollector<N, D> extends AbstractReferenceCountingGarb
 
 	public DefaultGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
 			ConcurrentHashMultiMap<SootMethod, PathEdge<N, D>> jumpFunctions,
-			IGCReferenceProvider<D, N> referenceProvider) {
+			IGCReferenceProvider<SootMethod> referenceProvider) {
 		super(icfg, jumpFunctions, referenceProvider);
 	}
 
