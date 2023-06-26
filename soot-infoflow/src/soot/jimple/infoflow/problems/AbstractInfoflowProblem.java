@@ -139,7 +139,7 @@ public abstract class AbstractInfoflowProblem
 		return false;
 	}
 
-	protected boolean isCallSiteActivatingTaint(Unit callSite, Unit activationUnit) {
+	public boolean isCallSiteActivatingTaint(Unit callSite, Unit activationUnit) {
 		if (!manager.getConfig().getFlowSensitiveAliasing())
 			return false;
 

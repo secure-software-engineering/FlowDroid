@@ -41,8 +41,8 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproceduralCFG<Unit, SootMethod>>
 		implements IInfoflowSolver {
 
-	private IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
-	private final AbstractInfoflowProblem problem;
+	protected IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
+	protected final AbstractInfoflowProblem problem;
 
 	public InfoflowSolver(AbstractInfoflowProblem problem, InterruptableExecutor executor) {
 		super(problem);
