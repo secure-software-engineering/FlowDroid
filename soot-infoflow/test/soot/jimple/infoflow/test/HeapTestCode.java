@@ -1668,4 +1668,21 @@ public class HeapTestCode {
 	void callee(Book b) {
 		System.out.println(b);
 	}
+
+	public static class OuterClass {
+		InnerClass i;
+	}
+
+	public static class InnerClass {
+		OuterClass o;
+		String str;
+	}
+
+	public void testRecursiveAccessPath() {
+		OuterClass o = new OuterClass();
+		o.i = new InnerClass();
+		o.i.o.i.str = TelephonyManager.getDeviceId();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(o.i.o.i.str);
+	}
 }

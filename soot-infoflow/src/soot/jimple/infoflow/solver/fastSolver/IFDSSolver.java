@@ -5,7 +5,7 @@
  * are made available under the terms of the GNU Lesser Public License v2.1
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
- * 
+ *
  * Contributors:
  *     Eric Bodden - initial API and implementation
  *     Marc-Andre Laverdiere-Papineau - Fixed race condition
@@ -55,7 +55,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 /**
  * A solver for an {@link IFDSTabulationProblem}. This solver is not based on
  * the IDESolver implementation in Heros for performance reasons.
- * 
+ *
  * @param <N> The type of nodes in the interprocedural control-flow graph.
  *            Typically {@link Unit}.
  * @param <D> The type of data-flow facts to be computed by the tabulation
@@ -134,9 +134,9 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	protected boolean solverId;
 
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
-	private ISolverTerminationReason killFlag = null;
+	protected ISolverTerminationReason killFlag = null;
 
-	private int maxCalleesPerCallSite = 75;
+	protected int maxCalleesPerCallSite = 75;
 	private int maxAbstractionPathLength = 100;
 
 	protected ISchedulingStrategy<N, D> schedulingStrategy = new DefaultSchedulingStrategy<N, D, I>(
@@ -154,14 +154,14 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Creates a solver for the given problem, constructing caches with the given
 	 * {@link CacheBuilder}. The solver must then be started by calling
 	 * {@link #solve()}.
-	 * 
+	 *
 	 * @param tabulationProblem        The tabulation problem to solve
 	 * @param flowFunctionCacheBuilder A valid {@link CacheBuilder} or
 	 *                                 <code>null</code> if no caching is to be used
 	 *                                 for flow functions.
 	 */
 	public IFDSSolver(IFDSTabulationProblem<N, D, SootMethod, I> tabulationProblem,
-			@SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
+					  @SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
 		if (logger.isDebugEnabled())
 			flowFunctionCacheBuilder = flowFunctionCacheBuilder.recordStats();
 		this.zeroValue = tabulationProblem.zeroValue();
@@ -265,7 +265,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Dispatch the processing of a given edge. It may be executed in a different
 	 * thread.
-	 * 
+	 *
 	 * @param edge           the edge to process
 	 * @param scheduleTarget
 	 */
@@ -286,13 +286,13 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Lines 13-20 of the algorithm; processing a call site in the caller's context.
-	 * 
+	 *
 	 * For each possible callee, registers incoming call edges. Also propagates
 	 * call-to-return flows and summarized callee flows within the caller.
-	 * 
+	 *
 	 * @param edge an edge whose target node resembles a method call
 	 */
-	private void processCall(PathEdge<N, D> edge) {
+	protected void processCall(PathEdge<N, D> edge) {
 		final D d1 = edge.factAtSource();
 		final N n = edge.getTarget(); // a call node; line 14...
 
@@ -364,7 +364,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Callback to notify derived classes that an end summary has been applied
-	 * 
+	 *
 	 * @param n           The call site where the end summary has been applied
 	 * @param sCalledProc The callee
 	 * @param d3          The callee-side incoming taint abstraction
@@ -373,7 +373,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	}
 
 	protected void applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
-			SootMethod sCalledProcN, D d3) {
+										 SootMethod sCalledProcN, D d3) {
 		// line 15.2
 		Set<EndSummary<N, D>> endSumm = endSummary(sCalledProcN, d3);
 
@@ -419,7 +419,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Computes the call flow function for the given call-site abstraction
-	 * 
+	 *
 	 * @param callFlowFunction The call flow function to compute
 	 * @param d1               The abstraction at the current method's start node.
 	 * @param d2               The abstraction at the call site
@@ -431,7 +431,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Computes the call-to-return flow function for the given call-site abstraction
-	 * 
+	 *
 	 * @param callToReturnFlowFunction The call-to-return flow function to compute
 	 * @param d1                       The abstraction at the current method's start
 	 *                                 node.
@@ -444,10 +444,10 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Lines 21-32 of the algorithm.
-	 * 
+	 *
 	 * Stores callee-side summaries. Also, at the side of the caller, propagates
 	 * intra-procedural flows to return sites using those newly computed summaries.
-	 * 
+	 *
 	 * @param edge an edge whose target node resembles a method exits
 	 */
 	protected void processExit(PathEdge<N, D> edge) {
@@ -543,7 +543,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Computes the return flow function for the given set of caller-side
 	 * abstractions.
-	 * 
+	 *
 	 * @param retFunction  The return flow function to compute
 	 * @param d1           The abstraction at the beginning of the callee
 	 * @param d2           The abstraction at the exit node in the callee
@@ -552,17 +552,17 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeReturnFlowFunction(FlowFunction<D> retFunction, D d1, D d2, N callSite,
-			Collection<D> callerSideDs) {
+											   Collection<D> callerSideDs) {
 		return retFunction.computeTargets(d2);
 	}
 
 	/**
 	 * Lines 33-37 of the algorithm. Simply propagate normal, intra-procedural
 	 * flows.
-	 * 
+	 *
 	 * @param edge
 	 */
-	private void processNormalFlow(PathEdge<N, D> edge) {
+	protected void processNormalFlow(PathEdge<N, D> edge) {
 		final D d1 = edge.factAtSource();
 		final N n = edge.getTarget();
 		final D d2 = edge.factAtTarget();
@@ -589,7 +589,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	/**
 	 * Computes the normal flow function for the given set of start and end
 	 * abstractions.
-	 * 
+	 *
 	 * @param flowFunction The normal flow function to compute
 	 * @param d1           The abstraction at the method's start node
 	 * @param d2           The abstraction at the current node
@@ -601,7 +601,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Propagates the flow further down the exploded super graph.
-	 * 
+	 *
 	 * @param sourceVal          the source value of the propagated summary edge
 	 * @param target             the target statement
 	 * @param targetVal          the target value at the target statement
@@ -652,7 +652,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Records a jump function. The source statement is implicit.
-	 * 
+	 *
 	 * @see PathEdge
 	 */
 	public D addFunction(PathEdge<N, D> edge) {
@@ -786,7 +786,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Sets the maximum number of abstractions that shall be recorded per join
 	 * point. In other words, enabling this option disables the recording of
 	 * neighbors beyond the given count.
-	 * 
+	 *
 	 * @param maxJoinPointAbstractions The maximum number of abstractions per join
 	 *                                 point, or -1 to record an arbitrary number of
 	 *                                 join point abstractions
@@ -797,7 +797,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Sets the memory manager that shall be used to manage the abstractions
-	 * 
+	 *
 	 * @param memoryManager The memory manager that shall be used to manage the
 	 *                      abstractions
 	 */
@@ -807,7 +807,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 	/**
 	 * Gets the memory manager used by this solver to reduce memory consumption
-	 * 
+	 *
 	 * @return The memory manager registered with this solver
 	 */
 	public IMemoryManager<D, N> getMemoryManager() {

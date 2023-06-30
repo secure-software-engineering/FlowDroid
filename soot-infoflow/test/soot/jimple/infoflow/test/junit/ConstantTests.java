@@ -23,7 +23,7 @@ import soot.jimple.infoflow.IInfoflow;
  */
 public abstract class ConstantTests extends JUnitTests {
 
-	@Test // (timeout = 300000)
+	@Test(timeout = 300000)
 	public void easyConstantFieldTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

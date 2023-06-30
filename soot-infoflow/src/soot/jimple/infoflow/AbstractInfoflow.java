@@ -102,6 +102,7 @@ import soot.jimple.infoflow.solver.gcSolver.GCSolverPeerGroup;
 import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
+import soot.jimple.infoflow.solver.sparseSolver.SparseInfoflowSolver;
 import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -1240,6 +1241,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		case ContextFlowSensitive:
 			logger.info("Using context- and flow-sensitive solver");
 			return new soot.jimple.infoflow.solver.fastSolver.InfoflowSolver(problem, executor);
+		case SparseContextFlowSensitive:
+			InfoflowConfiguration.SparsePropagationStrategy opt = config.getSolverConfiguration().getSparsePropagationStrategy();
+			logger.info("Using sparse context-sensitive and flow-sensitive solver with sparsification " + opt.toString());
+			return new soot.jimple.infoflow.solver.sparseSolver.SparseInfoflowSolver(problem, executor, opt);
 		case FlowInsensitive:
 			logger.info("Using context-sensitive, but flow-insensitive solver");
 			return new soot.jimple.infoflow.solver.fastSolver.flowInsensitive.InfoflowSolver(problem, executor);
