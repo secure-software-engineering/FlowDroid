@@ -72,10 +72,13 @@ public abstract class AbstractSparsePropagation implements IPropagationStrategy<
         protected boolean requiredForFlowSensitivity(Unit unit) {
             boolean forwardFlowSensitivity = activationUnit != null
                     && (activationUnit == unit || problem.isCallSiteActivatingTaint(unit, activationUnit));
+            if (forwardFlowSensitivity)
+                return true;
+
             SootMethod turnM;
             boolean backwardFlowSensitivity = turnUnit != null && (turnM = iCfg.getMethodOf(turnUnit)) != null
                     && (turnUnit == unit || iCfg.getCalleesOfCallAt(unit).stream().anyMatch(sm -> sm == turnM));
-            return forwardFlowSensitivity || backwardFlowSensitivity;
+            return backwardFlowSensitivity;
         }
 
         @Override

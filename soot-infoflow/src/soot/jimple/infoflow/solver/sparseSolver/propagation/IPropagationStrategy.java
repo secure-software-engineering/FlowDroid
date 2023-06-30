@@ -17,7 +17,7 @@ public interface IPropagationStrategy<N, D extends FastSolverLinkedNode<D, N>, I
     Collection<N> getSuccsOf(N n, D d);
 
     /**
-     * Get the successors of n given d
+     * Get the start points of sm given d
      *
      * @param sm method to be called
      * @param d  callee context abstraction

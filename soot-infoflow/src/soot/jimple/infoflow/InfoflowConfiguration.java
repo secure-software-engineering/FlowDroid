@@ -1131,6 +1131,8 @@ public class InfoflowConfiguration {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((dataFlowSolver == null) ? 0 : dataFlowSolver.hashCode());
+			if (dataFlowSolver == DataFlowSolver.SparseContextFlowSensitive)
+				result = prime * result + sparsePropagationStrategy.hashCode();
 			result = prime * result + maxCalleesPerCallSite;
 			result = prime * result + maxJoinPointAbstractions;
 			result = prime * result + maxAbstractionPathLength;
@@ -1148,6 +1150,9 @@ public class InfoflowConfiguration {
 			SolverConfiguration other = (SolverConfiguration) obj;
 			if (dataFlowSolver != other.dataFlowSolver)
 				return false;
+			if (dataFlowSolver == DataFlowSolver.SparseContextFlowSensitive)
+				if (sparsePropagationStrategy != other.sparsePropagationStrategy)
+					return false;
 			if (maxCalleesPerCallSite != other.maxCalleesPerCallSite)
 				return false;
 			if (maxJoinPointAbstractions != other.maxJoinPointAbstractions)
