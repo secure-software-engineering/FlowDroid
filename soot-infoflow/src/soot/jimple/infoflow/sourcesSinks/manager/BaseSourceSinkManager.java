@@ -386,7 +386,7 @@ public abstract class BaseSourceSinkManager
 			return null;
 
 		Collection<ISourceSinkDefinition> def = getSinkDefinitions(sCallSite, manager, ap);
-		return def == null ? null : new SinkInfo(def);
+		return def.size() > 0 ? new SinkInfo(def) : null;
 	}
 
 	@Override
