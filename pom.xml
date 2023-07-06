@@ -3,13 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.12.0</version>
+	<version>${revision}</version>
 	<name>FlowDroid Parent Module</name>
 	<description>Parent module for the FlowDroid data flow tracker</description>
 	<url>https://github.com/secure-software-engineering/FlowDroid</url>	
 	<packaging>pom</packaging>
 
 	<properties>
+		<revision>2.13.0-SNAPSHOT</revision>
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<maven.compiler.source>1.8</maven.compiler.source>

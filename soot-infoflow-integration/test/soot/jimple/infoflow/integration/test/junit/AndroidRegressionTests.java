@@ -1,21 +1,35 @@
 package soot.jimple.infoflow.integration.test.junit;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
+
+import soot.Body;
 import soot.SootMethod;
+import soot.Unit;
+import soot.dexpler.DalvikThrowAnalysis;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
+import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
+import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
+import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.*;
+import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
+import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
+import soot.toolkits.graph.BriefUnitGraph;
+import soot.toolkits.graph.DirectedGraph;
+import soot.toolkits.graph.ExceptionalUnitGraphFactory;
 
 /**
  * Tests that uncovered a bug.
@@ -98,5 +112,52 @@ public class AndroidRegressionTests extends BaseJUnitTests {
         SetupApplication app = initApplication("testAPKs/MapClearTest.apk");
         InfoflowResults results = app.runInfoflow("../soot-infoflow-android/SourcesAndSinks.txt");
         Assert.assertEquals(0, results.size());
+    }
+
+    /**
+     * Tests that the SummaryTaintWrapper correctly applies identity on methods which have no explicitly defined
+     * flow but are in an exclusive class.
+     */
+    @Test
+    public void testIdentityOverObjectInit() throws IOException, URISyntaxException {
+        SetupApplication app = initApplication("testAPKs/identityOverObjectInit.apk");
+        app.setIcfgFactory(new DefaultBiDiICFGFactory() {
+           protected BiDiInterproceduralCFG<Unit, SootMethod> getBaseCFG(boolean enableExceptions) {
+               // Force Object.<init> to have no callee to prevent that the SkipSystemClassRule
+               // adds the incoming taint to the outgoing set
+               return new JimpleBasedInterproceduralCFG(enableExceptions, true) {
+
+                   protected DirectedGraph<Unit> makeGraph(Body body) {
+                       return enableExceptions ? ExceptionalUnitGraphFactory.createExceptionalUnitGraph(body, DalvikThrowAnalysis.interproc(), true)
+                               : new BriefUnitGraph(body);
+                   }
+
+                   @Override
+                   public Collection<SootMethod> getCalleesOfCallAt(Unit u) {
+                       Stmt stmt = (Stmt) u;
+                       if (stmt.containsInvokeExpr()
+                               && stmt.getInvokeExpr().getMethod().getSignature()
+                                    .equals("<java.lang.Object: void <init>()>g"))
+                           return Collections.emptySet();
+                       return super.getCalleesOfCallAt(u);
+                   }
+               };
+           }
+       });
+        SummaryTaintWrapper tw = new SummaryTaintWrapper(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR) {
+            @Override
+            public boolean mayHaveSummaryForMethod(String subsig) {
+                // Force the issue
+                return false;
+            }
+        });
+        app.setTaintWrapper(tw);
+
+        List<String> ssinks = new ArrayList<>();
+        ssinks.add("<android.telephony.TelephonyManager: java.lang.String getDeviceId()> android.permission.READ_PHONE_STATE -> _SOURCE_");
+        ssinks.add("<android.util.Log: int i(java.lang.String,java.lang.String)> -> _SINK_");
+
+        InfoflowResults results = app.runInfoflow(PermissionMethodParser.fromStringList(ssinks));
+        Assert.assertEquals(1, results.size());
     }
 }

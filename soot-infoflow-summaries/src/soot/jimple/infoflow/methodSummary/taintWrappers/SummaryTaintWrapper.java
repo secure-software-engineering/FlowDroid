@@ -918,8 +918,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	protected ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
 			ByReferenceBoolean classSupported) {
 		final String subsig = method.getSubSignature();
-		if (!flows.mayHaveSummaryForMethod(subsig))
-			return ClassSummaries.EMPTY_SUMMARIES;
 
 		ClassSummaries classSummaries = null;
 		if (!method.isConstructor() && !method.isStaticInitializer() && !method.isStatic()) {
