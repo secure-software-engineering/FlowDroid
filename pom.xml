@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.12.0-SNAPSHOT</version>
+	<version>2.12.0</version>
 	<name>FlowDroid Parent Module</name>
 	<description>Parent module for the FlowDroid data flow tracker</description>
 	<url>https://github.com/secure-software-engineering/FlowDroid</url>	
@@ -15,18 +15,18 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-		<maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.13</maven-nexus-staging-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-		<maven-assembly-plugin.version>3.4.2</maven-assembly-plugin.version>
-		<maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
+		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+		<maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
 		
-		<slf4j.version>2.0.6</slf4j.version>
-		<log4j.version>2.19.0</log4j.version>
+		<slf4j.version>2.0.7</slf4j.version>
+		<log4j.version>2.20.0</log4j.version>
 		<junit.version>4.13.2</junit.version>
 		<guava.version>31.1-jre</guava.version>
 		<hamcrest.version>2.2</hamcrest.version>
