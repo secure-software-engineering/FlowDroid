@@ -21,10 +21,7 @@ import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
-import soot.jimple.infoflow.solver.EndSummary;
-import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
-import soot.jimple.infoflow.solver.IInfoflowSolver;
-import soot.jimple.infoflow.solver.SolverPeerGroup;
+import soot.jimple.infoflow.solver.*;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -64,7 +61,7 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 
 	@Override
 	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1) {
+							  Abstraction d2, Abstraction d1) {
 		if (!addIncoming(callee, d3, callSite, d1, d2))
 			return;
 
@@ -72,7 +69,13 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 		applyEndSummaryOnCall(d1, callSite, d2, returnSiteNs, callee, d3);
 	}
 
-	@Override
+    @Override
+    public void applySummary(SootMethod callee, Abstraction d3, Unit callSite, Abstraction d2, Abstraction d1) {
+		Collection<Unit> returnSiteNs = icfg.getReturnSitesOfCallAt(callSite);
+		applyEndSummaryOnCall(d1, callSite, d2, returnSiteNs, callee, d3);
+	}
+
+    @Override
 	protected Set<Abstraction> computeReturnFlowFunction(FlowFunction<Abstraction> retFunction, Abstraction d1,
 			Abstraction d2, Unit callSite, Collection<Abstraction> callerSideDs) {
 		if (retFunction instanceof SolverReturnFlowFunction) {
@@ -155,7 +158,7 @@ public class InfoflowSolver extends FlowInsensitiveSolver<Unit, Abstraction, BiD
 	}
 
 	@Override
-	public void setPeerGroup(SolverPeerGroup solverPeerGroup) {
+	public void setPeerGroup(ISolverPeerGroup solverPeerGroup) {
 		// We don't have support for peer groups and don't really need them either
 	}
 
