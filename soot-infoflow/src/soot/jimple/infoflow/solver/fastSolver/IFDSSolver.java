@@ -42,15 +42,18 @@ import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
+import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.solver.AbstractIFDSSolver;
 import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IStrategyBasedParallelSolver;
+import soot.jimple.infoflow.solver.IncomingRecord;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
+import soot.util.ConcurrentHashMultiMap;
 
 /**
  * A solver for an {@link IFDSTabulationProblem}. This solver is not based on
@@ -105,7 +108,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	// edges going along calls
 	// see CC 2010 paper by Naeem, Lhotak and Rodriguez
 	@SynchronizedBy("consistent lock on field")
-	protected final MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<N, Map<D, D>>> incoming = new MyConcurrentHashMap<Pair<SootMethod, D>, MyConcurrentHashMap<N, Map<D, D>>>();
+	protected final ConcurrentHashMultiMap<Pair<SootMethod, D>, IncomingRecord<N, D>> incoming = new ConcurrentHashMultiMap<>();
 
 	@DontSynchronize("stateless")
 	protected final FlowFunctions<N, D, SootMethod> flowFunctions;
@@ -463,47 +466,48 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// register end-summary
 		if (!addEndSummary(methodThatNeedsSummary, d1, n, d2))
 			return;
-		Map<N, Map<D, D>> inc = incoming(d1, methodThatNeedsSummary);
+		Set<IncomingRecord<N, D>> inc = incoming(d1, methodThatNeedsSummary);
 
 		// for each incoming call edge already processed
 		// (see processCall(..))
-		if (inc != null && !inc.isEmpty())
-			for (Entry<N, Map<D, D>> entry : inc.entrySet()) {
-				// Early termination check
-				if (killFlag != null)
-					return;
+		for (IncomingRecord<N, D> entry : inc) {
+			// Early termination check
+			if (killFlag != null)
+				return;
 
-				// line 22
-				N c = entry.getKey();
-				Set<D> callerSideDs = entry.getValue().keySet();
-				// for each return site
-				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
-					// compute return-flow function
-					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
-							retSiteC);
-					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, callerSideDs);
-					// for each incoming-call value
-					if (targets != null && !targets.isEmpty()) {
-						for (Entry<D, D> d1d2entry : entry.getValue().entrySet()) {
-							final D d4 = d1d2entry.getKey();
-							final D predVal = d1d2entry.getValue();
+			// line 22
+			N c = entry.n;
+			Set<D> callerSideDs = Collections.singleton(entry.d1);
+			// for each return site
+			for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
+				// compute return-flow function
+				FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
+						retSiteC);
+				Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, callerSideDs);
+				// for each incoming-call value
+				if (targets != null && !targets.isEmpty()) {
+					final D d4 = entry.d1;
+					final D predVal = entry.d2;
 
-							for (D d5 : targets) {
-								if (memoryManager != null)
-									d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
-								if (d5 == null)
-									continue;
+					for (D d5 : targets) {
+						if (memoryManager != null)
+							d5 = memoryManager.handleGeneratedMemoryObject(d2, d5);
+						if (d5 == null)
+							continue;
 
-								// If we have not changed anything in the callee, we do not need the facts from
-								// there. Even if we change something: If we don't need the concrete path, we
-								// can skip the callee in the predecessor chain
-								D d5p = shortenPredecessors(d5, predVal, d1, n, c);
-								schedulingStrategy.propagateReturnFlow(d4, retSiteC, d5p, c, false);
-							}
-						}
+						// If we have not changed anything in the callee, we do not need the facts from
+						// there. Even if we change something: If we don't need the concrete path, we
+						// can skip the callee in the predecessor chain
+						D d5p = shortenPredecessors(d5, predVal, d1, n, c);
+						schedulingStrategy.propagateReturnFlow(d4, retSiteC, d5p, c, false);
 					}
 				}
 			}
+
+			// Make sure all of the incoming edges are registered with the edge from the new
+			// summary
+			d1.addNeighbor(entry.d3);
+		}
 
 		// handling for unbalanced problems where we return out of a method with
 		// a fact for which we have no incoming flow
@@ -679,16 +683,15 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		return true;
 	}
 
-	protected Map<N, Map<D, D>> incoming(D d1, SootMethod m) {
-		Map<N, Map<D, D>> map = incoming.get(new Pair<SootMethod, D>(m, d1));
-		return map;
+	protected Set<IncomingRecord<N, D>> incoming(D d1, SootMethod m) {
+		Set<IncomingRecord<N, D>> inc = incoming.get(new Pair<SootMethod, D>(m, d1));
+		return inc;
 	}
 
 	protected boolean addIncoming(SootMethod m, D d3, N n, D d1, D d2) {
-		MyConcurrentHashMap<N, Map<D, D>> summaries = incoming.putIfAbsentElseGet(new Pair<SootMethod, D>(m, d3),
-				() -> new MyConcurrentHashMap<N, Map<D, D>>());
-		Map<D, D> set = summaries.putIfAbsentElseGet(n, () -> new ConcurrentHashMap<D, D>());
-		return set.put(d1, d2) == null;
+		IncomingRecord<N, D> newRecord = new IncomingRecord<N, D>(n, d1, d2, d3);
+		IncomingRecord<N, D> rec = incoming.putIfAbsent(new Pair<SootMethod, D>(m, d3), newRecord);
+		return rec == null;
 	}
 
 	/**

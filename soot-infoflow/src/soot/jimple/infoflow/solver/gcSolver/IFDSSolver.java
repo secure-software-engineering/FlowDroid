@@ -44,9 +44,7 @@ import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
-import soot.jimple.infoflow.solver.AbstractIFDSSolver;
-import soot.jimple.infoflow.solver.EndSummary;
-import soot.jimple.infoflow.solver.SolverPeerGroup;
+import soot.jimple.infoflow.solver.*;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.executors.SetPoolExecutor;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
@@ -132,7 +130,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	private int maxCalleesPerCallSite = 75;
 	private int maxAbstractionPathLength = 100;
 
-	protected SolverPeerGroup solverPeerGroup;
+	protected ISolverPeerGroup solverPeerGroup;
 
 	protected int sleepTime = 1;
 
@@ -702,65 +700,6 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		return true;
 	}
 
-	protected static class IncomingRecord<N, D extends FastSolverLinkedNode<D, N>> {
-
-		public final N n;
-		public final D d1;
-		public final D d2;
-		public final D d3;
-
-		public IncomingRecord(N n, D d1, D d2, D d3) {
-			this.n = n;
-			this.d1 = d1;
-			this.d2 = d2;
-			this.d3 = d3;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((d1 == null) ? 0 : d1.hashCode());
-			result = prime * result + ((d2 == null) ? 0 : d2.hashCode());
-			result = prime * result + ((d3 == null) ? 0 : d3.hashCode());
-			result = prime * result + ((n == null) ? 0 : n.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			IncomingRecord other = (IncomingRecord) obj;
-			if (d1 == null) {
-				if (other.d1 != null)
-					return false;
-			} else if (!d1.equals(other.d1))
-				return false;
-			if (d2 == null) {
-				if (other.d2 != null)
-					return false;
-			} else if (!d2.equals(other.d2))
-				return false;
-			if (d3 == null) {
-				if (other.d3 != null)
-					return false;
-			} else if (!d3.equals(other.d3))
-				return false;
-			if (n == null) {
-				if (other.n != null)
-					return false;
-			} else if (!n.equals(other.n))
-				return false;
-			return true;
-		}
-
-	}
-
 	protected Set<IncomingRecord<N, D>> incoming(D d1, SootMethod m) {
 		Set<IncomingRecord<N, D>> inc = incoming.get(new Pair<SootMethod, D>(m, d1));
 		return inc;
@@ -941,7 +880,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * 
 	 * @param solverPeerGroup The solver peer group
 	 */
-	public void setPeerGroup(SolverPeerGroup solverPeerGroup) {
+	public void setPeerGroup(ISolverPeerGroup solverPeerGroup) {
 		this.solverPeerGroup = solverPeerGroup;
 	}
 
