@@ -120,8 +120,29 @@
                 </flow>
             </flows>
         </method>
+        <method id="java.lang.String computeString(java.util.function.Function)">
+            <flows>
+                <flow isAlias="false">
+                    <!-- Data.stringField -> apply() arg0 -->
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: java.lang.String stringField&gt;]"
+                          AccessPathTypes="[java.lang.String]" />
+                    <to sourceSinkType="Parameter"
+                        ParameterIndex="0"
+                        gap="1" />
+                </flow>
+                <!-- Return of apply() -> Return of computeString -->
+                <flow isAlias="false">
+                    <from sourceSinkType="Return"
+                          gap="1" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
     </methods>
     <gaps>
         <gap num="0" id="&lt;soot.jimple.infoflow.test.methodSummary.Data: void switchData()&gt;"></gap>
+        <gap num="1" id="&lt;java.util.function.Function: java.lang.Object apply(java.lang.Object)&gt;"></gap>
     </gaps>
 </summary>
