@@ -1112,7 +1112,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		else if (flowSource.isThis() && taint.isField())
 			return true;
 		// A value can also flow from the return value of a gap to somewhere
-		else if (flowSource.isReturn() && flowSource.getGap() != null && taint.getGap() != null
+		else if (flowSource.isReturn() && flowSource.getGap() != null && taint.getGap() != null && taint.isReturn()
 				&& compareFields(taint, flowSource))
 			return true;
 		// For aliases, we over-approximate flows from the return edge to all

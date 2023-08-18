@@ -327,4 +327,11 @@ public class ApiClassClient {
 		d.identity();
 		sink(d.stringField);
 	}
+
+	public void matchGapReturnOnlyWithReturnTaints() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		String ret = d.computeString((s) -> "Untainted string");
+		sink(ret);
+	}
 }
