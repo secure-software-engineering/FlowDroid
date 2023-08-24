@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.android.manifest;
 
+import java.util.List;
+
 /**
  * Base interface for all components inside an Android app
  * 
@@ -29,4 +31,11 @@ public interface IAndroidComponent {
 	 */
 	public String getNameString();
 
+	/**
+	 * Gets all possible lifecycle methods of this type of Android component, not
+	 * all lifecycle methods are necessarily implemented
+	 * 
+	 * @return The list of (possible) lifecycle methods of this Android component
+	 */
+	public List<String> getLifecycleMethods();
 }
