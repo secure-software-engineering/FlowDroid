@@ -390,8 +390,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
-	 * Sets the class names of callbacks. If this value is null, it automatically
-	 * loads the names from AndroidCallbacks.txt as the default behavior.
+	 * Sets the class names of callbacks. hese are the callback classes defined by
+	 * the Android SDK, and they are not mapped to the current application. If this
+	 * value is null, FlowDroid automatically loads the names from
+	 * AndroidCallbacks.txt as the default behavior.
 	 * 
 	 * @param callbackClasses The class names of callbacks or null to use the
 	 *                        default file.
@@ -400,6 +402,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		this.callbackClasses = callbackClasses;
 	}
 
+	/**
+	 * Gets the class names of callbacks. These are the callback classes defined by
+	 * the Android SDK, and they are not mapped to the current application.
+	 * 
+	 * @return The class names of callbacks or null to use the default file.
+	 */
 	public Set<String> getCallbackClasses() {
 		return callbackClasses;
 	}
