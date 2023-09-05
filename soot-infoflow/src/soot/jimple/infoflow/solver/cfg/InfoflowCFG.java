@@ -289,7 +289,9 @@ public class InfoflowCFG implements IInfoflowCFG {
 		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
 
-		List<SootMethod> workList = new ArrayList<>();
+		// Since we process at max MAX_STATIC_USE_ANALYSIS_DEPTH, we should use that
+		// as a maximum.
+		List<SootMethod> workList = new ArrayList<>(MAX_STATIC_USE_ANALYSIS_DEPTH);
 		workList.add(smethod);
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
