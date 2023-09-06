@@ -56,6 +56,10 @@ public class DefaultBiDiICFGFactory implements BiDirICFGFactory {
 
 		BiDiInterproceduralCFG<Unit, SootMethod> baseCFG = getBaseCFG(enableExceptions);
 
+		return createInfoflowCFG(baseCFG);
+	}
+
+	protected IInfoflowCFG createInfoflowCFG(BiDiInterproceduralCFG<Unit, SootMethod> baseCFG) {
 		return new InfoflowCFG(baseCFG);
 	}
 
@@ -67,7 +71,9 @@ public class DefaultBiDiICFGFactory implements BiDirICFGFactory {
 			baseCFG = new JimpleBasedInterproceduralCFG(enableExceptions, true) {
 
 				protected DirectedGraph<Unit> makeGraph(Body body) {
-					return enableExceptions ? ExceptionalUnitGraphFactory.createExceptionalUnitGraph(body, DalvikThrowAnalysis.interproc(), true)
+					return enableExceptions
+							? ExceptionalUnitGraphFactory.createExceptionalUnitGraph(body,
+									DalvikThrowAnalysis.interproc(), true)
 							: new BriefUnitGraph(body);
 				}
 
@@ -82,9 +88,8 @@ public class DefaultBiDiICFGFactory implements BiDirICFGFactory {
 	/**
 	 * Sets whether this CFG will be used to analyze Android apps
 	 * 
-	 * @param isAndroid
-	 *            True if the CFG will be used to analyze Android apps,
-	 *            otherwise false
+	 * @param isAndroid True if the CFG will be used to analyze Android apps,
+	 *                  otherwise false
 	 */
 	public void setIsAndroid(boolean isAndroid) {
 		this.isAndroid = isAndroid;

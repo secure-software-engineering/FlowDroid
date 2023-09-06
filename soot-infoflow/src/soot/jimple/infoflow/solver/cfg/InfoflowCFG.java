@@ -58,11 +58,25 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
  */
 public class InfoflowCFG implements IInfoflowCFG {
 
-	private final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
-	private final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
+	protected final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
+	protected final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
 
-	private static enum StaticFieldUse {
-		Unknown, Unused, Read, Write, ReadWrite
+	public static enum StaticFieldUse {
+		Unknown, Unused, Read, Write, ReadWrite;
+
+		public StaticFieldUse merge(StaticFieldUse p) {
+			if ((this == Read && p == Write) || (this == Write && p == Read))
+				return ReadWrite;
+			if (this == ReadWrite || p == ReadWrite)
+				return ReadWrite;
+			if (p == this)
+				return this;
+			if (p == Unused)
+				return this;
+			if (this == Unused)
+				return p;
+			return Unknown;
+		}
 	}
 
 	protected final Map<SootMethod, Map<SootField, StaticFieldUse>> staticFieldUses = new ConcurrentHashMap<SootMethod, Map<SootField, StaticFieldUse>>();
@@ -289,7 +303,9 @@ public class InfoflowCFG implements IInfoflowCFG {
 		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
 
-		List<SootMethod> workList = new ArrayList<>();
+		// Since we process at max MAX_STATIC_USE_ANALYSIS_DEPTH, we should use that
+		// as a maximum.
+		List<SootMethod> workList = new ArrayList<>(MAX_STATIC_USE_ANALYSIS_DEPTH);
 		workList.add(smethod);
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
