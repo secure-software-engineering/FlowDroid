@@ -164,8 +164,9 @@ public abstract class AbstractInfoflowProblem
 		if (!activationAbs.isAbstractionActive())
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
 				boolean found = false;
+				IInfoflowCFG icfg = interproceduralCFG();
 				for (Unit au : callSites)
-					if (callee.getActiveBody().getUnits().contains(au)) {
+					if (icfg.getMethodOf(au) == callee) {
 						found = true;
 						break;
 					}
