@@ -61,7 +61,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 	private final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
 	private final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
 
-	private static enum StaticFieldUse {
+	public static enum StaticFieldUse {
 		Unknown, Unused, Read, Write, ReadWrite
 	}
 
