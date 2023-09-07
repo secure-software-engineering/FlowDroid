@@ -39,6 +39,7 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
+import soot.tagkit.Host;
 
 /**
  * abstract super class which - concentrates functionality used by
@@ -63,7 +64,7 @@ public abstract class AbstractInfoflowProblem
 
 	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Unit>>();
+	private MyConcurrentHashMap<Unit, Set<Host>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Host>>();
 
 	protected final PropagationRuleManager propagationRules;
 	protected final TaintPropagationResults results;
@@ -145,7 +146,7 @@ public abstract class AbstractInfoflowProblem
 
 		if (activationUnit == null)
 			return false;
-		Set<Unit> callSites = activationUnitsToCallSites.get(activationUnit);
+		Set<Host> callSites = activationUnitsToCallSites.get(activationUnit);
 		return (callSites != null && callSites.contains(callSite));
 	}
 
@@ -156,25 +157,23 @@ public abstract class AbstractInfoflowProblem
 		if (activationUnit == null)
 			return false;
 
-		Set<Unit> callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit,
-				new ConcurrentHashSet<Unit>());
+		Set<Host> callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit,
+				new ConcurrentHashSet<Host>());
 		if (callSites.contains(callSite))
 			return false;
 
-		if (!activationAbs.isAbstractionActive())
+		IInfoflowCFG icfg = (IInfoflowCFG) super.interproceduralCFG();
+		if (!activationAbs.isAbstractionActive()) {
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
-				boolean found = false;
-				IInfoflowCFG icfg = interproceduralCFG();
-				for (Unit au : callSites)
-					if (icfg.getMethodOf(au) == callee) {
-						found = true;
-						break;
-					}
-				if (!found)
+				if (!callSites.contains(callee))
 					return false;
 			}
+		}
 
-		return callSites.add(callSite);
+		boolean b = callSites.add(callSite);
+		if (b)
+			callSites.add(icfg.getMethodOf(callSite));
+		return b;
 	}
 
 	public void setActivationUnitsToCallSites(AbstractInfoflowProblem other) {
