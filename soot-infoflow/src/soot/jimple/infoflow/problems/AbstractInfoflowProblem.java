@@ -39,7 +39,6 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
-import soot.tagkit.Host;
 
 /**
  * abstract super class which - concentrates functionality used by
@@ -64,7 +63,20 @@ public abstract class AbstractInfoflowProblem
 
 	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private MyConcurrentHashMap<Unit, Set<Host>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Host>>();
+	private static class CallSite {
+		public Set<Unit> callsites = new ConcurrentHashSet<>();
+		public Set<SootMethod> callsiteMethods = new ConcurrentHashSet<>();
+
+		public boolean addCallsite(Unit callSite, IInfoflowCFG icfg) {
+			if (callsites.add(callSite)) {
+				callsiteMethods.add(icfg.getMethodOf(callSite));
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private MyConcurrentHashMap<Unit, CallSite> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, CallSite>();
 
 	protected final PropagationRuleManager propagationRules;
 	protected final TaintPropagationResults results;
@@ -146,8 +158,10 @@ public abstract class AbstractInfoflowProblem
 
 		if (activationUnit == null)
 			return false;
-		Set<Host> callSites = activationUnitsToCallSites.get(activationUnit);
-		return (callSites != null && callSites.contains(callSite));
+		CallSite callSites = activationUnitsToCallSites.get(activationUnit);
+		if (callSites != null)
+			return callSites.callsites.contains(callSite);
+		return false;
 	}
 
 	protected boolean registerActivationCallSite(Unit callSite, SootMethod callee, Abstraction activationAbs) {
@@ -157,23 +171,19 @@ public abstract class AbstractInfoflowProblem
 		if (activationUnit == null)
 			return false;
 
-		Set<Host> callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit,
-				new ConcurrentHashSet<Host>());
-		if (callSites.contains(callSite))
+		CallSite callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit, new CallSite());
+		if (callSites.callsites.contains(callSite))
 			return false;
 
 		IInfoflowCFG icfg = (IInfoflowCFG) super.interproceduralCFG();
 		if (!activationAbs.isAbstractionActive()) {
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
-				if (!callSites.contains(callee))
+				if (!callSites.callsiteMethods.contains(callee))
 					return false;
 			}
 		}
 
-		boolean b = callSites.add(callSite);
-		if (b)
-			callSites.add(icfg.getMethodOf(callSite));
-		return b;
+		return callSites.addCallsite(callSite, icfg);
 	}
 
 	public void setActivationUnitsToCallSites(AbstractInfoflowProblem other) {
