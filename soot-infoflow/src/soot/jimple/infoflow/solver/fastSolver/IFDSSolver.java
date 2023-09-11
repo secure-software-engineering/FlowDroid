@@ -40,9 +40,7 @@ import heros.ZeroedFlowFunctions;
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
-import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
-import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
 import soot.jimple.infoflow.solver.AbstractIFDSSolver;
@@ -164,7 +162,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 *                                 for flow functions.
 	 */
 	public IFDSSolver(IFDSTabulationProblem<N, D, SootMethod, I> tabulationProblem,
-					  @SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
+			@SuppressWarnings("rawtypes") CacheBuilder flowFunctionCacheBuilder) {
 		if (logger.isDebugEnabled())
 			flowFunctionCacheBuilder = flowFunctionCacheBuilder.recordStats();
 		this.zeroValue = tabulationProblem.zeroValue();
@@ -307,12 +305,12 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(n);
 		if (callees != null && !callees.isEmpty()) {
 			if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
-				callees.stream().filter(m -> m.isConcrete()).forEach(new Consumer<SootMethod>() {
+				callees.forEach(new Consumer<SootMethod>() {
 
 					@Override
 					public void accept(SootMethod sCalledProcN) {
-						// Early termination check
-						if (killFlag != null)
+						// Concrete and early termination check
+						if (!sCalledProcN.isConcrete() || killFlag != null)
 							return;
 
 						// compute the call-flow function
@@ -376,7 +374,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	}
 
 	protected void applyEndSummaryOnCall(final D d1, final N n, final D d2, Collection<N> returnSiteNs,
-										 SootMethod sCalledProcN, D d3) {
+			SootMethod sCalledProcN, D d3) {
 		// line 15.2
 		Set<EndSummary<N, D>> endSumm = endSummary(sCalledProcN, d3);
 
@@ -556,7 +554,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * @return The set of caller-side abstractions at the return site
 	 */
 	protected Set<D> computeReturnFlowFunction(FlowFunction<D> retFunction, D d1, D d2, N callSite,
-											   Collection<D> callerSideDs) {
+			Collection<D> callerSideDs) {
 		return retFunction.computeTargets(d2);
 	}
 
