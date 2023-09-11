@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +28,6 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
-import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
@@ -76,10 +77,18 @@ public abstract class AbstractInfoflowProblem
 		}
 	}
 
-	private MyConcurrentHashMap<Unit, CallSite> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, CallSite>();
+	private ConcurrentHashMap<Unit, CallSite> activationUnitsToCallSites = new ConcurrentHashMap<Unit, CallSite>();
 
 	protected final PropagationRuleManager propagationRules;
 	protected final TaintPropagationResults results;
+
+	private static Function<? super Unit, ? extends CallSite> createNewCallSite = new Function<Unit, CallSite>() {
+
+		@Override
+		public CallSite apply(Unit t) {
+			return new CallSite();
+		}
+	};
 
 	public AbstractInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
@@ -171,7 +180,7 @@ public abstract class AbstractInfoflowProblem
 		if (activationUnit == null)
 			return false;
 
-		CallSite callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit, new CallSite());
+		CallSite callSites = activationUnitsToCallSites.computeIfAbsent(activationUnit, createNewCallSite);
 		if (callSites.callsites.contains(callSite))
 			return false;
 
