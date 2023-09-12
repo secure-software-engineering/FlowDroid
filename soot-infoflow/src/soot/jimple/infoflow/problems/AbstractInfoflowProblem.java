@@ -10,10 +10,13 @@
  ******************************************************************************/
 package soot.jimple.infoflow.problems;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +29,6 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
-import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
@@ -63,10 +65,36 @@ public abstract class AbstractInfoflowProblem
 
 	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Unit>>();
+	private static class CallSite {
+		public Set<Unit> callsites = new ConcurrentHashSet<>();
+		public SoftReference<Set<SootMethod>> callsiteMethods = new SoftReference<>(new ConcurrentHashSet<>());
+
+		public boolean addCallsite(Unit callSite, IInfoflowCFG icfg) {
+			if (callsites.add(callSite)) {
+				Set<SootMethod> c = callsiteMethods.get();
+				if (c == null) {
+					c = new ConcurrentHashSet<>();
+					callsiteMethods = new SoftReference<>(c);
+				}
+				c.add(icfg.getMethodOf(callSite));
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private ConcurrentHashMap<Unit, CallSite> activationUnitsToCallSites = new ConcurrentHashMap<Unit, CallSite>();
 
 	protected final PropagationRuleManager propagationRules;
 	protected final TaintPropagationResults results;
+
+	private static Function<? super Unit, ? extends CallSite> createNewCallSite = new Function<Unit, CallSite>() {
+
+		@Override
+		public CallSite apply(Unit t) {
+			return new CallSite();
+		}
+	};
 
 	public AbstractInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
@@ -145,8 +173,10 @@ public abstract class AbstractInfoflowProblem
 
 		if (activationUnit == null)
 			return false;
-		Set<Unit> callSites = activationUnitsToCallSites.get(activationUnit);
-		return (callSites != null && callSites.contains(callSite));
+		CallSite callSites = activationUnitsToCallSites.get(activationUnit);
+		if (callSites != null)
+			return callSites.callsites.contains(callSite);
+		return false;
 	}
 
 	protected boolean registerActivationCallSite(Unit callSite, SootMethod callee, Abstraction activationAbs) {
@@ -156,24 +186,35 @@ public abstract class AbstractInfoflowProblem
 		if (activationUnit == null)
 			return false;
 
-		Set<Unit> callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit,
-				new ConcurrentHashSet<Unit>());
-		if (callSites.contains(callSite))
+		CallSite callSites = activationUnitsToCallSites.computeIfAbsent(activationUnit, createNewCallSite);
+		if (callSites.callsites.contains(callSite))
 			return false;
 
-		if (!activationAbs.isAbstractionActive())
+		IInfoflowCFG icfg = (IInfoflowCFG) super.interproceduralCFG();
+		if (!activationAbs.isAbstractionActive()) {
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
-				boolean found = false;
-				for (Unit au : callSites)
-					if (callee.getActiveBody().getUnits().contains(au)) {
-						found = true;
-						break;
+				Set<SootMethod> cm = callSites.callsiteMethods.get();
+				if (cm != null) {
+					if (!cm.contains(callee))
+						return false;
+				} else {
+					cm = new HashSet<>();
+					boolean found = false;
+					for (Unit au : callSites.callsites) {
+						cm.add(icfg.getMethodOf(au));
+						if (callee.getActiveBody().getUnits().contains(au)) {
+							found = true;
+							break;
+						}
 					}
-				if (!found)
-					return false;
+					callSites.callsiteMethods = new SoftReference<Set<SootMethod>>(cm);
+					if (!found)
+						return false;
+				}
 			}
+		}
 
-		return callSites.add(callSite);
+		return callSites.addCallsite(callSite, icfg);
 	}
 
 	public void setActivationUnitsToCallSites(AbstractInfoflowProblem other) {
