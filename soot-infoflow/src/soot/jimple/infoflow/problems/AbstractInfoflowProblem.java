@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.problems;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -66,11 +67,16 @@ public abstract class AbstractInfoflowProblem
 
 	private static class CallSite {
 		public Set<Unit> callsites = new ConcurrentHashSet<>();
-		public Set<SootMethod> callsiteMethods = new ConcurrentHashSet<>();
+		public SoftReference<Set<SootMethod>> callsiteMethods = new SoftReference<>(new ConcurrentHashSet<>());
 
 		public boolean addCallsite(Unit callSite, IInfoflowCFG icfg) {
 			if (callsites.add(callSite)) {
-				callsiteMethods.add(icfg.getMethodOf(callSite));
+				Set<SootMethod> c = callsiteMethods.get();
+				if (c == null) {
+					c = new ConcurrentHashSet<>();
+					callsiteMethods = new SoftReference<>(c);
+				}
+				c.add(icfg.getMethodOf(callSite));
 				return true;
 			}
 			return false;
@@ -187,8 +193,24 @@ public abstract class AbstractInfoflowProblem
 		IInfoflowCFG icfg = (IInfoflowCFG) super.interproceduralCFG();
 		if (!activationAbs.isAbstractionActive()) {
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
-				if (!callSites.callsiteMethods.contains(callee))
-					return false;
+				Set<SootMethod> cm = callSites.callsiteMethods.get();
+				if (cm != null) {
+					if (!cm.contains(callee))
+						return false;
+				} else {
+					cm = new HashSet<>();
+					boolean found = false;
+					for (Unit au : callSites.callsites) {
+						cm.add(icfg.getMethodOf(au));
+						if (callee.getActiveBody().getUnits().contains(au)) {
+							found = true;
+							break;
+						}
+					}
+					callSites.callsiteMethods = new SoftReference<Set<SootMethod>>(cm);
+					if (!found)
+						return false;
+				}
 			}
 		}
 
