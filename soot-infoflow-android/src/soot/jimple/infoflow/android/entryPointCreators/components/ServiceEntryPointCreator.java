@@ -1,17 +1,9 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 
-import soot.Local;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Type;
-import soot.Unit;
+import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
@@ -188,6 +180,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 			// Create the body
 			final JimpleBody b = Jimple.v().newBody(sm);
+			sm.setModifiers(sm.getModifiers() & ~Modifier.NATIVE);
 			sm.setActiveBody(b);
 			b.insertIdentityStmts();
 
