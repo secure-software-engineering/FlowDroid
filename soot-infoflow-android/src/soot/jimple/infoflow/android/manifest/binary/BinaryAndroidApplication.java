@@ -38,8 +38,7 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 		allowBackup = attrAllowBackup != null && attrAllowBackup.getValue().equals(Boolean.TRUE);
 
 		AXmlAttribute<?> attrCleartextTraffic = node.getAttribute("usesCleartextTraffic");
-		if (attrCleartextTraffic != null)
-			usesCleartextTraffic = attrCleartextTraffic.getValue().equals(Boolean.TRUE);
+		usesCleartextTraffic = attrCleartextTraffic != null && attrCleartextTraffic.getValue().equals(Boolean.TRUE);
 
 		this.name = loadApplicationName();
 	}
