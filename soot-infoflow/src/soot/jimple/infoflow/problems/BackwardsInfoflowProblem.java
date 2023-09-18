@@ -874,7 +874,13 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// If we do not know the callees, we can not reason
 						// To not break anything, propagate over
-						if (interproceduralCFG().getCalleesOfCallAt(callSite).isEmpty()) {
+						boolean hasConcreteCallees = false;
+						for (SootMethod callee : interproceduralCFG().getCalleesOfCallAt(callSite))
+							if (callee.isConcrete()) {
+								hasConcreteCallees = true;
+								break;
+							}
+						if (!hasConcreteCallees) {
 							if (source != zeroValue)
 								res.add(source);
 							return res;
