@@ -874,16 +874,15 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// If we do not know the callees, we can not reason
 						// To not break anything, propagate over
-						boolean hasConcreteCallees = false;
-						for (SootMethod callee : interproceduralCFG().getCalleesOfCallAt(callSite))
-							if (callee.isConcrete()) {
-								hasConcreteCallees = true;
-								break;
-							}
-						if (!hasConcreteCallees) {
-							if (source != zeroValue)
+						if (!killSource.value && source != zeroValue) {
+							boolean hasConcreteCallees = false;
+							for (SootMethod callee : interproceduralCFG().getCalleesOfCallAt(callSite))
+								if (callee.isConcrete()) {
+									hasConcreteCallees = true;
+									break;
+								}
+							if (!hasConcreteCallees)
 								res.add(source);
-							return res;
 						}
 
 						// Assumption: Sinks only leak taints but never
