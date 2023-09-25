@@ -93,18 +93,12 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected SourceSinkState scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s) {
+	protected SourceOrSink scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s) {
 		IReversibleSourceSinkManager ssm = (IReversibleSourceSinkManager) sourcesSinks;
 
 		SourceInfo sinkInfo = ssm.getInverseSinkInfo(s, manager);
 		SinkInfo sourceInfo = ssm.getInverseSourceInfo(s, manager, null);
-		if (sinkInfo != null && sourceInfo == null)
-			return SourceSinkState.SOURCE;
-		else if (sourceInfo != null && sinkInfo == null)
-			return SourceSinkState.SINK;
-		else if (sourceInfo != null && sinkInfo != null)
-			return SourceSinkState.BOTH;
-		return SourceSinkState.NEITHER;
+		return new SourceOrSink(sinkInfo, sourceInfo);
 	}
 
 	@Override

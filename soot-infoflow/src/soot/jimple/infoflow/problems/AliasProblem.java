@@ -49,6 +49,8 @@ import soot.jimple.UnopExpr;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
@@ -422,12 +424,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				for (int i = 0; i < dest.getParameterCount(); i++)
 					paramLocals[i] = dest.getActiveBody().getParameterLocal(i);
 
-				final boolean isSource = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSourceInfo((Stmt) src, manager) != null
-						: false;
-				final boolean isSink = manager.getSourceSinkManager() != null
-						? manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null
-						: false;
+				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
+				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
