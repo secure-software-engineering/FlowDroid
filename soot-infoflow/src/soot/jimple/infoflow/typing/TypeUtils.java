@@ -148,9 +148,13 @@ public class TypeUtils {
 
 		// The next field's base type must also be cast-compatible to the new
 		// base type
-		if (accessPath.isFieldRef() && fragmentCount > fieldStartIdx)
+		if (accessPath.isFieldRef() && fragmentCount > fieldStartIdx) {
+			// Unpack any array type first
+			if (type instanceof ArrayType)
+				type = ((ArrayType) type).getElementType();
 			if (!checkCast(type, accessPath.getFragments()[fieldStartIdx].getField().getDeclaringClass().getType()))
 				return false;
+		}
 
 		// No type problems found
 		return true;
