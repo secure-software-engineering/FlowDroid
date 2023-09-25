@@ -1329,4 +1329,31 @@ public abstract class HeapTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
+
+	@Test(timeout = 300000)
+	public void testRemoveEntailedAbstractions1() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
+				.map(res -> res.getSource().getStmt()).distinct().count());
+	}
+
+	@Test(timeout = 300000)
+	public void testRemoveEntailedAbstractions2() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
+		infoflow.getConfig().setInspectSinks(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
+				.map(res -> res.getSource().getStmt()).distinct().count());
+	}
 }

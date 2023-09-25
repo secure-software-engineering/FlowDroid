@@ -1676,6 +1676,11 @@ public class HeapTestCode {
 	public static class InnerClass {
 		OuterClass o;
 		String str;
+
+		public void leakIt() {
+			ConnectionManager cm = new ConnectionManager();
+			cm.publish(str);
+		}
 	}
 
 	public void testRecursiveAccessPath() {
@@ -1684,5 +1689,24 @@ public class HeapTestCode {
 		o.i.o.i.str = TelephonyManager.getDeviceId();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(o.i.o.i.str);
+	}
+
+	public void removeEntailedAbstractionsTest1() {
+		RecursiveDataClass rdc = new RecursiveDataClass();
+		rdc.data = TelephonyManager.getDeviceId();
+		rdc.leakIt();
+		rdc.child = new RecursiveDataClass();
+		rdc.child.data = TelephonyManager.getDeviceId();
+		rdc.child.leakIt();
+	}
+
+	public void removeEntailedAbstractionsTest2() {
+		OuterClass o = new OuterClass();
+		o.i = new InnerClass();
+		o.i.str = TelephonyManager.getDeviceId();
+		o.i.leakIt();
+		InnerClass i = new InnerClass();
+		i.str = TelephonyManager.getDeviceId();
+		i.leakIt();
 	}
 }
