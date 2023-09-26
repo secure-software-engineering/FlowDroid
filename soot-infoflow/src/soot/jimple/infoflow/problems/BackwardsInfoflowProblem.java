@@ -36,6 +36,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
@@ -410,10 +412,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				final boolean isSource = manager.getSourceSinkManager() != null
-						&& manager.getSourceSinkManager().getSourceInfo((Stmt) callStmt, manager) != null;
-				final boolean isSink = manager.getSourceSinkManager() != null
-						&& manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null;
+
+				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
+				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
