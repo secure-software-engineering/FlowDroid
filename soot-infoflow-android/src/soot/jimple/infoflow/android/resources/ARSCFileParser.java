@@ -502,7 +502,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	public static class ResConfig {
 		private ResTable_Config config;
-		private List<AbstractResource> resources = new ArrayList<AbstractResource>();
+		private List<AbstractResource> resources = new ArrayList<>();
 
 		public ResTable_Config getConfig() {
 			return config;
@@ -1438,13 +1438,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
-		 * Must be 0.
+		 * Must be 0 (solid) or 1 (sparse).
 		 */
-		int res0; // uint8
+		int flags; // uint8
 		/**
 		 * Must be 1.
 		 */
-		int res1; // uint16
+		int reserved; // uint16
 		/**
 		 * Number of uint32_t entry configuration masks that follow.
 		 */
@@ -1457,8 +1457,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 			result = prime * result + entryCount;
 			result = prime * result + ((header == null) ? 0 : header.hashCode());
 			result = prime * result + id;
-			result = prime * result + res0;
-			result = prime * result + res1;
+			result = prime * result + flags;
+			result = prime * result + reserved;
 			return result;
 		}
 
@@ -1480,9 +1480,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			if (id != other.id)
 				return false;
-			if (res0 != other.res0)
+			if (flags != other.flags)
 				return false;
-			if (res1 != other.res1)
+			if (reserved != other.reserved)
 				return false;
 			return true;
 		}
@@ -1510,13 +1510,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
+		 * Must be 0 or 1 (sparse).
+		 */
+		int flags; // uint8
+		/**
 		 * Must be 0.
 		 */
-		int res0; // uint8
-		/**
-		 * Must be 1.
-		 */
-		int res1; // uint16
+		int reserved; // uint16
 
 		/**
 		 * Number of uint32_t entry indices that follow.
@@ -1540,8 +1540,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 			result = prime * result + entryCount;
 			result = prime * result + ((header == null) ? 0 : header.hashCode());
 			result = prime * result + id;
-			result = prime * result + res0;
-			result = prime * result + res1;
+			result = prime * result + flags;
+			result = prime * result + reserved;
 			return result;
 		}
 
@@ -1570,9 +1570,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			if (id != other.id)
 				return false;
-			if (res0 != other.res0)
+			if (flags != other.flags)
 				return false;
-			if (res1 != other.res1)
+			if (reserved != other.reserved)
 				return false;
 			return true;
 		}
@@ -2090,7 +2090,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		ResTable_Header resourceHeader = new ResTable_Header();
 		readChunkHeader(stream, resourceHeader.header);
 		resourceHeader.packageCount = readUInt32(stream);
-		logger.debug(String.format("Package Groups (%d)", resourceHeader.packageCount));
+		logger.debug("Package Groups ({})", resourceHeader.packageCount);
 
 		// Do we have any packages to read?
 		int remainingSize = resourceHeader.header.size - resourceHeader.header.headerSize;
@@ -2099,6 +2099,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 		// Load the remaining data
 		byte[] remainingData = new byte[remainingSize];
+
 		int totalBytesRead = 0;
 		while (totalBytesRead < remainingSize) {
 			byte[] block = new byte[Math.min(BLOCK_SIZE, remainingSize - totalBytesRead)];
@@ -2115,8 +2116,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 		// Read the next chunk
 		int packageCtr = 0;
-		Map<Integer, String> keyStrings = new HashMap<Integer, String>();
-		Map<Integer, String> typeStrings = new HashMap<Integer, String>();
+		Map<Integer, String> keyStrings = new HashMap<>();
+		Map<Integer, String> typeStrings = new HashMap<>();
 		while (offset < remainingData.length - 1) {
 			beforeBlock = offset;
 			ResChunk_Header nextChunkHeader = new ResChunk_Header();
@@ -2233,13 +2234,26 @@ public class ARSCFileParser extends AbstractResourceParser {
 						config.config = typeTable.config;
 						resType.configurations.add(config);
 
+						boolean isSparse = (typeTable.flags == 1);
+
 						// Read the table entries
-						int resourceIdx = 0;
 						for (int i = 0; i < typeTable.entryCount; i++) {
-							int entryOffset = readUInt32(remainingData, offset);
-							offset += 4;
+							int entryOffset;
+							int resourceIdx;
+							if (isSparse) {
+								// read inner struct of ResTable_sparseTypeEntry
+								resourceIdx = readUInt16(remainingData, offset);
+								offset += 2;
+								// The offset from ResTable_type::entriesStart, divided by 4.
+								entryOffset = readUInt16(remainingData, offset);
+								entryOffset *= 4;
+								offset += 2;
+							} else {
+								resourceIdx = i;
+								entryOffset = readUInt32(remainingData, offset);
+								offset += 4;
+							}
 							if (entryOffset == 0xFFFFFFFF) { // NoEntry
-								resourceIdx++;
 								continue;
 							}
 							entryOffset += beforeInnerBlock + typeTable.entriesStart;
@@ -2303,7 +2317,6 @@ public class ARSCFileParser extends AbstractResourceParser {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
 							config.resources.add(res);
-							resourceIdx++;
 						}
 					}
 					offset = beforeInnerBlock + innerHeader.size;
@@ -2449,7 +2462,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		else if (size == 0x10)
 			entry = new ResTable_Map_Entry();
 		else
-			throw new RuntimeException("Unknown entry type");
+			throw new RuntimeException("Unknown entry type of size 0x" + Integer.toHexString(size));
 		entry.size = size;
 
 		int flags = readUInt16(data, offset);
@@ -2475,14 +2488,14 @@ public class ARSCFileParser extends AbstractResourceParser {
 		typeTable.id = readUInt8(data, offset);
 		offset += 1;
 
-		typeTable.res0 = readUInt8(data, offset);
-		if (typeTable.res0 != 0)
-			throw new RuntimeException("File format error, res0 was not zero");
+		typeTable.flags = readUInt8(data, offset);
+		if (typeTable.flags != 0 && typeTable.flags != 1)
+			throw new RuntimeException("File format error, flags is not zero or one");
 		offset += 1;
 
-		typeTable.res1 = readUInt16(data, offset);
-		if (typeTable.res1 != 0)
-			throw new RuntimeException("File format error, res1 was not zero");
+		typeTable.reserved = readUInt16(data, offset);
+		if (typeTable.reserved != 0)
+			throw new RuntimeException("File format error, reserved was not zero");
 		offset += 2;
 
 		typeTable.entryCount = readUInt32(data, offset);
@@ -2591,14 +2604,14 @@ public class ARSCFileParser extends AbstractResourceParser {
 		typeSpecTable.id = readUInt8(data, offset);
 		offset += 1;
 
-		typeSpecTable.res0 = readUInt8(data, offset);
+		typeSpecTable.flags = readUInt8(data, offset);
 		offset += 1;
-		if (typeSpecTable.res0 != 0)
+		if (typeSpecTable.flags != 0)
 			throw new RuntimeException("File format violation, res0 was not zero");
 
-		typeSpecTable.res1 = readUInt16(data, offset);
+		typeSpecTable.reserved = readUInt16(data, offset);
 		offset += 2;
-		if (typeSpecTable.res1 != 0)
+		if (typeSpecTable.reserved != 0)
 			throw new RuntimeException("File format violation, res1 was not zero");
 
 		typeSpecTable.entryCount = readUInt32(data, offset);
