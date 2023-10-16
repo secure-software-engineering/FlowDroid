@@ -82,11 +82,6 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	}
 
 	/**
-	 * Handler for zip-like apk files
-	 */
-	protected ApkHandler apk = null;
-
-	/**
 	 * Handler for android xml files
 	 */
 	protected AXmlHandler axml;
@@ -143,13 +138,14 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 			throw new RuntimeException(
 					String.format("The given APK file %s does not exist", apkFile.getCanonicalPath()));
 
-		this.apk = new ApkHandler(apkFile);
-		this.arscParser = arscParser;
-		try (InputStream is = this.apk.getInputStream("AndroidManifest.xml")) {
-			if (is == null)
-				throw new FileNotFoundException(
-						String.format("The file %s does not contain an Android Manifest", apkFile.getAbsolutePath()));
-			this.handle(is);
+		try (ApkHandler apk = new ApkHandler(apkFile)) {
+			this.arscParser = arscParser;
+			try (InputStream is = apk.getInputStream("AndroidManifest.xml")) {
+				if (is == null)
+					throw new FileNotFoundException(String.format("The file %s does not contain an Android Manifest",
+							apkFile.getAbsolutePath()));
+				this.handle(is);
+			}
 		}
 	}
 
@@ -207,17 +203,6 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 */
 	public AXmlHandler getAXml() {
 		return this.axml;
-	}
-
-	/**
-	 * Returns the handler which opened the APK file. If {@link BaseProcessManifest}
-	 * was instanciated directly with an {@link InputStream} this will return
-	 * <code>null</code>.
-	 *
-	 * @return APK Handler
-	 */
-	public ApkHandler getApk() {
-		return this.apk;
 	}
 
 	/**
@@ -514,62 +499,58 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		}
 		return permissions;
 	}
-	
-	
- /** *
-     * Gets the intent-filter components this application used
-     *
-     * @return the intent filter used by this application
-     * **/
 
-    public Set<String> getIntentFilter() {
-        List<AXmlNode> usesActions = this.axml.getNodesWithTag("action");
-        Set<String> intentFilters = new HashSet<>();
-        for (AXmlNode ittft : usesActions) {
-            if (ittft.getParent().getTag().equals("intent-filter")) {
-                AXmlAttribute<?> attr = ittft.getAttribute("name");
-                if (attr != null) {
-                    intentFilters.add(attr.getValue().toString());
-                } else {
-                    // The required "name" attribute is missing, so we collect all
-                    // empty attributes as a best-effort solution for broken malware apps
-                    for (AXmlAttribute<?> a : ittft.getAttributes().values())
-                        if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
-                            intentFilters.add((String) a.getValue());
-                }
-            }
-        }
-        return intentFilters;
-    }
-	
-	
+	/** *
+	 * Gets the intent-filter components this application used
+	 *
+	 * @return the intent filter used by this application
+	 * **/
+
+	public Set<String> getIntentFilter() {
+		List<AXmlNode> usesActions = this.axml.getNodesWithTag("action");
+		Set<String> intentFilters = new HashSet<>();
+		for (AXmlNode ittft : usesActions) {
+			if (ittft.getParent().getTag().equals("intent-filter")) {
+				AXmlAttribute<?> attr = ittft.getAttribute("name");
+				if (attr != null) {
+					intentFilters.add(attr.getValue().toString());
+				} else {
+					// The required "name" attribute is missing, so we collect all
+					// empty attributes as a best-effort solution for broken malware apps
+					for (AXmlAttribute<?> a : ittft.getAttributes().values())
+						if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
+							intentFilters.add((String) a.getValue());
+				}
+			}
+		}
+		return intentFilters;
+	}
+
 	/**
 	 * Gets the hardware components this application requests
 	 *
 	 * @return the hardware requested by this application
 	 * **/
-	public Set<String> getHardware(){
+	public Set<String> getHardware() {
 		List<AXmlNode> usesHardware = this.manifest.getChildrenWithTag("uses-feature");
 		Set<String> hardware = new HashSet<>();
-		for (AXmlNode hard : usesHardware){
+		for (AXmlNode hard : usesHardware) {
 			AXmlAttribute<?> attr = hard.getAttribute("name");
-			if (attr!=null){
+			if (attr != null) {
 				hardware.add(attr.getValue().toString());
-			}
-			else {
+			} else {
 				// The required "name" attribute is missing, following flowdroid,
 				// I also collect all empty
 				// attributes as a best-effort solution for broken malware apps
-				for (AXmlAttribute<?> a : hard.getAttributes().values()){
-					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty())){
+				for (AXmlAttribute<?> a : hard.getAttributes().values()) {
+					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty())) {
 						hardware.add(a.getValue().toString());
 					}
 				}
 			}
 		}
-		return  hardware;
+		return hardware;
 	}
-
 
 	/**
 	 * Adds a new permission to the manifest.
@@ -632,8 +613,6 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 */
 	@Override
 	public void close() {
-		if (this.apk != null)
-			this.apk.close();
 	}
 
 	/**
