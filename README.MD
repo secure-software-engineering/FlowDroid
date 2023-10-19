@@ -19,17 +19,17 @@ issue that prevents you from doing so. In that case, please let us know (see con
         <dependency>
             <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
             <artifactId>soot-infoflow</artifactId>
-            <version>2.10.0</version>
+            <version>2.12.0</version>
         </dependency>
         <dependency>
             <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
             <artifactId>soot-infoflow-summaries</artifactId>
-            <version>2.10.0</version>
+            <version>2.12.0</version>
         </dependency>
         <dependency>
             <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
             <artifactId>soot-infoflow-android</artifactId>
-            <version>2.10.0</version>
+            <version>2.12.0</version>
         </dependency>
     </dependencies>
 ```
@@ -48,31 +48,22 @@ all you need is the "soot-infoflow-cmd-jar-with-dependencies.jar" file.
 
 ### Building The Tool With Maven
 
-From version 2.5 on, FlowDroid is built using Maven. Use
+Requirements:
+* JDK 11 or above
+* Maven
+* The current snapshot of <a href="https://github.com/soot-oss/soot">Soot</a> installed
 
-```
-EXPORT ANDROID_JARS=<Android JAR folder>
-EXPORT DROIDBENCH=<DroidBench folder>
-mvn install
-```
-
-to build the tool and run all unit tests. The Android JAR folder is the "platforms" directory inside your Android SDK installation
-folder. The DroidBench folder is the location of DroidBench, our micro-benchmark suite. These two environment variables are only
-required for running the unit tests.
-
-If you do not want DroidBench, or are in a hurry and just want to build the tool without the tests (they can take
-quite some time to complete, we have more than 400 of them), try
-
-```
-mvn -DskipTests install
+At the first time, FlowDroid needs to be built from the parent module, i.e. the project's root folder. The full test
+suite takes around 30 minutes, so we recommend to disable the tests when building:
+```shell
+mvn install -DskipTests
 ```
 
-Either way, you will find the built JAR files in the "target" folder of the respective modules. Maven should take care of all
-dependencies that are required for the build. Unless you need to build FlowDroid on a machine without an Internet connection,
-thing should be pretty easy.
-
-Note that our tests runs on Java 8. The tests have not been adapted to newer versions of the JDK yet, so if your system uses
-a newer version, we recommend that you disable the tests for now.
+To run the build with tests enabled, some additional steps are needed:
+* JDK 8 must be installed
+* The `rt.jar` must be at the default location (alternatively, place the `rt.jar` inside `$JAVA_HOME/lib/`)
+* The DroidBench submodule must be initialized (clone with `--recursive`)
+* `ANDROID_JARS` environment variable must be set to the android platforms directory (typically `$HOME/Android/Sdk/platforms/`)
 
 ### Building The Tool With Eclipse
 
