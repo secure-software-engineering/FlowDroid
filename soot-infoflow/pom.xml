@@ -102,16 +102,6 @@
 			</resource>
 		</resources>
 	</build>
-	
-	<repositories>
-        <repository>
-            <id>Soot-Snapshots</id>
-            <url>https://ssebuild.sit.fraunhofer.de/nexus/repository/Soot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
