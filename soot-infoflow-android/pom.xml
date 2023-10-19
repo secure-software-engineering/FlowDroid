@@ -13,13 +13,6 @@
 		<version>2.13.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-
-	<repositories>
-		<repository>
-			<id>Eclipse</id>
-			<url>https://ssebuild.sit.fraunhofer.de/nexus/repository/maven-mixed/</url>
-		</repository>
-	</repositories>
 	
 	<build>
 		<finalName>soot-infoflow-android-classes</finalName>
