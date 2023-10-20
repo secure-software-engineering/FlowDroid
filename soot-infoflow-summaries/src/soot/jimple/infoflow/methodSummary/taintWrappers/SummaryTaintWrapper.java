@@ -241,6 +241,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (summaries.hasInterfaces()) {
 					for (String intfName : summaries.getInterfaces()) {
 						SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
+						scIntf.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
 						if (!sc.implementsInterface(intfName))
 							sc.addInterface(scIntf);
 					}
