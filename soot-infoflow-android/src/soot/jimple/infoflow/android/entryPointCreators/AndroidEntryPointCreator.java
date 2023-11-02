@@ -286,8 +286,11 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				componentToInfo.put(currentClass, componentCreator.getComponentInfo());
 
 				// dummyMain(component, intent)
-				body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
-						Collections.singletonList(NullConstant.v()))));
+				if (shouldAddLifecycleCall(currentClass)) {
+					body.getUnits()
+							.add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
+									Collections.singletonList(NullConstant.v()))));
+				}
 			}
 
 			// Jump back to the front of the component
@@ -321,6 +324,18 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			mainMethod.getActiveBody().validate();
 
 		return mainMethod;
+	}
+
+	/**
+	 * Checks whether a lifecycle call should be added to the given SootClass,
+	 * designed to be overridden by different implementations
+	 *
+	 * @param clazz the SootClass in question
+	 * @return True if a lifecycle call should be added in
+	 *         {@link #createDummyMainInternal()}
+	 */
+	protected boolean shouldAddLifecycleCall(SootClass clazz) {
+		return true;
 	}
 
 	/**
