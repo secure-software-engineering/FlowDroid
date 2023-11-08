@@ -160,4 +160,19 @@ public class AndroidRegressionTests extends BaseJUnitTests {
         InfoflowResults results = app.runInfoflow(PermissionMethodParser.fromStringList(ssinks));
         Assert.assertEquals(1, results.size());
     }
+
+    /**
+     * Tests that button callbacks declared in the XML file are correctly added to the lifecycle model
+     * when the app is compiled with newer Android API versions.
+     */
+    @Test
+    public void XMLCallbackAPI33() throws IOException {
+        SetupApplication app = initApplication("testAPKs/XMLCallbackAPI33.apk");
+
+        List<String> ssinks = new ArrayList<>();
+        ssinks.add("<java.util.Locale: java.lang.String getCountry()> -> _SOURCE_");
+        ssinks.add("<android.util.Log: int i(java.lang.String,java.lang.String)> -> _SINK_");
+        InfoflowResults results = app.runInfoflow(PermissionMethodParser.fromStringList(ssinks));
+        Assert.assertEquals(1, results.size());
+    }
 }

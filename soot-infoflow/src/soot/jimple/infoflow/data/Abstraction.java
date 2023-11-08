@@ -523,7 +523,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 * @return True if this object is locally equal to the given one, otherwise
 	 *         false
 	 */
-	private boolean localEquals(Abstraction other) {
+	public boolean localEquals(Abstraction other) {
 		// deliberately ignore prevAbs
 		if (sourceContext == null) {
 			if (other.sourceContext != null)

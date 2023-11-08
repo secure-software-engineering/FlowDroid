@@ -36,6 +36,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
@@ -410,10 +412,9 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				final boolean isSource = manager.getSourceSinkManager() != null
-						&& manager.getSourceSinkManager().getSourceInfo((Stmt) callStmt, manager) != null;
-				final boolean isSink = manager.getSourceSinkManager() != null
-						&& manager.getSourceSinkManager().getSinkInfo(stmt, manager, null) != null;
+
+				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
+				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
@@ -874,10 +875,15 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// If we do not know the callees, we can not reason
 						// To not break anything, propagate over
-						if (interproceduralCFG().getCalleesOfCallAt(callSite).isEmpty()) {
-							if (source != zeroValue)
+						if (!killSource.value && source != zeroValue) {
+							boolean hasConcreteCallees = false;
+							for (SootMethod callee : interproceduralCFG().getCalleesOfCallAt(callSite))
+								if (callee.isConcrete()) {
+									hasConcreteCallees = true;
+									break;
+								}
+							if (!hasConcreteCallees)
 								res.add(source);
-							return res;
 						}
 
 						// Assumption: Sinks only leak taints but never

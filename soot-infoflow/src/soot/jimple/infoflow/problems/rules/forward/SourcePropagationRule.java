@@ -8,6 +8,8 @@ import soot.SootMethod;
 import soot.ValueBox;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -100,42 +102,10 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
 			ByReferenceBoolean killAll) {
 		// Normally, we don't inspect source methods
-		if (!getManager().getConfig().getInspectSources() && getManager().getSourceSinkManager() != null) {
-			final SourceInfo sourceInfo = getManager().getSourceSinkManager().getSourceInfo(stmt, getManager());
-			// TODO:
-			if (sourceInfo != null && !isCallbackOrReturn(sourceInfo.getAllDefinitions()))
-				killAll.value = true;
-		}
-
-		// By default, we don't inspect sinks either
-		if (!getManager().getConfig().getInspectSinks() && getManager().getSourceSinkManager() != null) {
-			final boolean isSink = getManager().getSourceSinkManager().getSinkInfo(stmt, getManager(),
-					source.getAccessPath()) != null;
-			if (isSink)
-				killAll.value = true;
-		}
-
+		killAll.value = killAll.value
+				|| (!getManager().getConfig().getInspectSources() && stmt.hasTag(FlowDroidSourceStatement.TAG_NAME));
+		killAll.value = killAll.value
+				|| (!getManager().getConfig().getInspectSinks() && stmt.hasTag(FlowDroidSinkStatement.TAG_NAME));
 		return null;
 	}
-
-	/**
-	 * Checks whether the given source/sink definition is a callback or references
-	 * the return value of a method
-	 * 
-	 * @param definition The source/sink definition to check
-	 * @return True if the given source/sink definition references a callback or a
-	 *         method return value
-	 */
-	private boolean isCallbackOrReturn(Collection<ISourceSinkDefinition> definitions) {
-		for (ISourceSinkDefinition definition : definitions) {
-			if (definition instanceof MethodSourceSinkDefinition) {
-				MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
-				CallType callType = methodDef.getCallType();
-				if (callType == CallType.Callback || callType == CallType.Return)
-					return true;
-			}
-		}
-		return false;
-	}
-
 }

@@ -18,9 +18,6 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import soot.Modifier;
-import soot.Scene;
-import soot.SootClass;
 import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
@@ -36,10 +33,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.config.XMLConfigurationParser;
-import soot.jimple.infoflow.handlers.PreAnalysisHandler;
-import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.LazySummaryProvider;
-import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.taintWrappers.ReportMissingSummaryWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
@@ -244,7 +238,7 @@ public class MainClass {
 				"Use the specified mode when tracking static data flows (CONTEXTFLOWSENSITIVE, CONTEXTFLOWINSENSITIVE, NONE)");
 		options.addOption(OPTION_DATA_FLOW_DIRECTION, "direction", true,
 				"Specifies the direction of the infoflow analysis (FORWARDS, BACKWARDS)");
-		options.addOption(OPTION_GC_SLEEP_TIME, "gcsleeptime", true, 
+		options.addOption(OPTION_GC_SLEEP_TIME, "gcsleeptime", true,
 				"Specifies the sleep time for path edge collectors in seconds");
 
 		// Evaluation-specific options

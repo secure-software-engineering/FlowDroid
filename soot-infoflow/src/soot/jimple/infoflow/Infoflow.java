@@ -152,16 +152,10 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected SourceSinkState scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s) {
+	protected SourceOrSink scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s) {
 		SourceInfo sourceInfo = sourcesSinks.getSourceInfo(s, manager);
 		SinkInfo sinkInfo = sourcesSinks.getSinkInfo(s, manager, null);
-		if (sourceInfo != null && sinkInfo == null)
-			return SourceSinkState.SOURCE;
-		else if (sinkInfo != null && sourceInfo == null)
-			return SourceSinkState.SINK;
-		else if (sourceInfo != null && sinkInfo != null)
-			return SourceSinkState.BOTH;
-		return SourceSinkState.NEITHER;
+		return new SourceOrSink(sourceInfo, sinkInfo);
 	}
 
 	@Override

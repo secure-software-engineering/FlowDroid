@@ -35,7 +35,7 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 		debuggable = attrDebuggable != null && attrDebuggable.getValue().equals(Boolean.TRUE);
 
 		AXmlAttribute<?> attrAllowBackup = node.getAttribute("allowBackup");
-		allowBackup = attrAllowBackup != null && attrAllowBackup.getValue().equals(Boolean.TRUE);
+		allowBackup = attrAllowBackup == null || attrAllowBackup.getValue().equals(Boolean.TRUE);
 
 		AXmlAttribute<?> attrCleartextTraffic = node.getAttribute("usesCleartextTraffic");
 		if (attrCleartextTraffic != null)

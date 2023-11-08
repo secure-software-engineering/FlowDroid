@@ -42,9 +42,7 @@ import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.aliasing.BackwardsFlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.aliasing.NullAliasStrategy;
-import soot.jimple.infoflow.cfg.BiDirICFGFactory;
-import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.cfg.LibraryClassPatcher;
+import soot.jimple.infoflow.cfg.*;
 import soot.jimple.infoflow.codeOptimization.DeadCodeEliminator;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.config.IInfoflowConfig;
@@ -105,9 +103,9 @@ import soot.jimple.infoflow.solver.memory.DefaultMemoryManagerFactory;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.solver.sparseSolver.SparseInfoflowSolver;
-import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
-import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
-import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.*;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
 import soot.jimple.infoflow.threading.IExecutorFactory;
@@ -1279,6 +1277,57 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		SOURCE, SINK, NEITHER, BOTH
 	}
 
+	protected static class SourceOrSink {
+		private final SourceInfo sourceInfo;
+		private final SinkInfo sinkInfo;
+		private final SourceSinkState state;
+
+		protected SourceOrSink(SourceInfo sourceInfo, SinkInfo sinkInfo) {
+			this.sourceInfo = sourceInfo;
+			this.sinkInfo = sinkInfo;
+			if (sourceInfo != null && sinkInfo == null)
+				this.state = SourceSinkState.SOURCE;
+			else if (sinkInfo != null && sourceInfo == null)
+				this.state = SourceSinkState.SINK;
+			else if (sourceInfo != null && sinkInfo != null)
+				this.state = SourceSinkState.BOTH;
+			else
+				this.state = SourceSinkState.NEITHER;
+		}
+
+		protected SourceSinkState getState() {
+			return state;
+		}
+
+		protected SourceInfo getSourceInfo() {
+			return sourceInfo;
+		}
+
+		protected SinkInfo getSinkInfo() {
+			return sinkInfo;
+		}
+	}
+
+	/**
+	 * Checks whether the given source/sink definition is a callback or references
+	 * the return value of a method
+	 *
+	 * @param definitions The source/sink definition to check
+	 * @return True if the given source/sink definition references a callback or a
+	 *         method return value
+	 */
+	private boolean isCallbackOrReturn(Collection<ISourceSinkDefinition> definitions) {
+		for (ISourceSinkDefinition definition : definitions) {
+			if (definition instanceof MethodSourceSinkDefinition) {
+				MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
+				MethodSourceSinkDefinition.CallType callType = methodDef.getCallType();
+				if (callType == MethodSourceSinkDefinition.CallType.Callback || callType == MethodSourceSinkDefinition.CallType.Return)
+					return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Scans the given method for sources and sinks contained in it. Sinks are just
 	 * counted, sources are added to the InfoflowProblem as seeds.
@@ -1309,18 +1358,28 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			PatchingChain<Unit> units = m.getActiveBody().getUnits();
 			for (Unit u : units) {
 				Stmt s = (Stmt) u;
-				switch (scanStmtForSourcesSinks(sourcesSinks, s)) {
+				SourceOrSink sos = scanStmtForSourcesSinks(sourcesSinks, s);
+				switch (sos.getState()) {
 				case SOURCE:
+					if (s.containsInvokeExpr() && !isCallbackOrReturn(sos.getSourceInfo().getAllDefinitions()))
+						s.addTag(FlowDroidSourceStatement.INSTANCE);
 					forwardProblem.addInitialSeeds(s, Collections.singleton(forwardProblem.zeroValue()));
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSources.add(s);
 					break;
 				case SINK:
+					if (s.containsInvokeExpr())
+						s.addTag(FlowDroidSinkStatement.INSTANCE);
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSinks.add(s);
 					sinkCount++;
 					break;
 				case BOTH:
+					if (s.containsInvokeExpr()) {
+						if (!isCallbackOrReturn(sos.getSourceInfo().getAllDefinitions()))
+							s.addTag(FlowDroidSourceStatement.INSTANCE);
+						s.addTag(FlowDroidSinkStatement.INSTANCE);
+					}
 					forwardProblem.addInitialSeeds(s, Collections.singleton(forwardProblem.zeroValue()));
 					if (getConfig().getLogSourcesAndSinks()) {
 						collectedSources.add(s);
@@ -1339,13 +1398,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	/**
 	 * Checks whether the given statement is a source or a sink
-	 * 
+	 *
 	 * @param sourcesSinks The source/sink manager
 	 * @param s            The statement to check
 	 * @return An enumeration value that defines whether the given statement is a
-	 *         source, a sink, or neither
+	 * source, a sink, or neither
 	 */
-	protected abstract SourceSinkState scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s);
+	protected abstract SourceOrSink scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s);
 
 	/**
 	 * Given a callgraph, obtains all methods that may contain sources, i.e.,
@@ -1687,9 +1746,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			AbstractionAtSink curAbs = absAtSinkIt.next();
 			for (AbstractionAtSink checkAbs : res) {
 				if (checkAbs != curAbs && checkAbs.getSinkStmt() == curAbs.getSinkStmt()
-						&& checkAbs.getAbstraction().isImplicit() == curAbs.getAbstraction().isImplicit()
-						&& checkAbs.getAbstraction().getSourceContext() == curAbs.getAbstraction().getSourceContext()
-						&& checkAbs.getAbstraction().getTurnUnit() == curAbs.getAbstraction().getTurnUnit()) {
+						&& checkAbs.getAbstraction().localEquals(curAbs.getAbstraction())) {
 					if (checkAbs.getAbstraction().getAccessPath().entails(curAbs.getAbstraction().getAccessPath())) {
 						absAtSinkIt.remove();
 						break;

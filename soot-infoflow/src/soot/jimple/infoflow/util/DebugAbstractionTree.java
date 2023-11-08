@@ -1,9 +1,11 @@
 package soot.jimple.infoflow.util;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,4 +121,25 @@ public final class DebugAbstractionTree {
 		return HtmlEscapers.htmlEscaper().escape(string).replace("|", "\\|");
 	}
 
+	/**
+	 * Counts the nodes in an abstraction graph
+	 *
+	 * @param abs abstraction to start with
+	 * @return number of nodes in the graph
+	 */
+	public static long countNodes(Abstraction abs) {
+		Set<Abstraction> visited = Sets.newIdentityHashSet();
+		Deque<Abstraction> worklist = new ArrayDeque<>();
+		worklist.add(abs);
+		while (!worklist.isEmpty()) {
+			Abstraction curr = worklist.poll();
+			if (visited.add(curr)) {
+				if (curr.getPredecessor() != null)
+					worklist.add(curr.getPredecessor());
+				if (curr.getNeighborCount() > 0)
+					worklist.addAll(curr.getNeighbors());
+			}
+		}
+		return visited.size();
+	}
 }

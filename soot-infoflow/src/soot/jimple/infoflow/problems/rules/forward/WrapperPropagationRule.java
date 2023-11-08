@@ -12,6 +12,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
@@ -85,10 +86,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 		// Do not apply the taint wrapper to statements that are sources on their own
 		if (!getManager().getConfig().getInspectSources()) {
 			// Check whether this can be a source at all
-			final SourceInfo sourceInfo = getManager().getSourceSinkManager() != null
-					? getManager().getSourceSinkManager().getSourceInfo(iStmt, getManager())
-					: null;
-			if (sourceInfo != null)
+			if (iStmt.hasTag(FlowDroidSourceStatement.TAG_NAME))
 				return null;
 		}
 

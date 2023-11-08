@@ -45,6 +45,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
@@ -748,12 +750,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				for (int i = 0; i < invExpr.getArgCount(); i++)
 					callArgs[i] = invExpr.getArg(i);
 
-				final boolean isSink = (manager.getSourceSinkManager() != null)
-						? manager.getSourceSinkManager().getSinkInfo(iCallStmt, manager, null) != null
-						: false;
-				final boolean isSource = (manager.getSourceSinkManager() != null)
-						? manager.getSourceSinkManager().getSourceInfo(iCallStmt, manager) != null
-						: false;
+				final boolean isSink = iCallStmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
+				final boolean isSource = iCallStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final SootMethod callee = invExpr.getMethod();
 				final boolean hasValidCallees = hasValidCallees(call);
