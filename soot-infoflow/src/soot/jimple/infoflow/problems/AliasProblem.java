@@ -235,8 +235,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 						// Only inject the new alias into the forward solver but never propagate it upwards
 						// because the alias was created at this program point and won't be valid above.
 						for (Unit u : interproceduralCFG().getPredsOf(defStmt))
-							manager.getMainSolver()
-									.processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
+							manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
 					}
 				}
 
@@ -565,7 +564,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									res.add(abs);
 							}
 						} else if (ie != null && dest.getParameterCount() > 0
-									&& (isReflectiveCallSite || dest.getParameterCount() == ie.getArgCount())) {
+								&& (isReflectiveCallSite || dest.getParameterCount() == ie.getArgCount())) {
 							// check if param is tainted:
 							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
 								if (ie.getArg(i) == source.getAccessPath().getPlainValue()) {
@@ -720,12 +719,13 @@ public class AliasProblem extends AbstractInfoflowProblem {
 											// Check whether the call site created an alias by having two equal
 											// arguments, e.g. caller(o, o);. If yes, inject the other parameter
 											// back into the callee.
-											for (int argIndex = 0; !isReflectiveCallSite && argIndex < ie.getArgCount(); argIndex++) {
+											for (int argIndex = 0; !isReflectiveCallSite
+													&& argIndex < ie.getArgCount(); argIndex++) {
 												if (i != argIndex && originalCallArg == ie.getArg(argIndex)) {
-													AccessPath aliasAp = manager.getAccessPathFactory().copyWithNewValue(
-															source.getAccessPath(), paramLocals[argIndex],
-															source.getAccessPath().getBaseType(),
-																false);
+													AccessPath aliasAp = manager.getAccessPathFactory()
+															.copyWithNewValue(abs.getAccessPath(),
+																	paramLocals[argIndex],
+																	abs.getAccessPath().getBaseType(), false);
 													Abstraction aliasAbs = checkAbstraction(
 															source.deriveNewAbstraction(aliasAp, (Stmt) exitStmt));
 
@@ -748,7 +748,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 													continue;
 
 												if (paramLocals[i] == ((ReturnStmt) u).getOp()) {
-													manager.getMainSolver().processEdge(new PathEdge<>(d1, exitStmt, source));
+													manager.getMainSolver()
+															.processEdge(new PathEdge<>(d1, exitStmt, source));
 													break;
 												}
 											}
