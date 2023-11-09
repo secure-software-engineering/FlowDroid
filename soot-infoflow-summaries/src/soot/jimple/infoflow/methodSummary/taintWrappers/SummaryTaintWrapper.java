@@ -1222,8 +1222,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param fieldSig The signature of the field to retrieve
 	 * @return The field with the given signature if it exists, otherwise null
 	 */
-	private SootField safeGetField(String fieldSig) {
-		if (fieldSig == null || fieldSig.equals(""))
+	protected SootField safeGetField(String fieldSig) {
+		if (fieldSig == null || fieldSig.isEmpty())
 			return null;
 
 		SootField sf = Scene.v().grabField(fieldSig);
@@ -1231,19 +1231,18 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			return sf;
 
 		// This field does not exist, so we need to create it
-		String className = fieldSig.substring(1);
-		className = className.substring(0, className.indexOf(":"));
+		int colonIdx = fieldSig.indexOf(":");
+		String className = fieldSig.substring(1, colonIdx);
 		SootClass sc = Scene.v().getSootClassUnsafe(className, true);
 		if (sc.resolvingLevel() < SootClass.SIGNATURES && !sc.isPhantom()) {
 			System.err.println("WARNING: Class not loaded: " + sc);
 			return null;
 		}
 
-		String type = fieldSig.substring(fieldSig.indexOf(": ") + 2);
-		type = type.substring(0, type.indexOf(" "));
-
-		String fieldName = fieldSig.substring(fieldSig.lastIndexOf(" ") + 1);
-		fieldName = fieldName.substring(0, fieldName.length() - 1);
+		String typeAndName = fieldSig.substring(colonIdx + 2, fieldSig.length() - 1);
+		int spaceIdx = typeAndName.indexOf(" ");
+		String type = typeAndName.substring(0, spaceIdx);
+		String fieldName = typeAndName.substring(spaceIdx + 1);
 
 		SootFieldRef ref = Scene.v().makeFieldRef(sc, fieldName, TypeUtils.getTypeFromString(type), false);
 		return ref.resolve();
