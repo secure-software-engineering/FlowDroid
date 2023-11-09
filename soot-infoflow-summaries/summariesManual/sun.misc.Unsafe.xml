@@ -398,7 +398,7 @@
                 	</flows>
 		</method>
 		
-		<method id="boolean putBooleanVolatile(java.lang.Object,long,boolean)">
+		<method id="void putBooleanVolatile(java.lang.Object,long,boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
@@ -416,7 +416,7 @@
                 	</flows>
 		</method>
 		
-		<method id="byte putByteVolatile(java.lang.Object,long,byte)">
+		<method id="void putByteVolatile(java.lang.Object,long,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
@@ -434,7 +434,7 @@
                 	</flows>
 		</method>
 		
-		<method id="short putShortVolatile(java.lang.Object,long,short)">
+		<method id="void putShortVolatile(java.lang.Object,long,short)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2"/>
@@ -559,7 +559,7 @@
                 	</flows>
 		</method>
 		
-		<method id="int getAndAddLong(java.lang.Object,long,long)">
+		<method id="long getAndAddLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"/>
@@ -586,7 +586,7 @@
                 	</flows>
 		</method>
 		
-		<method id="int getAndSetLong(java.lang.Object,long,long)">
+		<method id="long getAndSetLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"/>
@@ -599,7 +599,7 @@
                 	</flows>
 		</method>
 		
-		<method id="int getAndSetObject(java.lang.Object,long,java.lang.Object)">
+		<method id="Object getAndSetObject(java.lang.Object,long,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"/>
@@ -617,7 +617,7 @@
 		<method id="int invokeCleaner(java.nio.ByteBuffer)">
 			<!-- is there a tainting possibility associated with this method? -->
 			<clears>
-				<clear sourceSinkType="Field"/>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"/>
 			</clears>
 		</method>
 	</methods>
