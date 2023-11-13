@@ -46,7 +46,7 @@
                 	</flows>
 		</method>
 		
-		<method id="boolean putBoolean(java.lang.Object,long,boolean)">
+		<method id="void putBoolean(java.lang.Object,long,boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
@@ -64,7 +64,7 @@
                 	</flows>
 		</method>
 		
-		<method id="byte putByte(java.lang.Object,long,byte)">
+		<method id="void putByte(java.lang.Object,long,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
@@ -82,7 +82,7 @@
                 	</flows>
 		</method>
 		
-		<method id="short putShort(java.lang.Object,long,short)">
+		<method id="void putShort(java.lang.Object,long,short)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2"/>
@@ -614,7 +614,7 @@
 		
 		<!-- no data exchange with methods loadFence() storeFence() fullFence()-->
 		
-		<method id="int invokeCleaner(java.nio.ByteBuffer)">
+		<method id="void invokeCleaner(java.nio.ByteBuffer)">
 			<!-- is there a tainting possibility associated with this method? -->
 			<clears>
 				<clear sourceSinkType="Parameter" ParameterIndex="0"/>
