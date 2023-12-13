@@ -142,7 +142,7 @@ public class InfoflowConfiguration {
 
 		/**
 		 * Use the fine-grained GC solver
-		 * */
+		 */
 		FineGrainedGC,
 	}
 
@@ -151,7 +151,8 @@ public class InfoflowConfiguration {
 	 */
 	public static enum SparsePropagationStrategy {
 		/**
-		 * Propagate facts dense (use to test that the solver modifications don't break something)
+		 * Propagate facts dense (use to test that the solver modifications don't break
+		 * something)
 		 */
 		Dense,
 		/**
@@ -1000,6 +1001,7 @@ public class InfoflowConfiguration {
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;
 		private int sleepTime = 1;
+		private boolean followReturnsPastSources = true;
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -1044,7 +1046,8 @@ public class InfoflowConfiguration {
 		/**
 		 * Sets the data flow solver to be used for the taint analysis
 		 *
-		 * @param sparsePropagationStrategy The propagation strategy used for sparsification
+		 * @param sparsePropagationStrategy The propagation strategy used for
+		 *                                  sparsification
 		 */
 		public void setSparsePropagationStrategy(SparsePropagationStrategy sparsePropagationStrategy) {
 			this.sparsePropagationStrategy = sparsePropagationStrategy;
@@ -1160,6 +1163,7 @@ public class InfoflowConfiguration {
 			result = prime * result + maxCalleesPerCallSite;
 			result = prime * result + maxJoinPointAbstractions;
 			result = prime * result + maxAbstractionPathLength;
+			result = prime * result + (followReturnsPastSources ? 31 : 17);
 			return result;
 		}
 
@@ -1183,7 +1187,27 @@ public class InfoflowConfiguration {
 				return false;
 			if (maxAbstractionPathLength != other.maxAbstractionPathLength)
 				return false;
+			if (followReturnsPastSources != other.followReturnsPastSources)
+				return false;
 			return true;
+		}
+
+		/**
+		 * Returns whether the analysis will follow function returns further up the call
+		 * stack than where the sources started.
+		 */
+		public boolean isFollowReturnsPastSources() {
+			return followReturnsPastSources;
+		}
+
+		/**
+		 * If true, the analysis will follow function returns further up the call stack
+		 * than where the sources started.
+		 *
+		 * @param followreturns the new value
+		 */
+		public void setFollowReturnsPastSources(boolean followreturns) {
+			this.followReturnsPastSources = followreturns;
 		}
 
 	}
@@ -2014,8 +2038,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether conditional sinks should be filtered if the condition was not met.
-	 * If false, conditional sinks won't be filtered.
+	 * Gets whether conditional sinks should be filtered if the condition was not
+	 * met. If false, conditional sinks won't be filtered.
 	 *
 	 * @return True if conditional flows will be filtered
 	 */
@@ -2024,8 +2048,8 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets whether conditional sinks should be filtered if the condition was not met.
-	 * If false, conditional sinks won't be filtered.
+	 * Sets whether conditional sinks should be filtered if the condition was not
+	 * met. If false, conditional sinks won't be filtered.
 	 *
 	 * @param filterConditionalSinks True if conditional sinks should be filtered
 	 */
