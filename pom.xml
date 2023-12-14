@@ -21,7 +21,7 @@
 		<maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.13</maven-nexus-staging-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
 		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
