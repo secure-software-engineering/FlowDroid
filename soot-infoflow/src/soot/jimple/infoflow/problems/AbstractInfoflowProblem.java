@@ -119,7 +119,7 @@ public abstract class AbstractInfoflowProblem
 	 */
 	@Override
 	public boolean followReturnsPastSeeds() {
-		return true;
+		return manager.getConfig().getSolverConfiguration().isFollowReturnsPastSources();
 	}
 
 	/**
