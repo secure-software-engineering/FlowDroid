@@ -7,6 +7,7 @@ import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.manifest.BaseProcessManifest;
 import soot.jimple.infoflow.android.manifest.IAndroidComponent;
+import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 /**
@@ -25,9 +26,10 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 	protected AbstractBinaryAndroidComponent(AXmlNode node, BaseProcessManifest<?, ?, ?, ?> manifest) {
 		this.node = node;
 		this.manifest = manifest;
+		ARSCFileParser arscParser = manifest.getArscParser();
 
 		AXmlAttribute<?> attrEnabled = node.getAttribute("enabled");
-		enabled = attrEnabled == null || !attrEnabled.getValue().equals(Boolean.FALSE);
+		enabled = attrEnabled == null || attrEnabled.asBoolean(arscParser);
 
 		loadIntentFilters();
 
@@ -35,7 +37,7 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 		if (attrExported == null)
 			exported = getExportedDefault();
 		else
-			exported = !attrExported.getValue().equals(Boolean.FALSE);
+			exported = attrExported.asBoolean(arscParser);
 	}
 
 	/**
@@ -72,7 +74,7 @@ public abstract class AbstractBinaryAndroidComponent implements IAndroidComponen
 	public String getNameString() {
 		AXmlAttribute<?> attr = node.getAttribute("name");
 		if (attr != null)
-			return manifest.expandClassName((String) attr.getValue());
+			return manifest.expandClassName(attr.asString(manifest.getArscParser()));
 		else {
 			// This component does not have a name, so this might be
 			// obfuscated malware. We apply a heuristic.

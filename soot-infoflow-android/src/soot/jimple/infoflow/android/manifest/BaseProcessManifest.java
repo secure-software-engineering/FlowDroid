@@ -244,16 +244,16 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 */
 	public ComponentType getComponentType(String className) {
 		for (AXmlNode node : this.activities)
-			if (node.getAttribute("name").getValue().equals(className))
+			if (node.getAttribute("name").asString(arscParser).equals(className))
 				return ComponentType.Activity;
 		for (AXmlNode node : this.services)
-			if (node.getAttribute("name").getValue().equals(className))
+			if (node.getAttribute("name").asString(arscParser).equals(className))
 				return ComponentType.Service;
 		for (AXmlNode node : this.receivers)
-			if (node.getAttribute("name").getValue().equals(className))
+			if (node.getAttribute("name").asString(arscParser).equals(className))
 				return ComponentType.BroadcastReceiver;
 		for (AXmlNode node : this.providers)
-			if (node.getAttribute("name").getValue().equals(className))
+			if (node.getAttribute("name").asString(arscParser).equals(className))
 				return ComponentType.ContentProvider;
 		return null;
 	}
@@ -364,7 +364,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		if (BaseProcessManifest.isAliasActivity(aliasActivity)) {
 			AXmlAttribute<?> targetActivityAttribute = aliasActivity.getAttribute("targetActivity");
 			if (targetActivityAttribute != null) {
-				return this.getActivity((String) targetActivityAttribute.getValue());
+				return this.getActivity(targetActivityAttribute.asString(arscParser));
 			}
 		}
 		return null;
@@ -408,8 +408,8 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	public String getPackageName() {
 		if (cache_PackageName == null) {
 			AXmlAttribute<?> attr = this.manifest.getAttribute("package");
-			if (attr != null && attr.getValue() != null)
-				cache_PackageName = (String) attr.getValue();
+			if (attr != null)
+				cache_PackageName = attr.asString(arscParser);
 		}
 		return cache_PackageName;
 	}
@@ -422,7 +422,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 */
 	public int getVersionCode() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionCode");
-		return attr == null || attr.getValue() == null ? -1 : Integer.parseInt(attr.getValue().toString());
+		return attr == null ? -1 : attr.asInteger(arscParser);
 	}
 
 	/**
@@ -432,7 +432,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 */
 	public String getVersionName() {
 		AXmlAttribute<?> attr = this.manifest.getAttribute("versionName");
-		return attr == null || attr.getValue() == null ? null : attr.getValue().toString();
+		return attr == null ? null : attr.asString(arscParser);
 	}
 
 	/**
@@ -445,14 +445,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		if (usesSdk == null || usesSdk.isEmpty())
 			return -1;
 		AXmlAttribute<?> attr = usesSdk.get(0).getAttribute("minSdkVersion");
-
-		if (attr == null || attr.getValue() == null)
-			return -1;
-
-		if (attr.getValue() instanceof Integer)
-			return (Integer) attr.getValue();
-
-		return Integer.parseInt(attr.getValue().toString());
+		return attr == null ? -1 : attr.asInteger(arscParser);
 	}
 
 	/**
@@ -465,14 +458,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		if (usesSdk == null || usesSdk.isEmpty())
 			return -1;
 		AXmlAttribute<?> attr = usesSdk.get(0).getAttribute("targetSdkVersion");
-
-		if (attr == null || attr.getValue() == null)
-			return -1;
-
-		if (attr.getValue() instanceof Integer)
-			return (Integer) attr.getValue();
-
-		return Integer.parseInt(attr.getValue().toString());
+		return attr == null ? -1 : attr.asInteger(arscParser);
 	}
 
 	/**
@@ -487,24 +473,23 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		for (AXmlNode perm : usesPerms) {
 			AXmlAttribute<?> attr = perm.getAttribute("name");
 			if (attr != null)
-				permissions.add((String) attr.getValue());
+				permissions.add(attr.asString(arscParser));
 			else {
 				// The required "name" attribute is missing, so we collect all
-				// empty
-				// attributes as a best-effort solution for broken malware apps
+				// empty attributes as a best-effort solution for broken malware apps
 				for (AXmlAttribute<?> a : perm.getAttributes().values())
 					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
-						permissions.add((String) a.getValue());
+						permissions.add(a.asString());
 			}
 		}
 		return permissions;
 	}
 
-	/** *
-	 * Gets the intent-filter components this application used
+	/**
+	 * * Gets the intent-filter components this application used
 	 *
 	 * @return the intent filter used by this application
-	 * **/
+	 **/
 
 	public Set<String> getIntentFilter() {
 		List<AXmlNode> usesActions = this.axml.getNodesWithTag("action");
@@ -513,13 +498,12 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 			if (ittft.getParent().getTag().equals("intent-filter")) {
 				AXmlAttribute<?> attr = ittft.getAttribute("name");
 				if (attr != null) {
-					intentFilters.add(attr.getValue().toString());
+					intentFilters.add(attr.asString(arscParser));
 				} else {
 					// The required "name" attribute is missing, so we collect all
 					// empty attributes as a best-effort solution for broken malware apps
 					for (AXmlAttribute<?> a : ittft.getAttributes().values())
-						if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty()))
-							intentFilters.add((String) a.getValue());
+						intentFilters.add(a.asString(arscParser));
 				}
 			}
 		}
@@ -530,21 +514,21 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Gets the hardware components this application requests
 	 *
 	 * @return the hardware requested by this application
-	 * **/
+	 **/
 	public Set<String> getHardware() {
 		List<AXmlNode> usesHardware = this.manifest.getChildrenWithTag("uses-feature");
 		Set<String> hardware = new HashSet<>();
 		for (AXmlNode hard : usesHardware) {
 			AXmlAttribute<?> attr = hard.getAttribute("name");
 			if (attr != null) {
-				hardware.add(attr.getValue().toString());
+				hardware.add(attr.asString(arscParser));
 			} else {
 				// The required "name" attribute is missing, following flowdroid,
 				// I also collect all empty
 				// attributes as a best-effort solution for broken malware apps
 				for (AXmlAttribute<?> a : hard.getAttributes().values()) {
 					if (a.getType() == AxmlVisitor.TYPE_STRING && (a.getName() == null || a.getName().isEmpty())) {
-						hardware.add(a.getValue().toString());
+						hardware.add(a.asString(arscParser).toString());
 					}
 				}
 			}
@@ -630,11 +614,11 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 					boolean actionFilter = false;
 					boolean categoryFilter = false;
 					for (AXmlNode intentFilter : activityChildren.getChildren()) {
-						if (intentFilter.getTag().equals("action") && intentFilter.getAttribute("name").getValue()
-								.toString().equals("android.intent.action.MAIN"))
+						String name = intentFilter.getAttribute("name").asString(arscParser);
+						String tag = intentFilter.getTag();
+						if (tag.equals("action") && name.equals("android.intent.action.MAIN"))
 							actionFilter = true;
-						else if (intentFilter.getTag().equals("category") && intentFilter.getAttribute("name")
-								.getValue().toString().equals("android.intent.category.LAUNCHER"))
+						else if (tag.equals("category") && name.equals("android.intent.category.LAUNCHER"))
 							categoryFilter = true;
 					}
 
