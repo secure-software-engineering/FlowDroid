@@ -1337,8 +1337,6 @@ public class InfoflowConfiguration {
 
 	private boolean pathAgnosticResults = true;
 	private static boolean oneResultPerAccessPath = false;
-	private static boolean mergeNeighbors = false;
-
 	private int stopAfterFirstKFlows = 0;
 	private ImplicitFlowMode implicitFlowMode = ImplicitFlowMode.NoImplicitFlows;
 	private boolean enableExceptions = true;
@@ -1472,26 +1470,6 @@ public class InfoflowConfiguration {
 	 */
 	public static void setOneResultPerAccessPath(boolean oneResultPerAP) {
 		oneResultPerAccessPath = oneResultPerAP;
-	}
-
-	/**
-	 * Gets whether neighbors at the same statement shall be merged into a single
-	 * abstraction
-	 * 
-	 * @return True if equivalent neighbor shall be merged, otherwise false
-	 */
-	public static boolean getMergeNeighbors() {
-		return mergeNeighbors;
-	}
-
-	/**
-	 * Sets whether neighbors at the same statement shall be merged into a single
-	 * abstraction
-	 * 
-	 * @param value True if equivalent neighbor shall be merged, otherwise false
-	 */
-	public static void setMergeNeighbors(boolean value) {
-		InfoflowConfiguration.mergeNeighbors = value;
 	}
 
 	/**

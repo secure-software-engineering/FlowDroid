@@ -40,10 +40,6 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	protected long classSummaryTimeout = -1;
 	private int repeatCount = 1;
 
-	static {
-		SummaryGeneratorConfiguration.setMergeNeighbors(true);
-	}
-
 	/**
 	 * Creates a new instance of the SummaryGeneratorConfiguration class and
 	 * initializes it with the default configuration options
