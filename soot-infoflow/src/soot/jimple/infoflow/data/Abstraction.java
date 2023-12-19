@@ -12,6 +12,7 @@ package soot.jimple.infoflow.data;
 
 import java.util.*;
 
+import com.google.common.collect.Sets;
 import gnu.trove.set.hash.TCustomHashSet;
 import gnu.trove.strategy.HashingStrategy;
 import soot.SootMethod;
@@ -19,6 +20,7 @@ import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.collect.AtomicBitSet;
+import soot.jimple.infoflow.collect.ConcurrentIdentityHashMap;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
@@ -79,69 +81,6 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 
 	protected AtomicBitSet pathFlags = null;
 	protected int propagationPathLength = 0;
-
-	public static class NeighborHashingStrategy implements HashingStrategy<Abstraction> {
-
-		private static final long serialVersionUID = 4836518478381414909L;
-		private static final NeighborHashingStrategy INSTANCE = new NeighborHashingStrategy();
-
-		@Override
-		public int computeHashCode(Abstraction abs) {
-			if (abs.neighborHashCode != 0)
-				return abs.neighborHashCode;
-
-			final int prime = 31;
-			int result = 1;
-
-			result = prime * result + abs.hashCode();
-			result = prime * result + ((abs.accessPath == null) ? 0 : abs.accessPath.hashCode());
-			result = prime * result + ((abs.predecessor == null) ? 0 : abs.predecessor.hashCode());
-			result = prime * result + ((abs.currentStmt == null) ? 0 : abs.currentStmt.hashCode());
-
-			result = prime * result + ((abs.sourceContext == null) ? 0 : abs.sourceContext.hashCode());
-			result = prime * result + ((abs.activationUnit == null) ? 0 : abs.activationUnit.hashCode());
-			result = prime * result + ((abs.turnUnit == null) ? 0 : abs.turnUnit.hashCode());
-			result = prime * result + ((abs.postdominators == null) ? 0 : abs.postdominators.hashCode());
-			result = prime * result + ((abs.dominator == null) ? 0 : abs.dominator.hashCode());
-
-			abs.neighborHashCode = result;
-			return result;
-		}
-
-		@Override
-		public boolean equals(Abstraction abs1, Abstraction abs2) {
-			if (abs1 == abs2)
-				return true;
-			if (abs1 == null || abs2 == null || abs1.getClass() != abs2.getClass())
-				return false;
-
-			// If we have already computed hash codes, we can use them for
-			// comparison
-			int hashCode1 = abs1.neighborHashCode;
-			int hashCode2 = abs2.neighborHashCode;
-			if (hashCode1 != 0 && hashCode2 != 0 && hashCode1 != hashCode2)
-				return false;
-
-			if (abs1.accessPath == null) {
-				if (abs2.accessPath != null)
-					return false;
-			} else if (!abs1.accessPath.equals(abs2.accessPath))
-				return false;
-			if (abs1.predecessor == null) {
-				if (abs2.predecessor != null)
-					return false;
-			} else if (!abs1.predecessor.equals(abs2.predecessor))
-				return false;
-			if (abs1.currentStmt == null) {
-				if (abs2.currentStmt != null)
-					return false;
-			} else if (!abs1.currentStmt.equals(abs2.currentStmt))
-				return false;
-
-			return abs1.localEquals(abs2);
-		}
-
-	}
 
 	public Abstraction(Collection<ISourceSinkDefinition> definitions, AccessPath sourceVal, Stmt sourceStmt, Object userData,
 					   boolean exceptionThrown, boolean isImplicit) {
@@ -631,27 +570,9 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		if (originalAbstraction == this)
 			return false;
 
-		// We should not add identical nodes as neighbors
-		if (this.predecessor == originalAbstraction.predecessor
-				&& this.currentStmt == originalAbstraction.currentStmt
-				&& this.correspondingCallSite == originalAbstraction.correspondingCallSite)
-			return false;
-
 		synchronized (this) {
-			if (neighbors == null)
-				neighbors = new TCustomHashSet<Abstraction>(NeighborHashingStrategy.INSTANCE);
-			else if (InfoflowConfiguration.getMergeNeighbors()) {
-				// Check if we already have an identical neighbor
-				for (Abstraction nb : neighbors) {
-					if (nb == originalAbstraction)
-						return false;
-					if (originalAbstraction.predecessor == nb.predecessor
-							&& originalAbstraction.currentStmt == nb.currentStmt
-							&& originalAbstraction.correspondingCallSite == nb.correspondingCallSite) {
-						return false;
-					}
-				}
-			}
+			if (this.neighbors == null)
+				this.neighbors = Sets.newIdentityHashSet();
 			return this.neighbors.add(originalAbstraction);
 		}
 	}
