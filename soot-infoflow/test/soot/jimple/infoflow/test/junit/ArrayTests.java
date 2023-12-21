@@ -42,6 +42,16 @@ public abstract class ArrayTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
+	public void arrayReadWritePos0bTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setEnableArrayTracking(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ArrayTestCode: void concreteWriteReadSamePosTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
 	public void arrayReadWritePos1Test() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
@@ -138,6 +148,16 @@ public abstract class ArrayTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.ArrayTestCode: void arrayLengthTest2()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void arrayLengthTest2b() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setEnableArraySizeTainting(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ArrayTestCode: void arrayLengthTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
 	}
 
 	@Test(timeout = 300000)
