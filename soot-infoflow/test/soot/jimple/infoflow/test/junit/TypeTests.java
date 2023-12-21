@@ -90,6 +90,16 @@ public abstract class TypeTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
+	public void instanceofTest2b() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setEnableInstanceOfTainting(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.TypeTestCode: void instanceofTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
 	public void callTargetTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

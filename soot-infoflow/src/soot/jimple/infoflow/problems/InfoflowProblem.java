@@ -135,7 +135,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							targetType = cast.getType();
 					}
 					// Special type handling for certain operations
-					else if (rightValue instanceof InstanceOfExpr)
+					else if (rightValue instanceof InstanceOfExpr && manager.getConfig().getEnableInstanceOfTainting())
 						newAbs = source.deriveNewAbstraction(manager.getAccessPathFactory().createAccessPath(leftValue,
 								BooleanType.v(), true, ArrayTaintType.ContentsAndLength), assignStmt);
 				} else
