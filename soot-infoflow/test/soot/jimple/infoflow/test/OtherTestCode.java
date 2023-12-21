@@ -13,6 +13,7 @@ package soot.jimple.infoflow.test;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.LinkedList;
+import java.util.Random;
 
 import soot.jimple.infoflow.test.android.AccountManager;
 import soot.jimple.infoflow.test.android.ConnectionManager;
@@ -649,7 +650,6 @@ public class OtherTestCode {
 		cm.publish(a.field1);
 	}
 
-
 	int source1() {
 		return TelephonyManager.getIMEI();
 	}
@@ -685,4 +685,25 @@ public class OtherTestCode {
 		cm.publish(add42(i));
 	}
 
+	int source3() {
+		return TelephonyManager.getIMEI();
+	}
+
+	public void testNeighbors1() {
+		ConnectionManager cm = new ConnectionManager();
+		int i;
+		if (new Random().nextBoolean()) {
+			i = source1();
+			i = add42(i);
+		} else if (new Random().nextBoolean()) {
+			i = source2();
+			i = add42(i);
+		} else {
+			i = source3();
+			i = add42(i);
+		}
+		// Join of three abstractions into one successor with two neighbors
+		// where the neighbors only differ in their corresponding call site
+		cm.publish(i);
+	}
 }

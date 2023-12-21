@@ -1669,7 +1669,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return A properly configured instance of the {@link Infoflow} class
 	 */
-	private IInPlaceInfoflow createInfoflow() {
+	protected IInPlaceInfoflow createInfoflow() {
 		// Some sanity checks
 		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			if (entryPointCreator == null)

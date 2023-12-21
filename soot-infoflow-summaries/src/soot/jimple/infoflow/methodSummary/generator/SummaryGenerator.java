@@ -752,7 +752,6 @@ public class SummaryGenerator {
 		// Disable the default path reconstruction. However, still make sure to
 		// retain the contents of the callees.
 		ISummaryInfoflow iFlow = getInfoflowInstance();
-		InfoflowConfiguration.setMergeNeighbors(true);
 		iFlow.setConfig(config);
 
 		if (nativeCallHandler == null)

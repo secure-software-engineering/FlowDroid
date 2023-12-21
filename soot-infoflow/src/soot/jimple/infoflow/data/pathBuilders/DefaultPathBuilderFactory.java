@@ -26,7 +26,7 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class RepeatableContextSensitivePathBuilder extends ContextSensitivePathBuilder {
+	public static class RepeatableContextSensitivePathBuilder extends ContextSensitivePathBuilder {
 
 		public RepeatableContextSensitivePathBuilder(InfoflowManager manager) {
 			super(manager);
@@ -44,7 +44,7 @@ public class DefaultPathBuilderFactory implements IPathBuilderFactory {
 	 * @author Steven Arzt
 	 *
 	 */
-	private static class ShutdownBatchPathBuilder extends BatchPathBuilder {
+	public static class ShutdownBatchPathBuilder extends BatchPathBuilder {
 
 		public ShutdownBatchPathBuilder(InfoflowManager manager, RepeatableContextSensitivePathBuilder innerBuilder) {
 			super(manager, innerBuilder);
