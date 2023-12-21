@@ -1366,6 +1366,7 @@ public class InfoflowConfiguration {
 	private boolean enableExceptions = true;
 	private boolean enableArrays = true;
 	private boolean enableArraySizeTainting = true;
+	private boolean enableInstanceOfTainting = true;
 	private boolean flowSensitiveAliasing = true;
 	private boolean enableTypeChecking = true;
 	private boolean ignoreFlowsInSystemPackages = false;
@@ -1414,6 +1415,7 @@ public class InfoflowConfiguration {
 		this.enableExceptions = config.enableExceptions;
 		this.enableArrays = config.enableArrays;
 		this.enableArraySizeTainting = config.enableArraySizeTainting;
+		this.enableInstanceOfTainting = config.enableInstanceOfTainting;
 		this.flowSensitiveAliasing = config.flowSensitiveAliasing;
 		this.enableTypeChecking = config.enableTypeChecking;
 		this.ignoreFlowsInSystemPackages = config.ignoreFlowsInSystemPackages;
@@ -1442,13 +1444,11 @@ public class InfoflowConfiguration {
 
 		this.taintAnalysisEnabled = config.taintAnalysisEnabled;
 		this.additionalFlowsEnabled = config.additionalFlowsEnabled;
-		this.filterConditionalSinks = filterConditionalSinks;
+		this.filterConditionalSinks = config.filterConditionalSinks;
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
 		this.memoryThreshold = config.memoryThreshold;
 		this.oneSourceAtATime = config.oneSourceAtATime;
-
-		this.baseDirectory = config.baseDirectory;
 	}
 
 	/**
@@ -1702,12 +1702,46 @@ public class InfoflowConfiguration {
 		return enableArrays;
 	}
 
+	/**
+	 * Sets whether the length of a tainted array shall be considered tainted
+	 * 
+	 * @param arrayLengthTainting True to taint the length of a tainted array, false
+	 *                            otherwise
+	 */
 	public void setEnableArraySizeTainting(boolean arrayLengthTainting) {
 		this.enableArraySizeTainting = arrayLengthTainting;
 	}
 
+	/**
+	 * Gets whether the length of a tainted array shall be considered tainted
+	 * 
+	 * @return True to taint the length of a tainted array, false otherwise
+	 */
 	public boolean getEnableArraySizeTainting() {
 		return this.enableArraySizeTainting;
+	}
+
+	/**
+	 * Sets whether an "instanceof" check on a tainted object shall deliver a
+	 * tainted result
+	 * 
+	 * @param enableInstanceOfTainting True if the "instanceof" check on a tainted
+	 *                                 object shall deliver a tainted result, false
+	 *                                 otherwise
+	 */
+	public void setEnableInstanceOfTainting(boolean enableInstanceOfTainting) {
+		this.enableInstanceOfTainting = enableInstanceOfTainting;
+	}
+
+	/**
+	 * Gets whether an "instanceof" check on a tainted object shall deliver a
+	 * tainted result
+	 * 
+	 * @return True if the "instanceof" check on a tainted object shall deliver a
+	 *         tainted result, false otherwise
+	 */
+	public boolean getEnableInstanceOfTainting() {
+		return enableInstanceOfTainting;
 	}
 
 	/**
@@ -2231,6 +2265,7 @@ public class InfoflowConfiguration {
 		result = prime * result + ((dataFlowDirection == null) ? 0 : dataFlowDirection.hashCode());
 		result = prime * result + (int) (dataFlowTimeout ^ (dataFlowTimeout >>> 32));
 		result = prime * result + (enableArraySizeTainting ? 1231 : 1237);
+		result = prime * result + (enableInstanceOfTainting ? 1231 : 1237);
 		result = prime * result + (enableArrays ? 1231 : 1237);
 		result = prime * result + (enableExceptions ? 1231 : 1237);
 		result = prime * result + (enableReflection ? 1231 : 1237);
@@ -2288,6 +2323,8 @@ public class InfoflowConfiguration {
 		if (dataFlowTimeout != other.dataFlowTimeout)
 			return false;
 		if (enableArraySizeTainting != other.enableArraySizeTainting)
+			return false;
+		if (enableInstanceOfTainting != other.enableInstanceOfTainting)
 			return false;
 		if (enableArrays != other.enableArrays)
 			return false;

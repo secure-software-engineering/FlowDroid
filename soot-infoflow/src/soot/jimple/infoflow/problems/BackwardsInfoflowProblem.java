@@ -333,10 +333,16 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									if (!manager.getTypeUtils().checkCast(ce.getCastType(), rightVal.getType()))
 										return null;
 								}
+
 								// LengthExpr/RHS ArrayRef and NewArrayExpr handled in ArrayPropagationRule.
 								// We allow NewArrayExpr to pass for removing the source but not creating a new
 								// taint below.
-								addRightValue = !(rightOp instanceof LengthExpr || rightOp instanceof ArrayRef);
+								if (rightOp instanceof InstanceOfExpr
+										&& manager.getConfig().getEnableInstanceOfTainting())
+									addRightValue = true;
+								else
+									addRightValue = !(rightOp instanceof LengthExpr || rightOp instanceof ArrayRef
+											|| rightOp instanceof InstanceOfExpr);
 							}
 
 							if (addRightValue) {
@@ -411,7 +417,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
-
 
 				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
@@ -570,7 +575,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									res.add(abs);
 							}
 						} else if (ie != null && dest.getParameterCount() > 0
-									&& (isReflectiveCallSite || ie.getArgCount() == dest.getParameterCount())) {
+								&& (isReflectiveCallSite || ie.getArgCount() == dest.getParameterCount())) {
 							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
 								if (!aliasing.mayAlias(ie.getArg(i), source.getAccessPath().getPlainValue()))
 									continue;
@@ -613,7 +618,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// Sometimes callers have more arguments than the callee parameters, e.g.
 						// because one argument is resolved in native code. A concrete example is
 						// sendMessageDelayed(android.os.Message, int)
-						//   -> handleMessage(android.os.Message message)
+						// -> handleMessage(android.os.Message message)
 						// TODO: handle argument/parameter mismatch for some special cases
 
 						return res;
@@ -890,7 +895,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// overwrite them. This is needed e.g. if an heap object
 						// is an argument and leaked twice in the same path.
 						// See also Android Source Sink Tests
-						if (isSink && !manager.getConfig().getInspectSinks() && source != zeroValue && !killSource.value)
+						if (isSink && !manager.getConfig().getInspectSinks() && source != zeroValue
+								&& !killSource.value)
 							res.add(source);
 
 						// If method is excluded, add the taint to not break anything

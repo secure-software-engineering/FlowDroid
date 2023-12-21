@@ -667,7 +667,6 @@ public class TypeTestCode {
 		System.out.println(x.b.data);
 	}
 
-
 	public void arrayCastWithApTest1() {
 		String tainted = TelephonyManager.getDeviceId();
 		B a = new B();
