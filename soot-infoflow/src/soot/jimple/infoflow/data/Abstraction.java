@@ -10,17 +10,19 @@
  ******************************************************************************/
 package soot.jimple.infoflow.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import com.google.common.collect.Sets;
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.strategy.HashingStrategy;
+
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.collect.AtomicBitSet;
-import soot.jimple.infoflow.collect.ConcurrentIdentityHashMap;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
@@ -82,8 +84,8 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	protected AtomicBitSet pathFlags = null;
 	protected int propagationPathLength = 0;
 
-	public Abstraction(Collection<ISourceSinkDefinition> definitions, AccessPath sourceVal, Stmt sourceStmt, Object userData,
-					   boolean exceptionThrown, boolean isImplicit) {
+	public Abstraction(Collection<ISourceSinkDefinition> definitions, AccessPath sourceVal, Stmt sourceStmt,
+			Object userData, boolean exceptionThrown, boolean isImplicit) {
 		this(sourceVal, new SourceContext(definitions, sourceVal, sourceStmt, userData), exceptionThrown, isImplicit);
 	}
 
@@ -620,7 +622,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	 *         before, otherwise false
 	 */
 	public boolean registerPathFlag(int id, int maxSize) {
-		if (pathFlags == null || pathFlags.size() < maxSize) {
+		if (pathFlags == null || pathFlags.getLargestInt() < maxSize) {
 			synchronized (this) {
 				if (pathFlags == null) {
 					// Make sure that the field is set only after the
@@ -628,7 +630,7 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 					// is done and the object is fully usable
 					AtomicBitSet pf = new AtomicBitSet(maxSize);
 					pathFlags = pf;
-				} else if (pathFlags.size() < maxSize) {
+				} else if (pathFlags.getLargestInt() < maxSize) {
 					AtomicBitSet pf = new AtomicBitSet(maxSize);
 					for (int i = 0; i < pathFlags.size(); i++) {
 						if (pathFlags.get(i))
