@@ -493,7 +493,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr() : null;
+				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr()
+						: null;
 				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
 				return new SolverReturnFlowFunction() {
@@ -605,7 +606,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									// Propagate over the parameter taint
 									// skip if the callee has more parameter than the iCallStmt.
 									// can happen by virtual edges added by soot (`virtualedges.xml`)
-									if (i < iCallStmt.getInvokeExpr().getArgCount() && aliasing.mayAlias(paramLocals[i], sourceBase)) {
+									if (i < iCallStmt.getInvokeExpr().getArgCount()
+											&& aliasing.mayAlias(paramLocals[i], sourceBase)) {
 										parameterAliases = true;
 										originalCallArg = iCallStmt.getInvokeExpr()
 												.getArg(isReflectiveCallSite ? 1 : i);
@@ -651,8 +653,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (abs != null) {
 											res.add(abs);
 											for (Abstraction callerD1 : callerD1s)
-												manager.getAliasing().computeAliases(callerD1, iCallStmt, originalCallArg,
-													res, interproceduralCFG().getMethodOf(callSite), abs);
+												manager.getAliasing().computeAliases(callerD1, iCallStmt,
+														originalCallArg, res,
+														interproceduralCFG().getMethodOf(callSite), abs);
 										}
 									}
 								}
@@ -675,9 +678,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									&& aliasing.mayAlias(thisLocal, sourceBase)) {
 								if (isExecutorExecute) {
 									if (manager.getTypeUtils().checkCast(source.getAccessPath(),
-																		 ie.getArg(0).getType())) {
-										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-												ie.getArg(0));
+											ie.getArg(0).getType())) {
+										AccessPath ap = manager.getAccessPathFactory()
+												.copyWithNewValue(source.getAccessPath(), ie.getArg(0));
 										Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
 										if (abs != null)
 											res.add(abs);
@@ -689,8 +692,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 										// Get the caller-side base local
 										// and create a new access path for it
-										Value callerBaseLocal = isReflectiveCallSite
-												? iIExpr.getArg(0)
+										Value callerBaseLocal = isReflectiveCallSite ? iIExpr.getArg(0)
 												: iIExpr.getBase();
 										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 												newSource.getAccessPath(), callerBaseLocal,
@@ -701,8 +703,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 											res.add(abs);
 											if (!abs.equals(calleeD1))
 												for (Abstraction callerD1 : callerD1s)
-													manager.getAliasing().computeAliases(callerD1, iCallStmt, callerBaseLocal,
-															res, interproceduralCFG().getMethodOf(iCallStmt), abs);
+													manager.getAliasing().computeAliases(callerD1, iCallStmt,
+															callerBaseLocal, res,
+															interproceduralCFG().getMethodOf(iCallStmt), abs);
 										}
 									}
 								}
@@ -855,7 +858,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							if (allCalleesRead) {
 								if (invExpr instanceof InstanceInvokeExpr
 										&& aliasing.mayAlias(((InstanceInvokeExpr) invExpr).getBase(),
-															 newSource.getAccessPath().getPlainValue())) {
+												newSource.getAccessPath().getPlainValue())) {
 									passOn = false;
 								}
 								if (passOn) {

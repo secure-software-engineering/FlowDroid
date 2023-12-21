@@ -46,12 +46,11 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 		final Value leftVal = assignStmt.getLeftOp();
 		final Value rightVal = assignStmt.getRightOp();
 
-		if (rightVal instanceof LengthExpr) {
+		if (rightVal instanceof LengthExpr && manager.getConfig().getEnableArraySizeTainting()) {
 			LengthExpr lengthExpr = (LengthExpr) rightVal;
 			if (getAliasing().mayAlias(source.getAccessPath().getPlainValue(), lengthExpr.getOp())) {
 				// Is the length tainted? If only the contents are tainted, we
-				// the
-				// incoming abstraction does not match
+				// the incoming abstraction does not match
 				if (source.getAccessPath().getArrayTaintType() == ArrayTaintType.Contents)
 					return null;
 
@@ -131,8 +130,8 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 
