@@ -21,11 +21,16 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.MethodSubSignature;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
@@ -39,6 +44,9 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdge;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdgeTarget;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
@@ -380,4 +388,27 @@ public abstract class AbstractInfoflowProblem
 		return propagationRules;
 	}
 
+	protected Value determineVirtualEdgeBase(InvokeExpr ie, SootMethod callee) {
+		VirtualEdge summary;
+		VirtualEdgesSummaries summaries = getManager().getVirtualEdgeSummaries();
+		if (ie instanceof StaticInvokeExpr)
+			summary = summaries.getVirtualEdgesMatchingFunction(ie.getMethod().getSignature());
+		else
+			summary = summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(ie.getMethod().makeRef()));
+		if (summary != null) {
+			for (VirtualEdgeTarget t : summary.getTargets()) {
+				int baseIdx = t.getArgIndex();
+				Value base = null;
+				if (baseIdx == -1) {
+					if (ie instanceof InstanceInvokeExpr) {
+						base = ((InstanceInvokeExpr) ie).getBase();
+					}
+				} else {
+					base = ie.getArg(baseIdx);
+				}
+				return base;
+			}
+		}
+		return null;
+	}
 }

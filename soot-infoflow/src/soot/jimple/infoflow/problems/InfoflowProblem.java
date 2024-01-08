@@ -391,7 +391,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
 				}
@@ -495,7 +495,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr()
 						: null;
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
+						.equals(callee.getNumberedSubSignature());
 
 				return new SolverReturnFlowFunction() {
 
@@ -676,11 +677,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// (then we have already fixed it)
 							if (!parameterAliases && !thisAliases && source.getAccessPath().getTaintSubFields()
 									&& aliasing.mayAlias(thisLocal, sourceBase)) {
-								if (isExecutorExecute) {
-									if (manager.getTypeUtils().checkCast(source.getAccessPath(),
-											ie.getArg(0).getType())) {
+								if (isVirtualEdgeCandidate) {
+									Value base = determineVirtualEdgeBase(ie, callee);
+									if (manager.getTypeUtils().checkCast(source.getAccessPath(), base.getType())) {
 										AccessPath ap = manager.getAccessPathFactory()
-												.copyWithNewValue(source.getAccessPath(), ie.getArg(0));
+												.copyWithNewValue(source.getAccessPath(), base);
 										Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
 										if (abs != null)
 											res.add(abs);
@@ -942,7 +943,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Android executor methods are handled specially.
 				// getSubSignature() is slow, so we try to avoid it whenever we can
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
+						.equals(callee.getNumberedSubSignature());
 
 				Set<AccessPath> res = null;
 
@@ -960,7 +962,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Is this a virtual method call?
 				Value baseLocal = null;
-				if (!isExecutorExecute && !ap.isStaticFieldRef() && !callee.isStatic()) {
+				if (!isVirtualEdgeCandidate && !ap.isStaticFieldRef() && !callee.isStatic()) {
 					if (interproceduralCFG().isReflectiveCallSite(ie)) {
 						// Method.invoke(target, arg0, ..., argn)
 						baseLocal = ie.getArg(0);
@@ -990,15 +992,24 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// special treatment for clinit methods - no param mapping
 				// possible
 				final int calleeParamCount = callee.getParameterCount();
-				if (isExecutorExecute) {
-					if (aliasing.mayAlias(ie.getArg(0), ap.getPlainValue())) {
-						if (res == null)
-							res = new HashSet<AccessPath>();
-						res.add(manager.getAccessPathFactory().copyWithNewValue(ap,
-								callee.getActiveBody().getThisLocal()));
+				boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				if (isVirtualEdgeCandidate) {
+					if (!isReflectiveCallSite && !callee.isStaticInitializer()) {
+						Value base = determineVirtualEdgeBase(ie, callee);
+
+						if (base != null) {
+							if (aliasing.mayAlias(base, ap.getPlainValue())) {
+								if (manager.getTypeUtils().hasCompatibleTypesForCall(ap, callee.getDeclaringClass())) {
+									if (res == null)
+										res = new HashSet<AccessPath>();
+
+									res.add(manager.getAccessPathFactory().copyWithNewValue(ap,
+											callee.retrieveActiveBody().getThisLocal()));
+								}
+							}
+						}
 					}
 				} else if (calleeParamCount > 0) {
-					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 					// check if param is tainted:
 					if (isReflectiveCallSite || ie.getArgCount() == calleeParamCount) {
@@ -1032,12 +1043,16 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						}
 					}
 
+					//wenn subsig nicht matched, virtualedgemanager anschauen
+					//wir brauchen nur das argument vom 2.inneren
+
 					// Sometimes callers have more arguments than the callee parameters, e.g.
 					// because one argument is resolved in native code. A concrete example is
 					// sendMessageDelayed(android.os.Message, int)
 					// -> handleMessage(android.os.Message message)
 					// TODO: handle argument/parameter mismatch for some special cases
 				}
+
 				return res;
 			}
 		};

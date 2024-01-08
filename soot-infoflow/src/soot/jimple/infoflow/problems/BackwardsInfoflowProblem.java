@@ -162,10 +162,10 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									cutFirstFieldLeft = (mappedAp.getFragmentCount() > 0
 											&& mappedAp.getFirstField() == instRef.getField());
 									// We can't really get more precise typewise
-//                                    leftType = leftVal.getType();
+									//                                    leftType = leftVal.getType();
 									if (!mappedAp.equals(ap)) {
 										ap = mappedAp;
-//                                        source = source.deriveNewAbstraction(ap, null);
+										//                                        source = source.deriveNewAbstraction(ap, null);
 									}
 								}
 								// whole object tainted
@@ -174,7 +174,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									// $stack1 = o.x with t=o.* -> T={$stack1}.
 									addLeftValue = true;
 									createNewVal = true;
-//                                    leftType = leftVal.getType();
+									//                                    leftType = leftVal.getType();
 								}
 							} else if (rightVal instanceof ArrayRef) {
 								if (!getManager().getConfig().getEnableArrayTracking()
@@ -421,7 +421,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
+				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
+						.equals(dest.getNumberedSubSignature());
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 				return new SolverCallFlowFunction() {
@@ -545,7 +546,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isExecutorExecute && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
 							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
 									: instanceInvokeExpr.getBase();
@@ -566,13 +567,19 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute) {
-							if (ie != null && aliasing.mayAlias(ie.getArg(0), source.getAccessPath().getPlainValue())) {
-								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-										thisLocal);
-								Abstraction abs = source.deriveNewAbstraction(ap, stmt);
-								if (abs != null)
-									res.add(abs);
+						if (isVirtualEdgeCandidate) {
+
+							Value base = determineVirtualEdgeBase(ie, dest);
+
+							if (base != null) {
+								if (ie != null && aliasing.mayAlias(base, source.getAccessPath().getPlainValue())) {
+									AccessPath ap = manager.getAccessPathFactory()
+											.copyWithNewValue(source.getAccessPath(), thisLocal);
+									Abstraction abs = source.deriveNewAbstraction(ap, stmt);
+									if (abs != null)
+										res.add(abs);
+								}
+
 							}
 						} else if (ie != null && dest.getParameterCount() > 0
 								&& (isReflectiveCallSite || ie.getArgCount() == dest.getParameterCount())) {
@@ -647,7 +654,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final Stmt exitStmt = (Stmt) exitSite;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
+						.equals(callee.getNumberedSubSignature());
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -696,7 +704,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isExecutorExecute && !callee.isStatic()) {
+						if (!isVirtualEdgeCandidate && !callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (aliasing.mayAlias(thisLocal, sourceBase) && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
@@ -721,10 +729,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute && ie != null) {
+						if (isVirtualEdgeCandidate && ie != null) {
 							if (aliasing.mayAlias(thisLocal, source.getAccessPath().getPlainValue())) {
+								Value base = determineVirtualEdgeBase(ie, callee);
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-										ie.getArg(0));
+										base);
 								Abstraction abs = source.deriveNewAbstraction(ap, exitStmt);
 								if (abs != null) {
 									enterConditional(abs, callSite, returnSite);
