@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.problems;
 
 import java.lang.ref.SoftReference;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.MethodSubSignature;
+import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
@@ -45,6 +48,8 @@ import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.DirectTarget;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.IndirectTarget;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdge;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdgeTarget;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
@@ -397,6 +402,33 @@ public abstract class AbstractInfoflowProblem
 			summary = summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(ie.getMethod().makeRef()));
 		if (summary != null) {
 			for (VirtualEdgeTarget t : summary.getTargets()) {
+				if (t instanceof IndirectTarget) {
+					ArrayDeque<IndirectTarget> targetQueue = new ArrayDeque<>();
+					targetQueue.add((IndirectTarget) t);
+					IndirectTarget c;
+					boolean matched = false;
+					while ((c = targetQueue.poll()) != null) {
+						for (VirtualEdgeTarget d : c.getTargets()) {
+							if (d instanceof IndirectTarget)
+								targetQueue.add(c);
+							else if (d instanceof DirectTarget) {
+								DirectTarget dt = (DirectTarget) t;
+								if (matchDirectTarget(dt, callee)) {
+									matched = true;
+									break;
+								}
+							}
+
+						}
+					}
+					if (!matched)
+						continue;
+				} else {
+					DirectTarget dt = (DirectTarget) t;
+					if (!matchDirectTarget(dt, callee))
+						continue;
+				}
+
 				int baseIdx = t.getArgIndex();
 				Value base = null;
 				if (baseIdx == -1) {
@@ -410,5 +442,14 @@ public abstract class AbstractInfoflowProblem
 			}
 		}
 		return null;
+	}
+
+	private boolean matchDirectTarget(DirectTarget dt, SootMethod callee) {
+		RefType tt = dt.getTargetType();
+		if (tt != null) {
+			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(callee.getDeclaringClass().getType(), tt))
+				return false;
+		}
+		return dt.getTargetMethod().equals(new MethodSubSignature(callee.makeRef()));
 	}
 }
