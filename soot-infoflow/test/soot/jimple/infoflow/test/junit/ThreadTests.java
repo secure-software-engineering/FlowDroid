@@ -46,4 +46,43 @@ public abstract class ThreadTests extends JUnitTests {
 		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, SOURCE_STRING_PWD));
 	}
 
+	@Test(timeout = 300000)
+	public void threadTestAnonymous() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ThreadTestCode: void testAnonymousInnerClass()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, SOURCE_STRING_PWD));
+	}
+
+	@Test(timeout = 300000)
+	public void testParamMapping() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ThreadTestCode: void testParamMapping()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, SOURCE_STRING_PWD));
+	}
+
+	@Test(timeout = 300000)
+	public void testParamMappingAlias() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().getAccessPathConfiguration().setUseThisChainReduction(false);
+		infoflow.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ThreadTestCode: void testParamMappingAlias()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertTrue(infoflow.getResults().isPathBetweenMethods(sink, SOURCE_STRING_PWD));
+	}
+
 }
