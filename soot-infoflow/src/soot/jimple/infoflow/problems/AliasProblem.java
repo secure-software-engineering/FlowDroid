@@ -431,7 +431,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
 				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(dest.getNumberedSubSignature());
+						&& !ie.getMethod().getNumberedSubSignature().equals(dest.getNumberedSubSignature())
+						&& !isReflectiveCallSite;
 
 				return new SolverCallFlowFunction() {
 
@@ -618,7 +619,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// getSubSignature()
 				// is slow, so we try to avoid it whenever we can
 				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature());
+						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {
 

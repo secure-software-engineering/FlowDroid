@@ -496,7 +496,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr()
 						: null;
 				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature());
+						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {
 
@@ -604,6 +605,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (originalCallArg == leftOp)
 											continue;
 									}
+
 									// Propagate over the parameter taint
 									// skip if the callee has more parameter than the iCallStmt.
 									// can happen by virtual edges added by soot (`virtualedges.xml`)
@@ -941,10 +943,13 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (ap.isEmpty())
 					return null;
 
+				boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+
 				// Android executor methods are handled specially.
 				// getSubSignature() is slow, so we try to avoid it whenever we can
 				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature());
+						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+						&& !isReflectiveCallSite;
 
 				Set<AccessPath> res = null;
 
@@ -963,7 +968,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// Is this a virtual method call?
 				Value baseLocal = null;
 				if (!isVirtualEdgeCandidate && !ap.isStaticFieldRef() && !callee.isStatic()) {
-					if (interproceduralCFG().isReflectiveCallSite(ie)) {
+					if (isReflectiveCallSite) {
 						// Method.invoke(target, arg0, ..., argn)
 						baseLocal = ie.getArg(0);
 					} else {
@@ -992,7 +997,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// special treatment for clinit methods - no param mapping
 				// possible
 				final int calleeParamCount = callee.getParameterCount();
-				boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 				if (isVirtualEdgeCandidate) {
 					if (!isReflectiveCallSite && !callee.isStaticInitializer()) {
 						Value base = determineVirtualEdgeBase(ie, callee);
