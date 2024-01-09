@@ -430,8 +430,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(dest.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
 						&& !isReflectiveCallSite;
 
 				return new SolverCallFlowFunction() {
@@ -618,8 +617,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// Android executor methods are handled specially.
 				// getSubSignature()
 				// is slow, so we try to avoid it whenever we can
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
 						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {

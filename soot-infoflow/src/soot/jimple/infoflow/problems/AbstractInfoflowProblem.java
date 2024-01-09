@@ -455,4 +455,14 @@ public abstract class AbstractInfoflowProblem
 
 		return manager.getTypeUtils().isOverriden(dt.getTargetMethod(), callee);
 	}
+
+	protected boolean isVirtualEdgeCandidate(InvokeExpr expr, SootMethod callee) {
+		if (expr.getMethodRef().getParameterTypes().size() != callee.getParameterCount())
+			return false;
+		if (!expr.getMethodRef().getName().equals(callee.getName()))
+			return false;
+
+		return !manager.getTypeUtils().isOverriden(new MethodSubSignature(expr.getMethodRef()), callee);
+	}
+
 }

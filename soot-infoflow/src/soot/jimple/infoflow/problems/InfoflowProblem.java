@@ -495,8 +495,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr()
 						: null;
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
 						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {
@@ -947,8 +946,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Android executor methods are handled specially.
 				// getSubSignature() is slow, so we try to avoid it whenever we can
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
 						&& !isReflectiveCallSite;
 
 				Set<AccessPath> res = null;

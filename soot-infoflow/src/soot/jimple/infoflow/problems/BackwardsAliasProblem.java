@@ -310,8 +310,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final boolean isSource = callStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(dest.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
 						&& !isReflectiveCallSite;
 
 				return new SolverCallFlowFunction() {
@@ -453,8 +452,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isVirtualEdgeCandidate = ie != null
-						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature())
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
 						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {
