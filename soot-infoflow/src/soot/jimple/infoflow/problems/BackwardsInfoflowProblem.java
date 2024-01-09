@@ -421,8 +421,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
-						.equals(dest.getNumberedSubSignature());
+				final boolean isVirtualEdgeCandidate = ie != null
+						&& !ie.getMethod().getNumberedSubSignature().equals(dest.getNumberedSubSignature());
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 
 				return new SolverCallFlowFunction() {
@@ -654,8 +654,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final Stmt exitStmt = (Stmt) exitSite;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isVirtualEdgeCandidate = !ie.getMethod().getNumberedSubSignature()
-						.equals(callee.getNumberedSubSignature());
+				final boolean isVirtualEdgeCandidate = ie != null
+						&& !ie.getMethod().getNumberedSubSignature().equals(callee.getNumberedSubSignature());
 
 				return new SolverReturnFlowFunction() {
 					@Override

@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import soot.MethodSubSignature;
 import soot.RefType;
-import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
@@ -412,7 +411,7 @@ public abstract class AbstractInfoflowProblem
 							if (d instanceof IndirectTarget)
 								targetQueue.add(c);
 							else if (d instanceof DirectTarget) {
-								DirectTarget dt = (DirectTarget) t;
+								DirectTarget dt = (DirectTarget) d;
 								if (matchDirectTarget(dt, callee)) {
 									matched = true;
 									break;
@@ -447,8 +446,9 @@ public abstract class AbstractInfoflowProblem
 	private boolean matchDirectTarget(DirectTarget dt, SootMethod callee) {
 		RefType tt = dt.getTargetType();
 		if (tt != null) {
-			if (!Scene.v().getOrMakeFastHierarchy().canStoreType(callee.getDeclaringClass().getType(), tt))
-				return false;
+			if (tt.hasSootClass() && tt.getSootClass().resolvingLevel() >= SootClass.HIERARCHY)
+				if (!manager.getTypeUtils().checkCast(callee.getDeclaringClass().getType(), tt))
+					return false;
 		}
 		return dt.getTargetMethod().equals(new MethodSubSignature(callee.makeRef()));
 	}
