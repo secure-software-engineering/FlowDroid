@@ -129,7 +129,6 @@ public class TypeUtils {
 		final int fragmentCount = accessPath.getFragmentCount();
 		int fieldStartIdx = 0;
 
-		//TODO: OnFlyCallGraphBuilder.getReceiversOfVirtualEdge nachimplementieren
 		if (accessPath.isStaticFieldRef()) {
 			if (!checkCast(type, accessPath.getFirstFieldType()))
 				return false;
@@ -180,7 +179,7 @@ public class TypeUtils {
 		// Cannot invoke a method on a primitive type
 		if (apBase.getBaseType() instanceof PrimType)
 			return false;
-		FastHierarchy hierarchy = manager.getHierarchy();
+
 		// Cannot invoke a method on an array
 		if (apBase.getBaseType() instanceof ArrayType)
 			return dest.getName().equals("java.lang.Object");

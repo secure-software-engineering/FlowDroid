@@ -392,6 +392,17 @@ public abstract class AbstractInfoflowProblem
 		return propagationRules;
 	}
 
+	/**
+	 * In case of a virtual edge starting from an invoke expression, returns the
+	 * value from the invoke expression which contains the base instance  
+	 * on which the virtual edge target will be called.
+	 * 
+	 * E.g. for new Thread(runnable), it returns runnable.
+	 *  
+	 * @param ie the invoke expression
+	 * @param callee the callee
+	 * @return the value which is the base value
+	 */
 	protected Value determineVirtualEdgeBase(InvokeExpr ie, SootMethod callee) {
 		VirtualEdge summary;
 		VirtualEdgesSummaries summaries = getManager().getVirtualEdgeSummaries();
