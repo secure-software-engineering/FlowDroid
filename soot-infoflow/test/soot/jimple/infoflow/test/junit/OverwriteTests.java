@@ -145,4 +145,13 @@ public abstract class OverwriteTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
+	@Test(timeout = 300000)
+	public void overwriteBaseValueTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.OverwriteTestCode: void overwriteBaseValueTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
 }
