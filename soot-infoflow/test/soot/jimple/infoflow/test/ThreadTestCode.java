@@ -27,6 +27,30 @@ public class ThreadTestCode {
 		}
 	}
 
+	static class FieldHolder {
+		String field;
+	}
+
+	public FieldHolder pubFieldHolder;
+	public FieldHolder pubFieldHolder2;
+
+	public void testParamMappingAlias() {
+		AccountManager am = new AccountManager();
+		pubFieldHolder = new FieldHolder();
+		pubFieldHolder2 = pubFieldHolder;
+		AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+			@Override
+			public Object run() {
+				pubFieldHolder2.field = am.getPassword();
+				ConnectionManager cm = new ConnectionManager();
+				cm.publish(pubFieldHolder.field);
+				return null;
+			}
+
+		});
+	}
+
 	public void testAnonymousInnerClass() {
 		AccountManager am = new AccountManager();
 		pubfield = am.getPassword();

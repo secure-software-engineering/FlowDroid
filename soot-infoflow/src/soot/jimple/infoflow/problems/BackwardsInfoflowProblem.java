@@ -400,7 +400,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit callStmt, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", callStmt, dest);
 					return KillAll.v();
 				}

@@ -412,7 +412,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete())
+				if (!dest.hasActiveBody())
 					return KillAll.v();
 
 				final Stmt stmt = (Stmt) src;
