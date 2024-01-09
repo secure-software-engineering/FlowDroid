@@ -521,7 +521,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 						// checks: this/fields
 						Value sourceBase = source.getAccessPath().getPlainValue();
-						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
+								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 							InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 							Value callBase = isReflectiveCallSite ? iIExpr.getArg(0) : iIExpr.getBase();
 

@@ -546,7 +546,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
+								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
 									: instanceInvokeExpr.getBase();
