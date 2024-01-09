@@ -707,8 +707,10 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// map o.f to this.f
 						if (!isVirtualEdgeCandidate && !callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
-							if (aliasing.mayAlias(thisLocal, sourceBase) && manager.getTypeUtils()
-									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
+							if (aliasing.mayAlias(thisLocal, sourceBase)
+									&& manager.getTypeUtils().hasCompatibleTypesForCall(source.getAccessPath(),
+											callee.getDeclaringClass())
+									&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 								Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
 										: instanceInvokeExpr.getBase();

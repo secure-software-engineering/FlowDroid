@@ -965,7 +965,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Is this a virtual method call?
 				Value baseLocal = null;
-				if (!isVirtualEdgeCandidate && !ap.isStaticFieldRef() && !callee.isStatic()) {
+				if (!isVirtualEdgeCandidate && !ap.isStaticFieldRef() && !callee.isStatic()
+						&& ie instanceof InstanceInvokeExpr) {
 					if (isReflectiveCallSite) {
 						// Method.invoke(target, arg0, ..., argn)
 						baseLocal = ie.getArg(0);
