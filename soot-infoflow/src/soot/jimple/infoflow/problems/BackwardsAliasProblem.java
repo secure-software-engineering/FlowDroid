@@ -1,6 +1,11 @@
 package soot.jimple.infoflow.problems;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import heros.FlowFunction;
 import heros.FlowFunctions;
@@ -15,7 +20,23 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
-import soot.jimple.*;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.BinopExpr;
+import soot.jimple.CastExpr;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.FieldRef;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InstanceOfExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.NewArrayExpr;
+import soot.jimple.ReturnStmt;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
+import soot.jimple.UnopExpr;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
@@ -163,7 +184,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 										handOver(d1, pred, newAbs);
 								}
 							} else {
-								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightOp, rightType, cutSubfield);
+								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightOp,
+										rightType, cutSubfield);
 								newAbs = source.deriveNewAbstraction(newAp, assignStmt);
 							}
 
@@ -270,7 +292,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit callSite, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", callSite, dest);
 					return KillAll.v();
 				}
@@ -284,12 +306,12 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-
 				final boolean isSink = callStmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = callStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
+						&& !isReflectiveCallSite;
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -352,7 +374,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map o to this
-						if (!isExecutorExecute && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
 							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
 							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
 									: instanceInvokeExpr.getBase();
@@ -373,7 +395,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute && ie != null && ie.getArg(0) == source.getAccessPath().getPlainValue()) {
+						if (isVirtualEdgeCandidate && ie != null
+								&& determineVirtualEdgeBase(ie, dest) == source.getAccessPath().getPlainValue()) {
 							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 									thisLocal);
 							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
@@ -429,7 +452,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
+						&& !isReflectiveCallSite;
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -490,7 +514,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isExecutorExecute && !callee.isStatic()) {
+						if (!isVirtualEdgeCandidate && !callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (thisLocal == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
@@ -513,7 +537,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute && ie != null && ie.getArg(0) == source.getAccessPath().getPlainValue()) {
+						if (isVirtualEdgeCandidate && ie != null
+								&& determineVirtualEdgeBase(ie, callee) == source.getAccessPath().getPlainValue()) {
 							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 									thisLocal);
 							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
@@ -719,8 +744,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							manager.getMainSolver().processEdge(new PathEdge<>(d1, unit, abs));
 					}
 				} else {
-					manager.getMainSolver()
-							.processEdge(new PathEdge<>(d1, unit, in));
+					manager.getMainSolver().processEdge(new PathEdge<>(d1, unit, in));
 				}
 			}
 		};
