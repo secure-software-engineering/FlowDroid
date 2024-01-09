@@ -469,9 +469,9 @@ public abstract class AbstractInfoflowProblem
 
 	protected boolean isVirtualEdgeCandidate(InvokeExpr expr, SootMethod callee) {
 		if (expr.getMethodRef().getParameterTypes().size() != callee.getParameterCount())
-			return false;
+			return true;
 		if (!expr.getMethodRef().getName().equals(callee.getName()))
-			return false;
+			return true;
 
 		return !manager.getTypeUtils().isOverriden(new MethodSubSignature(expr.getMethodRef()), callee);
 	}
