@@ -13,6 +13,13 @@ import soot.jimple.infoflow.InfoflowManager;
  */
 public class CallerCalleeManager {
 
+	/**
+	 * Returns the responsible caller-callee argument mapper for the given call site and callee.
+	 * @param manager the infoflow manager
+	 * @param callSite the callsite
+	 * @param callee the callee
+	 * @return the corresponding caller-callee mapper
+	 */
 	public static ICallerCalleeArgumentMapper getMapper(InfoflowManager manager, Stmt callSite, SootMethod callee) {
 		if (callSite != null && callSite.containsInvokeExpr()) {
 			final InvokeExpr ie = callSite.getInvokeExpr();
