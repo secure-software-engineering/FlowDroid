@@ -391,7 +391,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
 				}

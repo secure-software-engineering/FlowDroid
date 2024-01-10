@@ -100,7 +100,7 @@ public abstract class AbstractGapManager implements IGapManager {
 
 		// We always construct a gap if we have no callees. Sometimes, we have a callee,
 		// but that's only a self-reference or an abstract method
-		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(stmt).stream().filter(c -> c.isConcrete())
+		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(stmt).stream().filter(c -> c.hasActiveBody())
 				.collect(Collectors.toList());
 		if (!callees.isEmpty())
 			return false;
