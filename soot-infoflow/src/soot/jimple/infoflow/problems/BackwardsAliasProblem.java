@@ -1,6 +1,11 @@
 package soot.jimple.infoflow.problems;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import heros.FlowFunction;
 import heros.FlowFunctions;
@@ -15,10 +20,28 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
-import soot.jimple.*;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.BinopExpr;
+import soot.jimple.CastExpr;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.FieldRef;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InstanceOfExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.NewArrayExpr;
+import soot.jimple.ReturnStmt;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
+import soot.jimple.UnopExpr;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.callmappers.CallerCalleeManager;
+import soot.jimple.infoflow.callmappers.ICallerCalleeArgumentMapper;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
@@ -163,7 +186,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 										handOver(d1, pred, newAbs);
 								}
 							} else {
-								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightOp, rightType, cutSubfield);
+								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightOp,
+										rightType, cutSubfield);
 								newAbs = source.deriveNewAbstraction(newAp, assignStmt);
 							}
 
@@ -270,7 +294,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit callSite, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", callSite, dest);
 					return KillAll.v();
 				}
@@ -284,12 +308,11 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final Local[] paramLocals = dest.getActiveBody().getParameterLocals().toArray(new Local[0]);
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-
 				final boolean isSink = callStmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = callStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, dest);
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -352,16 +375,15 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map o to this
-						if (!isExecutorExecute && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
-							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
-							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-									: instanceInvokeExpr.getBase();
+						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
+									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (callBase == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
-								if (isReflectiveCallSite
-										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), thisLocal);
 									Abstraction abs = checkAbstraction(
@@ -373,19 +395,17 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute && ie != null && ie.getArg(0) == source.getAccessPath().getPlainValue()) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									thisLocal);
-							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
-							if (abs != null)
-								res.add(abs);
-						} else if (ie != null && dest.getParameterCount() > 0) {
-							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+						if (ie != null && dest.getParameterCount() > 0) {
+							for (int i = 0; i < ie.getArgCount(); i++) {
 								if (ie.getArg(i) != source.getAccessPath().getPlainValue())
 									continue;
 
+								int mappedIndex = mapper.getCalleeIndexOfCallerParameter(i);
+								if (mappedIndex == ICallerCalleeArgumentMapper.UNKNOWN)
+									continue;
+
 								// taint all parameters if reflective call site
-								if (isReflectiveCallSite) {
+								if (mappedIndex == ICallerCalleeArgumentMapper.ALL_PARAMS) {
 									for (Value param : paramLocals) {
 										AccessPath ap = manager.getAccessPathFactory()
 												.copyWithNewValue(source.getAccessPath(), param, null, false);
@@ -425,11 +445,11 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final Stmt callStmt = (Stmt) callSite;
 				final InvokeExpr ie = (callStmt != null && callStmt.containsInvokeExpr()) ? callStmt.getInvokeExpr()
 						: null;
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, callee);
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -490,16 +510,15 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isExecutorExecute && !callee.isStatic()) {
+						if (!callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (thisLocal == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
-								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
-								Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-										: instanceInvokeExpr.getBase();
+								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
+										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
-								if (isReflectiveCallSite
-										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 											source.getAccessPath(), callBase,
 											isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);
@@ -513,21 +532,14 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isExecutorExecute && ie != null && ie.getArg(0) == source.getAccessPath().getPlainValue()) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									thisLocal);
-							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
-							if (abs != null) {
-								res.add(abs);
-							}
-						} else if (ie != null) {
+						if (ie != null) {
 							for (int i = 0; i < callee.getParameterCount(); i++) {
 								if (source.getAccessPath().getPlainValue() != paramLocals[i])
 									continue;
 								if (isPrimitiveOrStringBase(source))
 									continue;
 
-								Value originalCallArg = ie.getArg(isReflectiveCallSite ? 1 : i);
+								Value originalCallArg = mapper.getCallerValueOfCalleeParameter(ie, i);
 								if (callSite instanceof DefinitionStmt && !isExceptionHandler(returnSite)) {
 									DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 									Value leftOp = defnStmt.getLeftOp();
@@ -719,8 +731,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							manager.getMainSolver().processEdge(new PathEdge<>(d1, unit, abs));
 					}
 				} else {
-					manager.getMainSolver()
-							.processEdge(new PathEdge<>(d1, unit, in));
+					manager.getMainSolver().processEdge(new PathEdge<>(d1, unit, in));
 				}
 			}
 		};

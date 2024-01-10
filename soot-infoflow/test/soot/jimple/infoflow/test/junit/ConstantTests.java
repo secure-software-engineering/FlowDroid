@@ -132,7 +132,7 @@ public abstract class ConstantTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void constResursiveTest1() {
+	public void constRecursiveTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.ConstantTestCode: void constRecursiveTest1()>");
