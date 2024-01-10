@@ -119,6 +119,19 @@ use Maven, you can add FlowDroid as a reference and have Maven resolve all requi
 
 In this section, we will collect code and configuration snippets for common tasks with FlowDroid.
 
+To run a simple data flow analysis, you can use the following code. You need to replace the placeholder ``androidJarFolder`` with the location of the
+``platforms`` directory in your Android SDK installation. The placeholder ``apkPath`` refers to the full file path of the APK file. The data flow
+results are accessible via the ``InfoflowResults`` class.
+
+```
+SetupApplication app = new SetupApplication(androidJarFolder, apkPath);
+app.setTaintWrapper(new SummaryTaintWrapper(new LazySummaryProvider("summariesManual")));
+InfoflowResults results = app.runInfoflow();
+```
+
+The data flow analysis uses the default StubDroid library summaries. In the default configuration, these summaries are stored in
+the ``summariesManual`` folder and there is no need to change that.
+
 ## Publications
 
 If you want to read the details on how FlowDroid works, <a href="http://tuprints.ulb.tu-darmstadt.de/5937/">the PhD thesis of

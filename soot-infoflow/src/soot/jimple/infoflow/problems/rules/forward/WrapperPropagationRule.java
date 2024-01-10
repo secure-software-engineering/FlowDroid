@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import soot.MethodSubSignature;
 import soot.RefType;
 import soot.SootMethod;
 import soot.jimple.DefinitionStmt;
@@ -18,10 +17,9 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
-import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
 
 /**
  * Rule for using external taint wrappers
@@ -30,8 +28,6 @@ import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
  *
  */
 public class WrapperPropagationRule extends AbstractTaintPropagationRule {
-
-	private VirtualEdgesSummaries summaries = new VirtualEdgesSummaries();
 
 	public WrapperPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
@@ -53,7 +49,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 	 * @return The taints computed by the wrapper
 	 */
 	private Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source,
-			ByReferenceBoolean killSource) {
+												  ByReferenceBoolean killSource) {
 		// Do not process zero abstractions
 		if (source == getZeroValue())
 			return null;
@@ -166,26 +162,10 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 			ByReferenceBoolean killAll) {
 		// If we have an exclusive taint wrapper for the target
 		// method, we do not perform an own taint propagation.
-		ITaintPropagationWrapper tw = getManager().getTaintWrapper();
-		if (tw != null) {
-			if (stmt.containsInvokeExpr()) {
-				SootMethod m = stmt.getInvokeExpr().getMethod();
-				if (m.isStatic() && summaries.getVirtualEdgesMatchingFunction(m.getSignature()) != null) {
-					//We have a virtual edge, e.g. for Thread.start
-					//as such we do not want to kill the taint here
-					return null;
-				}
-				if (!m.isStatic()
-						&& summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(m.makeRef())) != null) {
-					//same as above
-					return null;
-				}
-			}
-			if (tw.isExclusive(stmt, source)) {
-				// taint is propagated in CallToReturnFunction, so we do not need any taint
-				// here:
-				killAll.value = true;
-			}
+		if (getManager().getTaintWrapper() != null && getManager().getTaintWrapper().isExclusive(stmt, source)) {
+			// taint is propagated in CallToReturnFunction, so we do not need any taint
+			// here:
+			killAll.value = true;
 		}
 		return null;
 	}

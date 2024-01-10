@@ -393,7 +393,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.hasActiveBody()) {
+				if (!dest.isConcrete()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
 				}
@@ -602,7 +602,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (originalCallArg == leftOp)
 											continue;
 									}
-
 									// Propagate over the parameter taint
 									// skip if the callee has more parameter than the iCallStmt.
 									// can happen by virtual edges added by soot (`virtualedges.xml`)
@@ -929,8 +928,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (ap.isEmpty())
 					return null;
 
-				//boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
-
 				// Android executor methods are handled specially.
 				// getSubSignature() is slow, so we try to avoid it whenever we can
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmtCaller, callee);
@@ -1012,16 +1009,12 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 					}
 
-					//wenn subsig nicht matched, virtualedgemanager anschauen
-					//wir brauchen nur das argument vom 2.inneren
-
 					// Sometimes callers have more arguments than the callee parameters, e.g.
 					// because one argument is resolved in native code. A concrete example is
 					// sendMessageDelayed(android.os.Message, int)
 					// -> handleMessage(android.os.Message message)
 					// TODO: handle argument/parameter mismatch for some special cases
 				}
-
 				return res;
 			}
 		};
