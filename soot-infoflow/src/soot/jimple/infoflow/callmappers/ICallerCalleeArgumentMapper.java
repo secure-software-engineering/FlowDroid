@@ -41,7 +41,8 @@ public abstract interface ICallerCalleeArgumentMapper {
 		int idx = getCallerIndexOfCalleeParameter(calleeParamIndex);
 		if (idx == BASE_OBJECT) {
 			return ((InstanceInvokeExpr) expr).getBase();
-		}
+		} else if (idx == UNKNOWN)
+			return null;
 		return expr.getArg(idx);
 	}
 

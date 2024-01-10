@@ -657,6 +657,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 								parameterAliases = true;
 								if (callSite instanceof Stmt) {
 									Value originalCallArg = mapper.getCallerValueOfCalleeParameter(ie, i);
+									if (originalCallArg == null)
+										continue;
 
 									// If this is a constant parameter, we
 									// can safely ignore it
@@ -745,16 +747,17 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									if (callSite instanceof Stmt) {
 										Value callerBaseLocal = mapper.getCallerValueOfCalleeParameter(ie,
 												ICallerCalleeArgumentMapper.BASE_OBJECT);
-
-										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-												source.getAccessPath(), callerBaseLocal,
-												isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
-												false);
-										Abstraction abs = checkAbstraction(
-												source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-										if (abs != null) {
-											res.add(abs);
-											registerActivationCallSite(callSite, callee, abs);
+										if (callerBaseLocal != null) {
+											AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+													source.getAccessPath(), callerBaseLocal,
+													isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
+													false);
+											Abstraction abs = checkAbstraction(
+													source.deriveNewAbstraction(ap, (Stmt) exitStmt));
+											if (abs != null) {
+												res.add(abs);
+												registerActivationCallSite(callSite, callee, abs);
+											}
 										}
 
 									}
