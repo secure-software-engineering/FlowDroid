@@ -563,7 +563,7 @@ public class ApiTests extends ApiTestHelper {
 				-1, null));
 	}
 
-	@Test // (timeout = 100000)
+	@Test(timeout = 100000)
 	public void transferNoStringThroughDataClass() {
 		String mSig = "<" + className
 				+ ": java.lang.String transferNoStringThroughDataClass(soot.jimple.infoflow.test.methodSummary.IGapClass,java.lang.String)>";
