@@ -100,7 +100,14 @@ public abstract class AbstractGapManager implements IGapManager {
 			if (!it.next().isConcrete())
 				it.remove();
 		}
-
+		if (callees != null && !callees.isEmpty()) {
+			// If we have a call to an abstract method, this might instead of an
+			// empty callee list give us one with a self-loop. Semantically, this
+			// is however still an unknown callee.
+			if (!(callees.size() == 1 && callees.contains(sm) && stmt.getInvokeExpr().getMethod().isAbstract())) {
+				return false;
+			}
+		}
 		// Do not build gap flows for the java.lang.System class
 		if (sm.getDeclaringClass().getName().equals("java.lang.System"))
 			return false;
