@@ -40,6 +40,8 @@ import soot.jimple.UnopExpr;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.callmappers.CallerCalleeManager;
+import soot.jimple.infoflow.callmappers.ICallerCalleeArgumentMapper;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
@@ -309,9 +311,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final boolean isSink = callStmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = callStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
-						&& !isReflectiveCallSite;
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, dest);
+				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -374,10 +375,10 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map o to this
-						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
 							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
-							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-									: instanceInvokeExpr.getBase();
+							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
+									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (callBase == sourceBase && manager.getTypeUtils()
@@ -395,20 +396,17 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isVirtualEdgeCandidate && ie != null
-								&& determineVirtualEdgeBase(ie, dest) == source.getAccessPath().getPlainValue()) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									thisLocal);
-							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
-							if (abs != null)
-								res.add(abs);
-						} else if (ie != null && dest.getParameterCount() > 0) {
-							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+						if (ie != null && dest.getParameterCount() > 0) {
+							for (int i = 0; i < ie.getArgCount(); i++) {
 								if (ie.getArg(i) != source.getAccessPath().getPlainValue())
 									continue;
 
+								int mappedIndex = mapper.getCalleeIndexOfCallerParameter(i);
+								if (mappedIndex == ICallerCalleeArgumentMapper.UNKNOWN)
+									continue;
+
 								// taint all parameters if reflective call site
-								if (isReflectiveCallSite) {
+								if (mappedIndex == ICallerCalleeArgumentMapper.ALL_PARAMS) {
 									for (Value param : paramLocals) {
 										AccessPath ap = manager.getAccessPathFactory()
 												.copyWithNewValue(source.getAccessPath(), param, null, false);
@@ -448,12 +446,11 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final Stmt callStmt = (Stmt) callSite;
 				final InvokeExpr ie = (callStmt != null && callStmt.containsInvokeExpr()) ? callStmt.getInvokeExpr()
 						: null;
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
-						&& !isReflectiveCallSite;
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, callee);
+				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -514,13 +511,13 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isVirtualEdgeCandidate && !callee.isStatic()) {
+						if (!callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (thisLocal == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
 								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
-								Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-										: instanceInvokeExpr.getBase();
+								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
+										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 								if (isReflectiveCallSite
 										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
@@ -537,22 +534,14 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isVirtualEdgeCandidate && ie != null
-								&& determineVirtualEdgeBase(ie, callee) == source.getAccessPath().getPlainValue()) {
-							AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-									thisLocal);
-							Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
-							if (abs != null) {
-								res.add(abs);
-							}
-						} else if (ie != null) {
+						if (ie != null) {
 							for (int i = 0; i < callee.getParameterCount(); i++) {
 								if (source.getAccessPath().getPlainValue() != paramLocals[i])
 									continue;
 								if (isPrimitiveOrStringBase(source))
 									continue;
 
-								Value originalCallArg = ie.getArg(isReflectiveCallSite ? 1 : i);
+								Value originalCallArg = mapper.getCallerValueOfCalleeParameter(ie, i);
 								if (callSite instanceof DefinitionStmt && !isExceptionHandler(returnSite)) {
 									DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 									Value leftOp = defnStmt.getLeftOp();

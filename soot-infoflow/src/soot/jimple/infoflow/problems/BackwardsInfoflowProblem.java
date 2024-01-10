@@ -36,6 +36,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.callmappers.CallerCalleeManager;
+import soot.jimple.infoflow.callmappers.ICallerCalleeArgumentMapper;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
@@ -421,9 +423,8 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final boolean isSink = stmt.hasTag(FlowDroidSinkStatement.TAG_NAME);
 				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
-						&& !isReflectiveCallSite;
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, dest);
+				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -546,11 +547,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
+						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
 								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-							Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-									: instanceInvokeExpr.getBase();
+							Value callBase = mapper.getCallerValueOfCalleeParameter(instanceInvokeExpr,
+									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (aliasing.mayAlias(callBase, sourceBase) && manager.getTypeUtils()
@@ -568,28 +569,16 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isVirtualEdgeCandidate) {
-
-							Value base = determineVirtualEdgeBase(ie, dest);
-
-							if (base != null) {
-								if (ie != null && aliasing.mayAlias(base, source.getAccessPath().getPlainValue())) {
-									AccessPath ap = manager.getAccessPathFactory()
-											.copyWithNewValue(source.getAccessPath(), thisLocal);
-									Abstraction abs = source.deriveNewAbstraction(ap, stmt);
-									if (abs != null)
-										res.add(abs);
-								}
-
-							}
-						} else if (ie != null && dest.getParameterCount() > 0
-								&& (isReflectiveCallSite || ie.getArgCount() == dest.getParameterCount())) {
-							for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
+						if (ie != null && dest.getParameterCount() > 0) {
+							for (int i = 0; i < ie.getArgCount(); i++) {
 								if (!aliasing.mayAlias(ie.getArg(i), source.getAccessPath().getPlainValue()))
 									continue;
 								if (isPrimitiveOrStringBase(source))
 									continue;
 								if (!source.getAccessPath().getTaintSubFields())
+									continue;
+								int calleeIndex = mapper.getCalleeIndexOfCallerParameter(i);
+								if (calleeIndex == ICallerCalleeArgumentMapper.UNKNOWN)
 									continue;
 
 								// If the variable was overwritten
@@ -598,10 +587,11 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 								// I know ...) Otherwise, we need SSA
 								// or lots of bookkeeping to avoid FPs
 								// (BytecodeTests.flowSensitivityTest1).
-								if (interproceduralCFG().methodWritesValue(dest, paramLocals[i]))
+								if (!isReflectiveCallSite
+										&& interproceduralCFG().methodWritesValue(dest, paramLocals[calleeIndex]))
 									continue;
 
-								if (isReflectiveCallSite) {
+								if (calleeIndex == ICallerCalleeArgumentMapper.ALL_PARAMS) {
 									// taint all parameters if the arg array of an reflective
 									// call site is tainted
 									for (Value param : paramLocals) {
@@ -650,13 +640,12 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 				final Stmt stmt = (Stmt) callSite;
 				final InvokeExpr ie = (stmt != null && stmt.containsInvokeExpr()) ? stmt.getInvokeExpr() : null;
-				final boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
 				final Stmt callStmt = (Stmt) callSite;
 				final Stmt exitStmt = (Stmt) exitSite;
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
-						&& !isReflectiveCallSite;
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, callee);
+				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -705,15 +694,15 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!isVirtualEdgeCandidate && !callee.isStatic()) {
+						if (!callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (aliasing.mayAlias(thisLocal, sourceBase)
 									&& manager.getTypeUtils().hasCompatibleTypesForCall(source.getAccessPath(),
 											callee.getDeclaringClass())
 									&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-								Value callBase = isReflectiveCallSite ? instanceInvokeExpr.getArg(0)
-										: instanceInvokeExpr.getBase();
+								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
+										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 								// Either the callBase is from a reflective call site
 								// or the source base doesn't match with any parameters
@@ -732,23 +721,12 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						}
 
 						// map arguments to parameter
-						if (isVirtualEdgeCandidate && ie != null) {
-							if (aliasing.mayAlias(thisLocal, source.getAccessPath().getPlainValue())) {
-								Value base = determineVirtualEdgeBase(ie, callee);
-								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-										base);
-								Abstraction abs = source.deriveNewAbstraction(ap, exitStmt);
-								if (abs != null) {
-									enterConditional(abs, callSite, returnSite);
-									res.add(abs);
-								}
-							}
-						} else if (ie != null) {
+						if (ie != null) {
 							for (int paramIndex = 0; paramIndex < callee.getParameterCount(); paramIndex++) {
 								if (!aliasing.mayAlias(source.getAccessPath().getPlainValue(), paramLocals[paramIndex]))
 									continue;
 
-								Value originalCallArg = ie.getArg(isReflectiveCallSite ? 1 : paramIndex);
+								Value originalCallArg = mapper.getCallerValueOfCalleeParameter(ie, paramIndex);
 								if (!AccessPath.canContainValue(originalCallArg))
 									continue;
 								if (!isReflectiveCallSite && !manager.getTypeUtils().checkCast(source.getAccessPath(),

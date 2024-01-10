@@ -11,7 +11,6 @@
 package soot.jimple.infoflow.problems;
 
 import java.lang.ref.SoftReference;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,17 +21,11 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import soot.MethodSubSignature;
-import soot.RefType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
-import soot.Value;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.StaticInvokeExpr;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
@@ -46,11 +39,6 @@ import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.DirectTarget;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.IndirectTarget;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdge;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdgeTarget;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
@@ -391,89 +379,4 @@ public abstract class AbstractInfoflowProblem
 	public PropagationRuleManager getPropagationRules() {
 		return propagationRules;
 	}
-
-	/**
-	 * In case of a virtual edge starting from an invoke expression, returns the
-	 * value from the invoke expression which contains the base instance  
-	 * on which the virtual edge target will be called.
-	 * 
-	 * E.g. for new Thread(runnable), it returns runnable.
-	 *  
-	 * @param ie the invoke expression
-	 * @param callee the callee
-	 * @return the value which is the base value
-	 */
-	protected Value determineVirtualEdgeBase(InvokeExpr ie, SootMethod callee) {
-		VirtualEdge summary;
-		VirtualEdgesSummaries summaries = getManager().getVirtualEdgeSummaries();
-		if (ie instanceof StaticInvokeExpr)
-			summary = summaries.getVirtualEdgesMatchingFunction(ie.getMethod().getSignature());
-		else
-			summary = summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(ie.getMethod().makeRef()));
-		if (summary != null) {
-			for (VirtualEdgeTarget t : summary.getTargets()) {
-				if (t instanceof IndirectTarget) {
-					ArrayDeque<IndirectTarget> targetQueue = new ArrayDeque<>();
-					targetQueue.add((IndirectTarget) t);
-					IndirectTarget c;
-					boolean matched = false;
-					while ((c = targetQueue.poll()) != null) {
-						for (VirtualEdgeTarget d : c.getTargets()) {
-							if (d instanceof IndirectTarget)
-								targetQueue.add(c);
-							else if (d instanceof DirectTarget) {
-								DirectTarget dt = (DirectTarget) d;
-								if (matchDirectTarget(dt, callee)) {
-									matched = true;
-									break;
-								}
-							}
-
-						}
-					}
-					if (!matched)
-						continue;
-				} else {
-					DirectTarget dt = (DirectTarget) t;
-					if (!matchDirectTarget(dt, callee))
-						continue;
-				}
-
-				int baseIdx = t.getArgIndex();
-				Value base = null;
-				if (baseIdx == -1) {
-					if (ie instanceof InstanceInvokeExpr) {
-						base = ((InstanceInvokeExpr) ie).getBase();
-					}
-				} else {
-					base = ie.getArg(baseIdx);
-				}
-				return base;
-			}
-		}
-		return null;
-	}
-
-	private boolean matchDirectTarget(DirectTarget dt, SootMethod callee) {
-		RefType tt = dt.getTargetType();
-		if (tt != null) {
-			if (tt.hasSootClass() && tt.getSootClass().resolvingLevel() >= SootClass.HIERARCHY)
-				if (!manager.getTypeUtils().checkCast(callee.getDeclaringClass().getType(), tt))
-					return false;
-		}
-		if (dt.getTargetMethod().equals(new MethodSubSignature(callee.makeRef())))
-			return true;
-
-		return manager.getTypeUtils().isOverriden(dt.getTargetMethod(), callee);
-	}
-
-	protected boolean isVirtualEdgeCandidate(InvokeExpr expr, SootMethod callee) {
-		if (expr.getMethodRef().getParameterTypes().size() != callee.getParameterCount())
-			return true;
-		if (!expr.getMethodRef().getName().equals(callee.getName()))
-			return true;
-
-		return !manager.getTypeUtils().isOverriden(new MethodSubSignature(expr.getMethodRef()), callee);
-	}
-
 }
