@@ -572,7 +572,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 											if (abs != null)
 												res.add(abs);
 										}
-									} else {
+									} else if (mappedIntoCallee != ICallerCalleeArgumentMapper.BASE_OBJECT) {
 										// Taint the respective parameter local
 										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 												source.getAccessPath(), paramLocals[mappedIntoCallee]);
@@ -783,8 +783,6 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				final SootMethod callee = invExpr.getMethod();
 
 				final DefinitionStmt defStmt = iStmt instanceof DefinitionStmt ? (DefinitionStmt) iStmt : null;
-				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, iStmt, callee);
-
 				return new SolverCallToReturnFlowFunction() {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
