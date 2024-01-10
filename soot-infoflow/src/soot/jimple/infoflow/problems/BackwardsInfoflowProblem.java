@@ -61,9 +61,12 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
+	private IPropagationRuleManagerFactory rmf;
+
 	public BackwardsInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager, zeroValue, ruleManagerFactory);
+		this.rmf = ruleManagerFactory;
 	}
 
 	@Override
@@ -424,7 +427,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 				final boolean isSource = stmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, dest);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -547,18 +550,16 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						// o.m(a1, ..., an)
 						// map o.f to this.f
-						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
-								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-							Value callBase = mapper.getCallerValueOfCalleeParameter(instanceInvokeExpr,
+						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (aliasing.mayAlias(callBase, sourceBase) && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
 								// second condition prevents mapping o if it is also a parameter
-								if (isReflectiveCallSite
-										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), thisLocal);
 									Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) callStmt);
@@ -645,7 +646,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, callee);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -696,22 +697,19 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 						// map o.f to this.f
 						if (!callee.isStatic()) {
 							Value sourceBase = source.getAccessPath().getPlainValue();
-							if (aliasing.mayAlias(thisLocal, sourceBase)
-									&& manager.getTypeUtils().hasCompatibleTypesForCall(source.getAccessPath(),
-											callee.getDeclaringClass())
-									&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
+							if (aliasing.mayAlias(thisLocal, sourceBase) && manager.getTypeUtils()
+									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
 								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 								// Either the callBase is from a reflective call site
 								// or the source base doesn't match with any parameters
-								if (isReflectiveCallSite || instanceInvokeExpr.getArgs().stream()
-										.noneMatch(arg -> aliasing.mayAlias(arg, sourceBase))) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 											source.getAccessPath(), callBase,
 											isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);
-									Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
+									Abstraction abs = source.deriveNewAbstraction(ap, exitStmt);
 									if (abs != null) {
 										enterConditional(abs, callSite, returnSite);
 										res.add(abs);

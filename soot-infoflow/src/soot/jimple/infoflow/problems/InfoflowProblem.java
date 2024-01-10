@@ -494,7 +494,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, iCallStmt, callee);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 
@@ -817,7 +817,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// If one of the callers does not read the value, we
 							// must pass it on in any case
 							Collection<SootMethod> callees = interproceduralCFG().getCalleesOfCallAt(call);
-							boolean allCalleesRead = !callees.isEmpty();
+							boolean allCalleesRead = true;
 							outer: for (SootMethod callee : callees) {
 								if (callee.isConcrete() && callee.hasActiveBody()) {
 									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, iCallStmt, invExpr, null,
@@ -980,6 +980,12 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							int mapped = mapper.getCalleeIndexOfCallerParameter(i);
 							if (mapped == ICallerCalleeArgumentMapper.UNKNOWN)
 								continue;
+
+							// Get the parameter locals if we don't have them yet
+							if (paramLocals == null)
+								paramLocals = callee.getActiveBody().getParameterLocals()
+										.toArray(new Local[calleeParamCount]);
+
 							if (mapped == ICallerCalleeArgumentMapper.ALL_PARAMS) {
 								//Reflection
 
@@ -991,19 +997,17 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									if (newAP != null)
 										res.add(newAP);
 								}
+								continue;
 							} else if (mapped == ICallerCalleeArgumentMapper.BASE_OBJECT)
 								continue;
+							else {
+								// Taint the corresponding parameter local in the callee
 
-							// Taint the corresponding parameter local in the callee
-
-							// Get the parameter locals if we don't have them yet
-							if (paramLocals == null)
-								paramLocals = callee.getActiveBody().getParameterLocals()
-										.toArray(new Local[calleeParamCount]);
-
-							AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap, paramLocals[mapped]);
-							if (newAP != null)
-								res.add(newAP);
+								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
+										paramLocals[mapped]);
+								if (newAP != null)
+									res.add(newAP);
+							}
 						}
 
 					}

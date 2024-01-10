@@ -72,6 +72,7 @@ import soot.jimple.infoflow.util.BaseSelector;
  */
 public class AliasProblem extends AbstractInfoflowProblem {
 
+	@Override
 	public void setTaintWrapper(ITaintPropagationWrapper wrapper) {
 		taintWrapper = wrapper;
 	}
@@ -432,7 +433,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, dest);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverCallFlowFunction() {
 
@@ -522,10 +523,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 						// checks: this/fields
 						Value sourceBase = source.getAccessPath().getPlainValue();
-						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
-								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-							InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-							Value callBase = mapper.getCallerValueOfCalleeParameter(iIExpr,
+						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
+							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							if (callBase == sourceBase && manager.getTypeUtils()
@@ -613,7 +612,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// getSubSignature()
 				// is slow, so we try to avoid it whenever we can
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmt, callee);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 
@@ -734,34 +733,30 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									}
 								}
 							}
+						}
 
-							// Map the "this" local
-							if (!callee.isStatic()) {
-								if (thisLocal == sourceBase && manager.getTypeUtils().hasCompatibleTypesForCall(
-										source.getAccessPath(), callee.getDeclaringClass())) {
-									// check if it is not one of the params
-									// (then we have already fixed it)
-									if (!parameterAliases) {
-										if (callSite instanceof Stmt) {
-											Stmt stmt = (Stmt) callSite;
-											if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-												InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
-												Value callerBaseLocal = interproceduralCFG().isReflectiveCallSite(
-														iIExpr) ? iIExpr.getArg(0) : iIExpr.getBase();
+						// Map the "this" local
+						if (!callee.isStatic()) {
+							if (thisLocal == sourceBase && manager.getTypeUtils()
+									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
+								// check if it is not one of the params
+								// (then we have already fixed it)
+								if (!parameterAliases) {
+									if (callSite instanceof Stmt) {
+										Value callerBaseLocal = mapper.getCallerValueOfCalleeParameter(ie,
+												ICallerCalleeArgumentMapper.BASE_OBJECT);
 
-												AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-														source.getAccessPath(), callerBaseLocal,
-														isReflectiveCallSite ? null
-																: source.getAccessPath().getBaseType(),
-														false);
-												Abstraction abs = checkAbstraction(
-														source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-												if (abs != null) {
-													res.add(abs);
-													registerActivationCallSite(callSite, callee, abs);
-												}
-											}
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+												source.getAccessPath(), callerBaseLocal,
+												isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
+												false);
+										Abstraction abs = checkAbstraction(
+												source.deriveNewAbstraction(ap, (Stmt) exitStmt));
+										if (abs != null) {
+											res.add(abs);
+											registerActivationCallSite(callSite, callee, abs);
 										}
+
 									}
 								}
 							}
@@ -788,6 +783,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				final SootMethod callee = invExpr.getMethod();
 
 				final DefinitionStmt defStmt = iStmt instanceof DefinitionStmt ? (DefinitionStmt) iStmt : null;
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, iStmt, callee);
 
 				return new SolverCallToReturnFlowFunction() {
 					@Override

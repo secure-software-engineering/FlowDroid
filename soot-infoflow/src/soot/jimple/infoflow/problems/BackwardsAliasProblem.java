@@ -312,7 +312,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				final boolean isSource = callStmt.hasTag(FlowDroidSourceStatement.TAG_NAME);
 
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, dest);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverCallFlowFunction() {
 					@Override
@@ -376,15 +376,14 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 						// map o to this
 						if (!source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
-							InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
 							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (callBase == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
-								if (isReflectiveCallSite
-										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory()
 											.copyWithNewValue(source.getAccessPath(), thisLocal);
 									Abstraction abs = checkAbstraction(
@@ -450,7 +449,7 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, callStmt, callee);
-				final boolean isReflectiveCallSite = mapper.isReflectiveMapper();
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 					@Override
@@ -515,12 +514,11 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							Value sourceBase = source.getAccessPath().getPlainValue();
 							if (thisLocal == sourceBase && manager.getTypeUtils()
 									.hasCompatibleTypesForCall(source.getAccessPath(), callee.getDeclaringClass())) {
-								InstanceInvokeExpr instanceInvokeExpr = (InstanceInvokeExpr) callStmt.getInvokeExpr();
 								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
-								if (isReflectiveCallSite
-										|| instanceInvokeExpr.getArgs().stream().noneMatch(arg -> arg == sourceBase)) {
+								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
+										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
 									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 											source.getAccessPath(), callBase,
 											isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);

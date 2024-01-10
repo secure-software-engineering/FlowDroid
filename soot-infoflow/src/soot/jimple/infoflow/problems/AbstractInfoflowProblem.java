@@ -24,8 +24,10 @@ import org.slf4j.LoggerFactory;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.InvokeExpr;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
@@ -360,6 +362,9 @@ public abstract class AbstractInfoflowProblem
 				return true;
 		}
 
+		if (sm.isConcrete() && !sm.hasActiveBody())
+			return true;
+
 		return false;
 	}
 
@@ -378,5 +383,23 @@ public abstract class AbstractInfoflowProblem
 	 */
 	public PropagationRuleManager getPropagationRules() {
 		return propagationRules;
+	}
+
+	/**
+	 * Checks whether the arguments of a given invoke expression
+	 * has a reference to a given base object while ignoring the given index
+	 * @param e the invoke expr
+	 * @param actualBase the base to look for
+	 * @param ignoreIndex the index to ignore
+	 * @return true if there is another reference
+	 */
+	protected boolean hasAnotherReferenceOnBase(InvokeExpr e, Value actualBase, int ignoreIndex) {
+		for (int i = 0; i < e.getArgCount(); i++) {
+			if (i != ignoreIndex) {
+				if (e.getArg(i) == actualBase)
+					return true;
+			}
+		}
+		return false;
 	}
 }
