@@ -92,26 +92,23 @@ public abstract class AbstractGapManager implements IGapManager {
 		if (!isValueUsedInStmt(stmt, abs))
 			return false;
 
-		// We always construct a gap if we have no callees
-		SootMethod sm = icfg.getMethodOf(stmt);
-		Collection<SootMethod> callees = new ArrayList<>(icfg.getCalleesOfCallAt(stmt));
-		Iterator<SootMethod> it = callees.iterator();
-		while (it.hasNext()) {
-			if (!it.next().isConcrete())
-				it.remove();
-		}
-		if (callees != null && !callees.isEmpty()) {
-			// If we have a call to an abstract method, this might instead of an
-			// empty callee list give us one with a self-loop. Semantically, this
-			// is however still an unknown callee.
-			if (!(callees.size() == 1 && callees.contains(sm) && stmt.getInvokeExpr().getMethod().isAbstract())) {
-				return false;
-			}
-		}
 		// Do not build gap flows for the java.lang.System class
+		SootMethod sm = icfg.getMethodOf(stmt);
 		if (sm.getDeclaringClass().getName().equals("java.lang.System"))
 			return false;
 		if (targetMethod.getDeclaringClass().getName().startsWith("sun."))
+			return false;
+
+		// We always construct a gap if we have no callees. Sometimes, we have a callee,
+		// but that's only a self-reference or an abstract method
+		Collection<SootMethod> callees = new ArrayList<>(icfg.getCalleesOfCallAt(stmt));
+		Iterator<SootMethod> it = callees.iterator();
+		while (it.hasNext()) {
+			SootMethod callee = it.next();
+			if (!callee.isConcrete() || callee == sm)
+				it.remove();
+		}
+		if (!callees.isEmpty())
 			return false;
 
 		// We create a gap
