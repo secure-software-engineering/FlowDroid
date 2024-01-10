@@ -13,11 +13,13 @@ import soot.FloatType;
 import soot.Hierarchy;
 import soot.IntType;
 import soot.LongType;
+import soot.MethodSubSignature;
 import soot.PrimType;
 import soot.RefType;
 import soot.Scene;
 import soot.ShortType;
 import soot.SootClass;
+import soot.SootMethod;
 import soot.Type;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
@@ -97,10 +99,10 @@ public class TypeUtils {
 		FastHierarchy hierarchy = manager.getHierarchy();
 		if (hierarchy != null) {
 			if (hierarchy.canStoreType(destType, sourceType) // cast-up,
-																// i.e.
-																// Object
-																// to
-																// String
+					// i.e.
+					// Object
+					// to
+					// String
 					|| manager.getHierarchy().canStoreType(sourceType, destType)) // cast-down,
 																					// i.e.
 																					// String
@@ -357,4 +359,43 @@ public class TypeUtils {
 		return fh.canStoreType(child, parent);
 	}
 
+	/**
+	 * Checks whether "overriden" is an overriden version of "originalSubSig".
+	 * We have to check for covariance of the return value and the contra variance
+	 * of all parameters 
+	 * 
+	 * @param fh 			 The {@link FastHierarchy}
+	 * @param originalSubSig The sub signature of the base method 
+	 * @param overriden 	 The potentially method overriding the method of "originalSubSig" 
+	 * @return true if "overriden" overrides "originalSubSig"
+	 */
+	public static boolean isOverriden(FastHierarchy fh, MethodSubSignature originalSubSig, SootMethod overriden) {
+		if (!originalSubSig.getMethodName().equals(overriden.getName())
+				|| originalSubSig.getParameterTypes().size() != overriden.getParameterCount())
+			return false;
+
+		if (!fh.canStoreType(overriden.getReturnType(), originalSubSig.returnType))
+			return false;
+
+		for (int i = 0; i < overriden.getParameterCount(); i++) {
+			if (!fh.canStoreType(originalSubSig.getParameterTypes().get(i), overriden.getParameterType(i)))
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks whether "overriden" is an overriden version of "originalSubSig".
+	 * We have to check for covariance of the return value and the contra variance
+	 * of all parameters 
+	 * 
+	 * @param originalSubSig The sub signature of the base method 
+	 * @param overriden 	 The potentially method overriding the method of "originalSubSig" 
+	 * @return true if "overriden" overrides "originalSubSig"
+	 */
+	public boolean isOverriden(MethodSubSignature originalSubSig, SootMethod overriden) {
+		FastHierarchy hierarchy = manager.getHierarchy();
+		return isOverriden(hierarchy, originalSubSig, overriden);
+	}
 }
