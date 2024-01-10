@@ -1,7 +1,9 @@
 package soot.jimple.infoflow.methodSummary.generator.gaps;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import soot.Local;
@@ -92,14 +94,11 @@ public abstract class AbstractGapManager implements IGapManager {
 
 		// We always construct a gap if we have no callees
 		SootMethod sm = icfg.getMethodOf(stmt);
-		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(stmt);
-		if (callees != null && !callees.isEmpty()) {
-			// If we have a call to an abstract method, this might instead of an
-			// empty callee list give us one with a self-loop. Semantically, this
-			// is however still an unknown callee.
-			if (!(callees.size() == 1 && callees.contains(sm) && stmt.getInvokeExpr().getMethod().isAbstract())) {
-				return false;
-			}
+		Collection<SootMethod> callees = new ArrayList<>(icfg.getCalleesOfCallAt(stmt));
+		Iterator<SootMethod> it = callees.iterator();
+		while (it.hasNext()) {
+			if (!it.next().isConcrete())
+				it.remove();
 		}
 
 		// Do not build gap flows for the java.lang.System class

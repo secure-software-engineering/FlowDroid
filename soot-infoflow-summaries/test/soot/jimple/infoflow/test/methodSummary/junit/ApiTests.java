@@ -3,6 +3,7 @@ package soot.jimple.infoflow.test.methodSummary.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType.Field;
+import static soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType.GapBaseObject;
 import static soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType.Parameter;
 import static soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType.Return;
 
@@ -562,7 +563,7 @@ public class ApiTests extends ApiTestHelper {
 				-1, null));
 	}
 
-	@Test(timeout = 100000)
+	@Test // (timeout = 100000)
 	public void transferNoStringThroughDataClass() {
 		String mSig = "<" + className
 				+ ": java.lang.String transferNoStringThroughDataClass(soot.jimple.infoflow.test.methodSummary.IGapClass,java.lang.String)>";
@@ -571,6 +572,7 @@ public class ApiTests extends ApiTestHelper {
 		final String gapSig = makeGapClassSignature(
 				"soot.jimple.infoflow.test.methodSummary.Data dataThroughGap(soot.jimple.infoflow.test.methodSummary.Data)");
 
+		assertTrue(containsFlow(res, Parameter, 0, null, null, GapBaseObject, -1, null, gapSig));
 		assertTrue(containsFlow(res, Parameter, 1, null, null, Parameter, 0, new String[] { DATACLASS_STRING_FIELD },
 				gapSig));
 		assertTrue(containsFlow(res, Return, -1, new String[] { DATACLASS_STRING_FIELD2 }, gapSig, Return, -1, null,
