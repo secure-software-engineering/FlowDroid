@@ -212,6 +212,20 @@ public interface IInfoflowCFG extends BiDiInterproceduralCFG<Unit, SootMethod> {
 	public Collection<SootMethod> getOrdinaryCalleesOfCallAt(Unit u);
 
 	/**
+	 * Checks whether the given call is a call to Executor.execute() or
+	 * AccessController.doPrivileged() and whether the callee matches the expected
+	 * method signature
+	 * 
+	 * @param ie
+	 *            The invocation expression to check
+	 * @param dest
+	 *            The callee of the given invocation expression
+	 * @return True if the given invocation expression and callee are a valid call
+	 *         to Executor.execute() or AccessController.doPrivileged()
+	 */
+	public boolean isExecutorExecute(InvokeExpr ie, SootMethod dest);
+
+	/**
 	 * Checks whether the given call site is a reflective method call
 	 * 
 	 * @param u

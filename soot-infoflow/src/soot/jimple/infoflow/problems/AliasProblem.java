@@ -412,7 +412,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.hasActiveBody())
+				if (!dest.isConcrete())
 					return KillAll.v();
 
 				final Stmt stmt = (Stmt) src;
@@ -430,8 +430,10 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// than one might think
 				final Local thisLocal = dest.isStatic() ? null : dest.getActiveBody().getThisLocal();
 
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, dest)
-						&& !isReflectiveCallSite;
+				// Android executor methods are handled specially.
+				// getSubSignature()
+				// is slow, so we try to avoid it whenever we can
+				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, dest);
 
 				return new SolverCallFlowFunction() {
 
@@ -521,8 +523,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 						// checks: this/fields
 						Value sourceBase = source.getAccessPath().getPlainValue();
-						if (!isVirtualEdgeCandidate && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()
-								&& stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+						if (!isExecutorExecute && !source.getAccessPath().isStaticFieldRef() && !dest.isStatic()) {
 							InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 							Value callBase = isReflectiveCallSite ? iIExpr.getArg(0) : iIExpr.getBase();
 
@@ -552,9 +553,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 						}
 
 						// Map the parameter values into the callee
-						if (isVirtualEdgeCandidate) {
-							Value base = determineVirtualEdgeBase(ie, dest);
-							if (base == source.getAccessPath().getPlainValue()) {
+						if (isExecutorExecute) {
+							if (ie.getArg(0) == source.getAccessPath().getPlainValue()) {
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
 										thisLocal);
 								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
@@ -618,8 +618,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				// Android executor methods are handled specially.
 				// getSubSignature()
 				// is slow, so we try to avoid it whenever we can
-				final boolean isVirtualEdgeCandidate = ie != null && isVirtualEdgeCandidate(ie, callee)
-						&& !isReflectiveCallSite;
+				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
 
 				return new SolverReturnFlowFunction() {
 
@@ -655,12 +654,12 @@ public class AliasProblem extends AbstractInfoflowProblem {
 						// caller, return values cannot be propagated here. They
 						// don't yet exist at the beginning of the callee.
 
-						if (isVirtualEdgeCandidate) {
+						if (isExecutorExecute) {
 							// Map the "this" object to the first argument of
 							// the call site
 							if (source.getAccessPath().getPlainValue() == thisLocal) {
 								AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-										determineVirtualEdgeBase(ie, callee));
+										ie.getArg(0));
 								Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, (Stmt) exitStmt));
 								if (abs != null) {
 									res.add(abs);

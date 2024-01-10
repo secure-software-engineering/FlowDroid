@@ -49,7 +49,6 @@ import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph.ExceptionDest;
 import soot.toolkits.graph.MHGDominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
-import soot.util.NumberedString;
 
 /**
  * Interprocedural control-flow graph for the infoflow solver
@@ -579,14 +578,43 @@ public class InfoflowCFG implements IInfoflowCFG {
 	}
 
 	@Override
+	public boolean isExecutorExecute(InvokeExpr ie, SootMethod dest) {
+		if (ie == null || dest == null)
+			return false;
+
+		SootMethod ieMethod = ie.getMethod();
+		if (!ieMethod.getName().equals("execute") && !ieMethod.getName().equals("doPrivileged"))
+			return false;
+
+		final String ieSubSig = ieMethod.getSubSignature();
+		final String calleeSubSig = dest.getSubSignature();
+
+		if (ieSubSig.equals("void execute(java.lang.Runnable)") && calleeSubSig.equals("void run()"))
+			return true;
+
+		if (dest.getName().equals("run") && dest.getParameterCount() == 0 && dest.getReturnType() instanceof RefType) {
+			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction)"))
+				return true;
+			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction,"
+					+ "java.security.AccessControlContext)"))
+				return true;
+			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction)"))
+				return true;
+			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedExceptionAction,"
+					+ "java.security.AccessControlContext)"))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
 	public Collection<SootMethod> getOrdinaryCalleesOfCallAt(Unit u) {
 		InvokeExpr iexpr = ((Stmt) u).getInvokeExpr();
 
 		Collection<SootMethod> originalCallees = getCalleesOfCallAt(u);
 		List<SootMethod> callees = new ArrayList<>(originalCallees.size());
-		NumberedString d = iexpr.getMethod().getNumberedSubSignature();
 		for (SootMethod sm : originalCallees)
-			if (!sm.isStaticInitializer() && !sm.getNumberedSubSignature().equals(d))
+			if (!sm.isStaticInitializer() && !isExecutorExecute(iexpr, sm))
 				callees.add(sm);
 		return callees;
 	}

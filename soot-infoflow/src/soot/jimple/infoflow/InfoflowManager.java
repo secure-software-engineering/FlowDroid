@@ -12,7 +12,6 @@ import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.typing.TypeUtils;
-import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries;
 
 /**
  * Manager class for passing internal data flow objects to interface
@@ -36,8 +35,6 @@ public class InfoflowManager {
 	private final GlobalTaintManager globalTaintManager;
 	private Aliasing aliasing;
 
-	private final VirtualEdgesSummaries virtualEdgeSummaries = new VirtualEdgesSummaries();
-
 	// The infoflow manager for the on-demand analysis that computes additional flows
 	public InfoflowManager additionalManager;
 
@@ -59,8 +56,8 @@ public class InfoflowManager {
 	}
 
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
-			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			GlobalTaintManager globalTaintManager) {
+							  ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
+							  GlobalTaintManager globalTaintManager) {
 		this.config = config;
 		this.mainSolver = mainSolver;
 		this.icfg = icfg;
@@ -75,8 +72,8 @@ public class InfoflowManager {
 	}
 
 	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg,
-			ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
-			InfoflowManager existingManager) {
+							  ISourceSinkManager sourceSinkManager, ITaintPropagationWrapper taintWrapper, FastHierarchy hierarchy,
+							  InfoflowManager existingManager) {
 		this.config = config;
 		this.mainSolver = mainSolver;
 		this.icfg = icfg;
@@ -102,14 +99,6 @@ public class InfoflowManager {
 		this.accessPathFactory = new AccessPathFactory(config, typeUtils);
 		this.globalTaintManager = null;
 		this.usageContextProvider = null;
-	}
-
-	/**
-	 * Returns the virtual edge summaries
-	 * @return the virtual edge summaries
-	 */
-	public VirtualEdgesSummaries getVirtualEdgeSummaries() {
-		return virtualEdgeSummaries;
 	}
 
 	/**

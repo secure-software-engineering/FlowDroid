@@ -76,7 +76,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 		final Aliasing aliasing = getAliasing();
 		final ISourceSinkManager sourceSinkManager = getManager().getSourceSinkManager();
 
-		if (ap != null && sourceSinkManager != null && aliasing != null && shouldTriggerSource(source)) {
+		if (ap != null && sourceSinkManager != null && aliasing != null && source.isAbstractionActive()) {
 			for (Value val : BaseSelector.selectBaseList(retVal, false)) {
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
@@ -87,10 +87,6 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 				}
 			}
 		}
-	}
-
-	protected boolean shouldTriggerSource(Abstraction source) {
-		return source.isAbstractionActive();
 	}
 
 	@Override
@@ -143,8 +139,6 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-		if (stmt.toString().contains("onCallback("))
-			System.out.println();
 		// We only report leaks for active taints, not for alias queries
 		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef()) {
 			// Is the taint even visible inside the callee?
@@ -157,8 +151,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 					// If we have already seen the same taint at the same sink, there is no need to
 					// propagate this taint any further.
-					if (sinkInfo != null && !getResults()
-							.addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt))) {
+					if (sinkInfo != null
+							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt))) {
 						killState = true;
 					}
 				}
@@ -186,8 +180,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 			if (matches && source.isAbstractionActive() && ssm != null && aliasing != null
 					&& aliasing.mayAlias(source.getAccessPath().getPlainValue(), returnStmt.getOp())) {
 				SinkInfo sinkInfo = ssm.getSinkInfo(returnStmt, getManager(), source.getAccessPath());
-				if (sinkInfo != null && !getResults()
-						.addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, returnStmt)))
+				if (sinkInfo != null
+						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, returnStmt)))
 					killState = true;
 			}
 		}
