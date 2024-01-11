@@ -1,8 +1,8 @@
 package soot.jimple.infoflow.codeOptimization;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import soot.MethodOrMethodContext;
 import soot.Scene;
@@ -17,6 +17,7 @@ import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.jimple.toolkits.ide.icfg.JimpleBasedInterproceduralCFG;
 import soot.jimple.toolkits.scalar.ConditionalBranchFolder;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
@@ -55,7 +56,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 			if (method.getTag(SimulatedCodeElementTag.TAG_NAME) != null)
 				continue;
 
-			List<Unit> callSites = getCallsInMethod(method);
+			Set<Unit> callSites = getCallsInMethod(method);
 
 			ConstantPropagatorAndFolder.v().transform(method.getActiveBody());
 			DeadAssignmentEliminator.v().transform(method.getActiveBody());
@@ -89,7 +90,7 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 
 			// Delete all dead code. We need to be careful and patch the cfg so
 			// that it does not retain edges for call statements we have deleted
-			List<Unit> callSites = getCallsInMethod(method);
+			Set<Unit> callSites = getCallsInMethod(method);
 			UnreachableCodeEliminator.v().transform(method.getActiveBody());
 			removeDeadCallgraphEdges(method, callSites);
 		}
@@ -106,12 +107,13 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 *                     the method's body and have to be checked if still
 	 *                     existent
 	 */
-	static void removeDeadCallgraphEdges(SootMethod method, List<Unit> oldCallSites) {
-		List<Unit> newCallSites = getCallsInMethod(method);
+	static void removeDeadCallgraphEdges(SootMethod method, Set<Unit> oldCallSites) {
+		Set<Unit> newCallSites = getCallsInMethod(method);
 		if (oldCallSites != null)
-			for (Unit u : oldCallSites)
+			for (Unit u : oldCallSites) {
 				if (newCallSites == null || !newCallSites.contains(u))
 					Scene.v().getCallGraph().removeAllEdgesOutOf(u);
+			}
 
 	}
 
@@ -122,12 +124,12 @@ public class DeadCodeEliminator implements ICodeOptimizer {
 	 * @return The list of units calling other methods in the given method if there
 	 *         is at least one such unit. Otherwise null.
 	 */
-	static List<Unit> getCallsInMethod(SootMethod method) {
-		List<Unit> callSites = null;
+	static Set<Unit> getCallsInMethod(SootMethod method) {
+		Set<Unit> callSites = null;
 		for (Unit u : method.getActiveBody().getUnits())
 			if (((Stmt) u).containsInvokeExpr()) {
 				if (callSites == null)
-					callSites = new ArrayList<Unit>();
+					callSites = new HashSet<Unit>();
 				callSites.add(u);
 			}
 		return callSites;

@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import heros.solver.Pair;
 import soot.Body;
@@ -229,7 +229,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			MethodOrMethodContext mom = rdr.next();
 			SootMethod sm = mom.method();
 			if (sm.hasActiveBody()) {
-				List<Unit> oldCallSites = DeadCodeEliminator.getCallsInMethod(sm);
+				Set<Unit> oldCallSites = DeadCodeEliminator.getCallsInMethod(sm);
 
 				Body body = sm.retrieveActiveBody();
 				ConditionalBranchFolder.v().transform(body);
@@ -266,8 +266,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 						continue;
 
 					// If this is a fixed exception method, we must keep it
-					if (exceptionClass != null
-							&& ((InvokeExpr) s.getInvokeExpr()).getMethod().getDeclaringClass() == exceptionClass)
+					if (exceptionClass != null && s.getInvokeExpr().getMethod().getDeclaringClass() == exceptionClass)
 						continue;
 
 					// If none of our pre-conditions are satisfied, there is no
@@ -343,11 +342,11 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 		SootMethod method = callSite.getInvokeExpr().getMethod();
 
 		// If this method is a source on its own, we must keep it
-		if (sourceSinkManager != null && sourceSinkManager.getSourceInfo((Stmt) callSite, manager) != null)
+		if (sourceSinkManager != null && sourceSinkManager.getSourceInfo(callSite, manager) != null)
 			return true;
 
 		// If this method is a sink, we must keep it as well
-		if (sourceSinkManager != null && sourceSinkManager.getSinkInfo((Stmt) callSite, manager, null) != null)
+		if (sourceSinkManager != null && sourceSinkManager.getSinkInfo(callSite, manager, null) != null)
 			return true;
 
 		// If this method is wrapped, we need to keep it
@@ -371,7 +370,7 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			return;
 
 		// Only remove actual call sites
-		if (!((Stmt) callSite).containsInvokeExpr())
+		if (!callSite.containsInvokeExpr())
 			return;
 
 		// Remove the call
