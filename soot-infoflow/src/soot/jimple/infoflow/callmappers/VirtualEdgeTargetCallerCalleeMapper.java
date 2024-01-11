@@ -120,8 +120,6 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 				if (!manager.getTypeUtils().checkCast(callee.getDeclaringClass().getType(), tt))
 					return false;
 		}
-		if (dt.getTargetMethod().equals(new MethodSubSignature(callee.makeRef())))
-			return true;
 
 		return manager.getTypeUtils().isOverriden(dt.getTargetMethod(), callee);
 	}
