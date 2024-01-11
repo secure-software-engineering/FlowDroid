@@ -594,7 +594,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									int m = mapper.getCallerIndexOfCalleeParameter(i);
 									if (m == ICallerCalleeArgumentMapper.UNKNOWN)
 										continue;
-									if (m >= iCallStmt.getInvokeExpr().getArgCount())
+									if (m >= paramLocals.length)
 										continue;
 
 									// If this parameter is overwritten, we
