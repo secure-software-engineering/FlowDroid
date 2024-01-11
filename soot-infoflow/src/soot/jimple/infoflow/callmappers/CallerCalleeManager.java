@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.callmappers;
 
+import soot.MethodSubSignature;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
@@ -31,7 +32,8 @@ public class CallerCalleeManager {
 					.determineVirtualEdgeMapping(manager, ie, callee);
 			if (vedgemapper != null)
 				return vedgemapper;
-
+			if (!manager.getTypeUtils().isOverriden(new MethodSubSignature(ie.getMethod().makeRef()), callee))
+				return UnknownCallerCalleeMapper.INSTANCE;
 			return IdentityCallerCalleeMapper.INSTANCE;
 		}
 		return null;
