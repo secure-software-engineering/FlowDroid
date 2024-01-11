@@ -88,7 +88,7 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 					while ((c = targetQueue.poll()) != null) {
 						for (VirtualEdgeTarget d : c.getTargets()) {
 							if (d instanceof IndirectTarget)
-								targetQueue.add(c);
+								targetQueue.add(((IndirectTarget) d));
 							else if (d instanceof DirectTarget) {
 								dt = (DirectTarget) d;
 								if (matchDirectTarget(manager, dt, callee)) {
@@ -120,8 +120,6 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 				if (!manager.getTypeUtils().checkCast(callee.getDeclaringClass().getType(), tt))
 					return false;
 		}
-		if (dt.getTargetMethod().equals(new MethodSubSignature(callee.makeRef())))
-			return true;
 
 		return manager.getTypeUtils().isOverriden(dt.getTargetMethod(), callee);
 	}

@@ -591,25 +591,28 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							{
 								Value originalCallArg = null;
 								for (int i = 0; i < callee.getParameterCount(); i++) {
+									int m = mapper.getCallerIndexOfCalleeParameter(i);
+									if (m == ICallerCalleeArgumentMapper.UNKNOWN)
+										continue;
+									if (m >= paramLocals.length)
+										continue;
+
 									// If this parameter is overwritten, we
 									// cannot propagate the "old" taint over.
 									// Return value propagation must always
 									// happen explicitly.
+									originalCallArg = iCallStmt.getInvokeExpr().getArg(i);
 									if (callSite instanceof DefinitionStmt && !isExceptionHandler(retSite)) {
 										DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 										Value leftOp = defnStmt.getLeftOp();
-										originalCallArg = defnStmt.getInvokeExpr().getArg(i);
 										if (originalCallArg == leftOp)
 											continue;
 									}
 									// Propagate over the parameter taint
 									// skip if the callee has more parameter than the iCallStmt.
 									// can happen by virtual edges added by soot (`virtualedges.xml`)
-									if (i < iCallStmt.getInvokeExpr().getArgCount()
-											&& aliasing.mayAlias(paramLocals[i], sourceBase)) {
+									if (aliasing.mayAlias(paramLocals[m], sourceBase)) {
 										parameterAliases = true;
-										originalCallArg = iCallStmt.getInvokeExpr()
-												.getArg(mapper.getCallerIndexOfCalleeParameter(i));
 
 										// If this is a constant parameter, we
 										// can safely ignore it
@@ -682,18 +685,20 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									// and create a new access path for it
 									Value callerBaseLocal = mapper.getCallerValueOfCalleeParameter(
 											iCallStmt.getInvokeExpr(), ICallerCalleeArgumentMapper.BASE_OBJECT);
-									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-											newSource.getAccessPath(), callerBaseLocal,
-											isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
-											false);
-									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
-									if (abs != null) {
-										res.add(abs);
-										if (!abs.equals(calleeD1))
-											for (Abstraction callerD1 : callerD1s)
-												manager.getAliasing().computeAliases(callerD1, iCallStmt,
-														callerBaseLocal, res,
-														interproceduralCFG().getMethodOf(iCallStmt), abs);
+									if (callerBaseLocal != null) {
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+												newSource.getAccessPath(), callerBaseLocal,
+												isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
+												false);
+										Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
+										if (abs != null) {
+											res.add(abs);
+											if (!abs.equals(calleeD1))
+												for (Abstraction callerD1 : callerD1s)
+													manager.getAliasing().computeAliases(callerD1, iCallStmt,
+															callerBaseLocal, res,
+															interproceduralCFG().getMethodOf(iCallStmt), abs);
+										}
 									}
 								}
 							}

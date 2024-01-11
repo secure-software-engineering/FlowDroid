@@ -379,17 +379,20 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 							Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 									ICallerCalleeArgumentMapper.BASE_OBJECT);
 
-							Value sourceBase = source.getAccessPath().getPlainValue();
-							if (callBase == sourceBase && manager.getTypeUtils()
-									.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
-								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
-										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
-									AccessPath ap = manager.getAccessPathFactory()
-											.copyWithNewValue(source.getAccessPath(), thisLocal);
-									Abstraction abs = checkAbstraction(
-											source.deriveNewAbstraction(ap, (Stmt) callSite));
-									if (abs != null)
-										res.add(abs);
+							if (callBase != null) {
+								Value sourceBase = source.getAccessPath().getPlainValue();
+								if (callBase == sourceBase && manager.getTypeUtils()
+										.hasCompatibleTypesForCall(source.getAccessPath(), dest.getDeclaringClass())) {
+									if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase,
+											mapper.getCallerIndexOfCalleeParameter(
+													ICallerCalleeArgumentMapper.BASE_OBJECT))) {
+										AccessPath ap = manager.getAccessPathFactory()
+												.copyWithNewValue(source.getAccessPath(), thisLocal);
+										Abstraction abs = checkAbstraction(
+												source.deriveNewAbstraction(ap, (Stmt) callSite));
+										if (abs != null)
+											res.add(abs);
+									}
 								}
 							}
 						}
@@ -517,15 +520,19 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 								Value callBase = mapper.getCallerValueOfCalleeParameter(ie,
 										ICallerCalleeArgumentMapper.BASE_OBJECT);
 
-								if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase, mapper
-										.getCallerIndexOfCalleeParameter(ICallerCalleeArgumentMapper.BASE_OBJECT))) {
-									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-											source.getAccessPath(), callBase,
-											isReflectiveCallSite ? null : source.getAccessPath().getBaseType(), false);
-									Abstraction abs = checkAbstraction(
-											source.deriveNewAbstraction(ap, (Stmt) exitStmt));
-									if (abs != null) {
-										res.add(abs);
+								if (callBase != null) {
+									if (isReflectiveCallSite || !hasAnotherReferenceOnBase(ie, sourceBase,
+											mapper.getCallerIndexOfCalleeParameter(
+													ICallerCalleeArgumentMapper.BASE_OBJECT))) {
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
+												source.getAccessPath(), callBase,
+												isReflectiveCallSite ? null : source.getAccessPath().getBaseType(),
+												false);
+										Abstraction abs = checkAbstraction(
+												source.deriveNewAbstraction(ap, (Stmt) exitStmt));
+										if (abs != null) {
+											res.add(abs);
+										}
 									}
 								}
 							}
@@ -540,6 +547,8 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 									continue;
 
 								Value originalCallArg = mapper.getCallerValueOfCalleeParameter(ie, i);
+								if (originalCallArg == null)
+									continue;
 								if (callSite instanceof DefinitionStmt && !isExceptionHandler(returnSite)) {
 									DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 									Value leftOp = defnStmt.getLeftOp();
