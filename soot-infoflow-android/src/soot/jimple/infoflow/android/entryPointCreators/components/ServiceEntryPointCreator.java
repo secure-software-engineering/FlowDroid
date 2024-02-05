@@ -169,7 +169,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		SootMethod sm = component.getMethodUnsafe("android.os.IBinder onBind(android.content.Intent)");
 		final Type intentType = RefType.v("android.content.Intent");
 		final Type binderType = RefType.v("android.os.IBinder");
-		if (sm == null || !sm.hasActiveBody()) {
+		if (sm == null || !sm.isConcrete()) {
 			// Create a new onBind() method
 			if (sm == null) {
 				sm = Scene.v().makeSootMethod("onBind", Collections.singletonList(intentType), binderType,
@@ -192,7 +192,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 			b.getUnits().add(Jimple.v().newReturnStmt(binderLocal));
 		} else {
 			// Modify the existing onBind() method
-			JimpleBody b = (JimpleBody) sm.getActiveBody();
+			JimpleBody b = (JimpleBody) sm.retrieveActiveBody();
 			Stmt firstNonIdentityStmt = b.getFirstNonIdentityStmt();
 
 			final Local thisLocal = b.getThisLocal();
