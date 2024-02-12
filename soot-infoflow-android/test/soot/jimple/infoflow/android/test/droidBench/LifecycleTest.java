@@ -201,12 +201,9 @@ public abstract class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestServiceEventSequence3() throws IOException, XmlPullParserException {
-		int expected = 1;
-		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
-			expected = 0;
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ServiceEventSequence3.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(expected, res.size());
+		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
