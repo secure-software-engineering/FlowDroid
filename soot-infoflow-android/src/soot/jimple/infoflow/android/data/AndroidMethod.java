@@ -164,11 +164,6 @@ public class AndroidMethod extends SootMethodAndClass {
 			return false;
 		if (sourceSinkType != other.sourceSinkType)
 			return false;
-		if (!this.className.equals(other.className)
-		    || !this.methodName.equals(other.methodName)
-		    || !this.returnType.equals(other.returnType)) {
-			return false;
-		}
 		return true;
 	}
 
