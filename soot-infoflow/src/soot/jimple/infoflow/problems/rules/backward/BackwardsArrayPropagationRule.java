@@ -1,7 +1,18 @@
 package soot.jimple.infoflow.problems.rules.backward;
 
-import soot.*;
-import soot.jimple.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import soot.SootMethod;
+import soot.Type;
+import soot.Value;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
+import soot.jimple.LengthExpr;
+import soot.jimple.NewArrayExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
@@ -12,10 +23,6 @@ import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Rule for propagating array accesses
  * 
@@ -24,7 +31,8 @@ import java.util.Set;
  */
 public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule {
 
-	public BackwardsArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
+	public BackwardsArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue,
+			TaintPropagationResults results) {
 		super(manager, zeroValue, results);
 	}
 
@@ -58,7 +66,8 @@ public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule 
 		// y = new A[i] && y length tainted -> i tainted
 		else if (rightVal instanceof NewArrayExpr && getManager().getConfig().getEnableArraySizeTainting()) {
 			NewArrayExpr newArrayExpr = (NewArrayExpr) rightVal;
-			if (!(newArrayExpr.getSize() instanceof Constant) && source.getAccessPath().getArrayTaintType() != ArrayTaintType.Contents
+			if (!(newArrayExpr.getSize() instanceof Constant)
+					&& source.getAccessPath().getArrayTaintType() != ArrayTaintType.Contents
 					&& aliasing.mayAlias(source.getAccessPath().getPlainValue(), leftVal)) {
 				// Create the new taint abstraction
 				AccessPath ap = getManager().getAccessPathFactory().createAccessPath(newArrayExpr.getSize(), true);
@@ -76,8 +85,10 @@ public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule 
 				AccessPath ap;
 				if (getManager().getConfig().getImplicitFlowMode().trackArrayAccesses()) {
 					ap = getManager().getAccessPathFactory().createAccessPath(rightIndex, false);
-					newAbs = source.deriveNewAbstraction(ap, assignStmt);
-					res.add(newAbs);
+					if (ap != null) {
+						newAbs = source.deriveNewAbstraction(ap, assignStmt);
+						res.add(newAbs);
+					}
 				}
 				// taint whole array
 				// We add one layer
@@ -85,8 +96,8 @@ public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule 
 				Type targetType = TypeUtils.buildArrayOrAddDimension(baseType, baseType.getArrayType());
 
 				// Create the new taint abstraction
-				ap = getManager().getAccessPathFactory().copyWithNewValue(source.getAccessPath(), rightBase,
-						targetType, false, true, ArrayTaintType.Contents);
+				ap = getManager().getAccessPathFactory().copyWithNewValue(source.getAccessPath(), rightBase, targetType,
+						false, true, ArrayTaintType.Contents);
 
 				newAbs = source.deriveNewAbstraction(ap, assignStmt);
 			}
@@ -100,8 +111,7 @@ public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule 
 		res.add(newAbs);
 
 		if (aliasing.canHaveAliases(assignStmt, leftVal, newAbs))
-			aliasing.computeAliases(d1, assignStmt, leftVal, res, manager.getICFG().getMethodOf(assignStmt),
-					newAbs);
+			aliasing.computeAliases(d1, assignStmt, leftVal, res, manager.getICFG().getMethodOf(assignStmt), newAbs);
 
 		return res;
 	}
@@ -119,8 +129,8 @@ public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule 
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 
