@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 
 /**
@@ -21,7 +22,7 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
  */
 public class SummaryFlowCompactor {
 
-	private static final Logger logger = LoggerFactory.getLogger(InfoflowResultPostProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(SummaryFlowCompactor.class);
 
 	private final MethodSummaries summaries;
 
@@ -62,8 +63,21 @@ public class SummaryFlowCompactor {
 					if (flow == flow2)
 						continue;
 
-					if (flow.isCoarserThan(flow2)
-							|| (flow.isAlias() && flow2.isAlias() && flow.reverse().isCoarserThan(flow2))) {
+					// If we have an alias flow, we only need it in one direction
+					boolean removeFlow = false;
+					MethodFlow reverseFlow = flow.reverse();
+					if (reverseFlow.equals(flow2) && flow.isAlias() && flow2.isAlias()) {
+						// For flows to a gap basre object, we keep the flow in which the gap base
+						// object is the target.
+						if (flow.sink().getType() != SourceSinkType.GapBaseObject)
+							removeFlow = true;
+					} // If one flow is coarser than the other, we only keep the coarser flow
+					else if (flow.isCoarserThan(flow2)
+							|| (flow.isAlias() && flow2.isAlias() && reverseFlow.isCoarserThan(flow2))) {
+						removeFlow = true;
+					}
+
+					if (removeFlow) {
 						flowIt.remove();
 						flowsRemoved++;
 						hasChanged = true;
@@ -77,6 +91,7 @@ public class SummaryFlowCompactor {
 		} while (hasChanged);
 
 		logger.info("Removed {} flows in favour of more precise ones", flowsRemoved);
+
 	}
 
 	/**

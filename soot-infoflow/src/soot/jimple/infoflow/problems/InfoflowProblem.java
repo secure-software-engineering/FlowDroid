@@ -45,6 +45,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.callmappers.CallerCalleeManager;
+import soot.jimple.infoflow.callmappers.ICallerCalleeArgumentMapper;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
@@ -391,7 +393,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 			@Override
 			public FlowFunction<Abstraction> getCallFlowFunction(final Unit src, final SootMethod dest) {
-				if (!dest.isConcrete()) {
+				if (!dest.hasActiveBody()) {
 					logger.debug("Call skipped because target has no body: {} -> {}", src, dest);
 					return KillAll.v();
 				}
@@ -444,7 +446,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							return null;
 
 						// Map the source access path into the callee
-						Set<AccessPath> resMapping = mapAccessPathToCallee(dest, ie, paramLocals, thisLocal,
+						Set<AccessPath> resMapping = mapAccessPathToCallee(dest, stmt, ie, paramLocals, thisLocal,
 								source.getAccessPath());
 						if (resMapping == null)
 							return res;
@@ -478,8 +480,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (callSite != null && !(callSite instanceof Stmt))
 					return KillAll.v();
 				final Stmt iCallStmt = (Stmt) callSite;
-				final boolean isReflectiveCallSite = callSite != null
-						&& interproceduralCFG().isReflectiveCallSite(callSite);
 
 				final ReturnStmt returnStmt = (exitStmt instanceof ReturnStmt) ? (ReturnStmt) exitStmt : null;
 
@@ -493,9 +493,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// This is not cached by Soot, so accesses are more expensive
 				// than one might think
 				final Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
-				final InvokeExpr ie = iCallStmt != null && iCallStmt.containsInvokeExpr() ? iCallStmt.getInvokeExpr()
-						: null;
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, iCallStmt, callee);
+				final boolean isReflectiveCallSite = mapper != null ? mapper.isReflectiveMapper() : false;
 
 				return new SolverReturnFlowFunction() {
 
@@ -592,25 +591,28 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							{
 								Value originalCallArg = null;
 								for (int i = 0; i < callee.getParameterCount(); i++) {
+									int m = mapper.getCallerIndexOfCalleeParameter(i);
+									if (m == ICallerCalleeArgumentMapper.UNKNOWN)
+										continue;
+									if (m >= paramLocals.length)
+										continue;
+
 									// If this parameter is overwritten, we
 									// cannot propagate the "old" taint over.
 									// Return value propagation must always
 									// happen explicitly.
+									originalCallArg = iCallStmt.getInvokeExpr().getArg(i);
 									if (callSite instanceof DefinitionStmt && !isExceptionHandler(retSite)) {
 										DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 										Value leftOp = defnStmt.getLeftOp();
-										originalCallArg = defnStmt.getInvokeExpr().getArg(i);
 										if (originalCallArg == leftOp)
 											continue;
 									}
 									// Propagate over the parameter taint
 									// skip if the callee has more parameter than the iCallStmt.
 									// can happen by virtual edges added by soot (`virtualedges.xml`)
-									if (i < iCallStmt.getInvokeExpr().getArgCount()
-											&& aliasing.mayAlias(paramLocals[i], sourceBase)) {
+									if (aliasing.mayAlias(paramLocals[m], sourceBase)) {
 										parameterAliases = true;
-										originalCallArg = iCallStmt.getInvokeExpr()
-												.getArg(isReflectiveCallSite ? 1 : i);
 
 										// If this is a constant parameter, we
 										// can safely ignore it
@@ -676,24 +678,14 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// (then we have already fixed it)
 							if (!parameterAliases && !thisAliases && source.getAccessPath().getTaintSubFields()
 									&& aliasing.mayAlias(thisLocal, sourceBase)) {
-								if (isExecutorExecute) {
-									if (manager.getTypeUtils().checkCast(source.getAccessPath(),
-											ie.getArg(0).getType())) {
-										AccessPath ap = manager.getAccessPathFactory()
-												.copyWithNewValue(source.getAccessPath(), ie.getArg(0));
-										Abstraction abs = source.deriveNewAbstraction(ap, (Stmt) exitStmt);
-										if (abs != null)
-											res.add(abs);
-									}
-								} else if (iCallStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-									// Type check
-									if (manager.getTypeUtils().checkCast(source.getAccessPath(), thisLocal.getType())) {
-										InstanceInvokeExpr iIExpr = (InstanceInvokeExpr) iCallStmt.getInvokeExpr();
+								// Type check
+								if (manager.getTypeUtils().checkCast(source.getAccessPath(), thisLocal.getType())) {
 
-										// Get the caller-side base local
-										// and create a new access path for it
-										Value callerBaseLocal = isReflectiveCallSite ? iIExpr.getArg(0)
-												: iIExpr.getBase();
+									// Get the caller-side base local
+									// and create a new access path for it
+									Value callerBaseLocal = mapper.getCallerValueOfCalleeParameter(
+											iCallStmt.getInvokeExpr(), ICallerCalleeArgumentMapper.BASE_OBJECT);
+									if (callerBaseLocal != null) {
 										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 												newSource.getAccessPath(), callerBaseLocal,
 												isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
@@ -829,11 +821,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							// If one of the callers does not read the value, we
 							// must pass it on in any case
 							Collection<SootMethod> callees = interproceduralCFG().getCalleesOfCallAt(call);
-							boolean allCalleesRead = !callees.isEmpty();
+							boolean allCalleesRead = true;
 							outer: for (SootMethod callee : callees) {
 								if (callee.isConcrete() && callee.hasActiveBody()) {
-									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, invExpr, null, null,
-											source.getAccessPath());
+									Set<AccessPath> calleeAPs = mapAccessPathToCallee(callee, iCallStmt, invExpr, null,
+											null, source.getAccessPath());
 									if (calleeAPs != null) {
 										for (AccessPath ap : calleeAPs) {
 											if (ap != null) {
@@ -927,6 +919,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * Maps the given access path into the scope of the callee
 			 * 
 			 * @param callee      The method that is being called
+			 * @param stmt		  The caller statement or null
 			 * @param ie          The invocation expression for the call
 			 * @param paramLocals The list of parameter locals in the callee
 			 * @param thisLocal   The "this" local in the callee
@@ -934,7 +927,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * @return The set of callee-side access paths corresponding to the given
 			 *         caller-side access path
 			 */
-			private Set<AccessPath> mapAccessPathToCallee(final SootMethod callee, final InvokeExpr ie,
+			private Set<AccessPath> mapAccessPathToCallee(final SootMethod callee, Stmt stmtCaller, final InvokeExpr ie,
 					Value[] paramLocals, Local thisLocal, AccessPath ap) {
 				// We do not transfer empty access paths
 				if (ap.isEmpty())
@@ -942,7 +935,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Android executor methods are handled specially.
 				// getSubSignature() is slow, so we try to avoid it whenever we can
-				final boolean isExecutorExecute = interproceduralCFG().isExecutorExecute(ie, callee);
+				final ICallerCalleeArgumentMapper mapper = CallerCalleeManager.getMapper(manager, stmtCaller, callee);
 
 				Set<AccessPath> res = null;
 
@@ -960,15 +953,8 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 				// Is this a virtual method call?
 				Value baseLocal = null;
-				if (!isExecutorExecute && !ap.isStaticFieldRef() && !callee.isStatic()) {
-					if (interproceduralCFG().isReflectiveCallSite(ie)) {
-						// Method.invoke(target, arg0, ..., argn)
-						baseLocal = ie.getArg(0);
-					} else {
-						assert ie instanceof InstanceInvokeExpr;
-						InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
-						baseLocal = vie.getBase();
-					}
+				if (!ap.isStaticFieldRef() && !callee.isStatic()) {
+					baseLocal = mapper.getCallerValueOfCalleeParameter(ie, ICallerCalleeArgumentMapper.BASE_OBJECT);
 				}
 
 				// If we have a base local to map, we need to find the
@@ -987,49 +973,45 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						}
 				}
 
-				// special treatment for clinit methods - no param mapping
-				// possible
 				final int calleeParamCount = callee.getParameterCount();
-				if (isExecutorExecute) {
-					if (aliasing.mayAlias(ie.getArg(0), ap.getPlainValue())) {
-						if (res == null)
-							res = new HashSet<AccessPath>();
-						res.add(manager.getAccessPathFactory().copyWithNewValue(ap,
-								callee.getActiveBody().getThisLocal()));
-					}
-				} else if (calleeParamCount > 0) {
-					boolean isReflectiveCallSite = interproceduralCFG().isReflectiveCallSite(ie);
+				if (calleeParamCount > 0) {
+					for (int i = 0; i < ie.getArgCount(); i++) {
+						if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
+							if (res == null)
+								res = new HashSet<AccessPath>();
+							int mapped = mapper.getCalleeIndexOfCallerParameter(i);
+							if (mapped == ICallerCalleeArgumentMapper.UNKNOWN)
+								continue;
 
-					// check if param is tainted:
-					if (isReflectiveCallSite || ie.getArgCount() == calleeParamCount) {
-						for (int i = isReflectiveCallSite ? 1 : 0; i < ie.getArgCount(); i++) {
-							if (aliasing.mayAlias(ie.getArg(i), ap.getPlainValue())) {
-								if (res == null)
-									res = new HashSet<AccessPath>();
+							// Get the parameter locals if we don't have them yet
+							if (paramLocals == null)
+								paramLocals = callee.getActiveBody().getParameterLocals()
+										.toArray(new Local[calleeParamCount]);
 
-								// Get the parameter locals if we don't have them yet
-								if (paramLocals == null)
-									paramLocals = callee.getActiveBody().getParameterLocals()
-											.toArray(new Local[calleeParamCount]);
+							if (mapped == ICallerCalleeArgumentMapper.ALL_PARAMS) {
+								//Reflection
 
-								if (isReflectiveCallSite) {
-									// Taint all parameters in the callee if the argument array of a reflective
-									// method call is tainted
-									for (int j = 0; j < paramLocals.length; j++) {
-										AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
-												paramLocals[j], null, false);
-										if (newAP != null)
-											res.add(newAP);
-									}
-								} else {
-									// Taint the corresponding parameter local in the callee
+								// Taint all parameters in the callee if the argument array of a reflective
+								// method call is tainted
+								for (int j = 0; j < paramLocals.length; j++) {
 									AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
-											paramLocals[i]);
+											paramLocals[j], null, false);
 									if (newAP != null)
 										res.add(newAP);
 								}
+								continue;
+							} else if (mapped == ICallerCalleeArgumentMapper.BASE_OBJECT)
+								continue;
+							else {
+								// Taint the corresponding parameter local in the callee
+
+								AccessPath newAP = manager.getAccessPathFactory().copyWithNewValue(ap,
+										paramLocals[mapped]);
+								if (newAP != null)
+									res.add(newAP);
 							}
 						}
+
 					}
 
 					// Sometimes callers have more arguments than the callee parameters, e.g.

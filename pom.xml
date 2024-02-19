@@ -35,7 +35,7 @@
 
 		<apache-commons-cli.version>1.5.0</apache-commons-cli.version>
 
-		<soot.version>4.4.1</soot.version>
+		<soot.version>4.5.0-SNAPSHOT</soot.version>
 	</properties>
 
 	<developers>

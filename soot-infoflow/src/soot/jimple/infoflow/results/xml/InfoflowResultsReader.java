@@ -132,8 +132,8 @@ public class InfoflowResultsReader {
 					// Clear the old state
 					pathElements.clear();
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.pathElement) && reader.isStartElement()
-						&& stateStack.peek() == State.source) {
-					stateStack.push(State.taintPath);
+						&& stateStack.peek() == State.taintPath) {
+					stateStack.push(State.pathElement);
 
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
@@ -178,7 +178,9 @@ public class InfoflowResultsReader {
 						break;
 					}
 				} else if (reader.isEndElement()) {
-					stateStack.pop();
+					State s = stateStack.pop();
+					if (!reader.getLocalName().equalsIgnoreCase(s.name()))
+						throw new RuntimeException("Closing the wrong tag, likely a bug");
 
 					if (reader.getLocalName().equals(XmlConstants.Tags.accessPath)) {
 						ap = new SerializedAccessPath(apValue, apValueType, apTaintSubFields,

@@ -70,6 +70,8 @@ public class SootMethodAndClass extends AbstractMethodAndClass {
 			return false;
 		if (!this.className.equals(otherMethod.className))
 			return false;
+		if (!this.returnType.equals(otherMethod.returnType))
+			return false;
 		return true;
 	}
 

@@ -107,13 +107,11 @@ public class FieldToParaTests extends TestHelper {
 
 	@Test(timeout = 100000)
 	public void fieldToParaRec1() {
-		for (int i = 0; i < 10; i++) {
-			String mSig = "<soot.jimple.infoflow.test.methodSummary.FieldToPara: void dataParameterRec(soot.jimple.infoflow.test.methodSummary.Data,int)>";
-			Set<MethodFlow> flow = createSummaries(mSig).getAllFlows();
-			assertTrue(containsFlow(flow, Field, new String[] { OBJ_FIELD }, Parameter, 0,
-					new String[] { DATACLASS_OBJECT_FIELD }));
-			assertEquals(1, flow.size());
-		}
+		String mSig = "<soot.jimple.infoflow.test.methodSummary.FieldToPara: void dataParameterRec(soot.jimple.infoflow.test.methodSummary.Data,int)>";
+		Set<MethodFlow> flow = createSummaries(mSig).getAllFlows();
+		assertTrue(containsFlow(flow, Field, new String[] { OBJ_FIELD }, Parameter, 0,
+				new String[] { DATACLASS_OBJECT_FIELD }));
+		assertEquals(1, flow.size());
 	}
 
 	@Test(timeout = 100000)

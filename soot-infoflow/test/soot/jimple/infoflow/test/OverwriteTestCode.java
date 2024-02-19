@@ -15,16 +15,19 @@ import java.util.List;
 
 import soot.jimple.infoflow.test.android.ConnectionManager;
 import soot.jimple.infoflow.test.android.TelephonyManager;
+
 /**
- * checks if taint is removed after overwriting the values (for both string and list<string>)
+ * checks if taint is removed after overwriting the values (for both string and
+ * list<string>)
+ * 
  * @author Christian
  *
  */
 public class OverwriteTestCode {
 	static String staticString;
 	static List<String> staticList;
-	
-	public void varOverwrite(){
+
+	public void varOverwrite() {
 		String var;
 		List<String> varList = new LinkedList<String>();
 		String tainted = TelephonyManager.getDeviceId();
@@ -33,14 +36,14 @@ public class OverwriteTestCode {
 		var = "123";
 		varList = new LinkedList<String>();
 		varList.add("123");
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(var);
 		cm.publish(varList.get(0));
-		
+
 	}
-	
-	public void staticFieldOverwrite(){
+
+	public void staticFieldOverwrite() {
 		String tainted = TelephonyManager.getDeviceId();
 		OverwriteTestCode.staticString = tainted;
 		OverwriteTestCode.staticString = "123";
@@ -48,13 +51,13 @@ public class OverwriteTestCode {
 		OverwriteTestCode.staticList.add(tainted);
 		OverwriteTestCode.staticList = new LinkedList<String>();
 		OverwriteTestCode.staticList.add("123");
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(OverwriteTestCode.staticString);
 		cm.publish(OverwriteTestCode.staticList.get(0));
 	}
-	
-	public void fieldOverwrite(){
+
+	public void fieldOverwrite() {
 		String tainted = TelephonyManager.getDeviceId();
 		Test1 t = new Test1();
 		t.field = tainted;
@@ -66,8 +69,8 @@ public class OverwriteTestCode {
 		cm.publish(t.field);
 		cm.publish(t.list.get(0));
 	}
-	
-	public void returnOverwrite(){
+
+	public void returnOverwrite() {
 		String tainted = TelephonyManager.getDeviceId();
 		Test1 t = new Test1();
 		t.field = tainted;
@@ -78,8 +81,8 @@ public class OverwriteTestCode {
 		cm.publish(t.field);
 		cm.publish(t.list.get(0));
 	}
-	
-	public void returnOverwrite2(){
+
+	public void returnOverwrite2() {
 		String var;
 		List<String> varList = new LinkedList<String>();
 		String tainted = TelephonyManager.getDeviceId();
@@ -92,8 +95,8 @@ public class OverwriteTestCode {
 		cm.publish(var);
 		cm.publish(varList.get(0));
 	}
-	
-	public void returnOverwrite3(){
+
+	public void returnOverwrite3() {
 		String tainted = TelephonyManager.getDeviceId();
 		Test1 t = new Test1();
 		OverwriteTestCode.staticString = tainted;
@@ -105,37 +108,37 @@ public class OverwriteTestCode {
 		cm.publish(OverwriteTestCode.staticString);
 		cm.publish(OverwriteTestCode.staticList.get(0));
 	}
-	
-	public void returnOverwrite4(){
+
+	public void returnOverwrite4() {
 		String tainted = TelephonyManager.getDeviceId();
 		tainted = null;
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(tainted);
 	}
 
-	public class Test1{
+	public class Test1 {
 		String field;
 		LinkedList<String> list = new LinkedList<String>();
-		
-		public String testMethod(){
+
+		public String testMethod() {
 			return "123";
 		}
-		
-		public LinkedList<String> testMethodList(){
+
+		public LinkedList<String> testMethodList() {
 			LinkedList<String> result = new LinkedList<String>();
 			result.add("123");
 			return result;
 		}
-		
+
 	}
-	
+
 	private String data = "";
-	
+
 	private void setData(String data) {
 		this.data = data;
 	}
-	
-	public void returnOverwrite5(){
+
+	public void returnOverwrite5() {
 		setData(TelephonyManager.getDeviceId());
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(data);
@@ -144,12 +147,12 @@ public class OverwriteTestCode {
 	}
 
 	private static String dataStatic = "";
-	
+
 	private static void setDataStatic(String data) {
 		dataStatic = data;
 	}
-	
-	public void returnOverwrite6(){
+
+	public void returnOverwrite6() {
 		setDataStatic(TelephonyManager.getDeviceId());
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(dataStatic);
@@ -160,34 +163,35 @@ public class OverwriteTestCode {
 	private class DataClass {
 		public String data = "";
 		public DataClass2 dataClass2;
-		
+
 		public void clear() {
 			dataClass2 = null;
 		}
-		
+
 	}
+
 	private DataClass data2 = new DataClass();
-	
+
 	private class DataClass2 {
-		public String data = "";		
+		public String data = "";
 	}
-	
+
 	private void setData2(String data) {
 		this.data2.data = data;
 	}
 
-	public void returnOverwrite7(){
+	public void returnOverwrite7() {
 		setData2(TelephonyManager.getDeviceId());
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(data2.data);
 		setData2(null);
 		cm.publish(data2.data);
 	}
-	
+
 	private String nonsource() {
 		return "foo";
 	}
-	
+
 	public void loopOverwrite() {
 		String tmp;
 		ConnectionManager cm = new ConnectionManager();
@@ -195,8 +199,7 @@ public class OverwriteTestCode {
 			cm.publish(nonsource());
 			tmp = TelephonyManager.getDeviceId();
 			cm.publish(tmp);
-		}
-		while (true);
+		} while (true);
 	}
 
 	public void loopOverwrite2() {
@@ -207,10 +210,9 @@ public class OverwriteTestCode {
 			cm.publish(tmp);
 			tmp = TelephonyManager.getDeviceId();
 			cm.publish(tmp);
-		}
-		while (true);
+		} while (true);
 	}
-	
+
 	public void overwriteAlias() {
 		DataClass dc = new DataClass();
 		dc.dataClass2 = new DataClass2();
@@ -218,18 +220,36 @@ public class OverwriteTestCode {
 		DataClass dc2 = new DataClass();
 		dc2.dataClass2 = dc.dataClass2;
 		dc2.clear();
-		ConnectionManager cm = new ConnectionManager();		
+		ConnectionManager cm = new ConnectionManager();
 		cm.publish(dc.dataClass2.data);
 		cm.publish(dc2.dataClass2.data);
 	}
-	
+
 	public void simpleOverwriteAliasTest1() {
 		DataClass dc1 = new DataClass();
 		DataClass dc2 = dc1;
 		dc1.data = TelephonyManager.getDeviceId();
 		dc2.data = null;
-		ConnectionManager cm = new ConnectionManager();		
+		ConnectionManager cm = new ConnectionManager();
 		cm.publish(dc1.data);
+	}
+
+	private class TestClass {
+
+		public String data;
+
+		public TestClass forgetTaint() {
+			return new TestClass();
+		}
+
+	}
+
+	public void overwriteBaseValueTest() {
+		TestClass tc = new TestClass();
+		tc.data = TelephonyManager.getDeviceId();
+		tc = tc.forgetTaint();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(tc.data);
 	}
 
 }
