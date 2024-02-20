@@ -301,8 +301,14 @@
 		<method
 			id="java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
 			<flows>
-				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
