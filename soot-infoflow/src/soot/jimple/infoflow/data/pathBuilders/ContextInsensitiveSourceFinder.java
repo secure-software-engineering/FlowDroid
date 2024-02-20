@@ -108,7 +108,7 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		// not implemented
 	}
 
