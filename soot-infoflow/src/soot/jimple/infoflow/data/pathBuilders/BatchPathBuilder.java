@@ -81,8 +81,8 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
-		innerBuilder.runIncrementalPathCompuation();
+	public void runIncrementalPathComputation() {
+		innerBuilder.runIncrementalPathComputation();
 	}
 
 	@Override

@@ -174,7 +174,7 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		// not implemented
 	}
 

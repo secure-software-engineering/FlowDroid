@@ -1095,7 +1095,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					// After the last intermediate result has been computed,
 					// we need to re-process those abstractions that
 					// received new neighbors in the meantime
-					builder.runIncrementalPathCompuation();
+					builder.runIncrementalPathComputation();
 
 					try {
 						resultExecutor.awaitCompletion();

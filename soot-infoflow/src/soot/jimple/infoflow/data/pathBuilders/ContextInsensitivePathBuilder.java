@@ -152,7 +152,7 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		Set<AbstractionAtSink> incrementalAbs = new HashSet<>();
 		for (Abstraction abs : pathCache.keySet())
 			for (SourceContextAndPath scap : pathCache.get(abs)) {

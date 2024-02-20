@@ -168,18 +168,26 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return deriveNewAbstraction(p, currentStmt, isImplicit);
 	}
 
-	public Abstraction deriveNewAbstraction(AccessPath p, Stmt currentStmt, boolean isImplicit) {
-		// If the new abstraction looks exactly like the current one, there is
-		// no need to create a new object
-		if (this.accessPath.equals(p) && this.currentStmt == currentStmt && this.isImplicit == isImplicit)
-			return this;
+	public Abstraction deriveDefinitelyNewAbstraction(AccessPath p, Stmt currentStmt) {
+		return deriveDefinitelyNewAbstraction(p, currentStmt, isImplicit);
+	}
 
+	public Abstraction deriveDefinitelyNewAbstraction(AccessPath p, Stmt currentStmt, boolean isImplicit) {
 		Abstraction abs = deriveNewAbstractionMutable(p, currentStmt);
 		if (abs == null)
 			return null;
 
 		abs.isImplicit = isImplicit;
 		return abs;
+	}
+
+	public Abstraction deriveNewAbstraction(AccessPath p, Stmt currentStmt, boolean isImplicit) {
+		// If the new abstraction looks exactly like the current one, there is
+		// no need to create a new object
+		if (this.accessPath.equals(p) && this.currentStmt == currentStmt && this.isImplicit == isImplicit)
+			return this;
+
+		return deriveDefinitelyNewAbstraction(p, currentStmt, isImplicit);
 	}
 
 	protected Abstraction deriveNewAbstractionMutable(AccessPath p, Stmt currentStmt) {
