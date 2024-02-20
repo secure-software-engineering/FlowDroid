@@ -27,11 +27,9 @@ import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
 import soot.jimple.infoflow.river.AdditionalFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
-import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
@@ -413,19 +411,18 @@ public abstract class AbstractXMLSourceSinkParser {
 		}
 
 		protected void handleEndtagMethod() {
-			if (methodSignature == null)
-				return;
-
-			// Check whether we have data
-			if (!baseAPs.isEmpty() || !paramAPs.isEmpty() || !returnAPs.isEmpty()) {
-				AndroidMethod tempMeth = AndroidMethod.createFromSignature(methodSignature);
-				if (tempMeth != null) {
-					@SuppressWarnings("unchecked")
-					ISourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
-							paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions);
-					addSourceSinkDefinition(methodSignature, ssd);
-				} else {
-					logger.error("Invalid method signature: " + methodSignature);
+			if (methodSignature != null) {
+				// Check whether we have data
+				if (!baseAPs.isEmpty() || !paramAPs.isEmpty() || !returnAPs.isEmpty()) {
+					AndroidMethod tempMeth = AndroidMethod.createFromSignature(methodSignature);
+					if (tempMeth != null) {
+						@SuppressWarnings("unchecked")
+						ISourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
+								paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions);
+						addSourceSinkDefinition(methodSignature, ssd);
+					} else {
+						logger.error("Invalid method signature: " + methodSignature);
+					}
 				}
 			}
 
