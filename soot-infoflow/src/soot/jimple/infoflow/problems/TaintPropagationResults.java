@@ -63,7 +63,7 @@ public class TaintPropagationResults {
 
 		// Construct the abstraction at the sink
 		Abstraction abs = resultAbs.getAbstraction();
-		abs = abs.deriveNewAbstraction(abs.getAccessPath(), resultAbs.getSinkStmt());
+		abs = abs.deriveDefinitelyNewAbstraction(abs.getAccessPath(), resultAbs.getSinkStmt());
 		abs.setCorrespondingCallSite(resultAbs.getSinkStmt());
 
 		// Reduce the incoming abstraction
