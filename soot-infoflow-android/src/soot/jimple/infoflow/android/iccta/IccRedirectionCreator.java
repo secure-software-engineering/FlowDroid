@@ -25,6 +25,7 @@ import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
 import soot.VoidType;
+import soot.jimple.AssignStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
@@ -362,7 +363,8 @@ public class IccRedirectionCreator {
 		return newSM;
 	}
 
-	protected SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootClass destProvider) {
+	protected SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootMethod destCPMethod) {
+		final SootClass destCPClass = destCPMethod.getDeclaringClass();
 		SootMethod iccMethod = iccStmt.getInvokeExpr().getMethod();
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, iccMethod.getParameterTypes(),
@@ -384,13 +386,13 @@ public class IccRedirectionCreator {
 		}
 
 		// new
-		Local al = lg.generateLocal(destProvider.getType());
-		b.getUnits().add(Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destProvider.getType())));
+		Local al = lg.generateLocal(destCPClass.getType());
+		b.getUnits().add(Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destCPClass.getType())));
 
 		// init
 		List<Type> parameters = new ArrayList<Type>();
 		List<Value> args = new ArrayList<Value>();
-		SootMethod method = destProvider.getMethod("<init>", parameters, VoidType.v());
+		SootMethod method = destCPClass.getMethod("<init>", parameters, VoidType.v());
 		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args)));
 
 		Local rtLocal = lg.generateLocal(iccMethod.getReturnType());
@@ -398,7 +400,7 @@ public class IccRedirectionCreator {
 		// call related method and assign the result to return local, may
 		// optimize it to dummyMain method as well
 		parameters = iccMethod.getParameterTypes();
-		method = destProvider.getMethodByName(iccMethod.getName());
+		method = destCPMethod;
 		InvokeExpr invoke = Jimple.v().newVirtualInvokeExpr(al, method.makeRef(), locals);
 		b.getUnits().add(Jimple.v().newAssignStmt(rtLocal, invoke));
 
@@ -447,19 +449,9 @@ public class IccRedirectionCreator {
 			return;
 		}
 
-		Stmt redirectCallU = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
+		final Body body = addICCRedirectCall(link, redirectMethod, args);
 
-		final Body body = link.getFromSM().retrieveActiveBody();
 		final PatchingChain<Unit> units = body.getUnits();
-
-		copyTags(link.getFromU(), redirectCallU);
-		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
-		units.insertAfter(redirectCallU, link.getFromU());
-		instrumentedUnits.put(body, redirectCallU);
-		if (instrumentationCallback != null) {
-			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
-		}
-
 		// remove the real ICC methods call stmt
 		// link.getFromSM().retrieveActiveBody().getUnits().remove(link.getFromU());
 		// Please refer to AndroidIPCManager.postProcess() for this removing
@@ -486,6 +478,27 @@ public class IccRedirectionCreator {
 				}
 			}
 		}
+	}
+
+	protected Body addICCRedirectCall(IccLink link, SootMethod redirectMethod, List<Value> args) {
+		Stmt redirectCallU;
+		Jimple jimp = Jimple.v();
+		if (link.getFromU() instanceof AssignStmt)
+			redirectCallU = jimp.newAssignStmt(((AssignStmt) link.getFromU()).getLeftOp(),
+					Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
+		else
+			redirectCallU = jimp.newInvokeStmt(Jimple.v().newStaticInvokeExpr(redirectMethod.makeRef(), args));
+
+		final Body body = link.getFromSM().retrieveActiveBody();
+
+		copyTags(link.getFromU(), redirectCallU);
+		redirectCallU.addTag(SimulatedCodeElementTag.TAG);
+		body.getUnits().insertAfter(redirectCallU, link.getFromU());
+		instrumentedUnits.put(body, redirectCallU);
+		if (instrumentationCallback != null) {
+			instrumentationCallback.onRedirectorCallInserted(link, redirectCallU, redirectMethod);
+		}
+		return body;
 	}
 
 	/**
