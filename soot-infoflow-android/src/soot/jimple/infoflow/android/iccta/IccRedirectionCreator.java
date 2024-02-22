@@ -364,6 +364,7 @@ public class IccRedirectionCreator {
 	}
 
 	protected SootMethod generateRedirectMethodForContentProvider(Stmt iccStmt, SootMethod destCPMethod) {
+		final SootClass destCPClass = destCPMethod.getDeclaringClass();
 		SootMethod iccMethod = iccStmt.getInvokeExpr().getMethod();
 		String newSM_name = "redirector" + num++;
 		SootMethod newSM = Scene.v().makeSootMethod(newSM_name, iccMethod.getParameterTypes(),
@@ -385,14 +386,13 @@ public class IccRedirectionCreator {
 		}
 
 		// new
-		Local al = lg.generateLocal(destCPMethod.getDeclaringClass().getType());
-		b.getUnits()
-				.add(Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destCPMethod.getDeclaringClass().getType())));
+		Local al = lg.generateLocal(destCPClass.getType());
+		b.getUnits().add(Jimple.v().newAssignStmt(al, Jimple.v().newNewExpr(destCPClass.getType())));
 
 		// init
 		List<Type> parameters = new ArrayList<Type>();
 		List<Value> args = new ArrayList<Value>();
-		SootMethod method = destCPMethod.getDeclaringClass().getMethod("<init>", parameters, VoidType.v());
+		SootMethod method = destCPClass.getMethod("<init>", parameters, VoidType.v());
 		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(al, method.makeRef(), args)));
 
 		Local rtLocal = lg.generateLocal(iccMethod.getReturnType());
