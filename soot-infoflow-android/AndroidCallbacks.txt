@@ -349,6 +349,7 @@ android.webkit.WebMessagePort$WebMessageCallback
 android.webkit.WebView$FindListener
 android.webkit.WebView$PictureListener
 android.webkit.WebView$VisualStateCallback
+android.webkit.WebViewClient
 android.widget.AbsListView$MultiChoiceModeListener
 android.widget.AbsListView$OnScrollListener
 android.widget.AbsListView$RecyclerListener
