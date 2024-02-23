@@ -291,7 +291,7 @@ public class AndroidEntryPointUtils {
 	 * @return true if the method is pot. callable from JS
 	 */
 	public static boolean isCallableFromJS(SootMethod m) {
-		if (!m.isPublic() || m.isStatic())
+		if (!m.isPublic() || m.isStatic() || m.isAbstract())
 			return false;
 
 		for (Tag tag : m.getTags()) {

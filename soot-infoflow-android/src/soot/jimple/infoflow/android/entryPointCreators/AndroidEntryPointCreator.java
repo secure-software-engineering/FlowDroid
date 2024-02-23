@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.Body;
-import soot.Hierarchy;
 import soot.Local;
 import soot.Modifier;
 import soot.RefType;
@@ -58,6 +57,7 @@ import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -339,7 +339,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private void createJavascriptCallbacks() {
 		Jimple j = Jimple.v();
-		Hierarchy h = Scene.v().getActiveHierarchy();
 		for (SootMethod m : javascriptInterfaceStmts.keySet()) {
 			Set<Stmt> statements = javascriptInterfaceStmts.get(m);
 			for (Stmt s : statements) {
@@ -364,16 +363,18 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				Stmt assignF = j.newAssignStmt(l, j.newStaticFieldRef(f.makeRef()));
 				body.getUnits().add(assignF);
 				SootClass cbtype = ((RefType) f.getType()).getSootClass();
-				Set<SootMethod> allPossibleImpls = Scene.v().getOrMakeFastHierarchy().resolveAbstractDispatch(cbtype,
-						m);
-				for (SootMethod cbm : allPossibleImpls) {
-					if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
-						List<Value> args = new ArrayList<>();
-						for (Type t : cbm.getParameterTypes())
-							args.add(getSimpleDefaultValue(t));
-						InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
-						body.getUnits().add(st);
+
+				for (SootClass c : TypeUtils.getAllDerivedClasses(cbtype)) {
+					for (SootMethod cbm : c.getMethods()) {
+						if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
+							List<Value> args = new ArrayList<>();
+							for (Type t : cbm.getParameterTypes())
+								args.add(getSimpleDefaultValue(t));
+							InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
+							body.getUnits().add(st);
+						}
 					}
+
 				}
 				createIfStmt(assignF);
 
