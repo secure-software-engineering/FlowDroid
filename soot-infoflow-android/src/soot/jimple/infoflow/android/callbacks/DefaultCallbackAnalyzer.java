@@ -209,6 +209,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 				analyzeMethodForServiceConnection(method);
 				analyzeMethodForFragmentTransaction(lifecycleElement, method);
 				analyzeMethodForViewPagers(lifecycleElement, method);
+				analyzeMethodForJavascriptInterfaces(method);
 			}
 		}
 	}

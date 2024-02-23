@@ -17,6 +17,9 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.tagkit.AnnotationTag;
+import soot.tagkit.Tag;
+import soot.tagkit.VisibilityAnnotationTag;
 
 /**
  * Class containing common utility methods for dealing with Android entry points
@@ -51,6 +54,8 @@ public class AndroidEntryPointUtils {
 		Application, Activity, Service, Fragment, BroadcastReceiver, ContentProvider, GCMBaseIntentService,
 		GCMListenerService, HostApduService, ServiceConnection, Plain
 	}
+
+	private static final String JS_INTERFACE = "Landroid/webkit/JavascriptInterface;";
 
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointUtils} class. Soot must
@@ -280,4 +285,24 @@ public class AndroidEntryPointUtils {
 		return lifecycleMethods;
 	}
 
+	/**
+	 * Checks whether a method is potentially callable from JavaScript
+	 * @param m the method
+	 * @return true if the method is pot. callable from JS
+	 */
+	public static boolean isCallableFromJS(SootMethod m) {
+		if (!m.isPublic() || m.isStatic())
+			return false;
+
+		for (Tag tag : m.getTags()) {
+			if (tag instanceof VisibilityAnnotationTag) {
+				VisibilityAnnotationTag vatag = (VisibilityAnnotationTag) tag;
+				for (AnnotationTag t : vatag.getAnnotations()) {
+					if (t.getType().equals(JS_INTERFACE))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
 }

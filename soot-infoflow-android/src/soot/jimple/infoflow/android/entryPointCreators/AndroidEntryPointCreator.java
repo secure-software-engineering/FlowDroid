@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.entryPointCreators;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.Body;
+import soot.Hierarchy;
 import soot.Local;
 import soot.Modifier;
 import soot.RefType;
@@ -30,11 +32,17 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.Unit;
+import soot.UnitPatchingChain;
+import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.IfStmt;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
+import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.android.entryPointCreators.components.AbstractComponentEntryPointCreator;
@@ -50,6 +58,7 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -91,6 +100,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private final ComponentEntryPointCollection componentToInfo = new ComponentEntryPointCollection();
 
 	private Collection<SootClass> components;
+
+	private MultiMap<SootMethod, Stmt> javascriptInterfaceStmts;
 
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
@@ -305,6 +316,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			addApplicationCallbackMethods();
 			createIfStmt(beforeAppCallbacks);
 		}
+		createJavascriptCallbacks();
 
 		createIfStmt(outerStartStmt);
 
@@ -324,6 +336,60 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			mainMethod.getActiveBody().validate();
 
 		return mainMethod;
+	}
+
+	private void createJavascriptCallbacks() {
+		Jimple j = Jimple.v();
+		Hierarchy h = Scene.v().getActiveHierarchy();
+		for (SootMethod m : javascriptInterfaceStmts.keySet()) {
+			Set<Stmt> statements = javascriptInterfaceStmts.get(m);
+			for (Stmt s : statements) {
+				UnitPatchingChain units = m.retrieveActiveBody().getUnits();
+				Stmt succ = (Stmt) units.getSuccOf(s);
+				SootField f = null;
+				Value arg = s.getInvokeExpr().getArg(0);
+				if (succ.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
+					if (succ instanceof AssignStmt) {
+						AssignStmt assign = (AssignStmt) succ;
+						if (assign.getRightOp() == arg && assign.getLeftOp() instanceof StaticFieldRef) {
+							f = ((StaticFieldRef) assign.getLeftOp()).getField();
+						}
+					}
+				}
+				if (f == null) {
+					//create field
+					f = createField(arg.getType(), "jsInterface");
+					AssignStmt assign = j.newAssignStmt(j.newStaticFieldRef(f.makeRef()), arg);
+					assign.addTag(SimulatedCodeElementTag.TAG);
+					units.insertAfter(assign, s);
+				}
+
+				Local l = j.newLocal(f.getName(), f.getType());
+				body.getLocals().add(l);
+				Stmt assignF = j.newAssignStmt(l, j.newStaticFieldRef(f.makeRef()));
+				body.getUnits().add(assignF);
+				SootClass cbtype = ((RefType) f.getType()).getSootClass();
+				List<SootClass> allPossibleImpls;
+				if (cbtype.isInterface()) {
+					allPossibleImpls = h.getImplementersOf(cbtype);
+				} else {
+					allPossibleImpls = h.getSubclassesOfIncluding(cbtype);
+				}
+				for (SootClass c : allPossibleImpls) {
+					for (SootMethod cbm : c.getMethods()) {
+						if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
+							List<Value> args = new ArrayList<>();
+							for (Type t : cbm.getParameterTypes())
+								args.add(getSimpleDefaultValue(t));
+							InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
+							body.getUnits().add(st);
+						}
+					}
+				}
+				createIfStmt(assignF);
+
+			}
+		}
 	}
 
 	/**
@@ -392,18 +458,22 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				baseName = baseName.substring(baseName.lastIndexOf(".") + 1);
 
 			// Generate a fresh field name
-			SootClass dummyMainClass = mainMethod.getDeclaringClass();
-			int idx = 0;
-			String fieldName = baseName;
-			while (dummyMainClass.declaresFieldByName(fieldName)) {
-				fieldName = baseName + "_" + idx;
-				idx++;
-			}
-			SootField fld = Scene.v().makeSootField(fieldName, RefType.v(callbackClass),
-					Modifier.PRIVATE | Modifier.STATIC);
-			mainMethod.getDeclaringClass().addField(fld);
+			SootField fld = createField(RefType.v(callbackClass), baseName);
 			callbackClassToField.put(callbackClass, fld);
 		}
+	}
+
+	protected SootField createField(Type type, String baseName) {
+		SootClass dummyMainClass = mainMethod.getDeclaringClass();
+		int idx = 0;
+		String fieldName = baseName;
+		while (dummyMainClass.declaresFieldByName(fieldName)) {
+			fieldName = baseName + "_" + idx;
+			idx++;
+		}
+		SootField fld = Scene.v().makeSootField(fieldName, type, Modifier.PRIVATE | Modifier.STATIC);
+		mainMethod.getDeclaringClass().addField(fld);
+		return fld;
 	}
 
 	/**
@@ -600,6 +670,10 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					declaringClass.removeMethod(sm);
 			}
 		}
+	}
+
+	public void setJavaScriptInterfaces(MultiMap<SootMethod, Stmt> javascriptInterfaceStmts) {
+		this.javascriptInterfaceStmts = javascriptInterfaceStmts;
 	}
 
 }
