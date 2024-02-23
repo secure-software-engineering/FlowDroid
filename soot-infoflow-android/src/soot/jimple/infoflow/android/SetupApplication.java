@@ -122,6 +122,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
 
 	protected Set<SootClass> entrypoints = null;
+	protected MultiMap<SootMethod, Stmt> javascriptInterfaceStmts = new HashMultiMap<>();
 	protected Set<String> callbackClasses = null;
 	protected AndroidEntryPointCreator entryPointCreator = null;
 	protected IccInstrumenter iccInstrumenter = null;
@@ -774,6 +775,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					hasChanged = true;
 
 				if (entrypoints.addAll(jimpleClass.getDynamicManifestComponents()))
+					hasChanged = true;
+
+				if (javascriptInterfaceStmts.putAll(jimpleClass.getJavaScriptInterfaces()))
 					hasChanged = true;
 
 				// Collect the XML-based callback methods
@@ -1634,6 +1638,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// We don't need the computed callbacks anymore
 		this.callbackMethods.clear();
 		this.fragmentClasses.clear();
+		this.javascriptInterfaceStmts.clear();
 
 		// Notify our result handlers
 		for (ResultsAvailableHandler handler : resultsAvailableHandlers)
@@ -1787,6 +1792,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		entryPointCreator.setCallbackFunctions(callbackMethodSigs);
 		entryPointCreator.setFragments(fragmentClasses);
 		entryPointCreator.setComponents(components);
+		entryPointCreator.setJavaScriptInterfaces(javascriptInterfaceStmts);
 		return entryPointCreator;
 	}
 

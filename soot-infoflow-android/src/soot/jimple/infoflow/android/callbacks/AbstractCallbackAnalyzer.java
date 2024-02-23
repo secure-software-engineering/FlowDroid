@@ -199,6 +199,8 @@ public abstract class AbstractCallbackAnalyzer {
 
 			});
 
+	private MultiMap<SootMethod, Stmt> javaScriptInterfaces = new HashMultiMap<SootMethod, Stmt>();
+
 	public AbstractCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses)
 			throws IOException {
 		this(config, entryPointClasses, "AndroidCallbacks.txt");
@@ -427,6 +429,28 @@ public abstract class AbstractCallbackAnalyzer {
 						if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass().getName()))
 							dynamicManifestComponents.add(rt.getSootClass());
 					}
+				}
+			}
+		}
+	}
+
+	protected void analyzeMethodForJavascriptInterfaces(SootMethod method) {
+		// Do not analyze system classes
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+			return;
+		if (!method.isConcrete() || !method.hasActiveBody())
+			return;
+
+		final FastHierarchy fastHierarchy = Scene.v().getFastHierarchy();
+		final RefType webViewType = RefType.v("android.webkit.WebView");
+		for (Unit u : method.getActiveBody().getUnits()) {
+			Stmt stmt = (Stmt) u;
+			if (stmt.containsInvokeExpr()) {
+				final InvokeExpr iexpr = stmt.getInvokeExpr();
+				final SootMethodRef methodRef = iexpr.getMethodRef();
+				if (methodRef.getName().equals("addJavascriptInterface") && iexpr.getArgCount() == 2
+						&& fastHierarchy.canStoreType(methodRef.getDeclaringClass().getType(), webViewType)) {
+					this.javaScriptInterfaces.put(method, stmt);
 				}
 			}
 		}
@@ -1044,6 +1068,14 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {
 		this.valueProvider = valueProvider;
+	}
+
+	/**
+	 * Returns a set of all statements which add a javascript interface
+	 * @return the statement list
+	 */
+	public MultiMap<SootMethod, Stmt> getJavaScriptInterfaces() {
+		return javaScriptInterfaces;
 	}
 
 }
