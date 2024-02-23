@@ -293,19 +293,19 @@
 					<from sourceSinkType="Field" BaseType="android.net.Uri"
 						AccessPath="[android.net.Uri: java.lang.String scheme]"
 						AccessPathTypes="[java.lang.String]" />
-					<to sourceSinkType="Return" BaseType="android.net.Uri" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" BaseType="android.net.Uri"
 						AccessPath="[android.net.Uri: java.lang.String ssp]"
 						AccessPathTypes="[java.lang.String]" />
-					<to sourceSinkType="Return" BaseType="android.net.Uri" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" BaseType="android.net.Uri"
 						AccessPath="[android.net.Uri: java.lang.String fragment]"
 						AccessPathTypes="[java.lang.String]" />
-					<to sourceSinkType="Return" BaseType="android.net.Uri" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
 				</flow>
 			</flows>
 		</method>

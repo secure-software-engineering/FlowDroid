@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object"/>
+	<methods>
+		<method id="android.net.Uri getUrl()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean isForMainFrame()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean isRedirect()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean hasGesture()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getMethod()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map getRequestHeaders()">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
