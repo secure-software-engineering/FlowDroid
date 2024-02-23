@@ -42,7 +42,6 @@ import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
-import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.android.entryPointCreators.components.AbstractComponentEntryPointCreator;
@@ -345,22 +344,18 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			Set<Stmt> statements = javascriptInterfaceStmts.get(m);
 			for (Stmt s : statements) {
 				UnitPatchingChain units = m.retrieveActiveBody().getUnits();
-				Stmt succ = (Stmt) units.getSuccOf(s);
 				SootField f = null;
 				Value arg = s.getInvokeExpr().getArg(0);
-				if (succ.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
-					if (succ instanceof AssignStmt) {
-						AssignStmt assign = (AssignStmt) succ;
-						if (assign.getRightOp() == arg && assign.getLeftOp() instanceof StaticFieldRef) {
-							f = ((StaticFieldRef) assign.getLeftOp()).getField();
-						}
-					}
+				DummyMainFieldElementTag dm = (DummyMainFieldElementTag) s.getTag(DummyMainFieldElementTag.TAG_NAME);
+				if (dm != null) {
+					f = mainMethod.getDeclaringClass().getFieldByNameUnsafe(dm.getFieldName());
 				}
 				if (f == null) {
 					//create field
 					f = createField(arg.getType(), "jsInterface");
 					AssignStmt assign = j.newAssignStmt(j.newStaticFieldRef(f.makeRef()), arg);
 					assign.addTag(SimulatedCodeElementTag.TAG);
+					s.addTag(new DummyMainFieldElementTag(f.getName()));
 					units.insertAfter(assign, s);
 				}
 
@@ -369,21 +364,15 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				Stmt assignF = j.newAssignStmt(l, j.newStaticFieldRef(f.makeRef()));
 				body.getUnits().add(assignF);
 				SootClass cbtype = ((RefType) f.getType()).getSootClass();
-				List<SootClass> allPossibleImpls;
-				if (cbtype.isInterface()) {
-					allPossibleImpls = h.getImplementersOf(cbtype);
-				} else {
-					allPossibleImpls = h.getSubclassesOfIncluding(cbtype);
-				}
-				for (SootClass c : allPossibleImpls) {
-					for (SootMethod cbm : c.getMethods()) {
-						if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
-							List<Value> args = new ArrayList<>();
-							for (Type t : cbm.getParameterTypes())
-								args.add(getSimpleDefaultValue(t));
-							InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
-							body.getUnits().add(st);
-						}
+				Set<SootMethod> allPossibleImpls = Scene.v().getOrMakeFastHierarchy().resolveAbstractDispatch(cbtype,
+						m);
+				for (SootMethod cbm : allPossibleImpls) {
+					if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
+						List<Value> args = new ArrayList<>();
+						for (Type t : cbm.getParameterTypes())
+							args.add(getSimpleDefaultValue(t));
+						InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
+						body.getUnits().add(st);
 					}
 				}
 				createIfStmt(assignF);
