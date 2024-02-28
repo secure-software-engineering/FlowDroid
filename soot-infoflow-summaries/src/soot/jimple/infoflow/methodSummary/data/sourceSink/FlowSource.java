@@ -13,6 +13,8 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
  */
 public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 
+	public static final int ANY_PARAMETER = -2;
+
 	public FlowSource(SourceSinkType type, String baseType) {
 		super(type, -1, baseType, null, null, false);
 	}

@@ -57,7 +57,7 @@ public abstract class AbstractFlowSinkSource {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src The source or sink with which to compare the current one
+	 * @param other The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -221,7 +221,7 @@ public abstract class AbstractFlowSinkSource {
 		Map<String, String> res = new HashMap<String, String>();
 		if (isParameter()) {
 			res.put(XMLConstants.ATTRIBUTE_FLOWTYPE, XMLConstants.VALUE_PARAMETER);
-			res.put(XMLConstants.ATTRIBUTE_PARAMTER_INDEX, getParameterIndex() + "");
+			res.put(XMLConstants.ATTRIBUTE_PARAMETER_INDEX, getParameterIndex() + "");
 		} else if (isField())
 			res.put(XMLConstants.ATTRIBUTE_FLOWTYPE, XMLConstants.VALUE_FIELD);
 		else if (isReturn())

@@ -4,7 +4,7 @@ import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_ACCE
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_ACCESSPATHTYPES;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMTER_INDEX;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOWS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SINK;
@@ -214,7 +214,7 @@ public class SummaryWriter {
 			// nothing we need to write in the xml file here (we write the
 			// access path later)
 		} else if (currentFlow.isParameter())
-			writer.writeAttribute(ATTRIBUTE_PARAMTER_INDEX, currentFlow.getParameterIndex() + "");
+			writer.writeAttribute(ATTRIBUTE_PARAMETER_INDEX, currentFlow.getParameterIndex() + "");
 		else if (currentFlow.isGapBaseObject()) {
 			// nothing special to write
 		} else

@@ -7,14 +7,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import heros.solver.Pair;
 import heros.solver.PathEdge;
-import soot.*;
-import soot.jimple.*;
+import soot.ArrayType;
+import soot.FastHierarchy;
+import soot.Hierarchy;
+import soot.Local;
+import soot.Modifier;
+import soot.PrimType;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootFieldRef;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
+import soot.Value;
+import soot.VoidType;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.DynamicInvokeExpr;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.ReturnStmt;
+import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -24,6 +44,7 @@ import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
@@ -507,8 +528,17 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 
 		// Compute the wrapper taints for the current method
-		final SootMethod callee = stmt.getInvokeExpr().getMethod();
-		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
+		final InvokeExpr inv = stmt.getInvokeExpr();
+		SootMethod callee = inv.getMethod();
+		Set<AccessPath> res;
+		if (inv instanceof DynamicInvokeExpr) {
+			final DynamicInvokeExpr dyn = (DynamicInvokeExpr) inv;
+			SootMethod m = dyn.getBootstrapMethodRef().tryResolve();
+			if (m == null)
+				return null;
+			callee = m;
+		}
+		res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
@@ -522,7 +552,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			// Is this method explicitly excluded?
 			if (!this.flows.isMethodExcluded(callee.getDeclaringClass().getName(), callee.getSubSignature())) {
-//				wrapperMisses.incrementAndGet();
+				//				wrapperMisses.incrementAndGet();
 
 				if (classSupported.value)
 					return Collections.singleton(taintedAbs);
@@ -584,7 +614,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs,
 			final SootMethod method, ByReferenceBoolean killIncomingTaint, ByReferenceBoolean classSupported) {
-//		wrapperHits.incrementAndGet();
+		//		wrapperHits.incrementAndGet();
 
 		// Get the cached data flows
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
@@ -965,23 +995,28 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	protected SootClass getSummaryDeclaringClass(Stmt stmt, AccessPath taintedAP) {
 		Type declaredType = null;
-		if (stmt != null && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			// If the base object of the call is tainted, we may have a more precise type in
-			// the access path
-			InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
-			if (taintedAP != null && iinv.getBase() == taintedAP.getPlainValue()) {
-				declaredType = taintedAP.getBaseType();
-			}
+		if (stmt != null) {
+			if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+				// If the base object of the call is tainted, we may have a more precise type in
+				// the access path
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+				if (taintedAP != null && iinv.getBase() == taintedAP.getPlainValue()) {
+					declaredType = taintedAP.getBaseType();
+				}
 
-			// We may have a call such as
-			// x = editable.toString();
-			// In that case, the callee is Object.toString(), since in the stub Android
-			// JAR, the class android.text.Editable does not override toString(). On a
-			// real device, it does. Consequently, we have a summary in the "Editable"
-			// class. To handle such weird cases, we walk the class hierarchy based on
-			// the declared type of the base object.
-			Type baseType = iinv.getBase().getType();
-			declaredType = manager.getTypeUtils().getMorePreciseType(declaredType, baseType);
+				// We may have a call such as
+				// x = editable.toString();
+				// In that case, the callee is Object.toString(), since in the stub Android
+				// JAR, the class android.text.Editable does not override toString(). On a
+				// real device, it does. Consequently, we have a summary in the "Editable"
+				// class. To handle such weird cases, we walk the class hierarchy based on
+				// the declared type of the base object.
+				Type baseType = iinv.getBase().getType();
+				declaredType = manager.getTypeUtils().getMorePreciseType(declaredType, baseType);
+			} else if (stmt.getInvokeExpr() instanceof DynamicInvokeExpr) {
+				return ((DynamicInvokeExpr) stmt.getInvokeExpr()).getBootstrapMethodRef().getDeclaringClass();
+
+			}
 		}
 		return declaredType instanceof RefType ? ((RefType) declaredType).getSootClass() : null;
 	}
@@ -1102,6 +1137,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (compareFields(taint, flowSource))
 					return true;
 			}
+			if (flowSource.getParameterIndex() == FlowSource.ANY_PARAMETER)
+				return true;
 		} else if (flowSource.isField()) {
 			// Flows from a field can either be applied to the same field or
 			// the base object in total
