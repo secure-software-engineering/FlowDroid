@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -21,7 +20,6 @@ import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
-import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 
 /**
@@ -118,8 +116,8 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			case CACHED:
 				// In case we already know the subpath, we do append the path after the path
 				// builder terminated
-				if (config.getPathConfiguration().getPathReconstructionMode()
-						!= InfoflowConfiguration.PathReconstructionMode.NoPaths)
+				if (config.getPathConfiguration()
+						.getPathReconstructionMode() != InfoflowConfiguration.PathReconstructionMode.NoPaths)
 					deferredPaths.add(scap);
 				break;
 			case INFEASIBLE_OR_MAX_PATHS_REACHED:
@@ -140,8 +138,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 				if (checkForSource(pred, extendedScap))
 					sourceReachingScaps.add(extendedScap);
-				return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW
-						: PathProcessingResult.CACHED;
+				return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW : PathProcessingResult.CACHED;
 			}
 
 			// If we enter a method, we put it on the stack
@@ -229,10 +226,9 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> newResults =
-				results.addResult(scap.getDefinitions(), scap.getAccessPath(), scap.getStmt(),
-								  sourceContext.getDefinitions(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-								  sourceContext.getUserData(), scap.getAbstractionPath(), manager);
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> newResults = results.addResult(scap.getDefinitions(),
+				scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinitions(), sourceContext.getAccessPath(),
+				sourceContext.getStmt(), sourceContext.getUserData(), scap.getAbstractionPath(), manager);
 
 		// Notify our handlers
 		if (resultAvailableHandlers != null)
@@ -279,6 +275,14 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			onTaintPathsComputed();
 			cleanupExecutor();
 		}
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		deferredPaths = new ConcurrentHashSet<>();
+		sourceReachingScaps = new ConcurrentHashSet<>();
+		pathCache = new ConcurrentIdentityHashMultiMap<>();
 	}
 
 	/**
