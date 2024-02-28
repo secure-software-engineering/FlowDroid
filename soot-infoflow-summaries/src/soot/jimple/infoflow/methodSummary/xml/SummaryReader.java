@@ -3,7 +3,7 @@ package soot.jimple.infoflow.methodSummary.xml;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_MATCH_STRICT;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMTER_INDEX;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_TAINT_SUB_FIELDS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_CLEAR;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
@@ -51,7 +51,7 @@ public class SummaryReader extends AbstractXMLReader {
 	 * 
 	 * @param reader    The reader from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException Thrown if the reader could not be read
 	 */
 	public void read(Reader reader, ClassMethodSummaries summaries)
@@ -247,7 +247,7 @@ public class SummaryReader extends AbstractXMLReader {
 	 * 
 	 * @param fileName  The file from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException Thrown if the file could not be read
 	 */
 
@@ -418,9 +418,11 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private int parameterIdx(Map<String, String> attributes) {
-		String strIdx = attributes.get(ATTRIBUTE_PARAMTER_INDEX);
+		String strIdx = attributes.get(ATTRIBUTE_PARAMETER_INDEX);
 		if (strIdx == null || strIdx.isEmpty())
 			throw new RuntimeException("Parameter index not specified");
+		if (strIdx.equals("*"))
+			return FlowSource.ANY_PARAMETER;
 		return Integer.parseInt(strIdx);
 	}
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="102">
+    <hierarchy superClass="java.lang.Object">
+    </hierarchy>
+    <methods>
+    	<!-- Note that this a summary for dynamic invokes. For these, we do not actually know the number and types of parameters.
+    	As such, we use the wildcard * to match all possible concrete parameters used for the call site.  -->
+        <method id="java.lang.invoke.CallSite makeConcat(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType)">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="*" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+
+        <method id="java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])">
+            <flows>
+                <flow isAlias="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="*" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>
