@@ -529,17 +529,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Compute the wrapper taints for the current method
 		final InvokeExpr inv = stmt.getInvokeExpr();
-		final SootMethod callee = inv.getMethod();
+		SootMethod callee = inv.getMethod();
 		Set<AccessPath> res;
 		if (inv instanceof DynamicInvokeExpr) {
 			final DynamicInvokeExpr dyn = (DynamicInvokeExpr) inv;
 			SootMethod m = dyn.getBootstrapMethodRef().tryResolve();
 			if (m == null)
 				return null;
-
-			res = computeTaintsForMethod(stmt, d1, taintedAbs, m, killIncomingTaint, classSupported);
-		} else
-			res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
+			callee = m;
+		}
+		res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
