@@ -64,7 +64,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		return executor;
 	}
 
-	private enum PathProcessingResult {
+	protected enum PathProcessingResult {
 		// Describes that the predecessor should be queued
 		NEW,
 		// Describes that the predecessor was already queued, but we might need to merge paths
@@ -111,7 +111,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			case NEW:
 				// Schedule the predecessor
 				assert pathCache.containsKey(pred);
-				scheduleDependentTask(new SourceFindingTask(pred));
+				scheduleDependentTask(createSourceFindingTask(pred));
 				break;
 			case CACHED:
 				// In case we already know the subpath, we do append the path after the path
@@ -128,7 +128,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 		}
 
-		private PathProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
+		protected PathProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
@@ -172,6 +172,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 				if (existingPaths != null && existingPaths.size() > maxPaths)
 					return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 			}
+
 			return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW : PathProcessingResult.CACHED;
 		}
 
@@ -327,9 +328,13 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		if (pathCache.put(abs.getAbstraction(), scap)) {
 			if (!checkForSource(abs.getAbstraction(), scap))
-				return new SourceFindingTask(abs.getAbstraction());
+				return createSourceFindingTask(abs.getAbstraction());
 		}
 		return null;
+	}
+
+	protected Runnable createSourceFindingTask(Abstraction abstraction) {
+		return new SourceFindingTask(abstraction);
 	}
 
 	@Override

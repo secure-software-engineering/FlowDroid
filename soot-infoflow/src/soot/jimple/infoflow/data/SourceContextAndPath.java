@@ -1,6 +1,11 @@
 package soot.jimple.infoflow.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -24,13 +29,13 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 	private int hashCode = 0;
 
-	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions, AccessPath value,
-			Stmt stmt) {
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions,
+			AccessPath value, Stmt stmt) {
 		this(config, definitions, value, stmt, null);
 	}
 
-	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions, AccessPath value,
-			Stmt stmt, Object userData) {
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions,
+			AccessPath value, Stmt stmt, Object userData) {
 		super(definitions, value, stmt, userData);
 		this.config = config;
 	}
@@ -47,6 +52,10 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			}
 		}
 		return stmtPath;
+	}
+
+	public Abstraction getFirstAbstractionSlow() {
+		return path.getFirstSlow();
 	}
 
 	public List<Abstraction> getAbstractionPath() {
