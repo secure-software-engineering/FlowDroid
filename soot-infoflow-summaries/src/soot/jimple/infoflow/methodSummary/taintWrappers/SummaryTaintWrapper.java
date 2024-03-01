@@ -539,13 +539,17 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			callee = m;
 		}
 		res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
+		boolean wasEqualToIncoming = false;
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
 			if (resAbs == null)
 				resAbs = new HashSet<>();
-			for (AccessPath ap : res)
+			for (AccessPath ap : res) {
 				resAbs.add(taintedAbs.deriveNewAbstraction(ap, stmt));
+				if (ap.equals(taintedAbs.getAccessPath()))
+					wasEqualToIncoming = true;
+			}
 		}
 
 		// If we have no data flows, we can abort early
@@ -568,7 +572,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!killIncomingTaint.value) {
 			if (resAbs == null)
 				return Collections.singleton(taintedAbs);
-			resAbs.add(taintedAbs);
+			if (!wasEqualToIncoming)
+				resAbs.add(taintedAbs);
 		}
 		return resAbs;
 	}
