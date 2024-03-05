@@ -190,7 +190,10 @@ public abstract class AbstractXMLSourceSinkParser {
 			if (strCategory != null && !strCategory.isEmpty())
 				strCategory = strCategory.trim();
 
-			String strDescription = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE).trim();
+			String strDescription = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+
+			if (strDescription != null)
+				strDescription = strDescription.trim();
 			if (strDescription != null && !strDescription.isEmpty())
 				strDescription = strDescription.trim();
 
