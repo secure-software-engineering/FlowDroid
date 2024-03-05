@@ -32,7 +32,6 @@
 
 <xs:complexType name="sourcesSinksElementType">
 	<xs:attribute name="id" type="predefinedCategoryId" use="required" />
-	<xs:attribute name="customId" type="xs:string" use="optional" />
 	<xs:attribute name="mode" type="categoryModeType" use="required" />
 </xs:complexType>
 

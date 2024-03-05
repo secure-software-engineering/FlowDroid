@@ -1,6 +1,6 @@
 <sinkSources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:schemaLocation="SourcesAndSinks.xsd">
 
-	<category id="NO_CATEGORY" customId="OUTPUT_WRITING">
+	<category id="OUTPUT_WRITING">
 		<method signature="java.io.PrintWriter: void print(boolean)">
 			<param index="0" description="Output Data">
 				<accessPath isSource="false" isSink="true" />
@@ -1001,7 +1001,7 @@
 		</method>
 	</category>
 
-	<category id="NO_CATEGORY" customId="INPUT_READING">
+	<category id="INPUT_READING">
 		<method signature="java.io.Reader: int read()">
 			<return description="Input Data">
 				<accessPath isSource="true" isSink="false" />
@@ -1353,7 +1353,7 @@
 	</category>
 
 	<!-- Android Secure Settings -->
-	<category id="NO_CATEGORY" customId="SECURE_SETTINGS" description="Android Secure Settings">
+	<category id="SECURE_SETTINGS" description="Android Secure Settings">
 		<method signature="android.provider.Settings$Secure: float getFloat(android.content.ContentResolver,java.lang.String)">
 			<return description="Android Secure Setting">
 				<accessPath isSource="true" isSink="false" />
@@ -1831,7 +1831,7 @@
 	</category>
 
 	<!-- Address Information -->
-	<category id="NO_CATEGORY" customId="ADDRESS_INFORMATION" description="Address or Contact Information">
+	<category id="ADDRESS_INFORMATION" description="Address or Contact Information">
 		<!-- Addresses -->
 		<method signature="android.location.Address: java.lang.String getAddressLine(int)">
 			<return description="Address line">
@@ -1958,7 +1958,7 @@
 	</category>
 
 	<!-- Shared Preferences -->
-	<category id="NO_CATEGORY" customId="PREFERENCE_READ" description="Reading from preferences">
+	<category id="PREFERENCE_READ" description="Reading from preferences">
 		<method signature="android.content.SharedPreferences: boolean getBoolean(java.lang.String,boolean)">
 			<return description="Preference value">
 				<accessPath isSource="true" isSink="false" />
@@ -2024,7 +2024,7 @@
 	</category>
 
 	<!-- Environment Variables -->
-	<category id="NO_CATEGORY" customId="ENVIRONMENT" description="Environment">
+	<category id="ENVIRONMENT" description="Environment">
 		<method signature="java.lang.System: java.lang.String getenv(java.lang.String)">
 			<return description="Environment variable">
 				<accessPath isSource="true" isSink="false" />
@@ -2053,7 +2053,7 @@
 	</category>
 
 	<!-- SQL Results -->
-	<category id="NO_CATEGORY" customId="SQL_RESULTS" description="SQL Results">
+	<category id="SQL_RESULTS" description="SQL Results">
 		<method signature="java.sql.ResultSet: java.sql.Array getArray(int)">
 			<return description="SQL Result">
 				<accessPath isSource="true" isSink="false" />
@@ -2438,7 +2438,7 @@
 	</category>
 
 	<!-- Advertising ID -->
-	<category id="NO_CATEGORY" customId="ADVERTISING_ID">
+	<category id="ADVERTISING_ID">
 		<method signature="com.google.android.gms.ads.identifier.AdvertisingIdClient$Info: java.lang.String getId()">
 			<param index="0" description="Advertising ID">
 				<accessPath isSource="true" isSink="false" />

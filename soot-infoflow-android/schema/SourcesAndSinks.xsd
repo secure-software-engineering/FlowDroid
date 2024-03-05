@@ -18,7 +18,6 @@
 	    </xs:choice>
 	</xs:sequence>
     <xs:attribute name="id" type="categoryEnum" use="required" />
-    <xs:attribute name="customId" type="xs:string" use="optional" />
     <xs:attribute name="description" type="xs:string" use="optional" />
 </xs:complexType>
 
