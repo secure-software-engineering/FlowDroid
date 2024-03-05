@@ -53,7 +53,7 @@ public class InfoflowResultsSerializer extends soot.jimple.infoflow.results.xml.
 					writer.writeAttribute(XmlConstants.Attributes.systemCategory, mssd.getCategory().toString());
 					if (mssd.getCategory() instanceof CategoryDefinition) {
 						CategoryDefinition catDef = (CategoryDefinition) mssd.getCategory();
-						String customCat = catDef.getCustomCategory();
+						String customCat = catDef.getCategoryId();
 						if (customCat != null && !customCat.isEmpty())
 							writer.writeAttribute(XmlConstants.Attributes.userCategory, customCat);
 					}
@@ -74,7 +74,7 @@ public class InfoflowResultsSerializer extends soot.jimple.infoflow.results.xml.
 					writer.writeAttribute(XmlConstants.Attributes.systemCategory, mssd.getCategory().toString());
 					if (mssd.getCategory() instanceof CategoryDefinition) {
 						CategoryDefinition catDef = (CategoryDefinition) mssd.getCategory();
-						String customCat = catDef.getCustomCategory();
+						String customCat = catDef.getCategoryId();
 						if (customCat != null && !customCat.isEmpty())
 							writer.writeAttribute(XmlConstants.Attributes.userCategory, customCat);
 					}

@@ -242,9 +242,7 @@ public class XMLConfigurationWriter {
 			parentElement.appendChild(categoryTag);
 
 			// Write out the specification data
-			categoryTag.setAttribute(XMLConstants.ATTR_ID, def.getSystemCategory().toString());
-			if (def.getCustomCategory() != null && !def.getCustomCategory().isEmpty())
-				categoryTag.setAttribute(XMLConstants.ATTR_CUSTOM_ID, def.getCustomCategory());
+			categoryTag.setAttribute(XMLConstants.ATTR_ID, def.getCategoryId().toString());
 			categoryTag.setAttribute(XMLConstants.ATTR_MODE, categorySpec.get(def).toString());
 		}
 	}
