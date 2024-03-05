@@ -23,7 +23,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
-import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
 import soot.jimple.infoflow.river.AdditionalFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
@@ -187,15 +186,15 @@ public abstract class AbstractXMLSourceSinkParser {
 		}
 
 		protected void handleStarttagCategory(Attributes attributes) {
-			String strSysCategory = attributes.getValue(XMLConstants.ID_ATTRIBUTE).trim();
-			String strCustomCategory = attributes.getValue(XMLConstants.CUSTOM_ID_ATTRIBUTE);
-			if (strCustomCategory != null && !strCustomCategory.isEmpty())
-				strCustomCategory = strCustomCategory.trim();
-			String strCustomDescription = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
-			if (strCustomDescription != null && !strCustomDescription.isEmpty())
-				strCustomDescription = strCustomDescription.trim();
+			String strCategory = attributes.getValue(XMLConstants.ID_ATTRIBUTE).trim();
+			if (strCategory != null && !strCategory.isEmpty())
+				strCategory = strCategory.trim();
 
-			category = getOrMakeCategory(CATEGORY.valueOf(strSysCategory), strCustomCategory, strCustomDescription);
+			String strDescription = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE).trim();
+			if (strDescription != null && !strDescription.isEmpty())
+				strDescription = strDescription.trim();
+
+			category = getOrMakeCategory(strCategory, strDescription);
 
 			// Check for excluded categories
 			if (categoryFilter != null && !categoryFilter.acceptsCategory(category)) {
@@ -530,21 +529,17 @@ public abstract class AbstractXMLSourceSinkParser {
 	 * category is requested, the respective definition is created. Otherwise, the
 	 * existing one is returned.
 	 * 
-	 * @param systemCategory    The system-defined category name
-	 * @param customCategory    The user-defined category name
-	 * @param customDescription The human-readable description for the custom
-	 *                          category
+	 * @param categoryID    The user-defined category name
+	 * @param desc The human-readable description
 	 * @return The category definition object for the given category names
 	 */
-	private ISourceSinkCategory getOrMakeCategory(CATEGORY systemCategory, String customCategory,
-			String customDescription) {
+	private ISourceSinkCategory getOrMakeCategory(String categoryID, String desc) {
 		// For the key in the map, we ignore the description. We do not want to
 		// have the
 		// same category id just with different descriptions.
 
-		ISourceSinkCategory keyDef = new CategoryDefinition(systemCategory, customCategory);
-		return categories.computeIfAbsent(keyDef,
-				d -> new CategoryDefinition(systemCategory, customCategory, customDescription));
+		ISourceSinkCategory keyDef = new CategoryDefinition(categoryID);
+		return categories.computeIfAbsent(keyDef, d -> new CategoryDefinition(categoryID, desc));
 	}
 
 	/**

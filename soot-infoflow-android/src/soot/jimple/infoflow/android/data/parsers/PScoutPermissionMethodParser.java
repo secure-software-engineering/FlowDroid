@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
-import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
@@ -68,39 +67,39 @@ public class PScoutPermissionMethodParser implements ISourceSinkDefinitionProvid
 	}
 
 	private void initializeCategoryMap() {
-		categories.put("_NO_CATEGORY_", new CategoryDefinition(CATEGORY.NO_CATEGORY));
-		categories.put("_HARDWARE_INFO_", new CategoryDefinition(CATEGORY.HARDWARE_INFO));
-		categories.put("_NFC_", new CategoryDefinition(CATEGORY.NFC));
-		categories.put("_PHONE_CONNECTION_", new CategoryDefinition(CATEGORY.PHONE_CONNECTION));
-		categories.put("_INTER_APP_COMMUNICATION_", new CategoryDefinition(CATEGORY.INTER_APP_COMMUNICATION));
-		categories.put("_VOIP_", new CategoryDefinition(CATEGORY.VOIP));
-		categories.put("_CONTACT_INFORMATION_", new CategoryDefinition(CATEGORY.CONTACT_INFORMATION));
-		categories.put("_UNIQUE_IDENTIFIER_", new CategoryDefinition(CATEGORY.UNIQUE_IDENTIFIER));
-		categories.put("_PHONE_STATE_", new CategoryDefinition(CATEGORY.PHONE_STATE));
-		categories.put("_SYSTEM_SETTINGS_", new CategoryDefinition(CATEGORY.SYSTEM_SETTINGS));
-		categories.put("_LOCATION_INFORMATION_", new CategoryDefinition(CATEGORY.LOCATION_INFORMATION));
-		categories.put("_NETWORK_INFORMATION_", new CategoryDefinition(CATEGORY.NETWORK_INFORMATION));
-		categories.put("_EMAIL_", new CategoryDefinition(CATEGORY.EMAIL));
-		categories.put("_SMS_MMS_", new CategoryDefinition(CATEGORY.SMS_MMS));
-		categories.put("_CALENDAR_INFORMATION_", new CategoryDefinition(CATEGORY.CALENDAR_INFORMATION));
-		categories.put("_ACCOUNT_INFORMATION_", new CategoryDefinition(CATEGORY.ACCOUNT_INFORMATION));
-		categories.put("_BLUETOOTH_", new CategoryDefinition(CATEGORY.BLUETOOTH));
-		categories.put("_ACCOUNT_SETTINGS_", new CategoryDefinition(CATEGORY.ACCOUNT_SETTINGS));
-		categories.put("_VIDEO_", new CategoryDefinition(CATEGORY.VIDEO));
-		categories.put("_AUDIO_", new CategoryDefinition(CATEGORY.AUDIO));
-		categories.put("_SYNCHRONIZATION_DATA_", new CategoryDefinition(CATEGORY.SYNCHRONIZATION_DATA));
-		categories.put("_NETWORK_", new CategoryDefinition(CATEGORY.NETWORK));
-		categories.put("_EMAIL_SETTINGS_", new CategoryDefinition(CATEGORY.EMAIL_SETTINGS));
-		categories.put("_EMAIL_INFORMATION_", new CategoryDefinition(CATEGORY.EMAIL_INFORMATION));
-		categories.put("_IMAGE_", new CategoryDefinition(CATEGORY.IMAGE));
-		categories.put("_FILE_INFORMATION_", new CategoryDefinition(CATEGORY.FILE_INFORMATION));
-		categories.put("_BLUETOOTH_INFORMATION_", new CategoryDefinition(CATEGORY.BLUETOOTH_INFORMATION));
-		categories.put("_BROWSER_INFORMATION_", new CategoryDefinition(CATEGORY.BROWSER_INFORMATION));
-		categories.put("_FILE_", new CategoryDefinition(CATEGORY.FILE));
-		categories.put("_VOIP_INFORMATION_", new CategoryDefinition(CATEGORY.VOIP_INFORMATION));
-		categories.put("_DATABASE_INFORMATION_", new CategoryDefinition(CATEGORY.DATABASE_INFORMATION));
-		categories.put("_PHONE_INFORMATION_", new CategoryDefinition(CATEGORY.PHONE_INFORMATION));
-		categories.put("_LOG_", new CategoryDefinition(CATEGORY.LOG));
+		categories.put("_NO_CATEGORY_", new CategoryDefinition("NO_CATEGORY"));
+		categories.put("_HARDWARE_INFO_", new CategoryDefinition("HARDWARE_INFO"));
+		categories.put("_NFC_", new CategoryDefinition("NFC"));
+		categories.put("_PHONE_CONNECTION_", new CategoryDefinition("PHONE_CONNECTION"));
+		categories.put("_INTER_APP_COMMUNICATION_", new CategoryDefinition("INTER_APP_COMMUNICATION"));
+		categories.put("_VOIP_", new CategoryDefinition("VOIP"));
+		categories.put("_CONTACT_INFORMATION_", new CategoryDefinition("CONTACT_INFORMATION"));
+		categories.put("_UNIQUE_IDENTIFIER_", new CategoryDefinition("UNIQUE_IDENTIFIER"));
+		categories.put("_PHONE_STATE_", new CategoryDefinition("PHONE_STATE"));
+		categories.put("_SYSTEM_SETTINGS_", new CategoryDefinition("SYSTEM_SETTINGS"));
+		categories.put("_LOCATION_INFORMATION_", new CategoryDefinition("LOCATION_INFORMATION"));
+		categories.put("_NETWORK_INFORMATION_", new CategoryDefinition("NETWORK_INFORMATION"));
+		categories.put("_EMAIL_", new CategoryDefinition("EMAIL"));
+		categories.put("_SMS_MMS_", new CategoryDefinition("SMS_MMS"));
+		categories.put("_CALENDAR_INFORMATION_", new CategoryDefinition("CALENDAR_INFORMATION"));
+		categories.put("_ACCOUNT_INFORMATION_", new CategoryDefinition("ACCOUNT_INFORMATION"));
+		categories.put("_BLUETOOTH_", new CategoryDefinition("BLUETOOTH"));
+		categories.put("_ACCOUNT_SETTINGS_", new CategoryDefinition("ACCOUNT_SETTINGS"));
+		categories.put("_VIDEO_", new CategoryDefinition("VIDEO"));
+		categories.put("_AUDIO_", new CategoryDefinition("AUDIO"));
+		categories.put("_SYNCHRONIZATION_DATA_", new CategoryDefinition("SYNCHRONIZATION_DATA"));
+		categories.put("_NETWORK_", new CategoryDefinition("NETWORK"));
+		categories.put("_EMAIL_SETTINGS_", new CategoryDefinition("EMAIL_SETTINGS"));
+		categories.put("_EMAIL_INFORMATION_", new CategoryDefinition("EMAIL_INFORMATION"));
+		categories.put("_IMAGE_", new CategoryDefinition("IMAGE"));
+		categories.put("_FILE_INFORMATION_", new CategoryDefinition("FILE_INFORMATION"));
+		categories.put("_BLUETOOTH_INFORMATION_", new CategoryDefinition("BLUETOOTH_INFORMATION"));
+		categories.put("_BROWSER_INFORMATION_", new CategoryDefinition("BROWSER_INFORMATION"));
+		categories.put("_FILE_", new CategoryDefinition("FILE"));
+		categories.put("_VOIP_INFORMATION_", new CategoryDefinition("VOIP_INFORMATION"));
+		categories.put("_DATABASE_INFORMATION_", new CategoryDefinition("DATABASE_INFORMATION"));
+		categories.put("_PHONE_INFORMATION_", new CategoryDefinition("PHONE_INFORMATION"));
+		categories.put("_LOG_", new CategoryDefinition("LOG"));
 	}
 
 	private void parse() {

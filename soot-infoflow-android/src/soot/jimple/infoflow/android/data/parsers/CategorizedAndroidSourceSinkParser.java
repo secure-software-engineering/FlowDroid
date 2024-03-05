@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
-import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
@@ -50,7 +49,7 @@ public class CategorizedAndroidSourceSinkParser {
 
 	public Set<ISourceSinkDefinition> parse() throws IOException {
 		Set<ISourceSinkDefinition> definitions = new HashSet<>();
-		CategoryDefinition allCats = new CategoryDefinition(CATEGORY.ALL);
+		CategoryDefinition allCats = CategoryDefinition.ALL_CATEGORIES;
 		boolean loadAllCategories = categories.contains(allCats);
 
 		BufferedReader rdr = readFile();
@@ -63,7 +62,7 @@ public class CategorizedAndroidSourceSinkParser {
 		while ((line = rdr.readLine()) != null) {
 			Matcher m = p.matcher(line);
 			if (m.find()) {
-				CATEGORY strCat = CATEGORY.valueOf(m.group(5));
+				String strCat = m.group(5);
 				CategoryDefinition cat = new CategoryDefinition(strCat);
 
 				if (loadAllCategories || categories.contains(cat)) {
