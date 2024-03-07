@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,15 @@ import soot.jimple.infoflow.android.axml.ApkHandler;
  * @author Steven Arzt
  */
 public class ARSCFileParser extends AbstractResourceParser {
+
+	/**
+	 * If <code>true</code> any encountered resource format violation like reserved
+	 * fields which should be zero but have a value will raise an
+	 * {@link RuntimeException}.
+	 * 
+	 * If <code>false</code> format violations will only be logged as errors.
+	 */
+	public static boolean STRICT_MODE = true;
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -1438,13 +1448,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
-		 * Must be 0 (solid) or 1 (sparse).
+		 * Must be 0
 		 */
-		int flags; // uint8
+		int res0; // uint8
 		/**
 		 * Must be 1.
 		 */
-		int reserved; // uint16
+		int res1; // uint16
 		/**
 		 * Number of uint32_t entry configuration masks that follow.
 		 */
@@ -1457,8 +1467,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 			result = prime * result + entryCount;
 			result = prime * result + ((header == null) ? 0 : header.hashCode());
 			result = prime * result + id;
-			result = prime * result + flags;
-			result = prime * result + reserved;
+			result = prime * result + res0;
+			result = prime * result + res1;
 			return result;
 		}
 
@@ -1480,9 +1490,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			if (id != other.id)
 				return false;
-			if (flags != other.flags)
+			if (res0 != other.res0)
 				return false;
-			if (reserved != other.reserved)
+			if (res1 != other.res1)
 				return false;
 			return true;
 		}
@@ -2137,8 +2147,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				packageTable.header = nextChunkHeader;
 				offset = parsePackageTable(packageTable, remainingData, offset);
 
-				logger.debug(
-						String.format("\tPackage %s id=%d name=%s", packageCtr, packageTable.id, packageTable.name));
+				logger.debug("\tPackage {} id={} name={}", packageCtr, packageTable.id, packageTable.name);
 
 				// Record the end of the object to know then to stop looking for
 				// internal records
@@ -2272,7 +2281,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 									ResTable_Map map = new ResTable_Map();
 									entryOffset = readComplexValue(map, remainingData, entryOffset);
 
-									final String mapName = map.name + "";
+									final String mapName = Integer.toString(map.name);
 									AbstractResource value = parseValue(map.value);
 
 									// If we are dealing with an array, we put it into a special array container
@@ -2438,8 +2447,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return 0;
 
 		val.res0 = readUInt8(remainingData, offset);
-		if (val.res0 != 0)
-			throw new RuntimeException("File format error, res0 was not zero");
+		if (val.res0 != 0) {
+			raiseFormatViolationIssue("File format violation: res0 is not zero", offset);
+		}
 		offset += 1;
 
 		val.dataType = readUInt8(remainingData, offset);
@@ -2484,18 +2494,35 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return entry;
 	}
 
+	/**
+	 * Parse data struct <code>ResTable_type</code> as defined in AOSP
+	 * https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h
+	 * 
+	 * Also parses subsequent config table.
+	 * 
+	 * @param typeTable
+	 * @param data
+	 * @param offset
+	 * @return
+	 * @throws IOException
+	 */
 	private int readTypeTable(ResTable_Type typeTable, byte[] data, int offset) throws IOException {
 		typeTable.id = readUInt8(data, offset);
+		if (typeTable.id == 0) {
+			raiseFormatViolationIssue("File format violation in type table: id is zero", offset);
+		}
 		offset += 1;
 
 		typeTable.flags = readUInt8(data, offset);
-		if (typeTable.flags != 0 && typeTable.flags != 1)
-			throw new RuntimeException("File format error, flags is not zero or one");
+		if (typeTable.flags != 0 && typeTable.flags != 1) {
+			raiseFormatViolationIssue("File format violation in type table: flags is not zero or one", offset);
+		}
 		offset += 1;
 
 		typeTable.reserved = readUInt16(data, offset);
-		if (typeTable.reserved != 0)
-			throw new RuntimeException("File format error, reserved was not zero");
+		if (typeTable.reserved != 0) {
+			raiseFormatViolationIssue("File format violation in type table: reserved is not zero", offset);
+		}
 		offset += 2;
 
 		typeTable.entryCount = readUInt32(data, offset);
@@ -2600,19 +2627,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return offset;
 	}
 
+	/**
+	 * Parse data struct <code>ResTable_typeSpec</code> as defined in AOSP
+	 * https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h
+	 * 
+	 * @param typeSpecTable
+	 * @param data
+	 * @param offset
+	 * @return
+	 * @throws IOException
+	 */
 	private int readTypeSpecTable(ResTable_TypeSpec typeSpecTable, byte[] data, int offset) throws IOException {
 		typeSpecTable.id = readUInt8(data, offset);
+		if (typeSpecTable.id == 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: id is zero", offset);
+		}
 		offset += 1;
 
-		typeSpecTable.flags = readUInt8(data, offset);
+		typeSpecTable.res0 = readUInt8(data, offset);
+		if (typeSpecTable.res0 != 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: res0 is not zero", offset);
+		}
 		offset += 1;
-		if (typeSpecTable.flags != 0)
-			throw new RuntimeException("File format violation, res0 was not zero");
 
-		typeSpecTable.reserved = readUInt16(data, offset);
+		typeSpecTable.res1 = readUInt16(data, offset);
+		if (typeSpecTable.res1 != 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: res1 is not zero", offset);
+		}
 		offset += 2;
-		if (typeSpecTable.reserved != 0)
-			throw new RuntimeException("File format violation, res1 was not zero");
 
 		typeSpecTable.entryCount = readUInt32(data, offset);
 		offset += 4;
@@ -2674,7 +2716,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		stringIdx += 2;
 		byte[] str = new byte[strLen * 2];
 		System.arraycopy(remainingData, stringIdx, str, 0, strLen * 2);
-		return new String(remainingData, stringIdx, strLen * 2, "UTF-16LE");
+		return new String(remainingData, stringIdx, strLen * 2, StandardCharsets.UTF_16LE);
 	}
 
 	private String readStringUTF8(byte[] remainingData, int stringIdx) throws IOException {
@@ -2683,7 +2725,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		// the length here is somehow weird
 		int strLen = readUInt8(remainingData, stringIdx + 1);
 		stringIdx += 2;
-		String str = new String(remainingData, stringIdx, strLen, "UTF-8");
+		String str = new String(remainingData, stringIdx, strLen, StandardCharsets.UTF_8);
 		return str;
 	}
 
@@ -2944,4 +2986,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 		stringTable.putAll(otherParser.stringTable);
 	}
 
+	protected void raiseFormatViolationIssue(String message, int offset) {
+		if (STRICT_MODE) {
+			throw new RuntimeException(String.format("%s offset=0x%x", message, offset));
+		}
+		logger.error("{} offset=0x{}", message, Integer.toHexString(offset));
+	}
 }
