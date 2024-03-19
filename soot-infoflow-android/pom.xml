@@ -150,12 +150,12 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>3.22.2</version>
+			<version>4.26.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.esotericsoftware</groupId>
 		    <artifactId>kryo</artifactId>
-		    <version>5.4.0</version>
+		    <version>5.6.0</version>
 		</dependency>
 	</dependencies>
 </project>

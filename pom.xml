@@ -17,20 +17,20 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-		<maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
 		<maven-nexus-staging-plugin.version>1.6.13</maven-nexus-staging-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
 		<maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
 		
 		<slf4j.version>2.0.12</slf4j.version>
 		<log4j.version>2.23.0</log4j.version>
 		<junit.version>4.13.2</junit.version>
-		<guava.version>33.0.0-jre</guava.version>
+		<guava.version>33.1.0-jre</guava.version>
 		<hamcrest.version>2.2</hamcrest.version>
 
 		<apache-commons-cli.version>1.6.0</apache-commons-cli.version>
