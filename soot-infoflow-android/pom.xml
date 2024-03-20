@@ -150,7 +150,7 @@
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>4.26.0</version>
+			<version>3.25.3</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.esotericsoftware</groupId>
