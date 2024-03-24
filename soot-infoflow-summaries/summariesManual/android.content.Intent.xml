@@ -1529,7 +1529,7 @@
 						AccessPath="[android.content.Intent: java.lang.String mimeType]"
 						AccessPathTypes="[java.lang.String]" />
 				</flow>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="true" typeChecking="true">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" />
 				</flow>
