@@ -79,10 +79,32 @@ public abstract class JUnitTests {
 		appPath = appPathBuilder.toString();
 
 		StringBuilder libPathBuilder = new StringBuilder();
-		appendWithSeparator(libPathBuilder,
-				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
-		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		String javaHomeStr = System.getProperty("java.home");
+		boolean found = false;
+		if (!javaHomeStr.isEmpty()) {
+			// Find the Java 8 rt.jar even when the JVM is of a higher version
+			File parentDir = new File(javaHomeStr).getParentFile();
+			File[] files = parentDir.listFiles((dir, name) -> name.contains("java-1.8.0-") || name.contains("java-8-"));
+			if (files != null) {
+				for (File java8Path : files) {
+					File rtjar = new File(java8Path, "jre" + File.separator + "lib" + File.separator + "rt.jar");
+					if (rtjar.exists()) {
+						appendWithSeparator(libPathBuilder, rtjar);
+						found = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!found) {
+			// Try the default path on ubuntu
+			appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+			// Try the default path on fedora
+			appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-1.8.0/jre/lib/rt.jar"));
+		}
 		libPath = libPathBuilder.toString();
+		if (libPath.isEmpty())
+			throw new RuntimeException("Could not find rt.jar!");
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
