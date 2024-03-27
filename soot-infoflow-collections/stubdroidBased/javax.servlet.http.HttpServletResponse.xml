@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="javax.servlet.ServletResponse">
+	</hierarchy>
+	<methods>
+		<method id="void addHeader(java.lang.String,java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addIntHeader(java.lang.String,int)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDateHeader(java.lang.String,long)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setHeader(java.lang.String,java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+					   AccessPathTypes="[java.lang.String[]]" constrained="true" />
+			</clears>
+		</method>
+		<method id="void setIntHeader(java.lang.String,int)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+					   AccessPathTypes="[java.lang.String[]]" constrained="true" />
+			</clears>
+		</method>
+		<method id="void setDateHeader(java.lang.String,long)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" constrained="true" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+					   AccessPathTypes="[java.lang.String[]]" constrained="true" />
+			</clears>
+		</method>
+		<method id="java.lang.String getHeader(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						  AccessPathTypes="[java.lang.String[]]" constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Collection getHeaders(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						  AccessPathTypes="[java.lang.String[]]" constrained="true" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="java.lang.Object[]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

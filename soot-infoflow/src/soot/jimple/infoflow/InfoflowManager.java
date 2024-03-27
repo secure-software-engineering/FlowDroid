@@ -41,7 +41,7 @@ public class InfoflowManager {
 
 	private IUsageContextProvider usageContextProvider;
 
-	protected InfoflowManager(InfoflowConfiguration config) {
+	public InfoflowManager(InfoflowConfiguration config) {
 		this.config = config;
 		this.mainSolver = null;
 		this.icfg = null;
@@ -88,7 +88,7 @@ public class InfoflowManager {
 		this.usageContextProvider = null;
 	}
 
-	protected InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg) {
+	public InfoflowManager(InfoflowConfiguration config, IInfoflowSolver mainSolver, IInfoflowCFG icfg) {
 		this.config = config;
 		this.mainSolver = mainSolver;
 		this.icfg = icfg;

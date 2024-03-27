@@ -16,7 +16,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
 
 	protected final Collection<IMethodSummaryProvider> innerProviders;
-	private ClassSummaries cachedSummaries;
+	protected ClassSummaries cachedSummaries;
 
 	protected MergingSummaryProvider() {
 		this.innerProviders = new HashSet<>();

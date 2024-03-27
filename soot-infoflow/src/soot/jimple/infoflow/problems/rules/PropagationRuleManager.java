@@ -9,7 +9,6 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
-import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -24,6 +23,7 @@ public class PropagationRuleManager {
 	protected final Abstraction zeroValue;
 	protected final TaintPropagationResults results;
 	protected final ITaintPropagationRule[] rules;
+	protected IArrayContextProvider arrayRule;
 
 	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue,
 								  TaintPropagationResults results, ITaintPropagationRule[] rules) {
@@ -31,6 +31,17 @@ public class PropagationRuleManager {
 		this.zeroValue = zeroValue;
 		this.results = results;
 		this.rules = rules;
+
+		if (rules != null) {
+			for (ITaintPropagationRule rule : rules) {
+				if (rule instanceof IArrayContextProvider) {
+					arrayRule = (IArrayContextProvider) rule;
+					break;
+				}
+			}
+		}
+		if (arrayRule == null)
+			arrayRule = new DummyArrayContext();
 	}
 
 	/**
@@ -233,4 +244,7 @@ public class PropagationRuleManager {
 		return rules;
 	}
 
+	public IArrayContextProvider getArrayContextProvider() {
+		return arrayRule;
+	}
 }

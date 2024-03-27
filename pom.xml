@@ -67,6 +67,7 @@
 		<module>soot-infoflow-summaries</module>
 		<module>soot-infoflow-cmd</module>
         <module>soot-infoflow-integration</module>
+        <module>soot-infoflow-collections</module>
     </modules>
 
 	<dependencyManagement>

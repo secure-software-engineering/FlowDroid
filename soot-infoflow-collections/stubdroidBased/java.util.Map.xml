@@ -1,0 +1,507 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101" isInterface="true">
+	<methods>
+		<method id="java.lang.Object put(java.lang.Object,java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+		<method id="void putAll(java.util.Map)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method
+			id="java.lang.Object putIfAbsent(java.lang.Object,java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void clear()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="[java.util.Map: java.lang.Object[] keys]" />
+				<clear sourceSinkType="Field"
+					AccessPath="[java.util.Map: java.lang.Object[] values]" />
+			</clears>
+		</method>
+		<method id="java.lang.Object remove(java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="True" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="True"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method
+			id="java.lang.Object replace(java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method
+			id="void replace(java.lang.Object,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method
+				id="void replaceAll(java.util.function.BiFunction)">
+			<flows>
+				<!-- BiFunction -> gap this -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject" gap="42" />
+				</flow>
+				<!-- map -> gap parameter -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="42" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="42" />
+				</flow>
+				<!-- gap -> map -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return" gap="42" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="java.util.Collection values()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set keySet()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set entrySet()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object key]"
+						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object get(java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						  constrained="True" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method
+			id="java.lang.Object getOrDefault(java.lang.Object,java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="True" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object compute(java.lang.Object,java.util.function.BiFunction)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<!-- Key Flow -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="42" />
+				</flow>
+				<!-- Base Object is tainted -->
+				<flow isAlias="false" typeChecking="false"
+					  cutFirstField="true">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="42" />
+				</flow>
+				<!-- Lambda is tainted -->
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						gap="42" />
+				</flow>
+				<!-- gap to map -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="42" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Return"
+					 	  gap="42" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<!-- Prevent implicit identity -->
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="java.lang.Object computeIfPresent(java.lang.Object,java.util.function.BiFunction)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<!-- Key Flow -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="42" />
+				</flow>
+				<!-- Base Object is tainted -->
+				<flow isAlias="false" typeChecking="false"
+					  cutFirstField="true">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="42" />
+				</flow>
+				<!-- Lambda is tainted -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						gap="42" />
+				</flow>
+				<!-- gap to map -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="42" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="42" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<!-- Prevent implicit identity -->
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="java.lang.Object computeIfAbsent(java.lang.Object,java.util.function.Function)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<!-- Key Flow -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="43" />
+				</flow>
+				<!-- Lambda is tainted -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						gap="43" />
+				</flow>
+				<!-- gap to map -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="43" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="43" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object merge(java.lang.Object,java.lang.Object,java.util.function.BiFunction)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<!-- Key flow -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<!-- Value flow -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="True" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="42" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="42" />
+				</flow>
+				<!-- gap to map -->
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="42" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="True" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						  gap="42" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="True"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void forEach(java.util.function.BiConsumer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="44" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+	<gaps>
+		<gap num="42" id="&lt;java.util.function.BiFunction: java.lang.Object apply(java.lang.Object,java.lang.Object)&gt;" />
+		<gap num="43" id="&lt;java.util.function.Function: java.lang.Object apply(java.lang.Object)&gt;" />
+		<gap num="44" id="&lt;java.util.function.BiConsumer: void accept(java.lang.Object,java.lang.Object)&gt;" />
+	</gaps>
+</summary>

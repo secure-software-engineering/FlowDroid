@@ -2,4 +2,88 @@
 <summary fileFormatVersion="101">
 	<hierarchy superClass="javax.servlet.ServletResponse">
 	</hierarchy>
+	<methods>
+		<method id="void addHeader(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addIntHeader(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void addDateHeader(java.lang.String,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setHeader(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setIntHeader(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void setDateHeader(java.lang.String,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						AccessPathTypes="[java.lang.String[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHeader(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						  AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Collection getHeaders(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[javax.servlet.ServletResponse: java.lang.String[] header]"
+						  AccessPathTypes="[java.lang.String[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="java.lang.Object[]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
 </summary>

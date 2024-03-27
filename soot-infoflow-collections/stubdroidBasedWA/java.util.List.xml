@@ -1,0 +1,359 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101" isInterface="true">
+    <hierarchy>
+        <interface name="java.util.Collection" />
+        <interface name="java.lang.Iterable" />
+    </hierarchy>
+    <methods>
+        <method id="void add(int,java.lang.Object)">
+            <constraints>
+                <index sourceSinkType="Parameter"
+                       ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="withContext" typeChecking="false" final="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="True" />
+                </flow>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                              AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                              AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="shiftRight" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="boolean addAll(java.util.Collection)">
+            <constraints>
+                <index sourceSinkType="Implicit"
+                       ImplicitLocation="Next" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="append" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object get(int)">
+            <constraints>
+                <index sourceSinkType="Parameter"
+                       ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="true" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]"
+                          constrained="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.util.ListIterator listIterator()">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+                        AccessPathTypes="[java.lang.Object]" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="read-only" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.util.ListIterator listIterator(int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+                        AccessPathTypes="[java.lang.Object]" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="read-only" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.lang.Object remove(int)">
+            <constraints>
+                <index sourceSinkType="Parameter"
+                       ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]"
+                          constrained="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]"
+                          constrained="noMatch" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="shiftLeft" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                      AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                      AccessPathTypes="[java.lang.Object[]]"
+                      preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="boolean remove(java.lang.Object)">
+            <flows>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="boolean removeAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to   sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.lang.Object set(int,java.lang.Object)">
+            <constraints>
+                <index sourceSinkType="Parameter"
+                       ParameterIndex="0"
+                       mode="inplace" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+                <flow isAlias="false" typeChecking="false" final="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="true" />
+                </flow>
+            </flows>
+            <clears>
+                <clear  sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="true"
+                        preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="void replaceAll(java.util.function.UnaryOperator)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Parameter"
+                        ParameterIndex="0"
+                        gap="42" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="0" />
+                    <to sourceSinkType="GapBaseObject"
+                        gap="42" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Return"
+                          gap="42" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="boolean retainAll(java.util.Collection)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        preventPropagation="false" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="void sort(java.util.Comparator)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.util.List subList(int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="read-only" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.util.Spliterator spliterator()">
+            <flows>
+                <flow>
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+        <method id="java.lang.Object[] toArray()">
+            <flows>
+                <flow>
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Return" constrained="keep" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object[] toArray(java.lang.Object[])">
+            <flows>
+                <flow>
+                    <from sourceSinkType="Field"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Return" constrained="keep" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+    <gaps>
+        <!-- Gaps need the signature to match the exact class because there is no lookup for methods in superclasses -->
+        <gap num="42" id="&lt;java.util.function.Function: java.lang.Object apply(java.lang.Object)&gt;" />
+    </gaps>
+</summary>

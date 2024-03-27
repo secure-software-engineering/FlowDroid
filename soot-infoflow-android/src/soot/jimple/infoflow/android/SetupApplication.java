@@ -39,11 +39,7 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.AbstractInfoflow;
-import soot.jimple.infoflow.BackwardsInfoflow;
-import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
-import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.*;
 import soot.jimple.infoflow.InfoflowConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
@@ -79,6 +75,7 @@ import soot.jimple.infoflow.android.source.ConfigurationBasedCategoryFilter;
 import soot.jimple.infoflow.android.source.UnsupportedSourceSinkFormatException;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
+import soot.jimple.infoflow.cfg.FlowDroidUserClass;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
@@ -108,6 +105,7 @@ import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.options.Options;
+import soot.util.Chain;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -155,6 +153,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected IUsageContextProvider usageContextProvider = null;
 
 	protected IInPlaceInfoflow infoflow = null;
+
+	public interface OptimizationPass {
+		void performCodeInstrumentationBeforeDCE(InfoflowManager manager, Set<SootMethod> excludedMethods);
+
+		void performCodeInstrumentationAfterDCE(InfoflowManager manager, Set<SootMethod> excludedMethods);
+	}
+
+	protected List<OptimizationPass> opts = new ArrayList<>();
+
+	public void addOptimizationPass(OptimizationPass pass) {
+		opts.add(pass);
+	}
 
 	/**
 	 * Class for aggregating the data flow results obtained through multiple runs of
@@ -1005,7 +1015,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					Set<AndroidLayoutControl> controls = lfp.getUserControls().get(layoutFileName);
 					if (controls != null) {
 						for (AndroidLayoutControl lc : controls) {
-							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass().getName()))
+							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass()))
 								hasNewCallback |= registerCallbackMethodsForView(callbackClass, lc);
 						}
 					}
@@ -1081,7 +1091,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	private boolean registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
-		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass.getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass))
 			return false;
 
 		// Get common Android classes
@@ -1326,6 +1336,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return super.isUserCodeClass(className) || className.startsWith(packageName);
 		}
 
+		@Override
+		protected void performCodeInstrumentationBeforeDCE(InfoflowManager manager, Set<SootMethod> excludedMethods) {
+			super.performCodeInstrumentationBeforeDCE(manager, excludedMethods);
+			for (OptimizationPass pass : opts)
+				pass.performCodeInstrumentationBeforeDCE(manager, excludedMethods);
+		}
+
+		@Override
+		protected void performCodeInstrumentationAfterDCE(InfoflowManager manager, Set<SootMethod> excludedMethods) {
+			super.performCodeInstrumentationAfterDCE(manager, excludedMethods);
+			for (OptimizationPass pass : opts)
+				pass.performCodeInstrumentationAfterDCE(manager, excludedMethods);
+		}
 	}
 
 	protected class InPlaceBackwardsInfoflow extends BackwardsInfoflow implements IInPlaceInfoflow {
@@ -1569,6 +1592,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Get rid of leftovers from the last entry point
 		resultAggregator.clearLastResults();
 
+		// Before we do some app parsing, we need to make sure that all user classes are tagged
+		// accordingly to prevent filtering of accidental namespace clashes with system packages
+		tagUserCodeClasses();
+
 		// Perform basic app parsing
 		long callbackDuration = System.nanoTime();
 		try {
@@ -1617,10 +1644,11 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Print out the found results
 		{
 			int resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
+			int sourceCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().getResultSet().size();
 			if (config.getOneComponentAtATime())
 				logger.info("Found {} leaks for component {}", resCount, entrypoint);
 			else
-				logger.info("Found {} leaks", resCount);
+				logger.info("Found {} leaks from {} sources", resCount, sourceCount);
 		}
 
 		// Update the performance object with the real data
@@ -2000,5 +2028,22 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
 		this.usageContextProvider = usageContextProvider;
+	}
+
+	/**
+	 * Some apps, especially malware, use namespaces like "com.google.myapp", which are also namespaces of system
+	 * packages. To distinguish bad namespaces from actual system packages, we tag user classes that also match
+	 * system packages as with {@link FlowDroidUserClass}.
+	*/
+	protected void tagUserCodeClasses() {
+		if (!SystemClassHandler.v().isClassInSystemPackage(manifest.getPackageName() + ".someClass"))
+			return;
+
+		Chain<SootClass> appClasses = Scene.v().getApplicationClasses();
+		for (SootClass appClass : appClasses) {
+			if (SystemClassHandler.v().isClassInSystemPackage(appClass)
+					&& appClass.getName().startsWith(manifest.getPackageName()))
+				appClass.addTag(FlowDroidUserClass.v());
+		}
 	}
 }

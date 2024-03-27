@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="summary">
+	<xs:complexType>
+		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element name="hierarchy" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="interface" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="superClass" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="methods" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="method" type="methodType" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="gaps" minOccurs="0" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="gap" type="gapType" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="fileFormatVersion" type="xs:int" />
+		<xs:attribute name="isInterface" type="xs:boolean" />
+		<xs:attribute name="isExclusive" type="xs:boolean" />
+	</xs:complexType>
+</xs:element>
+
+<xs:complexType name="methodType">
+	<xs:sequence>
+		<xs:element name="constraints" minOccurs="0" maxOccurs="1">
+			<xs:complexType>
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="key" type="constraintType" minOccurs="1" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:element name="index" type="constraintType" minOccurs="1" maxOccurs="1" />
+				</xs:choice>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="flows" minOccurs="0" maxOccurs="1">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="flow" type="flowType" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="clears" minOccurs="0" maxOccurs="1">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="clear" type="clearType" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+	<xs:attribute name="id" type="xs:string" />
+	<xs:attribute name="isExcluded" type="xs:boolean" />
+</xs:complexType>
+
+<xs:complexType name="flowType">
+	<xs:sequence>
+		<xs:element name="from" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
+		<xs:element name="to" type="fromToDefinition" minOccurs="1" maxOccurs="1" />
+	</xs:sequence>
+	
+	<!-- 
+	True if the "from" object reference is stored in the "to" element instead of just
+	copying over the data.
+	 -->
+	<xs:attribute name="isAlias" type="xs:boolean" />
+	
+	<!--
+	True if no type checks shall be conducted. In that case, data can be copied from
+	the "from" element to the "to" element even if the respective types are not cast-
+	compatible.
+	 -->
+	<xs:attribute name="typeChecking" type="xs:boolean" use="optional" default="true" />
+	
+	<!--
+	True if no further fields shall be appended to the "to" element. Imagine the "from"
+	element references a.b and copies it to d, but a.b.c is tainted. Without this option,
+	the resulting taint would be on d.c. With this option, it would only be on d.  
+	 -->
+	<xs:attribute name="cutSubfields" type="xs:boolean" use="optional" default="false" />
+
+	<xs:attribute name="final" type="xs:boolean" use="optional" default="false" />
+</xs:complexType>
+
+<xs:complexType name="contextDefinition">
+	<xs:attribute name="name" type="xs:string" use="required" />	
+	<xs:attribute name="parameterIndex" type="xs:int" use="required" />	
+</xs:complexType>
+
+<xs:complexType name="constraintType">
+	<xs:attribute name="sourceSinkType" type="sourceSinkTypeConstraint" use="required" />
+	<xs:attribute name="ParameterIndex" type="xs:int" />
+	<xs:attribute name="ImplicitLocation" type="implicitType" />
+	<xs:attribute name="mode" type="indexMode" />
+</xs:complexType>
+
+<!-- Describes whether the data the index points to is replaced or by default; is assumed to be removed  -->
+<xs:simpleType name="indexMode">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="default" />
+		<xs:enumeration value="replace" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="clearType">
+	<xs:attribute name="sourceSinkType" type="sourceSinkType" use="required" />
+	<xs:attribute name="ParameterIndex" type="xs:int" />
+	<xs:attribute name="AccessPath" type="xs:string" />
+
+	<!--
+	True if the given constraints shall be used for the definition.
+	-->
+	<xs:attribute name="constrained" type="xs:boolean" use="optional" default="false" />
+
+	<!--
+	False if a matching taint should be killed but still added to the worklist.
+	-->
+	<xs:attribute name="preventPropagation" type="xs:boolean" use="optional" default="true" />
+</xs:complexType>
+
+<xs:complexType name="fromToDefinition">
+	<xs:attribute name="sourceSinkType" type="sourceSinkType" use="required" />
+	<xs:attribute name="ParameterIndex" type="xs:int" />
+	<xs:attribute name="BaseType" type="xs:string" />
+	<xs:attribute name="AccessPath" type="xs:string" />
+	<xs:attribute name="AccessPathTypes" type="xs:string" />
+	<xs:attribute name="gap" type="xs:int" />
+
+	<!--
+	True if the given constraints shall be used for the definition.
+	-->
+	<xs:attribute name="constrained" type="xs:boolean" use="optional" default="false" />
+
+	<!-- 
+	True if the resulting access path shall be a.* instead of a.
+	-->
+	<xs:attribute name="taintSubFields" type="xs:boolean" use="optional" default="false" />
+
+	<!-- 
+	True if the access path shall only match if all fields match. In strict mode,
+	a.* will not match a summary for a.foo. False to allow for wildcard matching.
+	-->
+	<xs:attribute name="matchStrict" type="xs:boolean" use="optional" default="false" />
+</xs:complexType>
+
+<xs:simpleType name="sourceSinkType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="Custom" />
+		<xs:enumeration value="Field" />
+		<xs:enumeration value="Parameter" />
+		<xs:enumeration value="GapBaseObject" />
+		<xs:enumeration value="Return" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="sourceSinkTypeConstraint">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="Parameter" />
+		<xs:enumeration value="Implicit" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="implicitType">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="First" />
+		<xs:enumeration value="Last" />
+		<xs:enumeration value="Next" />
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name="gapType">
+	<xs:attribute name="num" type="xs:int" />
+	<xs:attribute name="id" type="xs:string" />
+</xs:complexType>
+
+</xs:schema>
