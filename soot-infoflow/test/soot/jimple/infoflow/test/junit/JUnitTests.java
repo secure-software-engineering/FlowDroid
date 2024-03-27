@@ -103,7 +103,7 @@ public abstract class JUnitTests {
 	 * @param f  The path to append
 	 * @throws IOException
 	 */
-	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+	protected static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
 		if (f.exists()) {
 			if (sb.length() > 0)
 				sb.append(System.getProperty("path.separator"));

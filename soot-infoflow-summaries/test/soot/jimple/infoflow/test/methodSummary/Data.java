@@ -62,4 +62,10 @@ public class Data {
 	public String computeString(Function<String, String> f) {
 		return f.apply(stringField);
 	}
+
+	public String getAndOverwrite() {
+		String str = stringField;
+		stringField = null;
+		return str;
+	}
 }

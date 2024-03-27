@@ -253,7 +253,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 			if (!sm.isConcrete())
 				continue;
-			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
+			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
 				continue;
 			for (Unit u : sm.retrieveActiveBody().getUnits()) {
 				if (u instanceof Stmt) {

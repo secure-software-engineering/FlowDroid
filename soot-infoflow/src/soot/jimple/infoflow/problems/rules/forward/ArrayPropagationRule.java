@@ -18,8 +18,10 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.ContainerContext;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
+import soot.jimple.infoflow.problems.rules.IArrayContextProvider;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -28,7 +30,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Steven Arzt
  *
  */
-public class ArrayPropagationRule extends AbstractTaintPropagationRule {
+public class ArrayPropagationRule extends AbstractTaintPropagationRule implements IArrayContextProvider {
 
 	public ArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		super(manager, zeroValue, results);
@@ -135,4 +137,8 @@ public class ArrayPropagationRule extends AbstractTaintPropagationRule {
 		return null;
 	}
 
+	@Override
+	public ContainerContext[] getContextForArrayRef(ArrayRef arrayRef, Stmt stmt) {
+		return null;
+	}
 }

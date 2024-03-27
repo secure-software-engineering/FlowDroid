@@ -112,8 +112,8 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected void performCodeInstrumentation(InfoflowManager dceManager, Set<SootMethod> excludedMethods) {
-		super.performCodeInstrumentation(dceManager, excludedMethods);
+	protected void performCodeInstrumentationAfterDCE(InfoflowManager dceManager, Set<SootMethod> excludedMethods) {
+		super.performCodeInstrumentationAfterDCE(dceManager, excludedMethods);
 
 		// Fixes an edge case, see AddNopStmt
 		ICodeOptimizer nopStmt = new AddNopStmt();

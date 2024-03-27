@@ -3,6 +3,7 @@ package soot.jimple.infoflow.methodSummary.util;
 import soot.RefType;
 import soot.Type;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.methodSummary.data.summary.IsAliasType;
 
 /**
  * Utility class for handling aliasing-related checks

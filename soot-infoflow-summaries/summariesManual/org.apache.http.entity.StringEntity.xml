@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="org.apache.http.entity.AbstractHttpEntity" />
 	<methods>
 		<method id="void &lt;init&gt;(java.lang.String)">
 			<flows>

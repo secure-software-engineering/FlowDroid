@@ -26,23 +26,26 @@ public abstract class AbstractFlowSinkSource {
 	protected final GapDefinition gap;
 	protected final Object userData;
 	protected final boolean matchStrict;
+	protected ConstraintType isConstrained;
 
-	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, boolean matchStrict) {
-		this(type, parameterIdx, baseType, null, null, matchStrict);
+
+	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
+								  boolean matchStrict, ConstraintType isConstrained) {
+		this(type, parameterIdx, baseType, accessPath, null, matchStrict, isConstrained);
+	}
+
+	public AbstractFlowSinkSource(SourceSinkType type, String baseType, AccessPathFragment accessPath,
+								  GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+		this(type, -1, baseType, accessPath, gap, matchStrict, isConstrained);
 	}
 
 	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			boolean matchStrict) {
-		this(type, parameterIdx, baseType, accessPath, null, matchStrict);
+								  GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+		this(type, parameterIdx, baseType, accessPath, gap, null, matchStrict, isConstrained);
 	}
 
 	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			GapDefinition gap, boolean matchStrict) {
-		this(type, parameterIdx, baseType, accessPath, gap, null, matchStrict);
-	}
-
-	public AbstractFlowSinkSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			GapDefinition gap, Object userData, boolean matchStrict) {
+								  GapDefinition gap, Object userData, boolean matchStrict, ConstraintType isConstrained) {
 		this.type = type;
 		this.parameterIdx = parameterIdx;
 		this.baseType = baseType;
@@ -50,7 +53,9 @@ public abstract class AbstractFlowSinkSource {
 		this.gap = gap;
 		this.userData = userData;
 		this.matchStrict = matchStrict;
+		this.isConstrained = isConstrained;
 	}
+
 
 	/**
 	 * Checks whether the current source or sink is coarser than the given one,
@@ -157,6 +162,36 @@ public abstract class AbstractFlowSinkSource {
 		return matchStrict;
 	}
 
+	public boolean isConstrained() {
+		return isConstrained == ConstraintType.TRUE || isConstrained == ConstraintType.NO_MATCH;
+	}
+
+	public boolean shiftRight() {
+		return isConstrained == ConstraintType.SHIFT_RIGHT;
+	}
+
+	public boolean shiftLeft() {
+		return isConstrained == ConstraintType.SHIFT_LEFT;
+	}
+
+	public boolean anyShift() {
+		return shiftLeft() || shiftRight();
+	}
+
+	public boolean keepConstraint() {
+		return isConstrained == ConstraintType.KEEP;
+	}
+
+	public boolean keepOnRO() {
+		return isConstrained == ConstraintType.READONLY;
+	}
+
+	public boolean append() { return isConstrained == ConstraintType.APPEND; }
+
+	public ConstraintType getConstraintType() {
+		return isConstrained;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -165,6 +200,7 @@ public abstract class AbstractFlowSinkSource {
 		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
 		result = prime * result + ((gap == null) ? 0 : gap.hashCode());
 		result = prime * result + (matchStrict ? 1231 : 1237);
+		result = prime * result + isConstrained.hashCode();
 		result = prime * result + parameterIdx;
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((userData == null) ? 0 : userData.hashCode());
@@ -196,6 +232,8 @@ public abstract class AbstractFlowSinkSource {
 		} else if (!gap.equals(other.gap))
 			return false;
 		if (matchStrict != other.matchStrict)
+			return false;
+		if (isConstrained != other.isConstrained)
 			return false;
 		if (parameterIdx != other.parameterIdx)
 			return false;

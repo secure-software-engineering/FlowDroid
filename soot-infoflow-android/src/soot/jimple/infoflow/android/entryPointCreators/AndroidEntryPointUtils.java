@@ -277,7 +277,7 @@ public class AndroidEntryPointUtils {
 			for (String sig : methods) {
 				SootMethod sm = currentClass.getMethodUnsafe(sig);
 				if (sm != null)
-					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass().getName()))
+					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
 						lifecycleMethods.add(sm);
 			}
 			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;

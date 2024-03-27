@@ -721,6 +721,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Initialize the alias analysis
 			Abstraction zeroValue = Abstraction.getZeroAbstraction(manager.getConfig().getFlowSensitiveAliasing());
 			IAliasingStrategy aliasingStrategy = createAliasAnalysis(sourcesSinks, iCfg, executor, memoryManager);
+
 			IInfoflowSolver backwardSolver = aliasingStrategy.getSolver();
 			if (backwardSolver != null) {
 				zeroValue = backwardSolver.getTabulationProblem().createZeroValue();
@@ -757,6 +758,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			if (aliasingStrategy.getSolver() != null) {
 				aliasingStrategy.getSolver().getTabulationProblem().setActivationUnitsToCallSites(forwardProblem);
+				manager.setAliasSolver(aliasingStrategy.getSolver());
 			}
 
 			IInfoflowSolver additionalSolver = null;
@@ -961,8 +963,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				int taintPropagationSeconds = (int) Math.round((System.nanoTime() - beforeTaintPropagation) / 1E9);
 				performanceData.addTaintPropagationSeconds(taintPropagationSeconds);
 				performanceData.addEdgePropagationCount(forwardSolver.getPropagationCount());
-				if (backwardSolver != null)
+				performanceData.setInfoflowPropagationCount(forwardSolver.getPropagationCount());
+				if (backwardSolver != null) {
+					performanceData.setAliasPropagationCount(backwardSolver.getPropagationCount());
 					performanceData.addEdgePropagationCount(backwardSolver.getPropagationCount());
+				}
 
 				// Print taint wrapper statistics
 				if (taintWrapper != null) {
@@ -1470,9 +1475,19 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 		// Exclude system classes
 		final String className = sm.getDeclaringClass().getName();
-		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(className)
-				&& !isUserCodeClass(className))
-			return false;
+		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(className)) {
+			if (isUserCodeClass(className)) {
+				// Sometimes the namespace used for apps coincides with a system package prefix.
+				// isUserCodeClass allows to still mark such methods as user code. To remember this decision
+				// without always calling isUserCodeClass (with a possible inefficient string lookup), we do use
+				// a tag instead.
+				if (!sm.getDeclaringClass().hasTag(FlowDroidUserClass.TAG_NAME))
+					sm.getDeclaringClass().addTag(FlowDroidUserClass.v());
+				return true;
+			} else {
+				return false;
+			}
+		}
 
 		// Exclude library classes
 		if (config.getExcludeSootLibraryClasses() && sm.getDeclaringClass().isLibraryClass())
@@ -1512,6 +1527,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			excludedMethods.addAll(additionalEntryPointMethods);
 		excludedMethods.addAll(Scene.v().getEntryPoints());
 
+		// Allow for additional code instrumentation steps
+		performCodeInstrumentationBeforeDCE(dceManager, excludedMethods);
+
 		ICodeOptimizer dce = new DeadCodeEliminator();
 		dce.initialize(config);
 		dce.run(dceManager, excludedMethods, sourcesSinks, taintWrapper);
@@ -1527,7 +1545,17 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		}
 
 		// Allow for additional code instrumentation steps
-		performCodeInstrumentation(dceManager, excludedMethods);
+		performCodeInstrumentationAfterDCE(dceManager, excludedMethods);
+	}
+
+	/**
+	 * Allows subclasses to perform additional code instrumentation tasks
+	 *
+	 * @param dceManager      The manager class for dead code elimination and
+	 *                        instrumentation
+	 * @param excludedMethods The methods that shall not be modified
+	 */
+	protected void performCodeInstrumentationBeforeDCE(InfoflowManager dceManager, Set<SootMethod> excludedMethods) {
 	}
 
 	/**
@@ -1537,7 +1565,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 *                        instrumentation
 	 * @param excludedMethods The methods that shall not be modified
 	 */
-	protected void performCodeInstrumentation(InfoflowManager dceManager, Set<SootMethod> excludedMethods) {
+	protected void performCodeInstrumentationAfterDCE(InfoflowManager dceManager, Set<SootMethod> excludedMethods) {
 	}
 
 	/**

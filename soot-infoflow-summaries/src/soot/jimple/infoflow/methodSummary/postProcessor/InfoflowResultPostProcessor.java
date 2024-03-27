@@ -20,6 +20,7 @@ import soot.jimple.infoflow.methodSummary.data.factory.SourceSinkFactory;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSink;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
+import soot.jimple.infoflow.methodSummary.data.summary.IsAliasType;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.generator.SummaryGeneratorConfiguration;
@@ -248,7 +249,7 @@ public class InfoflowResultPostProcessor {
 	 * @param isAlias  True if source and sink alias, otherwise false
 	 */
 	protected void processAbstractionAtCall(MethodSummaries flows, AccessPath apAtCall, FlowSource source, Stmt stmt,
-			AccessPath sourceAP, boolean isAlias) {
+                                            AccessPath sourceAP, boolean isAlias) {
 		// Create a gap
 		GapDefinition gd = gapManager.getGapForCall(stmt);
 		if (gd == null)
@@ -316,7 +317,7 @@ public class InfoflowResultPostProcessor {
 	 *                   recursive calls or the like
 	 */
 	protected void processAbstractionAtReturn(MethodSummaries flows, AccessPath apAtReturn, SootMethod m,
-			FlowSource source, Stmt stmt, AccessPath sourceAP, boolean isAlias, boolean isInCallee) {
+                                              FlowSource source, Stmt stmt, AccessPath sourceAP, boolean isAlias, boolean isInCallee) {
 		// Was this the value returned by the method?
 		if (stmt instanceof ReturnStmt) {
 			ReturnStmt retStmt = (ReturnStmt) stmt;
@@ -431,7 +432,8 @@ public class InfoflowResultPostProcessor {
 		// Convert the method signature into a subsignature
 		String methodSubSig = SootMethodRepresentationParser.v().parseSootMethodString(method).getSubSignature();
 
-		MethodFlow mFlow = new MethodFlow(methodSubSig, source, sink, isAlias, true, false, false);
+		MethodFlow mFlow = new MethodFlow(methodSubSig, source, sink, isAlias ? IsAliasType.TRUE : IsAliasType.FALSE,
+				true, false, false, null, false, false);
 		if (summaries.addFlow(mFlow))
 			debugMSG(source, sink, isAlias);
 	}

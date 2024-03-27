@@ -120,7 +120,7 @@ public class AccessPathFactory {
 	}
 
 	public AccessPath createAccessPath(Value val, SootField[] appendingFields, boolean taintSubFields) {
-		return createAccessPath(val, null, AccessPathFragment.createFragmentArray(appendingFields, null),
+		return createAccessPath(val, null, AccessPathFragment.createFragmentArray(appendingFields, null, null),
 				taintSubFields, false, true, ArrayTaintType.ContentsAndLength);
 	}
 
@@ -136,8 +136,15 @@ public class AccessPathFactory {
 	}
 
 	public AccessPath createAccessPath(Value val, Type valType, AccessPathFragment[] appendingFragments,
-			boolean taintSubFields, boolean cutFirstField, boolean reduceBases, ArrayTaintType arrayTaintType,
-			boolean canHaveImmutableAliases) {
+									   boolean taintSubFields, boolean cutFirstField, boolean reduceBases, ArrayTaintType arrayTaintType,
+									   boolean canHaveImmutableAliases) {
+		return createAccessPath(val, valType, null, appendingFragments, taintSubFields, cutFirstField, reduceBases,
+				arrayTaintType, canHaveImmutableAliases);
+	}
+
+	public AccessPath createAccessPath(Value val, Type valType, ContainerContext[] ctxt, AccessPathFragment[] appendingFragments,
+                                       boolean taintSubFields, boolean cutFirstField, boolean reduceBases, ArrayTaintType arrayTaintType,
+                                       boolean canHaveImmutableAliases) {
 		// Make sure that the base object is valid
 		if (val != null && !AccessPath.canContainValue(val)) {
 			logger.error("Access paths cannot be rooted in values of type {}", val.getClass().getName());
@@ -219,7 +226,8 @@ public class AccessPathFactory {
 				// Check if we have a repeating field
 				int repeatPos = -1;
 				for (int i = bucketStart + 1; i < fragments.length; i++)
-					if (fragments[i].getField() == fragments[bucketStart].getField()) {
+					if (fragments[i].getField() == fragments[bucketStart].getField()
+							&& Arrays.equals(fragments[i].getContext(), fragments[bucketStart].getContext())) {
 						repeatPos = i;
 						break;
 					}
@@ -335,9 +343,12 @@ public class AccessPathFactory {
 			int ei = val instanceof StaticFieldRef ? 1 : 0;
 			while (ei < fragments.length) {
 				final Type eiType = ei == 0 ? baseType : fragments[ei - 1].getFieldType();
+				final ContainerContext[] eiContext = ei == 0 ? null : fragments[ei - 1].getContext();
 				int ej = ei;
 				while (ej < fragments.length) {
-					if (fragments[ej].getFieldType() == eiType || fragments[ej].getField().getType() == eiType) {
+					AccessPathFragment fj = fragments[ej];
+					if ((fj.getFieldType() == eiType || fj.getField().getType() == eiType)
+						&& Arrays.equals(eiContext, fj.getContext())) {
 						// The types match, f0...fi...fj maps back to an object of the same type as
 						// f0...fi. We must thus convert the access path to f0...fi-1[...fj]fj+1
 						AccessPathFragment[] newFragments = new AccessPathFragment[fragments.length - (ej - ei) - 1];
@@ -412,7 +423,7 @@ public class AccessPathFactory {
 			}
 		}
 
-		return new AccessPath(value, baseType, fragments, taintSubFields, cutOffApproximation, arrayTaintType,
+		return new AccessPath(value, baseType, ctxt, fragments, taintSubFields, cutOffApproximation, arrayTaintType,
 				canHaveImmutableAliases);
 	}
 
@@ -489,14 +500,31 @@ public class AccessPathFactory {
 	 */
 	public AccessPath copyWithNewValue(AccessPath original, Value val, Type newType, boolean cutFirstField,
 			boolean reduceBases, ArrayTaintType arrayTaintType) {
+		return copyWithNewValue(original, val, newType, cutFirstField, reduceBases, arrayTaintType, null);
+	}
+
+	/**
+	 * value val gets new base, fields are preserved.
+	 *
+	 * @param original       The original access path
+	 * @param val            The new base value
+	 * @param reduceBases    True if circular types shall be reduced to bases
+	 * @param arrayTaintType The way a tainted array shall be handled
+	 * @param ctxt			 New context
+	 * @return This access path with the base replaced by the value given in the val
+	 *         parameter
+	 */
+	public AccessPath copyWithNewValue(AccessPath original, Value val, Type newType, boolean cutFirstField,
+									   boolean reduceBases, ArrayTaintType arrayTaintType, ContainerContext[] baseCtxt) {
 		// If this copy would not add any new information, we can safely use the
 		// old object
 		if (original.getPlainValue() != null && original.getPlainValue().equals(val)
-				&& original.getBaseType().equals(newType) && original.getArrayTaintType() == arrayTaintType)
+				&& original.getBaseType().equals(newType) && original.getArrayTaintType() == arrayTaintType
+				&& Arrays.equals(original.getBaseContext(), baseCtxt))
 			return original;
 
 		// Create the new access path
-		AccessPath newAP = createAccessPath(val, newType, original.getFragments(), original.getTaintSubFields(),
+		AccessPath newAP = createAccessPath(val, newType, baseCtxt, original.getFragments(), original.getTaintSubFields(),
 				cutFirstField, reduceBases, arrayTaintType, original.getCanHaveImmutableAliases());
 
 		// Again, check whether we can do without the new object

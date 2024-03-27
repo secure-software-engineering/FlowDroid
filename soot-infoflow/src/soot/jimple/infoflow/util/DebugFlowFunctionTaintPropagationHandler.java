@@ -6,6 +6,8 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,15 +16,39 @@ import java.util.Set;
  * @author Tim Lange
  */
 public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagationHandler {
+    public static class MethodFilter {
+        private final Set<String> signatures;
 
-    String prefix;
+        public MethodFilter(String signature) {
+            this.signatures = Collections.singleton(signature);
+        }
 
-    public DebugFlowFunctionTaintPropagationHandler() {
-        this.prefix = "";
+        public MethodFilter(Set<String> signatures) {
+            this.signatures = signatures;
+        }
+
+        private boolean evaluate(String curr) {
+            for (String signature : signatures)
+                if (curr.contains(signature))
+                    return true;
+            return false;
+        }
     }
 
-    public DebugFlowFunctionTaintPropagationHandler(String prefix) {
+    private final String prefix;
+    private final MethodFilter filter;
+
+    public DebugFlowFunctionTaintPropagationHandler() {
+        this("", null);
+    }
+
+    public DebugFlowFunctionTaintPropagationHandler(MethodFilter filter) {
+        this("", filter);
+    }
+
+    public DebugFlowFunctionTaintPropagationHandler(String prefix, MethodFilter filter) {
         this.prefix = prefix;
+        this.filter = filter;
     }
 
     @Override
@@ -32,6 +58,9 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
 
     @Override
     public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+        if (this.filter != null && !this.filter.evaluate(manager.getICFG().getMethodOf(stmt).toString()))
+            return outgoing;
+
         String typeString = "";
         switch (type) {
             case CallToReturnFlowFunction:

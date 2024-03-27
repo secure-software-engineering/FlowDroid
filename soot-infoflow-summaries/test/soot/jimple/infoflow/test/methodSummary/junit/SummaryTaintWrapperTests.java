@@ -18,10 +18,7 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import soot.jimple.infoflow.*;
 import soot.jimple.infoflow.config.IInfoflowConfig;
@@ -266,7 +263,7 @@ public abstract class SummaryTaintWrapperTests {
 		checkInfoflow(iFlow, 1);
 	}
 
-	private void testNoFlowForMethod(String m) {
+	protected void testNoFlowForMethod(String m) {
 		IInfoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
