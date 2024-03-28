@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="102">
+    <methods>
+        <method id="java.lang.String getString(int)">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+    </methods>
+</summary>

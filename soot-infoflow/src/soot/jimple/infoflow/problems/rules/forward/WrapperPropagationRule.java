@@ -48,7 +48,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 	 * @param source The taint source
 	 * @return The taints computed by the wrapper
 	 */
-	private Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source,
+	protected Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source,
 												  ByReferenceBoolean killSource) {
 		// Do not process zero abstractions
 		if (source == getZeroValue())

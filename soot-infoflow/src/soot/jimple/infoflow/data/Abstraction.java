@@ -464,6 +464,27 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 		return localEquals(other);
 	}
 
+	public boolean equalsWithoutContext(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		Abstraction other = (Abstraction) obj;
+
+		// If we have already computed hash codes, we can use them for
+		// comparison
+		if (this.hashCode != 0 && other.hashCode != 0 && this.hashCode != other.hashCode)
+			return false;
+
+		if (accessPath == null) {
+			if (other.accessPath != null)
+				return false;
+		} else if (!accessPath.equals(other.accessPath))
+			return false;
+
+		return localEquals(other);
+	}
+
 	/**
 	 * Checks whether this object locally equals the given object, i.e. the both are
 	 * equal modulo the access path

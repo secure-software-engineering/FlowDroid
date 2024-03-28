@@ -11,7 +11,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
  * @author Steven Arzt
  *
  */
-class AccessPathPropagator {
+public class AccessPathPropagator {
 	
 	private final Taint taint;
 	private final GapDefinition gap;

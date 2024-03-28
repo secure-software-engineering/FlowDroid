@@ -33,6 +33,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.data.SourceContextAndPath;
+import soot.jimple.infoflow.methodSummary.data.summary.IsAliasType;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -57,7 +58,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	private final SummaryPathBuilderContext context;
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, boolean isAlias,
-			AccessPath curAP, List<SootMethod> callees, SummaryPathBuilderContext context) {
+                                       AccessPath curAP, List<SootMethod> callees, SummaryPathBuilderContext context) {
 		super(manager.getConfig(), null, value, stmt);
 		this.manager = manager;
 		this.isAlias = isAlias;
@@ -67,7 +68,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	}
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, AccessPath curAP,
-			boolean isAlias, int depth, List<SootMethod> callees, Object userData, SummaryPathBuilderContext context) {
+									   boolean isAlias, int depth, List<SootMethod> callees, Object userData, SummaryPathBuilderContext context) {
 		super(manager.getConfig(), null, value, stmt, userData);
 		this.manager = manager;
 		this.isAlias = isAlias;

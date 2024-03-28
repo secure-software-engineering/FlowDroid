@@ -1,21 +1,12 @@
 package soot.jimple.infoflow.methodSummary.xml;
 
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_MATCH_STRICT;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_TAINT_SUB_FIELDS;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_CLEAR;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_METHOD;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SINK;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SOURCE;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.VALUE_TRUE;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.*;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,15 +14,11 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowClear;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSink;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
-import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
-import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
-import soot.jimple.infoflow.methodSummary.data.summary.MethodClear;
-import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
-import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
-import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
+import soot.jimple.infoflow.methodSummary.data.summary.*;
 import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 
 public class SummaryReader extends AbstractXMLReader {
@@ -42,7 +29,7 @@ public class SummaryReader extends AbstractXMLReader {
 	private boolean validateSummariesOnRead = false;
 
 	private enum State {
-		summary, hierarchy, intf, methods, method, flow, clear, gaps, gap
+		summary, hierarchy, intf, methods, method, flows, flow, clear, gaps, gap
 	}
 
 	/**
@@ -70,7 +57,7 @@ public class SummaryReader extends AbstractXMLReader {
 
 			String currentMethod = "";
 			int currentID = -1;
-			boolean isAlias = false;
+			IsAliasType isAlias = IsAliasType.FALSE;
 			Boolean typeChecking = null;
 			Boolean ignoreTypes = null;
 			Boolean cutSubfields = null;
@@ -106,7 +93,7 @@ public class SummaryReader extends AbstractXMLReader {
 						// Some summaries are full signatures instead of subsignatures. We fix this on
 						// the fly.
 						if (currentMethod.contains(":"))
-							currentMethod = currentMethod.substring(currentMethod.indexOf(":") + 1);
+							currentMethod = currentMethod.substring(currentMethod.indexOf(": ") + 2);
 
 						String sIsExcluded = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUDED);
 						if (sIsExcluded != null && sIsExcluded.equals(XMLConstants.VALUE_TRUE))
@@ -125,7 +112,7 @@ public class SummaryReader extends AbstractXMLReader {
 						sinkAttributes.clear();
 						state = State.flow;
 						String sAlias = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_ALIAS);
-						isAlias = sAlias != null && sAlias.equals(XMLConstants.VALUE_TRUE);
+						isAlias = (sAlias != null && sAlias.equals(XMLConstants.VALUE_TRUE)) ? IsAliasType.TRUE : IsAliasType.FALSE;
 
 						String sTypeChecking = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_TYPE_CHECKING);
 						if (sTypeChecking != null && !sTypeChecking.isEmpty())
@@ -165,16 +152,18 @@ public class SummaryReader extends AbstractXMLReader {
 					if (state == State.flow) {
 						state = State.method;
 						MethodFlow flow = new MethodFlow(currentMethod, createSource(summary, sourceAttributes),
-								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields);
+								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields, null, false, false);
 						summary.addFlow(flow);
 
-						isAlias = false;
+						isAlias = IsAliasType.FALSE;
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isEndElement()) {
 					if (state == State.clear) {
 						state = State.method;
-						MethodClear clear = new MethodClear(currentMethod, createClear(summary, clearAttributes));
+						String ppString = clearAttributes.get(ATTRIBUTE_PREVENT_PROPAGATION);
+						boolean preventProp = ppString == null || ppString.isEmpty() || ppString.equals(VALUE_TRUE);
+						MethodClear clear = new MethodClear(currentMethod, createClear(summary, clearAttributes), null, preventProp);
 						summary.addClear(clear);
 					} else
 						throw new SummaryXMLException();
@@ -277,14 +266,14 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowSource(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isParameter(attributes)) {
 			return new FlowSource(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSource(SourceSinkType.GapBaseObject, getBaseType(attributes),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isReturn(attributes)) {
 			GapDefinition gap = getGapDefinition(attributes, summary);
 			if (gap == null)
@@ -293,7 +282,7 @@ public class SummaryReader extends AbstractXMLReader {
 
 			return new FlowSource(SourceSinkType.Return, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		}
 		throw new SummaryXMLException("Invalid flow source definition");
 	}
@@ -310,18 +299,18 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowSink(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isParameter(attributes)) {
 			return new FlowSink(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isReturn(attributes)) {
 			return new FlowSink(SourceSinkType.Return, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSink(SourceSinkType.GapBaseObject, -1, getBaseType(attributes), false,
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), ConstraintType.FALSE);
 		}
 		throw new SummaryXMLException();
 	}
@@ -338,14 +327,14 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowClear(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), ConstraintType.FALSE);
 		} else if (isParameter(attributes)) {
 			return new FlowClear(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), ConstraintType.FALSE);
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowClear(SourceSinkType.GapBaseObject, getBaseType(attributes),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), ConstraintType.FALSE);
 		}
 		throw new SummaryXMLException("Invalid flow clear definition");
 	}

@@ -11,7 +11,7 @@ public enum SourceSinkType {
 	 * The flow starts or ends at a field of the current base object
 	 */
 	Field,
-	
+
 	/**
 	 * The flow starts or ends at a field of a parameter of the current method
 	 */
@@ -31,5 +31,16 @@ public enum SourceSinkType {
 	 * A custom type of source or sink. Such elements will be ignored by the
 	 * default implementation
 	 */
-	Custom
+	Custom,
+
+	/**
+	 * Describes an implicit location that is induced by the base object,
+	 * i.e. the last index inside a list.
+	 */
+	Implicit,
+
+	/**
+	 * A wildcard that matches anything
+	 */
+	Any
 }

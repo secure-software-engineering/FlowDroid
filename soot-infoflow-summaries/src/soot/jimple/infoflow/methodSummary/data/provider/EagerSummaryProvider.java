@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.methodSummary.data.provider;
 
+import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -35,6 +37,11 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * @throws IOException
 	 */
 	public EagerSummaryProvider(String folderInJar, Class<?> parentClass) throws URISyntaxException, IOException {
+		loadSummariesFromJAR(folderInJar, parentClass, p -> loadClass(p));
+	}
+
+	public EagerSummaryProvider(String folderInJar, Class<?> parentClass, SummaryReader reader) throws URISyntaxException, IOException {
+		super(reader);
 		loadSummariesFromJAR(folderInJar, parentClass, p -> loadClass(p));
 	}
 

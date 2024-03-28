@@ -337,7 +337,7 @@ public class InfoflowResults {
 	 */
 	public Set<DataFlowResult> getResultSet() {
 		if (results == null || results.isEmpty())
-			return null;
+			return Collections.emptySet();
 
 		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
 		for (ResultSinkInfo sink : results.keySet()) {

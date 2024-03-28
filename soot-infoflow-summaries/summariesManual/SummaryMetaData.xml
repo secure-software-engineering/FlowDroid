@@ -22,7 +22,7 @@
 
 		<exclusiveModel type="class" name="java.lang.Enum" />
 		<exclusiveModel type="class" name="java.util.Currency" />
-		<exclusiveModel type="class" name="java.util.Timer" />
+<!--		<exclusiveModel type="class" name="java.util.Timer" />-->
 		<exclusiveModel type="class" name="java.text.SimpleDateFormat" />
 	</exclusiveModels>
 	<hierarchy>

@@ -12,6 +12,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SourceContext;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
@@ -187,7 +188,7 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 	 * @param accessPath The access path for which to create the flow source
 	 * @param stmt       The statement that calls the sink with the given access
 	 *                   path
-	 * @param The        definition of the gap from which the data flow originates
+	 * @param gap        definition of the gap from which the data flow originates
 	 * @return The set of generated flow sources
 	 */
 	private Set<FlowSource> getFlowSource(AccessPath accessPath, Stmt stmt, GapDefinition gap) {
@@ -196,17 +197,17 @@ public class SummaryGenerationTaintWrapper implements ITaintPropagationWrapper {
 		// This can be a base object
 		if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr)
 			if (((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase() == accessPath.getPlainValue())
-				res.add(new FlowSource(SourceSinkType.Field, accessPath.getBaseType().toString(), gap));
+				res.add(new FlowSource(SourceSinkType.Field, accessPath.getBaseType().toString(), gap, ConstraintType.FALSE));
 
 		// This can be a parameter
 		for (int i = 0; i < stmt.getInvokeExpr().getArgCount(); i++)
 			if (stmt.getInvokeExpr().getArg(i) == accessPath.getPlainValue())
-				res.add(new FlowSource(SourceSinkType.Parameter, i, accessPath.getBaseType().toString(), gap));
+				res.add(new FlowSource(SourceSinkType.Parameter, i, accessPath.getBaseType().toString(), gap, ConstraintType.FALSE));
 
 		// This can be a return value
 		if (stmt instanceof DefinitionStmt)
 			if (((DefinitionStmt) stmt).getLeftOp() == accessPath.getPlainValue())
-				res.add(new FlowSource(SourceSinkType.Return, accessPath.getBaseType().toString(), gap));
+				res.add(new FlowSource(SourceSinkType.Return, accessPath.getBaseType().toString(), gap, ConstraintType.FALSE));
 
 		return res;
 	}

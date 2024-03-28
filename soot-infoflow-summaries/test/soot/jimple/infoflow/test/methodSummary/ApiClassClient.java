@@ -177,7 +177,7 @@ public class ApiClassClient {
 		sink(t);
 	}
 
-	public void sink(Object out) {
+	public static void sink(Object out) {
 		System.out.println(out);
 	}
 
@@ -333,5 +333,15 @@ public class ApiClassClient {
 		d.stringField = stringSource();
 		String ret = d.computeString((s) -> "Untainted string");
 		sink(ret);
+	}
+
+	public void iterativeApplyIsOverapproximation() {
+		Map<String, String> map = new HashMap<>();
+		// The summary map.values -> return should only be applied
+		// if the incoming taint is map.values. But if the incoming
+		// taint is param1, then the iterative approach yields
+		// param1 -> map.values -> return, which over-approximates Map.put.
+		String oldVal = map.put("XXX", stringSource());
+		sink(oldVal);
 	}
 }

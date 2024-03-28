@@ -262,6 +262,7 @@ public class SummaryResolver {
 			if (curClass.isInterface()) {
 				List<SootClass> hierarchyClasses = hierarchy.getSuperinterfacesOf(curClass);
 				workList.addAll(hierarchyClasses);
+				classes.add(curClass);
 			} else {
 				List<SootClass> hierarchyClasses = hierarchy.getSuperclassesOf(curClass);
 				workList.addAll(hierarchyClasses);

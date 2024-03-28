@@ -30,6 +30,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<includes>
+						<!-- We include previous test classes but only want to run the tests from this project -->
+						soot/jimple/infoflow/test/methodSummary/**/*
+					</includes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -43,6 +49,13 @@
 						</manifest>
 					</archive>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -95,6 +108,27 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>build/testclasses</outputDirectory>
+							<resources>
+								<resource>
+									<directory>../soot-infoflow/build/testclasses</directory>
+								</resource>
+							</resources>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -160,7 +194,7 @@
 			<artifactId>soot-infoflow</artifactId>
 			<version>${revision}</version>
 			<type>test-jar</type>
-			<scope>test</scope>
+			<scope>compile</scope>
 			
 			<exclusions>
 				<exclusion>

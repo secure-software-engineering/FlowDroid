@@ -25,6 +25,7 @@ import soot.jimple.infoflow.nativeCallHandler.DefaultNativeCallHandler;
 import soot.jimple.infoflow.problems.AliasProblem;
 import soot.jimple.infoflow.problems.InfoflowProblem;
 import soot.jimple.infoflow.problems.rules.DefaultPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.river.BackwardNoSinkRuleManagerFactory;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -100,14 +101,13 @@ public class Infoflow extends AbstractInfoflow {
 		InfoflowManager aliasManager = null;
 		switch (getConfig().getAliasingAlgorithm()) {
 		case FlowSensitive:
-			aliasManager = new InfoflowManager(config, null, new BackwardsInfoflowCFG(iCfg), sourcesSinks, taintWrapper,
+			aliasManager = new InfoflowManager(config, backSolver, new BackwardsInfoflowCFG(iCfg), sourcesSinks, taintWrapper,
 					hierarchy, manager);
 			backProblem = new AliasProblem(aliasManager);
-
 			// We need to create the right data flow solver
 			SolverConfiguration solverConfig = config.getSolverConfiguration();
 			backSolver = createDataFlowSolver(executor, backProblem, solverConfig);
-
+			aliasManager.setMainSolver(backSolver);
 			backSolver.setMemoryManager(memoryManager);
 			backSolver.setPredecessorShorteningMode(
 					pathConfigToShorteningMode(manager.getConfig().getPathConfiguration()));
@@ -164,7 +164,7 @@ public class Infoflow extends AbstractInfoflow {
 	}
 
 	@Override
-	protected DefaultPropagationRuleManagerFactory initializeRuleManagerFactory() {
+	protected IPropagationRuleManagerFactory initializeRuleManagerFactory() {
 		return new DefaultPropagationRuleManagerFactory();
 	}
 

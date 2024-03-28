@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="103" isInterface="true">
+    <methods>
+        <method id="void setAttribute(java.lang.String,java.lang.Object)">
+            <constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.ServletContext: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.Object[]]" constrainted="true" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[javax.servlet.ServletContext: java.lang.Object[] attributes]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       constrained="true" />
+            </clears>
+        </method>
+        <method id="java.lang.Object getAttribute(java.lang.String)">
+            <constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.ServletContext: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.Object[]]" constrainted="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void removeAttribute(java.lang.String)">
+            <constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[javax.servlet.ServletContext: java.lang.Object[] attributes]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       constrained="true" />
+            </clears>
+        </method>
+        <method id="boolean setInitParameter(java.lang.String,java.lang.String)">
+            <constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.ServletContext: java.lang.String[] parameters]"
+                        AccessPathTypes="[java.lang.String[]]" constrainted="true" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[javax.servlet.ServletContext: java.lang.String[] parameters]"
+                       AccessPathTypes="[java.lang.String[]]"
+                       constrained="true" />
+            </clears>
+        </method>
+        <method id="java.lang.String getInitParameter(java.lang.String)">
+            <constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.ServletContext: java.lang.String[] parameters]"
+                          AccessPathTypes="[java.lang.String[]]" constrainted="true" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>

@@ -11,6 +11,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
+import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -52,7 +53,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 		// If this method is part of the Android framework, we don't need to
 		// call it
-		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass()))
 			return null;
 
 		assert method.isStatic() || classLocal != null

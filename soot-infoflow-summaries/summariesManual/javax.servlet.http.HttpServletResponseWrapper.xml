@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="javax.servlet.ServletResponseWrapper">
+		<interface name="javax.servlet.ServletResponse" />
+		<interface name="javax.servlet.HttpServletResponse" />
+	</hierarchy>
+</summary>

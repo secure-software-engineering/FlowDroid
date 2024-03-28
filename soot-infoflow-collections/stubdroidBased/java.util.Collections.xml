@@ -1,0 +1,450 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void reverse(java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void rotate(java.util.List,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void shuffle(java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void shuffle(java.util.List,java.util.Random)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void sort(java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void sort(java.util.List,java.util.Comparator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void swap(java.util.List,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="boolean addAll(java.util.Collection,java.lang.Object[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Queue asLifoQueue(java.util.Deque)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Collection checkedCollection(java.util.Collection,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List checkedList(java.util.List,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map checkedMap(java.util.Map,java.lang.Class,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set checkedSet(java.util.Set,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedMap checkedSortedMap(java.util.SortedMap,java.lang.Class,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedSet checkedSortedSet(java.util.SortedSet,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void copy(java.util.List,java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0" constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Enumeration enumeration(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Enumeration: java.util.Collection innerCollection]"
+						AccessPathTypes="[java.util.Collection]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void fill(java.util.List,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.ArrayList list(java.util.Enumeration)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Enumeration: java.util.Collection innerCollection]"
+						AccessPathTypes="[java.util.Collection]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object max(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object max(java.util.Collection,java.util.Comparator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object min(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object min(java.util.Collection,java.util.Comparator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List nCopies(int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set singleton(java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List singletonList(java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map singletonMap(java.lang.Object,java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Collection synchronizedCollection(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List synchronizedList(java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map synchronizedMap(java.util.Map)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set synchronizedSet(java.util.Set)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedMap synchronizedSortedMap(java.util.SortedMap)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedSet synchronizedSortedSet(java.util.SortedSet)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Collection unmodifiableCollection(java.util.Collection)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List unmodifiableList(java.util.List)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map unmodifiableMap(java.util.Map)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set unmodifiableSet(java.util.Set)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedMap unmodifiableSortedMap(java.util.SortedMap)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.SortedSet unmodifiableSortedSet(java.util.SortedSet)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"/>
+					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						constrained="keep" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

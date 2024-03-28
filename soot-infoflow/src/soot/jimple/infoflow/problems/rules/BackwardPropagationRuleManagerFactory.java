@@ -7,7 +7,6 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.backward.*;
-import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
 

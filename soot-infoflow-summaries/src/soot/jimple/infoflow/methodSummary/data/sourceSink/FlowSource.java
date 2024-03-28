@@ -15,56 +15,43 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 
 	public static final int ANY_PARAMETER = -2;
 
-	public FlowSource(SourceSinkType type, String baseType) {
-		super(type, -1, baseType, null, null, false);
+	public FlowSource(SourceSinkType type, String baseType, ConstraintType isConstrained) {
+		super(type, -1, baseType, null, null, false, isConstrained);
 	}
 
-	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap) {
-		super(type, -1, baseType, null, gap, null, false);
+	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap, ConstraintType isConstrained) {
+		super(type, -1, baseType, null, gap, null, false, isConstrained);
 	}
 
-	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap, boolean matchStrict) {
-		super(type, -1, baseType, null, gap, null, matchStrict);
+	public FlowSource(SourceSinkType type, String baseType, GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+		super(type, -1, baseType, null, gap, null, matchStrict, isConstrained);
 	}
 
-	public FlowSource(SourceSinkType type, String baseType, AccessPathFragment accessPath) {
-		super(type, -1, baseType, accessPath, false);
+	public FlowSource(SourceSinkType type, String baseType, AccessPathFragment apf, GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+		super(type, baseType, apf, gap, matchStrict, isConstrained);
 	}
 
-	public FlowSource(SourceSinkType type, String baseType, AccessPathFragment accessPath, GapDefinition gap) {
-		super(type, -1, baseType, accessPath, gap, false);
+	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, ConstraintType isConstrained) {
+		super(type, parameterIdx, baseType, null, null, false, isConstrained);
 	}
 
-	public FlowSource(SourceSinkType type, String baseType, AccessPathFragment accessPath, GapDefinition gap,
-			boolean matchStrict) {
-		super(type, -1, baseType, accessPath, gap, matchStrict);
-	}
-
-	public FlowSource(SourceSinkType type, int parameterIdx, String baseType) {
-		super(type, parameterIdx, baseType, null, null, false);
-	}
-
-	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, GapDefinition gap) {
-		super(type, parameterIdx, baseType, null, gap, null, false);
-	}
-
-	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath) {
-		super(type, parameterIdx, baseType, accessPath, false);
+	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, GapDefinition gap, ConstraintType isConstrained) {
+		super(type, parameterIdx, baseType, null, gap, null, false, isConstrained);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			GapDefinition gap) {
-		super(type, parameterIdx, baseType, accessPath, gap, false);
+					  GapDefinition gap, ConstraintType isConstrained) {
+		super(type, parameterIdx, baseType, accessPath, gap, false, isConstrained);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			GapDefinition gap, boolean matchStrict) {
-		super(type, parameterIdx, baseType, accessPath, gap, matchStrict);
+					  GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+		super(type, parameterIdx, baseType, accessPath, gap, matchStrict, isConstrained);
 	}
 
 	public FlowSource(SourceSinkType type, int parameterIdx, String baseType, AccessPathFragment accessPath,
-			GapDefinition gap, Object userData, boolean matchStrict) {
-		super(type, parameterIdx, baseType, accessPath, gap, userData, matchStrict);
+					  GapDefinition gap, Object userData, boolean matchStrict, ConstraintType isConstrained) {
+		super(type, parameterIdx, baseType, accessPath, gap, userData, matchStrict, isConstrained);
 	}
 
 	@Override
@@ -114,12 +101,12 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 		GapDefinition newGap = replacementMap.get(gap.getID());
 		if (newGap == null)
 			return this;
-		return new FlowSource(type, parameterIdx, baseType, accessPath, newGap, matchStrict);
+		return new FlowSource(type, parameterIdx, baseType, accessPath, newGap, matchStrict, isConstrained);
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new FlowSource(type, parameterIdx, baseType, accessPath, gap, userData, matchStrict);
+		return new FlowSource(type, parameterIdx, baseType, accessPath, gap, userData, matchStrict, isConstrained);
 	}
 
 }

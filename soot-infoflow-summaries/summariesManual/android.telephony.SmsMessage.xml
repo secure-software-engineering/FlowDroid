@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="102">
+    <methods>
+        <method id="java.lang.String getDisplayOriginatingAddress()">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="android.telephony.SmsMessage createFromPdu(byte[])">
+            <flow>
+                <from sourceSinkType="Parameter" ParameterIndex="0" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="java.lang.String getMessageBody()">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+    </methods>
+</summary>

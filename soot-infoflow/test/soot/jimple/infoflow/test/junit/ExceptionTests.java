@@ -34,7 +34,7 @@ public abstract class ExceptionTests extends JUnitTests {
 	@Test
 	public void exceptionControlWrappedFlowTest1() throws IOException {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.setTaintWrapper(new EasyTaintWrapper(new File("EasyTaintWrapperSource.txt")));
+		infoflow.setTaintWrapper(EasyTaintWrapper.getDefault());
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.ExceptionTestCode: void exceptionControlFlowTest1()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
@@ -44,7 +44,7 @@ public abstract class ExceptionTests extends JUnitTests {
 	@Test
 	public void exceptionControlFlowTestNoJDK1() throws IOException {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.setTaintWrapper(new EasyTaintWrapper(new File("EasyTaintWrapperSource.txt")));
+		infoflow.setTaintWrapper(EasyTaintWrapper.getDefault());
 		infoflow.setSootConfig(new IInfoflowConfig() {
 
 			@Override

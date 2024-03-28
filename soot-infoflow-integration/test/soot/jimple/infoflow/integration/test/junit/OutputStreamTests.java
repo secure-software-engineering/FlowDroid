@@ -10,7 +10,6 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
-import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -262,7 +261,6 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
     @Test(timeout = 30000)
     public void testCastWithSummaryTypeInformation1() {
         IInfoflow infoflow = this.initInfoflow();
-        infoflow.setTaintPropagationHandler(new DebugFlowFunctionTaintPropagationHandler());
         infoflow.getConfig().setAdditionalFlowsEnabled(false);
         List<String> epoints = new ArrayList();
         epoints.add("<soot.jimple.infoflow.integration.test.OutputStreamTestCode: void testCastWithSummaryTypeInformation1()>");

@@ -415,7 +415,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 				// If this is a system class, we may want to skip it
 				if (!ignoreExcludes && ignoreSystemClassParams
-						&& SystemClassHandler.v().isClassInSystemPackage(classToType.getName()))
+						&& SystemClassHandler.v().isClassInSystemPackage(classToType))
 					return NullConstant.v();
 
 				// Create a new instance to plug in here

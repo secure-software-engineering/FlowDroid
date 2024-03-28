@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101" isInterface="true">
+    <methods>
+        <method id="java.lang.Object getValue()">
+            <flow isAlias="true" typeChecking="false">
+                <from sourceSinkType="Field" ParameterIndex="0"
+                      AccessPath="[com.google.common.collect.Table$Cell: java.lang.Object value]"
+                      AccessPathTypes="[java.lang.Object]"  />
+                <to sourceSinkType="Return"/>
+            </flow>
+        </method>
+    </methods>
+</summary>

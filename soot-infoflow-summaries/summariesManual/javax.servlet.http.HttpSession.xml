@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+    <methods>
+        <method id="void setAttribute(java.lang.String,java.lang.Object)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.String[]]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object getAttribute(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void putValue(java.lang.String,java.lang.Object)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.String[]]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object getValue(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>

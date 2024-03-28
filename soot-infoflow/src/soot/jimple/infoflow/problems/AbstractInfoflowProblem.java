@@ -51,7 +51,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  *
  */
 public abstract class AbstractInfoflowProblem
-		extends DefaultJimpleIFDSTabulationProblem<Abstraction, BiDiInterproceduralCFG<Unit, SootMethod>> {
+		extends DefaultJimpleIFDSTabulationProblem<Abstraction, IInfoflowCFG> {
 
 	protected final InfoflowManager manager;
 
@@ -358,7 +358,7 @@ public abstract class AbstractInfoflowProblem
 		// We can ignore system classes according to FlowDroid's definition
 		if (manager.getConfig().getIgnoreFlowsInSystemPackages()) {
 			SootClass declClass = sm.getDeclaringClass();
-			if (declClass != null && SystemClassHandler.v().isClassInSystemPackage(declClass.getName()))
+			if (declClass != null && SystemClassHandler.v().isClassInSystemPackage(declClass))
 				return true;
 		}
 

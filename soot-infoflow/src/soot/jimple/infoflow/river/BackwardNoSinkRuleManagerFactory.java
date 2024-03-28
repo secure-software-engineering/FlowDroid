@@ -15,7 +15,7 @@ import soot.jimple.infoflow.problems.rules.backward.BackwardsImplicitFlowRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsSourcePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsStrongUpdatePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsWrapperRule;
-import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
+import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
 

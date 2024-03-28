@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+    <methods>
+        <method id="void setAttribute(java.lang.String,java.lang.Object)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.String[]]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void setAttribute(java.lang.String,java.lang.Object,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.String[]]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object getAttribute(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object getAttribute(java.lang.String,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+        <method id="java.lang.Object findAttribute(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>

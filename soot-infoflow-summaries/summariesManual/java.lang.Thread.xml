@@ -103,6 +103,20 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="void start()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.lang.Thread"
+						  AccessPath="[java.lang.Thread: java.lang.Runnable runnable]"
+						  AccessPathTypes="[java.lang.Runnable]" />
+					<to sourceSinkType="GapBaseObject" gap="42" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="GapBaseObject" gap="43" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.lang.String getName()">
 			<flows>
 				<flow isAlias="false">
@@ -154,4 +168,8 @@
 			</flows>
 		</method>
 	</methods>
+	<gaps>
+		<gap num="42" id="&lt;java.lang.Runnable: void run()&gt;" />
+		<gap num="43" id="&lt;java.lang.Thread: void run()&gt;" />
+	</gaps>
 </summary>

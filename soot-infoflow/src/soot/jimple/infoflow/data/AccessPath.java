@@ -12,11 +12,8 @@ package soot.jimple.infoflow.data;
 
 import java.util.Arrays;
 
-import soot.Local;
-import soot.NullType;
-import soot.SootField;
-import soot.Type;
-import soot.Value;
+import com.google.common.base.Joiner;
+import soot.*;
 import soot.jimple.ArrayRef;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.Jimple;
@@ -36,6 +33,7 @@ public class AccessPath implements Cloneable {
 
 	private final Local value;
 	private final Type baseType;
+	private final ContainerContext[] baseContext;
 
 	private final AccessPathFragment[] fragments;
 
@@ -58,6 +56,7 @@ public class AccessPath implements Cloneable {
 	private AccessPath() {
 		this.value = null;
 		this.baseType = null;
+		this.baseContext = null;
 		this.fragments = null;
 		this.taintSubFields = true;
 		this.cutOffApproximation = false;
@@ -67,19 +66,21 @@ public class AccessPath implements Cloneable {
 
 	AccessPath(Local val, SootField[] appendingFields, Type valType, Type[] appendingFieldTypes, boolean taintSubFields,
 			boolean isCutOffApproximation, ArrayTaintType arrayTaintType, boolean canHaveImmutableAliases) {
-		this.value = val;
-		this.baseType = valType;
-		this.fragments = AccessPathFragment.createFragmentArray(appendingFields, appendingFieldTypes);
-		this.taintSubFields = taintSubFields;
-		this.cutOffApproximation = isCutOffApproximation;
-		this.arrayTaintType = arrayTaintType;
-		this.canHaveImmutableAliases = canHaveImmutableAliases;
+		this(val, valType, null,
+			 AccessPathFragment.createFragmentArray(appendingFields, appendingFieldTypes, null),
+			 taintSubFields, isCutOffApproximation, arrayTaintType, canHaveImmutableAliases);
 	}
 
 	AccessPath(Local val, Type valType, AccessPathFragment[] fragments, boolean taintSubFields,
 			boolean isCutOffApproximation, ArrayTaintType arrayTaintType, boolean canHaveImmutableAliases) {
+		this(val, valType, null, fragments, taintSubFields, isCutOffApproximation, arrayTaintType, canHaveImmutableAliases);
+	}
+
+	AccessPath(Local val, Type valType, ContainerContext[] ctxt, AccessPathFragment[] fragments, boolean taintSubFields,
+               boolean isCutOffApproximation, ArrayTaintType arrayTaintType, boolean canHaveImmutableAliases) {
 		this.value = val;
 		this.baseType = valType;
+		this.baseContext = ctxt;
 		this.fragments = fragments;
 		this.taintSubFields = taintSubFields;
 		this.cutOffApproximation = isCutOffApproximation;
@@ -236,6 +237,30 @@ public class AccessPath implements Cloneable {
 		return this.hashCode;
 	}
 
+	private int hashCodeWOContext = 0;
+	public int hashCodeWithoutContext() {
+		if (hashCodeWOContext != 0)
+			return hashCodeWOContext;
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
+
+		if (fragments == null)
+			result *= prime;
+		else
+			for (AccessPathFragment f : fragments)
+				result = prime * result + (f == null ? 0 : f.hashCodeWithoutContext());
+
+		result = prime * result + (this.taintSubFields ? 1 : 0);
+		result = prime * result + this.arrayTaintType.hashCode();
+		result = prime * result + (this.canHaveImmutableAliases ? 1 : 0);
+		this.hashCodeWOContext = result;
+
+		return this.hashCodeWOContext;
+	}
+
 	public int getHashCode() {
 		return hashCode;
 	}
@@ -278,6 +303,40 @@ public class AccessPath implements Cloneable {
 		return true;
 	}
 
+	public boolean equalsWithoutContext(Object obj) {
+		if (obj == this || super.equals(obj))
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+
+		AccessPath other = (AccessPath) obj;
+
+		if (this.hashCodeWOContext != 0 && other.hashCodeWOContext != 0 && this.hashCodeWOContext != other.hashCodeWOContext)
+			return false;
+
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		if (baseType == null) {
+			if (other.baseType != null)
+				return false;
+		} else if (!baseType.equals(other.baseType))
+			return false;
+
+		if (this.taintSubFields != other.taintSubFields)
+			return false;
+		if (this.arrayTaintType != other.arrayTaintType)
+			return false;
+
+		if (this.canHaveImmutableAliases != other.canHaveImmutableAliases)
+			return false;
+
+		assert this.hashCodeWithoutContext() == other.hashCodeWithoutContext();
+		return true;
+	}
+
 	public boolean isStaticFieldRef() {
 		return value == null && fragments != null && fragments.length > 0;
 	}
@@ -299,6 +358,8 @@ public class AccessPath implements Cloneable {
 		String str = "";
 		if (value != null)
 			str += value.toString() + "(" + baseType + ")";
+		if (baseContext != null)
+			str += "@[" + Joiner.on(",").join(baseContext) + "]";
 		if (fragments != null && fragments.length > 0) {
 			for (int i = 0; i < fragments.length; i++)
 				if (fragments[i] != null) {
@@ -365,15 +426,37 @@ public class AccessPath implements Cloneable {
 		if (this.value != null && !this.value.equals(a2.value))
 			return false;
 
+		// If other taints all subfields but this one does not, this does not entail other
+		if (!this.taintSubFields && a2.taintSubFields)
+			return false;
+
+		// This must at least taint everything of an array other taints
+		if (this.arrayTaintType != ArrayTaintType.ContentsAndLength && this.arrayTaintType != a2.arrayTaintType)
+			return false;
+
 		if (this.fragments != null && a2.fragments != null) {
 			// If this access path is deeper than the other one, it cannot entail it
 			if (this.fragments.length > a2.fragments.length)
 				return false;
 
 			// Check the fields in detail
-			for (int i = 0; i < this.fragments.length; i++)
+			for (int i = 0; i < this.fragments.length; i++) {
 				if (!this.fragments[i].getField().equals(a2.fragments[i].getField()))
 					return false;
+
+				// Check that if this has a context, the context also entails the other context
+				if (this.fragments[i].hasContext()) {
+					if (!a2.fragments[i].hasContext())
+						return false;
+
+					ContainerContext[] ctxt1 = this.fragments[i].getContext();
+					ContainerContext[] ctxt2 = a2.fragments[i].getContext();
+					for (int j = 0; j < ctxt1.length; j++) {
+						if (!ctxt1[j].entails(ctxt2[j]))
+							return false;
+					}
+				}
+			}
 		}
 		return true;
 	}
@@ -407,6 +490,16 @@ public class AccessPath implements Cloneable {
 	public Type getBaseType() {
 		return this.baseType;
 	}
+
+	/**
+	 * Gets the type of the base value
+	 *
+	 * @return The type of the base value
+	 */
+	public ContainerContext[] getBaseContext() {
+		return this.baseContext;
+	}
+
 
 	/**
 	 * Gets whether sub-fields shall be tainted. If this access path is e.g. a.b.*,

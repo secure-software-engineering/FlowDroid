@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101" isInterface="true">
+    <methods>
+        <method id="java.util.Map asMap()">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                        AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void clear()">
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]" />
+            </clears>
+        </method>
+        <!-- containsEntry, containsKey, containsValue identity for now -->
+        <!-- TODO: foreach, entries, keys, keySet() -->
+        <method id="java.util.Collection get(java.lang.Object)">
+            <constraints>
+                <key sourceSinkType="Parameter"
+                     ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]"
+                          constrained="true" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="boolean put(java.lang.Object,java.lang.Object)">
+            <constraints>
+                <key sourceSinkType="Parameter"
+                     ParameterIndex="0" />
+            </constraints>
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="1" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]"
+                        constrained="true" />
+                </flow>
+            </flows>
+        </method>
+        <!-- TODO: putAll -->
+        <!-- remove is identity because there might be a set behind the collection
+             as well as we would need an extremly complex index analysis to find out
+             the index of a ListMultiMap -->
+        <method id="java.util.Collection removeAll(java.lang.Object)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]" />
+                    <to sourceSinkType="Return"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field"
+                          AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]" />
+                    <to   sourceSinkType="Field"
+                          AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]" />
+                </flow>
+            </flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[com.google.common.collect.Multimap: java.util.Collection[] innerArray]"
+                       preventPropagation="false" />
+            </clears>
+        </method>
+    </methods>
+</summary>

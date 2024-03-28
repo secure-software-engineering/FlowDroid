@@ -59,6 +59,11 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements Set<E> {
 		return delegate.put(o, o) == null;
 	}
 
+	public E addOrGet(E o) {
+		assert o != null;
+		return delegate.putIfAbsent(o, o);
+	}
+
 	@Override
 	public boolean remove(Object o) {
 		return delegate.remove(o) != null;

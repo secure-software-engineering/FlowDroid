@@ -40,8 +40,8 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.ListIterator: java.util.List innerList]"
-						AccessPathTypes="[java.util.List]" />
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -50,8 +50,8 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.ListIterator: java.util.List innerList]"
-						AccessPathTypes="[java.util.List]" />
+						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
@@ -84,8 +84,12 @@
 		<method id="java.util.List subList(int,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" />
-					<to sourceSinkType="Return" />
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>

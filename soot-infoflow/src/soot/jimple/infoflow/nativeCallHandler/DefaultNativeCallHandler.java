@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
@@ -25,6 +26,7 @@ public class DefaultNativeCallHandler extends AbstractNativeCallHandler {
 	private static final String SIG_ARRAYCOPY = "<java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>";
 	private static final String SIG_NEW_ARRAY = "<java.lang.reflect.Array: java.lang.Object newArray(java.lang.Class,int)>";
 	private static final String SIG_COMPARE_AND_SWAP_OBJECT = "<sun.misc.Unsafe: boolean compareAndSwapObject(java.lang.Object,long,java.lang.Object,java.lang.Object)>";
+	private static final String SIG_MAKE_CONCAT_WITH_CONSTANTS = "<soot.dummy.InvokeDynamic: java.lang.String makeConcatWithConstants(java.lang.String,java.lang.String)>";
 
 	@Override
 	public Set<Abstraction> getTaintedValues(Stmt call, Abstraction source, Value[] params) {

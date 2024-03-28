@@ -307,6 +307,18 @@ public class Aliasing {
 		}
 	}
 
+	public LocalMustAliasAnalysis getMustAliasAnalysis(Stmt stmt) {
+		SootMethod method = manager.getICFG().getMethodOf(stmt);
+		if (excludedFromMustAliasAnalysis.contains(method))
+			return null;
+
+		try {
+			return strongAliasAnalysis.getUnchecked(method);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
 	/**
 	 * Checks whether the given newly created taint can have an alias at the given
 	 * statement. Assume a statement a.x = source(). This will check whether

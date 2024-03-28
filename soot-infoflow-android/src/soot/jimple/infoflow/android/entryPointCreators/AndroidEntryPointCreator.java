@@ -534,7 +534,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				// of the application class.
 				if (method == null)
 					continue;
-				if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+				if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass()))
 					continue;
 
 				// Get the local instance of the target class

@@ -58,6 +58,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.EmptyPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverNormalFlowFunction;
@@ -79,6 +80,10 @@ public class AliasProblem extends AbstractInfoflowProblem {
 
 	public AliasProblem(InfoflowManager manager) {
 		super(manager, null, EmptyPropagationRuleManagerFactory.INSTANCE);
+	}
+
+	public AliasProblem(InfoflowManager manager, IPropagationRuleManagerFactory factory) {
+		super(manager, null, factory);
 	}
 
 	@Override
@@ -789,14 +794,19 @@ public class AliasProblem extends AbstractInfoflowProblem {
 				return new SolverCallToReturnFlowFunction() {
 					@Override
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
-						if (source == getZeroValue())
-							return null;
-						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
-
 						// Notify the handler if we have one
 						if (taintPropagationHandler != null)
 							taintPropagationHandler.notifyFlowIn(call, source, manager,
 									FlowFunctionType.CallToReturnFlowFunction);
+
+						return notifyOutFlowHandlers(call, d1, source, computeTargetsInternal(d1, source),
+								FlowFunctionType.CallToReturnFlowFunction);
+					}
+
+					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
+						if (source == getZeroValue())
+							return null;
+						assert source.isAbstractionActive() || manager.getConfig().getFlowSensitiveAliasing();
 
 						// Compute wrapper aliases
 						if (taintWrapper != null) {
@@ -854,8 +864,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 									return null;
 						}
 
-						return notifyOutFlowHandlers(call, d1, source, Collections.singleton(source),
-								FlowFunctionType.CallToReturnFlowFunction);
+						return Collections.singleton(source);
 					}
 				};
 			}

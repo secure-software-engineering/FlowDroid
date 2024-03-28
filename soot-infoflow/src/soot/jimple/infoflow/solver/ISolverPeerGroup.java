@@ -35,7 +35,7 @@ public interface ISolverPeerGroup {
      * @param n  call site
      * @param d1 calling context in caller
      * @param d2 incoming abstraction at call site
-     * @return   true if the added record is new
+     * @return true if the added record is new
      */
     boolean addIncoming(SootMethod m, Abstraction d3, Unit n, Abstraction d1, Abstraction d2);
 }
