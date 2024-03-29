@@ -56,13 +56,6 @@ public class CollectionSummaryParser extends XMLSummaryProvider {
         loadSummariesFromFiles(files, f -> loadClass(f));
     }
 
-    public void loadAdditionalSummaries(String folderInJar) throws URISyntaxException, IOException {
-        loadSummariesFromJAR(folderInJar, CollectionSummaryParser.class, p -> {
-            if (!loadedClasses.contains(fileToClass(p.getFileName().toString())))
-                loadClass(p);
-        });
-    }
-
     @Override
     public Set<String> getAllClassesWithSummaries() {
         return loadedClasses;

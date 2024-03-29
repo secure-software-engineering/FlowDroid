@@ -15,7 +15,11 @@ import soot.jimple.infoflow.collections.CollectionInfoflow;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
+import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.config.IInfoflowConfig;
+import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
+import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
+import soot.jimple.infoflow.methodSummary.data.provider.XMLSummaryProvider;
 import soot.options.Options;
 
 import javax.xml.stream.XMLStreamException;
@@ -53,12 +57,11 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
         result.setSootConfig(testConfig);
 
         try {
-            CollectionSummaryParser sp = new CollectionSummaryParser(new File("stubdroidBased"));
-            sp.loadAdditionalSummaries("../soot-infoflow-summaries/testSummaries/soot.jimple.infoflow.test.methodSummary.ApiClass.xml");
-            sp.loadAdditionalSummaries("../soot-infoflow-summaries/testSummaries/soot.jimple.infoflow.test.methodSummary.GapClass.xml");
-            sp.loadAdditionalSummaries("../soot-infoflow-summaries/testSummaries/soot.jimple.infoflow.test.methodSummary.Data.xml");
-            sp.loadAdditionalSummaries("../soot-infoflow-summaries/testSummaries/soot.jimple.infoflow.test.methodSummary.TestCollection.xml");
-            sp.loadAdditionalSummaries("summariesManual");
+            ArrayList<IMethodSummaryProvider> providers = new ArrayList();
+            providers.add(new CollectionSummaryParser(new File("stubdroidBased")));
+            providers.add(new EagerSummaryProvider("../soot-infoflow-summaries/testSummaries/"));
+            providers.add(new EagerSummaryProvider("summariesManual"));
+            PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
             result.setTaintWrapper(new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new));
         } catch (Exception e) {
             throw new RuntimeException();
