@@ -1,11 +1,15 @@
 package soot.jimple.infoflow.methodSummary.data.sourceSink;
 
 public enum ConstraintType {
+    // Constraint should match
     TRUE,
+    // No constraint
     FALSE,
-    // Should not match
+    // Constraint should not match
     NO_MATCH,
+    // Constraint moves to the right, only valid for position-based containers
     SHIFT_RIGHT,
+    // Constraint moves to the left, only valid for position-based containers
     SHIFT_LEFT,
     // Tells to keep the constraint from the source field
     KEEP,

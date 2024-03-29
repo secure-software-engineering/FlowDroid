@@ -8,28 +8,16 @@ import soot.jimple.infoflow.util.BaseSelector;
 
 public class IndexConstraint extends FlowConstraint {
     private final ImplicitLocation loc;
-    private final IndexMode mode;
 
     public IndexConstraint(SourceSinkType type, int paramIdx, String baseType, AccessPathFragment accessPathFragment,
-                           ImplicitLocation loc, IndexMode mode) {
+                           ImplicitLocation loc) {
         super(type, paramIdx, baseType, accessPathFragment);
         this.loc = loc;
-        this.mode = mode;
     }
 
     @Override
     public boolean isIndexBased() {
         return true;
-    }
-
-    @Override
-    public boolean mightShift() {
-        return mode == IndexMode.DEFAULT;
-    }
-
-    @Override
-    public boolean appendsTo() {
-        return mode == IndexMode.APPEND;
     }
 
     @Override
