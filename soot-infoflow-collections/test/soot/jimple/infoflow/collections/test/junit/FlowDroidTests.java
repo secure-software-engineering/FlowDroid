@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import gnu.trove.impl.sync.TSynchronizedShortByteMap;
 import org.junit.Assert;
 import org.junit.Before;
 
@@ -29,11 +28,8 @@ import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryP
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
-import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
-import soot.jimple.infoflow.solver.IInfoflowSolver;
-import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.tagkit.AnnotationIntElem;
 import soot.tagkit.AnnotationTag;
@@ -138,7 +134,7 @@ public abstract class FlowDroidTests {
 	protected ITaintPropagationWrapper getTaintWrapper() {
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
-			providers.add(new CollectionSummaryParser("stubdroidBasedWA"));
+			providers.add(new CollectionSummaryParser("stubdroidBased"));
 			providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
 			PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
 			return new CollectionSummaryTaintWrapper(sp, m -> new TestConstantStrategy(m, new PreciseShift()));

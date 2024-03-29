@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.collections.test.junit;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -16,7 +17,11 @@ import soot.jimple.infoflow.collections.context.IntervalContext;
 import soot.jimple.infoflow.collections.context.UnknownContext;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
+import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.data.ContainerContext;
+import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
+import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
+import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 public class ListAddAllItselfTests extends FlowDroidTests {
@@ -24,8 +29,10 @@ public class ListAddAllItselfTests extends FlowDroidTests {
 
     protected ITaintPropagationWrapper getTaintWrapper() {
         try {
-            CollectionSummaryParser sp = new CollectionSummaryParser(new File("stubdroidBased"));
-            sp.loadAdditionalSummaries("summariesManual");
+            ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
+            providers.add(new CollectionSummaryParser("stubdroidBased"));
+            providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
+            PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
             CollectionSummaryTaintWrapper sbtw = new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new) {
                 @Override
                 public void initialize(InfoflowManager manager) {
