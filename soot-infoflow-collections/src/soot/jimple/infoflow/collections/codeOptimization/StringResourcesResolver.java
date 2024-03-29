@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,11 @@ import soot.util.queue.QueueReader;
  */
 public class StringResourcesResolver implements ICodeOptimizer {
     private static final String CONTEXT_CLASS = "android.content.Context";
+    private static final String RESOURCE_CLASS = "android.content.res.Resources";
     private static final String GET_STRING_SUBSIG = "java.lang.String getString(int)";
+    private static final String GET_INT_SUBSIG = "int getInteger(int)";
+    private static final String GET_BOOL_SUBSIG = "boolean getBoolean(int)";
+    private static final String GET_FLOAT_SUBSIG = "float getFloat(int)";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,10 +81,11 @@ public class StringResourcesResolver implements ICodeOptimizer {
         assert parser != null;
 
         SootClass contextClass = Scene.v().getSootClassUnsafe(CONTEXT_CLASS);
-        if (contextClass == null) {
-            logger.error("Could not load class " + CONTEXT_CLASS + ". Aborting string resource resolving...");
-            return;
-        }
+        if (contextClass == null)
+            logger.warn("Could not load class " + CONTEXT_CLASS + ".");
+        SootClass resourceClass = Scene.v().getSootClassUnsafe(RESOURCE_CLASS);
+        if (resourceClass == null)
+            logger.warn("Could not load class " + RESOURCE_CLASS + ".");
 
         // First pass: Collect all statements to be replaced
         ReplacementCandidates rcs = new ReplacementCandidates();
@@ -99,9 +105,18 @@ public class StringResourcesResolver implements ICodeOptimizer {
                 // Check whether the invoke expressions calls a method we care about
                 SootMethod callee = stmt.getInvokeExpr().getMethod();
                 String subSig = callee.getSubSignature();
-                if (!manager.getHierarchy().isSubclass(callee.getDeclaringClass(), contextClass)
-                        || !subSig.equals(GET_STRING_SUBSIG))
-                    continue;
+
+                boolean contextGetString = contextClass != null
+                        && manager.getHierarchy().isSubclass(callee.getDeclaringClass(), contextClass)
+                        && subSig.equals(GET_STRING_SUBSIG);
+                if (!contextGetString) {
+                    boolean resourceGet = resourceClass != null
+                            && manager.getHierarchy().isSubclass(callee.getDeclaringClass(), resourceClass)
+                            && (subSig.equals(GET_STRING_SUBSIG) || subSig.equals(GET_INT_SUBSIG)
+                            || subSig.equals(GET_BOOL_SUBSIG) || subSig.equals(GET_FLOAT_SUBSIG));
+                    if (!resourceGet)
+                        continue;
+                }
 
                 // Extract the resource id
                 Value arg0 = stmt.getInvokeExpr().getArg(0);
@@ -112,12 +127,25 @@ public class StringResourcesResolver implements ICodeOptimizer {
 
                 // Get the string for the given resource id
                 ARSCFileParser.AbstractResource res = parser.findResource(resourceId);
-                if (!(res instanceof ARSCFileParser.StringResource))
+                Constant c;
+                if (res instanceof ARSCFileParser.StringResource) {
+                    String str = ((ARSCFileParser.StringResource) res).getValue();
+                    c = StringConstant.v(str);
+                } else if (res instanceof ARSCFileParser.IntegerResource) {
+                    int i = ((ARSCFileParser.IntegerResource) res).getValue();
+                    c = IntConstant.v(i);
+                } else if (res instanceof ARSCFileParser.BooleanResource) {
+                    boolean b = ((ARSCFileParser.BooleanResource) res).getValue();
+                    c = IntConstant.v(b ? 1 : 0);
+                } else if (res instanceof ARSCFileParser.FloatResource) {
+                    float f = ((ARSCFileParser.FloatResource) res).getValue();
+                    c = FloatConstant.v(f);
+                } else {
                     continue;
-                String str = ((ARSCFileParser.StringResource) res).getValue();
+                }
 
                 // Construct a new constant assignment
-                AssignStmt constantAssign = Jimple.v().newAssignStmt(((AssignStmt) stmt).getLeftOp(), StringConstant.v(str));
+                AssignStmt constantAssign = Jimple.v().newAssignStmt(((AssignStmt) stmt).getLeftOp(), c);
                 constantAssign.addTag(SimulatedCodeElementTag.TAG);
                 rcs.add(method, stmt, constantAssign);
             }
