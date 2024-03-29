@@ -488,6 +488,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
+	 * Get the ARSC file parser to read resources.
+	 *
+	 * @return ARSCFileParser
+	 */
+	public ARSCFileParser getResources() {
+		return resources;
+	}
+
+	/**
 	 * Creates the manifest handler for processing the app manifest
 	 * 
 	 * @param targetAPK The target APK file

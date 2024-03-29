@@ -15,6 +15,7 @@ import soot.jimple.*;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
+import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
@@ -39,9 +40,15 @@ public class StringResourcesResolver implements ICodeOptimizer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final SetupApplication setupApplication;
+
     private String fileName = null;
     private int runtime = -1;
     private int replaced = -1;
+
+    public StringResourcesResolver(SetupApplication setupApplication) {
+        this.setupApplication = setupApplication;
+    }
 
     public int getRuntime() {
         return runtime;
@@ -71,11 +78,9 @@ public class StringResourcesResolver implements ICodeOptimizer {
 
         long beforeOptimization = System.nanoTime();
 
-        ARSCFileParser parser;
-        try {
-            parser = ARSCFileParser.getInstance(new File(fileName));
-        } catch (IOException e) {
-            logger.error("Could not parse the ARSC file! Aborting string resource resolving...", e);
+        ARSCFileParser parser = setupApplication.getResources();
+        if (parser == null) {
+            logger.error("Could get the ARSC file parser! Aborting string resource resolving...");
             return;
         }
         assert parser != null;
