@@ -61,7 +61,7 @@ public class CollectionsSetupApplication extends SetupApplication {
                 ctf.initialize(manager.getConfig());
                 ctf.run(manager, excludedMethods, manager.getSourceSinkManager(), manager.getTaintWrapper());
 
-                StringResourcesResolver res = new StringResourcesResolver();
+                StringResourcesResolver res = new StringResourcesResolver(CollectionsSetupApplication.this);
                 res.initialize(manager.getConfig());
                 res.run(manager, excludedMethods, manager.getSourceSinkManager(), manager.getTaintWrapper());
             }
