@@ -154,14 +154,35 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	protected IInPlaceInfoflow infoflow = null;
 
+	/**
+	 * Interface for custom code transformations before the data flow analysis.
+	 */
 	public interface OptimizationPass {
+		/**
+		 * Perform additional code instrumentation tasks before the dead code elimination and constant propagation.
+		 *
+		 * @param manager infoflow manager
+		 * @param excludedMethods excluded methods, e.g., entry points
+		 */
 		void performCodeInstrumentationBeforeDCE(InfoflowManager manager, Set<SootMethod> excludedMethods);
+
+		/**
+		 * Perform additional code instrumentation tasks after the dead code elimination and constant propagation.
+		 *
+		 * @param manager infoflow manager
+		 * @param excludedMethods excluded methods, e.g., entry points
+		 */
 
 		void performCodeInstrumentationAfterDCE(InfoflowManager manager, Set<SootMethod> excludedMethods);
 	}
 
 	protected List<OptimizationPass> opts = new ArrayList<>();
 
+	/**
+	 * Add an optimization pass to be applied before the analysis.
+	 *
+	 * @param pass optimization pass
+	 */
 	public void addOptimizationPass(OptimizationPass pass) {
 		opts.add(pass);
 	}
