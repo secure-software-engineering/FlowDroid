@@ -2,7 +2,6 @@ package soot.jimple.infoflow.collections.parser;
 
 import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
 import soot.jimple.infoflow.collections.data.IndexConstraint;
-import soot.jimple.infoflow.collections.data.IndexMode;
 import soot.jimple.infoflow.collections.data.KeyConstraint;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowClear;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowConstraint;
@@ -428,25 +427,11 @@ public class StubDroidParser extends SummaryReader {
     private FlowConstraint createIndexConstraint(Map<String, String> attributes) throws SummaryXMLException {
         if (isParameter(attributes))
             return new IndexConstraint(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
-                    new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)), null, getMode(attributes));
+                    new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)), null);
         if (isImplicit(attributes))
             return new IndexConstraint(SourceSinkType.Implicit, -1, getBaseType(attributes),
-                    new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)), getImplicitLocation(attributes), getMode(attributes));
+                    new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)), getImplicitLocation(attributes));
         throw new SummaryXMLException();
-    }
-
-    private IndexMode getMode(Map<String, String> attributes) {
-        String mode = attributes.get(StubDroidXMLConstants.ATTRIBUTE_MODE);
-        if (mode == null)
-            return IndexMode.DEFAULT;
-        switch (mode.toLowerCase()) {
-            case StubDroidXMLConstants.MODE_IN_PLACE:
-                return IndexMode.IN_PLACE;
-            case StubDroidXMLConstants.MODE_APPEND:
-                return IndexMode.APPEND;
-            default:
-                return IndexMode.DEFAULT;
-        }
     }
 
     private ImplicitLocation getImplicitLocation(Map<String, String> attributes) {
