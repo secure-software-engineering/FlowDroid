@@ -121,6 +121,12 @@
 	<profiles>
 		<profile>
 			<id>deploy</id>
+            <activation>
+                <property>
+                    <name>deploy</name>
+                    <value>true</value>
+                </property>
+            </activation>
 			<build>
 				<plugins>
                     <plugin>
