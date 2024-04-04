@@ -7,7 +7,7 @@ import java.util.List;
  * 
  * @author Steven Arzt
  *
- * @param The type of Android component inside this container
+ * @param <E> The type of Android component inside this container
  */
 public interface IComponentContainer<E extends IAndroidComponent> extends Iterable<E> {
 

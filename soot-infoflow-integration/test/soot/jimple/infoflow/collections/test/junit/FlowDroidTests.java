@@ -20,7 +20,6 @@ import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
 import soot.jimple.infoflow.collections.strategies.containers.shift.PreciseShift;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
-import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
 import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
@@ -132,12 +131,11 @@ public abstract class FlowDroidTests {
 	protected ITaintPropagationWrapper getTaintWrapper() {
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
-			providers.add(new CollectionSummaryParser("stubdroidBased"));
 			providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
 			PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
 			return new CollectionSummaryTaintWrapper(sp, m -> new TestConstantStrategy(m, new PreciseShift()));
 		} catch (Exception e) {
-			throw new RuntimeException();
+			throw new RuntimeException(e);
 		}
 	}
 

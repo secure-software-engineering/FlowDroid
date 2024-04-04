@@ -126,7 +126,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * FlowDroid will automatically include the target APK file and the Android
 		 * platform JAR file, these need not be specified separately.
 		 * 
-		 * @return The additional libraries that are required on the analysis classpath
+		 * @param additionalClasspath The additional libraries that are required on the
+		 *                            analysis classpath
 		 */
 		public void setAdditionalClasspath(String additionalClasspath) {
 			this.additionalClasspath = additionalClasspath;
@@ -322,7 +323,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param iccConfig The other configuration object
+		 * @param cbConfig The other configuration object
 		 */
 		public void merge(CallbackConfiguration cbConfig) {
 			this.enableCallbacks = cbConfig.enableCallbacks;
@@ -368,7 +369,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * analysis
 		 * 
 		 * @return The callback analyzer being used
-		 * @return
 		 */
 		public CallbackAnalyzer getCallbackAnalyzer() {
 			return this.callbackAnalyzer;

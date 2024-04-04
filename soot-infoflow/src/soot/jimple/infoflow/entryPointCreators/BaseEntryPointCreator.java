@@ -182,8 +182,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	/**
 	 * Creates a new, empty main method containing the given body
-	 * 
-	 * @return The newly generated main method
 	 */
 	protected void createEmptyMainMethod() {
 		// If we already have a main class, we need to make sure to use a fresh

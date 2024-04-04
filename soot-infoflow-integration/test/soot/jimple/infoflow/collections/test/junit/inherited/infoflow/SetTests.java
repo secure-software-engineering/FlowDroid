@@ -8,7 +8,6 @@ import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
-import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
 import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
@@ -23,7 +22,6 @@ public class SetTests extends soot.jimple.infoflow.test.junit.SetTests {
         result.getConfig().setPreciseCollectionTracking(true);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
-			providers.add(new CollectionSummaryParser("stubdroidBased"));
 			providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
 			PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
 			result.setTaintWrapper(new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new));

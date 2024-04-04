@@ -13,7 +13,6 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
-import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
 import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.config.IInfoflowConfig;
@@ -60,7 +59,6 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
 
         try {
             ArrayList<IMethodSummaryProvider> providers = new ArrayList();
-            providers.add(new CollectionSummaryParser(new File("stubdroidBased")));
             providers.add(new EagerSummaryProvider("../soot-infoflow-summaries/testSummaries/"));
             providers.add(new EagerSummaryProvider("summariesManual"));
             PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
