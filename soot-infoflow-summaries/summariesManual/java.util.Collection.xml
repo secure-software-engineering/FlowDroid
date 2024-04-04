@@ -5,12 +5,17 @@
 	</hierarchy>
 	<methods>
 		<method id="boolean add(java.lang.Object)">
+			<constraints>
+				<index sourceSinkType="Implicit"
+					   ImplicitLocation="Next" />
+			</constraints>
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" final="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
 		</method>
@@ -39,7 +44,22 @@
 						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="read-only" />
+				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
 		</method>
 		<method id="java.lang.Object[] toArray()">
 			<flows>
