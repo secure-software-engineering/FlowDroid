@@ -24,7 +24,10 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -59,18 +62,12 @@ public abstract class JUnitTests {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		File f = new File(".");
-		File testSrc1 = new File(f, "bin");
-		File testSrc2 = new File(f, "build" + File.separator + "classes");
-		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
-
-		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
-			fail("Test aborted - none of the test sources are available");
-		}
-
 		StringBuilder appPathBuilder = new StringBuilder();
-		appendWithSeparator(appPathBuilder, testSrc1);
-		appendWithSeparator(appPathBuilder, testSrc2);
-		appendWithSeparator(appPathBuilder, testSrc3);
+		addTestPathes(f, appPathBuilder);
+		File fi = new File("../soot-infoflow");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
 		appPath = appPathBuilder.toString();
 
 		StringBuilder libPathBuilder = new StringBuilder();
@@ -116,6 +113,20 @@ public abstract class JUnitTests {
 		sinks.add(sinkInt);
 		sinks.add(sinkBoolean);
 		sinks.add(sinkDouble);
+	}
+
+	private static void addTestPathes(File f, StringBuilder appPathBuilder) throws IOException {
+		File testSrc1 = new File(f, "bin");
+		File testSrc2 = new File(f, "build" + File.separator + "classes");
+		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
+
+		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
+			fail("Test aborted - none of the test sources are available");
+		}
+
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appendWithSeparator(appPathBuilder, testSrc3);
 	}
 
 	/**
@@ -215,7 +226,6 @@ public abstract class JUnitTests {
 	 * @param infoflow infoflow object
 	 */
 	protected void onlyForwards(IInfoflow infoflow, String message) {
-		Assume.assumeTrue("Test is only applicable on forwards analysis: " + message,
-				infoflow instanceof Infoflow);
+		Assume.assumeTrue("Test is only applicable on forwards analysis: " + message, infoflow instanceof Infoflow);
 	}
 }
