@@ -64,7 +64,7 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
             PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
             result.setTaintWrapper(new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new));
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
 
         return result;
