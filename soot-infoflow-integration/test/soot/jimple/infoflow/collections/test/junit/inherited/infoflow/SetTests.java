@@ -1,13 +1,12 @@
 package soot.jimple.infoflow.collections.test.junit.inherited.infoflow;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import org.junit.Test;
 
 import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.CollectionInfoflow;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
@@ -20,7 +19,8 @@ public class SetTests extends soot.jimple.infoflow.test.junit.SetTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 
-		AbstractInfoflow result = new CollectionInfoflow("", false, new DefaultBiDiICFGFactory());
+        AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+        result.getConfig().setPreciseCollectionTracking(true);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
 			providers.add(new CollectionSummaryParser("stubdroidBased"));

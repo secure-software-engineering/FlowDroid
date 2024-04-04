@@ -39,8 +39,13 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.SootIntegrationMode;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
 import soot.jimple.infoflow.android.callbacks.AbstractCallbackAnalyzer;
@@ -77,6 +82,8 @@ import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.cfg.BiDirICFGFactory;
 import soot.jimple.infoflow.cfg.FlowDroidUserClass;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
+import soot.jimple.infoflow.collections.codeOptimization.ConstantTagFolding;
+import soot.jimple.infoflow.collections.codeOptimization.StringResourcesResolver;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
@@ -159,17 +166,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	public interface OptimizationPass {
 		/**
-		 * Perform additional code instrumentation tasks before the dead code elimination and constant propagation.
+		 * Perform additional code instrumentation tasks before the dead code
+		 * elimination and constant propagation.
 		 *
-		 * @param manager infoflow manager
+		 * @param manager         infoflow manager
 		 * @param excludedMethods excluded methods, e.g., entry points
 		 */
 		void performCodeInstrumentationBeforeDCE(InfoflowManager manager, Set<SootMethod> excludedMethods);
 
 		/**
-		 * Perform additional code instrumentation tasks after the dead code elimination and constant propagation.
+		 * Perform additional code instrumentation tasks after the dead code elimination
+		 * and constant propagation.
 		 *
-		 * @param manager infoflow manager
+		 * @param manager         infoflow manager
 		 * @param excludedMethods excluded methods, e.g., entry points
 		 */
 
@@ -1622,8 +1631,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Get rid of leftovers from the last entry point
 		resultAggregator.clearLastResults();
 
-		// Before we do some app parsing, we need to make sure that all user classes are tagged
-		// accordingly to prevent filtering of accidental namespace clashes with system packages
+		// Before we do some app parsing, we need to make sure that all user classes are
+		// tagged
+		// accordingly to prevent filtering of accidental namespace clashes with system
+		// packages
 		tagUserCodeClasses();
 
 		// Perform basic app parsing
@@ -1674,7 +1685,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Print out the found results
 		{
 			int resCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().size();
-			int sourceCount = resultAggregator.getLastResults() == null ? 0 : resultAggregator.getLastResults().getResultSet().size();
+			int sourceCount = resultAggregator.getLastResults() == null ? 0
+					: resultAggregator.getLastResults().getResultSet().size();
 			if (config.getOneComponentAtATime())
 				logger.info("Found {} leaks for component {}", resCount, entrypoint);
 			else
@@ -1752,6 +1764,27 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Initialize and configure the data flow tracker
 		IInPlaceInfoflow info = createInfoflowInternal(lifecycleMethods);
 
+		if (config.getPerformConstantPropagation()) {
+			addOptimizationPass(new SetupApplication.OptimizationPass() {
+				@Override
+				public void performCodeInstrumentationBeforeDCE(InfoflowManager manager,
+						Set<SootMethod> excludedMethods) {
+					ConstantTagFolding ctf = new ConstantTagFolding();
+					ctf.initialize(manager.getConfig());
+					ctf.run(manager, excludedMethods, manager.getSourceSinkManager(), manager.getTaintWrapper());
+
+					StringResourcesResolver res = new StringResourcesResolver(SetupApplication.this);
+					res.initialize(manager.getConfig());
+					res.run(manager, excludedMethods, manager.getSourceSinkManager(), manager.getTaintWrapper());
+				}
+
+				@Override
+				public void performCodeInstrumentationAfterDCE(InfoflowManager manager,
+						Set<SootMethod> excludedMethods) {
+
+				}
+			});
+		}
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
@@ -2061,10 +2094,11 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
-	 * Some apps, especially malware, use namespaces like "com.google.myapp", which are also namespaces of system
-	 * packages. To distinguish bad namespaces from actual system packages, we tag user classes that also match
-	 * system packages as with {@link FlowDroidUserClass}.
-	*/
+	 * Some apps, especially malware, use namespaces like "com.google.myapp", which
+	 * are also namespaces of system packages. To distinguish bad namespaces from
+	 * actual system packages, we tag user classes that also match system packages
+	 * as with {@link FlowDroidUserClass}.
+	 */
 	protected void tagUserCodeClasses() {
 		if (!SystemClassHandler.v().isClassInSystemPackage(manifest.getPackageName() + ".someClass"))
 			return;

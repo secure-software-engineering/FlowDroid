@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.CollectionInfoflow;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
@@ -21,7 +21,8 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 public class ArrayTests extends soot.jimple.infoflow.test.junit.ArrayTests {
     @Override
     protected AbstractInfoflow createInfoflowInstance() {
-        AbstractInfoflow result = new CollectionInfoflow("", false, new DefaultBiDiICFGFactory());
+        AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+        result.getConfig().setPreciseCollectionTracking(true);
         try {
             ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
             providers.add(new CollectionSummaryParser("stubdroidBased"));

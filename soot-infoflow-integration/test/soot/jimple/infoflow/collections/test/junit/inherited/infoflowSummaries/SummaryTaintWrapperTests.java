@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.CollectionInfoflow;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
@@ -28,7 +28,9 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
     @Override
     protected AbstractInfoflow createInfoflowInstance() {
 
-        return new CollectionInfoflow("", false, new DefaultBiDiICFGFactory());
+        Infoflow inf = new Infoflow("", false, new DefaultBiDiICFGFactory());
+        inf.getConfig().setPreciseCollectionTracking(true);
+        return inf;
     }
 
     @Override

@@ -1401,6 +1401,7 @@ public class InfoflowConfiguration {
 	private int maxAliasingBases = Integer.MAX_VALUE;
 	private boolean additionalFlowsEnabled = false;
 	private boolean filterConditionalSinks = true;
+	private boolean preciseCollectionTracking;
 
 	private static String baseDirectory = "";
 
@@ -2407,6 +2408,14 @@ public class InfoflowConfiguration {
 
 	public void setMaxAliasingBases(int value) {
 		maxAliasingBases = value;
+	}
+
+	public boolean getPreciseCollectionTracking() {
+		return preciseCollectionTracking;
+	}
+
+	public void setPreciseCollectionTracking(boolean value) {
+		preciseCollectionTracking = value;
 	}
 
 }

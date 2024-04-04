@@ -1,6 +1,11 @@
 package soot.jimple.infoflow.problems.rules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.collections.problems.rules.forward.ArrayWithIndexPropagationRule;
+import soot.jimple.infoflow.collections.problems.rules.forward.CollectionWrapperPropagationRule;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.forward.ArrayPropagationRule;
@@ -15,9 +20,6 @@ import soot.jimple.infoflow.problems.rules.forward.StrongUpdatePropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.TypingPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.WrapperPropagationRule;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Default implementation of the {@link IPropagationRuleManagerFactory} class
  * 
@@ -28,19 +30,27 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 
 	@Override
 	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
-													TaintPropagationResults results) {
+			TaintPropagationResults results) {
 		List<ITaintPropagationRule> ruleList = new ArrayList<>();
 
 		ruleList.add(new SourcePropagationRule(manager, zeroValue, results));
 		ruleList.add(new SinkPropagationRule(manager, zeroValue, results));
 		ruleList.add(new StaticPropagationRule(manager, zeroValue, results));
 
-		if (manager.getConfig().getEnableArrayTracking())
-			ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
+		if (manager.getConfig().getEnableArrayTracking()) {
+			if (manager.getConfig().getPreciseCollectionTracking())
+				ruleList.add(new ArrayWithIndexPropagationRule(manager, zeroValue, results));
+			else
+				ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
+		}
 		if (manager.getConfig().getEnableExceptionTracking())
 			ruleList.add(new ExceptionPropagationRule(manager, zeroValue, results));
-		if (manager.getTaintWrapper() != null)
-			ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));
+		if (manager.getTaintWrapper() != null) {
+			if (manager.getConfig().getPreciseCollectionTracking())
+				ruleList.add(new CollectionWrapperPropagationRule(manager, zeroValue, results));
+			else
+				ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));
+		}
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
 			ruleList.add(new ImplicitPropagtionRule(manager, zeroValue, results));
 		ruleList.add(new StrongUpdatePropagationRule(manager, zeroValue, results));
@@ -50,8 +60,7 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
 			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, zeroValue, results));
 
-		return new PropagationRuleManager(manager, zeroValue, results,
-				ruleList.toArray(new ITaintPropagationRule[0]));
+		return new PropagationRuleManager(manager, zeroValue, results, ruleList.toArray(new ITaintPropagationRule[0]));
 	}
 
 	public PropagationRuleManager createAliasRuleManager(InfoflowManager manager, Abstraction zeroValue) {

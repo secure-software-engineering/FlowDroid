@@ -698,6 +698,10 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
 	private boolean mergeDexFiles = false;
+
+	private boolean optimizeConstants;
+
+	private boolean performConstantPropagation;
 	private static boolean createActivityEntryMethods = true;
 
 	public InfoflowAndroidConfiguration() {
@@ -878,4 +882,11 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		return true;
 	}
 
+	public boolean getPerformConstantPropagation() {
+		return performConstantPropagation;
+	}
+
+	public void setPerformConstantPropagation(boolean value) {
+		performConstantPropagation = value;
+	}
 }

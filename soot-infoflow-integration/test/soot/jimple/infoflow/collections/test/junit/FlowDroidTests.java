@@ -16,10 +16,8 @@ import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.*;
-import soot.jimple.infoflow.android.CollectionsSetupApplication;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.CollectionInfoflow;
 import soot.jimple.infoflow.collections.strategies.containers.shift.PreciseShift;
 import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.parser.CollectionSummaryParser;
@@ -146,7 +144,8 @@ public abstract class FlowDroidTests {
 	protected abstract void setConfiguration(InfoflowConfiguration config);
 
 	protected IInfoflow initInfoflow() {
-		AbstractInfoflow result = new CollectionInfoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		result.getConfig().setPreciseCollectionTracking(true);
 		result.setThrowExceptions(true);
 		result.setTaintWrapper(getTaintWrapper());
 		setConfiguration(result.getConfig());
@@ -161,7 +160,8 @@ public abstract class FlowDroidTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		SetupApplication setupApplication = new CollectionsSetupApplication(androidJars, fileName);
+		SetupApplication setupApplication = new SetupApplication(androidJars, fileName);
+		setupApplication.getConfig().setPerformConstantPropagation(true);
 		setupApplication.getConfig().setMergeDexFiles(true);
 		setupApplication.setTaintWrapper(getTaintWrapper());
 		setConfiguration(setupApplication.getConfig());
