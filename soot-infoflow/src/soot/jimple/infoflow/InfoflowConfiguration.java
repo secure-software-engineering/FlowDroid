@@ -2410,10 +2410,24 @@ public class InfoflowConfiguration {
 		maxAliasingBases = value;
 	}
 
+	/**
+	 * Returns whether precise tracking through collections is enabled. Works best
+	 * if constant propagation is enabled. Note that this option incurs a
+	 * performance penalty and is usually not worth it.
+	 * 
+	 * @return whether precise collection tracking is enabled
+	 */
 	public boolean getPreciseCollectionTracking() {
 		return preciseCollectionTracking;
 	}
 
+	/**
+	 * Sets the option to enable precise tracking through collections. Works best if
+	 * constant propagation is enabled. Note that this option incurs a performance
+	 * penalty and is usually not worth it.
+	 * 
+	 * @param value if true, enable precise collection tracking
+	 */
 	public void setPreciseCollectionTracking(boolean value) {
 		preciseCollectionTracking = value;
 	}

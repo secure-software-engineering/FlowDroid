@@ -699,8 +699,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 
 	private boolean mergeDexFiles = false;
 
-	private boolean optimizeConstants;
-
 	private boolean performConstantPropagation;
 	private static boolean createActivityEntryMethods = true;
 
@@ -882,10 +880,22 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		return true;
 	}
 
+	/**
+	 * Returns whether FlowDroid should perform a simple constant propagation prior
+	 * to the data flow analysis.
+	 * 
+	 * @return whether to perform constant propagation
+	 */
 	public boolean getPerformConstantPropagation() {
 		return performConstantPropagation;
 	}
 
+	/**
+	 * Sets whether FlowDroid should perform a simple constant propagation prior to
+	 * the data flow analysis.
+	 * 
+	 * @param value true if constants should be propagated
+	 */
 	public void setPerformConstantPropagation(boolean value) {
 		performConstantPropagation = value;
 	}
