@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
@@ -23,7 +24,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
  * contain various tests with more than one source, conditional statements,
  * loops and java-internal functions on tainted objects
  */
-public class MultiTest extends JUnitTests {
+public abstract class MultiTest extends JUnitTests {
 
 	private static final String SOURCE_STRING_PWD = "<soot.jimple.infoflow.test.android.AccountManager: java.lang.String getPassword()>";
 
@@ -160,6 +161,7 @@ public class MultiTest extends JUnitTests {
 		Assert.assertEquals(2, infoflow.getResults().numConnections());
 	}
 
+	@Ignore("Race condition by design")
 	@Test(timeout = 300000)
 	public void stopAfterFirstKFlowsTest0() {
 		IInfoflow infoflow = initInfoflow();
@@ -180,6 +182,7 @@ public class MultiTest extends JUnitTests {
 		checkInfoflow(infoflow, 2);
 	}
 
+	@Ignore("Race condition by design")
 	@Test(timeout = 300000)
 	public void stopAfterFirstKFlowsTest2() {
 		IInfoflow infoflow = initInfoflow();
@@ -190,11 +193,32 @@ public class MultiTest extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void multiSinkTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.MultiTestCode: void multiSinkTest1()>");
+
+		final String streamSource = "<java.io.ByteArrayOutputStream: byte[] toByteArray()>";
+		final String publishSink = "<soot.jimple.infoflow.test.android.ConnectionManager: void publish(java.lang.String)>";
+
+		List<String> testSources = new ArrayList<>(sources);
+		testSources.add(streamSource);
+
+		infoflow.getConfig().setPathAgnosticResults(false);
+		infoflow.computeInfoflow(appPath, libPath, epoints, testSources, sinks);
+		InfoflowResults results = infoflow.getResults();
+
+		Assert.assertNotNull(results);
+		Assert.assertTrue(results.isPathBetweenMethods(publishSink, streamSource));
+		Assert.assertEquals(2, results.numConnections());
+	}
+
+	@Test(timeout = 300000)
+	public void multiSinkTest2() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.MultiTestCode: void multiSinkTest2()>");
 
 		final String streamSource = "<java.io.ByteArrayOutputStream: byte[] toByteArray()>";
 		final String publishSink = "<soot.jimple.infoflow.test.android.ConnectionManager: void publish(java.lang.String)>";

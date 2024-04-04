@@ -19,13 +19,13 @@ import soot.SootMethod;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.util.MultiMap;
@@ -46,7 +46,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 	public ActivityEntryPointCreator(SootClass component, SootClass applicationClass,
 			MultiMap<SootClass, String> activityLifecycleCallbacks, Map<SootClass, SootField> callbackClassToField,
-			Map<SootClass, SootMethod> fragmentToMainMethod, ProcessManifest manifest) {
+			Map<SootClass, SootMethod> fragmentToMainMethod, IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 		this.activityLifecycleCallbacks = activityLifecycleCallbacks;
 		this.callbackClassToField = callbackClassToField;
@@ -200,8 +200,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// 6. onRestart:
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, component, thisLocal);
-		createIfStmt(onStartStmt); // jump to onStart(), fall through to
-									// onDestroy()
+		body.getUnits().add(Jimple.v().newGotoStmt(onStartStmt)); // jump to onStart()
 
 		// 7. onDestroy
 		body.getUnits().add(stopToDestroyStmt);
@@ -224,41 +223,18 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// Create the field itself
 		resultIntentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
+		resultIntentField.addTag(SimulatedCodeElementTag.TAG);
 		component.addField(resultIntentField);
 	}
 
 	@Override
 	protected void createAdditionalMethods() {
-		createGetIntentMethod();
-		createSetIntentMethod();
-		createSetResultMethod();
-	}
+		if (InfoflowAndroidConfiguration.getCreateActivityEntryMethods()) {
 
-	/**
-	 * Creates an implementation of getIntent() that returns the intent from our ICC
-	 * model
-	 */
-	private void createGetIntentMethod() {
-		// We need to create an implementation of "getIntent". If there is already such
-		// an implementation, we don't touch it.
-		if (component.declaresMethod("android.content.Intent getIntent()"))
-			return;
-
-		Type intentType = RefType.v("android.content.Intent");
-		SootMethod sm = Scene.v().makeSootMethod("getIntent", Collections.<Type>emptyList(), intentType,
-				Modifier.PUBLIC);
-		component.addMethod(sm);
-		sm.addTag(SimulatedCodeElementTag.TAG);
-
-		JimpleBody b = Jimple.v().newBody(sm);
-		sm.setActiveBody(b);
-		b.insertIdentityStmts();
-
-		LocalGenerator localGen = new LocalGenerator(b);
-		Local lcIntent = localGen.generateLocal(intentType);
-		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
-				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));
-		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
+			createGetIntentMethod();
+			createSetIntentMethod();
+			createSetResultMethod();
+		}
 	}
 
 	/**

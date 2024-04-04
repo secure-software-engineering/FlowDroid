@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.android.callbacks.filters;
 
+import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -21,6 +23,11 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 		// If the callback is in the component class itself, it is trivially reachable
 		if (component == callbackHandler)
 			return true;
+		RefType fragmentType = RefType.v("android.app.Fragment");
+		boolean isFragment = Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), fragmentType);
+		if (isFragment)
+			// we cannot find constructors for these...
+			return true;
 
 		{
 			SootClass curHandler = callbackHandler;
@@ -36,6 +43,10 @@ public class UnreachableConstructorFilter extends AbstractCallbackFilter {
 				curHandler = outerClass;
 			}
 		}
+
+		// If the component is a subclass of the callbackHandler
+		if (Scene.v().getOrMakeFastHierarchy().canStoreClass(component, callbackHandler) && component.isConcrete())
+			return true;
 
 		// Is this handler class instantiated in a reachable method?
 		boolean hasConstructor = false;

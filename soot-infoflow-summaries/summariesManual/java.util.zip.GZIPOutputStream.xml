@@ -5,7 +5,8 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -14,7 +15,8 @@
 			<flows>
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -23,7 +25,8 @@
 			<flows>
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -32,7 +35,8 @@
 			<flows>
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -41,7 +45,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -50,7 +55,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -59,7 +65,8 @@
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.zip.GZIPOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>

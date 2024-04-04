@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.methodSummary.taintWrappers;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import soot.SootField;
 import soot.Type;
@@ -49,7 +51,21 @@ public class AccessPathFragment {
 	 * @param accessPath The original access path
 	 */
 	public AccessPathFragment(AccessPath accessPath) {
-		this(accessPath.getFields(), accessPath.getFieldTypes());
+		this(accessPath.getFragmentCount() > 0 ? Arrays.stream(accessPath.getFragments())
+				.map(f -> f.getField().toString()).collect(Collectors.toList()) : null,
+				accessPath.getFragmentCount() > 0 ? Arrays.stream(accessPath.getFragments())
+						.map(f -> f.getFieldType().toString()).collect(Collectors.toList()) : null);
+	}
+
+	/**
+	 * Creates a new instance of the {@link AccessPathFragment} class
+	 * 
+	 * @param fields     The fields in this fragment of an access path
+	 * @param fieldTypes The types of the given fields
+	 */
+	public AccessPathFragment(List<String> fields, List<String> fieldTypes) {
+		this.fields = fields == null ? null : fields.toArray(new String[fields.size()]);
+		this.fieldTypes = fieldTypes == null ? null : fieldTypes.toArray(new String[fieldTypes.size()]);
 	}
 
 	/**
@@ -121,6 +137,17 @@ public class AccessPathFragment {
 	}
 
 	/**
+	 * Gets the name of the first field in this access path fragment
+	 * 
+	 * @return The name of the first field in this access path fragment
+	 */
+	public String getFirstFieldName() {
+		if (fields == null || fields.length == 0)
+			return null;
+		return fields[0];
+	}
+
+	/**
 	 * Gets the type of the last field in this access path fragment
 	 * 
 	 * @return The type of the last field in this access path fragment
@@ -129,6 +156,17 @@ public class AccessPathFragment {
 		if (fieldTypes == null || fieldTypes.length == 0)
 			return null;
 		return fieldTypes[fieldTypes.length - 1];
+	}
+
+	/**
+	 * Gets the type of the first field in this access path fragment
+	 * 
+	 * @return The type of the first field in this access path fragment
+	 */
+	public String getFirstFieldType() {
+		if (fieldTypes == null || fieldTypes.length == 0)
+			return null;
+		return fieldTypes[0];
 	}
 
 	/**

@@ -56,6 +56,6 @@ public interface IAbstractionPathBuilder extends IMemoryBoundedSolver {
 	 * computed. This method is usually called after the taint propagation has
 	 * finished when incremental path building has been used in between.
 	 */
-	public void runIncrementalPathCompuation();
+	public void runIncrementalPathComputation();
 	
 }

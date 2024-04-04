@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="com.mashape.unirest.request.HttpRequest getHttpRequest()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.mashape.unirest.http.HttpResponse asString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asStringAsync(com.mashape.unirest.http.async.Callback)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.mashape.unirest.http.HttpResponse asJson()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asJsonAsync()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asJsonAsync(com.mashape.unirest.http.async.Callback)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.mashape.unirest.http.HttpResponse asObject(java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asObjectAsync(java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asObjectAsync(java.lang.Class,com.mashape.unirest.http.async.Callback)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.mashape.unirest.http.HttpResponse asBinary()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asBinaryAsync()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.concurrent.Future asBinaryAsync(com.mashape.unirest.http.async.Callback)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

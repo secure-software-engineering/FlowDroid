@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy>
+        	<interface name="javax.naming.Context" />
+		<interface name="javax.naming.directory.DirContext" />
+	</hierarchy>
+</summary>

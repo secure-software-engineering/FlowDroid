@@ -18,6 +18,8 @@
  */
 
 package soot.jimple.infoflow.collect;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -36,144 +38,154 @@ import soot.util.MultiMap;
  * @author Steven Arzt
  * 
  */
-public class ConcurrentIdentityHashMultiMap<K,V> extends AbstractMultiMap<K, V> {
+public class ConcurrentIdentityHashMultiMap<K, V> extends AbstractMultiMap<K, V> {
 
 	private static final long serialVersionUID = -6721251660349964507L;
-	
-	Map<K,ConcurrentMap<V, V>> m = new ConcurrentIdentityHashMap<K,ConcurrentMap<V, V>>();
 
-    public ConcurrentIdentityHashMultiMap() {}
-    
-    public ConcurrentIdentityHashMultiMap( MultiMap<K,V> m ) {
-        putAll( m );
-    }
-    
-    @Override
-    public int numKeys() {
-        return m.size();
-    }
+	Map<K, ConcurrentMap<V, V>> m = new ConcurrentIdentityHashMap<K, ConcurrentMap<V, V>>();
 
-    @Override
-    public boolean containsKey( Object key ) {
-        return m.containsKey( key );
-    }
+	public ConcurrentIdentityHashMultiMap() {
+	}
 
-    @Override
-    public boolean containsValue( V value ) {
-        for (Map<V, V> s: m.values())
-            if (s.containsKey(value)) return true;
-        return false;
-    }
+	public ConcurrentIdentityHashMultiMap(MultiMap<K, V> m) {
+		putAll(m);
+	}
 
-    protected ConcurrentMap<V,V> newSet() {
-        return new ConcurrentHashMap<V, V>();
-    }
-    
-    private ConcurrentMap<V, V> findSet( K key ) {
-    	ConcurrentMap<V, V> s = m.get( key );
-        if( s == null ) {
-        	synchronized (this) {
-        		// Better check twice, another thread may have created a set in
-        		// the meantime
-        		s = m.get( key );
-                if( s == null ) {
-                	s = newSet();
-                	m.put( key, s );
-                }
+	@Override
+	public int numKeys() {
+		return m.size();
+	}
+
+	@Override
+	public boolean containsKey(Object key) {
+		return m.containsKey(key);
+	}
+
+	@Override
+	public boolean containsValue(V value) {
+		for (Map<V, V> s : m.values())
+			if (s.containsKey(value))
+				return true;
+		return false;
+	}
+
+	protected ConcurrentMap<V, V> newSet() {
+		return new ConcurrentHashMap<V, V>();
+	}
+
+	private ConcurrentMap<V, V> findSet(K key) {
+		ConcurrentMap<V, V> s = m.get(key);
+		if (s == null) {
+			synchronized (this) {
+				// Better check twice, another thread may have created a set in
+				// the meantime
+				s = m.get(key);
+				if (s == null) {
+					s = newSet();
+					m.put(key, s);
+				}
 			}
-        }
-        return s;
-    }
+		}
+		return s;
+	}
 
-    @Override
-    public boolean put( K key, V value ) {
-        return findSet( key ).put( value, value ) == null;
-    }
-    
-    public V putIfAbsent( K key, V value ) {
-        return findSet( key ).putIfAbsent( value, value );
-    }
-    
-    @Override
-    public boolean putAll( K key, Set<V> values ) {
-        if (values.isEmpty()) return false;
-        
-        Map<V,V> set = findSet( key );
-        boolean ok = false;
-        for (V v : values)
-        	if (set.put(v, v) == null)
-        		ok = true;
-        
-        return ok;
-    }
+	@Override
+	public boolean put(K key, V value) {
+		return findSet(key).put(value, value) == null;
+	}
 
-    @Override
-    public boolean remove( K key, V value ) {
-        Map<V,V> s = m.get( key );
-        if( s == null ) return false;
-        boolean ret = s.remove( value ) != null;
-        if( s.isEmpty() ) {
-            m.remove( key );
-        }
-        return ret;
-    }
+	public V putIfAbsent(K key, V value) {
+		return findSet(key).putIfAbsent(value, value);
+	}
 
-    @Override
-    public boolean remove( K key ) {
-        return null != m.remove( key );
-    }
+	@Override
+	public boolean putAll(K key, Collection<V> values) {
+		if (values.isEmpty())
+			return false;
 
-    @Override
-    public boolean removeAll( K key, Set<V> values ) {
-        Map<V,V> s = m.get( key );
-        if( s == null ) return false;
-        boolean ret = false;
-        for (V v : values)
-        	if (s.remove( v ) != null)
-        		ret = true;
-        if( s.isEmpty() ) {
-            m.remove( key );
-        }
-        return ret;
-    }
+		Map<V, V> set = findSet(key);
+		boolean ok = false;
+		for (V v : values)
+			if (set.put(v, v) == null)
+				ok = true;
 
-    @Override
-    public Set<V> get( K o ) {
-        Map<V,V> ret = m.get( o );
-        if( ret == null ) return Collections.emptySet();
-        return Collections.unmodifiableSet(ret.keySet());
-    }
+		return ok;
+	}
 
-    @Override
-    public Set<K> keySet() {
-        return m.keySet();
-    }
+	@Override
+	public boolean remove(K key, V value) {
+		Map<V, V> s = m.get(key);
+		if (s == null)
+			return false;
+		boolean ret = s.remove(value) != null;
+		if (s.isEmpty()) {
+			m.remove(key);
+		}
+		return ret;
+	}
 
-    @Override
-    public Set<V> values() {
-        Set<V> ret = new HashSet<V>(m.size());
-        for (Map<V,V> s : m.values())
-            ret.addAll(s.keySet());
-        return ret;
-    }
+	@Override
+	public boolean remove(K key) {
+		return null != m.remove(key);
+	}
 
-    @Override
-    public boolean equals( Object o ) {
-        if( ! (o instanceof MultiMap) ) return false;
-        @SuppressWarnings("unchecked")
-		MultiMap<K,V> mm = (MultiMap<K,V>) o;
-        if( !keySet().equals( mm.keySet() ) ) return false;
-        for (Map.Entry<K, ConcurrentMap<V,V>> e : m.entrySet()) {
-            Map<V, V> s = e.getValue();
-            if( !s.equals( mm.get( e.getKey() ) ) ) return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean removeAll(K key, Collection<V> values) {
+		Map<V, V> s = m.get(key);
+		if (s == null)
+			return false;
+		boolean ret = false;
+		for (V v : values)
+			if (s.remove(v) != null)
+				ret = true;
+		if (s.isEmpty()) {
+			m.remove(key);
+		}
+		return ret;
+	}
 
-    @Override
-    public int hashCode() {
-        return m.hashCode();
-    }
+	@Override
+	public Set<V> get(K o) {
+		Map<V, V> ret = m.get(o);
+		if (ret == null)
+			return Collections.emptySet();
+		return ret.keySet();
+	}
+
+	@Override
+	public Set<K> keySet() {
+		return m.keySet();
+	}
+
+	@Override
+	public Set<V> values() {
+		Set<V> ret = new HashSet<V>(m.size());
+		for (Map<V, V> s : m.values())
+			ret.addAll(s.keySet());
+		return ret;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof MultiMap))
+			return false;
+		@SuppressWarnings("unchecked")
+		MultiMap<K, V> mm = (MultiMap<K, V>) o;
+		if (!keySet().equals(mm.keySet()))
+			return false;
+		for (Map.Entry<K, ConcurrentMap<V, V>> e : m.entrySet()) {
+			Map<V, V> s = e.getValue();
+			Set<V> otherValues = mm.get(e.getKey());
+			if (!s.keySet().equals(otherValues))
+				return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return m.hashCode();
+	}
 
 	@Override
 	public int size() {
@@ -184,5 +196,5 @@ public class ConcurrentIdentityHashMultiMap<K,V> extends AbstractMultiMap<K, V> 
 	public void clear() {
 		m.clear();
 	}
-	
+
 }

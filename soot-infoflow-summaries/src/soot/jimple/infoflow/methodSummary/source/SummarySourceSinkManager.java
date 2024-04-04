@@ -1,9 +1,12 @@
 package soot.jimple.infoflow.methodSummary.source;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +19,11 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Unit;
+import soot.UnitPatchingChain;
 import soot.Value;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.IdentityStmt;
 import soot.jimple.ParameterRef;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
@@ -26,6 +32,8 @@ import soot.jimple.ThisRef;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.methodSummary.data.factory.SourceSinkFactory;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
+import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
@@ -63,16 +71,15 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link SummarySourceSinkManager} class
 	 * 
-	 * @param mSig
-	 *            The signature of the method for which summaries shall be created
-	 * @param parentClass
-	 *            The parent class containing the method for which summaries shall
-	 *            be created. If mSig is the signature of a method inherited from a
-	 *            base class, this parameter receives the class on which the method
-	 *            denoted by mSig is called.
-	 * @param sourceSinkFactory
-	 *            The {@link SourceSinkFactory} to create source and sink data
-	 *            objects
+	 * @param mSig              The signature of the method for which summaries
+	 *                          shall be created
+	 * @param parentClass       The parent class containing the method for which
+	 *                          summaries shall be created. If mSig is the signature
+	 *                          of a method inherited from a base class, this
+	 *                          parameter receives the class on which the method
+	 *                          denoted by mSig is called.
+	 * @param sourceSinkFactory The {@link SourceSinkFactory} to create source and
+	 *                          sink data objects
 	 */
 	public SummarySourceSinkManager(String mSig, String parentClass, SourceSinkFactory sourceSinkFactory) {
 		this.methodSig = mSig;
@@ -83,11 +90,9 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 	/**
 	 * Creates a new instance of the {@link SummarySourceSinkManager} class
 	 * 
-	 * @param method
-	 *            The method for which summaries shall be created
-	 * @param sourceSinkFactory
-	 *            The {@link SourceSinkFactory} to create source and sink data
-	 *            objects
+	 * @param method            The method for which summaries shall be created
+	 * @param sourceSinkFactory The {@link SourceSinkFactory} to create source and
+	 *                          sink data objects
 	 */
 	public SummarySourceSinkManager(SootMethod method, SourceSinkFactory sourceSinkFactory) {
 		this.method = method;
@@ -155,12 +160,21 @@ public class SummarySourceSinkManager implements ISourceSinkManager {
 		if (!isMethodToSummarize(currentMethod))
 			return null;
 
-		return sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt ? new SinkInfo(null) : null;
+		return sCallSite instanceof ReturnStmt || sCallSite instanceof ReturnVoidStmt ? new SinkInfo() : null;
 	}
 
 	@Override
 	public void initialize() {
-		// nothing to do heres
+		// nothing to do here
+	}
+
+	/**
+	 * Gets the factory that creates the sources and sinks
+	 * 
+	 * @return The factory that creates the sources and sinks
+	 */
+	public SourceSinkFactory getSourceSinkFactory() {
+		return sourceSinkFactory;
 	}
 
 }

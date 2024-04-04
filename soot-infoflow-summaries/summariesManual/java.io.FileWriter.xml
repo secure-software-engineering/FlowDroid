@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.io.OutputStreamWriter" />
+	<methods>
+		<method id="void &lt;init&gt;(java.io.File)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.io.File: java.lang.String fileName]"
+						  AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.io.Writer: java.io.OutputStream innerStream]"
+						AccessPathTypes="[java.io.OutputStream]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

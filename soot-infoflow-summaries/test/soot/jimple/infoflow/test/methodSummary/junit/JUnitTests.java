@@ -23,7 +23,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
@@ -57,7 +58,6 @@ public abstract class JUnitTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		final String sep = System.getProperty("path.separator");
 		File f = new File(".");
 		File testSrc1 = new File(f, "bin");
 		File testSrc4 = new File(f, "testBin");
@@ -70,9 +70,19 @@ public abstract class JUnitTests {
 			fail("Test aborted - none of the test sources are available");
 		}
 
-		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath() + sep + testSrc3.getCanonicalPath()
-				+ sep + testSrc4.getCanonicalPath() + sep + testSrc5.getCanonicalPath();
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		StringBuilder appPathBuilder = new StringBuilder();
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appendWithSeparator(appPathBuilder, testSrc3);
+		appendWithSeparator(appPathBuilder, testSrc4);
+		appendWithSeparator(appPathBuilder, testSrc5);
+		appPath = appPathBuilder.toString();
+
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
@@ -90,6 +100,21 @@ public abstract class JUnitTests {
 		sinks.add(sinkDouble);
 	}
 
+	/**
+	 * Appends the given path to the given {@link StringBuilder} if it exists
+	 * 
+	 * @param sb The {@link StringBuilder} to which to append the path
+	 * @param f  The path to append
+	 * @throws IOException
+	 */
+	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+		if (f.exists()) {
+			if (sb.length() > 0)
+				sb.append(System.getProperty("path.separator"));
+			sb.append(f.getCanonicalPath());
+		}
+	}
+
 	@Before
 	public void resetSootAndStream() throws IOException {
 		soot.G.reset();
@@ -97,7 +122,7 @@ public abstract class JUnitTests {
 
 	}
 
-	protected void checkInfoflow(Infoflow infoflow, int resultCount) {
+	protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 			assertEquals(resultCount, map.size());
@@ -116,7 +141,7 @@ public abstract class JUnitTests {
 
 	}
 
-	protected void negativeCheckInfoflow(Infoflow infoflow) {
+	protected void negativeCheckInfoflow(IInfoflow infoflow) {
 		// If the result is available, it must be empty. Otherwise, it is
 		// implicitly ok since we don't expect to find anything anyway.
 		if (infoflow.isResultAvailable()) {
@@ -127,12 +152,14 @@ public abstract class JUnitTests {
 		}
 	}
 
-	protected Infoflow initInfoflow() {
+	protected abstract AbstractInfoflow createInfoflowInstance();
+
+	protected IInfoflow initInfoflow() {
 		return initInfoflow(false);
 	}
 
-	protected Infoflow initInfoflow(boolean useTaintWrapper) {
-		Infoflow result = new Infoflow();
+	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
+		IInfoflow result = createInfoflowInstance();
 		ConfigForTest testConfig = new ConfigForTest();
 		result.setSootConfig(testConfig);
 		if (useTaintWrapper) {

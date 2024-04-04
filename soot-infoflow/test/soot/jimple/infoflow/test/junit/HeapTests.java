@@ -20,15 +20,13 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.RefType;
-import soot.Scene;
-import soot.SootField;
-import soot.SootMethod;
+import soot.*;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
 import soot.jimple.infoflow.InfoflowManager;
@@ -36,17 +34,21 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SequentialEntryPointCreator;
+import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.taintWrappers.AbstractTaintWrapper;
+import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
+import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 /**
  * tests aliasing of heap references
  */
-public class HeapTests extends JUnitTests {
+public abstract class HeapTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void testForEarlyTermination() {
@@ -393,78 +395,147 @@ public class HeapTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test(timeout = 300000)
-	public void wrapperAliasesTest() {
-		IInfoflow infoflow = initInfoflow();
-		infoflow.setTaintWrapper(new AbstractTaintWrapper() {
+	private class MyTaintWrapper extends AbstractTaintWrapper implements IReversibleTaintWrapper {
+		@Override
+		public boolean isExclusiveInternal(Stmt stmt, AccessPath taintedPath) {
+			return stmt.containsInvokeExpr() && (stmt.getInvokeExpr().getMethod().getName().equals("foo2")
+					|| stmt.getInvokeExpr().getMethod().getName().equals("bar2"));
+		}
 
-			@Override
-			public boolean isExclusiveInternal(Stmt stmt, AccessPath taintedPath) {
-				return stmt.containsInvokeExpr() && (stmt.getInvokeExpr().getMethod().getName().equals("foo2")
-						|| stmt.getInvokeExpr().getMethod().getName().equals("bar2"));
+		@Override
+		public Set<AccessPath> getTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath) {
+			if (!stmt.containsInvokeExpr())
+				return Collections.singleton(taintedPath);
+
+			Set<AccessPath> res = new HashSet<AccessPath>();
+			res.add(taintedPath);
+
+			// We use a path length of 1, i.e. do not work with member
+			// fields,
+			// hence the commented-out code
+			if (stmt.getInvokeExpr().getMethod().getName().equals("foo2")) {
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+				if (taintedPath.getPlainValue() == iinv.getArg(0)) {
+					RefType rt = (RefType) iinv.getBase().getType();
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
+							new SootField[] { rt.getSootClass().getFieldByName("b1") }, true);
+					res.add(ap);
+				}
+				if (taintedPath.getPlainValue() == iinv.getArg(1)) {
+					RefType rt = (RefType) iinv.getBase().getType();
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
+							new SootField[] { rt.getSootClass().getFieldByName("b2") }, true);
+					res.add(ap);
+				}
+			} else if (stmt.getInvokeExpr().getMethod().getName().equals("bar2")) {
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+				if (taintedPath.getPlainValue() == iinv.getArg(0)) {
+					RefType rt = (RefType) iinv.getBase().getType();
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
+							new SootField[] { rt.getSootClass().getFieldByName("b1") }, true);
+					res.add(ap);
+				} else if (taintedPath.getPlainValue() == iinv.getBase()) {
+					DefinitionStmt def = (DefinitionStmt) stmt;
+					AccessPath ap = manager.getAccessPathFactory()
+							.createAccessPath(def.getLeftOp(), new SootField[] { Scene.v()
+									.getSootClass("soot.jimple.infoflow.test.HeapTestCode$A").getFieldByName("b") },
+									true);
+					res.add(ap);
+				}
 			}
 
-			@Override
-			public Set<AccessPath> getTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath) {
-				if (!stmt.containsInvokeExpr())
-					return Collections.singleton(taintedPath);
+			return res;
+		}
 
-				Set<AccessPath> res = new HashSet<AccessPath>();
-				res.add(taintedPath);
+		@Override
+		public Set<Abstraction> getInverseTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+			// Compute the tainted access paths
+			Set<AccessPath> aps = getInverseTaintsForMethodInternal(stmt, taintedPath.getAccessPath());
+			if (aps == null || aps.isEmpty())
+				return null;
 
-				// We use a path length of 1, i.e. do not work with member
-				// fields,
-				// hence the commented-out code
-				if (stmt.getInvokeExpr().getMethod().getName().equals("foo2")) {
-					InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
-					if (taintedPath.getPlainValue() == iinv.getArg(0)) {
-						RefType rt = (RefType) iinv.getBase().getType();
-						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
-								new SootField[] { rt.getSootClass().getFieldByName("b1") }, true);
+			// Convert the access paths into full abstractions
+			Set<Abstraction> res = new HashSet<Abstraction>(aps.size());
+			for (AccessPath ap : aps)
+				if (ap == taintedPath.getAccessPath())
+					res.add(taintedPath);
+				else
+					res.add(taintedPath.deriveNewAbstraction(ap, stmt));
+			return res;
+		}
+
+		public Set<AccessPath> getInverseTaintsForMethodInternal(Stmt stmt, AccessPath taintedPath) {
+			if (!stmt.containsInvokeExpr())
+				return Collections.singleton(taintedPath);
+
+			Set<AccessPath> res = new HashSet<AccessPath>();
+			res.add(taintedPath);
+
+			if (stmt.getInvokeExpr().getMethod().getName().equals("foo2")) {
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+
+				if (iinv.getBase() == taintedPath.getPlainValue()) {
+					RefType rt = (RefType) iinv.getBase().getType();
+					boolean wholeObjectIsTainted = taintedPath.getTaintSubFields()
+							&& taintedPath.getFragmentCount() == 0;
+
+					if (wholeObjectIsTainted || taintedPath.firstFieldMatches(rt.getSootClass().getFieldByName("b1"))) {
+						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getArg(0), true);
 						res.add(ap);
 					}
-					if (taintedPath.getPlainValue() == iinv.getArg(1)) {
-						RefType rt = (RefType) iinv.getBase().getType();
-						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
-								new SootField[] { rt.getSootClass().getFieldByName("b2") }, true);
-						res.add(ap);
-					}
-				} else if (stmt.getInvokeExpr().getMethod().getName().equals("bar2")) {
-					InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
-					if (taintedPath.getPlainValue() == iinv.getArg(0)) {
-						RefType rt = (RefType) iinv.getBase().getType();
-						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(),
-								new SootField[] { rt.getSootClass().getFieldByName("b1") }, true);
-						res.add(ap);
-					} else if (taintedPath.getPlainValue() == iinv.getBase()) {
-						DefinitionStmt def = (DefinitionStmt) stmt;
-						AccessPath ap = manager.getAccessPathFactory()
-								.createAccessPath(def.getLeftOp(), new SootField[] { Scene.v()
-										.getSootClass("soot.jimple.infoflow.test.HeapTestCode$A").getFieldByName("b") },
-										true);
+					if (wholeObjectIsTainted || taintedPath.firstFieldMatches(rt.getSootClass().getFieldByName("b2"))) {
+						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getArg(1), true);
 						res.add(ap);
 					}
 				}
+			} else if (stmt.getInvokeExpr().getMethod().getName().equals("bar2")) {
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
 
-				return res;
+				if (iinv.getBase() == taintedPath.getPlainValue()) {
+					RefType rt = (RefType) iinv.getBase().getType();
+					boolean wholeObjectIsTainted = taintedPath.getTaintSubFields()
+							&& taintedPath.getFragmentCount() == 0;
+
+					if (wholeObjectIsTainted || taintedPath.firstFieldMatches(rt.getSootClass().getFieldByName("b1"))) {
+						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getArg(0), true);
+						res.add(ap);
+					}
+				} else if (stmt instanceof AssignStmt) {
+					AssignStmt assignStmt = (AssignStmt) stmt;
+
+					if (assignStmt.getLeftOp() == taintedPath.getPlainValue() && taintedPath.firstFieldMatches(
+							Scene.v().getSootClass("soot.jimple.infoflow.test.HeapTestCode$A").getFieldByName("b"))) {
+						AccessPath ap = manager.getAccessPathFactory().createAccessPath(iinv.getBase(), true);
+						res.add(ap);
+						res.remove(taintedPath);
+					}
+				}
 			}
 
-			@Override
-			public boolean supportsCallee(SootMethod method) {
-				return false;
-			}
+			return res;
+		}
 
-			@Override
-			public boolean supportsCallee(Stmt callSite) {
-				return false;
-			}
+		@Override
+		public boolean supportsCallee(SootMethod method) {
+			return false;
+		}
 
-			@Override
-			public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
-				return null;
-			}
+		@Override
+		public boolean supportsCallee(Stmt callSite) {
+			return false;
+		}
 
-		});
+		@Override
+		public Set<Abstraction> getAliasesForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
+			return null;
+		}
+	}
+
+	@Test(timeout = 300000)
+	public void wrapperAliasesTest() {
+		IInfoflow infoflow = initInfoflow();
+		ITaintPropagationWrapper taintWrapper = new MyTaintWrapper();
+		infoflow.setTaintWrapper(taintWrapper);
 
 		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 		infoflow.getConfig().setInspectSources(false);
@@ -587,6 +658,30 @@ public class HeapTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void tripleAliasTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 3);
+	}
+
+	@Test(timeout = 300000)
+	public void singleAliasTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void singleAliasTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void negativeSingleAliasTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void negativeSingleAliasTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
 	}
 
 	@Test(timeout = 300000)
@@ -787,7 +882,6 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void separatedTreeTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
@@ -933,40 +1027,43 @@ public class HeapTests extends JUnitTests {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setInspectSources(false);
 		infoflow.getConfig().setInspectSinks(false);
-
+		onlyForwards(infoflow, "not supported backward");
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasStrongUpdateTest3()>");
-		infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), new ISourceSinkManager() {
+		ISourceSinkManager ssm = null;
+		if (infoflow instanceof Infoflow) {
+			ssm = new ISourceSinkManager() {
 
-			@Override
-			public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
-				if (sCallSite.containsInvokeExpr()) {
-					SootMethod sm = sCallSite.getInvokeExpr().getMethod();
-					if (sm.getSignature().equals(sinkMethod))
-						return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(sm)));
+				@Override
+				public SinkInfo getSinkInfo(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+					if (sCallSite.containsInvokeExpr()) {
+						SootMethod sm = sCallSite.getInvokeExpr().getMethod();
+						if (sm.getSignature().equals(sinkMethod))
+							return new SinkInfo(new MethodSourceSinkDefinition(new SootMethodAndClass(sm)));
+					}
+					return null;
 				}
-				return null;
-			}
 
-			@Override
-			public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
-				if (sCallSite instanceof AssignStmt) {
-					AssignStmt assignStmt = (AssignStmt) sCallSite;
-					if (assignStmt.getRightOp().toString().contains("taintedBySourceSinkManager"))
-						return new SourceInfo(null,
-								manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
-					else
-						return null;
+				@Override
+				public SourceInfo getSourceInfo(Stmt sCallSite, InfoflowManager manager) {
+					if (sCallSite instanceof AssignStmt) {
+						AssignStmt assignStmt = (AssignStmt) sCallSite;
+						if (assignStmt.getRightOp().toString().contains("taintedBySourceSinkManager"))
+							return new SourceInfo(manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
+						else
+							return null;
+					}
+					return null;
 				}
-				return null;
-			}
 
-			@Override
-			public void initialize() {
-				//
-			}
+				@Override
+				public void initialize() {
+					//
+				}
 
-		});
+			};
+		}
+		infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), ssm);
 
 		Assert.assertTrue(infoflow.isResultAvailable());
 		InfoflowResults map = infoflow.getResults();
@@ -1106,4 +1203,157 @@ public class HeapTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
+	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest1() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest2() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest3() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest3()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest4() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest4()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void aliasWithOverwriteTest5() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void aliasWithOverwriteTest5()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void innerFieldReductionTestNegative() {
+		IInfoflow infoflow = initInfoflow();
+		onlyForwards(infoflow, "We lose the object sensitivity here due to the recursive data structure"
+				+ "reduction. See also the comment above the code of innerFieldReductionTestNegative.");
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative()>");
+		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void innerFieldReductionTestNegative2() {
+		IInfoflow infoflow = initInfoflow();
+		onlyBackwards(infoflow, "We lose the object sensitivity here due to the recursive data structure"
+				+ "reduction. See also the comment above the code of innerFieldReductionTestNegative.");
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void innerFieldReductionTestNegative2()>");
+		infoflow.computeInfoflow(appPath, libPath, new SequentialEntryPointCreator(epoints), sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void activationStatementTest1() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void activationStatementTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+
+	@Test(timeout = 300000)
+	public void callSiteCreatesAlias() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void callSiteCreatesAlias()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void lhsNotUpwardsInAliasFlow() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void lhsNotUpwardsInAliasFlow()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void identityStmtIsNotAGoodHandoverPoint() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		infoflow.setTaintPropagationHandler(new TaintPropagationHandler() {
+			@Override
+			public void notifyFlowIn(Unit stmt, Abstraction taint, InfoflowManager manager, FlowFunctionType type) {
+				Assert.assertTrue(taint.isAbstractionActive());
+			}
+
+			@Override
+			public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+				return outgoing;
+			}
+		});
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void identityStmtIsNotAGoodHandoverPoint()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+
+	@Test(timeout = 300000)
+	public void testRecursiveAccessPath() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void testRecursiveAccessPath()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void testRemoveEntailedAbstractions1() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().setInspectSinks(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
+				.map(res -> res.getSource().getStmt()).distinct().count());
+	}
+
+	@Test(timeout = 300000)
+	public void testRemoveEntailedAbstractions2() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSources(false);
+		infoflow.getConfig().getAccessPathConfiguration().setAccessPathLength(1);
+		infoflow.getConfig().setInspectSinks(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
+				.map(res -> res.getSource().getStmt()).distinct().count());
+	}
 }

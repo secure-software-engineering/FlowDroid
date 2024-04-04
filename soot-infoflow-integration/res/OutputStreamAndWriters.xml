@@ -1,0 +1,736 @@
+<sinkSources>
+    <category id="NO_CATEGORY">
+        <method signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.lang.String source()">
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false" />
+            </return>
+        </method>
+        <method signature="java.io.PrintWriter: void write(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(char[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(char[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(java.lang.String,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(long)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(float)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(double)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(char[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.File getExternalDir()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void print(java.lang.Object)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.File getExternalDir()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(long)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(float)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(double)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(char[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void println(java.lang.Object)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.lang.String,java.lang.Object[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter format(java.lang.String,java.lang.Object[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter format(java.util.Locale,java.lang.String,java.lang.Object[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.Writer append(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.Writer append(java.lang.CharSequence,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.Writer append(java.lang.CharSequence)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: java.io.PrintWriter append(java.lang.CharSequence)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+
+        <method signature="java.io.Writer: java.io.Writer append(java.lang.CharSequence)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: java.io.Writer append(java.lang.CharSequence,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: java.io.Writer append(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: void write(char[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: void write(char[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: void write(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: void write(java.lang.String,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.Writer: void write(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+
+        <method signature="java.io.OutputStreamWriter: java.io.Writer append(java.lang.CharSequence,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStreamWriter: java.io.Writer append(java.lang.CharSequence)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStreamWriter: void write(java.lang.String,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStreamWriter: void write(char[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStreamWriter: void write(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+
+        <method signature="java.io.OutputStream: void write(byte[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.OutputStream id(java.io.OutputStream)" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.lang.String getExternalDirLoc()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.OutputStreamTestCode: java.io.File getExternalDir()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStream: void write(byte[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.OutputStream: void write(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+
+        <method signature="java.io.ObjectOutputStream: void writeBoolean(boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeByte(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeBytes(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeChar(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeChars(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeDouble(double)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeFloat(float)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeInt(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeLong(long)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeObject(java.lang.Object)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeShort(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeUnshared(java.lang.Object)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.ObjectOutputStream: void writeUTF(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeAscii(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBoolean(boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBooleans(boolean[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(byte)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChar(char)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChars(char[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloat(float)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloats(float[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInt(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInts(int[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLong(long)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLongs(long[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShort(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShorts(short[],int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeString(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarInt(int,boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarIntFlag(boolean,int,boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarLong(long,boolean)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.net.URLConnection" />
+            </additionalFlowCondition>
+        </method>
+    </category>
+</sinkSources>

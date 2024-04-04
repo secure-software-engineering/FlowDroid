@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="void arraycopy(java.lang.Object,int,java.lang.Object,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="2" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getProperty(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getProperty(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

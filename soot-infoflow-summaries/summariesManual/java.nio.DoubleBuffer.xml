@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="java.nio.Buffer" />
   <methods>
     <method id="double[] array()">
       <flows>

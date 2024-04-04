@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,11 +27,9 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
-	 * @param executor
-	 *            The executor in which to run the path reconstruction tasks
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
 	public ContextInsensitivePathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
 		super(manager, executor);
@@ -71,14 +71,14 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 
 		private boolean processPredecessor(SourceContextAndPath scap, Abstraction pred) {
 			// Put the current statement on the list
-			SourceContextAndPath extendedScap = scap.extendPath(pred, pathConfig);
+			SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 			if (extendedScap == null)
 				return false;
 
 			// Add the new path
 			checkForSource(pred, extendedScap);
 
-			final int maxPaths = pathConfig.getMaxPathsPerAbstraction();
+			final int maxPaths = config.getPathConfiguration().getMaxPathsPerAbstraction();
 			if (maxPaths > 0) {
 				Set<SourceContextAndPath> existingPaths = pathCache.get(pred);
 				if (existingPaths != null && existingPaths.size() > maxPaths)
@@ -115,10 +115,8 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 	 * Checks whether the given abstraction is a source. If so, a result entry is
 	 * created.
 	 * 
-	 * @param abs
-	 *            The abstraction to check
-	 * @param scap
-	 *            The path leading up to the current abstraction
+	 * @param abs  The abstraction to check
+	 * @param scap The path leading up to the current abstraction
 	 * @return True if the current abstraction is a source, otherwise false
 	 */
 	private boolean checkForSource(Abstraction abs, SourceContextAndPath scap) {
@@ -131,17 +129,17 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		results.addResult(scap.getDefinition(), scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinition(),
+		results.addResult(scap.getDefinitions(), scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinitions(),
 				sourceContext.getAccessPath(), sourceContext.getStmt(), sourceContext.getUserData(),
-				scap.getAbstractionPath());
+				scap.getAbstractionPath(), manager);
 		return true;
 	}
 
 	@Override
 	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
-		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
+		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinitions(),
 				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
-		scap = scap.extendPath(abs.getAbstraction(), pathConfig);
+		scap = scap.extendPath(abs.getAbstraction(), config);
 		if (pathCache.put(abs.getAbstraction(), scap))
 			if (!checkForSource(abs.getAbstraction(), scap))
 				return new SourceFindingTask(abs.getAbstraction());
@@ -154,7 +152,7 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		Set<AbstractionAtSink> incrementalAbs = new HashSet<>();
 		for (Abstraction abs : pathCache.keySet())
 			for (SourceContextAndPath scap : pathCache.get(abs)) {
@@ -162,9 +160,8 @@ public class ContextInsensitivePathBuilder extends ConcurrentAbstractionPathBuil
 					// This is a path for which we have to process the new
 					// neighbors
 					scap.setNeighborCounter(abs.getNeighbors().size());
-
 					for (Abstraction neighbor : abs.getNeighbors())
-						incrementalAbs.add(new AbstractionAtSink(scap.getDefinition(), neighbor, scap.getStmt()));
+						incrementalAbs.add(new AbstractionAtSink(scap.getDefinitions(), neighbor, scap.getStmt()));
 				}
 			}
 

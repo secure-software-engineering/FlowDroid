@@ -22,13 +22,14 @@ import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class CallbackTest extends JUnitTests {
+public abstract class CallbackTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestAnonymousClass1() throws IOException, XmlPullParserException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/AnonymousClass1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size()); // loc + lat, but single parameter
+		Assert.assertEquals(2, res.getResultSet().size());
 	}
 
 	@Test(timeout = 300000)
@@ -40,9 +41,12 @@ public class CallbackTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void runTestButton2() throws IOException, XmlPullParserException {
+		int expected = 3;
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
+			expected = 4;
 		InfoflowResults res = analyzeAPKFile("Callbacks/Button2.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(4, res.size()); // 3 + (strong alias update not
+		Assert.assertEquals(expected, res.size()); // 3 + (strong alias update not
 											// supported)
 	}
 
@@ -132,11 +136,14 @@ public class CallbackTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	@Ignore // Unregistering callbacks is not supported
+	 // Unregistering callbacks is not supported
 	public void runTestUnregister1() throws IOException, XmlPullParserException {
+		int expected = 0;
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
+			expected = 1;
 		InfoflowResults res = analyzeAPKFile("Callbacks/Unregister1.apk");
 		Assert.assertNotNull(res);
-		Assert.assertEquals(0, res.size());
+		Assert.assertEquals(1, res.size());
 	}
 
 }

@@ -4,7 +4,7 @@ import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_ACCE
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_ACCESSPATHTYPES;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMTER_INDEX;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOWS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SINK;
@@ -12,8 +12,8 @@ import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SOURCE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.VALUE_TRUE;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,11 +46,11 @@ public class SummaryWriter {
 	 * 
 	 * @param file    The target directory in which to place the class summary files
 	 * @param summary The class summaries to write out
-	 * @throws FileNotFoundException Thrown if the target file could not be found or
-	 *                               created
-	 * @throws XMLStreamException    Thrown if the XML data could not be written
+	 * @throws IOException        Thrown if the target file could not be found or
+	 *                            created
+	 * @throws XMLStreamException Thrown if the XML data could not be written
 	 */
-	public void write(File file, ClassSummaries summary) throws FileNotFoundException, XMLStreamException {
+	public void write(File file, ClassSummaries summary) throws IOException, XMLStreamException {
 		for (String className : summary.getClasses()) {
 			String fileName = file.getAbsolutePath() + File.separatorChar + className + ".xml";
 			write(new File(fileName), summary.getClassSummaries(className));
@@ -62,50 +62,51 @@ public class SummaryWriter {
 	 * 
 	 * @param file    The XML file in which to write the summaries
 	 * @param summary The method summaries to be written out
-	 * @throws FileNotFoundException Thrown if the target file could not be found or
-	 *                               created
-	 * @throws XMLStreamException    Thrown if the XML data could not be written
+	 * @throws XMLStreamException Thrown if the XML data could not be written
+	 * @throws IOException        Thrown if the target file could not be written
 	 */
-	public void write(File file, ClassMethodSummaries summary) throws FileNotFoundException, XMLStreamException {
+	public void write(File file, ClassMethodSummaries summary) throws XMLStreamException, IOException {
 		// Do not write out empty summaries
 		if (summary.isEmpty())
 			return;
 
-		OutputStream out = new FileOutputStream(file);
-		XMLOutputFactory factory = XMLOutputFactory.newInstance();
-		XMLStreamWriter writer = factory.createXMLStreamWriter(out);
+		try (OutputStream out = new FileOutputStream(file)) {
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
+			XMLStreamWriter writer = factory.createXMLStreamWriter(out);
 
-		writer.writeStartDocument();
-		writer.writeStartElement(XMLConstants.TREE_SUMMARY);
-		writer.writeAttribute(XMLConstants.ATTRIBUTE_FORMAT_VERSION, FILE_FORMAT_VERSION + "");
-		writer.writeAttribute(XMLConstants.ATTRIBUTE_IS_INTERFACE,
-				summary.isInterface() ? XMLConstants.VALUE_TRUE : XMLConstants.VALUE_FALSE);
+			writer.writeStartDocument();
+			writer.writeStartElement(XMLConstants.TREE_SUMMARY);
+			writer.writeAttribute(XMLConstants.ATTRIBUTE_FORMAT_VERSION, FILE_FORMAT_VERSION + "");
+			if (summary.hasInterfaceInfo())
+				writer.writeAttribute(XMLConstants.ATTRIBUTE_IS_INTERFACE,
+						summary.isInterface() ? XMLConstants.VALUE_TRUE : XMLConstants.VALUE_FALSE);
 
-		MethodSummaries methodSummaries = summary.getMethodSummaries();
+			MethodSummaries methodSummaries = summary.getMethodSummaries();
 
-		if (summary.hasInterfaces()) {
-			writer.writeStartElement(XMLConstants.TREE_HIERARCHY);
-			{
-				String superClass = summary.getSuperClass();
-				if (superClass != null && !superClass.isEmpty())
-					writer.writeAttribute(XMLConstants.ATTRIBUTE_SUPERCLASS, superClass);
+			if (summary.hasInterfaces()) {
+				writer.writeStartElement(XMLConstants.TREE_HIERARCHY);
+				{
+					String superClass = summary.getSuperClass();
+					if (superClass != null && !superClass.isEmpty())
+						writer.writeAttribute(XMLConstants.ATTRIBUTE_SUPERCLASS, superClass);
+				}
+				writeInterfaces(summary, writer);
+				writer.writeEndElement(); // end hierarchy tree
 			}
-			writeInterfaces(summary, writer);
-			writer.writeEndElement(); // end hierarchy tree
+
+			writer.writeStartElement(XMLConstants.TREE_METHODS);
+			writeMethodFlows(methodSummaries, writer);
+			writer.writeEndElement(); // end methods tree
+
+			if (methodSummaries.hasGaps()) {
+				writer.writeStartElement(XMLConstants.TREE_GAPS);
+				writeGaps(methodSummaries, writer);
+				writer.writeEndElement(); // end gaps tree
+			}
+
+			writer.writeEndDocument();
+			writer.close();
 		}
-
-		writer.writeStartElement(XMLConstants.TREE_METHODS);
-		writeMethodFlows(methodSummaries, writer);
-		writer.writeEndElement(); // end methods tree
-
-		if (methodSummaries.hasGaps()) {
-			writer.writeStartElement(XMLConstants.TREE_GAPS);
-			writeGaps(methodSummaries, writer);
-			writer.writeEndElement(); // end gaps tree
-		}
-
-		writer.writeEndDocument();
-		writer.close();
 	}
 
 	private void writeInterfaces(ClassMethodSummaries summary, XMLStreamWriter writer) throws XMLStreamException {
@@ -213,7 +214,7 @@ public class SummaryWriter {
 			// nothing we need to write in the xml file here (we write the
 			// access path later)
 		} else if (currentFlow.isParameter())
-			writer.writeAttribute(ATTRIBUTE_PARAMTER_INDEX, currentFlow.getParameterIndex() + "");
+			writer.writeAttribute(ATTRIBUTE_PARAMETER_INDEX, currentFlow.getParameterIndex() + "");
 		else if (currentFlow.isGapBaseObject()) {
 			// nothing special to write
 		} else

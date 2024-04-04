@@ -5,23 +5,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import soot.Body;
 import soot.Local;
+import soot.LocalGenerator;
+import soot.PatchingChain;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
+import soot.UnitPatchingChain;
+import soot.Value;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -35,6 +48,8 @@ import soot.util.MultiMap;
  */
 public abstract class AbstractComponentEntryPointCreator extends AbstractAndroidEntryPointCreator {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 	protected final SootClass component;
 	protected final SootClass applicationClass;
 	protected Set<SootMethod> callbacks = null;
@@ -43,8 +58,10 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	protected Local intentLocal = null;
 	protected SootField intentField = null;
 
+	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
+
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
-			ProcessManifest manifest) {
+			IManifestHandler manifest) {
 		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;
@@ -67,6 +84,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		// Create the field itself
 		intentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
+		intentField.addTag(SimulatedCodeElementTag.TAG);
 		component.addField(intentField);
 	}
 
@@ -190,7 +208,91 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				body.getUnits().add(Jimple.v().newReturnStmt(thisLocal));
 		}
 		NopEliminator.v().transform(body);
+
+		instrumentDummyMainMethod();
+
 		return mainMethod;
+	}
+
+	/**
+	 * Transfer Intent for such components that take an Intent as a parameter and do
+	 * not leverage getIntent() method for retrieving the received Intent.
+	 * 
+	 * Code adapted from FlowDroid v2.0.
+	 */
+	protected void instrumentDummyMainMethod() {
+		Body body = mainMethod.getActiveBody();
+
+		PatchingChain<Unit> units = body.getUnits();
+		for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+			Stmt stmt = (Stmt) iter.next();
+
+			if (stmt instanceof IdentityStmt)
+				continue;
+			if (!stmt.containsInvokeExpr())
+				continue;
+
+			InvokeExpr iexpr = stmt.getInvokeExpr();
+			if (iexpr.getMethodRef().isConstructor())
+				continue;
+
+			List<Type> types = stmt.getInvokeExpr().getMethod().getParameterTypes();
+			for (int i = 0; i < types.size(); i++) {
+				Type type = types.get(i);
+				if (type.equals(INTENT_TYPE)) {
+					try {
+						assignIntent(component, stmt.getInvokeExpr().getMethod(), i);
+					} catch (Exception ex) {
+						logger.error("Assign Intent for " + stmt.getInvokeExpr().getMethod() + " fails.", ex);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Method used in instrumentDummyMainMethod() to transfer Intent
+	 * 
+	 * Code adapted from FlowDroid v2.0.
+	 */
+	public void assignIntent(SootClass hostComponent, SootMethod method, int indexOfArgs) {
+		if (method.isConcrete() && !method.isStatic()) {
+			JimpleBody body = (JimpleBody) method.retrieveActiveBody();
+
+			// Some component types such as fragments don't have a getIntent() method
+			SootMethod m = hostComponent.getMethodUnsafe("android.content.Intent getIntent()");
+			if (m != null) {
+				UnitPatchingChain units = body.getUnits();
+				Local thisLocal = body.getThisLocal();
+				Local intentV = body.getParameterLocal(indexOfArgs);
+
+				// Make sure that we don't add the same statement over and over again
+				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
+					Stmt stmt = (Stmt) iter.next();
+					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
+						if (stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethod().equals(m))
+							return;
+					}
+				}
+
+				Stmt stmt = body.getFirstNonIdentityStmt();
+				/*
+				 * Using the component that the dummyMain() belongs to, as in some cases the
+				 * invoked method is only available in its superclass. and its superclass does
+				 * not contain getIntent() and consequently cause an runtime exception of
+				 * couldn't find getIntent().
+				 * 
+				 * RuntimeException: couldn't find method getIntent(*) in
+				 * com.google.android.gcm.GCMBroadcastReceiver
+				 */
+				Unit setIntentU = Jimple.v().newAssignStmt(intentV,
+						Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
+
+				setIntentU.addTag(SimulatedCodeElementTag.TAG);
+				units.insertBefore(setIntentU, stmt);
+			}
+		}
+
 	}
 
 	/**
@@ -238,17 +340,26 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		if (callbacks == null)
 			return false;
 
+		// Many callbacks needs a view. We keep one lying around. This helps us track
+		// state, but at the same time considers all views to be the same.
+		RefType rtView = RefType.v("android.view.View");
+		Value viewVal = getValueForType(rtView, referenceClasses, null, null, true);
+		if (viewVal instanceof Local)
+			localVarsForClasses.put(rtView.getSootClass(), (Local) viewVal);
+
 		// Get all classes in which callback methods are declared
 		MultiMap<SootClass, SootMethod> callbackClasses = getCallbackMethods(callbackSignature);
 
 		// The class for which we are generating the lifecycle always has an
 		// instance.
+		referenceClasses = new HashSet<>();
 		if (referenceClasses == null || referenceClasses.isEmpty())
-			referenceClasses = Collections.singleton(component);
+			referenceClasses.add(component);
 		else {
-			referenceClasses = new HashSet<>(referenceClasses);
+			referenceClasses.addAll(referenceClasses);
 			referenceClasses.add(component);
 		}
+		referenceClasses.add(rtView.getSootClass());
 
 		Stmt beforeCallbacks = Jimple.v().newNopStmt();
 		body.getUnits().add(beforeCallbacks);
@@ -369,4 +480,31 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		return info;
 	}
 
+	/**
+	 * Creates an implementation of getIntent() that returns the intent from our ICC
+	 * model
+	 */
+	protected void createGetIntentMethod() {
+		// We need to create an implementation of "getIntent". If there is already such
+		// an implementation, we don't touch it.
+		if (component.declaresMethod("android.content.Intent getIntent()"))
+			return;
+
+		Type intentType = RefType.v("android.content.Intent");
+		SootMethod sm = Scene.v().makeSootMethod("getIntent", Collections.<Type>emptyList(), intentType,
+				Modifier.PUBLIC);
+		sm.addTag(SimulatedCodeElementTag.TAG);
+		component.addMethod(sm);
+		sm.addTag(SimulatedCodeElementTag.TAG);
+
+		JimpleBody b = Jimple.v().newBody(sm);
+		sm.setActiveBody(b);
+		b.insertIdentityStmts();
+
+		LocalGenerator localGen = Scene.v().createLocalGenerator(b);
+		Local lcIntent = localGen.generateLocal(intentType);
+		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
+				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));
+		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
+	}
 }

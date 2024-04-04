@@ -10,7 +10,7 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -18,9 +18,9 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 
 	protected AndroidEntryPointUtils entryPointUtils = null;
 
-	protected ProcessManifest manifest;
+	protected IManifestHandler manifest;
 
-	public AbstractAndroidEntryPointCreator(ProcessManifest manifest) {
+	public AbstractAndroidEntryPointCreator(IManifestHandler manifest) {
 		this.manifest = manifest;
 	}
 
@@ -42,11 +42,8 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			return null;
 
 		SootMethod method = findMethod(currentClass, subsignature);
-
-		if (method == null) {
-			logger.warn("Could not find Android entry point method: {}", subsignature);
+		if (method == null)
 			return null;
-		}
 
 		// If the method is in one of the predefined Android classes, it cannot
 		// contain custom code, so we do not need to call it
@@ -58,8 +55,8 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
 			return null;
 
-		assert method.isStatic() || classLocal != null : "Class local was null for non-static method "
-				+ method.getSignature();
+		assert method.isStatic() || classLocal != null
+				: "Class local was null for non-static method " + method.getSignature();
 
 		// write Method
 		return buildMethodCall(method, classLocal, parentClasses);

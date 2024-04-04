@@ -25,7 +25,7 @@ import com.google.common.io.Files;
  * 
  * @author Stefan Haas, Mario Schlipf
  */
-public class ApkHandler {
+public class ApkHandler implements AutoCloseable {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -35,19 +35,16 @@ public class ApkHandler {
 	protected File apk;
 
 	/**
-	 * Pointer to the ZipFile. If an InputStream for a file within the ZipFile
-	 * is returned by {@link ApkHandler#getInputStream(String)} the ZipFile
-	 * object has to remain available in order to read the InputStream.
+	 * Pointer to the ZipFile. If an InputStream for a file within the ZipFile is
+	 * returned by {@link ApkHandler#getInputStream(String)} the ZipFile object has
+	 * to remain available in order to read the InputStream.
 	 */
 	protected ZipFile zip;
 
 	/**
-	 * @param path
-	 *            the APK's path
-	 * @throws ZipException
-	 *             occurs if the APK is no a valid zip file.
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param path the APK's path
+	 * @throws ZipException occurs if the APK is no a valid zip file.
+	 * @throws IOException  if an I/O error occurs.
 	 * @see ApkHandler#ApkHandler(File)
 	 */
 	public ApkHandler(String path) throws ZipException, IOException {
@@ -57,20 +54,16 @@ public class ApkHandler {
 	/**
 	 * Creates a new {@link ApkHandler} which handles the given APK file.
 	 * 
-	 * @param apk
-	 *            the APK's path
-	 * @throws ZipException
-	 *             occurs if the APK is no a valid zip file.
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param apk the APK's path
+	 * @throws ZipException occurs if the APK is no a valid zip file.
+	 * @throws IOException  if an I/O error occurs.
 	 */
 	public ApkHandler(File apk) throws ZipException, IOException {
 		this.apk = apk;
 	}
 
 	/**
-	 * Returns the absolute path of the APK which is held by the
-	 * {@link ApkHandler}.
+	 * Returns the absolute path of the APK which is held by the {@link ApkHandler}.
 	 * 
 	 * @see File#getAbsolutePath()
 	 */
@@ -101,11 +94,9 @@ public class ApkHandler {
 	 * The given filename has to be the relative path within the APK, e.g.
 	 * <code>res/menu/main.xml</code>
 	 * 
-	 * @param filename
-	 *            the file's path
+	 * @param filename the file's path
 	 * @return {@link InputStream} for the searched file, if not found null
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public InputStream getInputStream(String filename) throws IOException {
 		InputStream is = null;
@@ -129,10 +120,8 @@ public class ApkHandler {
 	}
 
 	/**
-	 * @param files
-	 *            array with File objects to be added to the APK.
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param files array with File objects to be added to the APK.
+	 * @throws IOException if an I/O error occurs.
 	 * @see {@link ApkHandler#addFilesToApk(List, Map)}
 	 */
 	public void addFilesToApk(List<File> files) throws IOException {
@@ -142,13 +131,10 @@ public class ApkHandler {
 	/**
 	 * Adds the files to the APK which is handled by this {@link ApkHandler}.
 	 * 
-	 * @param files
-	 *            Array with File objects to be added to the APK.
-	 * @param paths
-	 *            Map containing paths where to put the files. The Map's keys
-	 *            are the file's paths: <code>paths.get(file.getPath())</code>
-	 * @throws IOException
-	 *             if an I/O error occurs.
+	 * @param files Array with File objects to be added to the APK.
+	 * @param paths Map containing paths where to put the files. The Map's keys are
+	 *              the file's paths: <code>paths.get(file.getPath())</code>
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public void addFilesToApk(List<File> files, Map<String, String> paths) throws IOException {
 		// close zip file to rename apk
@@ -180,13 +166,9 @@ public class ApkHandler {
 			}
 		}
 
-		ZipInputStream zin = null;
-		ZipOutputStream out = null;
 		byte[] buf = new byte[1024];
-
-		try {
-			zin = new ZipInputStream(new FileInputStream(tempFile));
-			out = new ZipOutputStream(new FileOutputStream(this.apk));
+		try (ZipInputStream zin = new ZipInputStream(new FileInputStream(tempFile));
+				ZipOutputStream out = new ZipOutputStream(new FileOutputStream(this.apk))) {
 			ZipEntry entry;
 
 			nextEntry: while ((entry = zin.getNextEntry()) != null) {
@@ -229,29 +211,16 @@ public class ApkHandler {
 
 			// add files
 			for (File file : files) {
-				InputStream in = null;
-				try {
-					in = new FileInputStream(file);
+				try (InputStream in = new FileInputStream(file)) {
 					out.putNextEntry(new ZipEntry(paths.get(file.getPath())));
 					int len;
 					while ((len = in.read(buf)) > 0) {
 						out.write(buf, 0, len);
 					}
 					out.closeEntry();
-				} finally {
-					if (in != null)
-						in.close();
 				}
 			}
 		} finally {
-			// Close the streams
-			if (zin != null)
-				zin.close();
-			if (out != null) {
-				out.flush();
-				out.close();
-			}
-
 			// Delete the tmeporary file
 			if (tempFile != null && tempFile.exists())
 				tempFile.delete();

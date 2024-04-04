@@ -3,6 +3,12 @@ package soot.jimple.infoflow.methodSummary.data.sourceSink;
 import java.util.HashMap;
 import java.util.Map;
 
+import soot.Local;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
@@ -51,7 +57,7 @@ public abstract class AbstractFlowSinkSource {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src The source or sink with which to compare the current one
+	 * @param other The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -215,7 +221,7 @@ public abstract class AbstractFlowSinkSource {
 		Map<String, String> res = new HashMap<String, String>();
 		if (isParameter()) {
 			res.put(XMLConstants.ATTRIBUTE_FLOWTYPE, XMLConstants.VALUE_PARAMETER);
-			res.put(XMLConstants.ATTRIBUTE_PARAMTER_INDEX, getParameterIndex() + "");
+			res.put(XMLConstants.ATTRIBUTE_PARAMETER_INDEX, getParameterIndex() + "");
 		} else if (isField())
 			res.put(XMLConstants.ATTRIBUTE_FLOWTYPE, XMLConstants.VALUE_FIELD);
 		else if (isReturn())
@@ -250,5 +256,41 @@ public abstract class AbstractFlowSinkSource {
 	 *         given map have been replaced with the values from the map
 	 */
 	public abstract AbstractFlowSinkSource replaceGaps(Map<Integer, GapDefinition> replacementMap);
+
+	/**
+	 * Gets the base local for the access path that this source or sink definition
+	 * references
+	 * 
+	 * @param stmt The context in which to map the definition to concrete locals
+	 * @return The local that resembles the base local of this source or sink
+	 *         definition in the given context or <code>null</code> if this
+	 *         definition is not valid in the given context
+	 */
+	public Local getBaseLocal(Stmt stmt) {
+		if (stmt.containsInvokeExpr()) {
+			InvokeExpr iexpr = stmt.getInvokeExpr();
+			if (isField()) {
+				if (iexpr instanceof InstanceInvokeExpr) {
+					InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+					return (Local) iiexpr.getBase();
+				}
+			} else if (isParameter()) {
+				int idx = getParameterIndex();
+				if (idx < iexpr.getArgCount()) {
+					Value val = iexpr.getArg(idx);
+					if (val instanceof Local)
+						return (Local) val;
+				}
+			} else if (isReturn()) {
+				if (stmt instanceof AssignStmt) {
+					AssignStmt assignStmt = (AssignStmt) stmt;
+					Value lop = assignStmt.getLeftOp();
+					if (lop instanceof Local)
+						return (Local) lop;
+				}
+			}
+		}
+		return null;
+	}
 
 }

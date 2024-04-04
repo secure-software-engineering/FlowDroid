@@ -18,6 +18,11 @@ public class AXmlNode extends AXmlElement {
 	protected String tag;
 
 	/**
+	 * The textual contents of the node
+	 */
+	protected String text;
+
+	/**
 	 * The parent node.
 	 */
 	protected AXmlNode parent = null;
@@ -41,15 +46,30 @@ public class AXmlNode extends AXmlElement {
 	 * The <code>addded</code> flag is defaulted to true (see
 	 * {@link AXmlElement#added}).
 	 * 
-	 * @param tag
-	 *            the node's tag.
-	 * @param ns
-	 *            the node's namespace.
-	 * @param parent
-	 *            the node's parent node.
+	 * @param tag    the node's tag.
+	 * @param ns     the node's namespace.
+	 * @param parent the node's parent node.
 	 */
 	public AXmlNode(String tag, String ns, AXmlNode parent) {
-		this(tag, ns, parent, true);
+		this(tag, ns, parent, null);
+	}
+
+	/**
+	 * Creates a new {@link AXmlNode} object with the given <code>tag</code>,
+	 * <code>namespace</code> and <code>parent</code>.<br />
+	 * Keep in mind that this node will automatically be added as child to the given
+	 * parent node with <code>parent.addChild(this)</code>. If you want to create a
+	 * root node you can set <code>parent</code> to null.<br />
+	 * The <code>addded</code> flag is defaulted to true (see
+	 * {@link AXmlElement#added}).
+	 * 
+	 * @param tag    the node's tag.
+	 * @param ns     the node's namespace.
+	 * @param parent the node's parent node.
+	 * @param text   The textual contents of the node
+	 */
+	public AXmlNode(String tag, String ns, AXmlNode parent, String text) {
+		this(tag, ns, parent, true, text);
 	}
 
 	/**
@@ -58,22 +78,20 @@ public class AXmlNode extends AXmlElement {
 	 * will automatically be added as child to the given parent node with
 	 * <code>parent.addChild(this)</code>.
 	 * 
-	 * @param tag
-	 *            the node's tag.
-	 * @param ns
-	 *            the node's namespace.
-	 * @param parent
-	 *            the node's parent node.
-	 * @param added
-	 *            wheter this node was part of a parsed xml file or added
-	 *            afterwards.
+	 * @param tag    the node's tag.
+	 * @param ns     the node's namespace.
+	 * @param parent the node's parent node.
+	 * @param added  wheter this node was part of a parsed xml file or added
+	 *               afterwards.
+	 * @param text   The textual contents of the node
 	 */
-	public AXmlNode(String tag, String ns, AXmlNode parent, boolean added) {
+	public AXmlNode(String tag, String ns, AXmlNode parent, boolean added, String text) {
 		super(ns, added);
 		this.tag = tag;
 		this.parent = parent;
 		if (parent != null)
 			parent.addChild(this);
+		this.text = text;
 	}
 
 	/**
@@ -123,8 +141,7 @@ public class AXmlNode extends AXmlElement {
 	/**
 	 * Adds the given node as child.
 	 * 
-	 * @param child
-	 *            a new child for this node
+	 * @param child a new child for this node
 	 * @return this node itself for method chaining
 	 */
 	public AXmlNode addChild(AXmlNode child) {
@@ -138,12 +155,10 @@ public class AXmlNode extends AXmlElement {
 	 * Adds the given node as child at position index.
 	 * 
 	 * 
-	 * @param child
-	 *            a new child for this node
+	 * @param child a new child for this node
 	 * @return this node itself for method chaining
-	 * @throws IndexOutOfBoundsException
-	 *             if the index is out of range (index < 0 || index >
-	 *             children.size())
+	 * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
+	 *                                   index > children.size())
 	 */
 	public AXmlNode addChild(AXmlNode child, int index) {
 		if (this.children == null)
@@ -167,8 +182,7 @@ public class AXmlNode extends AXmlElement {
 	 * List containing all children of this node which have the given
 	 * <code>tag</code>.
 	 * 
-	 * @param tag
-	 *            the children's tag
+	 * @param tag the children's tag
 	 * @return list with all children with <code>tag</code>
 	 */
 	public List<AXmlNode> getChildrenWithTag(String tag) {
@@ -185,6 +199,19 @@ public class AXmlNode extends AXmlElement {
 	}
 
 	/**
+	 * Removes an element from the attributes.
+	 *
+	 * @param key the key
+	 * @return the previously associated value or null
+	 */
+	public AXmlAttribute<?> removeAttribute(String key) {
+		if (this.attributes == null)
+			return null;
+		return this.attributes.remove(key);
+	}
+
+
+	/**
 	 * Returns a map which contains all attributes. The keys match the attributes'
 	 * names.
 	 * 
@@ -199,8 +226,7 @@ public class AXmlNode extends AXmlElement {
 	/**
 	 * Returns whether this node has an attribute with the given <code>name</code>.
 	 * 
-	 * @param name
-	 *            the attribute's name
+	 * @param name the attribute's name
 	 * @return if this node has an attribute with <code>name</code>
 	 */
 	public boolean hasAttribute(String name) {
@@ -212,8 +238,7 @@ public class AXmlNode extends AXmlElement {
 	/**
 	 * Returns the attribute with the given <code>name</code>.
 	 * 
-	 * @param name
-	 *            the attribute's name.
+	 * @param name the attribute's name.
 	 * @return attribute with <code>name</code>.
 	 */
 	public AXmlAttribute<?> getAttribute(String name) {
@@ -226,8 +251,7 @@ public class AXmlNode extends AXmlElement {
 	 * Adds the given attribute to this node. Attributes have unique names. An
 	 * attribute with the same name will be overwritten.
 	 * 
-	 * @param attr
-	 *            the attribute to be added.
+	 * @param attr the attribute to be added.
 	 */
 	public void addAttribute(AXmlAttribute<?> attr) {
 		if (attr == null)
@@ -236,6 +260,18 @@ public class AXmlNode extends AXmlElement {
 		if (this.attributes == null)
 			this.attributes = new HashMap<>();
 		this.attributes.put(attr.getName(), attr);
+	}
+
+	/**
+	 * Adds the given attribute to this node. Attributes have unique names. An
+	 * attribute with the same name will be overwritten.
+	 * 
+	 * @param key   The name of the new attribute
+	 * @param ns    The namespace of the new attribute
+	 * @param value The value of the new attribute
+	 */
+	public void addAttribute(String key, String ns, String value) {
+		addAttribute(new AXmlAttribute<String>(key, value, ns));
 	}
 
 	/**
@@ -252,8 +288,7 @@ public class AXmlNode extends AXmlElement {
 	/**
 	 * Sets the parent of this node.
 	 * 
-	 * @param parent
-	 *            this node's new parent
+	 * @param parent this node's new parent
 	 */
 	public void setParent(AXmlNode parent) {
 		this.parent = parent;
@@ -275,6 +310,24 @@ public class AXmlNode extends AXmlElement {
 	 */
 	public void removeChild(AXmlNode child) {
 		children.remove(child);
+	}
+
+	/**
+	 * Gets the textual contents of this node
+	 * 
+	 * @return The textual contents of this node
+	 */
+	public String getText() {
+		return text;
+	}
+
+	/**
+	 * Sets the textual contents of this node
+	 * 
+	 * @param textThe textual contents of this node
+	 */
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }

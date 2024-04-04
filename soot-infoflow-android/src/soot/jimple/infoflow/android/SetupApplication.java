@@ -11,7 +11,6 @@
 package soot.jimple.infoflow.android;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,15 +35,18 @@ import soot.Main;
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
-import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SootIntegrationMode;
 import soot.jimple.infoflow.android.callbacks.AbstractCallbackAnalyzer;
 import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition;
 import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition.CallbackType;
@@ -54,6 +56,8 @@ import soot.jimple.infoflow.android.callbacks.filters.AlienFragmentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.AlienHostComponentFilter;
 import soot.jimple.infoflow.android.callbacks.filters.ApplicationCallbackFilter;
 import soot.jimple.infoflow.android.callbacks.filters.UnreachableConstructorFilter;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacks;
+import soot.jimple.infoflow.android.callbacks.xml.CollectedCallbacksSerializer;
 import soot.jimple.infoflow.android.config.SootConfigForAndroid;
 import soot.jimple.infoflow.android.data.AndroidMemoryManager;
 import soot.jimple.infoflow.android.data.AndroidMethod;
@@ -61,7 +65,8 @@ import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.iccta.IccInstrumenter;
-import soot.jimple.infoflow.android.iccta.IccResults;
+import soot.jimple.infoflow.android.manifest.IAndroidApplication;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.android.manifest.ProcessManifest;
 import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.android.resources.ARSCFileParser.AbstractResource;
@@ -78,6 +83,7 @@ import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.FlowDroidMemoryManager.PathDataErasureMode;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.handlers.ResultsAvailableHandler;
@@ -89,6 +95,7 @@ import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.rifl.RIFLSourceSinkDefinitionProvider;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
@@ -115,12 +122,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
 
 	protected Set<SootClass> entrypoints = null;
+	protected MultiMap<SootMethod, Stmt> javascriptInterfaceStmts = new HashMultiMap<>();
 	protected Set<String> callbackClasses = null;
 	protected AndroidEntryPointCreator entryPointCreator = null;
 	protected IccInstrumenter iccInstrumenter = null;
 
 	protected ARSCFileParser resources = null;
-	protected ProcessManifest manifest = null;
+	protected IManifestHandler manifest = null;
 	protected IValueProvider valueProvider = null;
 
 	protected final boolean forceAndroidJar;
@@ -142,7 +150,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	protected Set<PreAnalysisHandler> preprocessors = new HashSet<>();
 	protected Set<ResultsAvailableHandler> resultsAvailableHandlers = new HashSet<>();
 	protected TaintPropagationHandler taintPropagationHandler = null;
-	protected TaintPropagationHandler backwardsPropagationHandler = null;
+	protected TaintPropagationHandler aliasPropagationHandler = null;
+
+	protected IUsageContextProvider usageContextProvider = null;
 
 	protected IInPlaceInfoflow infoflow = null;
 
@@ -155,9 +165,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	private static class MultiRunResultAggregator implements ResultsAvailableHandler {
 
-		private final InfoflowResults aggregatedResults = new InfoflowResults();
+		private final InfoflowResults aggregatedResults;
 		private InfoflowResults lastResults = null;
 		private IInfoflowCFG lastICFG = null;
+
+		public MultiRunResultAggregator(boolean pathAgnosticResults) {
+			aggregatedResults = new InfoflowResults(pathAgnosticResults);
+		}
 
 		@Override
 		public void onResultsAvailable(IInfoflowCFG cfg, InfoflowResults results) {
@@ -270,7 +284,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// We can use either a specific platform JAR file or automatically
 		// select the right one
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
 			if (platformDir == null || platformDir.isEmpty())
 				throw new RuntimeException("Android platform directory not specified");
@@ -287,7 +301,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sinks loaded into FlowDroid
 	 */
-	public Set<? extends ISourceSinkDefinition> getSinks() {
+	public Collection<? extends ISourceSinkDefinition> getSinks() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSinks();
 	}
 
@@ -323,7 +337,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return The set of sources loaded into FlowDroid
 	 */
-	public Set<? extends ISourceSinkDefinition> getSources() {
+	public Collection<? extends ISourceSinkDefinition> getSources() {
 		return this.sourceSinkProvider == null ? null : this.sourceSinkProvider.getSources();
 	}
 
@@ -377,8 +391,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
-	 * Sets the class names of callbacks. If this value is null, it automatically
-	 * loads the names from AndroidCallbacks.txt as the default behavior.
+	 * Sets the class names of callbacks. hese are the callback classes defined by
+	 * the Android SDK, and they are not mapped to the current application. If this
+	 * value is null, FlowDroid automatically loads the names from
+	 * AndroidCallbacks.txt as the default behavior.
 	 * 
 	 * @param callbackClasses The class names of callbacks or null to use the
 	 *                        default file.
@@ -387,6 +403,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		this.callbackClasses = callbackClasses;
 	}
 
+	/**
+	 * Gets the class names of callbacks. These are the callback classes defined by
+	 * the Android SDK, and they are not mapped to the current application.
+	 * 
+	 * @return The class names of callbacks or null to use the default file.
+	 */
 	public Set<String> getCallbackClasses() {
 		return callbackClasses;
 	}
@@ -415,9 +437,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throw new RuntimeException(
 					String.format("Target APK file %s does not exist", targetAPK.getCanonicalPath()));
 
+		// Parse the resource file
+		long beforeARSC = System.nanoTime();
+		this.resources = new ARSCFileParser();
+		this.resources.parse(targetAPK.getAbsolutePath());
+		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
+
 		// To look for callbacks, we need to start somewhere. We use the Android
 		// lifecycle methods for this purpose.
-		this.manifest = new ProcessManifest(targetAPK);
+		this.manifest = createManifestParser(targetAPK);
 		SystemClassHandler.v().setExcludeSystemComponents(config.getIgnoreFlowsInSystemPackages());
 		Set<String> entryPoints = manifest.getEntryPointClasses();
 		this.entrypoints = new HashSet<>(entryPoints.size());
@@ -426,12 +454,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			if (sc != null)
 				this.entrypoints.add(sc);
 		}
+	}
 
-		// Parse the resource file
-		long beforeARSC = System.nanoTime();
-		this.resources = new ARSCFileParser();
-		this.resources.parse(targetAPK.getAbsolutePath());
-		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
+	/**
+	 * Creates the manifest handler for processing the app manifest
+	 * 
+	 * @param targetAPK The target APK file
+	 * @return The manifest handler for reading the given app's manifest file
+	 * @throws IOException
+	 * @throws XmlPullParserException
+	 */
+	protected IManifestHandler createManifestParser(final File targetAPK) throws IOException, XmlPullParserException {
+		return new ProcessManifest(targetAPK, resources);
 	}
 
 	/**
@@ -467,12 +501,35 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throws IOException, XmlPullParserException {
 		// Add the callback methods
 		LayoutFileParser lfp = null;
-		if (config.getCallbackConfig().getEnableCallbacks()) {
+		final CallbackConfiguration callbackConfig = config.getCallbackConfig();
+		if (callbackConfig.getEnableCallbacks()) {
+			// If we have a callback file, we use it
+			String callbackFile = callbackConfig.getCallbacksFile();
+			if (callbackFile != null && !callbackFile.isEmpty()) {
+				File cbFile = new File(callbackFile);
+				if (cbFile.exists()) {
+					CollectedCallbacks callbacks = CollectedCallbacksSerializer.deserialize(callbackConfig);
+					if (callbacks != null) {
+						// Get our callback data from the file
+						entrypoints = callbacks.getEntryPoints();
+						fragmentClasses = callbacks.getFragmentClasses();
+						callbackMethods = callbacks.getCallbackMethods();
+
+						// Create the callgraph
+						createMainMethod(entryPoint);
+						constructCallgraphInternal();
+
+						createSourceSinkProvider(entryPoint, lfp);
+						return;
+					}
+				}
+			}
+
 			if (callbackClasses != null && callbackClasses.isEmpty()) {
 				logger.warn("Callback definition file is empty, disabling callbacks");
 			} else {
 				lfp = createLayoutFileParser();
-				switch (config.getCallbackConfig().getCallbackAnalyzer()) {
+				switch (callbackConfig.getCallbackAnalyzer()) {
 				case Fast:
 					calculateCallbackMethodsFast(lfp, entryPoint);
 					break;
@@ -485,12 +542,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			}
 		} else if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			// Create the new iteration of the main method
-			createMainMethod(null);
+			createMainMethod(entryPoint);
 			constructCallgraphInternal();
 		}
 
 		logger.info("Entry point calculation done.");
+		createSourceSinkProvider(entryPoint, lfp);
+	}
 
+	/**
+	 * Creates the source/sink provider
+	 * 
+	 * @param entryPoint The entry point on which to run the data flow analysis
+	 * @param lfp        The layout file parser
+	 */
+	protected void createSourceSinkProvider(SootClass entryPoint, LayoutFileParser lfp) {
 		if (this.sourceSinkProvider != null) {
 			// Get the callbacks for the current entry point
 			Set<AndroidCallbackDefinition> callbacks;
@@ -622,8 +688,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// filter out callbacks even if the respective component is only
 		// analyzed later.
 		AbstractCallbackAnalyzer jimpleClass = callbackClasses == null
-				? new DefaultCallbackAnalyzer(config, entryPointClasses, callbackFile)
-				: new DefaultCallbackAnalyzer(config, entryPointClasses, callbackClasses);
+				? new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackFile)
+				: new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackClasses);
 		if (valueProvider != null)
 			jimpleClass.setValueProvider(valueProvider);
 		jimpleClass.addCallbackFilter(new AlienHostComponentFilter(entrypoints));
@@ -661,11 +727,17 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				// Create the new iteration of the main method
 				createMainMethod(component);
 
-				// Since the gerenation of the main method can take some time,
+				int numPrevEdges = 0;
+				if (Scene.v().hasCallGraph()) {
+					numPrevEdges = Scene.v().getCallGraph().size();
+				}
+				// Since the generation of the main method can take some time,
 				// we check again whether we need to stop.
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
-					if (((IMemoryBoundedSolver) jimpleClass).isKilled())
+					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
+						logger.warn("Callback calculation aborted due to timeout");
 						break;
+					}
 				}
 
 				if (!isInitial) {
@@ -682,6 +754,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				if (!Scene.v().hasCallGraph())
 					throw new RuntimeException("No callgraph in Scene even after creating one. That's very sad "
 							+ "and should never happen.");
+
+				lfp.parseLayoutFileDirect(config.getAnalysisFileConfig().getTargetAPKFile());
 				PackManager.v().getPack("wjtp").apply();
 
 				// Creating all callgraph takes time and memory. Check whether
@@ -693,11 +767,17 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					}
 				}
 
+				if (numPrevEdges < Scene.v().getCallGraph().size())
+					hasChanged = true;
+
 				// Collect the results of the soot-based phases
 				if (this.callbackMethods.putAll(jimpleClass.getCallbackMethods()))
 					hasChanged = true;
 
 				if (entrypoints.addAll(jimpleClass.getDynamicManifestComponents()))
+					hasChanged = true;
+
+				if (javascriptInterfaceStmts.putAll(jimpleClass.getJavaScriptInterfaces()))
 					hasChanged = true;
 
 				// Collect the XML-based callback methods
@@ -781,6 +861,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 		if (!abortedEarly)
 			logger.info("Callback analysis terminated normally");
+
+		// Serialize the callbacks
+		if (callbackConfig.isSerializeCallbacks()) {
+			CollectedCallbacks callbacks = new CollectedCallbacks(entryPointClasses, callbackMethods, fragmentClasses);
+			CollectedCallbacksSerializer.serialize(callbacks, callbackConfig);
+		}
 	}
 
 	/**
@@ -893,6 +979,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 										hasNewCallback = true;
 									break;
 								}
+
 								SootClass sclass = currentClass.getSuperclassUnsafe();
 								if (sclass == null) {
 									logger.error(String.format("Callback method %s not found in class %s", methodName,
@@ -919,7 +1006,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 					if (controls != null) {
 						for (AndroidLayoutControl lc : controls) {
 							if (!SystemClassHandler.v().isClassInSystemPackage(lc.getViewClass().getName()))
-								registerCallbackMethodsForView(callbackClass, lc);
+								hasNewCallback |= registerCallbackMethodsForView(callbackClass, lc);
 						}
 					}
 				} else
@@ -990,11 +1077,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param callbackClass The class with which to associate the layout callbacks
 	 * @param lc            The layout control whose callbacks are to be associated
 	 *                      with the given class
+	 * @return
 	 */
-	private void registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
+	private boolean registerCallbackMethodsForView(SootClass callbackClass, AndroidLayoutControl lc) {
 		// Ignore system classes
 		if (SystemClassHandler.v().isClassInSystemPackage(callbackClass.getName()))
-			return;
+			return false;
 
 		// Get common Android classes
 		if (scView == null)
@@ -1002,7 +1090,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Check whether the current class is actually a view
 		if (!Scene.v().getOrMakeFastHierarchy().canStoreType(lc.getViewClass().getType(), scView.getType()))
-			return;
+			return false;
 
 		// There are also some classes that implement interesting callback
 		// methods.
@@ -1017,16 +1105,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 						systemMethods.put(sm.getSubSignature(), sm);
 		}
 
+		boolean changed = false;
 		// Scan for methods that overwrite parent class methods
 		for (SootMethod sm : sc.getMethods()) {
 			if (!sm.isConstructor()) {
 				SootMethod parentMethod = systemMethods.get(sm.getSubSignature());
-				if (parentMethod != null)
+				if (parentMethod != null) {
 					// This is a real callback method
-					this.callbackMethods.put(callbackClass,
+					changed |= this.callbackMethods.put(callbackClass,
 							new AndroidCallbackDefinition(sm, parentMethod, CallbackType.Widget));
+				}
 			}
 		}
+		return changed;
 	}
 
 	/**
@@ -1237,6 +1328,45 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 	}
 
+	protected class InPlaceBackwardsInfoflow extends BackwardsInfoflow implements IInPlaceInfoflow {
+
+		/**
+		 * Creates a new instance of the Infoflow class for analyzing Android APK files.
+		 *
+		 * @param androidPath                 If forceAndroidJar is false, this is the
+		 *                                    base directory of the platform files in
+		 *                                    the Android SDK. If forceAndroidJar is
+		 *                                    true, this is the full path of a single
+		 *                                    android.jar file.
+		 * @param forceAndroidJar             True if a single platform JAR file shall
+		 *                                    be forced, false if Soot shall pick the
+		 *                                    appropriate platform version
+		 * @param icfgFactory                 The interprocedural CFG to be used by the
+		 *                                    InfoFlowProblem
+		 * @param additionalEntryPointMethods Additional methods generated by the entry
+		 *                                    point creator that are not directly entry
+		 *                                    ypoints on their own
+		 */
+		public InPlaceBackwardsInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
+				Collection<SootMethod> additionalEntryPointMethods) {
+			super(androidPath, forceAndroidJar, icfgFactory);
+			this.additionalEntryPointMethods = additionalEntryPointMethods;
+		}
+
+		@Override
+		public void runAnalysis(final ISourceSinkManager sourcesSinks, SootMethod entryPoint) {
+			this.dummyMainMethod = entryPoint;
+			super.runAnalysis(sourcesSinks);
+		}
+
+		@Override
+		protected boolean isUserCodeClass(String className) {
+			String packageName = manifest.getPackageName() + ".";
+			return super.isUserCodeClass(className) || className.startsWith(packageName);
+		}
+
+	}
+
 	/**
 	 * Constructs a callgraph only without running the actual data flow analysis. If
 	 * you want to run a data flow analysis, do not call this method. Instead, call
@@ -1381,7 +1511,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		}
 
 		// Start a new Soot instance
-		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstace) {
+		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
 			G.reset();
 			initializeSoot();
 		}
@@ -1394,7 +1524,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			throw new RuntimeException("Parse app resource failed", e);
 		}
 
-		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator();
+		MultiRunResultAggregator resultAggregator = new MultiRunResultAggregator(config.getPathAgnosticResults());
 
 		// We need at least one entry point
 		if (entrypoints == null || entrypoints.isEmpty()) {
@@ -1454,8 +1584,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		logger.info(
 				String.format("Collecting callbacks and building a callgraph took %d seconds", (int) callbackDuration));
 
-		final Set<? extends ISourceSinkDefinition> sources = getSources();
-		final Set<? extends ISourceSinkDefinition> sinks = getSinks();
+		final Collection<? extends ISourceSinkDefinition> sources = getSources();
+		final Collection<? extends ISourceSinkDefinition> sinks = getSinks();
 		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (config.getOneComponentAtATime())
 			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",
@@ -1498,6 +1628,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			InfoflowResults lastResults = resultAggregator.getLastResults();
 			if (lastResults != null) {
 				InfoflowPerformanceData perfData = lastResults.getPerformanceData();
+				if (perfData == null)
+					lastResults.setPerformanceData(perfData = new InfoflowPerformanceData());
 				perfData.setCallgraphConstructionSeconds((int) callbackDuration);
 				perfData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeEntryPoint) / 1E9));
 			}
@@ -1506,6 +1638,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// We don't need the computed callbacks anymore
 		this.callbackMethods.clear();
 		this.fragmentClasses.clear();
+		this.javascriptInterfaceStmts.clear();
 
 		// Notify our result handlers
 		for (ResultsAvailableHandler handler : resultsAvailableHandlers)
@@ -1519,17 +1652,19 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param cfg     The control flow graph to use for writing out the results
 	 */
 	protected void serializeResults(InfoflowResults results, IInfoflowCFG cfg) {
-		String resultsFile = config.getAnalysisFileConfig().getOutputFile();
-		if (resultsFile != null && !resultsFile.isEmpty()) {
-			InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
-			try {
-				serializer.serialize(results, resultsFile);
-			} catch (FileNotFoundException ex) {
-				System.err.println("Could not write data flow results to file: " + ex.getMessage());
-				ex.printStackTrace();
-			} catch (XMLStreamException ex) {
-				System.err.println("Could not write data flow results to file: " + ex.getMessage());
-				ex.printStackTrace();
+		if (results != null && !results.isEmpty()) {
+			String resultsFile = config.getAnalysisFileConfig().getOutputFile();
+			if (resultsFile != null && !resultsFile.isEmpty()) {
+				InfoflowResultsSerializer serializer = new InfoflowResultsSerializer(cfg, config);
+				try {
+					serializer.serialize(results, resultsFile);
+				} catch (IOException ex) {
+					System.err.println("Could not write data flow results to file: " + ex.getMessage());
+					ex.printStackTrace();
+				} catch (XMLStreamException ex) {
+					System.err.println("Could not write data flow results to file: " + ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
@@ -1539,7 +1674,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @return A properly configured instance of the {@link Infoflow} class
 	 */
-	private IInPlaceInfoflow createInfoflow() {
+	protected IInPlaceInfoflow createInfoflow() {
 		// Some sanity checks
 		if (config.getSootIntegrationMode().needsToBuildCallgraph()) {
 			if (entryPointCreator == null)
@@ -1558,13 +1693,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		// Initialize and configure the data flow tracker
 		IInPlaceInfoflow info = createInfoflowInternal(lifecycleMethods);
+
 		if (ipcManager != null)
 			info.setIPCManager(ipcManager);
 		info.setConfig(config);
 		info.setSootConfig(sootConfig);
 		info.setTaintWrapper(taintWrapper);
 		info.setTaintPropagationHandler(taintPropagationHandler);
-		info.setBackwardsPropagationHandler(backwardsPropagationHandler);
+		info.setAliasPropagationHandler(aliasPropagationHandler);
+		info.setUsageContextProvider(usageContextProvider);
 
 		// We use a specialized memory manager that knows about Android
 		info.setMemoryManagerFactory(new IMemoryManagerFactory() {
@@ -1579,19 +1716,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		info.setMemoryManagerFactory(null);
 
 		// Inject additional post-processors
-		info.setPostProcessors(Collections.singleton(new PostAnalysisHandler() {
+		info.addPostProcessor(new PostAnalysisHandler() {
 
 			@Override
 			public InfoflowResults onResultsAvailable(InfoflowResults results, IInfoflowCFG cfg) {
 				// Purify the ICC results if requested
 				final IccConfiguration iccConfig = config.getIccConfig();
-				if (iccConfig.isIccResultsPurifyEnabled())
-					results = IccResults.clean(cfg, results);
+				if (iccConfig.isIccResultsPurifyEnabled()) {
+					// no-op at the moment. We used to have a purifier here, but it didn't make
+					// any sense. Removed it for the better.
+				}
 
 				return results;
 			}
 
-		}));
+		});
 
 		return info;
 	}
@@ -1605,6 +1744,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 */
 	protected IInPlaceInfoflow createInfoflowInternal(Collection<SootMethod> lifecycleMethods) {
 		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
+		if (config.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards)
+			return new InPlaceBackwardsInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 		return new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 	}
 
@@ -1651,12 +1792,15 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		entryPointCreator.setCallbackFunctions(callbackMethodSigs);
 		entryPointCreator.setFragments(fragmentClasses);
 		entryPointCreator.setComponents(components);
+		entryPointCreator.setJavaScriptInterfaces(javascriptInterfaceStmts);
 		return entryPointCreator;
 	}
 
 	/**
 	 * Creates a new instance of the entry point creator
-	 * @param components The components for which the entry point creator shallk be responsible
+	 * 
+	 * @param components The components for which the entry point creator shallk be
+	 *                   responsible
 	 * @return The new instance of the entry point creator
 	 */
 	protected AndroidEntryPointCreator createEntryPointCreator(Set<SootClass> components) {
@@ -1677,14 +1821,16 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			return this.entrypoints;
 		else {
 			// We always analyze the application class together with each
-			// component
-			// as there might be interactions between the two
+			// component as there might be interactions between the two
 			Set<SootClass> components = new HashSet<>(2);
 			components.add(component);
 
-			String applicationName = manifest.getApplicationName();
-			if (applicationName != null && !applicationName.isEmpty())
-				components.add(Scene.v().getSootClassUnsafe(applicationName));
+			IAndroidApplication app = manifest.getApplication();
+			if (app != null) {
+				String applicationName = app.getName();
+				if (applicationName != null && !applicationName.isEmpty())
+					components.add(Scene.v().getSootClassUnsafe(applicationName));
+			}
 			return components;
 		}
 	}
@@ -1808,14 +1954,14 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	/**
-	 * Sets the backwards propagation handler, which will be notified when the alias
+	 * Sets the alias propagation handler, which will be notified when the alias
 	 * analysis processes an edge. Use this callback if you need a hook into the
 	 * low-level alias analysis.
 	 * 
-	 * @param backwardsPropagationHandler The propagation handler to register
+	 * @param aliasPropagationHandler The propagation handler to register
 	 */
-	public void setBackwardsPropagationHandler(TaintPropagationHandler backwardsPropagationHandler) {
-		this.backwardsPropagationHandler = backwardsPropagationHandler;
+	public void setAliasPropagationHandler(TaintPropagationHandler aliasPropagationHandler) {
+		this.aliasPropagationHandler = aliasPropagationHandler;
 	}
 
 	/**
@@ -1828,4 +1974,31 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		this.valueProvider = valueProvider;
 	}
 
+	/**
+	 * Removes all simulated code elements generated during entry point creation and
+	 * ICC instrumentation from the Soot Scene
+	 */
+	public void removeSimulatedCodeElements() {
+		for (Iterator<SootClass> scIt = Scene.v().getClasses().iterator(); scIt.hasNext();) {
+			SootClass sc = scIt.next();
+			if (sc.hasTag(SimulatedCodeElementTag.TAG_NAME))
+				scIt.remove();
+			else {
+				for (Iterator<SootMethod> smIt = sc.getMethods().iterator(); smIt.hasNext();) {
+					SootMethod sm = smIt.next();
+					if (sm.hasTag(SimulatedCodeElementTag.TAG_NAME))
+						smIt.remove();
+				}
+				for (Iterator<SootField> sfIt = sc.getFields().iterator(); sfIt.hasNext();) {
+					SootField sf = sfIt.next();
+					if (sf.hasTag(SimulatedCodeElementTag.TAG_NAME))
+						sfIt.remove();
+				}
+			}
+		}
+	}
+
+	public void setUsageContextProvider(IUsageContextProvider usageContextProvider) {
+		this.usageContextProvider = usageContextProvider;
+	}
 }

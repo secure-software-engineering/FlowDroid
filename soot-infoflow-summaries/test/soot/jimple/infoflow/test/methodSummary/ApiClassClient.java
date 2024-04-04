@@ -3,6 +3,8 @@ package soot.jimple.infoflow.test.methodSummary;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectOutputStream.PutField;
+import java.math.BigInteger;
+import java.util.*;
 
 public class ApiClassClient {
 	public Object source() {
@@ -275,4 +277,61 @@ public class ApiClassClient {
 		sink(collection.get());
 	}
 
+	public void taintedFieldToString() {
+		Data d = new Data();
+		d.objectField = source();
+		// in: d.objectField
+		// expected out: str (not str.objectField!)
+		String str = d.toString();
+		char c = str.charAt(2);
+		sink(c);
+	}
+
+	public void bigIntegerToString() {
+		BigInteger i = new BigInteger(stringSource());
+		String str = i.toString();
+		char c = str.charAt(2);
+		sink(c);
+	}
+
+	public void mapToString() {
+		Map<String, String> map = new HashMap<>();
+		map.put("Secret", stringSource());
+		String str = map.toString();
+		char c = str.charAt(2);
+		sink(c);
+	}
+
+	public void iterator() {
+		List<String> lst = new ArrayList<>();
+		lst.add(stringSource());
+		Iterator<String> it = lst.iterator();
+		if (it.hasNext())
+			sink(it.next());
+	}
+
+	private static void overwrite(Data d) {
+		d.stringField = "";
+	}
+
+	public void noPropagationOverUnhandledCallee() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		overwrite(d);
+		sink(d.stringField);
+	}
+
+	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		d.identity();
+		sink(d.stringField);
+	}
+
+	public void matchGapReturnOnlyWithReturnTaints() {
+		Data d = new Data();
+		d.stringField = stringSource();
+		String ret = d.computeString((s) -> "Untainted string");
+		sink(ret);
+	}
 }

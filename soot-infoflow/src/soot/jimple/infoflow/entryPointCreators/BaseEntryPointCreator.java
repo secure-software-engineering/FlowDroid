@@ -34,6 +34,7 @@ import soot.DoubleType;
 import soot.FloatType;
 import soot.IntType;
 import soot.Local;
+import soot.LocalGenerator;
 import soot.LongType;
 import soot.PrimType;
 import soot.RefType;
@@ -45,8 +46,6 @@ import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.VoidType;
-import soot.dava.internal.javaRep.DIntConstant;
-import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DoubleConstant;
 import soot.jimple.EqExpr;
@@ -79,6 +78,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	private List<String> substituteClasses;
 	private boolean allowSelfReferences = false;
 	private boolean ignoreSystemClassParams = true;
+	private boolean allowNonPublicConstructors = false;
 
 	private final Set<SootMethod> failedMethods = new HashSet<>();
 
@@ -144,14 +144,16 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 		// We provide some helper objects
 		final Body body = mainMethod.getActiveBody();
-		generator = new LocalGenerator(body);
+		generator = Scene.v().createLocalGenerator(body);
 
 		// Make sure that we have an opaque predicate
 		conditionCounter = 0;
 		intCounter = generator.generateLocal(IntType.v());
 		body.getUnits().add(Jimple.v().newAssignStmt(intCounter, IntConstant.v(conditionCounter)));
 
-		return createDummyMainInternal();
+		SootMethod m = createDummyMainInternal();
+		m.addTag(SimulatedCodeElementTag.TAG);
+		return m;
 	}
 
 	/**
@@ -163,6 +165,22 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	protected abstract SootMethod createDummyMainInternal();
 
 	/**
+	 * Gets the class that contains the dummy main method. If such a class does not
+	 * exist yet, it is created
+	 * 
+	 * @return The class tha contains the dummy main method
+	 */
+	protected SootClass getOrCreateDummyMainClass() {
+		SootClass mainClass = Scene.v().getSootClassUnsafe(dummyClassName);
+		if (mainClass == null) {
+			mainClass = Scene.v().makeSootClass(dummyClassName);
+			mainClass.setResolvingLevel(SootClass.BODIES);
+			Scene.v().addClass(mainClass);
+		}
+		return mainClass;
+	}
+
+	/**
 	 * Creates a new, empty main method containing the given body
 	 * 
 	 * @return The newly generated main method
@@ -170,19 +188,12 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	protected void createEmptyMainMethod() {
 		// If we already have a main class, we need to make sure to use a fresh
 		// method name
-		final SootClass mainClass;
+		int methodIndex = 0;
 		String methodName = dummyMethodName;
-		if (Scene.v().containsClass(dummyClassName)) {
-			int methodIndex = 0;
-			mainClass = Scene.v().getSootClass(dummyClassName);
-			if (!overwriteDummyMainMethod)
-				while (mainClass.declaresMethodByName(methodName))
-					methodName = dummyMethodName + "_" + methodIndex++;
-		} else {
-			mainClass = Scene.v().makeSootClass(dummyClassName);
-			mainClass.setResolvingLevel(SootClass.BODIES);
-			Scene.v().addClass(mainClass);
-		}
+		SootClass mainClass = getOrCreateDummyMainClass();
+		if (!overwriteDummyMainMethod)
+			while (mainClass.declaresMethodByName(methodName))
+				methodName = dummyMethodName + "_" + methodIndex++;
 
 		Type stringArrayType = ArrayType.v(RefType.v("java.lang.String"), 1);
 
@@ -213,7 +224,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		mainMethod.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
 
 		// Add a parameter reference to the body
-		LocalGenerator lg = new LocalGenerator(body);
+		LocalGenerator lg = Scene.v().createLocalGenerator(body);
 		Local paramLocal = lg.generateLocal(stringArrayType);
 		body.getUnits()
 				.addFirst(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(stringArrayType, 0)));
@@ -233,6 +244,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	protected void createAdditionalMethods() {
 		// empty in default implementation
+	}
+
+	/**
+	 * Gets a field name that is not already in use by some field
+	 * 
+	 * @param baseName The base name, i.e., prefix of the new field
+	 * @return A field name that is still free
+	 */
+	protected String getNonCollidingFieldName(String baseName) {
+		String fieldName = baseName;
+		int fieldIdx = 0;
+		final SootClass mainClass = getOrCreateDummyMainClass();
+		while (mainClass.declaresFieldByName(fieldName))
+			fieldName = baseName + "_" + fieldIdx++;
+		return fieldName;
 	}
 
 	/**
@@ -270,6 +296,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		}
 
 		final InvokeExpr invokeExpr;
+		final Jimple jimple = Jimple.v();
 		List<Value> args = new LinkedList<Value>();
 		if (methodToCall.getParameterCount() > 0) {
 			for (Type tp : methodToCall.getParameterTypes()) {
@@ -280,33 +307,37 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			}
 
 			if (methodToCall.isStatic())
-				invokeExpr = Jimple.v().newStaticInvokeExpr(methodToCall.makeRef(), args);
+				invokeExpr = jimple.newStaticInvokeExpr(methodToCall.makeRef(), args);
 			else {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
-					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef(), args);
+					invokeExpr = jimple.newSpecialInvokeExpr(classLocal, methodToCall.makeRef(), args);
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = jimple.newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
-					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef(), args);
+					invokeExpr = jimple.newVirtualInvokeExpr(classLocal, methodToCall.makeRef(), args);
 			}
 		} else {
 			if (methodToCall.isStatic()) {
-				invokeExpr = Jimple.v().newStaticInvokeExpr(methodToCall.makeRef());
+				invokeExpr = jimple.newStaticInvokeExpr(methodToCall.makeRef());
 			} else {
 				assert classLocal != null : "Class local method was null for non-static method call";
 				if (methodToCall.isConstructor())
-					invokeExpr = Jimple.v().newSpecialInvokeExpr(classLocal, methodToCall.makeRef());
+					invokeExpr = jimple.newSpecialInvokeExpr(classLocal, methodToCall.makeRef());
+				else if (methodToCall.getDeclaringClass().isInterface())
+					invokeExpr = jimple.newInterfaceInvokeExpr(classLocal, methodToCall.makeRef(), args);
 				else
-					invokeExpr = Jimple.v().newVirtualInvokeExpr(classLocal, methodToCall.makeRef());
+					invokeExpr = jimple.newVirtualInvokeExpr(classLocal, methodToCall.makeRef());
 			}
 		}
 
 		Stmt stmt;
 		if (!(methodToCall.getReturnType() instanceof VoidType)) {
 			Local returnLocal = generator.generateLocal(methodToCall.getReturnType());
-			stmt = Jimple.v().newAssignStmt(returnLocal, invokeExpr);
+			stmt = jimple.newAssignStmt(returnLocal, invokeExpr);
 
 		} else {
-			stmt = Jimple.v().newInvokeStmt(invokeExpr);
+			stmt = jimple.newInvokeStmt(invokeExpr);
 		}
 		body.getUnits().add(stmt);
 
@@ -315,7 +346,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		for (Value val : args)
 			if (val instanceof Local && val.getType() instanceof RefType) {
 				if (!parentClasses.contains(((RefType) val.getType()).getSootClass())) {
-					body.getUnits().add(Jimple.v().newAssignStmt(val, NullConstant.v()));
+					body.getUnits().add(jimple.newAssignStmt(val, NullConstant.v()));
 					localVarsForClasses.remove(((RefType) val.getType()).getSootClass());
 				}
 			}
@@ -339,7 +370,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @return The generated value, or null if no value could be generated
 	 */
 	protected Value getValueForType(Type tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses) {
-		return getValueForType(tp, constructionStack, parentClasses, null);
+		return getValueForType(tp, constructionStack, parentClasses, null, false);
 	}
 
 	/**
@@ -357,13 +388,14 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 *                          used instead of creating a new one.
 	 * @param generatedLocals   The set that receives all (temporary) locals created
 	 *                          to provide a value of the requested type
+	 * @param ignoreExcludes    True to ignore the exclude lists
 	 * @return The generated value, or null if no value could be generated
 	 */
 	protected Value getValueForType(Type tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses,
-			Set<Local> generatedLocals) {
+			Set<Local> generatedLocals, boolean ignoreExcludes) {
 		// Depending on the parameter type, we try to find a suitable
 		// concrete substitution
-		if (isSimpleType(tp.toString()))
+		if (isSimpleType(tp))
 			return getSimpleDefaultValue(tp);
 		else if (tp instanceof RefType) {
 			SootClass classToType = ((RefType) tp).getSootClass();
@@ -371,15 +403,19 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			if (classToType != null) {
 				// If we have a parent class compatible with this type, we use
 				// it before we check any other option
-				for (SootClass parent : parentClasses)
-					if (isCompatible(parent, classToType)) {
-						Value val = this.localVarsForClasses.get(parent);
-						if (val != null)
-							return val;
+				if (parentClasses != null && !parentClasses.isEmpty()) {
+					for (SootClass parent : parentClasses) {
+						if (isCompatible(parent, classToType)) {
+							Value val = this.localVarsForClasses.get(parent);
+							if (val != null)
+								return val;
+						}
 					}
+				}
 
 				// If this is a system class, we may want to skip it
-				if (ignoreSystemClassParams && SystemClassHandler.v().isClassInSystemPackage(classToType.getName()))
+				if (!ignoreExcludes && ignoreSystemClassParams
+						&& SystemClassHandler.v().isClassInSystemPackage(classToType.getName()))
 					return NullConstant.v();
 
 				// Create a new instance to plug in here
@@ -469,26 +505,29 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		return this.generateClassConstructor(createdClass, new HashSet<SootClass>(), parentClasses, null);
 	}
 
-
 	/**
 	 * Determines whether a class is accepted for generating a constructor.
 	 * 
-	 * @param clazz      The class of which to create an instance
+	 * @param clazz The class of which to create an instance
 	 * @return Whether the class is accepted for generating a constructor
 	 */
 	protected boolean acceptClass(SootClass clazz) {
 		// We cannot create instances of phantom classes as we do not have any
 		// constructor information for them
-		if (clazz.isPhantom() || clazz.isPhantomClass()) {
-			logger.warn("Cannot generate constructor for phantom class {}", clazz.getName());
-			return false;
+		if (!clazz.getName().equals("android.view.View")) {
+			if (clazz.isPhantom() || clazz.isPhantomClass()) {
+				logger.warn("Cannot generate constructor for phantom class {}", clazz.getName());
+				return false;
+			}
 		}
 
 		return true;
 	}
 
 	/**
-	 * Generates code which creates a new instance of the given class.
+	 * Generates code which creates a new instance of the given class. Note that if
+	 * {@link #allowNonPublicConstructors} is <code>true<code>, private or protected
+	 * constructors may be used.
 	 * 
 	 * @param createdClass      The class of which to create an instance
 	 * @param constructionStack The stack of classes currently under construction.
@@ -521,11 +560,12 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			return null;
 		}
 
-    // if sootClass is simpleClass:
-		if (isSimpleType(createdClass.toString())) {
-			Local varLocal = generator.generateLocal(getSimpleTypeFromType(createdClass.getType()));
+		// if sootClass is simpleClass:
+		final Jimple jimple = Jimple.v();
+		if (isSimpleType(createdClass.getType())) {
+			Local varLocal = generator.generateLocal(createdClass.getType());
 
-			AssignStmt aStmt = Jimple.v().newAssignStmt(varLocal, getSimpleDefaultValue(createdClass.getType()));
+			AssignStmt aStmt = jimple.newAssignStmt(varLocal, getSimpleDefaultValue(createdClass.getType()));
 			body.getUnits().add(aStmt);
 			return varLocal;
 		}
@@ -537,13 +577,13 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				: null;
 
 		// Make sure that we don't run into loops
-		if (!constructionStack.add(createdClass)) {
+		if (constructionStack != null && !constructionStack.add(createdClass)) {
 			if (warnOnConstructorLoop) {
 				logger.warn("Ran into a constructor generation loop for class " + createdClass
 						+ ", substituting with null...");
 			}
 			Local tempLocal = generator.generateLocal(RefType.v(createdClass));
-			AssignStmt assignStmt = Jimple.v().newAssignStmt(tempLocal, NullConstant.v());
+			AssignStmt assignStmt = jimple.newAssignStmt(tempLocal, NullConstant.v());
 			body.getUnits().add(assignStmt);
 			return tempLocal;
 		}
@@ -556,16 +596,21 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 			// instance anyway.
 			List<SootMethod> constructors = new ArrayList<>();
 			for (SootMethod currentMethod : createdClass.getMethods()) {
-				if (currentMethod.isPrivate() || currentMethod.isProtected() || !currentMethod.isConstructor())
+				if (!currentMethod.isConstructor())
+					continue;
+				if (!allowNonPublicConstructors && (currentMethod.isPrivate() || currentMethod.isProtected()))
 					continue;
 				constructors.add(currentMethod);
 			}
 
-			// The fewer parameters a constructor has, the better for us
+			// Prefer public constructors. The fewer parameters a constructor has, the
+			// better for us.
 			Collections.sort(constructors, new Comparator<SootMethod>() {
 
 				@Override
 				public int compare(SootMethod o1, SootMethod o2) {
+					if ((o1.isPrivate() || o1.isProtected()) != (o2.isPrivate() || o2.isProtected()))
+						return (o1.isPrivate() || o1.isProtected()) ? 1 : -1;
 					if (o1.getParameterCount() == o2.getParameterCount()) {
 						int o1Prims = 0, o2Prims = 0;
 						for (int i = 0; i < o1.getParameterCount(); i++)
@@ -588,7 +633,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 					// We need to reset the construction stack. Just because we
 					// already created a class instance for parameter 1, there is no reason for
 					// not being able to create the same class instance again for parameter 2.
-					Set<SootClass> newStack = new HashSet<>(constructionStack);
+					Set<SootClass> newStack = new HashSet<>(
+							constructionStack == null ? Collections.emptySet() : constructionStack);
 
 					// We need to check whether we have a reference to the
 					// outer class. In this case, we do not generate a new
@@ -598,31 +644,31 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 							&& this.localVarsForClasses.containsKey(outerClass))
 						params.add(this.localVarsForClasses.get(outerClass));
 					else if (shallowMode) {
-						if (isSimpleType(type.toString()))
+						if (isSimpleType(type))
 							params.add(getSimpleDefaultValue(type));
 						else
 							params.add(NullConstant.v());
 					} else {
-						Value val = getValueForType(type, newStack, parentClasses, tempLocals);
+						Value val = getValueForType(type, newStack, parentClasses, tempLocals, false);
 						params.add(val);
 					}
 				}
 
 				// Build the "new" expression
-				NewExpr newExpr = Jimple.v().newNewExpr(RefType.v(createdClass));
+				NewExpr newExpr = jimple.newNewExpr(RefType.v(createdClass));
 				Local tempLocal = generator.generateLocal(RefType.v(createdClass));
-				AssignStmt assignStmt = Jimple.v().newAssignStmt(tempLocal, newExpr);
+				AssignStmt assignStmt = jimple.newAssignStmt(tempLocal, newExpr);
 				body.getUnits().add(assignStmt);
 
 				// Create the constructor invocation
 				InvokeExpr vInvokeExpr;
 				if (params.isEmpty() || params.contains(null))
-					vInvokeExpr = Jimple.v().newSpecialInvokeExpr(tempLocal, currentMethod.makeRef());
+					vInvokeExpr = jimple.newSpecialInvokeExpr(tempLocal, currentMethod.makeRef());
 				else
-					vInvokeExpr = Jimple.v().newSpecialInvokeExpr(tempLocal, currentMethod.makeRef(), params);
+					vInvokeExpr = jimple.newSpecialInvokeExpr(tempLocal, currentMethod.makeRef(), params);
 
 				// We don't need return values
-				body.getUnits().add(Jimple.v().newInvokeStmt(vInvokeExpr));
+				body.getUnits().add(jimple.newInvokeStmt(vInvokeExpr));
 				if (tempLocals != null)
 					tempLocals.add(tempLocal);
 				return tempLocal;
@@ -682,40 +728,15 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		return null;
 	}
 
-	protected Type getSimpleTypeFromType(Type type) {
-		if (type.toString().equals("java.lang.String")) {
-			assert type instanceof RefType;
-			return RefType.v(((RefType) type).getSootClass());
-		}
-		if (type.toString().equals("void"))
-			return soot.VoidType.v();
-		if (type.toString().equals("char"))
-			return soot.CharType.v();
-		if (type.toString().equals("byte"))
-			return soot.ByteType.v();
-		if (type.toString().equals("short"))
-			return soot.ShortType.v();
-		if (type.toString().equals("int"))
-			return soot.IntType.v();
-		if (type.toString().equals("float"))
-			return soot.FloatType.v();
-		if (type.toString().equals("long"))
-			return soot.LongType.v();
-		if (type.toString().equals("double"))
-			return soot.DoubleType.v();
-		if (type.toString().equals("boolean"))
-			return soot.BooleanType.v();
-		throw new RuntimeException("Unknown simple type: " + type);
-	}
-
-	protected static boolean isSimpleType(String t) {
-		if (t.equals("java.lang.String") || t.equals("void") || t.equals("char") || t.equals("byte")
-				|| t.equals("short") || t.equals("int") || t.equals("float") || t.equals("long") || t.equals("double")
-				|| t.equals("boolean")) {
+	protected static boolean isSimpleType(Type t) {
+		if (t instanceof PrimType)
 			return true;
-		} else {
-			return false;
+		if (t instanceof RefType) {
+			RefType rt = (RefType) t;
+			if (rt.getSootClass().getName().equals("java.lang.String"))
+				return true;
 		}
+		return false;
 	}
 
 	protected Value getSimpleDefaultValue(Type t) {
@@ -736,7 +757,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		if (t instanceof DoubleType)
 			return DoubleConstant.v(0);
 		if (t instanceof BooleanType)
-			return DIntConstant.v(0, BooleanType.v());
+			return IntConstant.v(0);
 
 		// also for arrays etc.
 		return NullConstant.v();
@@ -858,6 +879,16 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 */
 	public void setIgnoreSystemClassParams(boolean ignoreSystemClassParams) {
 		this.ignoreSystemClassParams = ignoreSystemClassParams;
+	}
+
+	/**
+	 * Sets whether the entry point creator may use private or protected
+	 * constructors in order to generate a class instance in the dummyMain method.
+	 * 
+	 * @param allowNonPublicConstructors
+	 */
+	public void setAllowNonPublicConstructors(boolean allowNonPublicConstructors) {
+		this.allowNonPublicConstructors = allowNonPublicConstructors;
 	}
 
 	/**

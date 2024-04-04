@@ -1,9 +1,11 @@
 package soot.jimple.infoflow.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
@@ -19,17 +21,23 @@ import soot.jimple.infoflow.util.extensiblelist.ExtensibleList;
  * @author Steven Arzt
  */
 public class SourceContextAndPath extends SourceContext implements Cloneable {
+
 	protected ExtensibleList<Abstraction> path = null;
 	protected ExtensibleList<Stmt> callStack = null;
 	protected int neighborCounter = 0;
+	protected InfoflowConfiguration config;
+
 	private int hashCode = 0;
 
-	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt) {
-		this(definition, value, stmt, null);
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions,
+			AccessPath value, Stmt stmt) {
+		this(config, definitions, value, stmt, null);
 	}
 
-	public SourceContextAndPath(ISourceSinkDefinition definition, AccessPath value, Stmt stmt, Object userData) {
-		super(definition, value, stmt, userData);
+	public SourceContextAndPath(InfoflowConfiguration config, Collection<ISourceSinkDefinition> definitions,
+			AccessPath value, Stmt stmt, Object userData) {
+		super(definitions, value, stmt, userData);
+		this.config = config;
 	}
 
 	public List<Stmt> getPath() {
@@ -46,6 +54,10 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		return stmtPath;
 	}
 
+	public Abstraction getFirstAbstractionSlow() {
+		return path.getFirstSlow();
+	}
+
 	public List<Abstraction> getAbstractionPath() {
 		if (path == null)
 			return null;
@@ -56,6 +68,85 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			reversePath.add(it.next());
 		}
 		return reversePath;
+	}
+
+	/**
+	 * Return the last abstraction on the taint propagation path
+	 *
+	 * @return the last abstraction
+	 */
+	public Abstraction getLastAbstraction() {
+		return path.getLast();
+	}
+
+	private int getCallStackSize() {
+		if (isCallStackEmpty())
+			return 0;
+		return callStack.size();
+	}
+
+	/**
+	 * Extends the taint propagation path of THIS with the additional abstractions from OTHER
+	 *
+	 * @param other longer taint propagation path
+	 * @return The new taint propagation path
+	 */
+	public SourceContextAndPath extendPath(SourceContextAndPath other) {
+		// Bail out if the cached path is shorter than the current one
+		if (this.path == null || other.path == null || other.path.size() <= this.path.size())
+			return null;
+
+		Stack<Abstraction> pathStack = new Stack<>();
+		Abstraction lastAbs = this.getLastAbstraction();
+		boolean foundCommonAbs = false;
+
+		// Collect all additional abstractions on the cached path
+		Iterator<Abstraction> pathIt = other.path.reverseIterator();
+		while (pathIt.hasNext()) {
+			Abstraction next = pathIt.next();
+			if (next == lastAbs || (next.neighbors != null && next.neighbors.contains(lastAbs))) {
+				foundCommonAbs = true;
+				break;
+			}
+			pathStack.push(next);
+		}
+
+		// If the paths do not have a common abstraction, there's probably something wrong...
+		if (!foundCommonAbs)
+			return null;
+
+		// Append the additional abstractions to the new taint propagation path
+		SourceContextAndPath extendedScap = clone();
+		while (!pathStack.isEmpty())
+			extendedScap.path.add(pathStack.pop());
+
+		int newCallStackCapacity = other.getCallStackSize() - this.getCallStackSize();
+		// Sanity Check: The callStack of other should always be larger than the one of this
+		if (newCallStackCapacity < 0)
+			return null;
+		if (newCallStackCapacity > 0) {
+			Stack<Stmt> callStackBuf = new Stack<>();
+			Stmt topStmt = this.callStack == null ? null : this.callStack.getLast();
+
+			// Collect all additional statements on the call stack...
+			Iterator<Stmt> callStackIt = other.callStack.reverseIterator();
+			while (callStackIt.hasNext()) {
+				Stmt next = callStackIt.next();
+				if (next == topStmt)
+					break;
+				callStackBuf.push(next);
+			}
+
+			if (callStackBuf.size() > 0) {
+				if (extendedScap.callStack == null)
+					extendedScap.callStack = new ExtensibleList<>();
+				// ...and append them.
+				while (!callStackBuf.isEmpty())
+					extendedScap.callStack.add(callStackBuf.pop());
+			}
+		}
+
+		return extendedScap;
 	}
 
 	/**
@@ -72,12 +163,12 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 	/**
 	 * Extends the taint propagation path with the given abstraction
 	 * 
-	 * @param abs        The abstraction to put on the taint propagation path
-	 * @param pathConfig The configuration for constructing taint propagation paths
+	 * @param abs    The abstraction to put on the taint propagation path
+	 * @param config The configuration for constructing taint propagation paths
 	 * @return The new taint propagation path. If this path would contain a loop,
 	 *         null is returned instead of the looping path.
 	 */
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(Abstraction abs, InfoflowConfiguration config) {
 		if (abs == null)
 			return this;
 
@@ -85,35 +176,27 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (abs.getCurrentStmt() == null && abs.getCorrespondingCallSite() == null)
 			return this;
 
+		final PathConfiguration pathConfig = config == null ? null : config.getPathConfiguration();
+
 		// If we don't track paths and have nothing to put on the stack, there
 		// is no need to create a new object
 		final boolean trackPath = pathConfig == null ? true : pathConfig.getPathReconstructionMode().reconstructPaths();
 		if (abs.getCorrespondingCallSite() == null && !trackPath)
 			return this;
 
+		// Do not add the very same abstraction over and over again.
+		if (this.path != null) {
+			Iterator<Abstraction> it = path.reverseIterator();
+			while (it.hasNext()) {
+				Abstraction a = it.next();
+				if (a == abs)
+					return null;
+			}
+		}
+
 		SourceContextAndPath scap = null;
 		if (trackPath && abs.getCurrentStmt() != null) {
-			// Do not add the very same abstraction over and over again.
 			if (this.path != null) {
-				Iterator<Abstraction> it = path.reverseIterator();
-				while (it.hasNext()) {
-					Abstraction a = it.next();
-					if (a == abs)
-						return null;
-
-					// Do not run into loops. If we come back to the same
-					// abstraction, we don't got on with a neighbor
-					if (a.getNeighbors() != null && a.getNeighbors().contains(abs))
-						return null;
-
-					// If this is exactly the same abstraction as one we have
-					// seen before, we skip it. Otherwise, we would run through
-					// loops infinitely.
-					if (a.getCurrentStmt() == abs.getCurrentStmt()
-							&& a.getCorrespondingCallSite() == abs.getCorrespondingCallSite() && a.equals(abs))
-						return null;
-				}
-
 				// We cannot leave the same method at two different sites
 				Abstraction topAbs = path.getLast();
 				if (topAbs.equals(abs) && topAbs.getCorrespondingCallSite() != null
@@ -123,14 +206,16 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 			}
 
 			scap = clone();
+
 			// Extend the propagation path
 			if (scap.path == null)
 				scap.path = new ExtensibleList<Abstraction>();
 			scap.path.add(abs);
 
 			if (pathConfig != null && pathConfig.getMaxPathLength() > 0
-					&& scap.path.size() > pathConfig.getMaxPathLength())
+					&& scap.path.size() > pathConfig.getMaxPathLength()) {
 				return null;
+			}
 		}
 
 		// Extend the call stack
@@ -203,8 +288,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 		if (this.hashCode != 0 && scap.hashCode != 0 && this.hashCode != scap.hashCode)
 			return false;
 
-		boolean mergeDifferentPaths = !InfoflowConfiguration.getPathAgnosticResults() && path != null
-				&& scap.path != null;
+		boolean mergeDifferentPaths = !config.getPathAgnosticResults() && path != null && scap.path != null;
 		if (mergeDifferentPaths) {
 			if (path.size() != scap.path.size()) {
 				// Quick check: they cannot be equal
@@ -238,7 +322,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 		final int prime = 31;
 		int result = super.hashCode();
-		if (!InfoflowConfiguration.getPathAgnosticResults())
+		if (!config.getPathAgnosticResults())
 			result = prime * result + ((path == null) ? 0 : path.hashCode());
 		result = prime * result + ((callStack == null) ? 0 : callStack.hashCode());
 		this.hashCode = result;
@@ -247,7 +331,7 @@ public class SourceContextAndPath extends SourceContext implements Cloneable {
 
 	@Override
 	public SourceContextAndPath clone() {
-		final SourceContextAndPath scap = new SourceContextAndPath(definition, accessPath, stmt, userData);
+		final SourceContextAndPath scap = new SourceContextAndPath(config, definitions, accessPath, stmt, userData);
 		if (path != null)
 			scap.path = new ExtensibleList<Abstraction>(this.path);
 		if (callStack != null)

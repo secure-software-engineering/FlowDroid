@@ -13,6 +13,8 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
  */
 public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 
+	public static final int ANY_PARAMETER = -2;
+
 	public FlowSource(SourceSinkType type, String baseType) {
 		super(type, -1, baseType, null, null, false);
 	}
@@ -83,6 +85,9 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 			return "Return value of gap " + gap.getSignature()
 					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
 
+		if (isReturn())
+			return "Return value" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
+
 		if (isCustom())
 			return "CUSTOM " + gapString + "Parameter " + getParameterIndex()
 					+ (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath));
@@ -98,7 +103,8 @@ public class FlowSource extends AbstractFlowSinkSource implements Cloneable {
 	 */
 	public void validate(String methodName) {
 		if (getType() == SourceSinkType.Return && getGap() == null)
-			throw new RuntimeException("Return values cannot be sources. " + "Offending method: " + methodName);
+			throw new InvalidFlowSpecificationException(
+					"Return values cannot be sources. Offending method: " + methodName, this);
 	}
 
 	@Override

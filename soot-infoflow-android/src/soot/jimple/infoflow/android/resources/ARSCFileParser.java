@@ -10,9 +10,11 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.resources;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,9 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import soot.jimple.infoflow.android.axml.ApkHandler;
 
 /**
  * Parser for reading out the contents of Android's resource.arsc file.
@@ -33,6 +38,15 @@ import org.slf4j.LoggerFactory;
  * @author Steven Arzt
  */
 public class ARSCFileParser extends AbstractResourceParser {
+
+	/**
+	 * If <code>true</code> any encountered resource format violation like reserved
+	 * fields which should be zero but have a value will raise an
+	 * {@link RuntimeException}.
+	 * 
+	 * If <code>false</code> format violations will only be logged as errors.
+	 */
+	public static boolean STRICT_MODE = true;
 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -269,6 +283,25 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return null;
 		}
 
+		/**
+		 * Adds all contents of the given package to this data object
+		 * 
+		 * @param other The other package that shall be integrated into this one
+		 */
+		private void addAll(ResPackage other) {
+			for (ResType tp : other.types) {
+				ResType existingType = getType(tp.id, tp.typeName);
+				if (existingType == null)
+					types.add(tp);
+				else
+					existingType.addAll(tp);
+			}
+		}
+
+		public ResType getType(int id, String typeName) {
+			return types.stream().filter(t -> t.id == id && t.typeName.equals(typeName)).findFirst().orElse(null);
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -318,6 +351,32 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return this.typeName;
 		}
 
+		/**
+		 * Adds all data from the given type into this type
+		 * 
+		 * @param tp The type from which to add all data into this type
+		 */
+		private void addAll(ResType tp) {
+			for (ResConfig config : tp.configurations) {
+				ResConfig existingConfig = getConfiguration(config.getConfig());
+				if (existingConfig == null)
+					configurations.add(config);
+				else
+					existingConfig.addAll(config);
+			}
+		}
+
+		/**
+		 * Gets the configuration object for the given settings
+		 * 
+		 * @param config The settings to look for
+		 * @return The configuration object that is associated with the given settings,
+		 *         or <code>null</code> if no such configuration object exists
+		 */
+		public ResConfig getConfiguration(ResTable_Config config) {
+			return configurations.stream().filter(c -> c.config.equals(config)).findFirst().orElse(null);
+		}
+
 		public List<ResConfig> getConfigurations() {
 			return this.configurations;
 		}
@@ -336,6 +395,16 @@ public class ARSCFileParser extends AbstractResourceParser {
 					if (!resources.containsKey(res.resourceName))
 						resources.put(res.resourceName, res);
 			return resources.values();
+		}
+
+		/**
+		 * Gets the names of all resources defined for this resource type
+		 * 
+		 * @return The names of all resources in the current type
+		 */
+		public Collection<String> getAllResourceNames() {
+			return this.configurations.stream().flatMap(c -> c.getResources().stream()).map(r -> r.getResourceName())
+					.collect(Collectors.toSet());
 		}
 
 		/**
@@ -443,10 +512,19 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 */
 	public static class ResConfig {
 		private ResTable_Config config;
-		private List<AbstractResource> resources = new ArrayList<AbstractResource>();
+		private List<AbstractResource> resources = new ArrayList<>();
 
 		public ResTable_Config getConfig() {
 			return config;
+		}
+
+		/**
+		 * Adds all data from the given configuration into this data object
+		 * 
+		 * @param other The configuration object from which to read the data
+		 */
+		private void addAll(ResConfig other) {
+			this.resources.addAll(other.resources);
 		}
 
 		public List<AbstractResource> getResources() {
@@ -1061,18 +1139,25 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * Android resource containing complex map data.
 	 */
 	public static class ComplexResource extends AbstractResource {
-		private Map<String, AbstractResource> value;
+		private final String resType;
+		private final Map<String, AbstractResource> value;
 
-		public ComplexResource() {
+		public ComplexResource(String resType) {
+			this.resType = resType;
 			this.value = new HashMap<>();
 		}
 
-		public ComplexResource(Map<String, AbstractResource> value) {
+		public ComplexResource(String resType, Map<String, AbstractResource> value) {
+			this.resType = resType;
 			this.value = value;
 		}
 
 		public Map<String, AbstractResource> getValue() {
 			return this.value;
+		}
+
+		public String getResType() {
+			return resType;
 		}
 
 		@Override
@@ -1363,7 +1448,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
-		 * Must be 0.
+		 * Must be 0
 		 */
 		int res0; // uint8
 		/**
@@ -1435,13 +1520,13 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
+		 * Must be 0 or 1 (sparse).
+		 */
+		int flags; // uint8
+		/**
 		 * Must be 0.
 		 */
-		int res0; // uint8
-		/**
-		 * Must be 1.
-		 */
-		int res1; // uint16
+		int reserved; // uint16
 
 		/**
 		 * Number of uint32_t entry indices that follow.
@@ -1465,8 +1550,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 			result = prime * result + entryCount;
 			result = prime * result + ((header == null) ? 0 : header.hashCode());
 			result = prime * result + id;
-			result = prime * result + res0;
-			result = prime * result + res1;
+			result = prime * result + flags;
+			result = prime * result + reserved;
 			return result;
 		}
 
@@ -1495,9 +1580,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			if (id != other.id)
 				return false;
-			if (res0 != other.res0)
+			if (flags != other.flags)
 				return false;
-			if (res1 != other.res1)
+			if (reserved != other.reserved)
 				return false;
 			return true;
 		}
@@ -2015,7 +2100,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		ResTable_Header resourceHeader = new ResTable_Header();
 		readChunkHeader(stream, resourceHeader.header);
 		resourceHeader.packageCount = readUInt32(stream);
-		logger.debug(String.format("Package Groups (%d)", resourceHeader.packageCount));
+		logger.debug("Package Groups ({})", resourceHeader.packageCount);
 
 		// Do we have any packages to read?
 		int remainingSize = resourceHeader.header.size - resourceHeader.header.headerSize;
@@ -2024,6 +2109,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 		// Load the remaining data
 		byte[] remainingData = new byte[remainingSize];
+
 		int totalBytesRead = 0;
 		while (totalBytesRead < remainingSize) {
 			byte[] block = new byte[Math.min(BLOCK_SIZE, remainingSize - totalBytesRead)];
@@ -2040,8 +2126,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 		// Read the next chunk
 		int packageCtr = 0;
-		Map<Integer, String> keyStrings = new HashMap<Integer, String>();
-		Map<Integer, String> typeStrings = new HashMap<Integer, String>();
+		Map<Integer, String> keyStrings = new HashMap<>();
+		Map<Integer, String> typeStrings = new HashMap<>();
 		while (offset < remainingData.length - 1) {
 			beforeBlock = offset;
 			ResChunk_Header nextChunkHeader = new ResChunk_Header();
@@ -2061,8 +2147,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				packageTable.header = nextChunkHeader;
 				offset = parsePackageTable(packageTable, remainingData, offset);
 
-				logger.debug(
-						String.format("\tPackage %s id=%d name=%s", packageCtr, packageTable.id, packageTable.name));
+				logger.debug("\tPackage {} id={} name={}", packageCtr, packageTable.id, packageTable.name);
 
 				// Record the end of the object to know then to stop looking for
 				// internal records
@@ -2158,13 +2243,26 @@ public class ARSCFileParser extends AbstractResourceParser {
 						config.config = typeTable.config;
 						resType.configurations.add(config);
 
+						boolean isSparse = (typeTable.flags == 1);
+
 						// Read the table entries
-						int resourceIdx = 0;
 						for (int i = 0; i < typeTable.entryCount; i++) {
-							int entryOffset = readUInt32(remainingData, offset);
-							offset += 4;
+							int entryOffset;
+							int resourceIdx;
+							if (isSparse) {
+								// read inner struct of ResTable_sparseTypeEntry
+								resourceIdx = readUInt16(remainingData, offset);
+								offset += 2;
+								// The offset from ResTable_type::entriesStart, divided by 4.
+								entryOffset = readUInt16(remainingData, offset);
+								entryOffset *= 4;
+								offset += 2;
+							} else {
+								resourceIdx = i;
+								entryOffset = readUInt32(remainingData, offset);
+								offset += 4;
+							}
 							if (entryOffset == 0xFFFFFFFF) { // NoEntry
-								resourceIdx++;
 								continue;
 							}
 							entryOffset += beforeInnerBlock + typeTable.entriesStart;
@@ -2176,14 +2274,14 @@ public class ARSCFileParser extends AbstractResourceParser {
 							// If this is a simple entry, the data structure is
 							// followed by RES_VALUE
 							if (entry.flagsComplex) {
-								ComplexResource cmpRes = new ComplexResource();
+								ComplexResource cmpRes = new ComplexResource(resType.typeName);
 								res = cmpRes;
 
 								for (int j = 0; j < ((ResTable_Map_Entry) entry).count; j++) {
 									ResTable_Map map = new ResTable_Map();
 									entryOffset = readComplexValue(map, remainingData, entryOffset);
 
-									final String mapName = map.name + "";
+									final String mapName = Integer.toString(map.name);
 									AbstractResource value = parseValue(map.value);
 
 									// If we are dealing with an array, we put it into a special array container
@@ -2227,9 +2325,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 							if (res.resourceID <= 0) {
 								res.resourceID = (packageTable.id << 24) + (typeTable.id << 16) + resourceIdx;
 							}
-							logger.debug("resource added: {}", res);
 							config.resources.add(res);
-							resourceIdx++;
 						}
 					}
 					offset = beforeInnerBlock + innerHeader.size;
@@ -2351,8 +2447,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return 0;
 
 		val.res0 = readUInt8(remainingData, offset);
-		if (val.res0 != 0)
-			throw new RuntimeException("File format error, res0 was not zero");
+		if (val.res0 != 0) {
+			raiseFormatViolationIssue("File format violation: res0 is not zero", offset);
+		}
 		offset += 1;
 
 		val.dataType = readUInt8(remainingData, offset);
@@ -2375,7 +2472,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		else if (size == 0x10)
 			entry = new ResTable_Map_Entry();
 		else
-			throw new RuntimeException("Unknown entry type");
+			throw new RuntimeException("Unknown entry type of size 0x" + Integer.toHexString(size));
 		entry.size = size;
 
 		int flags = readUInt16(data, offset);
@@ -2397,18 +2494,35 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return entry;
 	}
 
+	/**
+	 * Parse data struct <code>ResTable_type</code> as defined in AOSP
+	 * https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h
+	 * 
+	 * Also parses subsequent config table.
+	 * 
+	 * @param typeTable
+	 * @param data
+	 * @param offset
+	 * @return
+	 * @throws IOException
+	 */
 	private int readTypeTable(ResTable_Type typeTable, byte[] data, int offset) throws IOException {
 		typeTable.id = readUInt8(data, offset);
+		if (typeTable.id == 0) {
+			raiseFormatViolationIssue("File format violation in type table: id is zero", offset);
+		}
 		offset += 1;
 
-		typeTable.res0 = readUInt8(data, offset);
-		if (typeTable.res0 != 0)
-			throw new RuntimeException("File format error, res0 was not zero");
+		typeTable.flags = readUInt8(data, offset);
+		if (typeTable.flags != 0 && typeTable.flags != 1) {
+			raiseFormatViolationIssue("File format violation in type table: flags is not zero or one", offset);
+		}
 		offset += 1;
 
-		typeTable.res1 = readUInt16(data, offset);
-		if (typeTable.res1 != 0)
-			throw new RuntimeException("File format error, res1 was not zero");
+		typeTable.reserved = readUInt16(data, offset);
+		if (typeTable.reserved != 0) {
+			raiseFormatViolationIssue("File format violation in type table: reserved is not zero", offset);
+		}
 		offset += 2;
 
 		typeTable.entryCount = readUInt32(data, offset);
@@ -2500,9 +2614,12 @@ public class ARSCFileParser extends AbstractResourceParser {
 		if (remainingSize > 0) {
 			byte[] remainingBytes = new byte[remainingSize];
 			System.arraycopy(data, offset, remainingBytes, 0, remainingSize);
-			if (!(new BigInteger(1, remainingBytes).equals(BigInteger.ZERO))) {
-				logger.warn("Excessive non-null bytes in ResTable_Config ignored");
-				assert false;
+			BigInteger remainingData = new BigInteger(1, remainingBytes);
+			if (!(remainingData.equals(BigInteger.ZERO))) {
+				logger.debug("Excessive {} non-null bytes in ResTable_Config ignored", remainingSize);
+				if (logger.isTraceEnabled()) {
+					logger.trace("remaining data: 0x" + remainingData.toString(16));
+				}
 			}
 			offset += remainingSize;
 		}
@@ -2510,19 +2627,34 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return offset;
 	}
 
+	/**
+	 * Parse data struct <code>ResTable_typeSpec</code> as defined in AOSP
+	 * https://android.googlesource.com/platform/frameworks/base/+/master/libs/androidfw/include/androidfw/ResourceTypes.h
+	 * 
+	 * @param typeSpecTable
+	 * @param data
+	 * @param offset
+	 * @return
+	 * @throws IOException
+	 */
 	private int readTypeSpecTable(ResTable_TypeSpec typeSpecTable, byte[] data, int offset) throws IOException {
 		typeSpecTable.id = readUInt8(data, offset);
+		if (typeSpecTable.id == 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: id is zero", offset);
+		}
 		offset += 1;
 
 		typeSpecTable.res0 = readUInt8(data, offset);
+		if (typeSpecTable.res0 != 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: res0 is not zero", offset);
+		}
 		offset += 1;
-		if (typeSpecTable.res0 != 0)
-			throw new RuntimeException("File format violation, res0 was not zero");
 
 		typeSpecTable.res1 = readUInt16(data, offset);
+		if (typeSpecTable.res1 != 0) {
+			raiseFormatViolationIssue("File format violation in type spec table: res1 is not zero", offset);
+		}
 		offset += 2;
-		if (typeSpecTable.res1 != 0)
-			throw new RuntimeException("File format violation, res1 was not zero");
 
 		typeSpecTable.entryCount = readUInt32(data, offset);
 		offset += 4;
@@ -2584,7 +2716,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		stringIdx += 2;
 		byte[] str = new byte[strLen * 2];
 		System.arraycopy(remainingData, stringIdx, str, 0, strLen * 2);
-		return new String(remainingData, stringIdx, strLen * 2, "UTF-16LE");
+		return new String(remainingData, stringIdx, strLen * 2, StandardCharsets.UTF_16LE);
 	}
 
 	private String readStringUTF8(byte[] remainingData, int stringIdx) throws IOException {
@@ -2593,7 +2725,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		// the length here is somehow weird
 		int strLen = readUInt8(remainingData, stringIdx + 1);
 		stringIdx += 2;
-		String str = new String(remainingData, stringIdx, strLen, "UTF-8");
+		String str = new String(remainingData, stringIdx, strLen, StandardCharsets.UTF_8);
 		return str;
 	}
 
@@ -2678,6 +2810,11 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 	public List<ResPackage> getPackages() {
 		return this.packages;
+	}
+
+	public ResPackage getPackage(int pkgID, String pkgName) {
+		return this.packages.stream().filter(p -> p.packageId == pkgID && p.packageName.equals(pkgName)).findFirst()
+				.orElse(null);
 	}
 
 	/**
@@ -2810,4 +2947,49 @@ public class ARSCFileParser extends AbstractResourceParser {
 		return resourceList;
 	}
 
+	/**
+	 * Creates a new instance of the {@link ARSCFileParser} class and parses the
+	 * Android resource database in the given APK file
+	 * 
+	 * @param apkFile The APK file in which to parse the resource database
+	 * @return The new {@link ARSCFileParser} instance, or <code>null</code> if the
+	 *         file could not be read
+	 * @throws IOException
+	 */
+	public static ARSCFileParser getInstance(File apkFile) throws IOException {
+		ARSCFileParser parser = new ARSCFileParser();
+		try (ApkHandler handler = new ApkHandler(apkFile); InputStream is = handler.getInputStream("resources.arsc")) {
+			if (is == null)
+				return null;
+			parser.parse(is);
+		}
+		return parser;
+	}
+
+	/**
+	 * Adds all resources loaded from another {@link ARSCFileParser} to this data
+	 * object
+	 * 
+	 * @param otherParser The other parser
+	 */
+	public void addAll(ARSCFileParser otherParser) {
+		// Merge the packages
+		for (ResPackage pkg : otherParser.packages) {
+			ResPackage existingPackage = getPackage(pkg.packageId, pkg.packageName);
+			if (existingPackage == null)
+				packages.add(pkg);
+			else
+				existingPackage.addAll(pkg);
+		}
+
+		// Merge the string table
+		stringTable.putAll(otherParser.stringTable);
+	}
+
+	protected void raiseFormatViolationIssue(String message, int offset) {
+		if (STRICT_MODE) {
+			throw new RuntimeException(String.format("%s offset=0x%x", message, offset));
+		}
+		logger.error("{} offset=0x{}", message, Integer.toHexString(offset));
+	}
 }

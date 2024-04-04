@@ -2,8 +2,9 @@ package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.Set;
 
+import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -16,7 +17,7 @@ import soot.util.MultiMap;
  * 
  * @author Steven Arzt
  */
-public class AheadOfTimeReferenceProvider<D, N> extends AbstractReferenceProvider<D, N> {
+public class AheadOfTimeReferenceProvider<N> extends AbstractReferenceProvider<SootMethod, N> {
 
 	private final MultiMap<SootMethod, SootMethod> methodToCallees = new HashMultiMap<>();
 
@@ -24,11 +25,14 @@ public class AheadOfTimeReferenceProvider<D, N> extends AbstractReferenceProvide
 		super(icfg);
 
 		// Initialize the caller/callee relationships
-
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod sm : sc.getMethods())
+				methodToCallees.putAll(sm, getTransitiveCallees(sm));
+		}
 	}
 
 	@Override
-	public Set<SootMethod> getMethodReferences(SootMethod method, FastSolverLinkedNode<D, N> context) {
+	public Set<SootMethod> getAbstractionReferences(SootMethod method) {
 		return methodToCallees.get(method);
 	}
 

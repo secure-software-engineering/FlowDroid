@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isInterface="true">
 	<methods>
 		<method id="java.lang.Object put(java.lang.Object,java.lang.Object)">
 			<flows>
@@ -65,9 +65,9 @@
 		<method id="void clear()">
 			<clears>
 				<clear sourceSinkType="Field"
-					AccessPath="[java.util.Set: java.lang.Object[] keys]" />
+					AccessPath="[java.util.Map: java.lang.Object[] keys]" />
 				<clear sourceSinkType="Field"
-					AccessPath="[java.util.Set: java.lang.Object[] values]" />
+					AccessPath="[java.util.Map: java.lang.Object[] values]" />
 			</clears>
 		</method>
 		<method id="java.lang.Object remove(java.lang.Object)">

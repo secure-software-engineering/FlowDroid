@@ -28,6 +28,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	private volatile MultiMap<String, MethodFlow> flows;
 	private volatile MultiMap<String, MethodClear> clears;
 	private volatile Map<Integer, GapDefinition> gaps;
+	private volatile Set<String> excludedMethods;
 
 	public MethodSummaries() {
 		this(new ConcurrentHashMultiMap<String, MethodFlow>());
@@ -679,11 +680,35 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 		return new MethodSummaries(reversedFlows, clears, gaps);
 	}
 
+	/**
+	 * Adds a method to exclude in the taint wrapper
+	 * 
+	 * @param methodSignature The subsignature of the method to ignore
+	 */
+	public void addExcludedMethod(String methodSignature) {
+		if (excludedMethods == null)
+			excludedMethods = new HashSet<>();
+		excludedMethods.add(methodSignature);
+	}
+
+	/**
+	 * Gets whether the method with the given subsignature has been excluded from
+	 * the data flow analysis
+	 * 
+	 * @param subsignature The subsignature
+	 * @return True if the method with the given subsignature has been excluded,
+	 *         false otherwise
+	 */
+	public boolean isExcluded(String subsignature) {
+		return excludedMethods != null && excludedMethods.contains(subsignature);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((clears == null) ? 0 : clears.hashCode());
+		result = prime * result + ((excludedMethods == null) ? 0 : excludedMethods.hashCode());
 		result = prime * result + ((flows == null) ? 0 : flows.hashCode());
 		result = prime * result + ((gaps == null) ? 0 : gaps.hashCode());
 		return result;
@@ -702,6 +727,11 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 			if (other.clears != null)
 				return false;
 		} else if (!clears.equals(other.clears))
+			return false;
+		if (excludedMethods == null) {
+			if (other.excludedMethods != null)
+				return false;
+		} else if (!excludedMethods.equals(other.excludedMethods))
 			return false;
 		if (flows == null) {
 			if (other.flows != null)

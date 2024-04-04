@@ -3,13 +3,16 @@ package soot.jimple.infoflow.data;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Class representing a source value together with the statement that created it
  * 
  * @author Steven Arzt
  */
 public class SourceContext implements Cloneable {
-	protected final ISourceSinkDefinition definition;
+	protected final Collection<ISourceSinkDefinition> definitions;
 	protected final AccessPath accessPath;
 	protected final Stmt stmt;
 	protected final Object userData;
@@ -21,16 +24,24 @@ public class SourceContext implements Cloneable {
 	}
 
 	public SourceContext(ISourceSinkDefinition definition, AccessPath accessPath, Stmt stmt, Object userData) {
+		this(Collections.singleton(definition), accessPath, stmt, userData);
+	}
+
+	public SourceContext(Collection<ISourceSinkDefinition> definitions, AccessPath accessPath, Stmt stmt) {
+		this(definitions, accessPath, stmt, null);
+	}
+
+	public SourceContext(Collection<ISourceSinkDefinition> definitions, AccessPath accessPath, Stmt stmt, Object userData) {
 		assert accessPath != null;
 
-		this.definition = definition;
+		this.definitions = definitions;
 		this.accessPath = accessPath;
 		this.stmt = stmt;
 		this.userData = userData;
 	}
 
-	public ISourceSinkDefinition getDefinition() {
-		return this.definition;
+	public Collection<ISourceSinkDefinition> getDefinitions() {
+		return this.definitions;
 	}
 
 	public AccessPath getAccessPath() {
@@ -52,7 +63,7 @@ public class SourceContext implements Cloneable {
 
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
+		result = prime * result + ((definitions == null) ? 0 : definitions.hashCode());
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
 		result = prime * result + ((accessPath == null) ? 0 : accessPath.hashCode());
 		result = prime * result + ((userData == null) ? 0 : userData.hashCode());
@@ -72,10 +83,10 @@ public class SourceContext implements Cloneable {
 		if (this.hashCode != 0 && other.hashCode != 0 && this.hashCode != other.hashCode)
 			return false;
 
-		if (definition == null) {
-			if (other.definition != null)
+		if (definitions == null) {
+			if (other.definitions != null)
 				return false;
-		} else if (!definition.equals(other.definition))
+		} else if (!definitions.equals(other.definitions))
 			return false;
 		if (stmt == null) {
 			if (other.stmt != null)
@@ -97,7 +108,7 @@ public class SourceContext implements Cloneable {
 
 	@Override
 	public SourceContext clone() {
-		SourceContext sc = new SourceContext(definition, accessPath, stmt, userData);
+		SourceContext sc = new SourceContext(definitions, accessPath, stmt, userData);
 		assert sc.equals(this);
 		return sc;
 	}

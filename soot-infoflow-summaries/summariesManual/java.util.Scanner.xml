@@ -1,0 +1,317 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object">
+		<interface name="java.io.Closeable" />
+		<interface name="java.util.Iterator" />
+	</hierarchy>
+	<methods>
+		<method id="void &lt;init&gt;(java.io.InputStream)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.io.InputStream,java.lang.String)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.io.InputStream,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.io.File)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.io.File,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.io.File,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.Readable)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.channels.ReadableByteChannel,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.file.Path)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.file.Path,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.nio.file.Path,java.nio.charset.Charset)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Scanner: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.regex.MatchResult match()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String next()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String next(java.lang.String)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String next(java.util.regex.Pattern)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String nextLine()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String findInLine(java.lang.String)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String findInLine(java.util.regex.Pattern)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String findWithinHorizon(java.lang.String,int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String findWithinHorizon(java.util.regex.Pattern,int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean nextBoolean()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte nextByte()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="byte nextByte(int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="short nextShort()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int nextInt()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int nextInt(int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long nextLong(int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="float nextFloat()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double nextDouble()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigInteger nextBigInteger()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigInteger nextBigInteger(int)">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.math.BigDecimal nextBigDecimal()">
+			<flows>
+				<flow isAlias="false" cutSubfields="true" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

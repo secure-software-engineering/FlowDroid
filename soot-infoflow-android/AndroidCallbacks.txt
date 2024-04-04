@@ -247,6 +247,12 @@ android.support.v4.view.PagerTitleStrip$PageListener
 android.support.v4.view.ViewPager$OnAdapterChangeListener
 android.support.v4.view.ViewPager$OnPageChangeListener
 android.support.v4.view.ViewPager$SimpleOnPageChangeListener
+androidx.fragment.app.FragmentManager$OnBackStackChangedListener
+androidx.loader.content.Loader$OnLoadCompleteListener
+androidx.viewpager.widget.PagerTitleStrip$PageListener
+androidx.viewpager.widget.ViewPager$OnAdapterChangeListener
+androidx.viewpager.widget.ViewPager$OnPageChangeListener
+androidx.viewpager.widget.ViewPager$SimpleOnPageChangeListener
 android.telecom.Call$Callback
 android.telecom.InCallService$VideoCall$Callback
 android.telecom.RemoteConference$Callback
@@ -343,6 +349,7 @@ android.webkit.WebMessagePort$WebMessageCallback
 android.webkit.WebView$FindListener
 android.webkit.WebView$PictureListener
 android.webkit.WebView$VisualStateCallback
+android.webkit.WebViewClient
 android.widget.AbsListView$MultiChoiceModeListener
 android.widget.AbsListView$OnScrollListener
 android.widget.AbsListView$RecyclerListener

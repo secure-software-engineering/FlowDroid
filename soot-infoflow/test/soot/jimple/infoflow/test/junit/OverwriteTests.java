@@ -19,9 +19,9 @@ import org.junit.Test;
 import soot.jimple.infoflow.IInfoflow;
 
 /**
- * test the overwrite behavior of tainted variables, fields and static variables 
+ * test the overwrite behavior of tainted variables, fields and static variables
  */
-public class OverwriteTests extends JUnitTests {
+public abstract class OverwriteTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void varOverwriteTest() {
@@ -135,12 +135,21 @@ public class OverwriteTests extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 		Assert.assertEquals(1, infoflow.getResults().size());
 	}
-	
+
 	@Test(timeout = 300000)
 	public void simpleOverwriteAliasTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.OverwriteTestCode: void simpleOverwriteAliasTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void overwriteBaseValueTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.OverwriteTestCode: void overwriteBaseValueTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}

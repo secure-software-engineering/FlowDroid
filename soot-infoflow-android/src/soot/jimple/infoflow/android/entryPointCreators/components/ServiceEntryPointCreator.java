@@ -1,22 +1,16 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
-import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.List;
 
-import soot.Local;
-import soot.RefType;
-import soot.Scene;
-import soot.SootClass;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Type;
+import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 
 /**
@@ -29,7 +23,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 	protected SootField binderField = null;
 
-	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, ProcessManifest manifest) {
+	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 	}
 
@@ -63,21 +57,17 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		ComponentType componentType = entryPointUtils.getComponentType(component);
 		boolean hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService) {
-			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
-				if (sm != null && !sm.getDeclaringClass().getName()
-						.equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
-					if (createPlainMethodCall(thisLocal, sm))
-						hasAdditionalMethods = true;
-			}
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getGCMIntentServiceMethods(),
+					AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS);
 		} else if (componentType == ComponentType.GCMListenerService) {
-			for (String sig : AndroidEntryPointConstants.getGCMListenerServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
-				if (sm != null
-						&& !sm.getDeclaringClass().getName().equals(AndroidEntryPointConstants.GCMLISTENERSERVICECLASS))
-					if (createPlainMethodCall(thisLocal, sm))
-						hasAdditionalMethods = true;
-			}
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getGCMListenerServiceMethods(),
+					AndroidEntryPointConstants.GCMLISTENERSERVICECLASS);
+		} else if (componentType == ComponentType.HostApduService) {
+			hasAdditionalMethods |= createSpecialServiceMethodCalls(
+					AndroidEntryPointConstants.getHostApduServiceMethods(),
+					AndroidEntryPointConstants.HOSTAPDUSERVICECLASS);
 		}
 		addCallbackMethods();
 		body.getUnits().add(endWhileStmt);
@@ -125,6 +115,27 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, component, thisLocal);
 	}
 
+	/**
+	 * Creates invocations to the handler methods of special-purpose services in
+	 * Android
+	 * 
+	 * @param methodSigs  The signatures of the methods for which to create
+	 *                    invocations
+	 * @param parentClass The name of the parent class in the SDK that contains the
+	 *                    service interface
+	 * @return True if at least one method invocation was created, false otherwise
+	 */
+	protected boolean createSpecialServiceMethodCalls(List<String> methodSigs, String parentClass) {
+		boolean hasAdditionalMethods = false;
+		for (String sig : methodSigs) {
+			SootMethod sm = findMethod(component, sig);
+			if (sm != null && !sm.getDeclaringClass().getName().equals(parentClass))
+				if (createPlainMethodCall(thisLocal, sm))
+					hasAdditionalMethods = true;
+		}
+		return hasAdditionalMethods;
+	}
+
 	@Override
 	protected void createAdditionalFields() {
 		super.createAdditionalFields();
@@ -146,6 +157,8 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// We need to instrument the onBind() method to store the binder in the field
 		instrumentOnBind();
+
+		createGetIntentMethod();
 	}
 
 	/**
@@ -156,7 +169,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		SootMethod sm = component.getMethodUnsafe("android.os.IBinder onBind(android.content.Intent)");
 		final Type intentType = RefType.v("android.content.Intent");
 		final Type binderType = RefType.v("android.os.IBinder");
-		if (sm == null || !sm.hasActiveBody()) {
+		if (sm == null || !sm.isConcrete()) {
 			// Create a new onBind() method
 			if (sm == null) {
 				sm = Scene.v().makeSootMethod("onBind", Collections.singletonList(intentType), binderType,
@@ -167,6 +180,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 			// Create the body
 			final JimpleBody b = Jimple.v().newBody(sm);
+			sm.setModifiers(sm.getModifiers() & ~Modifier.NATIVE);
 			sm.setActiveBody(b);
 			b.insertIdentityStmts();
 
@@ -178,15 +192,16 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 			b.getUnits().add(Jimple.v().newReturnStmt(binderLocal));
 		} else {
 			// Modify the existing onBind() method
-			JimpleBody b = (JimpleBody) sm.getActiveBody();
+			JimpleBody b = (JimpleBody) sm.retrieveActiveBody();
 			Stmt firstNonIdentityStmt = b.getFirstNonIdentityStmt();
 
 			final Local thisLocal = b.getThisLocal();
 			final Local binderLocal = b.getParameterLocal(0);
 
-			b.getUnits().insertAfter(Jimple.v()
-					.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()), binderLocal),
-					firstNonIdentityStmt);
+			final Unit assignStmt = Jimple.v()
+					.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, binderField.makeRef()), binderLocal);
+			assignStmt.addTag(SimulatedCodeElementTag.TAG);
+			b.getUnits().insertAfter(assignStmt, firstNonIdentityStmt);
 		}
 	}
 

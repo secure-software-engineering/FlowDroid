@@ -10,11 +10,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
+import soot.SootClass;
+import soot.SootMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
+import soot.jimple.infoflow.river.AdditionalFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
@@ -177,5 +181,103 @@ public class XmlParserTest {
 			} else
 				Assert.fail("should never happen");
 		}
+	}
+
+	/**
+	 * Test that additional flows are parsed correctly.
+	 *
+	 * @throws IOException
+	 */
+	@Test
+	public void additionalFlowsXMLTest() throws IOException {
+		String xmlFile = "testXmlParser/additionalFlows.xml";
+		XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile(xmlFile);
+		Set<ISourceSinkDefinition> sinkSet = parser.getSinks();
+
+		final String stringWriteSig = "<java.io.PrintWriter: void write(java.lang.String)>";
+		final String stringOffsetWriteSig = "<java.io.PrintWriter: void write(java.lang.String,int,int)>";
+		final String intWriteSig = "<java.io.PrintWriter: void write(int)>";
+		final String byteWriteSig = "<java.io.PrintWriter: void write(byte[])>";
+
+		final String openConSig = "<java.net.URL: java.net.URLConnection openConnection()>";
+		final String servletSig = "<javax.servlet.ServletResponse: java.io.PrintWriter getWriter()>";
+		final String httpSrvSig = "<javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()>";
+
+		final String byteArrayClass = "java.io.ByteArrayOutputStream";
+
+		Assert.assertEquals(4, sinkSet.size());
+		boolean foundStrSig = false, foundStrOffsetSig = false, foundIntSig = false, foundByteSig = false;
+		for (ISourceSinkDefinition sink : sinkSet) {
+			Assert.assertTrue(sink instanceof MethodSourceSinkDefinition);
+			MethodSourceSinkDefinition methodSink = (MethodSourceSinkDefinition) sink;
+			String methodSig = methodSink.getMethod().getSignature();
+
+			Set<SourceSinkCondition> conds = sink.getConditions();
+			switch (methodSig) {
+				case stringWriteSig: {
+					Assert.assertEquals(1, conds.size());
+					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+					Set<String> mRefs = cond.getSignaturesOnPath();
+					Assert.assertEquals(1, mRefs.size());
+					Assert.assertTrue(mRefs.contains(openConSig));
+					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
+					foundStrSig = true;
+					break;
+				}
+				case stringOffsetWriteSig: {
+					Assert.assertEquals(1, conds.size());
+					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+					Assert.assertEquals(0, cond.getSignaturesOnPath().size());
+					Set<String> cRefs = cond.getClassNamesOnPath();
+					Assert.assertEquals(1, cRefs.size());
+					Assert.assertTrue(cRefs.contains("java.lang.String"));
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
+					foundStrOffsetSig = true;
+					break;
+				}
+				case intWriteSig: {
+					Assert.assertEquals(1, conds.size());
+					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+					Set<String> mRefs = cond.getSignaturesOnPath();
+					Assert.assertEquals(2, mRefs.size());
+					Assert.assertTrue(mRefs.contains(servletSig));
+					Assert.assertTrue(mRefs.contains(httpSrvSig));
+					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+					Assert.assertEquals(0, cond.getExcludedClassNames().size());
+					foundIntSig = true;
+					break;
+				}
+				case byteWriteSig: {
+					Assert.assertEquals(2, conds.size());
+					boolean foundServlet = false, foundHttpServlet = false;
+					for (SourceSinkCondition cond : conds) {
+						Set<String> mRefs = ((AdditionalFlowCondition) cond).getSignaturesOnPath();
+						Assert.assertEquals(1, mRefs.size());
+						Assert.assertEquals(0, ((AdditionalFlowCondition) cond).getClassNamesOnPath().size());
+
+						if (mRefs.contains(servletSig)) {
+							foundServlet = true;
+							Assert.assertEquals(2, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
+									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.Object")));
+						} else if (mRefs.contains(httpSrvSig)) {
+							foundHttpServlet = true;
+							Assert.assertEquals(1, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
+									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.String")));
+						} else {
+							Assert.fail();
+						}
+					}
+					Assert.assertTrue(foundServlet && foundHttpServlet);
+					foundByteSig = true;
+					break;
+				}
+				default:
+					Assert.fail();
+			}
+		}
+		Assert.assertTrue(foundStrSig && foundStrOffsetSig && foundIntSig && foundByteSig);
 	}
 }

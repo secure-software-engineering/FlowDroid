@@ -316,6 +316,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		private int maxCallbacksPerComponent = 100;
 		private int callbackAnalysisTimeout = 0;
 		private int maxCallbackAnalysisDepth = -1;
+		private boolean serializeCallbacks = false;
+		private String callbacksFile = "";
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -329,6 +331,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.maxCallbacksPerComponent = cbConfig.maxCallbacksPerComponent;
 			this.callbackAnalysisTimeout = cbConfig.callbackAnalysisTimeout;
 			this.maxCallbackAnalysisDepth = cbConfig.maxCallbackAnalysisDepth;
+			this.serializeCallbacks = cbConfig.serializeCallbacks;
+			this.callbacksFile = cbConfig.callbacksFile;
 		}
 
 		/**
@@ -465,16 +469,58 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.maxCallbackAnalysisDepth = maxCallbackAnalysisDepth;
 		}
 
+		/**
+		 * Gets whether the collected callbacks shall be serialized into a file
+		 * 
+		 * @return True to serialize the collected callbacks into a file, false
+		 *         otherwise
+		 */
+		public boolean isSerializeCallbacks() {
+			return serializeCallbacks;
+		}
+
+		/**
+		 * Sets whether the collected callbacks shall be serialized into a file
+		 * 
+		 * @param serializeCallbacks True to serialize the collected callbacks into a
+		 *                           file, false otherwise
+		 */
+		public void setSerializeCallbacks(boolean serializeCallbacks) {
+			this.serializeCallbacks = serializeCallbacks;
+		}
+
+		/**
+		 * Gets the full path and file name of the file to which the collected callback
+		 * shall be written, or from which they shall be read, respectively
+		 * 
+		 * @return The file for the collected callbacks
+		 */
+		public String getCallbacksFile() {
+			return callbacksFile;
+		}
+
+		/**
+		 * Sets the full path and file name of the file to which the collected callback
+		 * shall be written, or from which they shall be read, respectively
+		 * 
+		 * @param callbacksFile The file for the collected callbacks
+		 */
+		public void setCallbacksFile(String callbacksFile) {
+			this.callbacksFile = callbacksFile;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + callbackAnalysisTimeout;
 			result = prime * result + ((callbackAnalyzer == null) ? 0 : callbackAnalyzer.hashCode());
+			result = prime * result + ((callbacksFile == null) ? 0 : callbacksFile.hashCode());
 			result = prime * result + (enableCallbacks ? 1231 : 1237);
 			result = prime * result + (filterThreadCallbacks ? 1231 : 1237);
 			result = prime * result + maxCallbackAnalysisDepth;
 			result = prime * result + maxCallbacksPerComponent;
+			result = prime * result + (serializeCallbacks ? 1231 : 1237);
 			return result;
 		}
 
@@ -491,6 +537,11 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 				return false;
 			if (callbackAnalyzer != other.callbackAnalyzer)
 				return false;
+			if (callbacksFile == null) {
+				if (other.callbacksFile != null)
+					return false;
+			} else if (!callbacksFile.equals(other.callbacksFile))
+				return false;
 			if (enableCallbacks != other.enableCallbacks)
 				return false;
 			if (filterThreadCallbacks != other.filterThreadCallbacks)
@@ -498,6 +549,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			if (maxCallbackAnalysisDepth != other.maxCallbackAnalysisDepth)
 				return false;
 			if (maxCallbacksPerComponent != other.maxCallbacksPerComponent)
+				return false;
+			if (serializeCallbacks != other.serializeCallbacks)
 				return false;
 			return true;
 		}
@@ -637,44 +690,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		Fast
 	}
 
-	/**
-	 * Enumeration containing the different ways in which Soot can be used
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	public static enum SootIntegrationMode {
-		/**
-		 * With this option, FlowDroid initializes and configures its own Soot instance.
-		 * This option is the default and the best choice in most cases.
-		 */
-		CreateNewInstace,
-
-		/**
-		 * With this option, FlowDroid uses the existing Soot instance, but generates
-		 * its own callgraph. Note that it is the responsibility of the caller to make
-		 * sure that pre-existing Soot instances are configured correctly for the use
-		 * with FlowDroid.
-		 */
-		UseExistingInstance,
-
-		/**
-		 * 
-		 */
-		UseExistingCallgraph;
-
-		/**
-		 * Gets whether this integration mode requires FlowDroid to build its own
-		 * callgraph
-		 * 
-		 * @return True if FlowDroid must create its own callgraph, otherwise false
-		 */
-		boolean needsToBuildCallgraph() {
-			return this == SootIntegrationMode.CreateNewInstace || this == SootIntegrationMode.UseExistingInstance;
-		}
-
-	}
-
 	private boolean oneComponentAtATime = false;
 
 	private final CallbackConfiguration callbackConfig = new CallbackConfiguration();
@@ -682,8 +697,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final IccConfiguration iccConfig = new IccConfiguration();
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
-	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstace;
 	private boolean mergeDexFiles = false;
+	private static boolean createActivityEntryMethods = true;
 
 	public InfoflowAndroidConfiguration() {
 		// We need to adapt some of the defaults. Most people don't care about
@@ -707,8 +722,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.iccConfig.merge(androidConfig.iccConfig);
 			this.analysisFileConfig.merge(androidConfig.analysisFileConfig);
 
-			this.sootIntegrationMode = androidConfig.sootIntegrationMode;
 			this.mergeDexFiles = androidConfig.mergeDexFiles;
+			this.createActivityEntryMethods = androidConfig.createActivityEntryMethods;
 		}
 	}
 
@@ -772,28 +787,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
-	 * Sets how FloweDroid shall interact with the underlying Soot instance.
-	 * FlowDroid can either set up Soot on its own, or work with an existing
-	 * instance.
-	 * 
-	 * @param sootIntegrationMode The integration mode that FlowDroid shall use
-	 */
-	public void setSootIntegrationMode(SootIntegrationMode sootIntegrationMode) {
-		this.sootIntegrationMode = sootIntegrationMode;
-	}
-
-	/**
-	 * Gets how FloweDroid shall interact with the underlying Soot instance.
-	 * FlowDroid can either set up Soot on its own, or work with an existing
-	 * instance.
-	 * 
-	 * @return The integration mode that FlowDroid shall use
-	 */
-	public SootIntegrationMode getSootIntegrationMode() {
-		return this.sootIntegrationMode;
-	}
-
-	/**
 	 * Gets whether FlowDroid shall merge all dex files in the APK to get a full
 	 * picture of the app
 	 * 
@@ -815,6 +808,27 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		this.mergeDexFiles = mergeDexFiles;
 	}
 
+	/**
+	 * Gets if Flowdroid should create new Methods when creating the Activity Entry
+	 * point
+	 * 
+	 * @return true/false
+	 */
+	public static boolean getCreateActivityEntryMethods() {
+		return createActivityEntryMethods;
+	}
+
+	/**
+	 * Sets if Flow Flowdroid should create new Methods when creating the Activity
+	 * Entry point
+	 * 
+	 * @param createActivityEntryMethods boolean that is true if Methods should be
+	 *                                   created
+	 */
+	public static void setCreateActivityEntryMethods(boolean createActivityEntryMethods) {
+		InfoflowAndroidConfiguration.createActivityEntryMethods = createActivityEntryMethods;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -824,7 +838,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		result = prime * result + ((iccConfig == null) ? 0 : iccConfig.hashCode());
 		result = prime * result + (mergeDexFiles ? 1231 : 1237);
 		result = prime * result + (oneComponentAtATime ? 1231 : 1237);
-		result = prime * result + ((sootIntegrationMode == null) ? 0 : sootIntegrationMode.hashCode());
 		result = prime * result + ((sourceSinkConfig == null) ? 0 : sourceSinkConfig.hashCode());
 		return result;
 	}
@@ -856,8 +869,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		if (mergeDexFiles != other.mergeDexFiles)
 			return false;
 		if (oneComponentAtATime != other.oneComponentAtATime)
-			return false;
-		if (sootIntegrationMode != other.sootIntegrationMode)
 			return false;
 		if (sourceSinkConfig == null) {
 			if (other.sourceSinkConfig != null)

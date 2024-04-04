@@ -43,8 +43,8 @@ public class ParaToParaTests extends TestHelper {
 				new String[] { LINKEDLIST_FIRST, LINKEDLIST_ITEM }));
 		assertTrue(containsFlow(flow, Parameter, 1, new String[] {}, Parameter, 0,
 				new String[] { LINKEDLIST_LAST, LINKEDLIST_ITEM }));
-		assertTrue(containsFlow(flow, Parameter, 0, new String[] { LINKEDLIST_LAST }, Parameter, 0,
-				new String[] { LINKEDLIST_FIRST }));
+		assertTrue(containsFlow(flow, Parameter, 0, new String[] { LINKEDLIST_LAST, LINKEDLIST_ITEM }, Parameter, 0,
+				new String[] { LINKEDLIST_FIRST, LINKEDLIST_ITEM }));
 		assertEquals(3, flow.size());
 	}
 

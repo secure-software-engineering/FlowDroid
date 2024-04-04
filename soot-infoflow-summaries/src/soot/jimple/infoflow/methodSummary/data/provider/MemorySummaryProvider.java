@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.methodSummary.data.provider;
 
-import java.util.Collections;
 import java.util.Set;
 
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
@@ -12,7 +11,7 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
  * @author Steven Arzt
  *
  */
-public class MemorySummaryProvider implements IMethodSummaryProvider {
+public class MemorySummaryProvider extends AbstractMethodSummaryProvider {
 
 	private final ClassSummaries summaries;
 
@@ -31,11 +30,6 @@ public class MemorySummaryProvider implements IMethodSummaryProvider {
 	 */
 	public MemorySummaryProvider(ClassSummaries summaries) {
 		this.summaries = summaries;
-	}
-
-	@Override
-	public Set<String> getLoadableClasses() {
-		return Collections.emptySet();
 	}
 
 	@Override
@@ -83,6 +77,19 @@ public class MemorySummaryProvider implements IMethodSummaryProvider {
 	 */
 	public void addSummary(ClassMethodSummaries summaries) {
 		summaries.merge(summaries);
+	}
+
+	@Override
+	public boolean isMethodExcluded(String className, String subSignature) {
+		ClassMethodSummaries classSummaries = summaries.getClassSummaries(className);
+		if (classSummaries == null)
+			return false;
+		return classSummaries.getMethodSummaries().isExcluded(subSignature);
+	}
+
+	@Override
+	public Set<String> getAllClassesWithSummaries() {
+		return summaries.getClasses();
 	}
 
 }

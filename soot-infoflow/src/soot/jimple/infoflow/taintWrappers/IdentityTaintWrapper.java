@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.taintWrappers;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import soot.SootMethod;
@@ -38,29 +39,38 @@ public class IdentityTaintWrapper extends AbstractTaintWrapper {
 		if (!stmt.getInvokeExpr().getMethod().getDeclaringClass().isLibraryClass())
 			return null;
 
-		// For the moment, we don't implement static taints on wrappers. Pass it on
-		// not to break anything
+		// For the moment, we don't implement static taints on wrappers. Pass it on not
+		// to break anything
 		if (taintedPath.isStaticFieldRef())
 			return Collections.singleton(taintedPath);
+
+		final Set<AccessPath> taints = new HashSet<AccessPath>();
+
+		// We always keep the incoming taint
+		taints.add(taintedPath);
 
 		if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 			InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) stmt.getInvokeExpr();
 
 			// If the base object is tainted, the return value is always tainted
 			if (taintedPath.getPlainValue().equals(iiExpr.getBase()))
-				if (stmt instanceof AssignStmt)
-					return Collections.singleton(manager.getAccessPathFactory()
-							.createAccessPath(((AssignStmt) stmt).getLeftOp(), taintedPath.getTaintSubFields()));
+				if (stmt instanceof AssignStmt) {
+					taints.add(manager.getAccessPathFactory().createAccessPath(((AssignStmt) stmt).getLeftOp(),
+							taintedPath.getTaintSubFields()));
+					return taints;
+				}
 		}
 
 		// If one of the parameters is tainted, the return value is tainted, too
 		for (Value param : stmt.getInvokeExpr().getArgs())
 			if (taintedPath.getPlainValue().equals(param))
-				if (stmt instanceof AssignStmt)
-					return Collections.singleton(manager.getAccessPathFactory()
-							.createAccessPath(((AssignStmt) stmt).getLeftOp(), taintedPath.getTaintSubFields()));
+				if (stmt instanceof AssignStmt) {
+					taints.add(manager.getAccessPathFactory().createAccessPath(((AssignStmt) stmt).getLeftOp(),
+							taintedPath.getTaintSubFields()));
+					return taints;
+				}
 
-		return Collections.emptySet();
+		return taints;
 	}
 
 	@Override

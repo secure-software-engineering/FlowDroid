@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="com.mashape.unirest.request.GetRequest header(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.mashape.unirest.request.BaseRequest: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

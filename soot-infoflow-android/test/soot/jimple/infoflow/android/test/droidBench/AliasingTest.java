@@ -13,27 +13,35 @@ package soot.jimple.infoflow.android.test.droidBench;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class AliasingTest extends JUnitTests {
+public abstract class AliasingTest extends JUnitTests {
 	
 	@Test(timeout=300000)
 	public void runTestFlowSensitivity1() throws IOException, XmlPullParserException {
+		int expected = 0;
+		// See also HeapTests#innerFieldReductionTestNegative
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS)
+			expected = 1;
+
 		InfoflowResults res = analyzeAPKFile("Aliasing/FlowSensitivity1.apk");
 		if (res != null)
-			Assert.assertEquals(0, res.size());
+			Assert.assertEquals(expected, res.size());
 	}
 	
 	@Test(timeout=300000)
-	@Ignore // not yet supported
+	 // not yet supported
 	public void runTestMerge1() throws IOException, XmlPullParserException {
+		int expected = 0;
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
+			expected = 1;
+
 		InfoflowResults res = analyzeAPKFile("Aliasing/Merge1.apk");
 		if (res != null)
-			Assert.assertEquals(0, res.size());
+			Assert.assertEquals(expected, res.size());
 	}
 	
 	@Test(timeout=300000)

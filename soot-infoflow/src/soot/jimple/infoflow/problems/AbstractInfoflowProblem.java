@@ -10,10 +10,13 @@
  ******************************************************************************/
 package soot.jimple.infoflow.problems;
 
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +24,19 @@ import org.slf4j.LoggerFactory;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.InvokeExpr;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
-import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
+import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -40,8 +46,8 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 /**
  * abstract super class which - concentrates functionality used by
- * InfoflowProblem and BackwardsInfoflowProblem - contains helper functions
- * which should not pollute the naturally large InfofflowProblems
+ * InfoflowProblem and AliasProblem - contains helper functions which should not
+ * pollute the naturally large InfofflowProblems
  *
  */
 public abstract class AbstractInfoflowProblem
@@ -61,11 +67,44 @@ public abstract class AbstractInfoflowProblem
 
 	protected TaintPropagationHandler taintPropagationHandler = null;
 
-	private MyConcurrentHashMap<Unit, Set<Unit>> activationUnitsToCallSites = new MyConcurrentHashMap<Unit, Set<Unit>>();
+	private static class CallSite {
+		public Set<Unit> callsites = new ConcurrentHashSet<>();
+		public SoftReference<Set<SootMethod>> callsiteMethods = new SoftReference<>(new ConcurrentHashSet<>());
 
-	public AbstractInfoflowProblem(InfoflowManager manager) {
+		public boolean addCallsite(Unit callSite, IInfoflowCFG icfg) {
+			if (callsites.add(callSite)) {
+				Set<SootMethod> c = callsiteMethods.get();
+				if (c == null) {
+					c = new ConcurrentHashSet<>();
+					callsiteMethods = new SoftReference<>(c);
+				}
+				c.add(icfg.getMethodOf(callSite));
+				return true;
+			}
+			return false;
+		}
+	}
+
+	private ConcurrentHashMap<Unit, CallSite> activationUnitsToCallSites = new ConcurrentHashMap<Unit, CallSite>();
+
+	protected final PropagationRuleManager propagationRules;
+	protected final TaintPropagationResults results;
+
+	private static Function<? super Unit, ? extends CallSite> createNewCallSite = new Function<Unit, CallSite>() {
+
+		@Override
+		public CallSite apply(Unit t) {
+			return new CallSite();
+		}
+	};
+
+	public AbstractInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
+			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager.getICFG());
 		this.manager = manager;
+		this.zeroValue = zeroValue == null ? createZeroValue() : zeroValue;
+		this.results = new TaintPropagationResults(manager);
+		this.propagationRules = ruleManagerFactory.createRuleManager(manager, this.zeroValue, results);
 	}
 
 	public void setSolver(IInfoflowSolver solver) {
@@ -82,7 +121,7 @@ public abstract class AbstractInfoflowProblem
 	 */
 	@Override
 	public boolean followReturnsPastSeeds() {
-		return true;
+		return manager.getConfig().getSolverConfiguration().isFollowReturnsPastSources();
 	}
 
 	/**
@@ -125,23 +164,21 @@ public abstract class AbstractInfoflowProblem
 		return initialSeeds;
 	}
 
-	/**
-	 * performance improvement: since we start directly at the sources, we do not
-	 * need to generate additional taints unconditionally
-	 */
 	@Override
 	public boolean autoAddZero() {
 		return false;
 	}
 
-	protected boolean isCallSiteActivatingTaint(Unit callSite, Unit activationUnit) {
+	public boolean isCallSiteActivatingTaint(Unit callSite, Unit activationUnit) {
 		if (!manager.getConfig().getFlowSensitiveAliasing())
 			return false;
 
 		if (activationUnit == null)
 			return false;
-		Set<Unit> callSites = activationUnitsToCallSites.get(activationUnit);
-		return (callSites != null && callSites.contains(callSite));
+		CallSite callSites = activationUnitsToCallSites.get(activationUnit);
+		if (callSites != null)
+			return callSites.callsites.contains(callSite);
+		return false;
 	}
 
 	protected boolean registerActivationCallSite(Unit callSite, SootMethod callee, Abstraction activationAbs) {
@@ -151,24 +188,35 @@ public abstract class AbstractInfoflowProblem
 		if (activationUnit == null)
 			return false;
 
-		Set<Unit> callSites = activationUnitsToCallSites.putIfAbsentElseGet(activationUnit,
-				new ConcurrentHashSet<Unit>());
-		if (callSites.contains(callSite))
+		CallSite callSites = activationUnitsToCallSites.computeIfAbsent(activationUnit, createNewCallSite);
+		if (callSites.callsites.contains(callSite))
 			return false;
 
-		if (!activationAbs.isAbstractionActive())
+		IInfoflowCFG icfg = (IInfoflowCFG) super.interproceduralCFG();
+		if (!activationAbs.isAbstractionActive()) {
 			if (!callee.getActiveBody().getUnits().contains(activationUnit)) {
-				boolean found = false;
-				for (Unit au : callSites)
-					if (callee.getActiveBody().getUnits().contains(au)) {
-						found = true;
-						break;
+				Set<SootMethod> cm = callSites.callsiteMethods.get();
+				if (cm != null) {
+					if (!cm.contains(callee))
+						return false;
+				} else {
+					cm = new HashSet<>();
+					boolean found = false;
+					for (Unit au : callSites.callsites) {
+						cm.add(icfg.getMethodOf(au));
+						if (callee.getActiveBody().getUnits().contains(au)) {
+							found = true;
+							break;
+						}
 					}
-				if (!found)
-					return false;
+					callSites.callsiteMethods = new SoftReference<Set<SootMethod>>(cm);
+					if (!found)
+						return false;
+				}
 			}
+		}
 
-		return callSites.add(callSite);
+		return callSites.addCallsite(callSite, icfg);
 	}
 
 	public void setActivationUnitsToCallSites(AbstractInfoflowProblem other) {
@@ -221,6 +269,15 @@ public abstract class AbstractInfoflowProblem
 	 */
 	public void setTaintPropagationHandler(TaintPropagationHandler handler) {
 		this.taintPropagationHandler = handler;
+	}
+
+	/**
+	 * Gets the taint propagation handler
+	 *
+	 * @return taint propagation handler
+	 */
+	public TaintPropagationHandler getTaintPropagationHandler() {
+		return this.taintPropagationHandler;
 	}
 
 	@Override
@@ -305,7 +362,44 @@ public abstract class AbstractInfoflowProblem
 				return true;
 		}
 
+		if (sm.isConcrete() && !sm.hasActiveBody())
+			return true;
+
 		return false;
 	}
 
+	/**
+	 * Gets the results of the data flow analysis
+	 */
+	public TaintPropagationResults getResults() {
+		return this.results;
+	}
+
+	/**
+	 * Gets the rules that FlowDroid uses internally to conduct specific analysis
+	 * tasks such as handling sources or sinks
+	 * 
+	 * @return The propagation rule manager
+	 */
+	public PropagationRuleManager getPropagationRules() {
+		return propagationRules;
+	}
+
+	/**
+	 * Checks whether the arguments of a given invoke expression
+	 * has a reference to a given base object while ignoring the given index
+	 * @param e the invoke expr
+	 * @param actualBase the base to look for
+	 * @param ignoreIndex the index to ignore
+	 * @return true if there is another reference
+	 */
+	protected boolean hasAnotherReferenceOnBase(InvokeExpr e, Value actualBase, int ignoreIndex) {
+		for (int i = 0; i < e.getArgCount(); i++) {
+			if (i != ignoreIndex) {
+				if (e.getArg(i) == actualBase)
+					return true;
+			}
+		}
+		return false;
+	}
 }

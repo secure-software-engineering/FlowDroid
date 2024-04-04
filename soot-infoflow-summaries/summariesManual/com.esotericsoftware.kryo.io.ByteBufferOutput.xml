@@ -1,0 +1,258 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+    <hierarchy superClass="com.esotericsoftware.kryo.io.Output" />
+
+    <methods>
+        <method id="void &lt;init&gt;(java.io.OutputStream)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void &lt;init&gt;(java.io.OutputStream,int)">
+            <flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeAscii(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeBoolean(boolean)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeBooleans(boolean[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeByte(byte)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeByte(int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeBytes(byte[])">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeByte(byte[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeChar(char)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeChars(char[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeDouble(double)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeDoubles(double,int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeFloat(float)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeFloats(float,int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeInt(int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeInts(int[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeLong(long)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeLongs(long[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeShort(short)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeShorts(short[],int,int)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="void writeString(java.lang.String)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+
+        <method id="int writeVarInt(int,boolean)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int writeVarIntFlag(boolean,int,boolean)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+        <method id="int writeVarLong(long,boolean)">
+            <flows>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+                        AccessPathTypes="[java.io.OutputStream]" />
+                </flow>
+            </flows>
+        </method>
+    </methods>
+</summary>

@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Set;
+
 /**
  * Abstract interface for soure/sink definitions
  * 
@@ -9,9 +11,9 @@ package soot.jimple.infoflow.sourcesSinks.definitions;
 public interface ISourceSinkDefinition {
 
 	/**
-	 * Sets the category to which this source or sink belonga
+	 * Sets the category to which this source or sink belongs
 	 * 
-	 * @param category The category to which this source or sink belonga
+	 * @param category The category to which this source or sink belongs
 	 */
 	public void setCategory(ISourceSinkCategory category);
 
@@ -39,11 +41,27 @@ public interface ISourceSinkDefinition {
 	public abstract ISourceSinkDefinition getSinkOnlyDefinition();
 
 	/**
-	 * Merges the source and sink definitions of the given definition object into
-	 * this definition object
+	 * Indicates if the definition contains any sources or sinks
 	 * 
-	 * @param other The definition object to merge
+	 * @return The boolean if this definition is empty
 	 */
-	public abstract void merge(ISourceSinkDefinition other);
+	public abstract boolean isEmpty();
+
+	/**
+	 * Gets the conditions under which the source/sink definition is valid
+	 *
+	 * @return A set with the conditions under which the source/sink definition is
+	 *         valid, optionally <code>null</code> if no such conditions exist
+	 */
+	public Set<SourceSinkCondition> getConditions();
+
+	/**
+	 * Sets the conditions under which the source/sink definition is valid
+	 *
+	 * @param conditions
+	 *            A set with the conditions under which the source/sink definition
+	 *            is valid, optionally <code>null</code> if no such conditions exist
+	 */
+	public void setConditions(Set<SourceSinkCondition> conditions);
 
 }

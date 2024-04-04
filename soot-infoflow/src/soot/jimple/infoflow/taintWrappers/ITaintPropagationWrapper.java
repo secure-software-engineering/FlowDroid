@@ -10,12 +10,14 @@
  ******************************************************************************/
 package soot.jimple.infoflow.taintWrappers;
 
+import java.util.Collection;
 import java.util.Set;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 
 /**
  * This interface declares methods to define classes and methods which should not
@@ -41,7 +43,15 @@ public interface ITaintPropagationWrapper {
 	 * the IFDS edges and the interprocedural control flow graph
 	 */
 	public void initialize(InfoflowManager manager);
-	
+
+	/**
+	 * This method returns a PreAnalysisHandler that runs before the InfoflowManager creation.
+	 * Use this method, for example, to inject hierarchy information.
+	 *
+	 * @return a collection of PreAnalysisHandlers. Assumed to be non-null.
+	 */
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers();
+
 	/**
 	 * Checks an invocation statement for black-box taint propagation. This allows
 	 * the wrapper to artificially propagate taints over method invocations without

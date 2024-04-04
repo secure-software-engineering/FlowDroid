@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
+	<hierarchy superClass="java.util.AbstractList">
+		<interface name="java.util.Collection" />
+		<interface name="java.util.List" />
+    </hierarchy>
     <methods>
         <method id="java.lang.Object getFirst()">
             <flows>

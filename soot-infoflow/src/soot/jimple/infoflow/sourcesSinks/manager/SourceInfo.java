@@ -1,10 +1,15 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import heros.solver.Pair;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.util.HashMultiMap;
 
 /**
  * Class containing additional information about a source. Users of FlowDroid
@@ -14,8 +19,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
  * @author Steven Arzt, Daniel Magin
  */
 public class SourceInfo extends AbstractSourceSinkInfo {
-
-	protected final Set<AccessPath> accessPaths;
+	protected final HashMultiMap<AccessPath, ISourceSinkDefinition> accessPathsToDefinitions;
 
 	/**
 	 * Creates a new instance of the {@link SourceInfo} class. This is a convenience
@@ -26,7 +30,15 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	 * @param ap The single access path that shall be tainted at this source
 	 */
 	public SourceInfo(ISourceSinkDefinition definition, AccessPath ap) {
-		this(definition, Collections.singleton(ap), null);
+		this(definition, ap, null);
+	}
+
+	public SourceInfo(AccessPath ap) {
+		this(Collections.singleton(new Pair<>(ap, null)));
+	}
+
+	public SourceInfo(ISourceSinkDefinition definition, Collection<AccessPath> aps) {
+		this(aps.stream().map(ap -> new Pair<>(ap, definition)).collect(Collectors.toSet()), null);
 	}
 
 	/**
@@ -38,29 +50,34 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	 * @param userData   Additional user data to be propagated with the source
 	 */
 	public SourceInfo(ISourceSinkDefinition definition, AccessPath ap, Object userData) {
-		this(definition, Collections.singleton(ap), userData);
+		this(Collections.singleton(new Pair<>(ap, definition)), userData);
 	}
 
 	/**
 	 * Creates a new instance of the {@link SourceInfo} class
 	 * 
-	 * @param definition The original definition of the source or sink
-	 * @param bundle     Information about access paths tainted by this source
+	 * @param apAndDefs Pairs of access paths and defintions
 	 */
-	public SourceInfo(ISourceSinkDefinition definition, Set<AccessPath> bundle) {
-		this(definition, bundle, null);
+	public SourceInfo(Collection<Pair<AccessPath, ISourceSinkDefinition>> apAndDefs) {
+		this(apAndDefs, null);
 	}
 
 	/**
 	 * Creates a new instance of the {@link SourceInfo} class
-	 * 
-	 * @param definition The original definition of the source or sink
-	 * @param bundle     Information about access paths tainted by this source
-	 * @param userData   Additional user data to be propagated with the source
+	 *
+	 * @param apAndDefs Pairs of access paths and defintions
+	 * @param userData  Additional user data to be propagated with the source
 	 */
-	public SourceInfo(ISourceSinkDefinition definition, Set<AccessPath> bundle, Object userData) {
-		super(definition, userData);
-		this.accessPaths = bundle;
+	public SourceInfo(Collection<Pair<AccessPath, ISourceSinkDefinition>> apAndDefs, Object userData) {
+		super(userData);
+
+		// Make sure we don't accidentally create empty SourceInfos
+		assert apAndDefs.size() > 0;
+
+		this.accessPathsToDefinitions = new HashMultiMap<>();
+		for (Pair<AccessPath, ISourceSinkDefinition> apAndDef : apAndDefs) {
+			accessPathsToDefinitions.put(apAndDef.getO1(), apAndDef.getO2());
+		}
 	}
 
 	/**
@@ -69,14 +86,29 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	 * @return All access paths tainted by this source
 	 */
 	public Set<AccessPath> getAccessPaths() {
-		return this.accessPaths;
+		return this.accessPathsToDefinitions.keySet();
+	}
+
+	/**
+	 * Get all definitions that match the access path
+	 * Precondition: This SourceInfo contains the access path
+	 *
+	 * @param ap access path
+	 * @return all definitions which match the access path
+	 */
+	public Collection<ISourceSinkDefinition> getDefinitionsForAccessPath(AccessPath ap) {
+		return this.accessPathsToDefinitions.get(ap);
+	}
+
+	public Collection<ISourceSinkDefinition> getAllDefinitions() {
+		return this.accessPathsToDefinitions.values();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
+		result = prime * result + ((accessPathsToDefinitions == null) ? 0 : accessPathsToDefinitions.hashCode());
 		return result;
 	}
 
@@ -89,10 +121,10 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		SourceInfo other = (SourceInfo) obj;
-		if (accessPaths == null) {
-			if (other.accessPaths != null)
+		if (accessPathsToDefinitions == null) {
+			if (other.accessPathsToDefinitions != null)
 				return false;
-		} else if (!accessPaths.equals(other.accessPaths))
+		} else if (!accessPathsToDefinitions.equals(other.accessPathsToDefinitions))
 			return false;
 		return true;
 	}

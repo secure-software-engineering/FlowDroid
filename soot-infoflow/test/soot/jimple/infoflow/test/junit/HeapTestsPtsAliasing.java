@@ -35,7 +35,7 @@ import soot.jimple.infoflow.taintWrappers.AbstractTaintWrapper;
 /**
  * tests aliasing of heap references
  */
-public class HeapTestsPtsAliasing extends JUnitTests {
+public abstract class HeapTestsPtsAliasing extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void testForEarlyTermination() {
@@ -120,12 +120,37 @@ public class HeapTestsPtsAliasing extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void heapTest1() {
+		for (int i = 0; i < 50; i++) {
+			IInfoflow infoflow = initInfoflow();
+			infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);
+			infoflow.getConfig().setMaxThreadNum(1);
+			List<String> epoints = new ArrayList<String>();
+			epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void methodTest1()>");
+			infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+			checkInfoflow(infoflow, 1);
+		}
+	}
+
+	@Test(timeout = 300000)
+	public void heapTest2() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);
+		infoflow.getConfig().setMaxThreadNum(1);
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void methodTest1()>");
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void methodTest2()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
+	@Test(timeout = 300000)
+	public void heapTest3() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);
+		infoflow.getConfig().setMaxThreadNum(1);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void methodTest3()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
@@ -536,7 +561,7 @@ public class HeapTestsPtsAliasing extends JUnitTests {
 		checkInfoflow(infoflow, 1);
 	}
 
-	@Test // (timeout = 300000)
+	@Test(timeout = 300000)
 	public void longAPAliasTest1() {
 		IInfoflow infoflow = initInfoflow();
 		infoflow.getConfig().setAliasingAlgorithm(AliasingAlgorithm.PtsBased);

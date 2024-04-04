@@ -22,9 +22,9 @@ import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
  */
 public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 
-	private final IAbstractionPathBuilder innerBuilder;
-	private int batchSize = 5;
-	private ISolverTerminationReason terminationReason = null;
+	protected final IAbstractionPathBuilder innerBuilder;
+	protected int batchSize = 5;
+	protected ISolverTerminationReason terminationReason = null;
 
 	public BatchPathBuilder(InfoflowManager manager, IAbstractionPathBuilder innerBuilder) {
 		super(manager);
@@ -40,8 +40,7 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 			// Build the next batch
 			while (batch.size() < this.batchSize && resIt.hasNext())
 				batch.add(resIt.next());
-			logger.info(
-					String.format("Running path reconstruction batch %d with %d elements", batchId++, batch.size()));
+			logger.info("Running path reconstruction batch {} with {} elements", batchId++, batch.size());
 
 			// Run the next batch
 			innerBuilder.reset();
@@ -82,8 +81,8 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
-		innerBuilder.runIncrementalPathCompuation();
+	public void runIncrementalPathComputation() {
+		innerBuilder.runIncrementalPathComputation();
 	}
 
 	@Override
@@ -120,8 +119,7 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 	 * Sets the number of paths that shall be part of one batch, i.e., that shall be
 	 * forwarded to the inner path builder at the same time
 	 * 
-	 * @param batchSize
-	 *            The number of paths in one batch
+	 * @param batchSize The number of paths in one batch
 	 */
 	public void setBatchSize(int batchSize) {
 		this.batchSize = batchSize;

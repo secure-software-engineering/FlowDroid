@@ -17,12 +17,11 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 
-
 /**
  * aim to produce a setting similar to the one that occurs when callback
  * methods, for instance from the LocationListener are executed.
  */
-public class CallbackTests extends JUnitTests {
+public abstract class CallbackTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void thirdCallBackTest() {

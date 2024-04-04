@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="java.lang.String decode(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String encode(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String encode(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.net.Uri fromParts(java.lang.String,java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String scheme]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String fragment]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getAuthority()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean getBooleanQueryParameter(java.lang.String,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getEncodedAuthority()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getEncodedPath()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getEncodedQuery()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getEncodedSchemeSpecificPart()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getEncodedUserInfo()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getFragment()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String fragment]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getHost()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getLastPathSegment()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getPath()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.List getPathSegments()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.util.List"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="int getPort()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: int port]"
+						AccessPathTypes="[int]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getQuery()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getQueryParameter(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Set getQueryParameterNames()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" 
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getScheme()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String scheme]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getSchemeSpecificPart()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String getUserInfo()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.net.Uri normalizeScheme()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri" />
+					<to sourceSinkType="Return" BaseType="android.net.Uri" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.net.Uri parse(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String scheme]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String fragment]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String scheme]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String fragment]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return" BaseType="java.lang.String" />
+				</flow>
+			</flows>
+		</method>
+		<method id="android.net.Uri withAppendedPath(android.net.Uri,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" BaseType="android.net.Uri" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" BaseType="android.net.Uri"
+						AccessPath="[android.net.Uri: java.lang.String ssp]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

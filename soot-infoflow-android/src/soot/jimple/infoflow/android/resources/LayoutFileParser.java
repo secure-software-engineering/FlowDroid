@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import pxb.android.axml.AxmlVisitor;
+import soot.FastHierarchy;
 import soot.PackManager;
 import soot.Scene;
 import soot.SceneTransformer;
@@ -115,9 +116,10 @@ public class LayoutFileParser extends AbstractResourceParser {
 
 		// To make sure that nothing all wonky is going on here, we
 		// check the hierarchy to find the android view class
-		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scView.getType()))
+		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		if (scView != null && fh.canStoreType(theClass.getType(), scView.getType()))
 			return true;
-		if (Scene.v().getOrMakeFastHierarchy().canStoreType(theClass.getType(), scWebView.getType()))
+		if (scWebView != null && fh.canStoreType(theClass.getType(), scWebView.getType()))
 			return true;
 
 		logger.warn(String.format("Layout class %s is not derived from android.view.View", theClass.getName()));
@@ -193,10 +195,10 @@ public class LayoutFileParser extends AbstractResourceParser {
 			@Override
 			public void handleResourceFile(final String fileName, Set<String> fileNameFilter, InputStream stream) {
 				// We only process valid layout XML files
-				if (!fileName.startsWith("res/layout"))
+				if (!fileName.startsWith("res/layout") && !fileName.startsWith("res/navigation"))
 					return;
 				if (!fileName.endsWith(".xml")) {
-					logger.warn("Skipping file %s in layout folder...", fileName);
+					logger.warn(String.format("Skipping file %s in layout folder...", fileName));
 					return;
 				}
 
@@ -262,6 +264,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 			// final AXmlAttribute<?> attrID = rootNode.getAttribute("id");
 			if (attr == null)
 				logger.warn("Fragment without class name or id detected");
+			else if (rootNode.getAttribute("navGraph") != null)
+				parseIncludeAttributes(layoutFile, rootNode);
 			else {
 				addFragment(layoutFile, getLayoutClass(attr.getValue().toString()));
 				if (attr.getType() != AxmlVisitor.TYPE_STRING)
@@ -293,7 +297,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 			attrName = attrName.trim();
 			AXmlAttribute<?> attr = entry.getValue();
 
-			if (attrName.equals("layout")) {
+			if (attrName.equals("layout") || attrName.equals("navGraph")) {
 				if ((attr.getType() == AxmlVisitor.TYPE_REFERENCE || attr.getType() == AxmlVisitor.TYPE_INT_HEX)
 						&& attr.getValue() instanceof Integer) {
 					// We need to get the target XML file from the binary
@@ -304,8 +308,8 @@ public class LayoutFileParser extends AbstractResourceParser {
 						return;
 					}
 					if (!(targetRes instanceof StringResource)) {
-						logger.warn("Invalid target node for include tag in layout XML, was %s",
-								targetRes.getClass().getName());
+						logger.warn(String.format("Invalid target node for include tag in layout XML, was %s",
+								targetRes.getClass().getName()));
 						return;
 					}
 					String targetFile = ((StringResource) targetRes).getValue();

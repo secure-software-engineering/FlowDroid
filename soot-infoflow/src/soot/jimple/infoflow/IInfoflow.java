@@ -26,6 +26,7 @@ import soot.jimple.infoflow.ipc.IIPCManager;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.results.InfoflowResults;
+import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintWrapperDataFlowAnalysis;
@@ -60,20 +61,20 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	public void setNativeCallHandler(INativeCallHandler handler);
 
 	/**
-	 * List of preprocessors that need to be executed in order before the
+	 * Add a preprocessor that need to be executed in order before the
 	 * information flow.
 	 * 
-	 * @param preprocessors the pre-processors
+	 * @param preprocessor the pre-processor
 	 */
-	public void setPreProcessors(Collection<? extends PreAnalysisHandler> preprocessors);
+	public void addPreprocessor(PreAnalysisHandler preprocessor);
 
 	/**
-	 * Sets the set of post-processors that shall be executed after the data flow
+	 * Adds a post-processor that shall be executed after the data flow
 	 * analysis has finished
 	 * 
-	 * @param postprocessors The post-processors to execute on the results
+	 * @param postprocessor The post-processor to execute on the results
 	 */
-	public void setPostProcessors(Collection<? extends PostAnalysisHandler> postprocessors);
+	public void addPostProcessor(PostAnalysisHandler postprocessor);
 
 	/**
 	 * Computes the information flow on a list of entry point methods. This list is
@@ -239,11 +240,11 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	public void setTaintPropagationHandler(TaintPropagationHandler handler);
 
 	/**
-	 * Sets a handler which is invoked whenever an alias is propagated backwards
+	 * Sets a handler which is invoked whenever an alias is propagated
 	 * 
 	 * @param handler The handler to be invoked when propagating aliases
 	 */
-	public void setBackwardsPropagationHandler(TaintPropagationHandler handler);
+	public void setAliasPropagationHandler(TaintPropagationHandler handler);
 
 	/**
 	 * Sets the factory to be used for creating memory managers
@@ -267,4 +268,10 @@ public interface IInfoflow extends ITaintWrapperDataFlowAnalysis {
 	 */
 	public void setPropagationRuleManagerFactory(IPropagationRuleManagerFactory ruleManagerFactory);
 
+	/**
+	 * Sets the usage context provider
+	 *
+	 * @param usageContextProvider The usage context provider object
+	 */
+	void setUsageContextProvider(IUsageContextProvider usageContextProvider);
 }

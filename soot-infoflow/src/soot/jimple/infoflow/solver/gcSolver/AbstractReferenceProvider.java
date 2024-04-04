@@ -14,7 +14,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * @author Steven Arzt
  *
  */
-public abstract class AbstractReferenceProvider<D, N> implements IGCReferenceProvider<D, N> {
+public abstract class AbstractReferenceProvider<A, N> implements IGCReferenceProvider<A> {
 
 	protected final BiDiInterproceduralCFG<N, SootMethod> icfg;
 
@@ -35,10 +35,16 @@ public abstract class AbstractReferenceProvider<D, N> implements IGCReferencePro
 
 		while (!workList.isEmpty()) {
 			SootMethod sm = workList.remove(0);
-			for (N callSite : icfg.getCallsFromWithin(sm)) {
-				for (SootMethod callee : icfg.getCalleesOfCallAt(callSite)) {
-					if (callees.add(callee))
-						workList.add(callee);
+			if (sm.isConcrete()) {
+				// We can only look for callees if we have a body
+				if (sm.hasActiveBody()) {
+					// Schedule the callees
+					for (N callSite : icfg.getCallsFromWithin(sm)) {
+						for (SootMethod callee : icfg.getCalleesOfCallAt(callSite)) {
+							if (callees.add(callee))
+								workList.add(callee);
+						}
+					}
 				}
 			}
 		}

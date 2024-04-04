@@ -184,6 +184,36 @@ public class TypeTestCode {
 		callIt(b);
 	}
 
+	public void callTargetTest2() {
+		ConnectionManager cm = new ConnectionManager();
+
+		A b2 = new B2();
+		cm.publish(b2.data);
+		b2.data = TelephonyManager.getDeviceId();
+
+		A b = new B();
+		b.data = TelephonyManager.getDeviceId();
+		cm.publish(b.data);
+	}
+
+	public void callTargetTest3() {
+		A b2 = new B2();
+		b2.leak();
+		b2.data = TelephonyManager.getDeviceId();
+
+		A b = new B();
+		b.data = TelephonyManager.getDeviceId();
+		b.leak();
+	}
+
+	public void callTargetTest1Reduced() {
+		ConnectionManager cm = new ConnectionManager();
+		StringBuilder sb = new StringBuilder();
+		String tainted = TelephonyManager.getDeviceId();
+		sb.append(tainted);
+		cm.publish(sb.toString());
+	}
+
 	public void arrayObjectCastTest() {
 		Object obj = Bundle.get("foo");
 		A foo2[] = (A[]) obj;
@@ -433,6 +463,17 @@ public class TypeTestCode {
 		cm.publish((String) d.arr[0]);
 	}
 
+	public void aliasTypeTestReduced() {
+		X b = new X();
+		b.arr = new Object[2];
+
+		X c = b;
+		b.arr[0] = TelephonyManager.getDeviceId();
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish((String) c.arr[0]);
+	}
+
 	public void aliasTypeTest2() {
 		X b = new X();
 		b.arr = new Object[2];
@@ -595,6 +636,16 @@ public class TypeTestCode {
 		cm.publish(arr3[0]);
 	}
 
+	public void multiDimensionalArrayTest2Reduced() {
+		ConnectionManager cm = new ConnectionManager();
+		int[][] arr = new int[1][1];
+		String id = TelephonyManager.getDeviceId();
+		int[] arr2 = arr[0];
+		arr2[0] = id.charAt(0);
+		int[] arr3 = arr[0];
+		cm.publish(arr3[0]);
+	}
+
 	public void aliasPerformanceTest1() {
 		String id = TelephonyManager.getDeviceId();
 
@@ -616,4 +667,21 @@ public class TypeTestCode {
 		System.out.println(x.b.data);
 	}
 
+	public void arrayCastWithApTest1() {
+		String tainted = TelephonyManager.getDeviceId();
+		B a = new B();
+		a.data = tainted;
+		A[] array = new B[1];
+		array[0] = a;
+		// Incoming: array(B[]).data
+		// checkCast checks whether the cast can be done successfully
+		// and all fields in the access path are still valid given the
+		// new type. Given we do have an access path, the base is an array
+		// and the current statement is a cast, checkCast first has to unpack
+		// the array type before checking whether the fields still work with
+		// the new type.
+		B[] array2 = (B[]) array;
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(array2[0].data);
+	}
 }

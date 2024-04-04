@@ -17,7 +17,7 @@ public class ClassSummaries {
 
 	public static final ClassSummaries EMPTY_SUMMARIES = new ImmutableClassSummaries();
 
-	private final Map<String, ClassMethodSummaries> summaries = new HashMap<>();
+	private final Map<String, ClassMethodSummaries> summaries;
 	private final Set<String> dependencies = new HashSet<>();
 	private SummaryMetaData metaData = null;
 
@@ -25,7 +25,16 @@ public class ClassSummaries {
 	 * Creates a new instance of the ClassSummaries class
 	 */
 	public ClassSummaries() {
-		//
+		summaries = createSummariesMap();
+	}
+
+	/**
+	 * Creates the map for storing the summaries
+	 * 
+	 * @return The map for storing the summaries
+	 */
+	protected Map<String, ClassMethodSummaries> createSummariesMap() {
+		return new HashMap<>();
 	}
 
 	/**
@@ -35,6 +44,16 @@ public class ClassSummaries {
 	 */
 	public ClassMethodSummaries getClassSummaries(String className) {
 		return summaries.get(className);
+	}
+
+	/**
+	 * Gets or creates a summary object for the given class
+	 * 
+	 * @param className The name of the class for which to get a summary object
+	 * @return The summary object for the class with the given name
+	 */
+	public ClassMethodSummaries getOrCreateClassSummaries(String className) {
+		return summaries.computeIfAbsent(className, n -> new ClassMethodSummaries(className));
 	}
 
 	/**

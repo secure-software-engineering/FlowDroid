@@ -34,19 +34,10 @@ public class AccessPath implements Cloneable {
 		Contents, Length, ContentsAndLength
 	}
 
-	// ATTENTION: This class *must* be immutable!
-	/*
-	 * tainted value, is not null for non-static values
-	 */
 	private final Local value;
-	/**
-	 * list of fields, either they are based on a concrete @value or they indicate a
-	 * static field
-	 */
-	private final SootField[] fields;
-
 	private final Type baseType;
-	private final Type[] fieldTypes;
+
+	private final AccessPathFragment[] fragments;
 
 	private final boolean taintSubFields;
 	private final boolean cutOffApproximation;
@@ -66,9 +57,8 @@ public class AccessPath implements Cloneable {
 
 	private AccessPath() {
 		this.value = null;
-		this.fields = null;
 		this.baseType = null;
-		this.fieldTypes = null;
+		this.fragments = null;
 		this.taintSubFields = true;
 		this.cutOffApproximation = false;
 		this.arrayTaintType = ArrayTaintType.ContentsAndLength;
@@ -78,9 +68,19 @@ public class AccessPath implements Cloneable {
 	AccessPath(Local val, SootField[] appendingFields, Type valType, Type[] appendingFieldTypes, boolean taintSubFields,
 			boolean isCutOffApproximation, ArrayTaintType arrayTaintType, boolean canHaveImmutableAliases) {
 		this.value = val;
-		this.fields = appendingFields;
 		this.baseType = valType;
-		this.fieldTypes = appendingFieldTypes;
+		this.fragments = AccessPathFragment.createFragmentArray(appendingFields, appendingFieldTypes);
+		this.taintSubFields = taintSubFields;
+		this.cutOffApproximation = isCutOffApproximation;
+		this.arrayTaintType = arrayTaintType;
+		this.canHaveImmutableAliases = canHaveImmutableAliases;
+	}
+
+	AccessPath(Local val, Type valType, AccessPathFragment[] fragments, boolean taintSubFields,
+			boolean isCutOffApproximation, ArrayTaintType arrayTaintType, boolean canHaveImmutableAliases) {
+		this.value = val;
+		this.baseType = valType;
+		this.fragments = fragments;
 		this.taintSubFields = taintSubFields;
 		this.cutOffApproximation = isCutOffApproximation;
 		this.arrayTaintType = arrayTaintType;
@@ -105,22 +105,84 @@ public class AccessPath implements Cloneable {
 		return value;
 	}
 
-	public SootField getLastField() {
-		if (fields == null || fields.length == 0)
+	public Value getCompleteValue() {
+		SootField f = getFirstField();
+		if (value == null) {
+			if (f == null)
+				return null;
+
+			return Jimple.v().newStaticFieldRef(f.makeRef());
+		} else {
+			if (f == null)
+				return value;
+			return Jimple.v().newInstanceFieldRef(value, f.makeRef());
+		}
+	}
+
+	/**
+	 * Gets the last fragment in the sequence of field dereferences
+	 * 
+	 * @return The last fragment in the sequence of field dereferences
+	 */
+	public AccessPathFragment getLastFragment() {
+		if (fragments == null || fragments.length == 0)
 			return null;
-		return fields[fields.length - 1];
+		return fragments[fragments.length - 1];
 	}
 
-	public Type getLastFieldType() {
-		if (fieldTypes == null || fieldTypes.length == 0)
-			return baseType;
-		return fieldTypes[fieldTypes.length - 1];
+	/**
+	 * Gets the first fragment in the sequence of field dereferences
+	 * 
+	 * @return The first fragment in the sequence of field dereferences
+	 */
+	public AccessPathFragment getFirstFragment() {
+		if (fragments == null || fragments.length == 0)
+			return null;
+		return fragments[0];
 	}
 
+	/**
+	 * Gets the first field in the sequence of field dereferences
+	 * 
+	 * @return The first field in the sequence of field dereferences
+	 */
 	public SootField getFirstField() {
-		if (fields == null || fields.length == 0)
+		if (fragments == null || fragments.length == 0)
 			return null;
-		return fields[0];
+		return fragments[0].getField();
+	}
+
+	/**
+	 * Gets the last field in the sequence of field dereferences
+	 * 
+	 * @return The last field in the sequence of field dereferences
+	 */
+	public SootField getLastField() {
+		if (fragments == null || fragments.length == 0)
+			return null;
+		return fragments[fragments.length - 1].getField();
+	}
+
+	/**
+	 * Gets the type of the first field in the sequence of field dereferences
+	 * 
+	 * @return The type of the first field in the sequence of field dereferences
+	 */
+	public Type getFirstFieldType() {
+		if (fragments == null || fragments.length == 0)
+			return null;
+		return fragments[0].getFieldType();
+	}
+
+	/**
+	 * Gets the type of the last field in the sequence of field dereferences
+	 * 
+	 * @return The type of the last field in the sequence of field dereferences
+	 */
+	public Type getLastFieldType() {
+		if (fragments == null || fragments.length == 0)
+			return getBaseType();
+		return fragments[fragments.length - 1].getFieldType();
 	}
 
 	/**
@@ -131,29 +193,27 @@ public class AccessPath implements Cloneable {
 	 *         field matches the given one, otherwise false
 	 */
 	public boolean firstFieldMatches(SootField field) {
-		if (fields == null || fields.length == 0)
+		if (fragments == null || fragments.length == 0)
 			return false;
-		if (field == fields[0])
-			return true;
-		return false;
+		return field == fragments[0].getField();
 	}
 
-	public Type getFirstFieldType() {
-		if (fieldTypes == null || fieldTypes.length == 0)
-			return null;
-		return fieldTypes[0];
+	/**
+	 * Gets the sequence of field dereferences in this access path
+	 * 
+	 * @return The sequence of field dereferences in this access path
+	 */
+	public AccessPathFragment[] getFragments() {
+		return fragments;
 	}
 
-	public SootField[] getFields() {
-		return fields;
-	}
-
-	public Type[] getFieldTypes() {
-		return fieldTypes;
-	}
-
-	public int getFieldCount() {
-		return fields == null ? 0 : fields.length;
+	/**
+	 * Gets the number of field dereferences in this access path
+	 * 
+	 * @return The number of field dereferences in this access path
+	 */
+	public int getFragmentCount() {
+		return fragments == null ? 0 : fragments.length;
 	}
 
 	@Override
@@ -166,8 +226,7 @@ public class AccessPath implements Cloneable {
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		result = prime * result + ((baseType == null) ? 0 : baseType.hashCode());
 
-		result = prime * result + ((fields == null) ? 0 : Arrays.hashCode(fields));
-		result = prime * result + ((fieldTypes == null) ? 0 : Arrays.hashCode(fieldTypes));
+		result = prime * result + ((fragments == null) ? 0 : Arrays.hashCode(fragments));
 
 		result = prime * result + (this.taintSubFields ? 1 : 0);
 		result = prime * result + this.arrayTaintType.hashCode();
@@ -204,9 +263,7 @@ public class AccessPath implements Cloneable {
 		} else if (!baseType.equals(other.baseType))
 			return false;
 
-		if (!Arrays.equals(fields, other.fields))
-			return false;
-		if (!Arrays.equals(fieldTypes, other.fieldTypes))
+		if (!Arrays.equals(fragments, other.fragments))
 			return false;
 
 		if (this.taintSubFields != other.taintSubFields)
@@ -222,33 +279,34 @@ public class AccessPath implements Cloneable {
 	}
 
 	public boolean isStaticFieldRef() {
-		return value == null && fields != null && fields.length > 0;
+		return value == null && fragments != null && fragments.length > 0;
 	}
 
 	public boolean isInstanceFieldRef() {
-		return value != null && fields != null && fields.length > 0;
+		return value != null && fragments != null && fragments.length > 0;
 	}
 
 	public boolean isFieldRef() {
-		return fields != null && fields.length > 0;
+		return fragments != null && fragments.length > 0;
 	}
 
 	public boolean isLocal() {
-		return value != null && value instanceof Local && (fields == null || fields.length == 0);
+		return value != null && value instanceof Local && (fragments == null || fragments.length == 0);
 	}
 
 	@Override
 	public String toString() {
 		String str = "";
 		if (value != null)
-			str += value.toString() + "(" + value.getType() + ")";
-		if (fields != null)
-			for (int i = 0; i < fields.length; i++)
-				if (fields[i] != null) {
+			str += value.toString() + "(" + baseType + ")";
+		if (fragments != null && fragments.length > 0) {
+			for (int i = 0; i < fragments.length; i++)
+				if (fragments[i] != null) {
 					if (!str.isEmpty())
 						str += " ";
-					str += fields[i];
+					str += fragments[i];
 				}
+		}
 		if (taintSubFields)
 			str += " *";
 
@@ -266,8 +324,8 @@ public class AccessPath implements Cloneable {
 		if (this == emptyAccessPath)
 			return this;
 
-		AccessPath a = new AccessPath(value, fields, baseType, fieldTypes, taintSubFields, cutOffApproximation,
-				arrayTaintType, canHaveImmutableAliases);
+		AccessPath a = new AccessPath(value, baseType, fragments, taintSubFields, cutOffApproximation, arrayTaintType,
+				canHaveImmutableAliases);
 		assert a.equals(this);
 		return a;
 	}
@@ -276,8 +334,13 @@ public class AccessPath implements Cloneable {
 		return emptyAccessPath;
 	}
 
+	/**
+	 * Gets whether this access path is empty, i.e., references nothing
+	 * 
+	 * @return True if this access path is empty, false otherwise
+	 */
 	public boolean isEmpty() {
-		return value == null && (fields == null || fields.length == 0);
+		return value == null && (fragments == null || fragments.length == 0);
 	}
 
 	/**
@@ -302,14 +365,14 @@ public class AccessPath implements Cloneable {
 		if (this.value != null && !this.value.equals(a2.value))
 			return false;
 
-		if (this.fields != null && a2.fields != null) {
+		if (this.fragments != null && a2.fragments != null) {
 			// If this access path is deeper than the other one, it cannot entail it
-			if (this.fields.length > a2.fields.length)
+			if (this.fragments.length > a2.fragments.length)
 				return false;
 
 			// Check the fields in detail
-			for (int i = 0; i < this.fields.length; i++)
-				if (!this.fields[i].equals(a2.fields[i]))
+			for (int i = 0; i < this.fragments.length; i++)
+				if (!this.fragments[i].getField().equals(a2.fragments[i].getField()))
 					return false;
 		}
 		return true;
@@ -322,22 +385,17 @@ public class AccessPath implements Cloneable {
 	 * @return A copy of this access path with the last field being dropped.
 	 */
 	public AccessPath dropLastField() {
-		if (fields == null || fields.length == 0)
+		if (fragments == null || fragments.length == 0)
 			return this;
 
-		final SootField[] newFields;
-		final Type[] newTypes;
-		if (fields.length > 1) {
-			newFields = new SootField[fields.length - 1];
-			System.arraycopy(fields, 0, newFields, 0, fields.length - 1);
-
-			newTypes = new Type[fields.length - 1];
-			System.arraycopy(fieldTypes, 0, newTypes, 0, fields.length - 1);
-		} else {
-			newFields = null;
-			newTypes = null;
-		}
-		return new AccessPath(value, newFields, baseType, newTypes, taintSubFields, cutOffApproximation, arrayTaintType,
+		final AccessPathFragment[] newFragments;
+		if (fragments.length > 1) {
+			int newLength = fragments.length - 1;
+			newFragments = new AccessPathFragment[newLength];
+			System.arraycopy(fragments, 0, newFragments, 0, newLength);
+		} else
+			newFragments = null;
+		return new AccessPath(value, baseType, newFragments, taintSubFields, cutOffApproximation, arrayTaintType,
 				canHaveImmutableAliases);
 	}
 
@@ -399,12 +457,10 @@ public class AccessPath implements Cloneable {
 		if (val instanceof Local && this.value == val)
 			return true;
 		else if (val instanceof StaticFieldRef)
-			return this.value == null && this.fields != null && this.fields.length > 0
-					&& this.fields[0] == ((StaticFieldRef) val).getField();
+			return this.value == null && getFirstField() == ((StaticFieldRef) val).getField();
 		else if (val instanceof InstanceFieldRef) {
 			InstanceFieldRef iref = (InstanceFieldRef) val;
-			return this.value == iref.getBase() && this.fields != null && this.fields.length > 0
-					&& this.fields[0] == iref.getField();
+			return this.value == iref.getBase() && getFirstField() == iref.getField();
 		} else
 			// Some unsupported value type
 			return false;

@@ -3,6 +3,7 @@
 	<hierarchy superClass="org.apache.http.client.methods.AbstractExecutionAwareRequest">
 		<interface name="org.apache.http.HttpMessage" />
 		<interface name="org.apache.http.HttpRequest" />
+		<interface name="org.apache.http.client.methods.HttpUriRequest" />
 	</hierarchy>
 	<methods>
 		<method id="void setURI(java.net.URI)">

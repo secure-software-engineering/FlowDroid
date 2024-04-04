@@ -23,15 +23,15 @@ import soot.jimple.infoflow.IInfoflow;
  * 
  * @author Steven Arzt
  */
-public class OperationSemanticTests extends JUnitTests{
+public abstract class OperationSemanticTests extends JUnitTests {
 
-	@Test(timeout=300000)
-    public void baseTest(){
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.OperationSemanticTestCode: void baseTestCode()>");
+	@Test(timeout = 300000)
+	public void baseTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.OperationSemanticTestCode: void baseTestCode()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-    }
+	}
 
 }

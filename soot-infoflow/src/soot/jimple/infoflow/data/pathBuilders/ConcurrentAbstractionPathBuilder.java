@@ -3,24 +3,33 @@ package soot.jimple.infoflow.data.pathBuilders;
 import java.util.HashSet;
 import java.util.Set;
 
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.results.BackwardsInfoflowResults;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 
 public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstractionPathBuilder {
 
-	protected final InfoflowResults results = new InfoflowResults();
+	protected final InfoflowResults results;
 
-	private final InterruptableExecutor executor;
+	protected final InterruptableExecutor executor;
 	private Set<IMemoryBoundedSolverStatusNotification> notificationListeners = new HashSet<>();
 	private ISolverTerminationReason killFlag = null;
 
 	public ConcurrentAbstractionPathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
 		super(manager);
 		this.executor = executor;
+
+		boolean pathAgnostic = manager.getConfig().getPathAgnosticResults();
+		InfoflowConfiguration.DataFlowDirection direction = manager.getConfig().getDataFlowDirection();
+		if (direction == InfoflowConfiguration.DataFlowDirection.Backwards)
+			results = new BackwardsInfoflowResults(pathAgnostic);
+		else
+			results = new InfoflowResults(pathAgnostic);
 	}
 
 	/**
@@ -38,6 +47,8 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 			return;
 
 		logger.info("Obtainted {} connections between sources and sinks", res.size());
+		if (!manager.getConfig().getPathAgnosticResults())
+			logger.info("Path-agnostic results are disabled, i.e., there will be one result per path");
 
 		// Notify the listeners that the solver has been started
 		for (IMemoryBoundedSolverStatusNotification listener : notificationListeners)
@@ -65,7 +76,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 			// Also build paths for the neighbors of our result abstraction
 			if (triggerComputationForNeighbors() && abs.getAbstraction().getNeighbors() != null) {
 				for (Abstraction neighbor : abs.getAbstraction().getNeighbors()) {
-					AbstractionAtSink neighborAtSink = new AbstractionAtSink(abs.getSinkDefinition(), neighbor,
+					AbstractionAtSink neighborAtSink = new AbstractionAtSink(abs.getSinkDefinitions(), neighbor,
 							abs.getSinkStmt());
 					task = getTaintPathTask(neighborAtSink);
 					if (task != null)
@@ -75,7 +86,7 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 			// If we do sequential path processing, we wait for the current
 			// sink abstraction to be processed before working on the next
-			if (pathConfig.getSequentialPathProcessing()) {
+			if (config.getPathConfiguration().getSequentialPathProcessing()) {
 				try {
 					executor.awaitCompletion();
 					executor.reset();
@@ -101,11 +112,6 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	protected abstract boolean triggerComputationForNeighbors();
 
 	@Override
-	public InfoflowResults getResults() {
-		return this.results;
-	}
-
-	@Override
 	public void forceTerminate(ISolverTerminationReason reason) {
 		killFlag = reason;
 		executor.interrupt();
@@ -120,6 +126,11 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	protected void scheduleDependentTask(Runnable task) {
 		if (!isKilled())
 			executor.execute(task);
+	}
+
+	@Override
+	public InfoflowResults getResults() {
+		return this.results;
 	}
 
 	@Override
@@ -155,5 +166,4 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 	InterruptableExecutor getExecutor() {
 		return this.executor;
 	}
-
 }

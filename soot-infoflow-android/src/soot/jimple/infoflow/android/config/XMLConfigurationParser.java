@@ -18,7 +18,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.CategoryMode;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
@@ -34,7 +33,6 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackConfigu
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.IccConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.SourceSinkConfiguration;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
-import soot.jimple.infoflow.android.data.CategoryDefinition.CATEGORY;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
 
 /**
@@ -113,19 +111,17 @@ public class XMLConfigurationParser {
 			} else if (stackElement == XMLSection.SOURCES) {
 				if (qName.equals(XMLConstants.TAG_CATEGORY)) {
 					String strId = attributes.getValue(XMLConstants.ATTR_ID);
-					String strCustomId = attributes.getValue(XMLConstants.ATTR_CUSTOM_ID);
 					String strMode = attributes.getValue(XMLConstants.ATTR_MODE);
 
-					CategoryDefinition catDef = new CategoryDefinition(CATEGORY.valueOf(strId), strCustomId);
+					CategoryDefinition catDef = new CategoryDefinition(strId);
 					config.getSourceSinkConfig().addSourceCategory(catDef, CategoryMode.valueOf(strMode));
 				}
 			} else if (stackElement == XMLSection.SINKS) {
 				if (qName.equals(XMLConstants.TAG_CATEGORY)) {
 					String strId = attributes.getValue(XMLConstants.ATTR_ID);
-					String strCustomId = attributes.getValue(XMLConstants.ATTR_CUSTOM_ID);
 					String strMode = attributes.getValue(XMLConstants.ATTR_MODE);
 
-					CategoryDefinition catDef = new CategoryDefinition(CATEGORY.valueOf(strId), strCustomId);
+					CategoryDefinition catDef = new CategoryDefinition(strId);
 					config.getSourceSinkConfig().addSinkCategory(catDef, CategoryMode.valueOf(strMode));
 				}
 			}
@@ -223,7 +219,7 @@ public class XMLConfigurationParser {
 					else if (currentElement.equals(XMLConstants.TAG_PATH_RECONSTRUCTION_MODE))
 						pathConfig.setPathReconstructionMode(PathReconstructionMode.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_PATH_AGNOSTIC_RESULTS))
-						InfoflowConfiguration.setPathAgnosticResults(Boolean.valueOf(data));
+						config.setPathAgnosticResults(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_MAX_CALLSTACK_SIZE))
 						pathConfig.setMaxCallStackSize(Integer.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_MAX_PATH_LENGTH))

@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,7 +57,7 @@ public class FilteringSourceSinkDefinitionProvider implements ISourceSinkDefinit
 	 * @param input The input set
 	 * @return The filtered set of source/sink definitions
 	 */
-	private Set<ISourceSinkDefinition> filter(Set<? extends ISourceSinkDefinition> input) {
+	private Set<ISourceSinkDefinition> filter(Collection<? extends ISourceSinkDefinition> input) {
 		Set<ISourceSinkDefinition> filtered = new HashSet<>(input.size());
 		for (ISourceSinkDefinition def : input)
 			if (filter.accepts(def))

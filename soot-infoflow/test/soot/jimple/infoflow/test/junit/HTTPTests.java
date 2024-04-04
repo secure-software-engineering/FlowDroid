@@ -18,31 +18,36 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
+
 /**
- * test taint propagation within java.net.URL and java.net.HttpURLConnection classes
+ * test taint propagation within java.net.URL and java.net.HttpURLConnection
+ * classes
  */
 @Ignore
-public class HTTPTests extends JUnitTests {
-	
-    @Test(timeout=300000)
-    public void testURL() throws IOException{
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void testURL()>");
+public abstract class HTTPTests extends JUnitTests {
+
+	@Test(timeout = 300000)
+	public void testURL() throws IOException {
+		// We need the taint wrapper, because SPARK misses an edge to
+		// URLStreamHandler.toExternalForm()
+		IInfoflow infoflow = initInfoflow(true);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void testURL()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
-		
+
 		checkInfoflow(infoflow, 1);
-    }
-    
-    @Test(timeout=300000)
-    public void testConnection() throws IOException{
-//    	this.taintWrapper = true;
-    	IInfoflow infoflow = initInfoflow();
-    	List<String> epoints = new ArrayList<String>();
-    	epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void method1()>");
+	}
+
+	@Test(timeout = 300000)
+	public void testConnection() throws IOException {
+		// We need the taint wrapper, because SPARK misses an edge to
+		// URLStreamHandler.toExternalForm()
+		IInfoflow infoflow = initInfoflow(true);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.HTTPTestCode: void method1()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
-		
+
 		checkInfoflow(infoflow, 1);
-    }
+	}
 
 }

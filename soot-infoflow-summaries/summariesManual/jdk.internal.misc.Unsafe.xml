@@ -1,0 +1,2764 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="int getInt(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putInt(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="java.lang.Object getReference(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putReference(java.lang.Object,long,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getBoolean(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="boolean putBoolean(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getByte(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="byte putByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getShort(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="short putShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getChar(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getLong(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getFloat(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putFloat(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getDouble(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putDouble(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAddress(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putAddress(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="Object getUncompressedObject(long address)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		<!-- identical to this section of sun.misc.Unsafe -->
+		<method id="byte getByte(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putByte(long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method> <!-- doubt,can address taint object? different abstraction levels -->
+		
+		<method id="int getInt(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putInt(long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getLong(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putLong(long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getFloat(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putFloat(long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getDouble(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putDouble(long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAddress(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putAddress(long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<!-- No data exchange for invalidInput(), is32BitClean(), checkSize(), checkNativeAddress(), checkOffset(), checkPointer(), checkPrimitiveArray(), checkPrimitivePointer(), alignToHeapWordSize() -->
+		
+		<!-- ?Possibly? no data exchange for allocateMemory(), allocateMemoryChecks()  -->
+		<method id="long reallocateMemory(long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method> <!-- frage am ende -->
+		
+		<method id="void setMemory(java.lang.Object,long,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method> <!-- how to describe setting relative memory -->
+		
+		<method id="void setMemory(long,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method> <!-- how to describe setting absolute memory -->
+		
+		<method id="void copyMemory(java.lang.Object,long,java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="2"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void copyMemory(long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="1"></to>
+				</flow>
+			</flows>
+		</method> <!-- doubt -->
+		
+		<!-- TODO what does swapping do, complete methods  -->
+		<method id="void copySwapMemory(java.lang.Object,long,java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="2"></to>
+				</flow>
+			</flows>
+		</method> 
+		
+		<method id="void copySwapMemory(long,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Parameter" ParameterIndex="1"></to>
+				</flow>
+			</flows>
+		</method> 
+		
+		<method id="void freeMemory(long)">
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			</clears>
+		</method>
+		
+		
+		<!-- No tainting possible for objectFieldOffset() staticFieldOffset() staticFieldBase() arrayBaseOffset() arrayIndexScale() addressSize() pageSize() dataCacheLineFlushSize() dataCacheLineAlignDown() dataCacheLineFlushSize() dataCacheLineAlignDown() isWriteBackEnabled() -->
+		
+		<!-- TODO are the following all the possible flows?-->
+		<method id="void defineClass(java.lang.String,byte[],int,int,java.lang.ClassLoader,java.security.ProtectionDomain)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method> 
+		
+		
+		<method id="boolean compareAndSetReference(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="java.lang.Object compareAndExchangeReference(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="java.lang.Object compareAndExchangeReferenceAcquire(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="java.lang.Object compareAndExchangeReferenceRelease(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetReferencePlain(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetReferenceAcquire(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetReferenceRelease(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetReference(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndSetInt(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int compareAndExchangeInt(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int compareAndExchangeIntAcquire(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int compareAndExchangeIntRelease(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetIntPlain(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetIntAcquire(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetIntRelease(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetInt(java.lang.Object,long,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte compareAndExchangeByte(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndSetByte(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetByte(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetByteAcquire(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetByteRelease(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetBytePlain(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndExchangeByteAcquire(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndExchangeByteRelease(java.lang.Object,long,byte,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short compareAndExchangeShort(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndSetShort(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetShort(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetShortAcquire(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetShortRelease(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetShortPlain(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short compareAndExchangeShortAcquire(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short compareAndExchangeShortRelease(java.lang.Object,long,short,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndSetChar(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char compareAndExchangeChar(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char compareAndExchangeCharAcquire(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char compareAndExchangeCharRelease(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetChar(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetCharAcquire(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetCharRelease(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetCharPlain(java.lang.Object,long,char,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndSetBoolean(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndExchangeBoolean(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndExchangeBooleanAcquire(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean compareAndExchangeBooleanRelease(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetBoolean(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetBooleanAcquire(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetBooleanRelease(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean weakCompareAndSetBooleanPlain(java.lang.Object,long,boolean,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float compareAndSetFloat(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float compareAndExchangeFloat(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float compareAndExchangeFloatAcquire(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float compareAndExchangeFloatRelease(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float weakCompareAndSetFloat(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float weakCompareAndSetFloatAcquire(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float weakCompareAndSetFloatRelease(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float weakCompareAndSetFloatPlain(java.lang.Object,long,float,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double compareAndSetDouble(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double compareAndExchangeDouble(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double compareAndExchangeDoubleAcquire(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double compareAndExchangeDoubleRelease(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double weakCompareAndSetDouble(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double weakCompareAndSetDoubleAcquire(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double weakCompareAndSetDoubleRelease(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double weakCompareAndSetDoublePlain(java.lang.Object,long,double,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long compareAndSetLong(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long compareAndExchangeLong(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long compareAndExchangeLongAcquire(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long compareAndExchangeLongRelease(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long weakCompareAndSetLong(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long weakCompareAndSetLongAcquire(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long weakCompareAndSetLongRelease(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long weakCompareAndSetLongPlain(java.lang.Object,long,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<!-- following volatile methods exactly corresponding to sun.misc.Unsafe -->
+
+		<method id="java.lang.Object getReferenceVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putReferenceVolatile(java.lang.Object,long,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getIntVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putIntVolatile(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getBooleanVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="boolean putBooleanVolatile(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getByteVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="byte putByteVolatile(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getShortVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="short putShortVolatile(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getCharVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putCharVolatile(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getLongVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putLongVolatile(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getFloatVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putFloatVolatile(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getDoubleVolatile(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		<method id="void putDoubleVolatile(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="java.lang.Object getReferenceAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="int getIntAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+
+		
+		<method id="boolean getBooleanAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="byte getByteAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+
+		
+		<method id="short getShortAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="char getCharAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="long getLongAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="float getFloatAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+		
+		
+		<method id="double getDoubleAcquire(java.lang.Object,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<to sourceSinkType="Return"></to>
+				</flow>
+                	</flows>
+		</method>
+		
+				<method id="void putReferenceRelease(java.lang.Object,long,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putIntRelease(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean putBooleanRelease(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte putByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short putShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putFloatRelease(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putDoubleRelease(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="void putReferenceOpaque(java.lang.Object,long,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putIntOpaque(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean putBooleanOpaque(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte putByteOpaque(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short putShortOpaque(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putCharOpaque(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putLongOpaque(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putFloatOpaque(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putDoubleOpaque(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndAddInt(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndAddIntRelease(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndAddIntAcquire(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndAddLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndAddLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndAddLongAcquire(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndAddByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndAddByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndAddByteAcquire(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndAddShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndAddShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndAddShortAcquire(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndAddChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndAddCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndAddCharAcquire(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndAddFloat(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndAddFloatRelease(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndAddFloatAcquire(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndAddDouble(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndAddDoubleRelease(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndAddDoubleAcquire(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndSetInt(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndSetIntRelease(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="int getAndSetIntAcquire(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndSetLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndSetLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndSetLongAcquire(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndSetByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndSetByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndSetByteAcquire(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndSetShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndSetShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndSetShortAcquire(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndSetChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndSetCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndSetCharAcquire(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndSetFloat(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndSetFloatRelease(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="float getAndSetFloatAcquire(java.lang.Object,long,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndSetDouble(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndSetDoubleRelease(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="double getAndSetDoubleAcquire(java.lang.Object,long,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<!-- BITWISE OPERATIONS -->
+		 
+		<method id="boolean getAndBitwiseOrBoolean(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseOrBooleanRelease(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseOrBooleanAcquire(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="boolean getAndBitwiseAndBoolean(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseAndBooleanRelease(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseAndBooleanAcquire(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+			<method id="boolean getAndBitwiseXorBoolean(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseXorBooleanRelease(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="boolean getAndBitwiseXorBooleanAcquire(java.lang.Object,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="byte getAndBitwiseOrByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseOrByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseOrByteAcquire(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="byte getAndBitwiseAndByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseAndByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseAndByteAcquire(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseXorByte(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseXorByteRelease(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="byte getAndBitwiseXorByteAcquire(java.lang.Object,long,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="char getAndBitwiseOrChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseOrCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseOrCharAcquire(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="char getAndBitwiseAndChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseAndCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseAndCharAcquire(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+			<method id="char getAndBitwiseXorChar(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseXorCharRelease(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="char getAndBitwiseXorCharAcquire(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="short getAndBitwiseOrShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseOrShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseOrShortAcquire(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseAndShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseAndShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseAndShortAcquire(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+			<method id="short getAndBitwiseXorShort(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseXorShortRelease(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="short getAndBitwiseXorShortAcquire(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+				<method id="long getAndBitwiseOrLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseOrLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseOrLongAcquire(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseAndLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseAndLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseAndLongAcquire(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+			<method id="long getAndBitwiseXorLong(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseXorLongRelease(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="long getAndBitwiseXorLongAcquire(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"></to>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putLongUnaligned(java.lang.Object,long,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putLongUnaligned(java.lang.Object,long,long,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putIntUnaligned(java.lang.Object,long,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putIntUnaligned(java.lang.Object,long,int,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putShortUnaligned(java.lang.Object,long,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putShortUnaligned(java.lang.Object,long,short,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putCharUnaligned(java.lang.Object,long,char)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void putCharUnaligned(java.lang.Object,long,char,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

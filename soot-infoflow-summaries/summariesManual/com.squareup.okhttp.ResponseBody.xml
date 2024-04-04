@@ -1,0 +1,143 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<methods>
+		<method id="byte[] bytes()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.InputStream byteStream()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.io.Reader charStream()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.io.Reader: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="long contentLength()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: long contentLength]"
+						AccessPathTypes="[long]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.squareup.okhttp.MediaType contentType()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: com.squareup.okhttp.MediaType contentType]"
+						AccessPathTypes="[com.squareup.okhttp.MediaType]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.squareup.okhttp.ResponseBody create(com.squareup.okhttp.MediaType,byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: com.squareup.okhttp.MediaType contentType]"
+						AccessPathTypes="[com.squareup.okhttp.MediaType]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.squareup.okhttp.ResponseBody create(com.squareup.okhttp.MediaType,okio.ByteString)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: com.squareup.okhttp.MediaType contentType]"
+						AccessPathTypes="[com.squareup.okhttp.MediaType]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.squareup.okhttp.ResponseBody create(com.squareup.okhttp.MediaType,long,okio.BufferedSource)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: com.squareup.okhttp.MediaType contentType]"
+						AccessPathTypes="[com.squareup.okhttp.MediaType]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: long contentLength]"
+						AccessPathTypes="[long]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2"
+						AccessPath="[okio.Buffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="com.squareup.okhttp.ResponseBody create(com.squareup.okhttp.MediaType,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: com.squareup.okhttp.MediaType contentType]"
+						AccessPathTypes="[com.squareup.okhttp.MediaType]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String string()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[com.squareup.okhttp.ResponseBody: byte[] bytes]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

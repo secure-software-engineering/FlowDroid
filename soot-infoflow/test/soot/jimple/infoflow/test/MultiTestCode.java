@@ -176,6 +176,17 @@ public class MultiTestCode {
 		byte[] senbytes = outbytes.toByteArray(); // source
 		String senstr = new String(senbytes);
 		ConnectionManager cm = new ConnectionManager();
+		StringBuilder sb = new StringBuilder();
+		sb.append(senstr);
+		cm.publish("a" + new String(senbytes)); // sink1
+		cm.publish("a" + senstr); // sink2
+	}
+
+	public void multiSinkTest2() {
+		ByteArrayOutputStream outbytes = new ByteArrayOutputStream();
+		byte[] senbytes = outbytes.toByteArray(); // source
+		String senstr = new String(senbytes);
+		ConnectionManager cm = new ConnectionManager();
 		cm.publish("a" + new String(senbytes)); // sink1
 		cm.publish("a" + senstr); // sink2
 	}

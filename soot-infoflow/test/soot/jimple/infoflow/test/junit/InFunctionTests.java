@@ -17,6 +17,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import soot.Body;
+import soot.Scene;
+import soot.Unit;
+import soot.jimple.ReturnStmt;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
@@ -24,7 +28,7 @@ import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
 /**
  * contain tests for Taintwrapper and parameters as sources and sinks
  */
-public class InFunctionTests extends JUnitTests {
+public abstract class InFunctionTests extends JUnitTests {
 
 	private static final String SOURCE_STRING_PARAMETER = "@parameter0: java.lang.String";
 	private static final String SOURCE_STRING_PARAMETER2 = "@parameter1: java.lang.String";
@@ -32,8 +36,16 @@ public class InFunctionTests extends JUnitTests {
 	private static final String SOURCE_INT_PARAMETER = "@parameter0: int";
 	private static final String SOURCE_INT_PARAMETER2 = "@parameter1: int";
 
-	private static final String SINK_STRING_RETURN = "secret";
-	private static final String SINK_STRING_RETURN_R5 = "$stack9";
+	private String getReturnValueName(String epoint) {
+		Body body = Scene.v().getMethod(epoint).getActiveBody();
+		for (Unit b : body.getUnits()) {
+			if (b instanceof ReturnStmt) {
+				ReturnStmt ret = (ReturnStmt) b;
+				return ret.getOp().toString();
+			}
+		}
+		throw new IllegalArgumentException(epoint + " has no return with operand.");
+	}
 
 	@Test(timeout = 300000)
 	public void inFunctionTest1() {
@@ -45,7 +57,7 @@ public class InFunctionTests extends JUnitTests {
 		ssm.setReturnTaintMethods(Collections.singletonList(epoint));
 
 		infoflow.computeInfoflow(appPath, libPath, epoint, ssm);
-		Assert.assertTrue(infoflow.getResults().isPathBetween(SINK_STRING_RETURN, SOURCE_STRING_PARAMETER));
+		Assert.assertTrue(infoflow.getResults().isPathBetween(getReturnValueName(epoint), SOURCE_STRING_PARAMETER));
 	}
 
 	@Test(timeout = 300000)
@@ -71,7 +83,7 @@ public class InFunctionTests extends JUnitTests {
 		ssm.setReturnTaintMethods(Collections.singletonList(epoint));
 
 		infoflow.computeInfoflow(appPath, libPath, epoint, ssm);
-		Assert.assertTrue(infoflow.getResults().isPathBetween(SINK_STRING_RETURN, SOURCE_STRING_PARAMETER));
+		Assert.assertTrue(infoflow.getResults().isPathBetween(getReturnValueName(epoint), SOURCE_STRING_PARAMETER));
 	}
 
 	@Test(timeout = 300000)
@@ -91,8 +103,12 @@ public class InFunctionTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoint), ssm);
 		Assert.assertFalse(infoflow.getResults().isEmpty());
 		Assert.assertEquals(3, infoflow.getResults().numConnections());
-		Assert.assertTrue(infoflow.getResults().isPathBetween(SINK_STRING_RETURN_R5, SOURCE_STRING_PARAMETER));
-		Assert.assertTrue(infoflow.getResults().isPathBetween(SINK_STRING_RETURN_R5, SOURCE_STRING_PARAMETER2));
+		Assert.assertTrue(infoflow.getResults().isPathBetween(getReturnValueName(
+				"<soot.jimple.infoflow.test.InFunctionCode: java.lang.String foo(java.lang.String,java.lang.String)>"),
+				SOURCE_STRING_PARAMETER));
+		Assert.assertTrue(infoflow.getResults().isPathBetween(getReturnValueName(
+				"<soot.jimple.infoflow.test.InFunctionCode: java.lang.String foo(java.lang.String,java.lang.String)>"),
+				SOURCE_STRING_PARAMETER2));
 	}
 
 	@Test(timeout = 300000)

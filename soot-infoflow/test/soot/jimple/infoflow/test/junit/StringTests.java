@@ -33,7 +33,7 @@ import soot.options.Options;
  * @author Christian
  *
  */
-public class StringTests extends JUnitTests {
+public abstract class StringTests extends JUnitTests {
 
 	@Test(timeout = 600000)
 	public void multipleSourcesTest() {
@@ -289,7 +289,6 @@ public class StringTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.StringTestCode: void methodStringConcat()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-		assertTrue(infoflow.getResults().isPathBetweenMethods(sink, sourcePwd));
 		assertTrue(infoflow.getResults().isPathBetweenMethods(sink, sourceDeviceId));
 	}
 

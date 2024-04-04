@@ -13,6 +13,7 @@ package soot.jimple.infoflow.test;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.LinkedList;
+import java.util.Random;
 
 import soot.jimple.infoflow.test.android.AccountManager;
 import soot.jimple.infoflow.test.android.ConnectionManager;
@@ -24,52 +25,51 @@ import soot.jimple.infoflow.test.utilclasses.ClassWithFinal;
 
 public class OtherTestCode {
 
-	
-	public void testWithField(){
+	public void testWithField() {
 		ClassWithField fclass = new ClassWithField();
 		fclass.field = TelephonyManager.getDeviceId();
-			
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(fclass.field);
 		cm.publish(fclass.field);
 	}
-	
-	public void genericsfinalconstructorProblem(){
+
+	public void genericsfinalconstructorProblem() {
 		String tainted = TelephonyManager.getDeviceId();
 		ClassWithFinal<String> c0 = new ClassWithFinal<String>(tainted, false);
 		String alsoTainted = c0.getString();
-		
+
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(alsoTainted);	
+		cm.publish(alsoTainted);
 	}
 
 	private String deviceId = "";
-	
+
 	public interface MyInterface {
 		void doSomething();
 	}
-	
+
 	public void innerClassTest() {
 		this.deviceId = TelephonyManager.getDeviceId();
 		runIt(new MyInterface() {
-			
+
 			@Override
 			public void doSomething() {
 				ConnectionManager cm = new ConnectionManager();
 				cm.publish(deviceId);
 			}
-			
+
 		});
 	}
-	
+
 	private void runIt(MyInterface intf) {
 		intf.doSomething();
 	}
-	
+
 	private String x(String y) {
 		return y;
 	}
-	
+
 	private String annotate(String data) {
 		return x(data);
 //		return "x" + data + "x";
@@ -78,36 +78,36 @@ public class OtherTestCode {
 	public void multiCallTest() {
 		ConnectionManager cm = new ConnectionManager();
 		String deviceId = TelephonyManager.getDeviceId();
-		
+
 		String data = annotate(deviceId);
 		cm.publish(data);
-		
+
 		String did = deviceId;
 		String data2 = annotate(did);
 		cm.publish(data2);
 	}
-	
+
 	public void passOverTest() {
 		ConnectionManager cm = new ConnectionManager();
 		String deviceId = TelephonyManager.getDeviceId();
 
 		C1 c = new C1(deviceId);
-		
+
 		annotate(c);
 		cm.publish(c.field1);
 	}
-	
+
 	private void annotate(C1 c) {
 		System.out.println(c.field1);
 		c = new C1("Hello World");
 	}
-	
+
 	public void overwriteTest() {
 		ConnectionManager cm = new ConnectionManager();
 		String deviceId = TelephonyManager.getDeviceId();
 
 		C1 c = new C1(deviceId);
-		
+
 		overwrite(c);
 		cm.publish(c.field1);
 	}
@@ -119,35 +119,35 @@ public class OtherTestCode {
 	public void loopTest() {
 		String imei = TelephonyManager.getDeviceId();
 		for (int i = 0; i < 10; i++) {
-	        ConnectionManager cm = new ConnectionManager();
+			ConnectionManager cm = new ConnectionManager();
 			cm.publish(imei);
 		}
 	}
-	
-	public void dataObjectTest(){
+
+	public void dataObjectTest() {
 		String imei = TelephonyManager.getDeviceId();
 
 		APIClass api = new APIClass();
 		api.testMethod(imei);
-        ConnectionManager cm = new ConnectionManager();
+		ConnectionManager cm = new ConnectionManager();
 		cm.publish(api.getDi());
 	}
 
-	class APIClass{
+	class APIClass {
 		InternalData d = new InternalData();
-		
-		public void testMethod(String i){
-			//d = i;
+
+		public void testMethod(String i) {
+			// d = i;
 			d.setI(i);
 		}
-		
-		String getDi(){
+
+		String getDi() {
 			return d.getI();
 		}
 	}
-	
-	class InternalData{
-		
+
+	class InternalData {
+
 		public String getI() {
 			return i;
 		}
@@ -159,9 +159,8 @@ public class OtherTestCode {
 		String i = "";
 	}
 
-	
-	//Tests from Mail:
-	
+	// Tests from Mail:
+
 	public void methodTainted() {
 		O x = new O();
 		x.field = TelephonyManager.getDeviceId();
@@ -174,6 +173,7 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(x2);
 	}
+
 	public void methodNotTainted() {
 		O x = new O();
 		x.field = TelephonyManager.getDeviceId();
@@ -186,7 +186,6 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(y2);
 	}
-	
 
 	String foo(O obj) {
 		return obj.field;
@@ -198,176 +197,168 @@ public class OtherTestCode {
 		public String get() {
 			return field;
 		}
-		
+
 		public void set(String data) {
 			this.field = data;
 		}
 	}
-	
+
 	public void method2() {
 		String tainted = TelephonyManager.getDeviceId();
 		O a = new O();
-		//Fehler wenn:
+		// Fehler wenn:
 		O b = new O();
-		
+
 		foo(a, tainted);
 		foo(b, "untainted");
-		
+
 		String taint = a.field;
 		String untaint = b.field;
 		untaint.toString();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(taint);
 	}
-	
+
 	public void method2NotTainted() {
 		String tainted = TelephonyManager.getDeviceId();
 		O a = new O();
-		//Fehler wenn:
+		// Fehler wenn:
 		O b = new O();
-		
+
 		foo(a, tainted);
 		foo(b, "untainted");
-		
+
 		String taint = a.field;
 		String untaint = b.field;
 		taint.toString();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(untaint);
 	}
-	
-	
-	void foo(O obj, String s){
+
+	void foo(O obj, String s) {
 		obj.field = s;
 	}
-	
-	
-	
-	public void method3(){
+
+	public void method3() {
 		String tainted = TelephonyManager.getDeviceId();
 		String untainted = "hallo welt";
 		List1 a = new List1();
 		List1 b = new List1();
 		a.add(tainted);
 		b.add(untainted);
-		
+
 		String c = a.get();
 		String d = b.get();
 		d.toString();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(c);
 	}
-	
-	public void method3NotTainted(){
+
+	public void method3NotTainted() {
 		String tainted = TelephonyManager.getDeviceId();
 		String untainted = "hallo welt";
 		List1 a = new List1();
 		List1 b = new List1();
 		a.add(tainted);
 		b.add(untainted);
-		
+
 		String c = a.get();
 		String d = b.get();
 		c.toString();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(d);
 	}
-	
-	
-	
-	
-	
+
 	private class List1 {
 		private String field;
-		
-		public void add(String e){
+
+		public void add(String e) {
 			field = e;
 		}
-		
-		public String get(){
+
+		public String get() {
 			return field;
 		}
 
 	}
-	
-	//advanced:
-	
-	public void method4(){
+
+	// advanced:
+
+	public void method4() {
 		String tainted = TelephonyManager.getDeviceId();
-		C2 c = new C2(tainted); 
+		C2 c = new C2(tainted);
 		C2 d = c;
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(d.cfield.field1);
 	}
-	
-	public void method5(){
+
+	public void method5() {
 		String tainted = TelephonyManager.getDeviceId();
-		
+
 		C2 c = new C2("test");
 		C1 changes = c.cfield;
 		c.cfield.field1 = tainted;
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(changes.field1);
-		
-		
+
 	}
-	
-	private class C1{
+
+	private class C1 {
 		String field1;
-		
-		public C1(String c){
+
+		public C1(String c) {
 			field1 = c;
 		}
 	}
-	
-	private class C2{
+
+	private class C2 {
 		C1 cfield;
-		
-		public C2(String c){
+
+		public C2(String c) {
 			cfield = new C1(c);
 		}
 	}
-	
-	public void method6(){
+
+	public void method6() {
 		String tainted = TelephonyManager.getDeviceId();
-		
+
 		@SuppressWarnings("unused")
 		C2static c = new C2static("test");
 		C1static.field1 = tainted;
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(C2static.cfield.getField());
-		
+
 	}
-	
-	public void testPointsToSet(){
+
+	public void testPointsToSet() {
 		Testclass1 tc1 = new Testclass1();
 		String tainted = TelephonyManager.getDeviceId();
 		tc1.dummyMethod(tainted);
 		String s1 = (String) tc1.getIt();
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(s1);
 	}
-	
-	private class Testclass1{
+
+	private class Testclass1 {
 		private Object[] elementData;
-		
-		public Testclass1(){
+
+		public Testclass1() {
 			elementData = new Object[3];
 		}
-		
-		public boolean dummyMethod(Object obj){
+
+		public boolean dummyMethod(Object obj) {
 			elementData[0] = obj;
 			return true;
 		}
-		
-		public Object getIt(){
+
+		public Object getIt() {
 			return elementData[0];
 		}
-		
+
 	}
-	
-	public void easyNegativeTest(){
+
+	public void easyNegativeTest() {
 		String tainted = TelephonyManager.getDeviceId();
 		LinkedList<String> notRelevantList = new LinkedList<String>();
 		LinkedList<String> list = new LinkedList<String>();
@@ -380,68 +371,70 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(outcome);
 	}
-	
+
 	public L1 l;
-	public void paramTransferTest(){
+
+	public void paramTransferTest() {
 		ConnectionManager cm = new ConnectionManager();
 		String tainted = TelephonyManager.getDeviceId();
 		l = new L1();
 		taint(tainted, l);
 		cm.publish(l.f);
 	}
-	
-	public void taint(String e, L1 m){
+
+	public void taint(String e, L1 m) {
 		m.f = e;
 	}
-	
-	class L1{
+
+	class L1 {
 		String f;
 	}
-	
+
 	@SuppressWarnings("unused")
-	public void objectSensitiveTest1(){
+	public void objectSensitiveTest1() {
 		ConnectionManager cm = new ConnectionManager();
 		IntermediateObject i1 = new IntermediateObject("123");
 		IntermediateObject i2 = new IntermediateObject(TelephonyManager.getDeviceId());
 		cm.publish(i1.getValue());
 	}
-	
-	class IntermediateObject{
+
+	class IntermediateObject {
 		Object1 o;
-		
-		public IntermediateObject(String s){
+
+		public IntermediateObject(String s) {
 			o = new Object1();
 			o.setField1(s);
 		}
-		
-		public String getValue(){
+
+		public String getValue() {
 			return o.getField1();
 		}
 	}
 
-	class Object1{
+	class Object1 {
 		String field1;
-		
-		public void setField1(String s){
+
+		public void setField1(String s) {
 			field1 = s;
 		}
-		public String getField1(){
+
+		public String getField1() {
 			return field1;
 		}
 	}
-	
+
 	class MyLinkedList {
 		Object element;
 		MyLinkedList nextElement;
 	}
-	
+
 	public void accessPathTest() {
 		MyLinkedList ll1 = new MyLinkedList();
 		ll1.nextElement = new MyLinkedList();
 		ll1.nextElement.nextElement = new MyLinkedList();
 		ll1.nextElement.nextElement.nextElement = new MyLinkedList();
 		ll1.nextElement.nextElement.nextElement.nextElement = new MyLinkedList();
-		
+
 		String tainted = TelephonyManager.getDeviceId();
 
 		MyLinkedList taintedList = new MyLinkedList();
@@ -451,7 +444,7 @@ public class OtherTestCode {
 		ll1.nextElement.nextElement.nextElement.nextElement.nextElement.nextElement.nextElement = null;
 
 		ConnectionManager cm = new ConnectionManager();
-		
+
 		cm.publish((String) ll1.nextElement.nextElement.nextElement.nextElement.nextElement.element);
 	}
 
@@ -463,7 +456,7 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(x);
 	}
-		
+
 	public void pathSkipTest2() {
 		O o = new O();
 		AccountManager am = new AccountManager();
@@ -471,21 +464,21 @@ public class OtherTestCode {
 
 		// make sure o.field is tainted before the first call to set()
 		o.field = TelephonyManager.getDeviceId();
-		
+
 		// call set() twice with different sources
 		o.set(deviceId);
 		o.set(am.getPassword());
-		
+
 		String x = o.get();
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(x);
 	}
-	
+
 	private String id(String data) {
 		String foo = data;
 		return foo;
 	}
-	
+
 	public void pathSkipTest3() {
 		AccountManager am = new AccountManager();
 		String deviceId = TelephonyManager.getDeviceId();
@@ -495,7 +488,7 @@ public class OtherTestCode {
 		data = id(deviceId);
 		System.out.println(data);
 		data = id(am.getPassword());
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(data);
 	}
@@ -505,16 +498,16 @@ public class OtherTestCode {
 		String deviceId = TelephonyManager.getDeviceId();
 		String data = "";
 		String data2 = "";
-		
+
 		data = id(deviceId);
 		System.out.println(data);
 		data2 = id(am.getPassword());
 		System.out.println(data2);
-		
+
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(data);
 	}
-	
+
 	public void pathSkipTest5() {
 		AccountManager am = new AccountManager();
 		String deviceId = TelephonyManager.getDeviceId();
@@ -527,11 +520,11 @@ public class OtherTestCode {
 		data = id(am.getPassword());
 		System.out.println(data);
 	}
-	
+
 	private String id2(String data) {
 		return id(data);
 	}
-	
+
 	public void pathSkipTest6() {
 		AccountManager am = new AccountManager();
 		String deviceId = TelephonyManager.getDeviceId();
@@ -555,7 +548,6 @@ public class OtherTestCode {
 		cm.publish(did);
 	}
 
-	
 	public void recursionTest1() {
 		String deviceId = TelephonyManager.getDeviceId();
 		recurse("", deviceId);
@@ -567,26 +559,26 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(deviceId2);
 	}
-	
+
 	private class MyAction implements PrivilegedAction<O> {
 
 		private String data = "";
-		
+
 		@Override
 		public O run() {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data);
 			return new O();
 		}
-		
+
 	}
-	
+
 	public void doPrivilegedTest1() {
 		MyAction action = new MyAction();
 		action.data = TelephonyManager.getDeviceId();
 		AccessController.doPrivileged(action);
 	}
-	
+
 	public void doPrivilegedTest2() {
 		MyAction action = new MyAction();
 		action.data = TelephonyManager.getDeviceId();
@@ -596,13 +588,13 @@ public class OtherTestCode {
 	private class MyHeapAction implements PrivilegedAction<O> {
 
 		private String data = "";
-		
+
 		@Override
 		public O run() {
 			this.data = TelephonyManager.getDeviceId();
 			return new O();
 		}
-		
+
 	}
 
 	public void doPrivilegedTest3() {
@@ -611,7 +603,7 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(action.data);
 	}
-	
+
 	public void multiSinkTest1() {
 		String imei = TelephonyManager.getDeviceId();
 		ConnectionManager cm = new ConnectionManager();
@@ -621,15 +613,28 @@ public class OtherTestCode {
 
 	public void multiSinkTest2() {
 		String imei = TelephonyManager.getDeviceId();
-		doLeak(imei);		
+		doLeak(imei);
 		doLeak(imei);
 	}
 
-	private void doLeak(String imei) {
+	private void doLeak(String param) {
 		ConnectionManager cm = new ConnectionManager();
-		cm.publish(imei);
+		cm.publish(param);
 	}
-	
+
+	public void multiSinkTest3() {
+		int imei = TelephonyManager.getIMEI();
+		int res1 = imei + 42;
+		int res2 = res1 - 21;
+		doLeak(res2);
+		doLeak(res2);
+	}
+
+	private void doLeak(int param) {
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(param);
+	}
+
 	public void skipOverObjectTest1() {
 		String imei = TelephonyManager.getDeviceId();
 		Object o = new Object();
@@ -637,7 +642,7 @@ public class OtherTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(imei);
 	}
-		
+
 	public void skipOverObjectTest2() {
 		C1 a = new C1(TelephonyManager.getDeviceId());
 		a.notify();
@@ -645,4 +650,60 @@ public class OtherTestCode {
 		cm.publish(a.field1);
 	}
 
+	int source1() {
+		return TelephonyManager.getIMEI();
+	}
+
+	int source2() {
+		return TelephonyManager.getIMEI();
+	}
+
+	int add42(int i) {
+		return i + 42;
+	}
+
+	public void alwaysShortenTest1(int x) {
+		ConnectionManager cm = new ConnectionManager();
+		int i;
+		if (x == 42) {
+			i = source1();
+		} else {
+			i = source2();
+		}
+		// add42 call can be shortened at processExit()
+		cm.publish(add42(i));
+	}
+
+	public void alwaysShortenTest2(int x) {
+		int k = TelephonyManager.getIMEI();
+		System.out.println(add42(k));
+		k = 0;
+
+		ConnectionManager cm = new ConnectionManager();
+		int i = source1();
+		// add42 call can be shortened at applyEndSummaryOnCall()
+		cm.publish(add42(i));
+	}
+
+	int source3() {
+		return TelephonyManager.getIMEI();
+	}
+
+	public void testNeighbors1() {
+		ConnectionManager cm = new ConnectionManager();
+		int i;
+		if (new Random().nextBoolean()) {
+			i = source1();
+			i = add42(i);
+		} else if (new Random().nextBoolean()) {
+			i = source2();
+			i = add42(i);
+		} else {
+			i = source3();
+			i = add42(i);
+		}
+		// Join of three abstractions into one successor with two neighbors
+		// where the neighbors only differ in their corresponding call site
+		cm.publish(i);
+	}
 }

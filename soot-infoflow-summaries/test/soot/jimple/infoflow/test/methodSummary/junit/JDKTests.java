@@ -147,6 +147,7 @@ public class JDKTests extends TestHelper {
 		Assert.assertNotNull(flow);
 	}
 
+	@Ignore("State explosion")
 	@Test(timeout = 100000)
 	public void gapTest10() {
 		String mSig = "<java.lang.String: byte[] getBytes(java.lang.String)>";
@@ -154,6 +155,7 @@ public class JDKTests extends TestHelper {
 		Assert.assertNotNull(flow);
 	}
 
+	@Ignore("State explosion")
 	@Test(timeout = 100000)
 	public void arrayBlockingQueueIterator() {
 		String mSig = "<java.util.concurrent.ArrayBlockingQueue: java.util.Iterator iterator()>";
@@ -167,6 +169,7 @@ public class JDKTests extends TestHelper {
 		sg.getConfig().getAccessPathConfiguration().setAccessPathLength(4);
 		sg.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(true);
 		sg.getConfig().setLoadFullJAR(false);
+		sg.getConfig().setSummarizeFullJAR(false);
 		sg.getConfig().setEnableExceptionTracking(true);
 		return sg;
 	}

@@ -25,8 +25,9 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_IS_INTERFACE = "isInterface";
 	public static final String ATTRIBUTE_ID = "num";
 	public static final String ATTRIBUTE_METHOD_SIG = "id";
+	public static final String ATTRIBUTE_IS_EXCLUDED = "isExcluded";
 	public static final String ATTRIBUTE_FLOWTYPE = "sourceSinkType";
-	public static final String ATTRIBUTE_PARAMTER_INDEX = "ParameterIndex";
+	public static final String ATTRIBUTE_PARAMETER_INDEX = "ParameterIndex";
 	public static final String ATTRIBUTE_ACCESSPATH = "AccessPath";
 	public static final String ATTRIBUTE_ACCESSPATHTYPES = "AccessPathTypes";
 	public static final String ATTRIBUTE_BASETYPE = "BaseType";
@@ -35,10 +36,12 @@ public class XMLConstants {
 	public static final String ATTRIBUTE_GAP = "gap";
 	public static final String ATTRIBUTE_IS_ALIAS = "isAlias";
 	public static final String ATTRIBUTE_TYPE_CHECKING = "typeChecking";
+	public static final String ATTRIBUTE_IGNORE_TYPES = "ignoreTypes";
 	public static final String ATTRIBUTE_CUT_SUBFIELDS = "cutSubfields";
 	public static final String ATTRIBUTE_MATCH_STRICT = "matchStrict";
 	public static final String ATTRIBUTE_NAME = "name";
 	public static final String ATTRIBUTE_SUPERCLASS = "superClass";
+	public static final String ATTRIBUTE_IS_EXCLUSIVE = "isExclusive";
 
 	public static final String VALUE_TRUE = "true";
 	public static final String VALUE_FALSE = "false";

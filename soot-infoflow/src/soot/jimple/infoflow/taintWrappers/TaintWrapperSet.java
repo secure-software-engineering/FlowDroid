@@ -10,14 +10,15 @@
  ******************************************************************************/
 package soot.jimple.infoflow.taintWrappers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import soot.SootMethod;
+import soot.Type;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 
 /**
  * Set of taint wrappers. It supports taint wrapping for a class if at least one
@@ -36,6 +37,14 @@ public class TaintWrapperSet implements IReversibleTaintWrapper {
 	public void initialize(InfoflowManager manager) {
 		for (ITaintPropagationWrapper w : this.wrappers)
 			w.initialize(manager);
+	}
+
+	@Override
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		List<PreAnalysisHandler> lst = new ArrayList<>();
+		for (ITaintPropagationWrapper wrapper : this.wrappers)
+			lst.addAll(wrapper.getPreAnalysisHandlers());
+		return lst;
 	}
 
 	/**

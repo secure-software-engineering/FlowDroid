@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.methodSummary.generator;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
@@ -13,11 +15,21 @@ import soot.jimple.infoflow.InfoflowConfiguration;
  */
 public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 
+	/**
+	 * Defines under which circumstances the return value of a method shall be
+	 * tainted.
+	 */
+	public static enum TaintCondition {
+		TaintAlways, TaintOnImplicit, TaintNever
+	}
+
 	protected boolean loadFullJAR = false;
+	protected boolean summarizeFullJAR = false;
 	protected String androidPlatformDir = "";
 
 	protected Set<String> excludes = null;
 	protected boolean summarizeHashCodeEquals = false;
+	protected Map<String, TaintCondition> defaultTaints = new HashMap<>();
 
 	protected boolean validateResults = true;
 
@@ -27,10 +39,6 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 
 	protected long classSummaryTimeout = -1;
 	private int repeatCount = 1;
-
-	static {
-		SummaryGeneratorConfiguration.setMergeNeighbors(true);
-	}
 
 	/**
 	 * Creates a new instance of the SummaryGeneratorConfiguration class and
@@ -49,6 +57,8 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 
 		getPathConfiguration().setPathBuildingAlgorithm(PathBuildingAlgorithm.None);
 		getPathConfiguration().setPathReconstructionMode(PathReconstructionMode.Fast);
+
+		setStandardDefaultTaints();
 	}
 
 	@Override
@@ -58,10 +68,13 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 			SummaryGeneratorConfiguration summaryConfig = (SummaryGeneratorConfiguration) config;
 			this.androidPlatformDir = summaryConfig.androidPlatformDir;
 			this.loadFullJAR = summaryConfig.loadFullJAR;
+			this.summarizeFullJAR = summaryConfig.summarizeFullJAR;
 
 			this.excludes = summaryConfig.excludes == null || summaryConfig.excludes.isEmpty() ? null
 					: new HashSet<>(summaryConfig.excludes);
 			this.summarizeHashCodeEquals = summaryConfig.summarizeHashCodeEquals;
+			this.defaultTaints = summaryConfig.defaultTaints == null || summaryConfig.defaultTaints.isEmpty() ? null
+					: new HashMap<>(summaryConfig.defaultTaints);
 
 			this.validateResults = summaryConfig.validateResults;
 			this.repeatCount = summaryConfig.repeatCount;
@@ -128,6 +141,26 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
+	 * Sets whether all classes from the target JAR file shall be summarized.
+	 * 
+	 * @param summarizeFullJAR True if all classes from the target JAR file shall be
+	 *                         summarized, otherwise false.
+	 */
+	public void setSummarizeFullJAR(boolean summarizeFullJAR) {
+		this.summarizeFullJAR = summarizeFullJAR;
+	}
+
+	/**
+	 * Gets whether all classes from the target JAR file shall be summarized.
+	 * 
+	 * @return True if all classes from the target JAR file shall be summarized,
+	 *         otherwise false.
+	 */
+	public boolean getSummarizeFullJAR() {
+		return this.summarizeFullJAR;
+	}
+
+	/**
 	 * Sets the set of classes to be excluded from the analysis. Use pkg.* to
 	 * exclude all classes in package "pkg"
 	 * 
@@ -147,23 +180,73 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether hashCode() and equals() methods should also be summarized
+	 * Gets whether hashCode() and equals() methods and other methods with default
+	 * taints should also be summarized
 	 * 
-	 * @return True if hashCode() and equals() methods shall be summarized, false
-	 *         otherwise
+	 * @return True if hashCode() and equals() methods and other methods with
+	 *         default taints shall be summarized, false otherwise
 	 */
 	public boolean getSummarizeHashCodeEquals() {
 		return summarizeHashCodeEquals;
 	}
 
 	/**
-	 * Sets whether hashCode() and equals() methods should also be summarized
+	 * Sets whether hashCode() and equals() methods and other methods with default
+	 * taints should also be summarized
 	 * 
-	 * @param summarizeHashCodeEquals True if hashCode() and equals() methods shall
-	 *                                be summarized, false otherwise
+	 * @param summarizeHashCodeEquals True if hashCode() and equals() methods and
+	 *                                other methods with default taints shall be
+	 *                                summarized, false otherwise
 	 */
 	public void setSummarizeHashCodeEquals(boolean summarizeHashCodeEquals) {
 		this.summarizeHashCodeEquals = summarizeHashCodeEquals;
+	}
+
+	/**
+	 * Gets the map of methods with default taint conditions. When
+	 * summarizeHashCodeEquals is true, the return value of the methods are tainted
+	 * according to the given taint conditions instead of analyzing the methods.
+	 * 
+	 * @return
+	 */
+	public Map<String, TaintCondition> getDefaultTaints() {
+		return defaultTaints;
+	}
+
+	/**
+	 * Sets the map of methods with default taint conditions. When
+	 * summarizeHashCodeEquals is true, the return value of the methods are tainted
+	 * according to the given taint conditions instead of analyzing the methods.
+	 * 
+	 * @param defaultTaints The map with methods and taint conditions that shall be
+	 *                      used
+	 */
+	public void setDefaultTaints(Map<String, TaintCondition> defaultTaints) {
+		this.defaultTaints = defaultTaints;
+	}
+
+	/**
+	 * Adds a method and a corresponding taint condition to the map. When
+	 * summarizeHashCodeEquals is true, the return value of the method is tainted
+	 * according to the given taint condition instead of analyzing the method.
+	 * 
+	 * @param method         The method for which the taint condition shall be used
+	 * @param taintCondition The taint condition that describes, when the return
+	 *                       value shall be tainted
+	 */
+	public void addDefaultTaint(String method, TaintCondition taintCondition) {
+		this.defaultTaints.put(method, taintCondition);
+	}
+
+	/**
+	 * Adds hashCode(), equals(), compare() and compareTo() to the map of methods
+	 * with taint conditions.
+	 */
+	public void setStandardDefaultTaints() {
+		defaultTaints.put("int hashCode()", TaintCondition.TaintAlways);
+		defaultTaints.put("boolean equals(java.lang.Object)", TaintCondition.TaintOnImplicit);
+		defaultTaints.put("int compare(java.lang.Object,java.lang.Object)", TaintCondition.TaintOnImplicit);
+		defaultTaints.put("int compareTo(java.lang.Object)", TaintCondition.TaintOnImplicit);
 	}
 
 	/**
@@ -315,8 +398,10 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 		result = prime * result + (int) (classSummaryTimeout ^ (classSummaryTimeout >>> 32));
 		result = prime * result + ((excludes == null) ? 0 : excludes.hashCode());
 		result = prime * result + (loadFullJAR ? 1231 : 1237);
+		result = prime * result + (summarizeFullJAR ? 1231 : 1237);
 		result = prime * result + repeatCount;
 		result = prime * result + (summarizeHashCodeEquals ? 1231 : 1237);
+		result = prime * result + ((defaultTaints == null) ? 0 : defaultTaints.hashCode());
 		result = prime * result + (useDefaultSummaries ? 1231 : 1237);
 		result = prime * result + (validateResults ? 1231 : 1237);
 		return result;
@@ -352,9 +437,16 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 			return false;
 		if (loadFullJAR != other.loadFullJAR)
 			return false;
+		if (summarizeFullJAR != other.summarizeFullJAR)
+			return false;
 		if (repeatCount != other.repeatCount)
 			return false;
 		if (summarizeHashCodeEquals != other.summarizeHashCodeEquals)
+			return false;
+		if (defaultTaints == null) {
+			if (other.defaultTaints != null)
+				return false;
+		} else if (!defaultTaints.equals(other.defaultTaints))
 			return false;
 		if (useDefaultSummaries != other.useDefaultSummaries)
 			return false;

@@ -31,8 +31,7 @@
 </xs:complexType>
 
 <xs:complexType name="sourcesSinksElementType">
-	<xs:attribute name="id" type="predefinedCategoryId" use="required" />
-	<xs:attribute name="customId" type="xs:string" use="optional" />
+	<xs:attribute name="id" type="xs:string" use="required" />
 	<xs:attribute name="mode" type="categoryModeType" use="required" />
 </xs:complexType>
 
@@ -50,44 +49,6 @@
 	</xs:restriction>
 </xs:simpleType>
 
-<xs:simpleType name="predefinedCategoryId">
-	<xs:restriction base="xs:string">
-		<xs:enumeration value="NO_CATEGORY" />
-		<xs:enumeration value="HARDWARE_INFO" />
-		<xs:enumeration value="UNIQUE_IDENTIFIER" />
-		<xs:enumeration value="LOCATION_INFORMATION" />
-		<xs:enumeration value="NETWORK_INFORMATION" />
-		<xs:enumeration value="ACCOUNT_INFORMATION" />
-		<xs:enumeration value="EMAIL_INFORMATION" />
-		<xs:enumeration value="FILE_INFORMATION" />
-		<xs:enumeration value="BLUETOOTH_INFORMATION" />
-		<xs:enumeration value="VOIP_INFORMATION" />
-		<xs:enumeration value="VOIP_INFORMATION" />
-		<xs:enumeration value="DATABASE_INFORMATION" />
-		<xs:enumeration value="PHONE_INFORMATION" />
-		<xs:enumeration value="PHONE_CONNECTION" />
-		<xs:enumeration value="INTER_APP_COMMUNICATION" />
-		<xs:enumeration value="VOIP" />
-		<xs:enumeration value="PHONE_STATE" />
-		<xs:enumeration value="EMAIL" />
-		<xs:enumeration value="BLUETOOTH" />
-		<xs:enumeration value="ACCOUNT_SETTINGS" />
-		<xs:enumeration value="VIDEO" />
-		<xs:enumeration value="SYNCHRONIZATION_DATA" />
-		<xs:enumeration value="NETWORK" />
-		<xs:enumeration value="EMAIL_SETTINGS" />
-		<xs:enumeration value="FILE" />
-		<xs:enumeration value="LOG" />
-		<xs:enumeration value="AUDIO" />
-		<xs:enumeration value="SMS_MMS" />
-		<xs:enumeration value="CONTACT_INFORMATION" />
-		<xs:enumeration value="CALENDAR_INFORMATION" />
-		<xs:enumeration value="SYSTEM_SETTINGS" />
-		<xs:enumeration value="IMAGE" />
-		<xs:enumeration value="BROWSER_INFORMATION" />
-		<xs:enumeration value="NFC" />
-	</xs:restriction>
-</xs:simpleType>
 
 <xs:simpleType name="layoutMatchingModeType">
 	<xs:restriction base="xs:string">

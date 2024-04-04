@@ -5,7 +5,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
  * Entry point creator for Android broadcast receivers
@@ -16,7 +16,7 @@ import soot.jimple.infoflow.android.manifest.ProcessManifest;
 public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public BroadcastReceiverEntryPointCreator(SootClass component, SootClass applicationClass,
-			ProcessManifest manifest) {
+			IManifestHandler manifest) {
 		super(component, applicationClass, manifest);
 	}
 
@@ -34,6 +34,13 @@ public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPo
 
 		body.getUnits().add(endWhileStmt);
 		createIfStmt(onReceiveStmt);
+	}
+
+	@Override
+	protected void createAdditionalMethods() {
+		super.createAdditionalMethods();
+
+		createGetIntentMethod();
 	}
 
 }

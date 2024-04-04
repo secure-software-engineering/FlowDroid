@@ -14,7 +14,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.PathReconstructionMode;
  * @author Steven Arzt
  *
  */
-public class SingleJoinPointTests extends JUnitTests {
+public abstract class SingleJoinPointTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void sharedMethodTest1() {

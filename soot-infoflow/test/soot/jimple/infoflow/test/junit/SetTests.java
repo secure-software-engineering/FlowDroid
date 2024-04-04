@@ -22,7 +22,7 @@ import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 /**
  * test taint propagation in sets
  */
-public class SetTests extends JUnitTests {
+public abstract class SetTests extends JUnitTests {
 
 	@Test(timeout = 300000)
 	public void concreteHashSetTest() {

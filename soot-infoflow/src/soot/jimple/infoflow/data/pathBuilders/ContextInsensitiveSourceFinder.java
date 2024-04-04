@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Set;
 
 import soot.jimple.infoflow.InfoflowManager;
@@ -20,35 +20,28 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	private int numTasks = 0;
 
 	/**
-	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder}
-	 * class
+	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder} class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
-	 * @param executor
-	 *            The executor in which to run the path reconstruction tasks
-	 * @param maxThreadNum
-	 *            The maximum number of threads to use
+	 * @param manager      The data flow manager that gives access to the icfg and
+	 *                     other objects
+	 * @param executor     The executor in which to run the path reconstruction
+	 *                     tasks
+	 * @param maxThreadNum The maximum number of threads to use
 	 */
 	public ContextInsensitiveSourceFinder(InfoflowManager manager, InterruptableExecutor executor) {
 		this(manager, executor, -1);
 	}
 
 	/**
-	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder}
-	 * class
+	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder} class
 	 * 
-	 * @param manager
-	 *            The data flow manager that gives access to the icfg and other
-	 *            objects
-	 * @param executor
-	 *            The executor in which to run the path reconstruction tasks
-	 * @param maxThreadNum
-	 *            The maximum number of threads to use
-	 * @param numTasks
-	 *            The maximum number of abstractions for which a path
-	 *            reconstruction will be performed
+	 * @param manager      The data flow manager that gives access to the icfg and
+	 *                     other objects
+	 * @param executor     The executor in which to run the path reconstruction
+	 *                     tasks
+	 * @param maxThreadNum The maximum number of threads to use
+	 * @param numTasks     The maximum number of abstractions for which a path
+	 *                     reconstruction will be performed
 	 */
 	public ContextInsensitiveSourceFinder(InfoflowManager manager, InterruptableExecutor executor, int numTasks) {
 		super(manager, executor);
@@ -63,7 +56,7 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	private class SourceFindingTask implements Runnable {
 		private final int taskId;
 		private final AbstractionAtSink flagAbs;
-		private final List<Abstraction> abstractionQueue = new LinkedList<Abstraction>();
+		private final Deque<Abstraction> abstractionQueue = new ArrayDeque<Abstraction>();
 
 		public SourceFindingTask(int taskId, AbstractionAtSink flagAbs, Abstraction abstraction) {
 			this.taskId = taskId;
@@ -74,20 +67,22 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 
 		@Override
 		public void run() {
-			while (!abstractionQueue.isEmpty()) {
+			while (true) {
 				// Terminate the thread when we run out of memory
 				if (isKilled()) {
 					abstractionQueue.clear();
 					return;
 				}
 
-				Abstraction abstraction = abstractionQueue.remove(0);
+				Abstraction abstraction = abstractionQueue.poll();
+				if (abstraction == null)
+					break;
 				if (abstraction.getSourceContext() != null) {
 					// Register the result
-					results.addResult(flagAbs.getSinkDefinition(), flagAbs.getAbstraction().getAccessPath(),
-							flagAbs.getSinkStmt(), abstraction.getSourceContext().getDefinition(),
+					results.addResult(flagAbs.getSinkDefinitions(), flagAbs.getAbstraction().getAccessPath(),
+							flagAbs.getSinkStmt(), abstraction.getSourceContext().getDefinitions(),
 							abstraction.getSourceContext().getAccessPath(), abstraction.getSourceContext().getStmt(),
-							abstraction.getSourceContext().getUserData(), null);
+							abstraction.getSourceContext().getUserData(), null, manager);
 
 					// Sources may not have predecessors
 					assert abstraction.getPredecessor() == null;
@@ -113,7 +108,7 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		// not implemented
 	}
 

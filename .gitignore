@@ -1,6 +1,8 @@
+soot-infoflow/jimpleCode/
 soot-infoflow-summaries/build/
 soot-infoflow-summaries/target/
 /.metadata
 /.recommenders
 .idea/
 *.iml
+target/

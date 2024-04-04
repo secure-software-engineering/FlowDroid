@@ -63,7 +63,6 @@ class XMLConstants {
 
 	public static final String ATTR_DEFAULT_MODE = "defaultMode";
 	public static final String ATTR_ID = "id";
-	public static final String ATTR_CUSTOM_ID = "customId";
 	public static final String ATTR_MODE = "mode";
 
 }

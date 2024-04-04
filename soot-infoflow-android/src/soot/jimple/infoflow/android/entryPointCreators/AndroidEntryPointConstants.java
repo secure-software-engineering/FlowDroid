@@ -26,16 +26,19 @@ public class AndroidEntryPointConstants {
 	public static final String SERVICECLASS = "android.app.Service";
 	public static final String GCMBASEINTENTSERVICECLASS = "com.google.android.gcm.GCMBaseIntentService";
 	public static final String GCMLISTENERSERVICECLASS = "com.google.android.gms.gcm.GcmListenerService";
+	public static final String HOSTAPDUSERVICECLASS = "android.nfc.cardemulation.HostApduService";
 	public static final String BROADCASTRECEIVERCLASS = "android.content.BroadcastReceiver";
 	public static final String CONTENTPROVIDERCLASS = "android.content.ContentProvider";
 	public static final String APPLICATIONCLASS = "android.app.Application";
 	public static final String FRAGMENTCLASS = "android.app.Fragment";
 	public static final String SUPPORTFRAGMENTCLASS = "android.support.v4.app.Fragment";
+	public static final String ANDROIDXFRAGMENTCLASS = "androidx.fragment.app.Fragment";
 	public static final String SERVICECONNECTIONINTERFACE = "android.content.ServiceConnection";
 	public static final String MAPACTIVITYCLASS = "com.google.android.maps.MapActivity";
 
 	public static final String APPCOMPATACTIVITYCLASS_V4 = "android.support.v4.app.AppCompatActivity";
 	public static final String APPCOMPATACTIVITYCLASS_V7 = "android.support.v7.app.AppCompatActivity";
+	public static final String APPCOMPATACTIVITYCLASS_X = "androidx.appcompat.app.AppCompatActivity";
 
 	public static final String ACTIVITY_ONCREATE = "void onCreate(android.os.Bundle)";
 	public static final String ACTIVITY_ONSTART = "void onStart()";
@@ -71,6 +74,9 @@ public class AndroidEntryPointConstants {
 	public static final String GCMLISTENERSERVICE_ONMESSAGESENT = "void onMessageSent(java.lang.String)";
 	public static final String GCMLISTENERSERVICE_ONSENDERROR = "void onSendError(java.lang.String,java.lang.String)";
 
+	public static final String HOSTAPDUSERVICE_PROCESSCOMMANDAPDU = "byte[] processCommandApdu(byte[],android.os.Bundle)";
+	public static final String HOSTAPDUSERVICE_ONDEACTIVATED = "void onDeactivated(int)";
+
 	public static final String FRAGMENT_ONCREATE = "void onCreate(android.os.Bundle)";
 	public static final String FRAGMENT_ONATTACH = "void onAttach(android.app.Activity)";
 	public static final String FRAGMENT_ONCREATEVIEW = "android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle)";
@@ -89,6 +95,11 @@ public class AndroidEntryPointConstants {
 	public static final String BROADCAST_ONRECEIVE = "void onReceive(android.content.Context,android.content.Intent)";
 
 	public static final String CONTENTPROVIDER_ONCREATE = "boolean onCreate()";
+	public static final String CONTENTPROVIDER_INSERT = "android.net.Uri insert(android.net.Uri,android.content.ContentValues)";
+	public static final String CONTENTPROVIDER_QUERY = "android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)";
+	public static final String CONTENTPROVIDER_UPDATE = "int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])";
+	public static final String CONTENTPROVIDER_DELETE = "int delete(android.net.Uri,java.lang.String,java.lang.String[])";
+	public static final String CONTENTPROVIDER_GETTYPE = "java.lang.String getType(android.net.Uri)";
 
 	public static final String APPLICATION_ONCREATE = "void onCreate()";
 	public static final String APPLICATION_ONTERMINATE = "void onTerminate()";
@@ -106,6 +117,7 @@ public class AndroidEntryPointConstants {
 	public static final String ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED = "void onActivityCreated(android.app.Activity,android.os.Bundle)";
 
 	public static final String COMPONENTCALLBACKSINTERFACE = "android.content.ComponentCallbacks";
+	public static final String COMPONENTCALLBACKS_ONLOWMEMORY = "void onLowMemory()";
 	public static final String COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED = "void onConfigurationChanged(android.content.res.Configuration)";
 
 	public static final String COMPONENTCALLBACKS2INTERFACE = "android.content.ComponentCallbacks2";
@@ -117,8 +129,8 @@ public class AndroidEntryPointConstants {
 
 	private static final String[] activityMethods = { ACTIVITY_ONCREATE, ACTIVITY_ONDESTROY, ACTIVITY_ONPAUSE,
 			ACTIVITY_ONRESTART, ACTIVITY_ONRESUME, ACTIVITY_ONSTART, ACTIVITY_ONSTOP, ACTIVITY_ONSAVEINSTANCESTATE,
-			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE,
-			ACTIVITY_ONPOSTRESUME };
+			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE, ACTIVITY_ONPOSTRESUME,
+			ACTIVITY_ONATTACHFRAGMENT };
 	private static final List<String> activityMethodList = Arrays.asList(activityMethods);
 
 	private static final String[] serviceMethods = { SERVICE_ONCREATE, SERVICE_ONDESTROY, SERVICE_ONSTART1,
@@ -127,7 +139,8 @@ public class AndroidEntryPointConstants {
 
 	private static final String[] fragmentMethods = { FRAGMENT_ONCREATE, FRAGMENT_ONDESTROY, FRAGMENT_ONPAUSE,
 			FRAGMENT_ONATTACH, FRAGMENT_ONDESTROYVIEW, FRAGMENT_ONRESUME, FRAGMENT_ONSTART, FRAGMENT_ONSTOP,
-			FRAGMENT_ONCREATEVIEW, FRAGMENT_ONACTIVITYCREATED, FRAGMENT_ONVIEWSTATERESTORED, FRAGMENT_ONDETACH };
+			FRAGMENT_ONCREATEVIEW, FRAGMENT_ONACTIVITYCREATED, FRAGMENT_ONVIEWSTATERESTORED, FRAGMENT_ONDETACH,
+			FRAGMENT_ONSAVEINSTANCESTATE, FRAGMENT_ONVIEWCREATED };
 	private static final List<String> fragmentMethodList = Arrays.asList(fragmentMethods);
 
 	private static final String[] gcmIntentServiceMethods = { GCMINTENTSERVICE_ONDELETEDMESSAGES,
@@ -139,10 +152,15 @@ public class AndroidEntryPointConstants {
 			GCMLISTENERSERVICE_ONMESSAGERECEIVED, GCMLISTENERSERVICE_ONMESSAGESENT, GCMLISTENERSERVICE_ONSENDERROR };
 	private static final List<String> gcmListenerServiceMethodList = Arrays.asList(gcmListenerServiceMethods);
 
+	private static final String[] hostApduServiceMethods = { HOSTAPDUSERVICE_PROCESSCOMMANDAPDU,
+			HOSTAPDUSERVICE_ONDEACTIVATED };
+	private static final List<String> hostApduServiceMethodList = Arrays.asList(hostApduServiceMethods);
+
 	private static final String[] broadcastMethods = { BROADCAST_ONRECEIVE };
 	private static final List<String> broadcastMethodList = Arrays.asList(broadcastMethods);
 
-	private static final String[] contentproviderMethods = { CONTENTPROVIDER_ONCREATE };
+	private static final String[] contentproviderMethods = { CONTENTPROVIDER_ONCREATE, CONTENTPROVIDER_DELETE,
+			CONTENTPROVIDER_GETTYPE, CONTENTPROVIDER_INSERT, CONTENTPROVIDER_QUERY, CONTENTPROVIDER_UPDATE };
 	private static final List<String> contentProviderMethodList = Arrays.asList(contentproviderMethods);
 
 	private static final String[] applicationMethods = { APPLICATION_ONCREATE, APPLICATION_ONTERMINATE };
@@ -154,11 +172,12 @@ public class AndroidEntryPointConstants {
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED };
 	private static final List<String> activityLifecycleMethodList = Arrays.asList(activityLifecycleMethods);
 
-	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED };
+	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED,
+			COMPONENTCALLBACKS_ONLOWMEMORY };
 	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
 
-	private static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
-	private static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
+	public static final String[] componentCallback2Methods = { COMPONENTCALLBACKS2_ONTRIMMEMORY };
+	public static final List<String> componentCallback2MethodList = Arrays.asList(componentCallback2Methods);
 
 	private static final String[] serviceConnectionMethods = { SERVICECONNECTION_ONSERVICECONNECTED,
 			SERVICECONNECTION_ONSERVICEDISCONNECTED };
@@ -185,6 +204,10 @@ public class AndroidEntryPointConstants {
 
 	public static List<String> getGCMListenerServiceMethods() {
 		return gcmListenerServiceMethodList;
+	}
+
+	public static List<String> getHostApduServiceMethods() {
+		return hostApduServiceMethodList;
 	}
 
 	public static List<String> getBroadcastLifecycleMethods() {
@@ -214,6 +237,7 @@ public class AndroidEntryPointConstants {
 	public static List<String> getServiceConnectionMethods() {
 		return serviceConnectionMethodList;
 	}
+
 	/*
 	 * ========================================================================
 	 */
@@ -222,8 +246,7 @@ public class AndroidEntryPointConstants {
 	 * Gets whether the given class if one of Android's default lifecycle classes
 	 * (android.app.Activity etc.)
 	 * 
-	 * @param className
-	 *            The name of the class to check
+	 * @param className The name of the class to check
 	 * @return True if the given class is one of Android's default lifecycle
 	 *         classes, otherwise false
 	 */
@@ -231,7 +254,7 @@ public class AndroidEntryPointConstants {
 		return className.equals(ACTIVITYCLASS) || className.equals(SERVICECLASS) || className.equals(FRAGMENTCLASS)
 				|| className.equals(BROADCASTRECEIVERCLASS) || className.equals(CONTENTPROVIDERCLASS)
 				|| className.equals(APPLICATIONCLASS) || className.equals(APPCOMPATACTIVITYCLASS_V4)
-				|| className.equals(APPCOMPATACTIVITYCLASS_V7);
+				|| className.equals(APPCOMPATACTIVITYCLASS_V7) || className.equals(APPCOMPATACTIVITYCLASS_X);
 	}
 
 	/**
@@ -239,6 +262,25 @@ public class AndroidEntryPointConstants {
 	 */
 	private AndroidEntryPointConstants() {
 
+	}
+
+	/**
+	 * Checks whether the given subsignature corresponds to the subsignature of a
+	 * lifecycle method
+	 * 
+	 * @param subsig The subsignature
+	 * @return True if the given subsignature is potentially a lifecycle method
+	 *         (depending on the parent class which is not checked here), false
+	 *         otherwise
+	 */
+	public static boolean isLifecycleSubsignature(String subsig) {
+		return activityMethodList.contains(subsig) || serviceMethodList.contains(subsig)
+				|| fragmentMethodList.contains(subsig) || gcmIntentServiceMethodList.contains(subsig)
+				|| gcmListenerServiceMethodList.contains(subsig) || hostApduServiceMethodList.contains(subsig)
+				|| broadcastMethodList.contains(subsig) || contentProviderMethodList.contains(subsig)
+				|| applicationMethodList.contains(subsig) || activityLifecycleMethodList.contains(subsig)
+				|| componentCallbackMethodList.contains(subsig) || componentCallback2MethodList.contains(subsig)
+				|| serviceConnectionMethodList.contains(subsig);
 	}
 
 }

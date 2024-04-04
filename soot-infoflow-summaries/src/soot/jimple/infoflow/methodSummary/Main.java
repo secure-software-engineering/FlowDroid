@@ -3,7 +3,9 @@ package soot.jimple.infoflow.methodSummary;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +40,15 @@ class Main {
 
 	private static final String OPTION_FORCE_OVERWRITE = "fo";
 	private static final String OPTION_LOAD_FULL_JAR = "lf";
+	private static final String OPTION_SUMMARIZE_FULL_JAR = "sf";
 	private static final String OPTION_EXCLUDE = "e";
 	private static final String OPTION_REPEAT = "r";
 	private static final String OPTION_FLOW_TIMEOUT = "ft";
 	private static final String OPTION_CLASS_TIMEOUT = "ct";
 	private static final String OPTION_ANALYZE_HASHCODE_EQUALS = "he";
 	private static final String OPTION_ANDROID_PLATFORMS = "p";
+	private static final String OPTION_IGNORE_DEFAULT_SUMMARIES = "is";
+	private static final String OPTION_WRITE_JIMPLE_FILES = "wj";
 
 	public static void main(final String[] args) throws FileNotFoundException, XMLStreamException {
 		Main main = new Main();
@@ -62,7 +67,9 @@ class Main {
 
 		options.addOption(OPTION_FORCE_OVERWRITE, "forceoverwrite", false,
 				"Silently overwrite summary files in output directory");
-		options.addOption(OPTION_LOAD_FULL_JAR, "loadfulljar", false, "Summarizes all classes from the given JAR file");
+		options.addOption(OPTION_LOAD_FULL_JAR, "loadfulljar", false, "Loads all classes from the given JAR file");
+		options.addOption(OPTION_SUMMARIZE_FULL_JAR, "summarizefulljar", false,
+				"Summarizes all classes from the given JAR file");
 		options.addOption(OPTION_EXCLUDE, "exclude", true, "Excludes the given class(es)");
 		options.addOption(OPTION_REPEAT, "repeat", true,
 				"Repeats the summary generation multiple times. Useful for performance measurements.");
@@ -74,6 +81,9 @@ class Main {
 				"Also analyze hashCode() and equals() methods");
 		options.addOption(OPTION_ANDROID_PLATFORMS, "platformsdir", true,
 				"Path to the platforms directory from the Android SDK");
+		options.addOption(OPTION_IGNORE_DEFAULT_SUMMARIES, "ignoresummaries", false,
+				"Existing summaries from the default summary directory are ignored");
+		options.addOption(OPTION_WRITE_JIMPLE_FILES, "writejimplefiles", false, "Write out the Jimple files");
 	}
 
 	public void run(final String[] args) throws FileNotFoundException, XMLStreamException {
@@ -84,10 +94,11 @@ class Main {
 
 			final boolean forceOverwrite = cmd.hasOption(OPTION_FORCE_OVERWRITE);
 			boolean loadFullJAR = cmd.hasOption(OPTION_LOAD_FULL_JAR);
+			boolean summarizeFullJAR = cmd.hasOption(OPTION_SUMMARIZE_FULL_JAR);
 
 			// We need proper parameters
 			String[] extraArgs = cmd.getArgs();
-			if (extraArgs.length < 2 || (extraArgs.length < 3 && !loadFullJAR)) {
+			if (extraArgs.length < 2 || (extraArgs.length < 3 && !summarizeFullJAR)) {
 				printHelpMessage();
 				return;
 			}
@@ -99,12 +110,35 @@ class Main {
 			SummaryGenerator generator = new SummaryGeneratorFactory().initSummaryGenerator();
 
 			// Parse the mandatory arguments
-			File toAnalyze = new File(extraArgs[0]);
+			String toAnalyze = extraArgs[0];
 			File outputFolder = new File(extraArgs[1]);
+
+			// Check if the given files to analyze do exist
+			List<String> filesToAnalyze = Arrays.asList(toAnalyze.split(File.pathSeparator));
+			for (String fileStr : filesToAnalyze) {
+				File file = new File(fileStr);
+				if (!file.exists()) {
+					System.err.println("File not found: " + file);
+					System.exit(1);
+					return;
+				}
+				if (file.isDirectory()) {
+					File[] files = file.listFiles(new FilenameFilter() {
+						@Override
+						public boolean accept(File dir, String name) {
+							return name.toLowerCase().endsWith(".jar");
+						}
+					});
+					for (int c = 0; c < files.length; c++) {
+						File f = files[c];
+						toAnalyze += File.pathSeparator + f.getPath();
+					}
+				}
+			}
 
 			// Collect the classes to be analyzed from our command line
 			List<String> classesToAnalyze = new ArrayList<>();
-			if (!loadFullJAR) {
+			if (!summarizeFullJAR) {
 				for (int i = 2; i < extraArgs.length; i++) {
 					if (extraArgs[i].startsWith("-")) {
 						printHelpMessage();
@@ -121,44 +155,17 @@ class Main {
 			}
 
 			generator.getConfig().setLoadFullJAR(loadFullJAR);
+			generator.getConfig().setSummarizeFullJAR(summarizeFullJAR);
 			generator.getConfig().setExcludes(excludes);
 
 			// Set optional settings
 			configureOptionalSettings(cmd, generator);
 
 			// Configure the output directory
-			if (!toAnalyze.exists()) {
-				System.err.println("File not found: " + toAnalyze);
-				System.exit(1);
-				return;
-			}
 			generator.getConfig().addAdditionalSummaryDirectory(outputFolder.getAbsolutePath());
 
 			// Run it
-			if (toAnalyze.isDirectory()) {
-				File[] files = toAnalyze.listFiles(new FilenameFilter() {
-
-					@Override
-					public boolean accept(File dir, String name) {
-						return name.toLowerCase().endsWith(".jar");
-					}
-
-				});
-				for (int c = 0; c < files.length; c++) {
-					File f = files[c];
-					System.out.println(String.format("Jar %d of %d: %s", c + 1, files.length, f));
-					createSummaries(generator, classesToAnalyze, forceOverwrite, f, outputFolder);
-				}
-
-				// If we don't have any JAR files, the target may be a normal classpath with
-				// Java class files
-				if (files.length == 0) {
-					System.out.println(String.format("Analyzing directory %s...", toAnalyze.getAbsolutePath()));
-					createSummaries(generator, classesToAnalyze, forceOverwrite, toAnalyze, outputFolder);
-				}
-			} else {
-				createSummaries(generator, classesToAnalyze, forceOverwrite, toAnalyze, outputFolder);
-			}
+			createSummaries(generator, classesToAnalyze, forceOverwrite, toAnalyze, outputFolder);
 
 			System.out.println("Done.");
 		} catch (ParseException e) {
@@ -199,6 +206,16 @@ class Main {
 			String platformsDir = cmd.getOptionValue(OPTION_ANDROID_PLATFORMS);
 			generator.getConfig().setAndroidPlatformDir(platformsDir);
 		}
+		{
+			boolean ignoreDefaultSummaries = cmd.hasOption(OPTION_IGNORE_DEFAULT_SUMMARIES);
+			if (ignoreDefaultSummaries)
+				generator.getConfig().setUseDefaultSummaries(false);
+		}
+		{
+			boolean writeJimpleFiles = cmd.hasOption(OPTION_WRITE_JIMPLE_FILES);
+			if (writeJimpleFiles)
+				generator.getConfig().setWriteOutputFiles(true);
+		}
 	}
 
 	/**
@@ -226,12 +243,12 @@ class Main {
 		System.out.println();
 
 		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("soot-infoflow-cmd <JAR File> <Output Directory> <Classes...> [OPTIONS]", options);
+		formatter.printHelp("soot-infoflow-summaries <JAR File> <Output Directory> <Classes...> [OPTIONS]", options);
 	}
 
 	private static void createSummaries(SummaryGenerator generator, List<String> classesToAnalyze,
-			final boolean doForceOverwrite, File toAnalyze, File outputFolder) {
-		ClassSummaries summaries = generator.createMethodSummaries(toAnalyze.getPath(), classesToAnalyze,
+			final boolean doForceOverwrite, String toAnalyze, File outputFolder) {
+		ClassSummaries summaries = generator.createMethodSummaries(toAnalyze, classesToAnalyze,
 				new IClassSummaryHandler() {
 
 					@Override
@@ -290,7 +307,7 @@ class Main {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

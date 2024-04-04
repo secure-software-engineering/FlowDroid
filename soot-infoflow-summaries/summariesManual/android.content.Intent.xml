@@ -35,6 +35,18 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="void &lt;init&gt;(android.content.Context,java.lang.Class)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1"
+						AccessPath="[java.lang.Class: java.lang.String className]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.Intent: android.content.ComponentName componentName]"
+						AccessPathTypes="[android.content.ComponentName]" />
+				</flow>
+			</flows>
+		</method>
 		<method id="void &lt;init&gt;(java.lang.String,android.net.Uri,android.content.Context,java.lang.Class)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -48,6 +60,14 @@
 					<to sourceSinkType="Field" BaseType="android.content.Intent"
 						AccessPath="[android.content.Intent: android.net.Uri uri]"
 						AccessPathTypes="[android.net.Uri]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3"
+						AccessPath="[java.lang.Class: java.lang.String className]"
+						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.Intent: android.content.ComponentName componentName]"
+						AccessPathTypes="[android.content.ComponentName]" />
 				</flow>
 			</flows>
 		</method>
@@ -441,8 +461,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" BaseType="android.content.Intent"
-						AccessPath="[android.content.Intent: java.lang.String package]"
-						AccessPathTypes="[java.lang.String]" />
+						AccessPath="[android.content.Intent: android.content.ComponentName componentName]"
+						AccessPathTypes="[android.content.ComponentName]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -1481,9 +1501,9 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" BaseType="android.content.Intent"
-						AccessPath="[android.content.Intent: java.lang.String package]"
-						AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.Intent: android.content.ComponentName componentName]"
+						AccessPathTypes="[android.content.ComponentName]" />
 				</flow>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" />

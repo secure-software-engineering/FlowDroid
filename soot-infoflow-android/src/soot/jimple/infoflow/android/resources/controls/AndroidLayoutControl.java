@@ -57,10 +57,8 @@ public abstract class AndroidLayoutControl extends LayoutControl {
 	/**
 	 * Adds an additional attribute to this layout control
 	 * 
-	 * @param key
-	 *            The key of the attribute
-	 * @param value
-	 *            The value of the attribute
+	 * @param key   The key of the attribute
+	 * @param value The value of the attribute
 	 */
 	public void addAdditionalAttribute(String key, String value) {
 		if (additionalAttributes != null)
@@ -89,8 +87,7 @@ public abstract class AndroidLayoutControl extends LayoutControl {
 	/**
 	 * Sets the unique identifier of the layout control
 	 * 
-	 * @param id
-	 *            The unique identifier of the layout control
+	 * @param id The unique identifier of the layout control
 	 */
 	void setId(int id) {
 		this.id = id;
@@ -100,23 +97,20 @@ public abstract class AndroidLayoutControl extends LayoutControl {
 	 * Handles the given attribute and copies the data from the attribute into this
 	 * data object
 	 * 
-	 * @param attribute
-	 *            The attribute to handle
-	 * @param loadOptionalData
-	 *            True if optional data, that is not directly necessary for
-	 *            understanding the semantics of the control, shall be loaded as
-	 *            well
+	 * @param attribute        The attribute to handle
+	 * @param loadOptionalData True if optional data, that is not directly necessary
+	 *                         for understanding the semantics of the control, shall
+	 *                         be loaded as well
 	 */
 	void handleAttribute(AXmlAttribute<?> attribute, boolean loadOptionalData) {
 		final String attrName = attribute.getName().trim();
 		final int type = attribute.getType();
 
-		if (attrName.equals("id")
-				&& (type == AxmlVisitor.TYPE_REFERENCE || attribute.getType() == AxmlVisitor.TYPE_INT_HEX)) {
-			id = (Integer) attribute.getValue();
+		if (attrName.equals("id")) {
+			id = attribute.asInteger();
 		} else if (isActionListener(attrName) && type == AxmlVisitor.TYPE_STRING
 				&& attribute.getValue() instanceof String) {
-			clickListener = ((String) attribute.getValue()).trim();
+			clickListener = attribute.asString().trim();
 		} else if (loadOptionalData) {
 			if (additionalAttributes == null)
 				additionalAttributes = new HashMap<>();
@@ -128,9 +122,8 @@ public abstract class AndroidLayoutControl extends LayoutControl {
 	 * Checks whether this name is the name of a well-known Android listener
 	 * attribute. This is a function to allow for future extension.
 	 * 
-	 * @param name
-	 *            The attribute name to check. This name is guaranteed to be in the
-	 *            android namespace.
+	 * @param name The attribute name to check. This name is guaranteed to be in the
+	 *             android namespace.
 	 * @return True if the given attribute name corresponds to a listener, otherwise
 	 *         false.
 	 */

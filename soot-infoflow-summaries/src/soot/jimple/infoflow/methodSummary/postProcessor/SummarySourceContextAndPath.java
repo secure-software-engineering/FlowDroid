@@ -15,7 +15,6 @@ import soot.Local;
 import soot.PrimType;
 import soot.SootField;
 import soot.SootMethod;
-import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
@@ -23,15 +22,16 @@ import soot.jimple.AssignStmt;
 import soot.jimple.Constant;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.data.AccessPathFactory.BasePair;
+import soot.jimple.infoflow.data.AccessPathFragment;
 import soot.jimple.infoflow.data.SourceContextAndPath;
 import soot.jimple.infoflow.methodSummary.util.AliasUtils;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
@@ -58,7 +58,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, boolean isAlias,
 			AccessPath curAP, List<SootMethod> callees, SummaryPathBuilderContext context) {
-		super(null, value, stmt);
+		super(manager.getConfig(), null, value, stmt);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;
@@ -68,7 +68,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	public SummarySourceContextAndPath(InfoflowManager manager, AccessPath value, Stmt stmt, AccessPath curAP,
 			boolean isAlias, int depth, List<SootMethod> callees, Object userData, SummaryPathBuilderContext context) {
-		super(null, value, stmt, userData);
+		super(manager.getConfig(), null, value, stmt, userData);
 		this.manager = manager;
 		this.isAlias = isAlias;
 		this.curAP = curAP;
@@ -78,7 +78,7 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	}
 
 	@Override
-	public SourceContextAndPath extendPath(Abstraction abs, PathConfiguration pathConfig) {
+	public SourceContextAndPath extendPath(Abstraction abs, InfoflowConfiguration pathConfig) {
 		// Do we have data at all?
 		if (abs == null)
 			return this;
@@ -341,26 +341,25 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 				return curAP;
 			} else {
 				// Get the bases for this type
-				final Collection<BasePair> bases = manager.getAccessPathFactory().getBaseForType(base.getType());
+				final Collection<AccessPathFragment[]> bases = manager.getAccessPathFactory()
+						.getBaseForType(base.getType());
 				if (bases != null) {
-					for (BasePair xbase : bases) {
-						if (xbase.getFields()[0] == field) {
-							// Build the access path against which we have
-							// actually matched
-							SootField[] cutFields = new SootField[curAP.getFieldCount() + xbase.getFields().length];
-							Type[] cutFieldTypes = new Type[cutFields.length];
+					synchronized (bases) {
+						for (AccessPathFragment[] xbase : bases) {
+							if (xbase[0].getField() == field) {
+								// Build the access path against which we have
+								// actually matched
+								AccessPathFragment[] cutFragments = new AccessPathFragment[curAP.getFragmentCount()
+										+ xbase.length];
 
-							System.arraycopy(xbase.getFields(), 0, cutFields, 0, xbase.getFields().length);
-							System.arraycopy(curAP.getFields(), 0, cutFields, xbase.getFields().length,
-									curAP.getFieldCount());
+								System.arraycopy(xbase, 0, cutFragments, 0, xbase.length);
+								System.arraycopy(curAP.getFragments(), 0, cutFragments, xbase.length,
+										curAP.getFragmentCount());
 
-							System.arraycopy(xbase.getTypes(), 0, cutFieldTypes, 0, xbase.getTypes().length);
-							System.arraycopy(curAP.getFieldTypes(), 0, cutFieldTypes, xbase.getFields().length,
-									curAP.getFieldCount());
-
-							return manager.getAccessPathFactory().createAccessPath(curAP.getPlainValue(), cutFields,
-									curAP.getBaseType(), cutFieldTypes, curAP.getTaintSubFields(), false, false,
-									curAP.getArrayTaintType());
+								return manager.getAccessPathFactory().createAccessPath(curAP.getPlainValue(),
+										curAP.getBaseType(), cutFragments, curAP.getTaintSubFields(), false, false,
+										curAP.getArrayTaintType());
+							}
 						}
 					}
 				}
@@ -383,6 +382,9 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 */
 	private AccessPath mapAccessPathIntoCallee(AccessPath curAP, final Stmt stmt, final Stmt callSite,
 			SootMethod callee, boolean isBackwards) {
+		final InvokeExpr iexpr = callSite.getInvokeExpr();
+		final SootMethod targetMethod = iexpr.getMethod();
+
 		// Map the return value into the scope of the callee
 		if (stmt instanceof ReturnStmt) {
 			ReturnStmt retStmt = (ReturnStmt) stmt;
@@ -392,8 +394,8 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		}
 
 		// Map the "this" fields into the callee
-		if (!callee.isStatic() && callSite.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) callSite.getInvokeExpr();
+		if (!callee.isStatic() && iexpr instanceof InstanceInvokeExpr) {
+			InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iexpr;
 			if (iiExpr.getBase() == curAP.getPlainValue()) {
 				Local thisLocal = callee.getActiveBody().getThisLocal();
 				return manager.getAccessPathFactory().copyWithNewValue(curAP, thisLocal);
@@ -403,23 +405,44 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Map the parameters into the callee. Note that parameters as
 		// such cannot return taints from methods, only fields reachable
 		// through them. (nope, not true for alias propagation)
-		if (!curAP.isLocal() || isBackwards)
-			for (int i = 0; i < callSite.getInvokeExpr().getArgCount(); i++) {
-				if (callSite.getInvokeExpr().getArg(i) == curAP.getPlainValue()) {
-					Local paramLocal = callee.getActiveBody().getParameterLocal(i);
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, paramLocal);
+		if (!curAP.isLocal() || isBackwards) {
+			// Special handling for doPrivileged() and for threads. The call to start(t) is
+			// with a taint on t is translated to t.this.
+			if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+				if (iexpr.getArgCount() == 1 && iexpr.getArg(0) == curAP.getPlainValue()) {
+					Local thisLocal = callee.getActiveBody().getThisLocal();
+					return manager.getAccessPathFactory().copyWithNewValue(curAP, thisLocal);
+				}
+			} else {
+				for (int i = 0; i < iexpr.getArgCount(); i++) {
+					if (iexpr.getArg(i) == curAP.getPlainValue()) {
+						Local paramLocal = callee.getActiveBody().getParameterLocal(i);
+						return manager.getAccessPathFactory().copyWithNewValue(curAP, paramLocal);
+					}
 				}
 			}
+		}
 
 		// Map the parameters back to arguments when we are entering a method
 		// during backwards propagation
 		if (!curAP.isLocal() && !isBackwards) {
 			SootMethod curMethod = manager.getICFG().getMethodOf(stmt);
-			for (int i = 0; i < callSite.getInvokeExpr().getArgCount(); i++) {
-				Local paramLocal = curMethod.getActiveBody().getParameterLocal(i);
-				if (paramLocal == curAP.getPlainValue()) {
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, callSite.getInvokeExpr().getArg(i),
-							curMethod.getParameterType(i), false);
+
+			// Special handling for doPrivileged() and for threads. The call to start(t) is
+			// with a taint on t is translated to t.this.
+			if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+				Local thisLocal = curMethod.getActiveBody().getThisLocal();
+				if (iexpr.getArgCount() == 1 && thisLocal == curAP.getPlainValue()) {
+					return manager.getAccessPathFactory().copyWithNewValue(curAP, iexpr.getArg(0),
+							curMethod.getParameterType(0), false);
+				}
+			} else {
+				for (int i = 0; i < iexpr.getArgCount(); i++) {
+					Local paramLocal = curMethod.getActiveBody().getParameterLocal(i);
+					if (paramLocal == curAP.getPlainValue()) {
+						return manager.getAccessPathFactory().copyWithNewValue(curAP, iexpr.getArg(i),
+								curMethod.getParameterType(i), false);
+					}
 				}
 			}
 		}
@@ -447,18 +470,16 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 		// Cache the "this" local
 		Local thisLocal = callee.isStatic() ? null : callee.getActiveBody().getThisLocal();
 
-		// Special treatment for doPrivileged()
-		if (stmt.getInvokeExpr().getMethod().getName().equals("doPrivileged")) {
-			if (!callee.isStatic())
-				if (curAP.getPlainValue() == thisLocal)
-					return manager.getAccessPathFactory().copyWithNewValue(curAP, stmt.getInvokeExpr().getArg(0));
-
+		// Special handling for threads and doPrivileged()
+		final SootMethod targetMethod = stmt.getInvokeExpr().getMethod();
+		if (isThreadCall(targetMethod, callee) || isDoPrivilegedCall(targetMethod, callee)) {
+			if (curAP.getPlainValue() == thisLocal)
+				return manager.getAccessPathFactory().copyWithNewValue(curAP, stmt.getInvokeExpr().getArg(0));
 			return null;
 		}
 
 		// Make sure that we don't end up with a senseless callee
-		if (!callee.getSubSignature().equals(stmt.getInvokeExpr().getMethod().getSubSignature())
-				&& !isThreadCall(stmt.getInvokeExpr().getMethod(), callee)) {
+		if (!callee.getSubSignature().equals(targetMethod.getSubSignature()) && !isThreadCall(targetMethod, callee)) {
 			logger.warn(String.format("Invalid callee on stack. Caller was %s, callee was %s",
 					stmt.getInvokeExpr().getMethod().getSubSignature(), callee));
 			return null;
@@ -519,6 +540,18 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 
 	/**
 	 * Simplistic check to see whether the given formal callee and actual callee can
+	 * be in a do-privileged relationship
+	 * 
+	 * @param callSite The method at the call site
+	 * @param callee   The actual callee
+	 * @return True if this can be a do-privileged call edge, otherwise false
+	 */
+	private boolean isDoPrivilegedCall(SootMethod targetMethod, SootMethod callee) {
+		return targetMethod.getName().equals("doPrivileged") && !callee.isStatic();
+	}
+
+	/**
+	 * Simplistic check to see whether the given formal callee and actual callee can
 	 * be in a thread-start relationship
 	 * 
 	 * @param callSite The method at the call site
@@ -526,7 +559,11 @@ class SummarySourceContextAndPath extends SourceContextAndPath {
 	 * @return True if this can be a thread-start call edge, otherwise false
 	 */
 	private boolean isThreadCall(SootMethod callSite, SootMethod callee) {
-		return (callSite.getName().equals("start") && callee.getName().equals("run"));
+		if (callee.getName().equals("run") && !callee.isStatic()) {
+			final String callSiteName = callSite.getName();
+			return callSiteName.equals("start") || callSiteName.equals("post");
+		}
+		return false;
 	}
 
 	@Override

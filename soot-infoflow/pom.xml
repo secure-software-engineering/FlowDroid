@@ -3,53 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.tud.sse</groupId>
 	<artifactId>soot-infoflow</artifactId>
 	<name>soot-infoflow</name>
-	<version>2.7.3-SNAPSHOT</version>
 	<description>Soot extending data flow tracking components for Java</description>
 	<url>https://github.com/secure-software-engineering/FlowDroid</url>
 
-	<organization>
-		<name>Fraunhofer SIT</name>
-		<url>https://www.sit.fraunhofer.de/</url>
-	</organization>
-
-	<licenses>
-		<license>
-			<name>GNU LESSER GENERAL PUBLIC LICENSE 2.1</name>
-			<url>https://www.gnu.org/licenses/lgpl-2.1.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<name>Steven Arzt</name>
-			<email>steven.arzt@sit.fraunhofer.de</email>
-			<organization>Fraunhofer SIT</organization>
-			<organizationUrl>https://www.sit.fraunhofer.de/en/</organizationUrl>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</connection>
-		<developerConnection>scm:git:git@github.com:secure-software-engineering/FlowDroid.git</developerConnection>
-		<url>https://github.com/secure-software-engineering/FlowDroid/tree/develop</url>
-	</scm>
-
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-		<maven-nexus-staging-plugin.version>1.6.8</maven-nexus-staging-plugin.version>
-		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
-		<maven-javadoc-plugin.version>3.0.0</maven-javadoc-plugin.version>
-		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-		<maven-surefire-plugin.version>2.20.1</maven-surefire-plugin.version>
-		<maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
-	</properties>
+	<parent>
+		<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.14.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
 
 	<build>
 		<finalName>soot-infoflow-classes</finalName>
@@ -61,7 +25,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.2</version>
+				<version>${maven-compiler-plugin.version}</version>
 			</plugin>
 
 			<plugin>
@@ -143,29 +107,29 @@
 		<dependency>
 			<groupId>de.upb.cs.swt</groupId>
 			<artifactId>heros</artifactId>
-			<version>1.2.0-SNAPSHOT</version>
+			<version>1.2.3</version>
 		</dependency>
 		<dependency>
-			<groupId>ca.mcgill.sable</groupId>
+			<groupId>org.soot-oss</groupId>
 			<artifactId>soot</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>${soot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>1.3</version>
+			<artifactId>hamcrest</artifactId>
+			<version>${hamcrest.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -176,50 +140,22 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>25.1-jre</version>
+			<version>${guava.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
-	<repositories>
-		<repository>
-			<id>sonatype-snapshot</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+	
 	<profiles>
 		<profile>
 			<id>deploy</id>
-			<activation>
-				<property>
-					<name>deploy</name>
-					<value>true</value>
-				</property>
-			</activation>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>${maven-nexus-staging-plugin.version}</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>ossrh</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -230,26 +166,6 @@
 								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
-								</goals>
-								<configuration>
-									<!-- This is necessary for gpg to not try to use the pinentry programs -->
-									<gpgArguments>
-										<arg>--pinentry-mode</arg>
-										<arg>loopback</arg>
-									</gpgArguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>simple-command</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
 								</goals>
 							</execution>
 						</executions>

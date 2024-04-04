@@ -2,7 +2,6 @@ package soot.jimple.infoflow.solver;
 
 import java.util.Set;
 
-import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
@@ -29,10 +28,31 @@ public interface IInfoflowSolver {
 	 * @return The end summary of the given method for the given incoming
 	 *         abstraction
 	 */
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3);
+	public Set<EndSummary<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3);
 
+	/**
+	 * Injects the given calling context into the incoming set
+	 *
+	 * @param callee   method
+	 * @param d3 	   calling context
+	 * @param callSite call site
+	 * @param d2 	   incoming abstraction at the call site
+	 * @param d1	   calling context at the call site
+	 */
 	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1);
+							  Abstraction d2, Abstraction d1);
+
+	/**
+	 * Calls applyEndSummaryOnCall in the current solver
+	 *
+	 * @param callee   method
+	 * @param d3 	   calling context
+	 * @param callSite call site
+	 * @param d2 	   incoming abstraction at the call site
+	 * @param d1	   calling context at the call site
+	 */
+	public void applySummary(SootMethod callee, Abstraction d3, Unit callSite,
+							 Abstraction d2, Abstraction d1);
 
 	/**
 	 * Cleans up some unused memory. Results will still be available afterwards, but
@@ -121,5 +141,18 @@ public interface IInfoflowSolver {
 	 *                                 propagation path
 	 */
 	public void setMaxAbstractionPathLength(int maxAbstractionPathLength);
+
+	/**
+	 * Sets the peer group in which this solver operates. Peer groups allow for
+	 * synchronization between solvers
+	 * 
+	 * @param solverPeerGroup The solver peer group
+	 */
+	public void setPeerGroup(ISolverPeerGroup solverPeerGroup);
+
+	/**
+	 * Notifies the solver that no further edges will be scheduled
+	 */
+	public void terminate();
 
 }

@@ -47,6 +47,7 @@ import soot.toolkits.exceptions.ThrowableSet;
 import soot.toolkits.graph.DirectedGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraph.ExceptionDest;
+import soot.toolkits.graph.MHGDominatorsFinder;
 import soot.toolkits.graph.MHGPostDominatorsFinder;
 
 /**
@@ -57,17 +58,47 @@ import soot.toolkits.graph.MHGPostDominatorsFinder;
  */
 public class InfoflowCFG implements IInfoflowCFG {
 
-	private final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
-	private final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
+	protected final static int MAX_SIDE_EFFECT_ANALYSIS_DEPTH = 25;
+	protected final static int MAX_STATIC_USE_ANALYSIS_DEPTH = 50;
 
-	private static enum StaticFieldUse {
-		Unknown, Unused, Read, Write, ReadWrite
+	public static enum StaticFieldUse {
+		Unknown, Unused, Read, Write, ReadWrite;
+
+		public StaticFieldUse merge(StaticFieldUse p) {
+			if ((this == Read && p == Write) || (this == Write && p == Read))
+				return ReadWrite;
+			if (this == ReadWrite || p == ReadWrite)
+				return ReadWrite;
+			if (p == this)
+				return this;
+			if (p == Unused)
+				return this;
+			if (this == Unused)
+				return p;
+			return Unknown;
+		}
 	}
 
 	protected final Map<SootMethod, Map<SootField, StaticFieldUse>> staticFieldUses = new ConcurrentHashMap<SootMethod, Map<SootField, StaticFieldUse>>();
 	protected final Map<SootMethod, Boolean> methodSideEffects = new ConcurrentHashMap<SootMethod, Boolean>();
 
 	protected final BiDiInterproceduralCFG<Unit, SootMethod> delegate;
+
+	protected final LoadingCache<Unit, UnitContainer> unitsToDominator = IDESolver.DEFAULT_CACHE_BUILDER
+			.build(new CacheLoader<Unit, UnitContainer>() {
+				@Override
+				public UnitContainer load(Unit unit) throws Exception {
+					SootMethod method = getMethodOf(unit);
+					DirectedGraph<Unit> graph = delegate.getOrCreateUnitGraph(method);
+
+					MHGDominatorsFinder<Unit> dominatorFinder = new MHGDominatorsFinder<Unit>(graph);
+					Unit dom = dominatorFinder.getImmediateDominator(unit);
+					if (dom == null)
+						return new UnitContainer(method);
+					else
+						return new UnitContainer(dom);
+				}
+			});
 
 	protected final LoadingCache<Unit, UnitContainer> unitToPostdominator = IDESolver.DEFAULT_CACHE_BUILDER
 			.build(new CacheLoader<Unit, UnitContainer>() {
@@ -146,10 +177,17 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return unitToPostdominator.getUnchecked(u);
 	}
 
+	@Override
+	public UnitContainer getDominatorOf(Unit u) {
+		return unitsToDominator.getUnchecked(u);
+	}
+
 	// delegate methods follow
 
 	@Override
 	public SootMethod getMethodOf(Unit u) {
+		if (u == null)
+			throw new RuntimeException("Cannot get the method that contains a null unit");
 		return delegate.getMethodOf(u);
 	}
 
@@ -260,12 +298,14 @@ public class InfoflowCFG implements IInfoflowCFG {
 		return use == StaticFieldUse.Write || use == StaticFieldUse.ReadWrite || use == StaticFieldUse.Unknown;
 	}
 
-	protected synchronized StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
+	protected StaticFieldUse checkStaticFieldUsed(SootMethod smethod, SootField variable) {
 		// Skip over phantom methods
-		if (!smethod.isConcrete())
+		if (!smethod.isConcrete() || !smethod.hasActiveBody())
 			return StaticFieldUse.Unused;
 
-		List<SootMethod> workList = new ArrayList<>();
+		// Since we process at max MAX_STATIC_USE_ANALYSIS_DEPTH, we should use that
+		// as a maximum.
+		List<SootMethod> workList = new ArrayList<>(MAX_STATIC_USE_ANALYSIS_DEPTH);
 		workList.add(smethod);
 		Map<SootMethod, StaticFieldUse> tempUses = new HashMap<>();
 
@@ -359,8 +399,10 @@ public class InfoflowCFG implements IInfoflowCFG {
 		}
 
 		// Merge the temporary results into the global cache
-		for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
-			registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+		synchronized (tempUses) {
+			for (Entry<SootMethod, StaticFieldUse> tempEntry : tempUses.entrySet()) {
+				registerStaticVariableUse(tempEntry.getKey(), variable, tempEntry.getValue());
+			}
 		}
 
 		StaticFieldUse outerUse = tempUses.get(smethod);
@@ -521,6 +563,16 @@ public class InfoflowCFG implements IInfoflowCFG {
 	}
 
 	@Override
+	public List<Unit> getConditionalBranchIntraprocedural(Unit callSite) {
+		return null;
+	}
+
+	@Override
+	public List<Unit> getConditionalBranchesInterprocedural(Unit unit) {
+		return null;
+	}
+
+	@Override
 	public boolean isReachable(Unit u) {
 		return delegate.isReachable(u);
 	}
@@ -540,7 +592,7 @@ public class InfoflowCFG implements IInfoflowCFG {
 		if (ieSubSig.equals("void execute(java.lang.Runnable)") && calleeSubSig.equals("void run()"))
 			return true;
 
-		if (calleeSubSig.equals("java.lang.Object run()")) {
+		if (dest.getName().equals("run") && dest.getParameterCount() == 0 && dest.getReturnType() instanceof RefType) {
 			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction)"))
 				return true;
 			if (ieSubSig.equals("java.lang.Object doPrivileged(java.security.PrivilegedAction,"
@@ -601,6 +653,9 @@ public class InfoflowCFG implements IInfoflowCFG {
 
 		unitToPostdominator.invalidateAll();
 		unitToPostdominator.cleanUp();
+
+		unitsToDominator.invalidateAll();
+		unitsToDominator.cleanUp();
 	}
 
 }

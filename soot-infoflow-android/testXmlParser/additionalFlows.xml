@@ -1,0 +1,43 @@
+<sinkSources>
+    <category id="NO_CATEGORY">
+        <method signature="java.io.PrintWriter: void write(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="java.net.URL: java.net.URLConnection openConnection()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="javax.servlet.ServletResponse: java.io.PrintWriter getWriter()" />
+                <signatureOnPath signature="javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(byte[])">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="javax.servlet.ServletResponse: java.io.PrintWriter getWriter()" />
+                <excludeClassName className="java.io.ByteArrayOutputStream" />
+                <excludeClassName className="java.lang.Object" />
+            </additionalFlowCondition>
+            <additionalFlowCondition>
+                <signatureOnPath signature="javax.servlet.http.HttpServletResponse: java.io.PrintWriter getWriter()" />
+                <excludeClassName className="java.lang.String" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="java.io.PrintWriter: void write(java.lang.String,int,int)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <classNameOnPath className="java.lang.String" />
+            </additionalFlowCondition>
+        </method>
+    </category>
+</sinkSources>

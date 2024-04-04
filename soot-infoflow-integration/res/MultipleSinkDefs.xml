@@ -1,0 +1,113 @@
+<sinkSources>
+    <category id="NO_CATEGORY">
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: java.lang.String source()">
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false" />
+            </return>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject objectSource()">
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false">
+                    <pathElement type="java.lang.String" field="fieldA" />
+                </accessPath>
+            </return>
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false">
+                    <pathElement type="java.lang.String" field="fieldB" />
+                </accessPath>
+            </return>
+        </method>
+    </category>
+    <category id="NETWORK">
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject objectSourceA()">
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false">
+                    <pathElement type="java.lang.String" field="fieldA" />
+                </accessPath>
+            </return>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode$MyClass: void conditionalSink(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode$MyClass: void contextOne()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void sink(java.lang.String,java.lang.String)">
+            <param index="1" description="Second Parameter">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="0">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldA" />
+                </accessPath>
+            </param>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject,soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="0">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldA" />
+                </accessPath>
+            </param>
+        </method>
+        <field signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject source">
+            <accessPath isSource="true" isSink="false">
+                <pathElement type="java.lang.String" field="fieldA" />
+            </accessPath>
+        </field>
+        <field signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject sink">
+            <accessPath isSource="false" isSink="true">
+                <pathElement type="java.lang.String" field="fieldA" />
+            </accessPath>
+        </field>
+    </category>
+    <category id="VOIP">
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject objectSourceB()">
+            <return type="java.lang.String">
+                <accessPath isSource="true" isSink="false">
+                    <pathElement type="java.lang.String" field="fieldB" />
+                </accessPath>
+            </return>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode$MyClass: void conditionalSink(java.lang.String)">
+            <param index="0" description="Output Data">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+            <additionalFlowCondition>
+                <signatureOnPath signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode$MyClass: void contextTwo()" />
+            </additionalFlowCondition>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void sink(java.lang.String,java.lang.String)">
+            <param index="0" description="First Parameter">
+                <accessPath isSource="false" isSink="true" />
+            </param>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="0">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldB" />
+                </accessPath>
+            </param>
+        </method>
+        <method signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: void objectSink(soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject,soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject)">
+            <param index="1">
+                <accessPath isSource="false" isSink="true">
+                    <pathElement type="java.lang.String" field="fieldB" />
+                </accessPath>
+            </param>
+        </method>
+        <field signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject source">
+            <accessPath isSource="true" isSink="false">
+                <pathElement type="java.lang.String" field="fieldB" />
+            </accessPath>
+        </field>
+        <field signature="soot.jimple.infoflow.integration.test.MultipleSinkTestCode: soot.jimple.infoflow.integration.test.MultipleSinkTestCode$ReturnObject sink">
+            <accessPath isSource="false" isSink="true">
+                <pathElement type="java.lang.String" field="fieldB" />
+            </accessPath>
+        </field>
+    </category>
+</sinkSources>

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.SetupApplication;
@@ -58,12 +59,15 @@ public class JUnitTests {
 		System.out.println("Loading Android.jar files from " + androidJars);
 
 		SetupApplication setupApplication = new SetupApplication(androidJars, apkFileName);
-		setupApplication.setTaintWrapper(new EasyTaintWrapper());
+		setupApplication.setTaintWrapper(EasyTaintWrapper.getDefault());
 		setupApplication.getConfig().setImplicitFlowMode(
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);
 		setupApplication.getConfig().setStaticFieldTrackingMode(
 				enableStaticFields ? StaticFieldTrackingMode.ContextFlowSensitive : StaticFieldTrackingMode.None);
 		setupApplication.getConfig().setFlowSensitiveAliasing(flowSensitiveAliasing);
+
+//		setupApplication.getConfig().setDataFlowDirection(InfoflowConfiguration.DataFlowDirection.Backwards);
+
 		return setupApplication.runInfoflow(xmlFileName);
 	}
 }

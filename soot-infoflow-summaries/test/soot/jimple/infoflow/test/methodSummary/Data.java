@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.test.methodSummary;
 
+import java.util.function.Function;
+
 public class Data {
 	Object objectField = new Integer(3);
 	Object objectField2 = new Integer(5);
@@ -52,5 +54,12 @@ public class Data {
 		this.stringField = i;
 	}
 	
-	
+	public void identity() {
+		// NO-OP but do something to make sure that this won't get removed by optimizations
+		System.out.println("Hello World");
+	}
+
+	public String computeString(Function<String, String> f) {
+		return f.apply(stringField);
+	}
 }

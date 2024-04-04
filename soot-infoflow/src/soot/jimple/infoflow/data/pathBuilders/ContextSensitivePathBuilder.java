@@ -1,11 +1,17 @@
 package soot.jimple.infoflow.data.pathBuilders;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.collect.ConcurrentIdentityHashMultiMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
@@ -27,15 +33,44 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 	protected ConcurrentIdentityHashMultiMap<Abstraction, SourceContextAndPath> pathCache = new ConcurrentIdentityHashMultiMap<>();
 
+	// Set holds all paths that reach an already cached subpath
+	protected ConcurrentHashSet<SourceContextAndPath> deferredPaths = new ConcurrentHashSet<>();
+	// Set holds all paths that reach a source
+	protected ConcurrentHashSet<SourceContextAndPath> sourceReachingScaps = new ConcurrentHashSet<>();
+
 	/**
 	 * Creates a new instance of the {@link ContextSensitivePathBuilder} class
 	 * 
-	 * @param manager  The data flow manager that gives access to the icfg and other
-	 *                 objects
-	 * @param executor The executor in which to run the path reconstruction tasks
+	 * @param manager The data flow manager that gives access to the icfg and other
+	 *                objects
 	 */
-	public ContextSensitivePathBuilder(InfoflowManager manager, InterruptableExecutor executor) {
-		super(manager, executor);
+	public ContextSensitivePathBuilder(InfoflowManager manager) {
+		super(manager, createExecutor(manager));
+	}
+
+	private static InterruptableExecutor createExecutor(InfoflowManager manager) {
+		int numThreads = Runtime.getRuntime().availableProcessors();
+		int mtn = manager.getConfig().getMaxThreadNum();
+		InterruptableExecutor executor = new InterruptableExecutor(mtn == -1 ? numThreads : Math.min(mtn, numThreads),
+				Integer.MAX_VALUE, 30, TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>());
+		executor.setThreadFactory(new ThreadFactory() {
+
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "Path reconstruction");
+			}
+
+		});
+		return executor;
+	}
+
+	protected enum PathProcessingResult {
+		// Describes that the predecessor should be queued
+		NEW,
+		// Describes that the predecessor was already queued, but we might need to merge paths
+		CACHED,
+		// Describes that nothing further should be queued
+		INFEASIBLE_OR_MAX_PATHS_REACHED
 	}
 
 	/**
@@ -43,7 +78,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	 * 
 	 * @author Steven Arzt
 	 */
-	protected class SourceFindingTask implements Runnable {
+	protected class SourceFindingTask implements Runnable, Comparable<SourceFindingTask> {
 		private final Abstraction abstraction;
 
 		public SourceFindingTask(Abstraction abstraction) {
@@ -53,47 +88,65 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 		@Override
 		public void run() {
 			final Set<SourceContextAndPath> paths = pathCache.get(abstraction);
-			final Abstraction pred = abstraction.getPredecessor();
+			Abstraction pred = abstraction.getPredecessor();
 
 			if (pred != null && paths != null) {
 				for (SourceContextAndPath scap : paths) {
 					// Process the predecessor
-					if (processPredecessor(scap, pred)) {
-						// Schedule the predecessor
-						scheduleDependentTask(new SourceFindingTask(pred));
-					}
+					processAndQueue(pred, scap);
 
 					// Process the predecessor's neighbors
 					if (pred.getNeighbors() != null) {
 						for (Abstraction neighbor : pred.getNeighbors()) {
-							if (processPredecessor(scap, neighbor)) {
-								// Schedule the predecessor
-								scheduleDependentTask(new SourceFindingTask(neighbor));
-							}
+							processAndQueue(neighbor, scap);
 						}
 					}
 				}
 			}
 		}
 
-		private boolean processPredecessor(SourceContextAndPath scap, Abstraction pred) {
+		private void processAndQueue(Abstraction pred, SourceContextAndPath scap) {
+			PathProcessingResult p = processPredecessor(scap, pred);
+			switch (p) {
+			case NEW:
+				// Schedule the predecessor
+				assert pathCache.containsKey(pred);
+				scheduleDependentTask(createSourceFindingTask(pred));
+				break;
+			case CACHED:
+				// In case we already know the subpath, we do append the path after the path
+				// builder terminated
+				if (config.getPathConfiguration()
+						.getPathReconstructionMode() != InfoflowConfiguration.PathReconstructionMode.NoPaths)
+					deferredPaths.add(scap);
+				break;
+			case INFEASIBLE_OR_MAX_PATHS_REACHED:
+				// Nothing to do
+				break;
+			default:
+				assert false;
+			}
+		}
+
+		protected PathProcessingResult processPredecessor(SourceContextAndPath scap, Abstraction pred) {
 			// Shortcut: If this a call-to-return node, we should not enter and
 			// immediately leave again for performance reasons.
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt() == pred.getCorrespondingCallSite()) {
-				SourceContextAndPath extendedScap = scap.extendPath(pred, pathConfig);
+				SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 				if (extendedScap == null)
-					return false;
+					return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
-				checkForSource(pred, extendedScap);
-				return pathCache.put(pred, extendedScap);
+				if (checkForSource(pred, extendedScap))
+					sourceReachingScaps.add(extendedScap);
+				return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW : PathProcessingResult.CACHED;
 			}
 
 			// If we enter a method, we put it on the stack
-			SourceContextAndPath extendedScap = scap.extendPath(pred, pathConfig);
+			SourceContextAndPath extendedScap = scap.extendPath(pred, config);
 			if (extendedScap == null)
-				return false;
+				return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
-			// Do we process a method return?
+			// Check if we are in the right context
 			if (pred.getCurrentStmt() != null && pred.getCurrentStmt().containsInvokeExpr()) {
 				// Pop the top item off the call stack. This gives us the item
 				// and the new SCAP without the item we popped off.
@@ -102,7 +155,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					Stmt topCallStackItem = pathAndItem.getO2();
 					// Make sure that we don't follow an unrealizable path
 					if (topCallStackItem != pred.getCurrentStmt())
-						return false;
+						return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 
 					// We have returned from a function
 					extendedScap = pathAndItem.getO1();
@@ -110,15 +163,17 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			}
 
 			// Add the new path
-			checkForSource(pred, extendedScap);
+			if (checkForSource(pred, extendedScap))
+				sourceReachingScaps.add(extendedScap);
 
-			final int maxPaths = pathConfig.getMaxPathsPerAbstraction();
+			final int maxPaths = config.getPathConfiguration().getMaxPathsPerAbstraction();
 			if (maxPaths > 0) {
 				Set<SourceContextAndPath> existingPaths = pathCache.get(pred);
 				if (existingPaths != null && existingPaths.size() > maxPaths)
-					return false;
+					return PathProcessingResult.INFEASIBLE_OR_MAX_PATHS_REACHED;
 			}
-			return pathCache.put(pred, extendedScap);
+
+			return pathCache.put(pred, extendedScap) ? PathProcessingResult.NEW : PathProcessingResult.CACHED;
 		}
 
 		@Override
@@ -138,9 +193,12 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 			if (getClass() != obj.getClass())
 				return false;
 			SourceFindingTask other = (SourceFindingTask) obj;
-			if (abstraction != other.abstraction)
-				return false;
-			return true;
+			return abstraction == other.abstraction;
+		}
+
+		@Override
+		public int compareTo(SourceFindingTask arg0) {
+			return Integer.compare(abstraction.getPathLength(), arg0.abstraction.getPathLength());
 		}
 
 	}
@@ -169,20 +227,21 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();
-		Pair<ResultSourceInfo, ResultSinkInfo> newResult = results.addResult(scap.getDefinition(), scap.getAccessPath(),
-				scap.getStmt(), sourceContext.getDefinition(), sourceContext.getAccessPath(), sourceContext.getStmt(),
-				sourceContext.getUserData(), scap.getAbstractionPath());
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> newResults = results.addResult(scap.getDefinitions(),
+				scap.getAccessPath(), scap.getStmt(), sourceContext.getDefinitions(), sourceContext.getAccessPath(),
+				sourceContext.getStmt(), sourceContext.getUserData(), scap.getAbstractionPath(), manager);
 
 		// Notify our handlers
 		if (resultAvailableHandlers != null)
 			for (OnPathBuilderResultAvailable handler : resultAvailableHandlers)
-				handler.onResultAvailable(newResult.getO1(), newResult.getO2());
+				for (Pair<ResultSourceInfo, ResultSinkInfo> newResult : newResults)
+					handler.onResultAvailable(newResult.getO1(), newResult.getO2());
 
 		return true;
 	}
 
 	@Override
-	public void runIncrementalPathCompuation() {
+	public void runIncrementalPathComputation() {
 		Set<AbstractionAtSink> incrementalAbs = new HashSet<>();
 		for (Abstraction abs : pathCache.keySet())
 			for (SourceContextAndPath scap : pathCache.get(abs)) {
@@ -192,7 +251,7 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 					scap.setNeighborCounter(abs.getNeighbors().size());
 
 					for (Abstraction neighbor : abs.getNeighbors())
-						incrementalAbs.add(new AbstractionAtSink(scap.getDefinition(), neighbor, scap.getStmt()));
+						incrementalAbs.add(new AbstractionAtSink(scap.getDefinitions(), neighbor, scap.getStmt()));
 				}
 			}
 		if (!incrementalAbs.isEmpty())
@@ -200,15 +259,82 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 	}
 
 	@Override
-	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
-		SourceContextAndPath scap = new SourceContextAndPath(abs.getSinkDefinition(),
-				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
-		scap = scap.extendPath(abs.getAbstraction(), pathConfig);
+	public void computeTaintPaths(Set<AbstractionAtSink> res) {
+		try {
+			super.computeTaintPaths(res);
 
-		if (pathCache.put(abs.getAbstraction(), scap))
+			// Wait for the path builder to terminate. The path reconstruction should stop
+			// on time anyway. In case it doesn't, we make sure that we don't get stuck.
+			long pathTimeout = manager.getConfig().getPathConfiguration().getPathReconstructionTimeout();
+			if (pathTimeout > 0)
+				executor.awaitCompletion(pathTimeout + 20, TimeUnit.SECONDS);
+			else
+				executor.awaitCompletion();
+		} catch (InterruptedException e) {
+			logger.error("Could not wait for executor termination", e);
+		} finally {
+			onTaintPathsComputed();
+			cleanupExecutor();
+		}
+	}
+
+	@Override
+	public void reset() {
+		super.reset();
+		deferredPaths = new ConcurrentHashSet<>();
+		sourceReachingScaps = new ConcurrentHashSet<>();
+		pathCache = new ConcurrentIdentityHashMultiMap<>();
+	}
+
+	/**
+	 * Tries to fill up deferred paths toward a source.
+	 */
+	protected void buildPathsFromCache() {
+		for (SourceContextAndPath deferredScap : deferredPaths) {
+			for (SourceContextAndPath sourceScap : sourceReachingScaps) {
+				SourceContextAndPath fullScap = deferredScap.extendPath(sourceScap);
+				if (fullScap != null)
+					checkForSource(fullScap.getLastAbstraction(), fullScap);
+			}
+		}
+	}
+
+	/**
+	 * Method that is called when the taint paths have been computed
+	 */
+	protected void onTaintPathsComputed() {
+		buildPathsFromCache();
+	}
+
+	/**
+	 * Method that is called to shut down the executor
+	 */
+	protected void cleanupExecutor() {
+		shutdown();
+	}
+
+	/**
+	 * Terminates the internal executor and cleans up all resources that were used
+	 */
+	public void shutdown() {
+		executor.shutdown();
+	}
+
+	@Override
+	protected Runnable getTaintPathTask(final AbstractionAtSink abs) {
+		SourceContextAndPath scap = new SourceContextAndPath(config, abs.getSinkDefinitions(),
+				abs.getAbstraction().getAccessPath(), abs.getSinkStmt());
+		scap = scap.extendPath(abs.getAbstraction(), config);
+
+		if (pathCache.put(abs.getAbstraction(), scap)) {
 			if (!checkForSource(abs.getAbstraction(), scap))
-				return new SourceFindingTask(abs.getAbstraction());
+				return createSourceFindingTask(abs.getAbstraction());
+		}
 		return null;
+	}
+
+	protected Runnable createSourceFindingTask(Abstraction abstraction) {
+		return new SourceFindingTask(abstraction);
 	}
 
 	@Override

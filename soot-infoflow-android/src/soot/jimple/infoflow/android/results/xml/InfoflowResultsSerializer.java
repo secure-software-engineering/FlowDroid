@@ -21,18 +21,20 @@ public class InfoflowResultsSerializer extends soot.jimple.infoflow.results.xml.
 
 	/**
 	 * Creates a new instance of the InfoflowResultsSerializer class
+	 * 
+	 * @param config The configuration of the data flow
 	 */
-	public InfoflowResultsSerializer() {
-		super();
+	public InfoflowResultsSerializer(InfoflowConfiguration config) {
+		super(config);
 	}
 
 	/**
 	 * Creates a new instance of the InfoflowResultsSerializer class
 	 * 
-	 * @param cfg
-	 *            The control flow graph to be used for obtaining additional
-	 *            information such as the methods containing source or sink
-	 *            statements
+	 * @param cfg    The control flow graph to be used for obtaining additional
+	 *               information such as the methods containing source or sink
+	 *               statements
+	 * @param config The configuration of the data flow
 	 */
 	public InfoflowResultsSerializer(IInfoflowCFG cfg, InfoflowConfiguration config) {
 		super(cfg, config);
@@ -51,7 +53,7 @@ public class InfoflowResultsSerializer extends soot.jimple.infoflow.results.xml.
 					writer.writeAttribute(XmlConstants.Attributes.systemCategory, mssd.getCategory().toString());
 					if (mssd.getCategory() instanceof CategoryDefinition) {
 						CategoryDefinition catDef = (CategoryDefinition) mssd.getCategory();
-						String customCat = catDef.getCustomCategory();
+						String customCat = catDef.getCategoryId();
 						if (customCat != null && !customCat.isEmpty())
 							writer.writeAttribute(XmlConstants.Attributes.userCategory, customCat);
 					}
@@ -72,7 +74,7 @@ public class InfoflowResultsSerializer extends soot.jimple.infoflow.results.xml.
 					writer.writeAttribute(XmlConstants.Attributes.systemCategory, mssd.getCategory().toString());
 					if (mssd.getCategory() instanceof CategoryDefinition) {
 						CategoryDefinition catDef = (CategoryDefinition) mssd.getCategory();
-						String customCat = catDef.getCustomCategory();
+						String customCat = catDef.getCategoryId();
 						if (customCat != null && !customCat.isEmpty())
 							writer.writeAttribute(XmlConstants.Attributes.userCategory, customCat);
 					}

@@ -13,23 +13,17 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
  * @author Steven Arzt
  *
  */
-public class MergingSummaryProvider implements IMethodSummaryProvider {
+public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
 
-	private final Collection<IMethodSummaryProvider> innerProviders;
+	protected final Collection<IMethodSummaryProvider> innerProviders;
+	private ClassSummaries cachedSummaries;
+
+	protected MergingSummaryProvider() {
+		this.innerProviders = new HashSet<>();
+	}
 
 	public MergingSummaryProvider(Collection<IMethodSummaryProvider> innerProviders) {
 		this.innerProviders = innerProviders;
-	}
-
-	@Override
-	public Set<String> getLoadableClasses() {
-		Set<String> loadableClasses = new HashSet<>();
-		for (IMethodSummaryProvider provider : innerProviders) {
-			Set<String> curClasses = provider.getLoadableClasses();
-			if (curClasses != null && !curClasses.isEmpty())
-				loadableClasses.addAll(curClasses);
-		}
-		return loadableClasses;
 	}
 
 	@Override
@@ -73,7 +67,7 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 			ClassSummaries providerSummaries = provider.getMethodFlows(classes, methodSignature);
 			if (providerSummaries != null) {
 				if (summaries == null)
-					summaries = new ClassSummaries();
+					summaries = createClassSummaries();
 				summaries.merge(providerSummaries);
 			}
 		}
@@ -115,16 +109,49 @@ public class MergingSummaryProvider implements IMethodSummaryProvider {
 
 	@Override
 	public ClassSummaries getSummaries() {
-		ClassSummaries summaries = null;
+		ClassSummaries summaries = cachedSummaries;
+		if (summaries != null)
+			return summaries;
 		for (IMethodSummaryProvider provider : innerProviders) {
 			ClassSummaries providerSummaries = provider.getSummaries();
 			if (providerSummaries != null) {
 				if (summaries == null)
-					summaries = new ClassSummaries();
+					summaries = createClassSummaries();
 				summaries.merge(providerSummaries);
 			}
 		}
+		this.cachedSummaries = summaries;
 		return summaries;
+	}
+
+	/**
+	 * Creates the {@link ClassSummaries} object to use for merging individual
+	 * summaries
+	 * 
+	 * @return The new {@link ClassSummaries} object
+	 */
+	protected ClassSummaries createClassSummaries() {
+		return new ClassSummaries();
+	}
+
+	@Override
+	public boolean isMethodExcluded(String className, String subSignature) {
+		for (IMethodSummaryProvider provider : innerProviders) {
+			if (provider.isMethodExcluded(className, subSignature))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Set<String> getAllClassesWithSummaries() {
+		Set<String> classes = new HashSet<>();
+		for (IMethodSummaryProvider provider : innerProviders) {
+			Set<String> curClasses = provider.getAllClassesWithSummaries();
+			if (curClasses != null && !curClasses.isEmpty())
+				classes.addAll(curClasses);
+		}
+		return classes;
 	}
 
 }

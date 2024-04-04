@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.sourcesSinks.definitions;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,14 +18,27 @@ import soot.jimple.Stmt;
 public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 		implements IAccessPathBasedSourceSinkDefinition {
 
-	private final Stmt stmt;
-	private final Local local;
-	private Set<AccessPathTuple> accessPaths;
+	protected final Stmt stmt;
+	protected final Local local;
+	protected Set<AccessPathTuple> accessPaths;
 
 	public StatementSourceSinkDefinition(Stmt stmt, Local local, Set<AccessPathTuple> accessPaths) {
+		if (accessPaths == null || accessPaths.isEmpty())
+			throw new IllegalArgumentException("Access Paths must not be empty");
 		this.stmt = stmt;
 		this.local = local;
-		this.accessPaths = accessPaths;
+		this.accessPaths = new HashSet<>(accessPaths);
+	}
+
+	public static StatementSourceSinkDefinition createBlankStatementSourceDefinition(Stmt stmt, Local local) {
+		return new StatementSourceSinkDefinition(stmt, local,
+				Collections.singleton(AccessPathTuple.getBlankSourceTuple()));
+
+	}
+
+	public static StatementSourceSinkDefinition createBlankStatementSinkDefinition(Stmt stmt, Local local) {
+		return new StatementSourceSinkDefinition(stmt, local,
+				Collections.singleton(AccessPathTuple.getBlankSinkTuple()));
 	}
 
 	@Override
@@ -76,21 +90,6 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	}
 
 	@Override
-	public void merge(ISourceSinkDefinition other) {
-		if (other instanceof StatementSourceSinkDefinition) {
-			StatementSourceSinkDefinition otherStmt = (StatementSourceSinkDefinition) other;
-
-			// Merge the base object definitions
-			if (otherStmt.accessPaths != null && !otherStmt.accessPaths.isEmpty()) {
-				if (this.accessPaths == null)
-					this.accessPaths = new HashSet<>();
-				for (AccessPathTuple apt : otherStmt.accessPaths)
-					this.accessPaths.add(apt);
-			}
-		}
-	}
-
-	@Override
 	public boolean isEmpty() {
 		return false;
 	}
@@ -106,7 +105,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	}
 
 	@Override
-	public IAccessPathBasedSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
+	public StatementSourceSinkDefinition filter(Collection<AccessPathTuple> toFilter) {
 		// Filter the access paths
 		Set<AccessPathTuple> filteredAPs = null;
 		if (accessPaths != null && !accessPaths.isEmpty()) {
@@ -122,13 +121,15 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 
 	protected StatementSourceSinkDefinition buildNewDefinition(Stmt stmt, Local local,
 			Set<AccessPathTuple> accessPaths) {
-		return new StatementSourceSinkDefinition(stmt, local, accessPaths);
+		StatementSourceSinkDefinition sssd = new StatementSourceSinkDefinition(stmt, local, accessPaths);
+		sssd.category = category;
+		return sssd;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((accessPaths == null) ? 0 : accessPaths.hashCode());
 		result = prime * result + ((local == null) ? 0 : local.hashCode());
 		result = prime * result + ((stmt == null) ? 0 : stmt.hashCode());
@@ -139,7 +140,7 @@ public class StatementSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;

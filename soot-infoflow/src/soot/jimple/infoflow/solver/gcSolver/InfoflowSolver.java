@@ -11,18 +11,18 @@
 package soot.jimple.infoflow.solver.gcSolver;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 import heros.FlowFunction;
-import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
+import soot.jimple.infoflow.solver.IncomingRecord;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
 import soot.jimple.infoflow.solver.functions.SolverCallToReturnFlowFunction;
@@ -43,8 +43,8 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	private IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
 	private final AbstractInfoflowProblem problem;
 
-	public InfoflowSolver(AbstractInfoflowProblem problem, InterruptableExecutor executor) {
-		super(problem);
+	public InfoflowSolver(AbstractInfoflowProblem problem, InterruptableExecutor executor, int sleepTime) {
+		super(problem, sleepTime);
 		this.problem = problem;
 		this.executor = executor;
 		problem.setSolver(this);
@@ -57,19 +57,41 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 
 	@Override
 	public boolean processEdge(PathEdge<Unit, Abstraction> edge) {
+		// We might not have a garbage collector yet
+		if (this.garbageCollector == null) {
+			synchronized (this) {
+				if (this.garbageCollector == null)
+					this.garbageCollector = createGarbageCollector();
+			}
+		}
+
 		propagate(edge.factAtSource(), edge.getTarget(), edge.factAtTarget(), null, false);
 		return true;
 	}
 
 	@Override
 	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-			Abstraction d2, Abstraction d1) {
-		if (!addIncoming(callee, d3, callSite, d1, d2))
-			return;
+							  Abstraction d2, Abstraction d1) {
+		// The incoming data structure is shared in the peer group. No need to inject.
+	}
 
+	@Override
+	public Set<IncomingRecord<Unit, Abstraction>> incoming(Abstraction d1, SootMethod m) {
+		// Redirect to peer group
+		return solverPeerGroup.incoming(d1, m);
+	}
+
+	@Override
+	public boolean addIncoming(SootMethod m, Abstraction d3, Unit n, Abstraction d1, Abstraction d2) {
+		// Redirect to peer group
+		return solverPeerGroup.addIncoming(m, d3, n, d1, d2);
+	}
+
+    @Override
+    public void applySummary(SootMethod callee, Abstraction d3, Unit callSite, Abstraction d2, Abstraction d1) {
 		Collection<Unit> returnSiteNs = icfg.getReturnSitesOfCallAt(callSite);
 		applyEndSummaryOnCall(d1, callSite, d2, returnSiteNs, callee, d3);
-	}
+    }
 
 	@Override
 	protected Set<Abstraction> computeReturnFlowFunction(FlowFunction<Abstraction> retFunction, Abstraction d1,
@@ -118,7 +140,7 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 	}
 
 	@Override
-	public Set<Pair<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
+	public Set<EndSummary<Unit, Abstraction>> endSummary(SootMethod m, Abstraction d3) {
 		return super.endSummary(m, d3);
 	}
 
@@ -132,7 +154,7 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, BiDiInterproce
 			final Abstraction d2 = edge.factAtTarget();
 
 			final SootMethod methodThatNeedsSummary = icfg.getMethodOf(u);
-			final Map<Unit, Map<Abstraction, Abstraction>> inc = incoming(d1, methodThatNeedsSummary);
+			final Set<IncomingRecord<Unit, Abstraction>> inc = incoming(d1, methodThatNeedsSummary);
 
 			if (inc == null || inc.isEmpty())
 				followReturnsPastSeedsHandler.handleFollowReturnsPastSeeds(d1, u, d2);

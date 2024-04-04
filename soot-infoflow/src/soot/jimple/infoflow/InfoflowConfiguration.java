@@ -10,7 +10,58 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class InfoflowConfiguration {
+
 	protected final static Logger logger = LoggerFactory.getLogger(InfoflowConfiguration.class);
+
+	/**
+	 * Enumeration containing the different ways in which Soot can be used
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static enum SootIntegrationMode {
+		/**
+		 * With this option, FlowDroid initializes and configures its own Soot instance.
+		 * This option is the default and the best choice in most cases.
+		 */
+		CreateNewInstance,
+
+		/**
+		 * With this option, FlowDroid uses the existing Soot instance, but generates
+		 * its own callgraph. Note that it is the responsibility of the caller to make
+		 * sure that pre-existing Soot instances are configured correctly for the use
+		 * with FlowDroid.
+		 */
+		UseExistingInstance,
+
+		/**
+		 * Use the existing Soot instance and existing callgraph. Do not generate
+		 * anything, the caller is responsible for providing a valid Soot instance and
+		 * callgraph.
+		 */
+		UseExistingCallgraph;
+
+		/**
+		 * Gets whether this integration mode requires FlowDroid to build its own
+		 * callgraph
+		 * 
+		 * @return True if FlowDroid must create its own callgraph, otherwise false
+		 */
+		public boolean needsToBuildCallgraph() {
+			return this == SootIntegrationMode.CreateNewInstance || this == SootIntegrationMode.UseExistingInstance;
+		}
+
+		/**
+		 * Checks whether this integration mode requires FlowDroid to initialize a fresh
+		 * Soot instance
+		 * 
+		 * @return True to initialize a fresh Soot instance, false otherwise
+		 */
+		public boolean needsToInitializeSoot() {
+			return this == CreateNewInstance;
+		}
+
+	}
 
 	/**
 	 * Enumeration containing the callgraph algorithms supported for the use with
@@ -75,6 +126,11 @@ public class InfoflowConfiguration {
 		ContextFlowSensitive,
 
 		/**
+		 * Use a flow- and context-sensitive solver that propagates facts sparse
+		 */
+		SparseContextFlowSensitive,
+
+		/**
 		 * Use a context-sensitive, but flow-insensitive solver
 		 */
 		FlowInsensitive,
@@ -82,7 +138,43 @@ public class InfoflowConfiguration {
 		/**
 		 * Use the garbage-collecting solver
 		 */
-		GarbageCollecting
+		GarbageCollecting,
+
+		/**
+		 * Use the fine-grained GC solver
+		 */
+		FineGrainedGC,
+	}
+
+	/**
+	 * Enumeration containing the options for the SparseContextFlowSensitive solver
+	 */
+	public static enum SparsePropagationStrategy {
+		/**
+		 * Propagate facts dense (use to test that the solver modifications don't break
+		 * something)
+		 */
+		Dense,
+		/**
+		 * Propagate facts sparse only based on the local
+		 */
+		Simple,
+		/**
+		 * Propagate facts sparse, taking the first field of an access path into account
+		 */
+		Precise
+	}
+
+	public static enum DataFlowDirection {
+		/**
+		 * Use the default forwards infoflow search
+		 */
+		Forwards,
+
+		/**
+		 * Use the backwards infoflow search
+		 */
+		Backwards
 	}
 
 	/**
@@ -903,11 +995,13 @@ public class InfoflowConfiguration {
 	 *
 	 */
 	public static class SolverConfiguration {
-
-		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive; // GarbageCollecting;
+		private DataFlowSolver dataFlowSolver = DataFlowSolver.ContextFlowSensitive;
+		private SparsePropagationStrategy sparsePropagationStrategy = SparsePropagationStrategy.Precise;
 		private int maxJoinPointAbstractions = 10;
 		private int maxCalleesPerCallSite = 75;
 		private int maxAbstractionPathLength = 100;
+		private int sleepTime = 1;
+		private boolean followReturnsPastSources = true;
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -916,6 +1010,7 @@ public class InfoflowConfiguration {
 		 */
 		public void merge(SolverConfiguration solverConfig) {
 			this.dataFlowSolver = solverConfig.dataFlowSolver;
+			this.sparsePropagationStrategy = solverConfig.sparsePropagationStrategy;
 			this.maxJoinPointAbstractions = solverConfig.maxJoinPointAbstractions;
 			this.maxCalleesPerCallSite = solverConfig.maxCalleesPerCallSite;
 			this.maxAbstractionPathLength = solverConfig.maxAbstractionPathLength;
@@ -937,6 +1032,25 @@ public class InfoflowConfiguration {
 		 */
 		public void setDataFlowSolver(DataFlowSolver solver) {
 			this.dataFlowSolver = solver;
+		}
+
+		/**
+		 * Gets the propagation strategy used in sparsePropagation
+		 *
+		 * @return The data flow solver to be used for the taint analysis
+		 */
+		public SparsePropagationStrategy getSparsePropagationStrategy() {
+			return this.sparsePropagationStrategy;
+		}
+
+		/**
+		 * Sets the data flow solver to be used for the taint analysis
+		 *
+		 * @param sparsePropagationStrategy The propagation strategy used for
+		 *                                  sparsification
+		 */
+		public void setSparsePropagationStrategy(SparsePropagationStrategy sparsePropagationStrategy) {
+			this.sparsePropagationStrategy = sparsePropagationStrategy;
 		}
 
 		/**
@@ -1021,14 +1135,35 @@ public class InfoflowConfiguration {
 			this.maxAbstractionPathLength = maxAbstractionPathLength;
 		}
 
+		/**
+		 * Sets the sleep time of garbage colletors
+		 * 
+		 * @param sleeptime The interval in second for the path edge collection
+		 */
+		public void setSleepTime(int sleeptime) {
+			this.sleepTime = sleeptime;
+		}
+
+		/**
+		 * Gets the sleep time of garbage colletors
+		 * 
+		 * @return The interval in second for the path edge collection
+		 */
+		public int getSleepTime() {
+			return this.sleepTime;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((dataFlowSolver == null) ? 0 : dataFlowSolver.hashCode());
+			if (dataFlowSolver == DataFlowSolver.SparseContextFlowSensitive)
+				result = prime * result + sparsePropagationStrategy.hashCode();
 			result = prime * result + maxCalleesPerCallSite;
 			result = prime * result + maxJoinPointAbstractions;
 			result = prime * result + maxAbstractionPathLength;
+			result = prime * result + (followReturnsPastSources ? 31 : 17);
 			return result;
 		}
 
@@ -1043,13 +1178,36 @@ public class InfoflowConfiguration {
 			SolverConfiguration other = (SolverConfiguration) obj;
 			if (dataFlowSolver != other.dataFlowSolver)
 				return false;
+			if (dataFlowSolver == DataFlowSolver.SparseContextFlowSensitive)
+				if (sparsePropagationStrategy != other.sparsePropagationStrategy)
+					return false;
 			if (maxCalleesPerCallSite != other.maxCalleesPerCallSite)
 				return false;
 			if (maxJoinPointAbstractions != other.maxJoinPointAbstractions)
 				return false;
 			if (maxAbstractionPathLength != other.maxAbstractionPathLength)
 				return false;
+			if (followReturnsPastSources != other.followReturnsPastSources)
+				return false;
 			return true;
+		}
+
+		/**
+		 * Returns whether the analysis will follow function returns further up the call
+		 * stack than where the sources started.
+		 */
+		public boolean isFollowReturnsPastSources() {
+			return followReturnsPastSources;
+		}
+
+		/**
+		 * If true, the analysis will follow function returns further up the call stack
+		 * than where the sources started.
+		 *
+		 * @param followreturns the new value
+		 */
+		public void setFollowReturnsPastSources(boolean followreturns) {
+			this.followReturnsPastSources = followreturns;
 		}
 
 	}
@@ -1201,15 +1359,14 @@ public class InfoflowConfiguration {
 
 	}
 
-	private static boolean pathAgnosticResults = true;
+	private boolean pathAgnosticResults = true;
 	private static boolean oneResultPerAccessPath = false;
-	private static boolean mergeNeighbors = false;
-
 	private int stopAfterFirstKFlows = 0;
 	private ImplicitFlowMode implicitFlowMode = ImplicitFlowMode.NoImplicitFlows;
 	private boolean enableExceptions = true;
 	private boolean enableArrays = true;
 	private boolean enableArraySizeTainting = true;
+	private boolean enableInstanceOfTainting = true;
 	private boolean flowSensitiveAliasing = true;
 	private boolean enableTypeChecking = true;
 	private boolean ignoreFlowsInSystemPackages = false;
@@ -1233,12 +1390,19 @@ public class InfoflowConfiguration {
 	private AliasingAlgorithm aliasingAlgorithm = AliasingAlgorithm.FlowSensitive;
 	private CodeEliminationMode codeEliminationMode = CodeEliminationMode.PropagateConstants;
 	private StaticFieldTrackingMode staticFieldTrackingMode = StaticFieldTrackingMode.ContextFlowSensitive;
+	private SootIntegrationMode sootIntegrationMode = SootIntegrationMode.CreateNewInstance;
+	private DataFlowDirection dataFlowDirection = DataFlowDirection.Forwards;
 
 	private boolean taintAnalysisEnabled = true;
 	private boolean incrementalResultReporting = false;
 	private long dataFlowTimeout = 0;
 	private double memoryThreshold = 0.9d;
 	private boolean oneSourceAtATime = false;
+	private int maxAliasingBases = Integer.MAX_VALUE;
+	private boolean additionalFlowsEnabled = false;
+	private boolean filterConditionalSinks = true;
+
+	private static String baseDirectory = "";
 
 	/**
 	 * Merges the given configuration options into this configuration object
@@ -1251,6 +1415,7 @@ public class InfoflowConfiguration {
 		this.enableExceptions = config.enableExceptions;
 		this.enableArrays = config.enableArrays;
 		this.enableArraySizeTainting = config.enableArraySizeTainting;
+		this.enableInstanceOfTainting = config.enableInstanceOfTainting;
 		this.flowSensitiveAliasing = config.flowSensitiveAliasing;
 		this.enableTypeChecking = config.enableTypeChecking;
 		this.ignoreFlowsInSystemPackages = config.ignoreFlowsInSystemPackages;
@@ -1270,16 +1435,16 @@ public class InfoflowConfiguration {
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
 		this.codeEliminationMode = config.codeEliminationMode;
+		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
+		this.sootIntegrationMode = config.sootIntegrationMode;
+		this.dataFlowDirection = config.dataFlowDirection;
 
 		this.inspectSources = config.inspectSources;
 		this.inspectSinks = config.inspectSinks;
 
-		this.callgraphAlgorithm = config.callgraphAlgorithm;
-		this.aliasingAlgorithm = config.aliasingAlgorithm;
-		this.codeEliminationMode = config.codeEliminationMode;
-		this.staticFieldTrackingMode = config.staticFieldTrackingMode;
-
-		this.taintAnalysisEnabled = config.writeOutputFiles;
+		this.taintAnalysisEnabled = config.taintAnalysisEnabled;
+		this.additionalFlowsEnabled = config.additionalFlowsEnabled;
+		this.filterConditionalSinks = config.filterConditionalSinks;
 		this.incrementalResultReporting = config.incrementalResultReporting;
 		this.dataFlowTimeout = config.dataFlowTimeout;
 		this.memoryThreshold = config.memoryThreshold;
@@ -1294,8 +1459,8 @@ public class InfoflowConfiguration {
 	 *                            they connect the same source and sink, even if
 	 *                            their propagation paths differ, otherwise false
 	 */
-	public static void setPathAgnosticResults(boolean pathAgnosticResults) {
-		InfoflowConfiguration.pathAgnosticResults = pathAgnosticResults;
+	public void setPathAgnosticResults(boolean pathAgnosticResults) {
+		this.pathAgnosticResults = pathAgnosticResults;
 	}
 
 	/**
@@ -1306,8 +1471,8 @@ public class InfoflowConfiguration {
 	 *         same source and sink, even if their propagation paths differ,
 	 *         otherwise false
 	 */
-	public static boolean getPathAgnosticResults() {
-		return InfoflowConfiguration.pathAgnosticResults;
+	public boolean getPathAgnosticResults() {
+		return pathAgnosticResults;
 	}
 
 	/**
@@ -1329,26 +1494,6 @@ public class InfoflowConfiguration {
 	 */
 	public static void setOneResultPerAccessPath(boolean oneResultPerAP) {
 		oneResultPerAccessPath = oneResultPerAP;
-	}
-
-	/**
-	 * Gets whether neighbors at the same statement shall be merged into a single
-	 * abstraction
-	 * 
-	 * @return True if equivalent neighbor shall be merged, otherwise false
-	 */
-	public static boolean getMergeNeighbors() {
-		return mergeNeighbors;
-	}
-
-	/**
-	 * Sets whether neighbors at the same statement shall be merged into a single
-	 * abstraction
-	 * 
-	 * @param value True if equivalent neighbor shall be merged, otherwise false
-	 */
-	public static void setMergeNeighbors(boolean value) {
-		InfoflowConfiguration.mergeNeighbors = value;
 	}
 
 	/**
@@ -1475,6 +1620,28 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Sets how FlowDroid shall interact with the underlying Soot instance.
+	 * FlowDroid can either set up Soot on its own, or work with an existing
+	 * instance.
+	 * 
+	 * @param sootIntegrationMode The integration mode that FlowDroid shall use
+	 */
+	public void setSootIntegrationMode(SootIntegrationMode sootIntegrationMode) {
+		this.sootIntegrationMode = sootIntegrationMode;
+	}
+
+	/**
+	 * Gets how FloweDroid shall interact with the underlying Soot instance.
+	 * FlowDroid can either set up Soot on its own, or work with an existing
+	 * instance.
+	 * 
+	 * @return The integration mode that FlowDroid shall use
+	 */
+	public SootIntegrationMode getSootIntegrationMode() {
+		return this.sootIntegrationMode;
+	}
+
+	/**
 	 * Sets whether a flow sensitive aliasing algorithm shall be used
 	 * 
 	 * @param flowSensitiveAliasing True if a flow sensitive aliasing algorithm
@@ -1535,12 +1702,46 @@ public class InfoflowConfiguration {
 		return enableArrays;
 	}
 
+	/**
+	 * Sets whether the length of a tainted array shall be considered tainted
+	 * 
+	 * @param arrayLengthTainting True to taint the length of a tainted array, false
+	 *                            otherwise
+	 */
 	public void setEnableArraySizeTainting(boolean arrayLengthTainting) {
 		this.enableArraySizeTainting = arrayLengthTainting;
 	}
 
+	/**
+	 * Gets whether the length of a tainted array shall be considered tainted
+	 * 
+	 * @return True to taint the length of a tainted array, false otherwise
+	 */
 	public boolean getEnableArraySizeTainting() {
 		return this.enableArraySizeTainting;
+	}
+
+	/**
+	 * Sets whether an "instanceof" check on a tainted object shall deliver a
+	 * tainted result
+	 * 
+	 * @param enableInstanceOfTainting True if the "instanceof" check on a tainted
+	 *                                 object shall deliver a tainted result, false
+	 *                                 otherwise
+	 */
+	public void setEnableInstanceOfTainting(boolean enableInstanceOfTainting) {
+		this.enableInstanceOfTainting = enableInstanceOfTainting;
+	}
+
+	/**
+	 * Gets whether an "instanceof" check on a tainted object shall deliver a
+	 * tainted result
+	 * 
+	 * @return True if the "instanceof" check on a tainted object shall deliver a
+	 *         tainted result, false otherwise
+	 */
+	public boolean getEnableInstanceOfTainting() {
+		return enableInstanceOfTainting;
 	}
 
 	/**
@@ -1577,6 +1778,24 @@ public class InfoflowConfiguration {
 	 */
 	public AliasingAlgorithm getAliasingAlgorithm() {
 		return aliasingAlgorithm;
+	}
+
+	/**
+	 * Gets the data flow direction to be used for the taint analysis
+	 *
+	 * @return The data flow direction to be used for the taint analysis
+	 */
+	public DataFlowDirection getDataFlowDirection() {
+		return this.dataFlowDirection;
+	}
+
+	/**
+	 * Sets the data flow direction to be used for the taint analysis
+	 *
+	 * @param direction The data flow direction to be used for the taint analysis
+	 */
+	public void setDataFlowDirection(DataFlowDirection direction) {
+		this.dataFlowDirection = direction;
 	}
 
 	/**
@@ -1813,6 +2032,44 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets whether additional flows are enabled.
+	 *
+	 * @return True if additional flows are enabled
+	 */
+	public boolean getAdditionalFlowsEnabled() {
+		return additionalFlowsEnabled;
+	}
+
+	/**
+	 * Sets whether additional flows are enabled.
+	 *
+	 * @param additionalFlowsEnabled True if additional flows shall be enabled
+	 */
+	public void setAdditionalFlowsEnabled(boolean additionalFlowsEnabled) {
+		this.additionalFlowsEnabled = additionalFlowsEnabled;
+	}
+
+	/**
+	 * Gets whether conditional sinks should be filtered if the condition was not
+	 * met. If false, conditional sinks won't be filtered.
+	 *
+	 * @return True if conditional flows will be filtered
+	 */
+	public boolean getFilterConditionalSinks() {
+		return filterConditionalSinks;
+	}
+
+	/**
+	 * Sets whether conditional sinks should be filtered if the condition was not
+	 * met. If false, conditional sinks won't be filtered.
+	 *
+	 * @param filterConditionalSinks True if conditional sinks should be filtered
+	 */
+	public void setFilterConditionalSinks(boolean filterConditionalSinks) {
+		this.filterConditionalSinks = filterConditionalSinks;
+	}
+
+	/**
 	 * Gets whether the data flow results shall be reported incrementally instead of
 	 * being only available after the full data flow analysis has been completed.
 	 * 
@@ -1940,6 +2197,24 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets the base directory used e.g. for SourcesSinks.xsd
+	 *
+	 * @return the base directory
+	 */
+	public static String getBaseDirectory() {
+		return baseDirectory;
+	}
+
+	/**
+	 * Sets the base directory used e.g. for SourcesSinks.xsd
+	 * 
+	 * @param baseDirectory path to the base directory as string
+	 */
+	public static void setBaseDirectory(String baseDirectory) {
+		InfoflowConfiguration.baseDirectory = baseDirectory;
+	}
+
+	/**
 	 * Prints a summary of this data flow configuration
 	 */
 	public void printSummary() {
@@ -1975,6 +2250,8 @@ public class InfoflowConfiguration {
 		if (oneSourceAtATime)
 			logger.info("Running with one source at a time");
 		logger.info("Using alias algorithm " + aliasingAlgorithm);
+		if (additionalFlowsEnabled)
+			logger.info("Additional flows enabled.");
 	}
 
 	@Override
@@ -1985,8 +2262,10 @@ public class InfoflowConfiguration {
 		result = prime * result + ((aliasingAlgorithm == null) ? 0 : aliasingAlgorithm.hashCode());
 		result = prime * result + ((callgraphAlgorithm == null) ? 0 : callgraphAlgorithm.hashCode());
 		result = prime * result + ((codeEliminationMode == null) ? 0 : codeEliminationMode.hashCode());
+		result = prime * result + ((dataFlowDirection == null) ? 0 : dataFlowDirection.hashCode());
 		result = prime * result + (int) (dataFlowTimeout ^ (dataFlowTimeout >>> 32));
 		result = prime * result + (enableArraySizeTainting ? 1231 : 1237);
+		result = prime * result + (enableInstanceOfTainting ? 1231 : 1237);
 		result = prime * result + (enableArrays ? 1231 : 1237);
 		result = prime * result + (enableExceptions ? 1231 : 1237);
 		result = prime * result + (enableReflection ? 1231 : 1237);
@@ -2010,8 +2289,11 @@ public class InfoflowConfiguration {
 		result = prime * result + ((pathConfiguration == null) ? 0 : pathConfiguration.hashCode());
 		result = prime * result + ((solverConfiguration == null) ? 0 : solverConfiguration.hashCode());
 		result = prime * result + ((staticFieldTrackingMode == null) ? 0 : staticFieldTrackingMode.hashCode());
+		result = prime * result + ((sootIntegrationMode == null) ? 0 : sootIntegrationMode.hashCode());
 		result = prime * result + stopAfterFirstKFlows;
 		result = prime * result + (taintAnalysisEnabled ? 1231 : 1237);
+		result = prime * result + (additionalFlowsEnabled ? 1231 : 1237);
+		result = prime * result + (filterConditionalSinks ? 1231 : 1237);
 		result = prime * result + (writeOutputFiles ? 1231 : 1237);
 		return result;
 	}
@@ -2036,9 +2318,13 @@ public class InfoflowConfiguration {
 			return false;
 		if (codeEliminationMode != other.codeEliminationMode)
 			return false;
+		if (dataFlowDirection != other.dataFlowDirection)
+			return false;
 		if (dataFlowTimeout != other.dataFlowTimeout)
 			return false;
 		if (enableArraySizeTainting != other.enableArraySizeTainting)
+			return false;
+		if (enableInstanceOfTainting != other.enableInstanceOfTainting)
 			return false;
 		if (enableArrays != other.enableArrays)
 			return false;
@@ -2091,9 +2377,15 @@ public class InfoflowConfiguration {
 			return false;
 		if (staticFieldTrackingMode != other.staticFieldTrackingMode)
 			return false;
+		if (sootIntegrationMode != other.sootIntegrationMode)
+			return false;
 		if (stopAfterFirstKFlows != other.stopAfterFirstKFlows)
 			return false;
 		if (taintAnalysisEnabled != other.taintAnalysisEnabled)
+			return false;
+		if (additionalFlowsEnabled != other.additionalFlowsEnabled)
+			return false;
+		if (filterConditionalSinks != other.filterConditionalSinks)
 			return false;
 		if (writeOutputFiles != other.writeOutputFiles)
 			return false;
@@ -2107,6 +2399,14 @@ public class InfoflowConfiguration {
 	 */
 	public SourceSinkConfiguration getSourceSinkConfig() {
 		return sourceSinkConfig;
+	}
+
+	public int getMaxAliasingBases() {
+		return maxAliasingBases;
+	}
+
+	public void setMaxAliasingBases(int value) {
+		maxAliasingBases = value;
 	}
 
 }

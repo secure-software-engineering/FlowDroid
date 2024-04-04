@@ -10,11 +10,13 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.entryPointCreators;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,8 +31,13 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.Unit;
+import soot.UnitPatchingChain;
+import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.IfStmt;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
@@ -44,10 +51,13 @@ import soot.jimple.infoflow.android.entryPointCreators.components.ContentProvide
 import soot.jimple.infoflow.android.entryPointCreators.components.FragmentEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceConnectionEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointCreator;
-import soot.jimple.infoflow.android.manifest.ProcessManifest;
+import soot.jimple.infoflow.android.manifest.IAndroidApplication;
+import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -90,6 +100,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private Collection<SootClass> components;
 
+	private MultiMap<SootMethod, Stmt> javascriptInterfaceStmts;
+
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -98,7 +110,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	 * @param components The list of classes to be automatically scanned for Android
 	 *                   lifecycle methods
 	 */
-	public AndroidEntryPointCreator(ProcessManifest manifest, Collection<SootClass> components) {
+	public AndroidEntryPointCreator(IManifestHandler manifest, Collection<SootClass> components) {
 		super(manifest);
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
@@ -254,6 +266,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
+			case HostApduService:
 				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass, this.manifest);
 				break;
 			case ServiceConnection:
@@ -283,8 +296,11 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				componentToInfo.put(currentClass, componentCreator.getComponentInfo());
 
 				// dummyMain(component, intent)
-				body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
-						Collections.singletonList(NullConstant.v()))));
+				if (shouldAddLifecycleCall(currentClass)) {
+					body.getUnits()
+							.add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
+									Collections.singletonList(NullConstant.v()))));
+				}
 			}
 
 			// Jump back to the front of the component
@@ -299,6 +315,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			addApplicationCallbackMethods();
 			createIfStmt(beforeAppCallbacks);
 		}
+		createJavascriptCallbacks();
 
 		createIfStmt(outerStartStmt);
 
@@ -320,23 +337,85 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		return mainMethod;
 	}
 
+	private void createJavascriptCallbacks() {
+		Jimple j = Jimple.v();
+		for (SootMethod m : javascriptInterfaceStmts.keySet()) {
+			Set<Stmt> statements = javascriptInterfaceStmts.get(m);
+			for (Stmt s : statements) {
+				UnitPatchingChain units = m.retrieveActiveBody().getUnits();
+				SootField f = null;
+				Value arg = s.getInvokeExpr().getArg(0);
+				DummyMainFieldElementTag dm = (DummyMainFieldElementTag) s.getTag(DummyMainFieldElementTag.TAG_NAME);
+				if (dm != null) {
+					f = mainMethod.getDeclaringClass().getFieldByNameUnsafe(dm.getFieldName());
+				}
+				if (f == null) {
+					//create field
+					f = createField(arg.getType(), "jsInterface");
+					AssignStmt assign = j.newAssignStmt(j.newStaticFieldRef(f.makeRef()), arg);
+					assign.addTag(SimulatedCodeElementTag.TAG);
+					s.addTag(new DummyMainFieldElementTag(f.getName()));
+					units.insertAfter(assign, s);
+				}
+
+				Local l = j.newLocal(f.getName(), f.getType());
+				body.getLocals().add(l);
+				Stmt assignF = j.newAssignStmt(l, j.newStaticFieldRef(f.makeRef()));
+				body.getUnits().add(assignF);
+				SootClass cbtype = ((RefType) f.getType()).getSootClass();
+
+				for (SootClass c : TypeUtils.getAllDerivedClasses(cbtype)) {
+					for (SootMethod cbm : c.getMethods()) {
+						if (AndroidEntryPointUtils.isCallableFromJS(cbm)) {
+							List<Value> args = new ArrayList<>();
+							for (Type t : cbm.getParameterTypes())
+								args.add(getSimpleDefaultValue(t));
+							InvokeStmt st = j.newInvokeStmt(j.newVirtualInvokeExpr(l, cbm.makeRef(), args));
+							body.getUnits().add(st);
+						}
+					}
+
+				}
+				createIfStmt(assignF);
+
+			}
+		}
+	}
+
+	/**
+	 * Checks whether a lifecycle call should be added to the given SootClass,
+	 * designed to be overridden by different implementations
+	 *
+	 * @param clazz the SootClass in question
+	 * @return True if a lifecycle call should be added in
+	 *         {@link #createDummyMainInternal()}
+	 */
+	protected boolean shouldAddLifecycleCall(SootClass clazz) {
+		return true;
+	}
+
 	/**
 	 * Find the application class and its callbacks
 	 */
 	private void initializeApplicationClass() {
 
-		String applicationName = manifest.getApplicationName();
-		// We can only look for callbacks if we have an application class
-		if (applicationName == null || applicationName.isEmpty())
-			return;
-		// Find the application class
-		for (SootClass currentClass : components) {
-			// Is this the application class?
-			if (entryPointUtils.isApplicationClass(currentClass) && currentClass.getName().equals(applicationName)) {
-				if (applicationClass != null && currentClass != applicationClass)
-					throw new RuntimeException("Multiple application classes in app");
-				applicationClass = currentClass;
-				break;
+		IAndroidApplication app = manifest.getApplication();
+		if (app != null) {
+			String applicationName = app.getName();
+			// We can only look for callbacks if we have an application class
+			if (applicationName == null || applicationName.isEmpty())
+				return;
+
+			// Find the application class
+			for (SootClass currentClass : components) {
+				// Is this the application class?
+				if (entryPointUtils.isApplicationClass(currentClass)
+						&& currentClass.getName().equals(applicationName)) {
+					if (applicationClass != null && currentClass != applicationClass)
+						throw new RuntimeException("Multiple application classes in app");
+					applicationClass = currentClass;
+					break;
+				}
 			}
 		}
 
@@ -350,13 +429,15 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		Collection<SootMethod> callbacks = callbackFunctions.get(applicationClass);
 		if (callbacks != null) {
 			for (SootMethod smCallback : callbacks) {
-				// Is this a special callback class? We have callbacks that model activity
-				// lifecycle events and ones that model generic events (e.g., low memory)
-				if (scActCallbacks != null && Scene.v().getOrMakeFastHierarchy()
-						.canStoreType(smCallback.getDeclaringClass().getType(), scActCallbacks.getType()))
-					activityLifecycleCallbacks.put(smCallback.getDeclaringClass(), smCallback.getSignature());
-				else
-					applicationCallbackClasses.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+				if (smCallback != null) {
+					// Is this a special callback class? We have callbacks that model activity
+					// lifecycle events and ones that model generic events (e.g., low memory)
+					if (scActCallbacks != null && Scene.v().getOrMakeFastHierarchy()
+							.canStoreType(smCallback.getDeclaringClass().getType(), scActCallbacks.getType()))
+						activityLifecycleCallbacks.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+					else
+						applicationCallbackClasses.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+				}
 			}
 		}
 
@@ -367,18 +448,22 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				baseName = baseName.substring(baseName.lastIndexOf(".") + 1);
 
 			// Generate a fresh field name
-			SootClass dummyMainClass = mainMethod.getDeclaringClass();
-			int idx = 0;
-			String fieldName = baseName;
-			while (dummyMainClass.declaresFieldByName(fieldName)) {
-				fieldName = baseName + "_" + idx;
-				idx++;
-			}
-			SootField fld = Scene.v().makeSootField(fieldName, RefType.v(callbackClass),
-					Modifier.PRIVATE | Modifier.STATIC);
-			mainMethod.getDeclaringClass().addField(fld);
+			SootField fld = createField(RefType.v(callbackClass), baseName);
 			callbackClassToField.put(callbackClass, fld);
 		}
+	}
+
+	protected SootField createField(Type type, String baseName) {
+		SootClass dummyMainClass = mainMethod.getDeclaringClass();
+		int idx = 0;
+		String fieldName = baseName;
+		while (dummyMainClass.declaresFieldByName(fieldName)) {
+			fieldName = baseName + "_" + idx;
+			idx++;
+		}
+		SootField fld = Scene.v().makeSootField(fieldName, type, Modifier.PRIVATE | Modifier.STATIC);
+		mainMethod.getDeclaringClass().addField(fld);
+		return fld;
 	}
 
 	/**
@@ -425,6 +510,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			return;
 		}
 
+		List<String> lifecycleMethods = AndroidEntryPointConstants.getApplicationLifecycleMethods();
 		for (SootClass sc : applicationCallbackClasses.keySet())
 			for (String methodSig : applicationCallbackClasses.get(sc)) {
 				SootMethodAndClass methodAndClass = SootMethodRepresentationParser.v().parseSootMethodString(methodSig);
@@ -432,16 +518,14 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				SootMethod method = findMethod(Scene.v().getSootClass(sc.getName()), subSig);
 
 				// We do not consider lifecycle methods which are directly
-				// inserted
-				// at their respective positions
-				if (sc == applicationClass
-						&& AndroidEntryPointConstants.getApplicationLifecycleMethods().contains(subSig))
+				// inserted at their respective positions
+				if (sc == applicationClass && lifecycleMethods.contains(subSig))
 					continue;
 
 				// If this is an activity lifecycle method, we skip it as well
 				// TODO: can be removed once we filter it in general
 				if (activityLifecycleCallbacks.containsKey(sc))
-					if (AndroidEntryPointConstants.getActivityLifecycleCallbackMethods().contains(subSig))
+					if (lifecycleMethods.contains(subSig))
 						continue;
 
 				// If we found no implementation or if the implementation we found is in a
@@ -576,6 +660,10 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					declaringClass.removeMethod(sm);
 			}
 		}
+	}
+
+	public void setJavaScriptInterfaces(MultiMap<SootMethod, Stmt> javascriptInterfaceStmts) {
+		this.javascriptInterfaceStmts = javascriptInterfaceStmts;
 	}
 
 }

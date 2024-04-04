@@ -47,8 +47,6 @@ public abstract class TestHelper {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		final String sep = System.getProperty("path.separator");
-
 		File f = new File(".");
 		File testSrc1 = new File(f, "testBin");
 		File testSrc2 = new File(f, "build" + File.separator + "testclasses");
@@ -56,8 +54,31 @@ public abstract class TestHelper {
 		if (!(testSrc1.exists() || testSrc2.exists()))
 			fail("Test aborted - none of the test sources are available");
 
-		appPath = testSrc1.getCanonicalPath() + sep + testSrc2.getCanonicalPath();
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar";
+		StringBuilder appPathBuilder = new StringBuilder();
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appPath = appPathBuilder.toString();
+
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
+	}
+
+	/**
+	 * Appends the given path to the given {@link StringBuilder} if it exists
+	 * 
+	 * @param sb The {@link StringBuilder} to which to append the path
+	 * @param f  The path to append
+	 * @throws IOException
+	 */
+	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+		if (f.exists()) {
+			if (sb.length() > 0)
+				sb.append(System.getProperty("path.separator"));
+			sb.append(f.getCanonicalPath());
+		}
 	}
 
 	protected boolean containsFlow(Set<MethodFlow> flows, SourceSinkType sourceTyp, String[] sourceFields,

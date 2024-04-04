@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.options.Options;
 
 /**
@@ -12,7 +13,7 @@ import soot.options.Options;
  * @author Steven Arzt
  *
  */
-public class SummaryInfoflow extends Infoflow {
+public class SummaryInfoflow extends Infoflow implements ISummaryInfoflow {
 
 	private InfoflowManager cachedManager = null;
 	private String libPath;
@@ -33,7 +34,8 @@ public class SummaryInfoflow extends Infoflow {
 	}
 
 	@Override
-	protected void onTaintPropagationCompleted() {
+	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver aliasSolver,
+											   IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
 		cachedManager = this.manager;
 	}
 

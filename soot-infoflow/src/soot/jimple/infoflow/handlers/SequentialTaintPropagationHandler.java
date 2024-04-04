@@ -30,9 +30,8 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Creates a sequence of taint propagation handlers from the given list
 	 * 
-	 * @param handlers
-	 *            A list of taint propagation handlers to which all calls shall be
-	 *            relayed
+	 * @param handlers A list of taint propagation handlers to which all calls shall
+	 *                 be relayed
 	 */
 	public SequentialTaintPropagationHandler(List<TaintPropagationHandler> handlers) {
 		this.innerHandlers = new ArrayList<>(handlers);
@@ -41,11 +40,11 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	/**
 	 * Adds a new handler to this sequence of handlers
 	 * 
-	 * @param handler
-	 *            The handler to add to the sequence
+	 * @param handler The handler to add to the sequence
 	 */
 	public void addHandler(TaintPropagationHandler handler) {
-		this.innerHandlers.add(handler);
+		if (handler != null)
+			this.innerHandlers.add(handler);
 	}
 
 	/**
@@ -66,6 +65,9 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	@Override
 	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
+		if (innerHandlers.isEmpty())
+			return outgoing;
+
 		Set<Abstraction> resultSet = new HashSet<>();
 		for (TaintPropagationHandler handler : innerHandlers) {
 			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type);
@@ -73,6 +75,18 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 				resultSet.addAll(handlerResults);
 		}
 		return resultSet;
+	}
+
+	/**
+	 * Adds all of the given taint propagation handlers
+	 * 
+	 * @param handlers The taint propagation handlers to add
+	 */
+	public void addAllHandlers(TaintPropagationHandler[] handlers) {
+		if (handlers != null && handlers.length > 0) {
+			for (TaintPropagationHandler handler : handlers)
+				addHandler(handler);
+		}
 	}
 
 }

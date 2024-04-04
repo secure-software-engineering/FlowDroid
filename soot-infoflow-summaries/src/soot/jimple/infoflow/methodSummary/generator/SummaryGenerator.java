@@ -41,6 +41,8 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
+import soot.jimple.infoflow.methodSummary.generator.gaps.GapManager;
+import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
 import soot.jimple.infoflow.methodSummary.handler.SummaryTaintPropagationHandler;
 import soot.jimple.infoflow.methodSummary.postProcessor.InfoflowResultPostProcessor;
 import soot.jimple.infoflow.methodSummary.postProcessor.SummaryFlowCompactor;
@@ -51,7 +53,6 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.nativeCallHandler.INativeCallHandler;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
-import soot.jimple.infoflow.taintWrappers.TaintWrapperList;
 import soot.options.Options;
 
 /**
@@ -73,8 +74,8 @@ public class SummaryGenerator {
 
 	protected List<String> substitutedWith = new LinkedList<String>();
 
-	protected SummaryTaintWrapper fallbackWrapper;
-	protected boolean fallbackWrapperInitialized = false;
+	protected SummaryTaintWrapper summaryTaintWrapper;
+	protected boolean summaryTaintWrapperInitialized = false;
 	protected MemorySummaryProvider onFlySummaryProvider = null;
 
 	public SummaryGenerator() {
@@ -84,10 +85,10 @@ public class SummaryGenerator {
 	/**
 	 * Initializes the fallback taint wrapper
 	 */
-	private void initializeFallbackWrapper() {
-		if (fallbackWrapperInitialized)
+	protected void initializeSummaryTaintWrapper() {
+		if (summaryTaintWrapperInitialized)
 			return;
-		fallbackWrapperInitialized = true;
+		summaryTaintWrapperInitialized = true;
 
 		try {
 			// Do we want to integrate summaries on the fly?
@@ -111,7 +112,7 @@ public class SummaryGenerator {
 
 			// Combine our summary providers
 			IMethodSummaryProvider provider = new MergingSummaryProvider(innerProviders);
-			fallbackWrapper = new SummaryTaintWrapper(provider);
+			summaryTaintWrapper = new SummaryTaintWrapper(provider);
 		} catch (Exception e) {
 			LoggerFactory.getLogger(getClass()).error(
 					"An error occurred while loading the fallback taint wrapper, proceeding without fallback", e);
@@ -123,9 +124,9 @@ public class SummaryGenerator {
 	 * new summaries. Call this method after changing pre-existing summary files on
 	 * disk.
 	 */
-	public void releaseFallbackTaintWrapper() {
-		this.fallbackWrapper = null;
-		this.fallbackWrapperInitialized = false;
+	public void releaseSummaryTaintWrapper() {
+		this.summaryTaintWrapper = null;
+		this.summaryTaintWrapperInitialized = false;
 	}
 
 	/**
@@ -194,7 +195,9 @@ public class SummaryGenerator {
 		 */
 		private int getDependencyCount(SootClass sc) {
 			Set<SootClass> dependencies = new HashSet<>();
-			for (SootMethod sm : sc.getMethods()) {
+			// Resolving method bodies may lead to the creation of new phantom methods,
+			// which in turn leads to a ConcurrentModificationExcpetion.
+			for (SootMethod sm : new ArrayList<>(sc.getMethods())) {
 				if (sm.isConcrete()) {
 					for (Unit u : sm.retrieveActiveBody().getUnits()) {
 						Stmt stmt = (Stmt) u;
@@ -265,8 +268,11 @@ public class SummaryGenerator {
 			}
 		}
 
-		Options.v().set_output_format(Options.output_format_none);
-		if (hasWildcard || config.getLoadFullJAR())
+		if (config.getWriteOutputFiles())
+			Options.v().set_output_format(Options.output_format_jimple);
+		else
+			Options.v().set_output_format(Options.output_format_none);
+		if (hasWildcard || config.getLoadFullJAR() || config.getSummarizeFullJAR())
 			Options.v().set_process_dir(Arrays.asList(classpath.split(File.pathSeparator)));
 		else
 			Options.v().set_soot_classpath(classpath);
@@ -287,7 +293,7 @@ public class SummaryGenerator {
 		Scene.v().loadNecessaryClasses();
 
 		Set<ClassAnalysisTask> realClasses = new HashSet<>(classNames.size());
-		if (config.getLoadFullJAR()) {
+		if (config.getSummarizeFullJAR()) {
 			for (Iterator<SootClass> scIt = Scene.v().getApplicationClasses().snapshotIterator(); scIt.hasNext();) {
 				SootClass sc = scIt.next();
 				Scene.v().forceResolve(sc.getName(), SootClass.SIGNATURES);
@@ -337,18 +343,30 @@ public class SummaryGenerator {
 				}
 			}
 
-			// We also need to analyze methods of parent classes except for
-			// those methods that have been overwritten in the child class
-			SootClass curClass = sc.getSuperclassUnsafe();
-			while (curClass != null) {
-				if (!curClass.isConcrete() || curClass.isLibraryClass())
-					break;
+			// We also need to analyze methods of (transitive) parent classes except for
+			// those methods that have been overwritten in the child class. From Java 8,
+			// interfaces can implement default methods. Therefore, methods of implemented
+			// interfaces need to be analyzed as well.
+			List<SootClass> parentClasses = new ArrayList<>();
+			if (sc.hasSuperclass())
+				parentClasses.add(sc.getSuperclassUnsafe());
+			parentClasses.addAll(sc.getInterfaces());
+			Set<SootClass> doneClasses = new HashSet<>();
+			while (!parentClasses.isEmpty()) {
+				SootClass curClass = parentClasses.remove(0);
+				if (curClass == null || curClass.getName().equals("java.lang.Object") || doneClasses.contains(curClass))
+					continue;
 
 				for (SootMethod sm : curClass.getMethods()) {
-					if (checkAndAdd(analysisTask, sm))
+					if (!doneMethods.contains(sm.getSubSignature()) && checkAndAdd(analysisTask, sm))
 						doneMethods.add(sm.getSubSignature());
 				}
-				curClass = curClass.getSuperclassUnsafe();
+
+				doneClasses.add(curClass);
+
+				if (curClass.hasSuperclass())
+					parentClasses.add(curClass.getSuperclassUnsafe());
+				parentClasses.addAll(curClass.getInterfaces());
 			}
 		}
 
@@ -360,7 +378,7 @@ public class SummaryGenerator {
 
 		// Do the actual analysis
 		ClassSummaries summaries = new ClassSummaries();
-		for (ClassAnalysisTask analysisTask : realClasses) {
+		for (ClassAnalysisTask analysisTask : sortedTasks) {
 			final String className = analysisTask.className;
 
 			// Check if we really need to analyze this class
@@ -437,13 +455,13 @@ public class SummaryGenerator {
 			return false;
 
 		// We normally don't analyze hashCode() and equals()
-		final String sig = sm.getSignature();
+		final String subSig = sm.getSubSignature();
 		if (!config.getSummarizeHashCodeEquals()) {
-			if (sig.equals("int hashCode()") || sig.equals("boolean equals(java.lang.Object)"))
+			if (subSig.equals("int hashCode()") || subSig.equals("boolean equals(java.lang.Object)"))
 				return false;
 		}
 
-		analysisTask.addMethod(sig);
+		analysisTask.addMethod(sm.getSignature());
 		return true;
 	}
 
@@ -602,27 +620,24 @@ public class SummaryGenerator {
 	 *                      end (but in the context) of the data flow analysis
 	 * @return summary of method m
 	 */
-	private MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
-			final GapManager gapManager, final ResultsAvailableHandler resultHandler) {
+	protected MethodSummaries createMethodSummary(String classpath, final String methodSig, final String parentClass,
+			final IGapManager gapManager, final ResultsAvailableHandler resultHandler) {
 		// We need to construct a fallback taint wrapper based on the current
 		// configuration
-		initializeFallbackWrapper();
+		initializeSummaryTaintWrapper();
 
 		logger.info(String.format("Computing method summary for %s...", methodSig));
 		long nanosBeforeMethod = System.nanoTime();
 
-		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(
-				config.getAccessPathConfiguration().getAccessPathLength());
-		final SummarySourceSinkManager sourceSinkManager = new SummarySourceSinkManager(methodSig, parentClass,
-				sourceSinkFactory);
+		final SummarySourceSinkManager sourceSinkManager = createSourceSinkManager(methodSig, parentClass);
 		final MethodSummaries summaries = new MethodSummaries();
 
-		final SummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
+		final ISummaryInfoflow infoflow = initInfoflow(summaries, gapManager);
 
 		final SummaryTaintPropagationHandler listener = new SummaryTaintPropagationHandler(methodSig, parentClass,
 				gapManager);
 		infoflow.setTaintPropagationHandler(listener);
-		infoflow.setPreProcessors(Collections.singleton(new PreAnalysisHandler() {
+		infoflow.addPreprocessor(new PreAnalysisHandler() {
 
 			@Override
 			public void onBeforeCallgraphConstruction() {
@@ -633,7 +648,7 @@ public class SummaryGenerator {
 				listener.addExcludedMethod(Scene.v().getMethod(DUMMY_MAIN_SIG));
 			}
 
-		}));
+		});
 
 		infoflow.addResultsAvailableHandler(new ResultsAvailableHandler() {
 
@@ -642,10 +657,10 @@ public class SummaryGenerator {
 				InfoflowResultPostProcessor processor;
 				if (infoflow.getManager() != null)
 					processor = new InfoflowResultPostProcessor(listener.getResult(), infoflow.getManager(), methodSig,
-							sourceSinkFactory, gapManager);
+							sourceSinkManager.getSourceSinkFactory(), gapManager);
 				else
 					processor = new InfoflowResultPostProcessor(listener.getResult(), infoflow.getConfig(), methodSig,
-							sourceSinkFactory, gapManager);
+							sourceSinkManager.getSourceSinkFactory(), gapManager);
 				processor.postProcess(summaries);
 
 				if (resultHandler != null)
@@ -667,6 +682,21 @@ public class SummaryGenerator {
 		return summaries;
 	}
 
+	/**
+	 * Creates the source/sink manager for introducing new sources and sinks into
+	 * the taint analysis
+	 * 
+	 * @param methodSig   The signature of the method for which to create sources
+	 *                    and sinks, i.e., the method to be summarized
+	 * @param parentClass The class that contains the method to summarize
+	 * @return The new {@link SummarySourceSinkManager}
+	 */
+	protected SummarySourceSinkManager createSourceSinkManager(final String methodSig, final String parentClass) {
+		final SourceSinkFactory sourceSinkFactory = new SourceSinkFactory(
+				config.getAccessPathConfiguration().getAccessPathLength());
+		return new SummarySourceSinkManager(methodSig, parentClass, sourceSinkFactory);
+	}
+
 	private BaseEntryPointCreator createEntryPoint(Collection<String> entryPoints, String parentClass) {
 		SequentialEntryPointCreator dEntryPointCreater = new SequentialEntryPointCreator(entryPoints);
 
@@ -686,8 +716,8 @@ public class SummaryGenerator {
 	 * 
 	 * @return The newly constructed Infoflow instance
 	 */
-	protected SummaryInfoflow getInfoflowInstance() {
-		SummaryInfoflow infoflow = new SummaryInfoflow();
+	protected ISummaryInfoflow getInfoflowInstance() {
+		ISummaryInfoflow infoflow = new SummaryInfoflow();
 		infoflow.setPathBuilderFactory(new DefaultPathBuilderFactory(config.getPathConfiguration()) {
 
 			@Override
@@ -707,7 +737,7 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The taint wrapper to be used during summary generation
 	 */
-	protected SummaryGenerationTaintWrapper createTaintWrapper(MethodSummaries summaries, GapManager gapManager) {
+	protected SummaryGenerationTaintWrapper createTaintWrapper(MethodSummaries summaries, IGapManager gapManager) {
 		return new SummaryGenerationTaintWrapper(summaries, gapManager);
 	}
 
@@ -718,11 +748,10 @@ public class SummaryGenerator {
 	 * @param gapManager The gap manager to be used when handling callbacks
 	 * @return The initialized data flow engine
 	 */
-	protected SummaryInfoflow initInfoflow(MethodSummaries summaries, GapManager gapManager) {
+	protected ISummaryInfoflow initInfoflow(MethodSummaries summaries, IGapManager gapManager) {
 		// Disable the default path reconstruction. However, still make sure to
 		// retain the contents of the callees.
-		SummaryInfoflow iFlow = getInfoflowInstance();
-		InfoflowConfiguration.setMergeNeighbors(true);
+		ISummaryInfoflow iFlow = getInfoflowInstance();
 		iFlow.setConfig(config);
 
 		if (nativeCallHandler == null)
@@ -730,8 +759,12 @@ public class SummaryGenerator {
 		else
 			iFlow.setNativeCallHandler(new SummaryNativeCallHandler(nativeCallHandler));
 
-		final SummaryGenerationTaintWrapper summaryWrapper = createTaintWrapper(summaries, gapManager);
-		iFlow.setTaintWrapper(new TaintWrapperList(fallbackWrapper, summaryWrapper));
+		final SummaryGenerationTaintWrapper summaryGenWrapper = createTaintWrapper(summaries, gapManager);
+		// We only want to compute summaries for methods we do not have summaries. Thus, we register the
+		// summary generation wrapper as a fallback to the SummaryTaintWrapper such that it is only queried
+		// when the SummaryTaintWrapper doesn't know the method.
+		summaryTaintWrapper.setFallbackTaintWrapper(summaryGenWrapper);
+		iFlow.setTaintWrapper(summaryTaintWrapper);
 
 		// Set the Soot configuration
 		if (sootConfig == null)

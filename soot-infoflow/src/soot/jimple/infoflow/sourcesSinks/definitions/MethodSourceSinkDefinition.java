@@ -65,9 +65,21 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 
 	/**
 	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
+	 * 
+	 * @param am The method for which this object defines sources and sinks
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am) {
 		this(am, null, null, null, CallType.MethodCall);
+	}
+
+	/**
+	 * Creates a new instance of the {@link MethodSourceSinkDefinition} class
+	 * 
+	 * @param am       The method for which this object defines sources and sinks
+	 * @param callType The type of calls to define as sources or sinks
+	 */
+	public MethodSourceSinkDefinition(SootMethodAndClass am, CallType callType) {
+		this(am, null, null, null, callType);
 	}
 
 	/**
@@ -85,6 +97,27 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	 */
 	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
 			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType) {
+		this(am, baseObjects, parameters, returnValues, callType, null);
+	}
+
+	/**
+	 * Creates a new instance of the MethodSourceSinkDefinition class
+	 * 
+	 * @param am           The method for which this object defines sources and
+	 *                     sinks
+	 * @param baseObjects  The source and sink definitions for the base object on
+	 *                     which a method of this class is invoked
+	 * @param parameters   The source and sink definitions for parameters of the
+	 *                     current method
+	 * @param returnValues The source definitions for the return value of the
+	 *                     current method
+	 * @param callType     The type of calls to define as sources or sinks
+	 * @param category     The category to which this source or sink belongs
+	 */
+	public MethodSourceSinkDefinition(SootMethodAndClass am, Set<AccessPathTuple> baseObjects,
+			Set<AccessPathTuple>[] parameters, Set<AccessPathTuple> returnValues, CallType callType,
+			ISourceSinkCategory category) {
+		super(category);
 		this.method = am;
 		this.baseObjects = baseObjects == null || baseObjects.isEmpty() ? null : baseObjects;
 		this.parameters = parameters;
@@ -193,6 +226,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return method == null ? "<no method>" : method.getSignature();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public MethodSourceSinkDefinition getSourceOnlyDefinition() {
 		// Collect all base sources
@@ -205,15 +239,19 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		}
 
 		// Collect all parameter sources
-		@SuppressWarnings("unchecked")
-		Set<AccessPathTuple>[] paramSources = new Set[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			Set<AccessPathTuple> aptSet = parameters[i];
-			Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
-			paramSources[i] = thisParam;
-			for (AccessPathTuple apt : aptSet)
-				if (apt.getSourceSinkType().isSource())
-					thisParam.add(apt);
+		Set<AccessPathTuple>[] paramSources = null;
+		if (parameters != null && parameters.length > 0) {
+			paramSources = new Set[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				Set<AccessPathTuple> aptSet = parameters[i];
+				if (aptSet != null) {
+					Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
+					paramSources[i] = thisParam;
+					for (AccessPathTuple apt : aptSet)
+						if (apt.getSourceSinkType().isSource())
+							thisParam.add(apt);
+				}
+			}
 		}
 
 		// Collect all return sources
@@ -229,6 +267,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return mssd;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public MethodSourceSinkDefinition getSinkOnlyDefinition() {
 		// Collect all base sinks
@@ -241,15 +280,19 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		}
 
 		// Collect all parameter sinks
-		@SuppressWarnings("unchecked")
-		Set<AccessPathTuple>[] paramSinks = new Set[parameters.length];
-		for (int i = 0; i < parameters.length; i++) {
-			Set<AccessPathTuple> aptSet = parameters[i];
-			Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
-			paramSinks[i] = thisParam;
-			for (AccessPathTuple apt : aptSet)
-				if (apt.getSourceSinkType().isSink())
-					thisParam.add(apt);
+		Set<AccessPathTuple>[] paramSinks = null;
+		if (parameters != null) {
+			paramSinks = new Set[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				Set<AccessPathTuple> aptSet = parameters[i];
+				if (aptSet != null) {
+					Set<AccessPathTuple> thisParam = new HashSet<>(aptSet.size());
+					paramSinks[i] = thisParam;
+					for (AccessPathTuple apt : aptSet)
+						if (apt.getSourceSinkType().isSink())
+							thisParam.add(apt);
+				}
+			}
 		}
 
 		// Collect all return sinks
@@ -279,7 +322,8 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	protected MethodSourceSinkDefinition buildNewDefinition(Set<AccessPathTuple> baseAPTs,
 			Set<AccessPathTuple>[] paramAPTs, Set<AccessPathTuple> returnAPTs) {
 		MethodSourceSinkDefinition def = buildNewDefinition(method, baseAPTs, paramAPTs, returnAPTs, callType);
-		def.setCategory(category);
+		def.category = category;
+		def.conditions = conditions;
 		return def;
 	}
 
@@ -290,36 +334,31 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				filteredReturnValues, callType);
 	}
 
-	@Override
+	/**
+	 * Adds the given access path tuples to this source/sink definition for the
+	 * given parameter index
+	 * 
+	 * @param paramIdx  The parameter index
+	 * @param paramDefs The access path tuples
+	 */
 	@SuppressWarnings("unchecked")
-	public void merge(ISourceSinkDefinition other) {
-		if (other instanceof MethodSourceSinkDefinition) {
-			MethodSourceSinkDefinition otherMethod = (MethodSourceSinkDefinition) other;
-
-			// Merge the base object definitions
-			if (otherMethod.baseObjects != null && !otherMethod.baseObjects.isEmpty()) {
-				if (this.baseObjects == null)
-					this.baseObjects = new HashSet<>();
-				for (AccessPathTuple apt : otherMethod.baseObjects)
-					this.baseObjects.add(apt);
+	public void addParameterDefinition(int paramIdx, Set<AccessPathTuple> paramDefs) {
+		if (paramDefs != null && !paramDefs.isEmpty()) {
+			// We may need to widen our parameter array
+			Set<AccessPathTuple>[] oldSet = this.parameters;
+			if (oldSet.length <= paramIdx) {
+				Set<AccessPathTuple>[] newSet = (Set<AccessPathTuple>[]) new Set<?>[paramIdx + 1];
+				System.arraycopy(oldSet, 0, newSet, 0, paramIdx);
+				this.parameters = newSet;
 			}
 
-			// Merge the parameter definitions
-			if (otherMethod.parameters != null && otherMethod.parameters.length > 0) {
-				if (this.parameters == null)
-					this.parameters = new Set[this.method.getParameters().size()];
-				for (int i = 0; i < otherMethod.parameters.length; i++) {
-					this.parameters[i].addAll(otherMethod.parameters[i]);
-				}
+			// We may not have a set of access path tuples yet
+			Set<AccessPathTuple> aps = this.parameters[paramIdx];
+			if (aps == null) {
+				aps = new HashSet<>(paramDefs.size());
+				this.parameters[paramIdx] = aps;
 			}
-
-			// Merge the return value definitions
-			if (otherMethod.returnValues != null && !otherMethod.returnValues.isEmpty()) {
-				if (this.returnValues == null)
-					this.returnValues = new HashSet<>();
-				for (AccessPathTuple apt : otherMethod.returnValues)
-					this.returnValues.add(apt);
-			}
+			aps.addAll(paramDefs);
 		}
 	}
 
@@ -354,11 +393,11 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((baseObjects == null) ? 0 : baseObjects.hashCode());
-		result = prime * result + ((method == null) ? 0 : method.hashCode());
 		result = prime * result + ((callType == null) ? 0 : callType.hashCode());
-		result = prime * result + ((parameters == null) ? 0 : Arrays.hashCode(parameters));
+		result = prime * result + ((method == null) ? 0 : method.hashCode());
+		result = prime * result + Arrays.hashCode(parameters);
 		result = prime * result + ((returnValues == null) ? 0 : returnValues.hashCode());
 		return result;
 	}
@@ -367,7 +406,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -377,20 +416,14 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 				return false;
 		} else if (!baseObjects.equals(other.baseObjects))
 			return false;
+		if (callType != other.callType)
+			return false;
 		if (method == null) {
 			if (other.method != null)
 				return false;
 		} else if (!method.equals(other.method))
 			return false;
-		if (callType == null) {
-			if (other.callType != null)
-				return false;
-		} else if (!callType.equals(other.callType))
-			return false;
-		if (parameters == null) {
-			if (other.parameters != null)
-				return false;
-		} else if (!Arrays.equals(parameters, other.parameters))
+		if (!Arrays.equals(parameters, other.parameters))
 			return false;
 		if (returnValues == null) {
 			if (other.returnValues != null)
@@ -413,8 +446,9 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		if (index < 5 && callType == CallType.MethodCall) {
 			MethodSourceSinkDefinition def = PARAM_OBJ_SOURCE[index];
 			if (def == null) {
-				def = new MethodSourceSinkDefinition(null, (Set<AccessPathTuple>[]) new Set<?>[] {
-						Collections.singleton(AccessPathTuple.getBlankSourceTuple()) }, null, callType);
+				Set<AccessPathTuple>[] params = (Set<AccessPathTuple>[]) new Set<?>[index + 1];
+				params[index] = Collections.singleton(AccessPathTuple.getBlankSourceTuple());
+				def = new MethodSourceSinkDefinition(null, params, null, callType);
 				PARAM_OBJ_SOURCE[index] = def;
 			}
 			return def;
@@ -516,6 +550,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		MethodSourceSinkDefinition def = buildNewDefinition(method, filteredBaseObjects, filteredParameters,
 				filteredReturnValues, callType);
 		def.setCategory(category);
+		def.setConditions(conditions);
 		return def;
 	}
 

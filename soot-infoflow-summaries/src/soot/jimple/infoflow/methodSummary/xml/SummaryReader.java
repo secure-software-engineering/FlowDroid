@@ -3,7 +3,7 @@ package soot.jimple.infoflow.methodSummary.xml;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASETYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_MATCH_STRICT;
-import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMTER_INDEX;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_TAINT_SUB_FIELDS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_CLEAR;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
@@ -51,14 +51,17 @@ public class SummaryReader extends AbstractXMLReader {
 	 * 
 	 * @param reader    The reader from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException Thrown if the reader could not be read
 	 */
 	public void read(Reader reader, ClassMethodSummaries summaries)
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			xmlreader = XMLInputFactory.newInstance().createXMLStreamReader(reader);
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			xmlreader = factory.createXMLStreamReader(reader);
 			final MethodSummaries summary = summaries.getMethodSummaries();
 
 			Map<String, String> sourceAttributes = new HashMap<String, String>();
@@ -69,6 +72,7 @@ public class SummaryReader extends AbstractXMLReader {
 			int currentID = -1;
 			boolean isAlias = false;
 			Boolean typeChecking = null;
+			Boolean ignoreTypes = null;
 			Boolean cutSubfields = null;
 
 			State state = State.summary;
@@ -81,7 +85,15 @@ public class SummaryReader extends AbstractXMLReader {
 				final String localName = xmlreader.getLocalName();
 				if (localName.equals(XMLConstants.TREE_SUMMARY) && xmlreader.isStartElement()) {
 					String isInterface = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_INTERFACE);
-					summaries.setInterface(isInterface != null && isInterface.equals(XMLConstants.VALUE_TRUE));
+
+					// If the string is empty, it's unknown, and neither true nor false, so we must
+					// not call setInterface()!
+					if (isInterface != null && !isInterface.isEmpty())
+						summaries.setInterface(isInterface.equals(XMLConstants.VALUE_TRUE));
+
+					String isExclusive = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUSIVE);
+					if (isExclusive != null && !isExclusive.isEmpty())
+						summaries.setExclusiveForClass(isExclusive.equals(XMLConstants.VALUE_TRUE));
 				} else if (localName.equals(XMLConstants.TREE_METHODS) && xmlreader.isStartElement()) {
 					if (state == State.summary)
 						state = State.methods;
@@ -90,6 +102,15 @@ public class SummaryReader extends AbstractXMLReader {
 				} else if (localName.equals(TREE_METHOD) && xmlreader.isStartElement()) {
 					if (state == State.methods) {
 						currentMethod = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_METHOD_SIG);
+
+						// Some summaries are full signatures instead of subsignatures. We fix this on
+						// the fly.
+						if (currentMethod.contains(":"))
+							currentMethod = currentMethod.substring(currentMethod.indexOf(":") + 1);
+
+						String sIsExcluded = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUDED);
+						if (sIsExcluded != null && sIsExcluded.equals(XMLConstants.VALUE_TRUE))
+							summary.addExcludedMethod(currentMethod);
 						state = State.method;
 					} else
 						throw new SummaryXMLException();
@@ -113,6 +134,11 @@ public class SummaryReader extends AbstractXMLReader {
 						String sCutSubfields = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_CUT_SUBFIELDS);
 						if (sCutSubfields != null && !sCutSubfields.isEmpty())
 							cutSubfields = sCutSubfields.equals(XMLConstants.VALUE_TRUE);
+
+						String sIgnoreTypes = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IGNORE_TYPES);
+						if (sIgnoreTypes != null && !sIgnoreTypes.isEmpty())
+							ignoreTypes = sIgnoreTypes.equals(XMLConstants.VALUE_TRUE);
+
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isStartElement()) {
@@ -139,7 +165,7 @@ public class SummaryReader extends AbstractXMLReader {
 					if (state == State.flow) {
 						state = State.method;
 						MethodFlow flow = new MethodFlow(currentMethod, createSource(summary, sourceAttributes),
-								createSink(summary, sinkAttributes), isAlias, typeChecking, cutSubfields);
+								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields);
 						summary.addFlow(flow);
 
 						isAlias = false;
@@ -221,7 +247,7 @@ public class SummaryReader extends AbstractXMLReader {
 	 * 
 	 * @param fileName  The file from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
 	 * @throws IOException Thrown if the file could not be read
 	 */
 
@@ -325,11 +351,19 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isReturn(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Return.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Return.toString());
+		}
+		return false;
 	}
 
 	private boolean isField(Map<String, String> attributes) {
-		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Field.toString());
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Field.toString());
+		}
+		return false;
 	}
 
 	private String[] getAccessPath(Map<String, String> attributes) {
@@ -384,9 +418,11 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private int parameterIdx(Map<String, String> attributes) {
-		String strIdx = attributes.get(ATTRIBUTE_PARAMTER_INDEX);
+		String strIdx = attributes.get(ATTRIBUTE_PARAMETER_INDEX);
 		if (strIdx == null || strIdx.isEmpty())
 			throw new RuntimeException("Parameter index not specified");
+		if (strIdx.equals("*"))
+			return FlowSource.ANY_PARAMETER;
 		return Integer.parseInt(strIdx);
 	}
 

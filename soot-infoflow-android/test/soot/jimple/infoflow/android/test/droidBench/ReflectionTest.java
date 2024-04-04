@@ -20,7 +20,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.results.InfoflowResults;
 
-public class ReflectionTest extends JUnitTests {
+public abstract class ReflectionTest extends JUnitTests {
 	
 	private AnalysisConfigurationCallback enableReflectionCallback = new AnalysisConfigurationCallback() {
 		
@@ -73,11 +73,14 @@ public class ReflectionTest extends JUnitTests {
 	}
 	
 	@Test(timeout=300000)
-	@Ignore
+	
 	public void runTestReflection7() throws IOException, XmlPullParserException {
+		int expected = 1;
+		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
+			expected = 0;
 		InfoflowResults res = analyzeAPKFile("Reflection/Reflection7.apk", null,
 				enableReflectionCallback);
-		Assert.assertEquals(1, res.size());
+		Assert.assertEquals(expected, res.size());
 	}
 	
 	@Test(timeout=300000)

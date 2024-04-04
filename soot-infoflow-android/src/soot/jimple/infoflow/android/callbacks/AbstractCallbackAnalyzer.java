@@ -24,10 +24,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
+import heros.solver.Pair;
 import soot.AnySubType;
 import soot.Body;
 import soot.FastHierarchy;
@@ -36,11 +42,17 @@ import soot.PointsToSet;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.jimple.ArrayRef;
+import soot.jimple.AssignStmt;
+import soot.jimple.CastExpr;
+import soot.jimple.ClassConstant;
+import soot.jimple.FieldRef;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -53,11 +65,15 @@ import soot.jimple.infoflow.android.callbacks.filters.ICallbackFilter;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.jimple.infoflow.values.SimpleConstantValueProvider;
 import soot.jimple.toolkits.callgraph.Edge;
+import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraphFactory;
+import soot.toolkits.scalar.SimpleLocalDefs;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -86,11 +102,23 @@ public abstract class AbstractCallbackAnalyzer {
 
 	protected final SootClass scSupportFragmentTransaction = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentTransaction");
+	protected final SootClass scAndroidXFragmentTransaction = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentTransaction");
 	protected final SootClass scSupportFragment = Scene.v().getSootClassUnsafe("android.support.v4.app.Fragment");
+	protected final SootClass scAndroidXFragment = Scene.v().getSootClassUnsafe("androidx.fragment.app.Fragment");
 
 	protected final SootClass scSupportViewPager = Scene.v().getSootClassUnsafe("android.support.v4.view.ViewPager");
+	protected final SootClass scAndroidXViewPager = Scene.v().getSootClassUnsafe("androidx.viewpager.widget.ViewPager");
+
 	protected final SootClass scFragmentStatePagerAdapter = Scene.v()
 			.getSootClassUnsafe("android.support.v4.app.FragmentStatePagerAdapter");
+	protected final SootClass scFragmentPagerAdapter = Scene.v()
+			.getSootClassUnsafe("android.support.v4.app.FragmentPagerAdapter");
+
+	protected final SootClass scAndroidXFragmentStatePagerAdapter = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentStatePagerAdapter");
+	protected final SootClass scAndroidXFragmentPagerAdapter = Scene.v()
+			.getSootClassUnsafe("androidx.fragment.app.FragmentPagerAdapter");
 
 	protected final InfoflowAndroidConfiguration config;
 	protected final Set<SootClass> entryPointClasses;
@@ -100,12 +128,78 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
+	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new HashMultiMap<>();
 	protected final Map<SootClass, Integer> fragmentIDs = new HashMap<>();
 
 	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
 	protected final Set<SootClass> excludedEntryPoints = new HashSet<>();
 
 	protected IValueProvider valueProvider = new SimpleConstantValueProvider();
+
+	protected LoadingCache<SootField, List<Type>> arrayToContentTypes = CacheBuilder.newBuilder()
+			.build(new CacheLoader<SootField, List<Type>>() {
+
+				@Override
+				public List<Type> load(SootField field) throws Exception {
+					// Find all assignments to this field
+					List<Type> typeList = new ArrayList<>();
+					field.getDeclaringClass().getMethods().stream().filter(m -> m.isConcrete())
+							.map(m -> m.retrieveActiveBody()).forEach(b -> {
+								// Find all locals that reference the field
+								Set<Local> arrayLocals = new HashSet<>();
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+										if (rop instanceof FieldRef && ((FieldRef) rop).getField() == field) {
+											arrayLocals.add((Local) lop);
+										} else if (lop instanceof FieldRef && ((FieldRef) lop).getField() == field) {
+											arrayLocals.add((Local) rop);
+										}
+									}
+								}
+
+								// Find casts
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+
+										if (rop instanceof CastExpr) {
+											CastExpr ce = (CastExpr) rop;
+											if (arrayLocals.contains(ce.getOp()))
+												arrayLocals.add((Local) lop);
+											else if (arrayLocals.contains(lop))
+												arrayLocals.add((Local) ce.getOp());
+										}
+									}
+								}
+
+								// Find the assignments to the array locals
+								for (Unit u : b.getUnits()) {
+									if (u instanceof AssignStmt) {
+										AssignStmt assignStmt = (AssignStmt) u;
+										Value rop = assignStmt.getRightOp();
+										Value lop = assignStmt.getLeftOp();
+										if (lop instanceof ArrayRef) {
+											ArrayRef arrayRef = (ArrayRef) lop;
+											if (arrayLocals.contains(arrayRef.getBase())) {
+												Type t = rop.getType();
+												if (t instanceof RefType)
+													typeList.add(rop.getType());
+											}
+										}
+									}
+								}
+							});
+					return typeList;
+				}
+
+			});
+
+	private MultiMap<SootMethod, Stmt> javaScriptInterfaces = new HashMultiMap<SootMethod, Stmt>();
 
 	public AbstractCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses)
 			throws IOException {
@@ -148,11 +242,14 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!new File(fileName).exists()) {
 			fileName = "../soot-infoflow-android/AndroidCallbacks.txt";
 			if (!new File(fileName).exists()) {
-				return loadAndroidCallbacks(
-						new InputStreamReader(ResourceUtils.getResourceStream("/AndroidCallbacks.txt")));
+				try (InputStream is = ResourceUtils.getResourceStream("/AndroidCallbacks.txt")) {
+					return loadAndroidCallbacks(new InputStreamReader(is));
+				}
 			}
 		}
-		return loadAndroidCallbacks(new FileReader(fileName));
+		try (FileReader fr = new FileReader(fileName)) {
+			return loadAndroidCallbacks(fr);
+		}
 	}
 
 	/**
@@ -165,15 +262,11 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	public static Set<String> loadAndroidCallbacks(Reader reader) throws IOException {
 		Set<String> androidCallbacks = new HashSet<String>();
-		BufferedReader bufReader = new BufferedReader(reader);
-		try {
+		try (BufferedReader bufReader = new BufferedReader(reader)) {
 			String line;
 			while ((line = bufReader.readLine()) != null)
 				if (!line.isEmpty())
 					androidCallbacks.add(line);
-
-		} finally {
-			bufReader.close();
 		}
 		return androidCallbacks;
 	}
@@ -230,39 +323,14 @@ public abstract class AbstractCallbackAnalyzer {
 						if (arg instanceof Local) {
 							Set<Type> possibleTypes = Scene.v().getPointsToAnalysis().reachingObjects((Local) arg)
 									.possibleTypes();
-							for (Type possibleType : possibleTypes) {
-								RefType baseType;
-								if (possibleType instanceof RefType)
-									baseType = (RefType) possibleType;
-								else if (possibleType instanceof AnySubType)
-									baseType = ((AnySubType) possibleType).getBase();
-								else {
-									logger.warn("Unsupported type detected in callback analysis");
-									continue;
-								}
-
-								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
-									callbackClasses.add(targetClass);
-							}
-
 							// If we don't have pointsTo information, we take
 							// the type of the local
 							if (possibleTypes.isEmpty()) {
 								Type argType = ((Local) arg).getType();
-								RefType baseType;
-								if (argType instanceof RefType)
-									baseType = (RefType) argType;
-								else if (argType instanceof AnySubType)
-									baseType = ((AnySubType) argType).getBase();
-								else {
-									logger.warn("Unsupported type detected in callback analysis");
-									continue;
-								}
-
-								SootClass targetClass = baseType.getSootClass();
-								if (!SystemClassHandler.v().isClassInSystemPackage(targetClass.getName()))
-									callbackClasses.add(targetClass);
+								checkAndAddCallback(callbackClasses, argType);
+							} else {
+								for (Type possibleType : possibleTypes)
+									checkAndAddCallback(callbackClasses, possibleType);
 							}
 						}
 					}
@@ -273,6 +341,32 @@ public abstract class AbstractCallbackAnalyzer {
 		// Analyze all found callback classes
 		for (SootClass callbackClass : callbackClasses)
 			analyzeClassInterfaceCallbacks(callbackClass, callbackClass, lifecycleElement);
+	}
+
+	/**
+	 * Adds the class that implements the given type to the set of callback classes.
+	 * This method deals with <code>AnyType</code> types as well.
+	 * 
+	 * @param callbackClasses The set to which to add the callback classes
+	 * @param argType         The type to add
+	 */
+	protected void checkAndAddCallback(Set<SootClass> callbackClasses, Type argType) {
+		RefType baseType;
+		if (argType instanceof RefType) {
+			baseType = (RefType) argType;
+			SootClass targetClass = baseType.getSootClass();
+			if (!SystemClassHandler.v().isClassInSystemPackage(targetClass))
+				callbackClasses.add(targetClass);
+		} else if (argType instanceof AnySubType) {
+			baseType = ((AnySubType) argType).getBase();
+			SootClass baseClass = ((RefType) baseType).getSootClass();
+			for (SootClass sc : TypeUtils.getAllDerivedClasses(baseClass)) {
+				if (!SystemClassHandler.v().isClassInSystemPackage(sc))
+					callbackClasses.add(sc);
+			}
+		} else {
+			logger.warn("Unsupported type detected in callback analysis");
+		}
 	}
 
 	/**
@@ -340,6 +434,28 @@ public abstract class AbstractCallbackAnalyzer {
 		}
 	}
 
+	protected void analyzeMethodForJavascriptInterfaces(SootMethod method) {
+		// Do not analyze system classes
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
+			return;
+		if (!method.isConcrete() || !method.hasActiveBody())
+			return;
+
+		final FastHierarchy fastHierarchy = Scene.v().getFastHierarchy();
+		final RefType webViewType = RefType.v("android.webkit.WebView");
+		for (Unit u : method.getActiveBody().getUnits()) {
+			Stmt stmt = (Stmt) u;
+			if (stmt.containsInvokeExpr()) {
+				final InvokeExpr iexpr = stmt.getInvokeExpr();
+				final SootMethodRef methodRef = iexpr.getMethodRef();
+				if (methodRef.getName().equals("addJavascriptInterface") && iexpr.getArgCount() == 2
+						&& fastHierarchy.canStoreType(methodRef.getDeclaringClass().getType(), webViewType)) {
+					this.javaScriptInterfaces.put(method, stmt);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Checks whether the given method dynamically registers a new service
 	 * connection
@@ -394,7 +510,8 @@ public abstract class AbstractCallbackAnalyzer {
 	protected void analyzeMethodForFragmentTransaction(SootClass lifecycleElement, SootMethod method) {
 		if (scFragment == null || scFragmentTransaction == null)
 			if (scSupportFragment == null || scSupportFragmentTransaction == null)
-				return;
+				if (scAndroidXFragment == null || scAndroidXFragmentTransaction == null)
+					return;
 		if (!method.isConcrete() || !method.hasActiveBody())
 			return;
 
@@ -407,7 +524,7 @@ public abstract class AbstractCallbackAnalyzer {
 			Stmt stmt = (Stmt) u;
 			if (stmt.containsInvokeExpr()) {
 				final String methodName = stmt.getInvokeExpr().getMethod().getName();
-				if (methodName.equals("getFragmentManager"))
+				if (methodName.equals("getFragmentManager") || methodName.equals("getSupportFragmentManager"))
 					isFragmentManager = true;
 				else if (methodName.equals("beginTransaction"))
 					isFragmentTransaction = true;
@@ -438,6 +555,8 @@ public abstract class AbstractCallbackAnalyzer {
 								.canStoreType(iinvExpr.getBase().getType(), scFragmentTransaction.getType());
 						isFragmentTransaction |= scSupportFragmentTransaction != null && Scene.v().getFastHierarchy()
 								.canStoreType(iinvExpr.getBase().getType(), scSupportFragmentTransaction.getType());
+						isFragmentTransaction |= scAndroidXFragmentTransaction != null && Scene.v().getFastHierarchy()
+								.canStoreType(iinvExpr.getBase().getType(), scAndroidXFragmentTransaction.getType());
 						isAddTransaction = stmt.getInvokeExpr().getMethod().getName().equals("add")
 								|| stmt.getInvokeExpr().getMethod().getName().equals("replace");
 
@@ -449,11 +568,15 @@ public abstract class AbstractCallbackAnalyzer {
 								// Is this a fragment?
 								if (br.getType() instanceof RefType) {
 									RefType rt = (RefType) br.getType();
+									if (br instanceof ClassConstant)
+										rt = (RefType) ((ClassConstant) br).toSootType();
 
 									boolean addFragment = scFragment != null
 											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
 									addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
 											.canStoreType(rt, scSupportFragment.getType());
+									addFragment |= scAndroidXFragment != null && Scene.v().getFastHierarchy()
+											.canStoreType(rt, scAndroidXFragment.getType());
 									if (addFragment)
 										checkAndAddFragment(method.getDeclaringClass(), rt.getSootClass());
 								}
@@ -474,7 +597,12 @@ public abstract class AbstractCallbackAnalyzer {
 	 * @author Julius Naeumann
 	 */
 	protected void analyzeMethodForViewPagers(SootClass clazz, SootMethod method) {
-		if (scSupportViewPager == null || scFragmentStatePagerAdapter == null)
+		// We need at least one fragment base class
+		if (scSupportViewPager == null && scAndroidXViewPager == null)
+			return;
+		// We need at least one class with a method to register a fragment
+		if (scFragmentStatePagerAdapter == null && scAndroidXFragmentStatePagerAdapter == null
+				&& scFragmentPagerAdapter == null && scAndroidXFragmentPagerAdapter == null)
 			return;
 
 		if (!method.isConcrete())
@@ -485,44 +613,40 @@ public abstract class AbstractCallbackAnalyzer {
 		// look for invocations of ViewPager.setAdapter
 		for (Unit u : body.getUnits()) {
 			Stmt stmt = (Stmt) u;
-
 			if (!stmt.containsInvokeExpr())
 				continue;
 
 			InvokeExpr invExpr = stmt.getInvokeExpr();
-
 			if (!(invExpr instanceof InstanceInvokeExpr))
 				continue;
-
 			InstanceInvokeExpr iinvExpr = (InstanceInvokeExpr) invExpr;
 
 			// check whether class is of ViewPager type
-
-			if (!Scene.v().getFastHierarchy().canStoreType(iinvExpr.getBase().getType(), scSupportViewPager.getType()))
+			if (!safeIsType(iinvExpr.getBase(), scSupportViewPager)
+					&& !safeIsType(iinvExpr.getBase(), scAndroidXViewPager))
 				continue;
 
 			// check whether setAdapter method is called
-
 			if (!stmt.getInvokeExpr().getMethod().getName().equals("setAdapter")
 					|| stmt.getInvokeExpr().getArgCount() != 1)
 				continue;
 
 			// get argument
 			Value pa = stmt.getInvokeExpr().getArg(0);
-
 			if (!(pa.getType() instanceof RefType))
 				continue;
-
 			RefType rt = (RefType) pa.getType();
 
 			// check whether argument is of type FragmentStatePagerAdapter
-			if (!Scene.v().getFastHierarchy().canStoreType(rt, scFragmentStatePagerAdapter.getType()))
+			if (!safeIsType(pa, scFragmentStatePagerAdapter) && !safeIsType(pa, scAndroidXFragmentStatePagerAdapter)
+					&& !safeIsType(pa, scFragmentPagerAdapter) && !safeIsType(pa, scAndroidXFragmentPagerAdapter))
 				continue;
 
 			// now analyze getItem() to find possible Fragments
 			SootMethod getItem = rt.getSootClass().getMethodUnsafe("android.support.v4.app.Fragment getItem(int)");
-
 			if (getItem == null)
+				getItem = rt.getSootClass().getMethodUnsafe("androidx.fragment.app.Fragment getItem(int)");
+			if (getItem == null || !getItem.isConcrete())
 				continue;
 
 			Body b = getItem.retrieveActiveBody();
@@ -536,11 +660,74 @@ public abstract class AbstractCallbackAnalyzer {
 					Value rv = rs.getOp();
 					Type type = rv.getType();
 					if (type instanceof RefType) {
-						checkAndAddFragment(method.getDeclaringClass(), ((RefType) type).getSootClass());
+						SootClass rtClass = ((RefType) type).getSootClass();
+						if (rv instanceof Local && (rtClass.getName().startsWith("android.")
+								|| rtClass.getName().startsWith("androidx.")))
+							analyzeFragmentCandidates(rs, getItem, (Local) rv);
+						else
+							checkAndAddFragment(method.getDeclaringClass(), rtClass);
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Attempts to find fragments that are not returned immediately, but that
+	 * require a more complex backward analysis. This analysis is best-effort, we do
+	 * not attempt to solve every possible case.
+	 * 
+	 * @param s The statement at which the fragment is returned
+	 * @param m The method in which the fragment is returned
+	 * @param l The local that contains the fragment
+	 */
+	private void analyzeFragmentCandidates(Stmt s, SootMethod m, Local l) {
+		ExceptionalUnitGraph g = ExceptionalUnitGraphFactory.createExceptionalUnitGraph(m.getActiveBody());
+		SimpleLocalDefs lds = new SimpleLocalDefs(g);
+
+		List<Pair<Local, Stmt>> toSearch = new ArrayList<>();
+		Set<Pair<Local, Stmt>> doneSet = new HashSet<>();
+		toSearch.add(new Pair<>(l, s));
+
+		while (!toSearch.isEmpty()) {
+			Pair<Local, Stmt> pair = toSearch.remove(0);
+			if (doneSet.add(pair)) {
+				List<Unit> defs = lds.getDefsOfAt(pair.getO1(), pair.getO2());
+				for (Unit def : defs) {
+					if (def instanceof AssignStmt) {
+						AssignStmt assignStmt = (AssignStmt) def;
+						Value rop = assignStmt.getRightOp();
+						if (rop instanceof ArrayRef) {
+							ArrayRef arrayRef = (ArrayRef) rop;
+
+							// Look for all assignments to the array
+							toSearch.add(new Pair<>((Local) arrayRef.getBase(), assignStmt));
+						} else if (rop instanceof FieldRef) {
+							FieldRef fieldRef = (FieldRef) rop;
+							try {
+								List<Type> typeList = arrayToContentTypes.get(fieldRef.getField());
+								typeList.stream().map(t -> ((RefType) t).getSootClass())
+										.forEach(c -> checkAndAddFragment(m.getDeclaringClass(), c));
+							} catch (ExecutionException e) {
+								logger.error(String.format("Could not load potential types for field %s",
+										fieldRef.getField().getSignature()), e);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks whether the given value is of the type of the given class
+	 * 
+	 * @param val   The value to check
+	 * @param clazz The class from which to get the type
+	 * @return True if the given value is of the type of the given class
+	 */
+	private boolean safeIsType(Value val, SootClass clazz) {
+		return clazz != null && Scene.v().getFastHierarchy().canStoreType(val.getType(), clazz.getType());
 	}
 
 	/**
@@ -593,12 +780,18 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Activity")
-					|| curClass.getName().equals("android.support.v7.app.ActionBarActivity")
-					|| curClass.getName().equals("android.support.v7.app.AppCompatActivity"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Activity")
+					|| curClassName.equals("android.support.v7.app.ActionBarActivity")
+					|| curClassName.equals("android.support.v7.app.AppCompatActivity")
+					|| curClassName.equals("androidx.appcompat.app.AppCompatActivity"))
 				return true;
-			if (curClass.declaresMethod("void setContentView(int)"))
-				return false;
+			// As long as the class is subclass of android.app.Activity,
+			// it can be sure that the setContentView method is what we expected.
+			// Following 2 statements make the overriding of method
+			// setContentView ignored.
+			// if (curClass.declaresMethod("void setContentView(int)"))
+			// return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -621,10 +814,9 @@ public abstract class AbstractCallbackAnalyzer {
 		// of using the superclass signature
 		SootClass curClass = inv.getMethod().getDeclaringClass();
 		while (curClass != null) {
-			if (curClass.getName().equals("android.app.Fragment"))
+			final String curClassName = curClass.getName();
+			if (curClassName.equals("android.app.Fragment") || curClassName.equals("android.view.LayoutInflater"))
 				return true;
-			if (curClass.declaresMethod("android.view.View inflate(int,android.view.ViewGroup,boolean)"))
-				return false;
 			curClass = curClass.hasSuperclass() ? curClass.getSuperclass() : null;
 		}
 		return false;
@@ -655,15 +847,19 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// Iterate over all user-implemented methods. If they are inherited
 		// from a system class, they are callback candidates.
-		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSubclassesOfIncluding(sootClass)) {
+		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOfIncluding(sootClass)) {
 			if (SystemClassHandler.v().isClassInSystemPackage(parentClass.getName()))
 				continue;
 			for (SootMethod method : parentClass.getMethods()) {
 				if (!method.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
 					// Check whether this is a real callback method
 					SootMethod parentMethod = systemMethods.get(method.getSubSignature());
-					if (parentMethod != null)
-						checkAndAddMethod(method, parentMethod, sootClass, CallbackType.Default);
+					if (parentMethod != null) {
+						if (checkAndAddMethod(method, parentMethod, sootClass, CallbackType.Default)) {
+							// We only keep the latest override in the class hierarchy
+							systemMethods.remove(parentMethod.getSubSignature());
+						}
+					}
 				}
 			}
 		}
@@ -679,7 +875,8 @@ public abstract class AbstractCallbackAnalyzer {
 		return null;
 	}
 
-	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass, SootClass lifecycleElement) {
+	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass,
+			SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
 		// reason to look for interface implementations
 		if (!baseClass.isConcrete())
@@ -778,7 +975,8 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		return this.callbackMethods.put(lifecycleClass, new AndroidCallbackDefinition(method, parentMethod, callbackType));
+		return this.callbackMethods.put(lifecycleClass,
+				new AndroidCallbackDefinition(method, parentMethod, callbackType));
 	}
 
 	/**
@@ -790,6 +988,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
 		this.fragmentClasses.put(componentClass, fragmentClass);
+		this.fragmentClassesRev.put(fragmentClass, componentClass);
 	}
 
 	private boolean isEmpty(Body activeBody) {
@@ -869,6 +1068,14 @@ public abstract class AbstractCallbackAnalyzer {
 	 */
 	public void setValueProvider(IValueProvider valueProvider) {
 		this.valueProvider = valueProvider;
+	}
+
+	/**
+	 * Returns a set of all statements which add a javascript interface
+	 * @return the statement list
+	 */
+	public MultiMap<SootMethod, Stmt> getJavaScriptInterfaces() {
+		return javaScriptInterfaces;
 	}
 
 }

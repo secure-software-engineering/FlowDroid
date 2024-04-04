@@ -10,39 +10,41 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-
-import heros.solver.IDESolver;
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.ArrayType;
 import soot.FastHierarchy;
 import soot.Hierarchy;
 import soot.Local;
+import soot.Modifier;
 import soot.PrimType;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
+import soot.SootFieldRef;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.handlers.PreAnalysisHandler;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
@@ -51,13 +53,17 @@ import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.SourceSinkType;
 import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryQuery;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResolver;
+import soot.jimple.infoflow.methodSummary.taintWrappers.resolvers.SummaryResponse;
+import soot.jimple.infoflow.solver.EndSummary;
 import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
 import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
+import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
-import soot.jimple.infoflow.util.TypeUtils;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
 
@@ -70,8 +76,6 @@ import soot.util.MultiMap;
  */
 public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
-	private static final int MAX_HIERARCHY_DEPTH = 10;
-
 	private InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
 	private AtomicInteger wrapperMisses = new AtomicInteger();
@@ -82,323 +86,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 	private Hierarchy hierarchy;
 	private FastHierarchy fastHierarchy;
+	private SummaryResolver summaryResolver;
 
 	private MultiMap<Pair<Abstraction, SootMethod>, AccessPathPropagator> userCodeTaints = new ConcurrentHashMultiMap<>();
-
-	protected final LoadingCache<SummaryQuery, SummaryResponse> methodToImplFlows = IDESolver.DEFAULT_CACHE_BUILDER
-			.build(new CacheLoader<SummaryQuery, SummaryResponse>() {
-				@Override
-				public SummaryResponse load(SummaryQuery query) throws Exception {
-					final SootClass calleeClass = query.calleeClass;
-					final SootClass declaredClass = query.declaredClass;
-					final String methodSig = query.subsignature;
-					final ClassSummaries classSummaries = new ClassSummaries();
-					boolean isClassSupported = false;
-
-					// Get the flows in the target method
-					if (calleeClass != null)
-						isClassSupported = getSummaries(methodSig, classSummaries, calleeClass);
-
-					// If we haven't found any summaries, we look at the class from the declared
-					// type at the call site
-					if (declaredClass != null && !isClassSupported)
-						isClassSupported = getSummaries(methodSig, classSummaries, declaredClass);
-
-					// If we still don't have anything, we must try the hierarchy. Since this
-					// best-effort approach can be fairly imprecise, it is our last resort.
-					if (!isClassSupported && calleeClass != null)
-						isClassSupported = getSummariesHierarchy(methodSig, classSummaries, calleeClass);
-					if (declaredClass != null && !isClassSupported)
-						isClassSupported = getSummariesHierarchy(methodSig, classSummaries, declaredClass);
-
-					if (!classSummaries.isEmpty())
-						return new SummaryResponse(classSummaries, isClassSupported);
-					else
-						return isClassSupported ? SummaryResponse.EMPTY_BUT_SUPPORTED : SummaryResponse.NOT_SUPPORTED;
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in the given
-				 * class
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The class for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean getSummaries(final String methodSig, final ClassSummaries summaries, SootClass clazz) {
-					// Do we have direct support for the target class?
-					if (summaries.merge(flows.getMethodFlows(clazz, methodSig)))
-						return true;
-
-					// Do we support any interface this class might have?
-					if (checkInterfaces(methodSig, summaries, clazz))
-						return true;
-
-					// If the target is abstract and we haven't found any flows,
-					// we check for child classes
-					SootMethod targetMethod = clazz.getMethodUnsafe(methodSig);
-					if (!clazz.isConcrete() || targetMethod == null || !targetMethod.isConcrete()) {
-						for (SootClass parentClass : getAllParentClasses(clazz)) {
-							// Do we have support for the target class?
-							if (summaries.merge(flows.getMethodFlows(parentClass, methodSig)))
-								return true;
-
-							// Do we support any interface this class might have?
-							if (checkInterfaces(methodSig, summaries, parentClass))
-								return true;
-						}
-					}
-
-					// In case we don't have a real hierarchy, we must reconstruct one from the
-					// summaries
-					String curClass = clazz.getName();
-					while (curClass != null) {
-						ClassMethodSummaries classSummaries = flows.getClassFlows(curClass);
-						if (classSummaries != null) {
-							// Check for flows in the current class
-							if (summaries.merge(flows.getMethodFlows(curClass, methodSig)))
-								return true;
-
-							// Check for interfaces
-							if (checkInterfacesFromSummary(methodSig, summaries, curClass))
-								return true;
-
-							curClass = classSummaries.getSuperClass();
-						} else
-							break;
-					}
-
-					return false;
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in a class in
-				 * the hierarchy of the given class
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The class for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean getSummariesHierarchy(final String methodSig, final ClassSummaries summaries,
-						SootClass clazz) {
-					// Don't try to look up the whole Java hierarchy
-					if (clazz == Scene.v().getSootClassUnsafe("java.lang.Object"))
-						return false;
-
-					// If the target is abstract and we haven't found any flows,
-					// we check for child classes. Since the summaries are class-specific and we
-					// don't really know which child class we're looking for, we have to merge the
-					// flows for all possible classes.
-					SootMethod targetMethod = clazz.getMethodUnsafe(methodSig);
-					if (!clazz.isConcrete() || targetMethod == null || !targetMethod.isConcrete()) {
-						Set<SootClass> childClasses = getAllChildClasses(clazz);
-						if (childClasses.size() > MAX_HIERARCHY_DEPTH)
-							return false;
-
-						boolean found = false;
-						for (SootClass childClass : childClasses) {
-							// Do we have support for the target class?
-							if (summaries.merge(flows.getMethodFlows(childClass, methodSig)))
-								found = true;
-
-							// Do we support any interface this class might have?
-							if (checkInterfaces(methodSig, summaries, childClass))
-								found = true;
-						}
-						return found;
-					}
-					return false;
-
-				}
-
-				/**
-				 * Checks whether we have summaries for the given method signature in the given
-				 * interface or any of its super-interfaces
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param clazz     The interface for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				private boolean checkInterfaces(String methodSig, ClassSummaries summaries, SootClass clazz) {
-					for (SootClass intf : clazz.getInterfaces()) {
-						// Directly check the interface
-						if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-							return true;
-
-						for (SootClass parent : getAllParentClasses(intf)) {
-							// Do we have support for the interface?
-							if (summaries.merge(flows.getMethodFlows(parent, methodSig)))
-								return true;
-						}
-					}
-
-					// We might not have hierarchy information in the scene, so let's check the
-					// summary itself
-					return checkInterfacesFromSummary(methodSig, summaries, clazz.getName());
-				}
-
-				/**
-				 * Checks for summaries on the interfaces implemented by the given class. This
-				 * method relies on the hierarchy data from the summary XML files, rather than
-				 * the Soot scene
-				 * 
-				 * @param methodSig The subsignature of the method for which to get summaries
-				 * @param summaries The summary object to which to add the discovered summaries
-				 * @param className The interface for which to look for summaries
-				 * @return True if summaries were found, false otherwise
-				 */
-				protected boolean checkInterfacesFromSummary(String methodSig, ClassSummaries summaries,
-						String className) {
-					List<String> interfaces = new ArrayList<>();
-					interfaces.add(className);
-					while (!interfaces.isEmpty()) {
-						final String intfName = interfaces.remove(0);
-						ClassMethodSummaries classSummaries = flows.getClassFlows(intfName);
-						if (classSummaries != null && classSummaries.hasInterfaces()) {
-							for (String intf : classSummaries.getInterfaces()) {
-								// Do we have a summary on the current interface?
-								if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-									return true;
-
-								// Recursively check for more interfaces
-								interfaces.add(intf);
-							}
-						}
-					}
-					return false;
-				}
-
-			});
-
-	/**
-	 * Query that retrieves summaries for a given class and method.
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	private static class SummaryQuery {
-
-		public final SootClass calleeClass;
-		public final SootClass declaredClass;
-		public final String subsignature;
-
-		public SummaryQuery(SootClass calleeClass, SootClass declaredClass, String subsignature) {
-			this.calleeClass = calleeClass;
-			this.declaredClass = declaredClass;
-			this.subsignature = subsignature;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(calleeClass.getName());
-			sb.append(": ");
-			sb.append(subsignature);
-			return sb.toString();
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((calleeClass == null) ? 0 : calleeClass.hashCode());
-			result = prime * result + ((declaredClass == null) ? 0 : declaredClass.hashCode());
-			result = prime * result + ((subsignature == null) ? 0 : subsignature.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SummaryQuery other = (SummaryQuery) obj;
-			if (calleeClass == null) {
-				if (other.calleeClass != null)
-					return false;
-			} else if (!calleeClass.equals(other.calleeClass))
-				return false;
-			if (declaredClass == null) {
-				if (other.declaredClass != null)
-					return false;
-			} else if (!declaredClass.equals(other.declaredClass))
-				return false;
-			if (subsignature == null) {
-				if (other.subsignature != null)
-					return false;
-			} else if (!subsignature.equals(other.subsignature))
-				return false;
-			return true;
-		}
-
-	}
-
-	/**
-	 * Response from a cache that provides flows for a given combination of class
-	 * and method
-	 * 
-	 * @author Steven Arzt
-	 *
-	 */
-	private static class SummaryResponse {
-
-		public final static SummaryResponse NOT_SUPPORTED = new SummaryResponse(null, false);
-		public final static SummaryResponse EMPTY_BUT_SUPPORTED = new SummaryResponse(null, true);
-
-		private final ClassSummaries classSummaries;
-		private final boolean isClassSupported;
-
-		public SummaryResponse(ClassSummaries classSummaries, boolean isClassSupported) {
-			this.classSummaries = classSummaries;
-			this.isClassSupported = isClassSupported;
-		}
-
-		@Override
-		public String toString() {
-			if (isClassSupported) {
-				if (classSummaries == null)
-					return "<Empty summary>";
-				else
-					return classSummaries.toString();
-			} else
-				return "<Class not supported>";
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((classSummaries == null) ? 0 : classSummaries.hashCode());
-			result = prime * result + (isClassSupported ? 1231 : 1237);
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			SummaryResponse other = (SummaryResponse) obj;
-			if (classSummaries == null) {
-				if (other.classSummaries != null)
-					return false;
-			} else if (!classSummaries.equals(other.classSummaries))
-				return false;
-			if (isClassSupported != other.isClassSupported)
-				return false;
-			return true;
-		}
-
-	}
 
 	/**
 	 * Handler that is used for injecting taints from callbacks implemented in user
@@ -440,7 +130,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 					}
 
 					// Apply the aggregated propagators
-					Set<AccessPath> resultAPs = applyFlowsIterative(flowsInTarget, new ArrayList<>(workSet));
+					boolean reverseFlows = manager.getConfig()
+							.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
+					Set<AccessPath> resultAPs = applyFlowsIterative(flowsInTarget, new ArrayList<>(workSet),
+							reverseFlows);
 
 					// Propagate the access paths
 					if (resultAPs != null && !resultAPs.isEmpty()) {
@@ -449,7 +142,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 							Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap,
 									rootPropagator.getStmt());
 							for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
-								manager.getForwardSolver().processEdge(
+								manager.getMainSolver().processEdge(
 										new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
 						}
 					}
@@ -511,7 +204,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		this.manager = manager;
 
 		// Load all classes for which we have summaries to signatures
-		Set<String> loadableClasses = flows.getLoadableClasses();
+		Set<String> loadableClasses = flows.getAllClassesWithSummaries();
 		if (loadableClasses != null) {
 			for (String className : loadableClasses)
 				loadClass(className);
@@ -520,16 +213,71 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		for (String className : flows.getSupportedClasses())
 			loadClass(className);
 
+		// Initialize the resolver that decides which summary is applicable to which
+		// call site
+		this.summaryResolver = new SummaryResolver(flows);
+
 		// Get the hierarchy
-		this.hierarchy = Scene.v().getActiveHierarchy();
-		this.fastHierarchy = Scene.v().getOrMakeFastHierarchy();
+		final Scene scene = Scene.v();
+		this.hierarchy = scene.getActiveHierarchy();
+		this.fastHierarchy = scene.getOrMakeFastHierarchy();
 
 		// Register the taint propagation handler
-		manager.getForwardSolver().setFollowReturnsPastSeedsHandler(new SummaryFRPSHandler());
+		manager.getMainSolver().setFollowReturnsPastSeedsHandler(new SummaryFRPSHandler());
 
 		// If we have a fallback wrapper, we need to initialize that one as well
 		if (fallbackWrapper != null)
 			fallbackWrapper.initialize(manager);
+	}
+
+	class HierarchyInjector implements PreAnalysisHandler {
+		@Override
+		public void onBeforeCallgraphConstruction() {
+			// Inject the hierarchy
+			for (String className : flows.getAllClassesWithSummaries()) {
+				SootClass sc = Scene.v().forceResolve(className, SootClass.SIGNATURES);
+				if (!sc.isPhantom())
+					continue;
+
+				ClassMethodSummaries summaries = flows.getClassFlows(className);
+				if (summaries == null)
+					continue;
+
+				// Some phantom classes are actually interfaces
+				if (summaries.hasInterfaceInfo()) {
+					if (summaries.isInterface())
+						sc.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
+					else
+						sc.setModifiers(sc.getModifiers() & ~Modifier.INTERFACE);
+				}
+
+				// Set the correct superclass
+				if (summaries.hasSuperclass()) {
+					final String superclassName = summaries.getSuperClass();
+					SootClass scSuperclass = Scene.v().forceResolve(superclassName, SootClass.SIGNATURES);
+					sc.setSuperclass(scSuperclass);
+				}
+
+				// Register the interfaces
+				if (summaries.hasInterfaces()) {
+					for (String intfName : summaries.getInterfaces()) {
+						SootClass scIntf = Scene.v().forceResolve(intfName, SootClass.SIGNATURES);
+						scIntf.setModifiers(sc.getModifiers() | Modifier.INTERFACE);
+						if (!sc.implementsInterface(intfName))
+							sc.addInterface(scIntf);
+					}
+				}
+			}
+		}
+
+		@Override
+		public void onAfterCallgraphConstruction() {
+			// NO-OP
+		}
+	}
+
+	public Collection<PreAnalysisHandler> getPreAnalysisHandlers() {
+		return Collections.singleton(new HierarchyInjector());
 	}
 
 	/**
@@ -538,7 +286,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * 
 	 * @param className The name of the class to load
 	 */
-	private void loadClass(String className) {
+	protected void loadClass(String className) {
 		SootClass sc = Scene.v().getSootClassUnsafe(className);
 		if (sc == null) {
 			sc = Scene.v().makeSootClass(className);
@@ -560,7 +308,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 *                            value of a method call, otherwise false
 	 * @return The set of taints derived from the given access path
 	 */
-	private Set<Taint> createTaintFromAccessPathOnCall(AccessPath ap, Stmt stmt, boolean matchReturnedValues) {
+	private Set<Taint> createTaintFromAccessPathOnCall(AccessPath ap, Stmt stmt, boolean matchReturnedValues,
+			ByReferenceBoolean killIncomingSource) {
 		Value base = getMethodBase(stmt);
 		Set<Taint> newTaints = null;
 
@@ -569,8 +318,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (newTaints == null)
 				newTaints = new HashSet<>();
 
-			newTaints.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+			newTaints.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+					ap.getTaintSubFields()));
 		}
 
 		// Check whether a parameter is tainted
@@ -580,18 +329,21 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				newTaints = new HashSet<>();
 
 			newTaints.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+					new AccessPathFragment(ap), ap.getTaintSubFields()));
 		}
 
 		// If we also match returned values, we must do this here
 		if (matchReturnedValues && stmt instanceof DefinitionStmt) {
 			DefinitionStmt defStmt = (DefinitionStmt) stmt;
 			if (defStmt.getLeftOp() == ap.getPlainValue()) {
+				// retVals are killed backwards
+				if (killIncomingSource != null)
+					killIncomingSource.value = true;
 				if (newTaints == null)
 					newTaints = new HashSet<>();
 
 				newTaints.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields()));
+						new AccessPathFragment(ap), ap.getTaintSubFields()));
 			}
 		}
 
@@ -617,8 +369,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				&& ap.getPlainValue() == sm.getActiveBody().getThisLocal()) {
 			if (res == null)
 				res = new HashSet<>();
-			res.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+			res.add(new Taint(SourceSinkType.Field, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+					ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether a parameter is tainted
@@ -627,7 +379,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (res == null)
 				res = new HashSet<>();
 			res.add(new Taint(SourceSinkType.Parameter, paramIdx, ap.getBaseType().toString(),
-					new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+					new AccessPathFragment(ap), ap.getTaintSubFields(), gap));
 		}
 
 		// Check whether the return value is tainted
@@ -636,8 +388,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (retStmt.getOp() == ap.getPlainValue()) {
 				if (res == null)
 					res = new HashSet<>();
-				res.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(),
-						new AccessPathFragment(ap.getFields(), ap.getFieldTypes()), ap.getTaintSubFields(), gap));
+				res.add(new Taint(SourceSinkType.Return, -1, ap.getBaseType().toString(), new AccessPathFragment(ap),
+						ap.getTaintSubFields(), gap));
 			}
 		}
 
@@ -652,11 +404,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param stmt The statement at which the access path shall be valid
 	 * @return The access path derived from the given taint
 	 */
-	protected AccessPath createAccessPathFromTaint(Taint t, Stmt stmt) {
+	protected AccessPath createAccessPathFromTaint(Taint t, Stmt stmt, boolean reverseFlows) {
 		// Convert the taints to Soot objects
 		SootField[] fields = safeGetFields(t.getAccessPath());
 		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
+		soot.jimple.infoflow.data.AccessPathFragment fragments[] = soot.jimple.infoflow.data.AccessPathFragment
+				.createFragmentArray(fields, types);
 
 		// If the taint is a return value, we taint the left side of the
 		// assignment
@@ -666,7 +420,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				return null;
 
 			DefinitionStmt defStmt = (DefinitionStmt) stmt;
-			return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), fields, baseType, types,
+			return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), baseType, fragments,
 					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 		}
 
@@ -674,12 +428,22 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// corresponding local
 		if (t.isParameter() && stmt.containsInvokeExpr()) {
 			InvokeExpr iexpr = stmt.getInvokeExpr();
-			Value paramVal = iexpr.getArg(t.getParameterIndex());
+			int paramIndex = t.getParameterIndex();
+
+			// If the caller is missing a corresponding argument
+			// then just quit here.
+			// Note that this can happen, e.g., because of the android lifecycle model
+			// where sometimes arguments/params get removed in native code which is
+			// not represented in the call-graph.
+			if (paramIndex >= iexpr.getArgCount())
+				return null;
+
+			Value paramVal = iexpr.getArg(paramIndex);
 			if (!AccessPath.canContainValue(paramVal))
 				return null;
 
-			return manager.getAccessPathFactory().createAccessPath(paramVal, fields, baseType, types,
-					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+			return manager.getAccessPathFactory().createAccessPath(paramVal, baseType, fragments, t.taintSubFields(),
+					false, true, ArrayTaintType.ContentsAndLength);
 		}
 
 		// If the taint is on the base value, we need to taint the base local
@@ -687,7 +451,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			final InvokeExpr iexpr = stmt.getInvokeExpr();
 			if (iexpr instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
-				return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), fields, baseType, types,
+				return manager.getAccessPathFactory().createAccessPath(iiexpr.getBase(), baseType, fragments,
 						t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 			} else if (iexpr instanceof StaticInvokeExpr) {
 				// For a static invocation, we apply field taints to the return value
@@ -695,8 +459,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (!(siexpr.getMethodRef().getReturnType() instanceof VoidType)) {
 					if (stmt instanceof DefinitionStmt) {
 						DefinitionStmt defStmt = (DefinitionStmt) stmt;
-						return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), fields, baseType,
-								types, t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
+						return manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), baseType, fragments,
+								t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength);
 					} else
 						return null;
 				}
@@ -715,26 +479,39 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param sm The method in which the access path shall be created
 	 * @return The access path derived from the given taint and method
 	 */
-	private AccessPath createAccessPathInMethod(Taint t, SootMethod sm) {
+	private Set<AccessPath> createAccessPathInMethod(Taint t, SootMethod sm) {
 		// Convert the taints to Soot objects
 		SootField[] fields = safeGetFields(t.getAccessPath());
 		Type[] types = safeGetTypes(t.getAccessPath(), fields);
 		Type baseType = TypeUtils.getTypeFromString(t.getBaseType());
+		soot.jimple.infoflow.data.AccessPathFragment fragments[] = soot.jimple.infoflow.data.AccessPathFragment
+				.createFragmentArray(fields, types);
 
 		// A return value cannot be propagated into a method
-		if (t.isReturn())
-			throw new RuntimeException("Unsupported taint type");
+		if (t.isReturn()) {
+			if (manager.getConfig().getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Forwards)
+				throw new RuntimeException("Unsupported taint type");
+			Set<AccessPath> aps = new HashSet<>();
+			for (Unit unit : sm.getActiveBody().getUnits()) {
+				if (!(unit instanceof ReturnStmt))
+					continue;
+
+				aps.add(manager.getAccessPathFactory().createAccessPath(((ReturnStmt) unit).getOp(), baseType,
+						fragments, t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength));
+			}
+			return aps;
+		}
 
 		if (t.isParameter()) {
 			Local l = sm.getActiveBody().getParameterLocal(t.getParameterIndex());
-			return manager.getAccessPathFactory().createAccessPath(l, fields, baseType, types, true, false, true,
-					ArrayTaintType.ContentsAndLength);
+			return Collections.singleton(manager.getAccessPathFactory().createAccessPath(l, baseType, fragments, true,
+					false, true, ArrayTaintType.ContentsAndLength));
 		}
 
 		if (t.isField() || t.isGapBaseObject()) {
 			Local l = sm.getActiveBody().getThisLocal();
-			return manager.getAccessPathFactory().createAccessPath(l, fields, baseType, types, true, false, true,
-					ArrayTaintType.ContentsAndLength);
+			return Collections.singleton(manager.getAccessPathFactory().createAccessPath(l, baseType, fragments, true,
+					false, true, ArrayTaintType.ContentsAndLength));
 		}
 
 		throw new RuntimeException("Failed to convert taint " + t);
@@ -751,43 +528,73 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 
 		// Compute the wrapper taints for the current method
-		final SootMethod callee = stmt.getInvokeExpr().getMethod();
-		Set<AccessPath> res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
+		final InvokeExpr inv = stmt.getInvokeExpr();
+		SootMethod callee = inv.getMethod();
+		Set<AccessPath> res;
+		if (inv instanceof DynamicInvokeExpr) {
+			final DynamicInvokeExpr dyn = (DynamicInvokeExpr) inv;
+			SootMethod m = dyn.getBootstrapMethodRef().tryResolve();
+			if (m == null)
+				return null;
+			callee = m;
+		}
+		res = computeTaintsForMethod(stmt, d1, taintedAbs, callee, killIncomingTaint, classSupported);
+		boolean wasEqualToIncoming = false;
 
 		// Create abstractions from the access paths
 		if (res != null && !res.isEmpty()) {
 			if (resAbs == null)
 				resAbs = new HashSet<>();
-			for (AccessPath ap : res)
+			for (AccessPath ap : res) {
 				resAbs.add(taintedAbs.deriveNewAbstraction(ap, stmt));
+				if (ap.equals(taintedAbs.getAccessPath()))
+					wasEqualToIncoming = true;
+			}
 		}
 
 		// If we have no data flows, we can abort early
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
-			wrapperMisses.incrementAndGet();
+			// Is this method explicitly excluded?
+			if (!this.flows.isMethodExcluded(callee.getDeclaringClass().getName(), callee.getSubSignature())) {
+				//				wrapperMisses.incrementAndGet();
 
-			if (!classSupported.value)
-				reportMissingMethod(callee);
-
-			if (classSupported.value)
-				return Collections.singleton(taintedAbs);
-			else {
-				if (fallbackWrapper == null)
-					return null;
+				if (classSupported.value)
+					return Collections.singleton(taintedAbs);
 				else {
-					Set<Abstraction> fallbackTaints = fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
-					return fallbackTaints;
+					reportMissingSummary(callee, stmt, taintedAbs);
+					return fallbackWrapper != null ? fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs) : null;
 				}
 			}
 		}
 
 		// We always retain the incoming abstraction unless it is explicitly
 		// cleared
-		if (!killIncomingTaint.value)
-			resAbs.add(taintedAbs);
+		if (!killIncomingTaint.value) {
+			if (resAbs == null)
+				return Collections.singleton(taintedAbs);
+			if (!wasEqualToIncoming)
+				resAbs.add(taintedAbs);
+		}
 		return resAbs;
 	}
 
+	/**
+	 * Method that is called when no summary exists for a given method
+	 * 
+	 * @param method   The method for which no summary exists
+	 * @param stmt     The statement that calls the method for which no summary
+	 *                 exists
+	 * @param incoming The incoming taint abstraction
+	 */
+	protected void reportMissingSummary(SootMethod method, Stmt stmt, Abstraction incoming) {
+		reportMissingMethod(method);
+	}
+
+	/**
+	 * Method that is called when no summary exists for a given method
+	 * 
+	 * @param method Method to be reported as missing
+	 */
 	protected void reportMissingMethod(SootMethod method) {
 		if (reportMissingSummaries
 				&& SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass().getName()))
@@ -812,7 +619,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs,
 			final SootMethod method, ByReferenceBoolean killIncomingTaint, ByReferenceBoolean classSupported) {
-		wrapperHits.incrementAndGet();
+		//		wrapperHits.incrementAndGet();
 
 		// Get the cached data flows
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
@@ -820,7 +627,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			return null;
 
 		// Create a level-0 propagator for the initially tainted access path
-		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, false);
+		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, false, null);
 		if (taintsFromAP == null || taintsFromAP.isEmpty())
 			return null;
 
@@ -856,7 +663,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			}
 
 			// Apply the data flows until we reach a fixed point
-			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList);
+			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, false);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
@@ -874,17 +681,17 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param flowsInCallee The flow summaries for the given callee
 	 * @param workList      The incoming propagators on which to apply the flow
 	 *                      summaries
-	 * @param aliasingQuery True if this query is for aliases, false if it is for
-	 *                      normal taint propagation.
+	 * @param reverseFlows  True if flows should be applied reverse. Useful for
+	 *                      back- wards analysis
 	 * @return The set of outgoing access paths
 	 */
-	private Set<AccessPath> applyFlowsIterative(MethodSummaries flowsInCallee, List<AccessPathPropagator> workList) {
+	private Set<AccessPath> applyFlowsIterative(MethodSummaries flowsInCallee, List<AccessPathPropagator> workList,
+			boolean reverseFlows) {
 		Set<AccessPath> res = null;
 		Set<AccessPathPropagator> doneSet = new HashSet<AccessPathPropagator>(workList);
 		while (!workList.isEmpty()) {
 			final AccessPathPropagator curPropagator = workList.remove(0);
 			final GapDefinition curGap = curPropagator.getGap();
-
 			// Make sure we don't have invalid data
 			if (curGap != null && curPropagator.getParent() == null)
 				throw new RuntimeException("Gap flow without parent detected");
@@ -911,6 +718,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 			// Apply the flow summaries for other libraries
 			if (flowsInTarget != null && !flowsInTarget.isEmpty()) {
+				if (reverseFlows)
+					flowsInTarget = flowsInTarget.reverse();
 				for (MethodFlow flow : flowsInTarget) {
 					// Apply the flow summary
 					AccessPathPropagator newPropagator = applyFlow(flow, curPropagator);
@@ -928,7 +737,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 					// Propagate it
 					if (newPropagator.getParent() == null && newPropagator.getTaint().getGap() == null) {
-						AccessPath ap = createAccessPathFromTaint(newPropagator.getTaint(), newPropagator.getStmt());
+						AccessPath ap = createAccessPathFromTaint(newPropagator.getTaint(), newPropagator.getStmt(),
+								reverseFlows);
 						if (ap == null)
 							continue;
 						else {
@@ -977,6 +787,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		// gaps
 		if (flow.source().getGap() != null && flow.source().getType() == SourceSinkType.Return)
 			return null;
+		if (flow.sink().getGap() != null && flow.sink().getType() == SourceSinkType.Return)
+			return null;
 
 		// Reverse the flow if necessary
 		return flow.reverse();
@@ -1019,8 +831,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			}
 		}
 
-		AccessPath ap = createAccessPathInMethod(propagator.getTaint(), implementor);
-		Abstraction abs = new Abstraction(null, ap, null, null, false, false);
+		Set<AccessPath> aps = createAccessPathInMethod(propagator.getTaint(), implementor);
+		aps.remove(null);
+		if (aps.isEmpty())
+			return null;
+		Set<Abstraction> absSet = new HashSet<>();
+		aps.forEach(ap -> absSet.add(new Abstraction(null, ap, null, null, false, false)));
+		absSet.remove(null);
 
 		// We need to pop the last gap element off the stack
 		AccessPathPropagator parent = safePopParent(propagator);
@@ -1028,37 +845,41 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
-		Set<Pair<Unit, Abstraction>> endSummary = manager.getForwardSolver().endSummary(implementor, abs);
-		if (endSummary != null && !endSummary.isEmpty()) {
-			for (Pair<Unit, Abstraction> pair : endSummary) {
-				if (outgoingTaints == null)
-					outgoingTaints = new HashSet<>();
+		for (Abstraction abs : absSet) {
+			Set<EndSummary<Unit, Abstraction>> endSummary = manager.getMainSolver().endSummary(implementor, abs);
+			if (endSummary != null && !endSummary.isEmpty()) {
+				for (EndSummary<Unit, Abstraction> pair : endSummary) {
+					if (outgoingTaints == null)
+						outgoingTaints = new HashSet<>();
 
-				// Create the taint that corresponds to the access path leaving
-				// the user-code method
-				Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.getO2().getAccessPath(),
-						(Stmt) pair.getO1(), propagator.getGap());
-				if (newTaints != null)
-					for (Taint newTaint : newTaints) {
-						AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent,
-								propagator.getParent() == null ? null : propagator.getParent().getStmt(),
-								propagator.getParent() == null ? null : propagator.getParent().getD1(),
-								propagator.getParent() == null ? null : propagator.getParent().getD2());
-						outgoingTaints.add(newPropagator);
+					// Create the taint that corresponds to the access path leaving
+					// the user-code method
+					Set<Taint> newTaints = createTaintFromAccessPathOnReturn(pair.d4.getAccessPath(), (Stmt) pair.eP,
+							propagator.getGap());
+					if (newTaints != null) {
+						for (Taint newTaint : newTaints) {
+							AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent,
+									propagator.getParent() == null ? null : propagator.getParent().getStmt(),
+									propagator.getParent() == null ? null : propagator.getParent().getD1(),
+									propagator.getParent() == null ? null : propagator.getParent().getD2());
+							outgoingTaints.add(newPropagator);
+						}
 					}
+				}
+				continue;
 			}
-			return outgoingTaints;
+
+			// Register the new context so that we can get the taints back
+			this.userCodeTaints.put(new Pair<>(abs, implementor), propagator);
+
+			// if we don't have a summary, we need to inject the taints into the solver
+			for (Unit sP : manager.getICFG().getStartPointsOf(implementor)) {
+				PathEdge<Unit, Abstraction> edge = new PathEdge<>(abs, sP, abs);
+				manager.getMainSolver().processEdge(edge);
+			}
 		}
 
-		// Create a new edge at the start point of the callee
-		for (Unit sP : manager.getICFG().getStartPointsOf(implementor)) {
-			PathEdge<Unit, Abstraction> edge = new PathEdge<>(abs, sP, abs);
-			manager.getForwardSolver().processEdge(edge);
-		}
-
-		// Register the new context so that we can get the taints back
-		this.userCodeTaints.put(new Pair<>(abs, implementor), propagator);
-		return null;
+		return outgoingTaints;
 	}
 
 	private AccessPathPropagator safePopParent(AccessPathPropagator curPropagator) {
@@ -1130,11 +951,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 *         otherwise null. Note that this is a set of sets, one set per possible
 	 *         callee.
 	 */
-	private ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
+	protected ClassSummaries getFlowSummariesForMethod(Stmt stmt, final SootMethod method, Abstraction taintedAbs,
 			ByReferenceBoolean classSupported) {
 		final String subsig = method.getSubSignature();
-		if (!flows.mayHaveSummaryForMethod(subsig))
-			return ClassSummaries.EMPTY_SUMMARIES;
 
 		ClassSummaries classSummaries = null;
 		if (!method.isConstructor() && !method.isStaticInitializer() && !method.isStatic()) {
@@ -1154,34 +973,57 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			}
 		}
 
-		// We may have a call such as
-		// x = editable.toString();
-		// In that case, the callee is Object.toString(), since in the stub Android
-		// JAR, the class android.text.Editable does not override toString(). On a
-		// real device, it does. Consequently, we have a summary in the "Editable"
-		// class. To handle such weird cases, we walk the class hierarchy based on
-		// the declared type of the base object.
-		SootClass declaredClass = null;
-		if (stmt != null && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
-			Type baseType = iinv.getBase().getType();
-			if (baseType instanceof RefType)
-				declaredClass = ((RefType) baseType).getSootClass();
-		}
-
 		// Check the direct callee
 		if (classSummaries == null || classSummaries.isEmpty()) {
-			SummaryResponse response = methodToImplFlows
-					.getUnchecked(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
+			SootClass declaredClass = getSummaryDeclaringClass(stmt,
+					taintedAbs == null ? null : taintedAbs.getAccessPath());
+			SummaryResponse response = summaryResolver
+					.resolve(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
 			if (response != null) {
 				if (classSupported != null)
-					classSupported.value = response.isClassSupported;
+					classSupported.value = response.isClassSupported();
 				classSummaries = new ClassSummaries();
-				classSummaries.merge(response.classSummaries);
+				classSummaries.merge(response.getClassSummaries());
 			}
 		}
 
 		return classSummaries;
+	}
+
+	/**
+	 * Gets the class that likely declares the method that is being called by the
+	 * given statement
+	 * 
+	 * @param stmt      The invocation statement
+	 * @param taintedAP The tainted access path
+	 * @return The class in which to look for a summary for the called method
+	 */
+	protected SootClass getSummaryDeclaringClass(Stmt stmt, AccessPath taintedAP) {
+		Type declaredType = null;
+		if (stmt != null) {
+			if (stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
+				// If the base object of the call is tainted, we may have a more precise type in
+				// the access path
+				InstanceInvokeExpr iinv = (InstanceInvokeExpr) stmt.getInvokeExpr();
+				if (taintedAP != null && iinv.getBase() == taintedAP.getPlainValue()) {
+					declaredType = taintedAP.getBaseType();
+				}
+
+				// We may have a call such as
+				// x = editable.toString();
+				// In that case, the callee is Object.toString(), since in the stub Android
+				// JAR, the class android.text.Editable does not override toString(). On a
+				// real device, it does. Consequently, we have a summary in the "Editable"
+				// class. To handle such weird cases, we walk the class hierarchy based on
+				// the declared type of the base object.
+				Type baseType = iinv.getBase().getType();
+				declaredType = manager.getTypeUtils().getMorePreciseType(declaredType, baseType);
+			} else if (stmt.getInvokeExpr() instanceof DynamicInvokeExpr) {
+				return ((DynamicInvokeExpr) stmt.getInvokeExpr()).getBootstrapMethodRef().getDeclaringClass();
+
+			}
+		}
+		return declaredType instanceof RefType ? ((RefType) declaredType).getSootClass() : null;
 	}
 
 	/**
@@ -1216,68 +1058,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		return implementors;
-	}
-
-	/**
-	 * Gets all child classes of the given class. If the given class is an
-	 * interface, all implementors of this interface and its all of child-
-	 * interfaces are returned.
-	 * 
-	 * @param sc The class or interface for which to get the children
-	 * @return The children of the given class or interface
-	 */
-	private Set<SootClass> getAllChildClasses(SootClass sc) {
-		List<SootClass> workList = new ArrayList<SootClass>();
-		workList.add(sc);
-
-		Set<SootClass> doneSet = new HashSet<SootClass>();
-		Set<SootClass> classes = new HashSet<>();
-
-		while (!workList.isEmpty()) {
-			SootClass curClass = workList.remove(0);
-			if (!doneSet.add(curClass))
-				continue;
-
-			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getImplementersOf(curClass));
-				workList.addAll(hierarchy.getSubinterfacesOf(curClass));
-			} else {
-				workList.addAll(hierarchy.getSubclassesOf(curClass));
-				classes.add(curClass);
-			}
-		}
-
-		return classes;
-	}
-
-	/**
-	 * Gets all parent classes of the given class. If the given class is an
-	 * interface, all parent implementors of this interface are returned.
-	 * 
-	 * @param sc The class or interface for which to get the parents
-	 * @return The parents of the given class or interface
-	 */
-	private Set<SootClass> getAllParentClasses(SootClass sc) {
-		List<SootClass> workList = new ArrayList<SootClass>();
-		workList.add(sc);
-
-		Set<SootClass> doneSet = new HashSet<SootClass>();
-		Set<SootClass> classes = new HashSet<>();
-
-		while (!workList.isEmpty()) {
-			SootClass curClass = workList.remove(0);
-			if (!doneSet.add(curClass))
-				continue;
-
-			if (curClass.isInterface()) {
-				workList.addAll(hierarchy.getSuperinterfacesOf(curClass));
-			} else {
-				workList.addAll(hierarchy.getSuperclassesOf(curClass));
-				classes.add(curClass);
-			}
-		}
-
-		return classes;
 	}
 
 	/**
@@ -1342,7 +1122,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (newTaint == null)
 			return null;
 
-		AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent, stmt, d1, d2);
+		AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent, stmt, d1, d2,
+				propagator.isInversePropagator());
 		return newPropagator;
 	}
 
@@ -1361,6 +1142,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				if (compareFields(taint, flowSource))
 					return true;
 			}
+			if (flowSource.getParameterIndex() == FlowSource.ANY_PARAMETER)
+				return true;
 		} else if (flowSource.isField()) {
 			// Flows from a field can either be applied to the same field or
 			// the base object in total
@@ -1372,7 +1155,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		else if (flowSource.isThis() && taint.isField())
 			return true;
 		// A value can also flow from the return value of a gap to somewhere
-		else if (flowSource.isReturn() && flowSource.getGap() != null && taint.getGap() != null
+		else if (flowSource.isReturn() && flowSource.getGap() != null && taint.getGap() != null && taint.isReturn()
 				&& compareFields(taint, flowSource))
 			return true;
 		// For aliases, we over-approximate flows from the return edge to all
@@ -1481,8 +1264,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * @param fieldSig The signature of the field to retrieve
 	 * @return The field with the given signature if it exists, otherwise null
 	 */
-	private SootField safeGetField(String fieldSig) {
-		if (fieldSig == null || fieldSig.equals(""))
+	protected SootField safeGetField(String fieldSig) {
+		if (fieldSig == null || fieldSig.isEmpty())
 			return null;
 
 		SootField sf = Scene.v().grabField(fieldSig);
@@ -1490,21 +1273,21 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			return sf;
 
 		// This field does not exist, so we need to create it
-		String className = fieldSig.substring(1);
-		className = className.substring(0, className.indexOf(":"));
+		int colonIdx = fieldSig.indexOf(":");
+		String className = fieldSig.substring(1, colonIdx);
 		SootClass sc = Scene.v().getSootClassUnsafe(className, true);
 		if (sc.resolvingLevel() < SootClass.SIGNATURES && !sc.isPhantom()) {
 			System.err.println("WARNING: Class not loaded: " + sc);
 			return null;
 		}
 
-		String type = fieldSig.substring(fieldSig.indexOf(": ") + 2);
-		type = type.substring(0, type.indexOf(" "));
+		String typeAndName = fieldSig.substring(colonIdx + 2, fieldSig.length() - 1);
+		int spaceIdx = typeAndName.indexOf(" ");
+		String type = typeAndName.substring(0, spaceIdx);
+		String fieldName = typeAndName.substring(spaceIdx + 1);
 
-		String fieldName = fieldSig.substring(fieldSig.lastIndexOf(" ") + 1);
-		fieldName = fieldName.substring(0, fieldName.length() - 1);
-
-		return Scene.v().makeFieldRef(sc, fieldName, TypeUtils.getTypeFromString(type), false).resolve();
+		SootFieldRef ref = Scene.v().makeFieldRef(sc, fieldName, TypeUtils.getTypeFromString(type), false);
+		return ref.resolve();
 	}
 
 	/**
@@ -1657,18 +1440,21 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (flowSink.getType() == SourceSinkType.GapBaseObject && remainingFields != null && !remainingFields.isEmpty())
 			sourceSinkType = SourceSinkType.Field;
 
-		// Compute the new base type
-		Type newBaseType = TypeUtils.getMorePreciseType(taintType, sinkType);
-		if (newBaseType == null)
-			newBaseType = sinkType;
 		String sBaseType = sinkType == null ? null : "" + sinkType;
+		if (!flow.getIgnoreTypes()) {
+			// Compute the new base type
+			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
+			if (newBaseType == null)
+				newBaseType = sinkType;
 
-		// Set the correct type. In case x -> b.x, the new type is not the type
-		// of b, but of the field x.
-		if (flowSink.hasAccessPath()) {
-			if (appendedFields != null)
-				appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1, "" + newBaseType);
-			sBaseType = flowSink.getBaseType();
+			// Set the correct type. In case x -> b.x, the new type is not the type
+			// of b, but of the field x.
+			if (flowSink.hasAccessPath()) {
+				if (appendedFields != null)
+					appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1,
+							String.valueOf(newBaseType));
+				sBaseType = flowSink.getBaseType();
+			}
 		}
 
 		// Taint the correct fields
@@ -1702,13 +1488,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	protected boolean isCutSubFields(MethodFlow flow) {
 		Boolean cut = flow.getCutSubFields();
-		Boolean typeChecking = flow.getTypeChecking();
-		if (cut == null) {
-			if (typeChecking != null)
-				return !typeChecking.booleanValue();
-			return false;
-		}
-		return cut.booleanValue();
+		return cut != null && cut.booleanValue();
 	}
 
 	/**
@@ -1808,13 +1588,17 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	@Override
 	public boolean isExclusive(Stmt stmt, Abstraction taintedPath) {
 		// If we directly support the callee, we are exclusive in any case
-		if (supportsCallee(stmt))
+		if (supportsCallee(stmt)) {
+			wrapperHits.getAndIncrement();
 			return true;
+		}
 
 		// If the fallback wrapper supports the method and is exclusive for it,
 		// we are as well
-		if (fallbackWrapper != null && fallbackWrapper.isExclusive(stmt, taintedPath))
+		if (fallbackWrapper != null && fallbackWrapper.isExclusive(stmt, taintedPath)) {
+			wrapperHits.getAndIncrement();
 			return true;
+		}
 
 		// We may also be exclusive for a complete class
 		if (stmt.containsInvokeExpr()) {
@@ -1824,32 +1608,44 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				// Are the class flows configured to be exclusive?
 				final String targetClassName = targetClass.getName();
 				ClassMethodSummaries cms = flows.getClassFlows(targetClassName);
-				if (cms != null && cms.isExclusiveForClass())
+				if (cms != null && cms.isExclusiveForClass()) {
+					wrapperHits.getAndIncrement();
 					return true;
+				}
 
 				// Check for classes excluded by meta data
 				ClassSummaries summaries = flows.getSummaries();
 				SummaryMetaData metaData = summaries.getMetaData();
 				if (metaData != null) {
-					if (metaData.isClassExclusive(targetClassName))
+					if (metaData.isClassExclusive(targetClassName)) {
+						wrapperHits.getAndIncrement();
 						return true;
+					}
 				}
 			}
 		}
-
+		wrapperMisses.getAndIncrement();
 		return false;
 	}
 
 	@Override
 	public boolean supportsCallee(SootMethod method) {
-		// Check whether we directly support that class. We assume that if we
-		// have some summary for that class, we have all summaries for that
-		// class.
+		// Check whether we directly support that class
 		SootClass declClass = method.getDeclaringClass();
-		if (declClass != null && flows.supportsClass(declClass.getName()))
+		if (declClass == null)
+			return false;
+
+		ClassMethodSummaries cms = flows.getClassFlows(declClass.getName());
+		if (cms == null)
+			return false;
+
+		// We assume for exclusive classes that we have all summaries for that class.
+		if (cms.isExclusiveForClass())
 			return true;
 
-		return false;
+		// Otherwise, we check whether we have a summary for the method.
+		MethodSummaries summaries = cms.getMethodSummaries().filterForMethod(method.getSubSignature());
+		return summaries != null && !summaries.isEmpty();
 	}
 
 	@Override
@@ -1905,10 +1701,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, null);
 
 		// If we have no data flows, we can abort early
-		if (flowsInCallees.isEmpty()) {
+		if (flowsInCallees == null || flowsInCallees.isEmpty()) {
 			if (fallbackWrapper == null)
 				return null;
 			else
@@ -1916,15 +1712,18 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		// Create a level-0 propagator for the initially tainted access path
-		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, true);
+		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, true, null);
 		if (taintsFromAP == null || taintsFromAP.isEmpty())
 			return Collections.emptySet();
 
 		Set<AccessPath> res = null;
 		for (String className : flowsInCallees.getClasses()) {
 			List<AccessPathPropagator> workList = new ArrayList<AccessPathPropagator>();
+
+			boolean reverseFlows = manager.getConfig()
+					.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
 			for (Taint taint : taintsFromAP)
-				workList.add(new AccessPathPropagator(taint, null, null, stmt, d1, taintedAbs, true));
+				workList.add(new AccessPathPropagator(taint, null, null, stmt, d1, taintedAbs, !reverseFlows));
 
 			// Get the flows in this class
 			ClassMethodSummaries classFlows = flowsInCallees.getClassSummaries(className);
@@ -1937,7 +1736,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				continue;
 
 			// Apply the data flows until we reach a fixed point
-			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList);
+			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, false);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
@@ -1997,12 +1796,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
 
+		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 		// Get the cached data flows
 		final SootMethod method = stmt.getInvokeExpr().getMethod();
-		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, null);
+		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
 
 		// If we have no data flows, we can abort early
 		if (flowsInCallees.isEmpty()) {
+			if (classSupported.value)
+				return Collections.singleton(taintedAbs);
+
 			if (fallbackWrapper != null && fallbackWrapper instanceof IReversibleTaintWrapper)
 				return ((IReversibleTaintWrapper) fallbackWrapper).getInverseTaintsForMethod(stmt, d1, taintedAbs);
 			else
@@ -2010,16 +1813,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		// Create a level-0 propagator for the initially tainted access path
-		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, true);
+		ByReferenceBoolean killIncomingTaint = new ByReferenceBoolean();
+		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, true,
+				killIncomingTaint);
 		if (taintsFromAP == null || taintsFromAP.isEmpty())
 			return Collections.emptySet();
 
 		Set<AccessPath> res = null;
 		for (String className : flowsInCallees.getClasses()) {
-			List<AccessPathPropagator> workList = new ArrayList<AccessPathPropagator>();
-			for (Taint taint : taintsFromAP)
-				workList.add(new AccessPathPropagator(taint, null, null, stmt, d1, taintedAbs, true));
-
 			// Get the flows in this class
 			ClassMethodSummaries classFlows = flowsInCallees.getClassSummaries(className);
 			if (classFlows == null)
@@ -2030,11 +1831,22 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (flowsInCallee == null || flowsInCallee.isEmpty())
 				continue;
 
-			// Since we are scanning backwards, we need to reverse the flows
-			flowsInCallee = flowsInCallee.reverse();
+			List<AccessPathPropagator> workList = new ArrayList<AccessPathPropagator>();
+			for (Taint taint : taintsFromAP) {
+				if (!killIncomingTaint.value && flowsInCallee.hasClears()) {
+					for (MethodClear clear : flowsInCallee.getAllClears()) {
+						if (flowMatchesTaint(clear.getClearDefinition(), taint)) {
+							killIncomingTaint.value = true;
+							break;
+						}
+					}
+				}
+
+				workList.add(new AccessPathPropagator(taint, null, null, stmt, d1, taintedAbs, true));
+			}
 
 			// Apply the data flows until we reach a fixed point
-			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList);
+			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, true);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
@@ -2043,12 +1855,17 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		}
 
 		// We always retain the incoming taint
-		if (res == null || res.isEmpty())
+		if (res == null || res.isEmpty()) {
+			// except it is overwritten
+			if (killIncomingTaint.value)
+				return null;
 			return Collections.singleton(taintedAbs);
+		}
 
 		// Create abstractions from the access paths
 		Set<Abstraction> resAbs = new HashSet<>(res.size() + 1);
-		resAbs.add(taintedAbs);
+		if (!killIncomingTaint.value)
+			resAbs.add(taintedAbs);
 		for (AccessPath ap : res) {
 			Abstraction newAbs = taintedAbs.deriveNewAbstraction(ap, stmt);
 			newAbs.setCorrespondingCallSite(stmt);

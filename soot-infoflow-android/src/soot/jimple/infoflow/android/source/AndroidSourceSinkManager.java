@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.source;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,10 +27,12 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
+import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
@@ -87,8 +90,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @param sinks   The list of sink methods
 	 * @param config  The configuration of the data flow analyzer
 	 */
-	public AndroidSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, InfoflowAndroidConfiguration config) {
+	public AndroidSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, InfoflowAndroidConfiguration config) {
 		this(sources, sinks, Collections.<AndroidCallbackDefinition>emptySet(), config, null);
 	}
 
@@ -111,8 +114,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @param layoutControls  A map from reference identifiers to the respective
 	 *                        Android layout controls
 	 */
-	public AndroidSourceSinkManager(Set<? extends ISourceSinkDefinition> sources,
-			Set<? extends ISourceSinkDefinition> sinks, Set<AndroidCallbackDefinition> callbackMethods,
+	public AndroidSourceSinkManager(Collection<? extends ISourceSinkDefinition> sources,
+			Collection<? extends ISourceSinkDefinition> sinks, Set<AndroidCallbackDefinition> callbackMethods,
 			InfoflowAndroidConfiguration config, Map<Integer, AndroidLayoutControl> layoutControls) {
 		super(sources, sinks, callbackMethods, config);
 		this.layoutControls = layoutControls;
@@ -204,7 +207,7 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 						if (tag instanceof IntegerConstantValueTag)
 							return ((IntegerConstantValueTag) tag).getIntValue();
 						else
-							logger.error("Constant %s was of unexpected type", field.toString());
+							logger.error(String.format("Constant %s was of unexpected type", field.toString()));
 				} else if (assign.getRightOp() instanceof InvokeExpr) {
 					InvokeExpr inv = (InvokeExpr) assign.getRightOp();
 					if (inv.getMethod().getName().equals("getIdentifier")
@@ -214,7 +217,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 						// well-known
 						// Android API method for resource handling
 						if (inv.getArgCount() != 3) {
-							logger.error("Invalid parameter count (%d) for call to getIdentifier", inv.getArgCount());
+							logger.error(String.format("Invalid parameter count (%d) for call to getIdentifier",
+									inv.getArgCount()));
 							return null;
 						}
 
@@ -228,13 +232,17 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 							resName = ((StringConstant) inv.getArg(0)).value;
 						if (inv.getArg(1) instanceof StringConstant)
 							resID = ((StringConstant) inv.getArg(1)).value;
-						if (inv.getArg(2) instanceof StringConstant)
-							packageName = ((StringConstant) inv.getArg(2)).value;
-						else if (inv.getArg(2) instanceof Local)
-							packageName = findLastStringAssignment(stmt, (Local) inv.getArg(2), cfg);
+
+						Value thirdArg = inv.getArg(2);
+						if (thirdArg instanceof StringConstant)
+							packageName = ((StringConstant) thirdArg).value;
+						else if (thirdArg instanceof Local)
+							packageName = findLastStringAssignment(stmt, (Local) thirdArg, cfg);
+						else if (thirdArg instanceof NullConstant)
+							return null;
 						else {
-							logger.error("Unknown parameter type %s in call to getIdentifier",
-									inv.getArg(2).getClass().getName());
+							logger.error(String.format("Unknown parameter type %s in call to getIdentifier",
+									inv.getArg(2).getClass().getName()));
 							return null;
 						}
 
@@ -388,7 +396,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 
 		// We need special treatment for the Android support classes
 		if (!isResourceCall) {
-			if (callee.getDeclaringClass().getName().startsWith("android.support.v")
+			if ((callee.getDeclaringClass().getName().startsWith("android.support.v")
+					|| callee.getDeclaringClass().getName().startsWith("androidx."))
 					&& callee.getSubSignature().equals(smActivityFindViewById.getSubSignature()))
 				isResourceCall = true;
 		}
@@ -417,11 +426,12 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	}
 
 	@Override
-	protected ISourceSinkDefinition getSinkDefinition(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
-		ISourceSinkDefinition definition = super.getSinkDefinition(sCallSite, manager, ap);
-		if (definition != null)
-			return definition;
+	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+		Collection<ISourceSinkDefinition> definitions = super.getSinkDefinitions(sCallSite, manager, ap);
+		if (definitions.size() > 0)
+			return definitions;
 
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>();
 		if (sCallSite.containsInvokeExpr()) {
 			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
 			final String subSig = callee.getSubSignature();
@@ -446,16 +456,42 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 					if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
 						SootMethod sm = clazz.getMethodUnsafe(subSig);
 						if (sm != null) {
-							ISourceSinkDefinition def = this.sinkMethods.get(sm);
-							if (def != null)
-								return def;
+							Collection<ISourceSinkDefinition> defs = this.sinkMethods.get(sm);
+							sinkDefs.addAll(defs);
 							break;
 						}
 					}
 				}
 			}
 		}
-		return null;
+		return sinkDefs;
+	}
+
+	@Override
+	protected Collection<ISourceSinkDefinition> getInverseSinkDefinition(Stmt sCallSite, IInfoflowCFG cfg) {
+		Collection<ISourceSinkDefinition> definition = super.getInverseSinkDefinition(sCallSite, cfg);
+		if (definition.size() > 0)
+			return definition;
+
+		HashSet<ISourceSinkDefinition> sinkDefs = new HashSet<>();
+		if (sCallSite.containsInvokeExpr()) {
+			final SootMethod callee = sCallSite.getInvokeExpr().getMethod();
+			final String subSig = callee.getSubSignature();
+			final SootClass sc = callee.getDeclaringClass();
+
+			for (SootClass clazz : iccBaseClasses) {
+				if (Scene.v().getOrMakeFastHierarchy().isSubclass(sc, clazz)) {
+					SootMethod sm = clazz.getMethodUnsafe(subSig);
+					if (sm != null) {
+						Collection<ISourceSinkDefinition> adefs = this.sinkMethods.get(sm);
+						sinkDefs.addAll(adefs);
+						break;
+					}
+				}
+			}
+		}
+
+		return sinkDefs;
 	}
 
 	@Override

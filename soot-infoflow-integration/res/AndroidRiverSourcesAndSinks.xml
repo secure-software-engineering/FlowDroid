@@ -1,0 +1,2449 @@
+<sinkSources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:schemaLocation="SourcesAndSinks.xsd">
+
+	<category id="OUTPUT_WRITING">
+		<method signature="java.io.PrintWriter: void print(boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(char)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(long)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(float)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(double)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(char[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void print(java.lang.Object)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(char)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(long)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(float)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(double)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(char[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: void println(java.lang.Object)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.lang.String,java.lang.Object[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: java.io.PrintWriter printf(java.util.Locale,java.lang.String,java.lang.Object[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: java.io.PrintWriter format(java.lang.String,java.lang.Object[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.PrintWriter: java.io.PrintWriter format(java.util.Locale,java.lang.String,java.lang.Object[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: java.io.Writer append(java.lang.CharSequence)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: java.io.Writer append(java.lang.CharSequence,int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: java.io.Writer append(char)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: void write(char[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: void write(char[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: void write(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: void write(java.lang.String,int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.Writer: void write(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.StringWriter" />
+				<excludeClassName className="java.io.CharArrayWriter" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.OutputStream: void write(byte[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.OutputStream: void write(byte[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.OutputStream: void write(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+
+		<method signature="java.io.ObjectOutputStream: void writeBoolean(boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeByte(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeBytes(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeChar(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeChars(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeDouble(double)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeFloat(float)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeInt(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeLong(long)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeObject(java.lang.Object)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeShort(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeUnshared(java.lang.Object)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="java.io.ObjectOutputStream: void writeUTF(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeAscii(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBoolean(boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBooleans(boolean[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(byte)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeByte(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[])">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeBytes(byte[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChar(char)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeChars(char[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeDouble(double[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloat(float)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeFloat(float[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInt(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeInts(int[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLong(long)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeLongs(long[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShort(int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeShorts(short[],int,int)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: void writeString(java.lang.String)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarInt(int,boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarIntFlag(boolean,int,boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferOutput: int writeVarLong(long,boolean)">
+			<param index="0" description="Output Data">
+				<accessPath isSource="false" isSink="true" />
+			</param>
+			<additionalFlowCondition>
+				<signatureOnPath signature="java.net.URLConnection: java.io.OutputStream getOutputStream()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalCacheDir()" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalCacheDirs()" />
+				<signatureOnPath signature="android.content.Context: java.io.File getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalFilesDir(java.lang.String)" />
+				<signatureOnPath signature="android.content.Context: java.io.File[] getExternalMediaDirs()" />
+				<excludeClassName className="java.io.ByteArrayOutputStream" />
+			</additionalFlowCondition>
+		</method>
+	</category>
+
+	<category id="INPUT_READING">
+		<method signature="java.io.Reader: int read()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.Reader: int read(char[])">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.io.Reader: int read(char[],int,int)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.io.Reader: int read(java.nio.CharBuffer)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+
+		<method signature="java.io.InputStream: int read()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.InputStream: int read(byte[])">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.io.InputStream: int read(byte[],int,int)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+
+		<method signature="java.io.ObjectInputStream: int read()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: int read(byte[],int,int)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.io.ObjectInputStream: boolean readBoolean()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: byte readByte()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: char readChar()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: double readDouble()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: float readFloat()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: int readFully(byte[])">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.io.ObjectInputStream: int readInt()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: java.lang.String readString()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: long readLong()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: java.lang.Object readObject()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: short readShort()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: int readUnsignedByte()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: int readUnsignedShort()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.io.ObjectInputStream: java.lang.String readUTF()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: java.nio.ByteBuffer getByteBuffer()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: java.io.InputStream getInputStream()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int read()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int read()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int read(byte[])">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int read(byte[],int,int)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: boolean readBoolean()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: byte readByte()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readBytes(byte[])">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readBytes(byte[],int,int)">
+			<param index="0" description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: byte[] readBytes()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readByteUnsigned()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: char readChar()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: char[] readChars(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: double readDouble()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: double readDouble(double,boolean)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: double[] readDoubles(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: float readFloat()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: float[] readFloats(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readInt()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readInt(boolean)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int[] readInts(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: long readLong()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: long readLong(boolean)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: long[] readLongs(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: short readShort()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: short[] readShorts(int)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readShortUnsigned()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: java.lang.String readString()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: java.lang.StringBuilder readStringBuilder()">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: int readVarInt(boolean)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="com.esotericsoftware.kryo.io.ByteBufferInput: long readVarLong(boolean)">
+			<return description="Input Data">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Unique Device Identifiers -->
+	<category id="UNIQUE_IDENTIFIER" description="Unique Identifiers">
+		<!-- Telephony-related identifiers -->
+		<method signature="android.telephony.TelephonyManager: java.lang.String getDeviceId()">
+			<return description="Unique Device Id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getDeviceId(int)">
+			<return description="Unique Device Id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getMeid()">
+			<return description="MEID (Mobile Equipment Identifier)">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getMeid(int)">
+			<return description="MEID (Mobile Equipment Identifier)">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getImei()">
+			<return description="IMEI (International Mobile Equipment Identity)">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getImei(int)">
+			<return description="IMEI (International Mobile Equipment Identity)">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getSimSerialNumber()">
+			<return description="Serial number of the SIM">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getLine1Number()">
+			<return description="Phone number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getVoiceMailNumber()">
+			<return description="Phone number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getCompleteVoiceMailNumber()">
+			<return description="Phone number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getIsimDomain()">
+			<return description="IMS domain name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getVoiceMailAlphaTag()">
+			<return description="Alphabetic identifier associated with the voice mail number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.bluetooth.BluetoothAdapter: java.lang.String getAddress()">
+			<return description="Bluetooth Address">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Android Secure Settings -->
+	<category id="SECURE_SETTINGS" description="Android Secure Settings">
+		<method signature="android.provider.Settings$Secure: float getFloat(android.content.ContentResolver,java.lang.String)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: float getFloat(android.content.ContentResolver,java.lang.String,float)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: int getInt(android.content.ContentResolver,java.lang.String)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: int getInt(android.content.ContentResolver,java.lang.String,int)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: long getLong(android.content.ContentResolver,java.lang.String)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: long getLong(android.content.ContentResolver,java.lang.String,long)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: float getFloat(android.content.ContentResolver,java.lang.String)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: float getFloat(android.content.ContentResolver,java.lang.String,float)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.provider.Settings$Secure: java.lang.String getString(android.content.ContentResolver,java.lang.String)">
+			<return description="Android Secure Setting">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Network Data -->
+	<category id="NETWORK_INFORMATION" description="Network Information">
+		<!-- WiFi -->
+		<method signature="android.net.wifi.WifiInfo: java.lang.String getMacAddress()">
+			<return description="Mac Address">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.net.wifi.WifiInfo: int getIpAddress()">
+			<return description="Ip Address">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.net.wifi.WifiInfo: java.lang.String getSSID()">
+			<return description="SSID">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getNetworkCountryIso()">
+			<return description="Network country Iso">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getNetworkCountryIso(int)">
+			<return description="Network country Iso">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getNetworkOperator()">
+			<return description="Network operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getNetworkOperatorName()">
+			<return description="Network operator name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getSimCountryIso()">
+			<return description="SIM country Iso">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: int getSimState()">
+			<return description="SIM state">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: int getSimState(int)">
+			<return description="SIM state">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getSubscriberId()">
+			<return description="Subscriber Id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getSimOperator()">
+			<return description="SIM operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getSimOperatorName()">
+			<return description="SIM Operator name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.lang.String getNetworkSpecifier()">
+			<return description="Network specifier">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.ServiceState: int getCdmaNetworkId()">
+			<return description="Operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.ServiceState: int getCdmaSystemId()">
+			<return description="Operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.ServiceState: java.lang.String getOperatorAlphaLong()">
+			<return description="Operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.ServiceState: java.lang.String getOperatorAlphaShort()">
+			<return description="Operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.ServiceState: java.lang.String getOperatorNumeric()">
+			<return description="Operator">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Location Data -->
+	<category id="LOCATION_INFORMATION" description="Location information">
+		<method signature="android.location.Location: double getLatitude()">
+			<return description="Latitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Location: double getLongitude()">
+			<return description="Longitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Location: float getBearing()">
+			<return description="Bearing">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Location: float getSpeed()">
+			<return description="Speed">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.LocationManager: android.location.Location getLastKnownLocation(java.lang.String)">
+			<return description="Last known location">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.TelephonyManager: android.telephony.CellLocation getCellLocation()">
+			<return description="Cell location">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.TelephonyManager: java.util.List getNeighboringCellInfo()">
+			<return description="Neighboring cell info">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.gsm.GsmCellLocation: int getCid()">
+			<return description="GSM cell id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.gsm.GsmCellLocation: int getLac()">
+			<return description="GSM location area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.gsm.GsmCellLocation: java.lang.String toString()">
+			<return description="GSM cell location">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.cdma.CdmaCellLocation: int getBaseStationLatitude()">
+			<return description="Base station latitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.cdma.CdmaCellLocation: int getBaseStationLongitude()">
+			<return description="Base station longitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.cdma.CdmaCellLocation: java.lang.String toString()">
+			<return description="CDMA cell location">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<!-- Cell Identity -->
+		<method signature="android.telephony.CellIdentityCdma: int getBasestationId()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityCdma: int getLatitude()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityCdma: int getLongitude()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityCdma: int getNetworkId()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityCdma: int getSystemId()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityCdma: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.CellIdentityGsm: int getArfcn()">
+			<return description="Cell absolute RF channel number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: int getBsic()">
+			<return description="Cell base station identity code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: int getCid()">
+			<return description="GM cell identity">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: int getLac()">
+			<return description="Cell location area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: int getMcc()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: java.lang.String getMccString()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: int getMnc()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: java.lang.String getMncString()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityGsm: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.CellIdentityLte: java.util.Set getAdditionalPlmns()">
+			<return description="Additional public land mobile networks">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getCi()">
+			<return description="Cell identity">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getEarfcn()">
+			<return description="Absolute RF channel number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getMcc()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: java.lang.String getMccString()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getMnc()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: java.lang.String getMncString()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getPci()">
+			<return description="Physical cell id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: int getTac()">
+			<return description="Tracking area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityLte: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.CellIdentityNr: java.util.Set getAdditionalPlmns()">
+			<return description="Additional public land mobile networks">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: java.lang.String getMccString()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: java.lang.String getMncString()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: int getNci()">
+			<return description="New Radio 5G (NR) cell identity">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: int getNrarfcn()">
+			<return description="New Radio 5G (NR) absolute radio frequency channel number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: int getPci()">
+			<return description="Physical cell id">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: int getTac()">
+			<return description="Tracking area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityNr: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.CellIdentityTdscdma: java.util.Set getAdditionalPlmns()">
+			<return description="Additional public land mobile networks">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: int getCid()">
+			<return description="GSM cell identity">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: int getLac()">
+			<return description="Cell location area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: java.lang.String getMccString()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: java.lang.String getMncString()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: int getUarfcn()">
+			<return description="UMTS absolute radio frequency channel number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityTdscdma: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.telephony.CellIdentityWcdma: java.util.Set getAdditionalPlmns()">
+			<return description="Additional public land mobile networks">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getCid()">
+			<return description="GSM cell identity">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getLac()">
+			<return description="Cell location area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getLac()">
+			<return description="Cell location area code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getMcc()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: java.lang.String getMccString()">
+			<return description="Cell mobile country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getMnc()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: java.lang.String getMncString()">
+			<return description="Cell mobile network code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: int getUarfcn()">
+			<return description="UMTS absolute RF channel number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.telephony.CellIdentityWcdma: java.lang.String toString()">
+			<return description="Cell information">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Address Information -->
+	<category id="ADDRESS_INFORMATION" description="Address or Contact Information">
+		<!-- Addresses -->
+		<method signature="android.location.Address: java.lang.String getAddressLine(int)">
+			<return description="Address line">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getAdminArea()">
+			<return description="Administrative area of address">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getCountryCode()">
+			<return description="Country code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getCountryName()">
+			<return description="Country name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: double getLatitude()">
+			<return description="Latitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: double getLongitude()">
+			<return description="Longitude">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getLocality()">
+			<return description="Locality">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getPhone()">
+			<return description="Phone number">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getPostalCode()">
+			<return description="Postal code">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getPremises()">
+			<return description="Premises">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getSubAdminArea()">
+			<return description="Sub-administrativ area name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getSubLocality()">
+			<return description="Sub-locality">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getSubThoroughfare()">
+			<return>
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getThoroughfare()">
+			<return description="Sub-thoroughfare">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: java.lang.String getUrl()">
+			<return description="URL">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Address: void writeToParcel(android.os.Parcel,int)">
+			<param index="0" description="Target Parcel">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+
+		<!-- Countries -->
+		<method signature="android.location.Country: java.lang.String getCountryIso()">
+			<return description="Country Iso">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.location.Country: void writeToParcel(android.os.Parcel,int)">
+			<param index="0" description="Target Parcel">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+		<method signature="java.util.TimeZone: java.lang.String getDisplayName()">
+			<return description="Time zone name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.util.TimeZone: java.lang.String getDisplayName(boolean,int)">
+			<return description="Time zone name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.util.TimeZone: java.lang.String getDisplayName(java.util.Locale)">
+			<return description="Time zone name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.util.TimeZone: java.lang.String getDisplayName(boolean,int,java.util.Locale)">
+			<return description="Time zone name">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.util.TimeZone: java.util.TimeZone getDefault()">
+			<return description="Default tim zone">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.util.TimeZone: java.util.TimeZone getDefaultRef()">
+			<return description="Default time zone">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Shared Preferences -->
+	<category id="PREFERENCE_READ" description="Reading from preferences">
+		<method signature="android.content.SharedPreferences: boolean getBoolean(java.lang.String,boolean)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.content.SharedPreferences: float getFloat(java.lang.String,float)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.content.SharedPreferences: int getInt(java.lang.String,int)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.content.SharedPreferences: long getLong(java.lang.String,long)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.content.SharedPreferences: java.lang.String getString(java.lang.String,java.lang.String)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.content.SharedPreferences: java.util.Set getStringSet(java.lang.String,java.util.Set)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+
+		<method signature="android.preference.PreferenceDataStore: boolean getBoolean(java.lang.String,boolean)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.preference.PreferenceDataStore: float getFloat(java.lang.String,float)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.preference.PreferenceDataStore: int getInt(java.lang.String,int)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.preference.PreferenceDataStore: long getLong(java.lang.String,long)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.preference.PreferenceDataStore: java.lang.String getString(java.lang.String,java.lang.String)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.preference.PreferenceDataStore: java.util.Set getStringSet(java.lang.String,java.util.Set)">
+			<return description="Preference value">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Environment Variables -->
+	<category id="ENVIRONMENT" description="Environment">
+		<method signature="java.lang.System: java.lang.String getenv(java.lang.String)">
+			<return description="Environment variable">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.lang.System: java.util.Map getenv()">
+			<return description="Environment variables">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.lang.System: java.util.Properties getProperties()">
+			<return description="System properties">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.lang.System: java.lang.String getProperty(java.lang.String)">
+			<return description="System property">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.lang.System: java.lang.String getProperty(java.lang.String,java.lang.String)">
+			<return description="System property">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- SQL Results -->
+	<category id="SQL_RESULTS" description="SQL Results">
+		<method signature="java.sql.ResultSet: java.sql.Array getArray(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Array getArray(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getAsciiStream(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getAsciiStream(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.math.BigDecimal getBigDecimal(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.math.BigDecimal getBigDecimal(int,int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.math.BigDecimal getBigDecimal(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.math.BigDecimal getBigDecimal(java.lang.String,int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getBinaryStream(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getBinaryStream(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Blob getBlob(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Blob getBlob(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: boolean getBoolean(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: boolean getBoolean(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: byte getByte(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: byte getByte(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: byte[] getBytes(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: byte[] getBytes(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.Reader getCharacterStream(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.Reader getCharacterStream(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Clob getClob(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Clob getClob(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Date getDate(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Date getDate(int,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Date getDate(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Date getDate(java.lang.String,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: double getDouble(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: double getDouble(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: float getFloat(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: float getFloat(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: int getInt(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: int getInt(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: long getLong(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: long getLong(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.Reader getNCharacterStream(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.Reader getNCharacterStream(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.NClob getNClob(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.NClob getNClob(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.String getNString(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.String getNString(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(int,java.lang.Class)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(int,java.util.Map)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(java.lang.String,java.lang.Class)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.Object getObject(java.lang.String,java.util.Map)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Ref getRef(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Ref getRef(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: short getShort(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: short getShort(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.SQLXML getSQLXML(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.SQLXML getSQLXML(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.String getString(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.lang.String getString(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Time getTime(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Time getTime(int,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Time getTime(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Time getTime(java.lang.String,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Timestamp getTimestamp(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Timestamp getTimestamp(int,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Timestamp getTimestamp(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.sql.Timestamp getTimestamp(java.lang.String,java.util.Calendar)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getUnicodeStream(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.io.InputStream getUnicodeStream(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.net.URL getURL(int)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="java.sql.ResultSet: java.net.URL getURL(java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor query(boolean,java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor query(java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor query(boolean,java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String,android.os.CancellationSignal)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor query(java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor queryWithFactory(android.database.sqlite.SQLiteDatabase$CursorFactory,boolean,java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String,android.os.CancellationSignal)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor queryWithFactory(android.database.sqlite.SQLiteDatabase$CursorFactory,boolean,java.lang.String,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor rawQuery(java.lang.String,java.lang.String[],android.os.CancellationSignal)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor rawQuery(java.lang.String,java.lang.String[])">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor rawQueryWithFactory(android.database.sqlite.SQLiteDatabase$CursorFactory,java.lang.String,java.lang.String[],java.lang.String,android.os.CancellationSignal)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+		<method signature="android.database.sqlite.SQLiteDatabase: android.database.Cursor rawQueryWithFactory(android.database.sqlite.SQLiteDatabase$CursorFactory,java.lang.String,java.lang.String[],java.lang.String)">
+			<return description="SQL Result">
+				<accessPath isSource="true" isSink="false" />
+			</return>
+		</method>
+	</category>
+
+	<!-- Advertising ID -->
+	<category id="ADVERTISING_ID">
+		<method signature="com.google.android.gms.ads.identifier.AdvertisingIdClient$Info: java.lang.String getId()">
+			<param index="0" description="Advertising ID">
+				<accessPath isSource="true" isSink="false" />
+			</param>
+		</method>
+	</category>
+
+</sinkSources>
