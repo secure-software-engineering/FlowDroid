@@ -59,7 +59,7 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
 
         try {
             ArrayList<IMethodSummaryProvider> providers = new ArrayList();
-            providers.add(new EagerSummaryProvider("../soot-infoflow-summaries/testSummaries/"));
+            providers.add(new EagerSummaryProvider("testSummaries"));
             providers.add(new EagerSummaryProvider("summariesManual"));
             PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
             result.setTaintWrapper(new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new));

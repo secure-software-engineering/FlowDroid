@@ -18,9 +18,14 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
@@ -231,17 +236,20 @@ public abstract class SummaryTaintWrapperTests {
 
 	@Test(timeout = 30000)
 	public void noPropagationOverUnhandledCallee() {
-		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void noPropagationOverUnhandledCallee()>");
+		testNoFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void noPropagationOverUnhandledCallee()>");
 	}
 
 	@Test(timeout = 30000)
 	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
-		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void identityIsStillAppliedOnUnhandledMethodButExclusiveClass()>");
+		testFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void identityIsStillAppliedOnUnhandledMethodButExclusiveClass()>");
 	}
 
 	@Test(timeout = 30000)
 	public void matchGapReturnOnlyWithReturnTaints() {
-		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void matchGapReturnOnlyWithReturnTaints()>");
+		testNoFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void matchGapReturnOnlyWithReturnTaints()>");
 	}
 
 	@Test
@@ -332,7 +340,28 @@ public abstract class SummaryTaintWrapperTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
+		StringBuilder appPathBuilder = new StringBuilder();
 		File f = new File(".");
+		addTestPathes(f, appPathBuilder);
+
+		File fi = new File("../soot-infoflow");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("../soot-infoflow-summaries");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		appPath = appPathBuilder.toString();
+
+		StringBuilder libPathBuilder = new StringBuilder();
+		appendWithSeparator(libPathBuilder,
+				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
+		libPath = libPathBuilder.toString();
+	}
+
+	private static void addTestPathes(File f, StringBuilder appPathBuilder) throws IOException {
 		File testSrc1 = new File(f, "bin");
 		File testSrc2 = new File(f, "testBin");
 		File testSrc3 = new File(f, "build" + File.separator + "classes");
@@ -341,19 +370,10 @@ public abstract class SummaryTaintWrapperTests {
 		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists() || testSrc4.exists())) {
 			fail("Test aborted - none of the test sources are available");
 		}
-
-		StringBuilder appPathBuilder = new StringBuilder();
 		appendWithSeparator(appPathBuilder, testSrc1);
 		appendWithSeparator(appPathBuilder, testSrc2);
 		appendWithSeparator(appPathBuilder, testSrc3);
 		appendWithSeparator(appPathBuilder, testSrc4);
-		appPath = appPathBuilder.toString();
-
-		StringBuilder libPathBuilder = new StringBuilder();
-		appendWithSeparator(libPathBuilder,
-				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
-		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
-		libPath = libPathBuilder.toString();
 	}
 
 	/**
