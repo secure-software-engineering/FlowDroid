@@ -40,6 +40,7 @@ import heros.ZeroedFlowFunctions;
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
@@ -303,7 +304,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 
 		// for each possible callee
 		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(n);
- 		if (callees != null && !callees.isEmpty()) {
+		if (callees != null && !callees.isEmpty()) {
 			if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
 				callees.forEach(new Consumer<SootMethod>() {
 

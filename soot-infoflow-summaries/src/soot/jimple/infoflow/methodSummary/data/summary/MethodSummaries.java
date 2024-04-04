@@ -87,7 +87,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given clears (kill flows) into the this method summary object
 	 * 
-	 * @param newFlows The new clears (kill flows) to be merged
+	 * @param newClears The new clears (kill flows) to be merged
 	 */
 	public void mergeClears(Collection<MethodClear> newClears) {
 		if (newClears != null && !newClears.isEmpty()) {
@@ -264,13 +264,13 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 		return summaries;
 	}
 
-
 	public MethodSummaries filterForAliases() {
 		MethodSummaries summaries = null;
 
 		// Get the flows
 		if (flows != null && !flows.isEmpty()) {
-			Set<MethodFlow> sigFlows = flows.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE).collect(Collectors.toSet());
+			Set<MethodFlow> sigFlows = flows.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE)
+					.collect(Collectors.toSet());
 			if (!sigFlows.isEmpty()) {
 				if (summaries == null)
 					summaries = new MethodSummaries();
@@ -280,7 +280,8 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 
 		// Get the clears
 		if (clears != null && !clears.isEmpty()) {
-			Set<MethodClear> sigClears = clears.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE).collect(Collectors.toSet());
+			Set<MethodClear> sigClears = clears.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE)
+					.collect(Collectors.toSet());
 			if (!sigClears.isEmpty()) {
 				if (summaries == null)
 					summaries = new MethodSummaries();

@@ -6,16 +6,15 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * In some cases, bitmasks might be used in a way where there is a precendence of certain
- * masks to save space.
- * For "normal" bitmasks, the traditional way of checking is much faster.
+ * In some cases, bitmasks might be used in a way where there is a precendence
+ * of certain masks to save space. For "normal" bitmasks, the traditional way of
+ * checking is much faster.
  * 
- * Simple Example:
- * Option A (can be used alone or in combination with others): 01
- * Option B (cannot be used with option A): 10
- * Option C (only valid when used with Option A): 11
+ * Simple Example: Option A (can be used alone or in combination with others):
+ * 01 Option B (cannot be used with option A): 10 Option C (only valid when used
+ * with Option A): 11
  * 
- * In this case, we could do checking of B via ((v & 10) == 1) && ((v & 1) != 1) 
+ * In this case, we could do checking of B via ((v & 10) == 1) && ((v & 1) != 1)
  * but sometimes there are a lot of options (e.g. inputType)
  * 
  * @param <T> the keys used to distinguish flags
@@ -25,9 +24,10 @@ public class BitwiseFlagSystem<T> {
 	private List<Integer> values = new ArrayList<Integer>();
 
 	/**
-	 * Associate the given key with the bits set in set bits.
-	 * The first registration wins.
-	 * @param key the key
+	 * Associate the given key with the bits set in set bits. The first registration
+	 * wins.
+	 * 
+	 * @param key     the key
 	 * @param setBits the bits set
 	 */
 	public void register(T key, int setBits) {
@@ -37,7 +37,8 @@ public class BitwiseFlagSystem<T> {
 
 	/**
 	 * Returns all matching flags
-	 * @param inputValue input value
+	 * 
+	 * @param value input value
 	 */
 	public final Collection<T> getFlags(int value) {
 		List<T> matchedResults = new ArrayList<>(4);
@@ -66,8 +67,9 @@ public class BitwiseFlagSystem<T> {
 
 	/**
 	 * Checks whether all the given flags are set
+	 * 
 	 * @param inputValue input value
-	 * @param flag the flags to check
+	 * @param flag       the flags to check
 	 */
 	@SafeVarargs
 	public final boolean isSet(int inputValue, T... flag) {

@@ -210,7 +210,6 @@ public class AXmlNode extends AXmlElement {
 		return this.attributes.remove(key);
 	}
 
-
 	/**
 	 * Returns a map which contains all attributes. The keys match the attributes'
 	 * names.
@@ -324,7 +323,7 @@ public class AXmlNode extends AXmlElement {
 	/**
 	 * Sets the textual contents of this node
 	 * 
-	 * @param textThe textual contents of this node
+	 * @param text The textual contents of this node
 	 */
 	public void setText(String text) {
 		this.text = text;

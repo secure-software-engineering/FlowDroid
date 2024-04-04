@@ -210,7 +210,7 @@ public class InfoflowPerformanceData {
 	/**
 	 * Adds the given number of seconds to the time spent on taint propagation
 	 * 
-	 * @param toaAdd The time to add in seconds
+	 * @param toAdd The time to add in seconds
 	 */
 	public void addTaintPropagationSeconds(int toAdd) {
 		int time = this.taintPropagationSeconds;
@@ -224,7 +224,7 @@ public class InfoflowPerformanceData {
 	 * Adds the given number of edges to the total number of edges propagated,
 	 * regardless of the solver in which they were propagated
 	 * 
-	 * @param toaAdd The number of edges to add
+	 * @param toAdd The number of edges to add
 	 */
 	public void addEdgePropagationCount(long toAdd) {
 		long edges = this.edgePropagationCount;
@@ -256,8 +256,8 @@ public class InfoflowPerformanceData {
 	/**
 	 * Sets the number of sinks that were identified in the given input program
 	 * 
-	 * @param sourceCount The number of sinks that were identified in the given
-	 *                    input program
+	 * @param sinkCount The number of sinks that were identified in the given input
+	 *                  program
 	 */
 	public void setSinkCount(int sinkCount) {
 		this.sinkCount = sinkCount;
@@ -295,8 +295,8 @@ public class InfoflowPerformanceData {
 	/**
 	 * Sets the number of edges propagated in the alias analysis
 	 * 
-	 * @param infoflowPropagationCount The number of edges propagated in the alias
-	 *                                 analysis
+	 * @param aliasPropagationCount The number of edges propagated in the alias
+	 *                              analysis
 	 */
 	public void setAliasPropagationCount(long aliasPropagationCount) {
 		this.aliasPropagationCount = aliasPropagationCount;

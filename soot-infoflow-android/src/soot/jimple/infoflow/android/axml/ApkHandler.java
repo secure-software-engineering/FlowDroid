@@ -122,7 +122,7 @@ public class ApkHandler implements AutoCloseable {
 	/**
 	 * @param files array with File objects to be added to the APK.
 	 * @throws IOException if an I/O error occurs.
-	 * @see {@link ApkHandler#addFilesToApk(List, Map)}
+	 * @see ApkHandler {@link ApkHandler#addFilesToApk(List, Map)}
 	 */
 	public void addFilesToApk(List<File> files) throws IOException {
 		this.addFilesToApk(files, new HashMap<String, String>());

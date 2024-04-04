@@ -21,8 +21,8 @@ public class AlienFragmentFilter extends AbstractCallbackFilter {
 	/**
 	 * Creates a new instance of the {@link AlienFragmentFilter} class
 	 * 
-	 * @param A
-	 *            mapping from fragments to the activities containing them
+	 * @param fragmentToActivity mapping from fragments to the activities containing
+	 *                           them
 	 */
 	public AlienFragmentFilter(MultiMap<SootClass, SootClass> fragmentToActivity) {
 		this.fragmentToActivity = fragmentToActivity;
@@ -31,7 +31,7 @@ public class AlienFragmentFilter extends AbstractCallbackFilter {
 	@Override
 	public boolean accepts(SootClass component, SootClass callbackHandler) {
 		if (fragmentClass == null)
-			//No filtering possible
+			// No filtering possible
 			return true;
 		if (Scene.v().getOrMakeFastHierarchy().canStoreType(callbackHandler.getType(), this.fragmentClass.getType()))
 			if (!fragmentToActivity.get(callbackHandler).contains(component))

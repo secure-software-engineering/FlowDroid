@@ -265,7 +265,8 @@ public class ClassSummaries {
 	 * 
 	 * @param className True if this data object contains method summaries for the
 	 *                  given class, otherwise false
-	 * @return
+	 * @return true if this data object contains method summaries for the given
+	 *         class
 	 */
 	public boolean hasSummariesForClass(String className) {
 		return summaries.containsKey(className);

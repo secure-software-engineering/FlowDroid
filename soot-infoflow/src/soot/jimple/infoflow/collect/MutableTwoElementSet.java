@@ -14,8 +14,11 @@ import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import heros.FlowFunction;
+
 /**
- * An modifiable set holding up to two elements. Particularly useful within flow functions.
+ * An modifiable set holding up to two elements. Particularly useful within flow
+ * functions.
  *
  * @param <E>
  * @see FlowFunction
@@ -24,19 +27,19 @@ import java.util.NoSuchElementException;
  * @author Steven Arzt
  */
 public class MutableTwoElementSet<E> extends AbstractSet<E> {
-	
+
 	protected E first, second;
-	
+
 	public MutableTwoElementSet() {
 		this.first = null;
 		this.second = null;
-	}	
+	}
 
 	public MutableTwoElementSet(E first, E second) {
 		this.first = first;
 		this.second = second;
 	}
-	
+
 	public boolean add(E item) {
 		if (first == null) {
 			first = item;
@@ -44,7 +47,7 @@ public class MutableTwoElementSet<E> extends AbstractSet<E> {
 		}
 		if (first != null && first.equals(item))
 			return false;
-		
+
 		if (second == null) {
 			second = item;
 			return true;
@@ -54,17 +57,17 @@ public class MutableTwoElementSet<E> extends AbstractSet<E> {
 
 		throw new RuntimeException("Capacity exceeded");
 	}
-	
+
 	public static <E> MutableTwoElementSet<E> twoElementSet(E first, E second) {
 		return new MutableTwoElementSet<E>(first, second);
 	}
-	
+
 	@Override
 	public Iterator<E> iterator() {
 		return new Iterator<E>() {
 			int size = -1;
 			int elementsRead = 0;
-			
+
 			@Override
 			public boolean hasNext() {
 				if (size < 0)
@@ -74,7 +77,7 @@ public class MutableTwoElementSet<E> extends AbstractSet<E> {
 
 			@Override
 			public E next() {
-				switch(elementsRead) {
+				switch (elementsRead) {
 				case 0:
 					elementsRead++;
 					return first;
@@ -82,7 +85,7 @@ public class MutableTwoElementSet<E> extends AbstractSet<E> {
 					elementsRead++;
 					return second;
 				default:
-					throw new NoSuchElementException();	
+					throw new NoSuchElementException();
 				}
 			}
 
@@ -101,5 +104,5 @@ public class MutableTwoElementSet<E> extends AbstractSet<E> {
 		if (second != null)
 			size++;
 		return size;
-	}	
+	}
 }

@@ -17,47 +17,50 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	protected final boolean taintSubFields;
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
-					boolean taintSubFields, ConstraintType isConstrained) {
+			boolean taintSubFields, ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, accessPath, false, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
-					boolean taintSubFields, GapDefinition gap, ConstraintType isConstrained) {
+			boolean taintSubFields, GapDefinition gap, ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, accessPath, gap, false, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
-					boolean taintSubFields, GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+			boolean taintSubFields, GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, accessPath, gap, matchStrict, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, AccessPathFragment accessPath,
-					boolean taintSubFields, GapDefinition gap, Object userData, boolean matchStrict, ConstraintType isConstrained) {
+			boolean taintSubFields, GapDefinition gap, Object userData, boolean matchStrict,
+			ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, accessPath, gap, userData, matchStrict, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, ConstraintType isConstrained) {
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields,
+			ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, null, null, false, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
-	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, GapDefinition gap, ConstraintType isConstrained) {
+	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, GapDefinition gap,
+			ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, null, gap, null, false, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
 	public FlowSink(SourceSinkType type, int paramterIdx, String baseType, boolean taintSubFields, GapDefinition gap,
-					Object userData, ConstraintType isConstrained) {
+			Object userData, ConstraintType isConstrained) {
 		super(type, paramterIdx, baseType, null, gap, userData, false, isConstrained);
 		this.taintSubFields = taintSubFields;
 	}
 
 	public FlowSink(SourceSinkType type, String baseType, AccessPathFragment accessPath, boolean taintSubFields2,
-					GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
+			GapDefinition gap, boolean matchStrict, ConstraintType isConstrained) {
 		super(type, -1, baseType, accessPath, gap, matchStrict, isConstrained);
 		this.taintSubFields = taintSubFields2 || (accessPath != null && accessPath.length() > this.accessPath.length());
 	}
@@ -71,7 +74,7 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 	 * i.e., if all elements referenced by the given source or sink are also
 	 * referenced by this one
 	 * 
-	 * @param src The source or sink with which to compare the current one
+	 * @param other The source or sink with which to compare the current one
 	 * @return True if the current source or sink is coarser than the given one,
 	 *         otherwise false
 	 */
@@ -100,8 +103,8 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 					+ taintSubFields();
 
 		if (isField())
-			return gapString + "Field" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath)) + " | "
-					+ taintSubFields();
+			return gapString + "Field" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath))
+					+ " | " + taintSubFields();
 
 		if (isReturn())
 			return gapString + "Return" + (accessPath == null ? "" : " " + AccessPathFragment.toString(accessPath))
@@ -146,12 +149,14 @@ public class FlowSink extends AbstractFlowSinkSource implements Cloneable {
 		GapDefinition newGap = replacementMap.get(gap.getID());
 		if (newGap == null)
 			return this;
-		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, newGap, matchStrict, isConstrained);
+		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, newGap, matchStrict,
+				isConstrained);
 	}
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, gap, userData, matchStrict, isConstrained);
+		return new FlowSink(type, parameterIdx, baseType, accessPath, taintSubFields, gap, userData, matchStrict,
+				isConstrained);
 	}
 
 }

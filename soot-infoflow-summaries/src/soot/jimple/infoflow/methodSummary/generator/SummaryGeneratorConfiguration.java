@@ -207,7 +207,7 @@ public class SummaryGeneratorConfiguration extends InfoflowConfiguration {
 	 * summarizeHashCodeEquals is true, the return value of the methods are tainted
 	 * according to the given taint conditions instead of analyzing the methods.
 	 * 
-	 * @return
+	 * @return the default taint conditions
 	 */
 	public Map<String, TaintCondition> getDefaultTaints() {
 		return defaultTaints;

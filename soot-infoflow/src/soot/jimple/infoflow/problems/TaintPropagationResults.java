@@ -98,7 +98,6 @@ public class TaintPropagationResults {
 	 * 
 	 * @return True if this result object is empty, i.e., there are no results yet,
 	 *         otherwise false
-	 * @return
 	 */
 	public boolean isEmpty() {
 		return this.results.isEmpty();

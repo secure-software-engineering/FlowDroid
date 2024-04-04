@@ -813,8 +813,8 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * Sets the name that shall be used for the new class containing the dummy main
 	 * method
 	 * 
-	 * @param dummyMethodName The name for the new class containing the dummy main
-	 *                        method
+	 * @param dummyClassName The name for the new class containing the dummy main
+	 *                       method
 	 */
 	public void setDummyClassName(String dummyClassName) {
 		this.dummyClassName = dummyClassName;
@@ -894,10 +894,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * If this flag is set to "false", a new, non-conflicting method and class name
 	 * is chosen.
 	 * 
-	 * @param reuseDummyMainValue True if existing methods that conflict with the
-	 *                            entry point to be created shall be overwritten,
-	 *                            false to automatically chose a new,
-	 *                            non-conflicting name.
+	 * @param overwriteDummyMainValue True if existing methods that conflict with
+	 *                                the entry point to be created shall be
+	 *                                overwritten, false to automatically chose a
+	 *                                new, non-conflicting name.
 	 */
 	public void setOverwriteDummyMainMethod(boolean overwriteDummyMainValue) {
 		this.overwriteDummyMainMethod = overwriteDummyMainValue;

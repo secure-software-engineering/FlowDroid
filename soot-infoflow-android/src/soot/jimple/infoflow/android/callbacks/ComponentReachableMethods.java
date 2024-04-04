@@ -44,7 +44,7 @@ public class ComponentReachableMethods {
 	private QueueReader<MethodOrMethodContext> unprocessedMethods;
 
 	/**
-	 * Creates a new instance of the {@link MyReachableMethods} class
+	 * Creates a new instance of the {@link ComponentReachableMethods} class
 	 * 
 	 * @param config            The configuration of the data flow solver
 	 * @param originalComponent The original component or which we are looking for

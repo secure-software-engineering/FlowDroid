@@ -1,9 +1,5 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-
-import java.util.Collection;
-
 /**
  * Abstract base class for source/sink information
  * 
@@ -17,9 +13,7 @@ abstract class AbstractSourceSinkInfo {
 	/**
 	 * Creates a new instance of the {@link AbstractSourceSinkInfo} class
 	 * 
-	 * @param definitions The original definitions of the source or sink
-	 * @param userData   Additional user data to be propagated with the source or
-	 *                   sink
+	 * @param userData Additional user data to be propagated with the source or sink
 	 */
 	public AbstractSourceSinkInfo(Object userData) {
 		this.userData = userData;

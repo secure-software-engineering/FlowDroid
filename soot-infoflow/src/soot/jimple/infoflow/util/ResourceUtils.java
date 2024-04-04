@@ -12,10 +12,8 @@ public class ResourceUtils {
 	 * within the JAR. This method does throw an exception in case the resource file
 	 * was not found. The caller responsible for closing the stream.
 	 * 
-	 * @param class
-	 *            the class file to use as a base
-	 * @param filename
-	 *            the resource file name
+	 * @param clazz    the class file to use as a base
+	 * @param filename the resource file name
 	 * @return the input stream
 	 * @throws IOException
 	 */
@@ -38,8 +36,7 @@ public class ResourceUtils {
 	 * within the JAR. This method does throw an exception in case the resource file
 	 * was not found. The caller responsible for closing the stream.
 	 * 
-	 * @param filename
-	 *            the resource file name
+	 * @param filename the resource file name
 	 * @return the input stream
 	 * @throws IOException
 	 */

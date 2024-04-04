@@ -118,7 +118,8 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * @param apkFile the AppManifest within the given APK will be parsed.
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
-	 * @see {@link BaseProcessManifest#BaseProcessManifest(InputStream)}
+	 * @see BaseProcessManifest
+	 *      {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
 	public BaseProcessManifest(File apkFile) throws IOException, XmlPullParserException {
 		this(apkFile, ARSCFileParser.getInstance(apkFile));
@@ -131,7 +132,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * @param arscParser The parser for the Android resource database
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
-	 * @see {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
+	 * @see BaseProcessManifest {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
 	public BaseProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException, XmlPullParserException {
 		if (!apkFile.exists())

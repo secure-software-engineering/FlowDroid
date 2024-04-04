@@ -410,7 +410,7 @@ public class InfoflowConfiguration {
 		/**
 		 * Copies the settings of the given configuration into this configuration object
 		 * 
-		 * @param iccConfig The other configuration object
+		 * @param ssConfig The other configuration object
 		 */
 		public void merge(SourceSinkConfiguration ssConfig) {
 			this.callbackSourceMode = ssConfig.callbackSourceMode;
@@ -447,8 +447,8 @@ public class InfoflowConfiguration {
 		 * Sets the default mode for handling sinks that have not been configured
 		 * explicitly
 		 * 
-		 * @param sourceFilterMode The default mode for handling sinks that have not
-		 *                         been configured explicitly
+		 * @param sinkFilterMode The default mode for handling sinks that have not been
+		 *                       configured explicitly
 		 */
 		public void setSinkFilterMode(SourceSinkFilterMode sinkFilterMode) {
 			this.sinkFilterMode = sinkFilterMode;
@@ -480,8 +480,8 @@ public class InfoflowConfiguration {
 		 * Sets whether the parameters of lifecycle methods shall be considered as
 		 * sources
 		 * 
-		 * @param enableLifecycleSoures True if the parameters of lifecycle methods
-		 *                              shall be considered as sources, otherwise false
+		 * @param enableLifecycleSources True if the parameters of lifecycle methods
+		 *                               shall be considered as sources, otherwise false
 		 */
 		public void setEnableLifecycleSources(boolean enableLifecycleSources) {
 			this.enableLifecycleSources = enableLifecycleSources;
@@ -707,7 +707,7 @@ public class InfoflowConfiguration {
 		 * longer than this limit, the path reconstruction is aborted and the respective
 		 * path is skipped.
 		 * 
-		 * @param maxPathLenfgth The maximum length of a taint propagtation path3
+		 * @param maxPathLength The maximum length of a taint propagation path
 		 */
 		public void setMaxPathLength(int maxPathLength) {
 			this.maxPathLength = maxPathLength;
@@ -1242,7 +1242,7 @@ public class InfoflowConfiguration {
 		 * Gets the maximum depth of the access paths. All paths will be truncated if
 		 * they exceed the given size.
 		 * 
-		 * @param accessPathLength the maximum value of an access path.
+		 * @return the maximum value of an access path.
 		 */
 		public int getAccessPathLength() {
 			return accessPathLength;
@@ -1915,7 +1915,7 @@ public class InfoflowConfiguration {
 	 * Sets whether and how FlowDroid shall eliminate irrelevant code before running
 	 * the taint propagation
 	 * 
-	 * @param Mode the mode of dead and irrelevant code eliminiation to be used
+	 * @param mode the mode of dead and irrelevant code eliminiation to be used
 	 */
 	public void setCodeEliminationMode(CodeEliminationMode mode) {
 		this.codeEliminationMode = mode;
