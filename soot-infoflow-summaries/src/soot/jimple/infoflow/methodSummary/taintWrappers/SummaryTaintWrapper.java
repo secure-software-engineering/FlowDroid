@@ -1470,13 +1470,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
 			if (newBaseType == null)
 				newBaseType = sinkType;
+			sBaseType = String.valueOf(newBaseType);
 
 			// Set the correct type. In case x -> b.x, the new type is not the type
 			// of b, but of the field x.
 			if (flowSink.hasAccessPath()) {
 				if (appendedFields != null)
-					appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1,
-							String.valueOf(newBaseType));
+					appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1, sBaseType);
 				sBaseType = flowSink.getBaseType();
 			}
 		}
