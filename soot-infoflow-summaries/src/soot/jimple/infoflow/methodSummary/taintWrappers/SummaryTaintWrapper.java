@@ -16,6 +16,7 @@ import soot.ArrayType;
 import soot.FastHierarchy;
 import soot.Hierarchy;
 import soot.Local;
+import soot.MethodSubSignature;
 import soot.Modifier;
 import soot.PrimType;
 import soot.RefType;
@@ -1402,7 +1403,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		int lastCommonAPIdx = Math.min(flowSource.getAccessPathLength(), taint.getAccessPathLength());
 
-		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink));
+		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink, flow.methodSig()));
 		Type taintType = TypeUtils.getTypeFromString(getAssignmentType(taint, lastCommonAPIdx - 1));
 
 		// For type checking, we need types
@@ -1515,13 +1516,26 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * Gets the type that is finally assigned when propagating this source or sink.
 	 * For an access path a.b.c, this would be the type of "c".
 	 * 
-	 * @param srcSink The source or sink from which to get the propagation type
+	 * @param srcSink   The source or sink from which to get the propagation type
+	 * @param methodSig The method subsignature for retrieving missing types from
+	 *                  the signature
 	 * @return The type of the value which the access path of the given source or
 	 *         sink finally references
 	 */
-	private String getAssignmentType(AbstractFlowSinkSource srcSink) {
-		if (!srcSink.hasAccessPath())
-			return srcSink.getBaseType();
+	private String getAssignmentType(AbstractFlowSinkSource srcSink, String methodSig) {
+		if (!srcSink.hasAccessPath()) {
+			String baseType = srcSink.getBaseType();
+			if (baseType != null)
+				return baseType;
+
+			// If we have no base type in the summary, we parse it from the method signature
+			MethodSubSignature subsig = new MethodSubSignature(Scene.v().getSubSigNumberer().findOrAdd(methodSig));
+			if (srcSink.isReturn())
+				return subsig.returnType.toString();
+			if (srcSink.isParameter())
+				return subsig.parameterTypes.get(srcSink.getParameterIndex()).toString();
+			return null;
+		}
 
 		// If we don't have explicit access path types, we use the declared
 		// types instead
