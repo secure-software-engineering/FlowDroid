@@ -556,7 +556,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			// Is this method explicitly excluded?
 			if (!this.flows.isMethodExcluded(callee.getDeclaringClass().getName(), callee.getSubSignature())) {
-				//				wrapperMisses.incrementAndGet();
+				// wrapperMisses.incrementAndGet();
 
 				if (classSupported.value)
 					return Collections.singleton(taintedAbs);
@@ -619,7 +619,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 */
 	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs,
 			final SootMethod method, ByReferenceBoolean killIncomingTaint, ByReferenceBoolean classSupported) {
-		//		wrapperHits.incrementAndGet();
+		// wrapperHits.incrementAndGet();
 
 		// Get the cached data flows
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
@@ -1446,13 +1446,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
 			if (newBaseType == null)
 				newBaseType = sinkType;
+			sBaseType = String.valueOf(newBaseType);
 
 			// Set the correct type. In case x -> b.x, the new type is not the type
 			// of b, but of the field x.
 			if (flowSink.hasAccessPath()) {
 				if (appendedFields != null)
-					appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1,
-							String.valueOf(newBaseType));
+					appendedFields = appendedFields.updateFieldType(flowSink.getAccessPathLength() - 1, sBaseType);
 				sBaseType = flowSink.getBaseType();
 			}
 		}
