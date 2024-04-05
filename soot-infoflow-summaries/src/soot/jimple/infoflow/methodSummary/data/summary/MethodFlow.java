@@ -240,10 +240,11 @@ public class MethodFlow extends AbstractMethodSummary {
 					return true;
 				if ("java.lang.Object[]".equals(from.getLastFieldType()))
 					return true;
+				if (to.isField() && !to.hasAccessPath())
+					return true;
 			}
 			return false;
 		}
 		return ignoreTypes;
 	}
-
 }
