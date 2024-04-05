@@ -23,7 +23,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
@@ -234,17 +236,20 @@ public abstract class SummaryTaintWrapperTests {
 
 	@Test(timeout = 30000)
 	public void noPropagationOverUnhandledCallee() {
-		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void noPropagationOverUnhandledCallee()>");
+		testNoFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void noPropagationOverUnhandledCallee()>");
 	}
 
 	@Test(timeout = 30000)
 	public void identityIsStillAppliedOnUnhandledMethodButExclusiveClass() {
-		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void identityIsStillAppliedOnUnhandledMethodButExclusiveClass()>");
+		testFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void identityIsStillAppliedOnUnhandledMethodButExclusiveClass()>");
 	}
 
 	@Test(timeout = 30000)
 	public void matchGapReturnOnlyWithReturnTaints() {
-		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void matchGapReturnOnlyWithReturnTaints()>");
+		testNoFlowForMethod(
+				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void matchGapReturnOnlyWithReturnTaints()>");
 	}
 
 	@Test
