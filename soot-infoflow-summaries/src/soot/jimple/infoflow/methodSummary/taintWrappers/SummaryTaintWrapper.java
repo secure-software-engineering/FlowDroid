@@ -1269,7 +1269,18 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		for (int i = 0; i < taintedPath.getAccessPathLength() && i < flowSource.getAccessPathLength(); i++) {
 			String taintField = taintedPath.getAccessPath().getField(i);
 			String sourceField = flowSource.getAccessPath().getField(i);
-			if (!sourceField.equals(taintField))
+			if (sourceField.equals(taintField))
+				continue;
+
+			Scene sc = Scene.v();
+			SootClass sourceClass = sc.getSootClassUnsafe(Scene.signatureToClass(sourceField));
+			SootClass taintClass = sc.getSootClassUnsafe(Scene.signatureToClass(taintField));
+			if (sourceClass == null || taintClass == null)
+				return false;
+			if (sc.getOrMakeFastHierarchy().canStoreClass(taintClass, sourceClass)) {
+				if (!Scene.signatureToSubsignature(sourceField).equals(Scene.signatureToSubsignature(taintField)))
+					return false;
+			} else
 				return false;
 		}
 
