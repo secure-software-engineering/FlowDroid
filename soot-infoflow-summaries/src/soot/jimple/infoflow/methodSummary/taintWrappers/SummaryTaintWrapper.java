@@ -1251,7 +1251,18 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		for (int i = 0; i < taintedPath.getAccessPathLength() && i < flowSource.getAccessPathLength(); i++) {
 			String taintField = taintedPath.getAccessPath().getField(i);
 			String sourceField = flowSource.getAccessPath().getField(i);
-			if (!sourceField.equals(taintField))
+			if (sourceField.equals(taintField))
+				continue;
+
+			Scene sc = Scene.v();
+			SootClass sourceClass = sc.getSootClassUnsafe(Scene.signatureToClass(sourceField));
+			SootClass taintClass = sc.getSootClassUnsafe(Scene.signatureToClass(taintField));
+			if (sourceClass == null || taintClass == null)
+				return false;
+			if (sc.getOrMakeFastHierarchy().canStoreClass(taintClass, sourceClass)) {
+				if (!Scene.signatureToSubsignature(sourceField).equals(Scene.signatureToSubsignature(taintField)))
+					return false;
+			} else
 				return false;
 		}
 
@@ -1529,11 +1540,25 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 				return baseType;
 
 			// If we have no base type in the summary, we parse it from the method signature
-			MethodSubSignature subsig = new MethodSubSignature(Scene.v().getSubSigNumberer().findOrAdd(methodSig));
-			if (srcSink.isReturn())
-				return subsig.returnType.toString();
-			if (srcSink.isParameter())
-				return subsig.parameterTypes.get(srcSink.getParameterIndex()).toString();
+			if (srcSink.hasGap()) {
+				// We take the signature of the gap
+				String gapSig = srcSink.getGap().getSignature();
+				SootMethodAndClass smac = SootMethodRepresentationParser.v().parseSootMethodString(gapSig);
+				if (srcSink.isReturn())
+					return smac.getReturnType();
+				else if (srcSink.isParameter())
+					return smac.getParameters().get(srcSink.getParameterIndex());
+				else if (srcSink.isGapBaseObject())
+					return smac.getClassName();
+			} else {
+				// We take the signature of the method for which we have the summary
+				MethodSubSignature subsig = new MethodSubSignature(Scene.v().getSubSigNumberer().findOrAdd(methodSig));
+				if (srcSink.isReturn())
+					return subsig.returnType.toString();
+				else if (srcSink.isParameter())
+					return subsig.parameterTypes.get(srcSink.getParameterIndex()).toString();
+			}
+
 			return null;
 		}
 
