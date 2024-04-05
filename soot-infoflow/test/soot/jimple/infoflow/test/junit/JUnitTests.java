@@ -64,7 +64,6 @@ public abstract class JUnitTests {
 		File f = new File(".");
 		StringBuilder appPathBuilder = new StringBuilder();
 		addTestPathes(f, appPathBuilder);
-		appPath = appPathBuilder.toString();
 
 		File fi = new File("../soot-infoflow");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
@@ -74,6 +73,7 @@ public abstract class JUnitTests {
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
 			addTestPathes(fi, appPathBuilder);
 		}
+		appPath = appPathBuilder.toString();
 		StringBuilder libPathBuilder = new StringBuilder();
 		String javaHomeStr = System.getProperty("java.home");
 		boolean found = false;

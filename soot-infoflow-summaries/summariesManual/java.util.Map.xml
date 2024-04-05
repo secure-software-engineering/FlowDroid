@@ -12,7 +12,7 @@
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false" final="true">
+				<flow isAlias="true" typeChecking="false" final="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
@@ -495,6 +495,17 @@
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="44" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						  constrained="True" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>

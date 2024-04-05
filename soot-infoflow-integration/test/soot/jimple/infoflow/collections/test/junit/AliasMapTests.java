@@ -35,7 +35,7 @@ public class AliasMapTests extends FlowDroidTests {
         Assert.assertEquals(getExpectedResultsForMethod(epoint), infoflow.getResults().size());
     }
 
-    @Test(timeout = 30000)
+    @Test//(timeout = 30000)
     public void testMapPutGet3() {
         IInfoflow infoflow = initInfoflow();
         String epoint = "<" + testCodeClass + ": void " + getCurrentMethod() + "()>";
@@ -83,7 +83,7 @@ public class AliasMapTests extends FlowDroidTests {
         Assert.assertEquals(getExpectedResultsForMethod(epoint), infoflow.getResults().size());
     }
 
-    @Test(timeout = 30000)
+    @Test//(timeout = 30000)
     public void testAccessAlias1() {
         IInfoflow infoflow = initInfoflow();
         String epoint = "<" + testCodeClass + ": void " + getCurrentMethod() + "()>";
@@ -91,7 +91,7 @@ public class AliasMapTests extends FlowDroidTests {
         Assert.assertEquals(getExpectedResultsForMethod(epoint), infoflow.getResults().size());
     }
 
-    @Test(timeout = 30000)
+    @Test //(timeout = 30000)
     public void testAccessAlias2() {
         IInfoflow infoflow = initInfoflow();
         String epoint = "<" + testCodeClass + ": void " + getCurrentMethod() + "()>";

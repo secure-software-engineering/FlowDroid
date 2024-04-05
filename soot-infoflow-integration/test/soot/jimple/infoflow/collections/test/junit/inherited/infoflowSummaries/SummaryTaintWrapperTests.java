@@ -75,4 +75,5 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
         // TODO: move final attribute toward upstream
         testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void iterativeApplyIsOverapproximation()>");
     }
+    
 }
