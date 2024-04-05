@@ -152,7 +152,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (leftValue instanceof ArrayRef && manager.getConfig().getEnableArraySizeTainting()) {
 					arrayTaintType = ArrayTaintType.Contents;
 					baseCtxt = propagationRules.getArrayContextProvider().getContextForArrayRef((ArrayRef) leftValue,
-																								assignStmt);
+							assignStmt);
 				}
 
 				// also taint the target of the assignment
@@ -924,7 +924,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * Maps the given access path into the scope of the callee
 			 * 
 			 * @param callee      The method that is being called
-			 * @param stmt		  The caller statement or null
+			 * @param stmt        The caller statement or null
 			 * @param ie          The invocation expression for the call
 			 * @param paramLocals The list of parameter locals in the callee
 			 * @param thisLocal   The "this" local in the callee
@@ -994,7 +994,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										.toArray(new Local[calleeParamCount]);
 
 							if (mapped == ICallerCalleeArgumentMapper.ALL_PARAMS) {
-								//Reflection
+								// Reflection
 
 								// Taint all parameters in the callee if the argument array of a reflective
 								// method call is tainted

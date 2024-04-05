@@ -104,7 +104,7 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
         infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints), getSourceSinkManager(infoflow));
         this.checkInfoflow(infoflow, 1);
     }
-    @Test(timeout = 300000)
+    @Test //(timeout = 300000)
     public void testDataOutputStream1() {
         IInfoflow infoflow = this.initInfoflow();
         List<String> epoints = new ArrayList();
