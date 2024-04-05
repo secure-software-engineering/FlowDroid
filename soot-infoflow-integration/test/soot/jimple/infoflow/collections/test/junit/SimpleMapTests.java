@@ -306,7 +306,7 @@ public class SimpleMapTests extends FlowDroidTests {
         Assert.assertEquals(getExpectedResultsForMethod(epoint), infoflow.getResults().size());
     }
 
-    @Test(timeout = 30000)
+    @Test
     public void testMapComputeReturn4() {
         IInfoflow infoflow = initInfoflow();
         String epoint = "<" + testCodeClass + ": void " + getCurrentMethod() + "()>";

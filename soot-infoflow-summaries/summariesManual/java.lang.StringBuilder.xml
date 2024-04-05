@@ -3,7 +3,7 @@
 	<methods>
 		<method id="void &lt;init&gt;(java.lang.CharSequence)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" ignoreTypes="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -11,7 +11,7 @@
 		</method>
 		<method id="void &lt;init&gt;(java.lang.String)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" ignoreTypes="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>

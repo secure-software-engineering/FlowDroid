@@ -356,6 +356,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
 						// Check whether we must activate a taint
+						if (getManager().getICFG().getMethodOf(stmt).getName().equals("apply"))
+							System.out.println();
+						if (getManager().getICFG().getMethodOf(stmt).getName().contains("lambda"))
+							System.out.println();
 						final Abstraction newSource;
 						if (!source.isAbstractionActive() && src == source.getActivationUnit())
 							newSource = source.getActiveCopy();
