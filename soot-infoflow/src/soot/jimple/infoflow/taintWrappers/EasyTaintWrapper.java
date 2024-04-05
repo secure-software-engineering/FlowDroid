@@ -37,7 +37,12 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
-import soot.jimple.*;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.StaticInvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.BackwardsInfoflowProblem;
@@ -129,6 +134,10 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 	}
 
 	public static EasyTaintWrapper getDefault() throws IOException {
+		File f = new File("EasyTaintWrapperSource.txt");
+		if (f.exists()) {
+			return new EasyTaintWrapper(f);
+		}
 		try (InputStream is = ResourceUtils.getResourceStream("/EasyTaintWrapperSource.txt")) {
 			return new EasyTaintWrapper(is);
 		}
@@ -284,12 +293,10 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		return taints;
 	}
 
-
 	@Override
 	public Set<Abstraction> getInverseTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedPath) {
 		// Compute the tainted access paths
-		Set<AccessPath> aps = getInverseTaintsForMethodInternal(stmt,
-				taintedPath);
+		Set<AccessPath> aps = getInverseTaintsForMethodInternal(stmt, taintedPath);
 		if (aps == null || aps.isEmpty())
 			return null;
 
@@ -329,7 +336,8 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		boolean taintEqualsHashCode = alwaysModelEqualsHashCode
 				&& (subSig.equals("boolean equals(java.lang.Object)") || subSig.equals("int hashCode()"));
 
-		// We need to handle some API calls explicitly as they do not really fit the model of our rules
+		// We need to handle some API calls explicitly as they do not really fit the
+		// model of our rules
 		if (!taintedPath.isEmpty() && method.getDeclaringClass().getName().equals("java.lang.String")
 				&& subSig.equals("void getChars(int,int,char[],int)"))
 			return handleInverseStringGetChars(stmt.getInvokeExpr(), taintedPath);
@@ -390,7 +398,8 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 				}
 				// or for static fields if the retVal is tainted
 				else if (stmt.getInvokeExpr() instanceof StaticInvokeExpr && stmt instanceof DefinitionStmt) {
-					doTaint = !taintEqualsHashCode && ((DefinitionStmt) stmt).getLeftOp().equals(taintedPath.getPlainValue());
+					doTaint = !taintEqualsHashCode
+							&& ((DefinitionStmt) stmt).getLeftOp().equals(taintedPath.getPlainValue());
 				}
 			}
 
@@ -438,8 +447,7 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		// If the third argument is tainted, the base object gets also tainted
 		if (invokeExpr.getArg(2) == taintedPath.getPlainValue())
 			return new TwoElementSet<AccessPath>(taintedPath,
-					manager.getAccessPathFactory().createAccessPath(((InstanceInvokeExpr) invokeExpr).getBase(),
-							true));
+					manager.getAccessPathFactory().createAccessPath(((InstanceInvokeExpr) invokeExpr).getBase(), true));
 		return Collections.singleton(taintedPath);
 	}
 
@@ -555,8 +563,8 @@ public class EasyTaintWrapper extends AbstractTaintWrapper implements IReversibl
 		if (ifc.isPhantom())
 			return getMethodWrapTypeDirect(ifc.getName(), subSig);
 
-		assert ifc.isInterface() : "Class " + ifc.getName() + " is not an interface, though returned "
-				+ "by getInterfaces().";
+		assert ifc.isInterface()
+				: "Class " + ifc.getName() + " is not an interface, though returned " + "by getInterfaces().";
 		for (SootClass pifc : Scene.v().getActiveHierarchy().getSuperinterfacesOfIncluding(ifc)) {
 			MethodWrapType wt = getMethodWrapTypeDirect(pifc.getName(), subSig);
 			if (wt != MethodWrapType.NotRegistered)

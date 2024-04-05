@@ -10,24 +10,16 @@
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field"
                         AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
-                        AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                        AccessPathTypes="[java.lang.String[]]" constrained="true" />
                 </flow>
             </flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
-                       AccessPathTypes="[java.lang.String[]]" constrained="true" />
-            </clears>
         </method>
         <method id="java.lang.Object getAttribute(java.lang.String)">
-            <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
-            </constraints>
             <flows>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                          AccessPathTypes="[java.lang.String[]]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
@@ -41,7 +33,7 @@
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field"
                         AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
-                        AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                        AccessPathTypes="[java.lang.String[]]" constrained="true" />
                 </flow>
             </flows>
             <clears>
@@ -51,14 +43,11 @@
             </clears>
         </method>
         <method id="java.lang.Object getValue(java.lang.String)">
-            <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
-            </constraints>
             <flows>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                          AccessPathTypes="[java.lang.String[]]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>

@@ -24,11 +24,12 @@
             <constraints>
                 <key sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
+
             <flows>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[javax.servlet.ServletContext: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrainted="true" />
+                          AccessPathTypes="[java.lang.String[]]" constrainted="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>

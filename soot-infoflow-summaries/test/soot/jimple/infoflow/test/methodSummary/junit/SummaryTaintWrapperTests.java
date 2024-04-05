@@ -8,6 +8,11 @@ import java.net.URISyntaxException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.config.IInfoflowConfig;
+import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 

@@ -10,13 +10,13 @@
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field"
                         AccessPath="[javax.servlet.jsp.JspContext: java.lang.Object[] attributes]"
-                        AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                        AccessPathTypes="[java.lang.String[]]" constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <clear sourceSinkType="Field"
                        AccessPath="[javax.servlet.jsp.JspContext: java.lang.Object[] attributes]"
-                       AccessPathTypes="[java.lang.Object[]]"
+                       AccessPathTypes="[java.lang.String[]]"
                        constrained="true" />
             </clears>
         </method>
@@ -47,7 +47,7 @@
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[javax.servlet.jsp.JspContext: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                          AccessPathTypes="[java.lang.String[]]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
@@ -59,8 +59,8 @@
             <flows>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
-                          AccessPath="[javax.servlet.jsp.JspContext: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                          AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
@@ -72,8 +72,8 @@
             <flows>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Field"
-                          AccessPath="[javax.servlet.jsp.JspContext: java.lang.Object[] attributes]"
-                          AccessPathTypes="[java.lang.Object[]]" constrained="true" />
+                          AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+                          AccessPathTypes="[java.lang.String[]]" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
@@ -100,5 +100,7 @@
                        constrained="true" />
             </clears>
         </method>
+=======
+>>>>>>> 7e6ec6c448d6407e7f6b98c3e85726b94483604e
     </methods>
 </summary>
