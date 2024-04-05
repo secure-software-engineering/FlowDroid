@@ -73,10 +73,6 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 
 	@Override
 	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
-		// System.out.println(manager.getICFG().getMethodOf(stmt).retrieveActiveBody());
-		if (stmt.toString().contains("java.lang.StringBuilder append(java.lang.Object)>($stack17#1)"))
-			System.out.println();
-
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
@@ -539,6 +535,9 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 		assert stmt.containsInvokeExpr();
 		InvokeExpr ie = stmt.getInvokeExpr();
 		ContainerContext[] ctxt = new ContainerContext[constraints.length];
+		if (constraints.length == 0)
+			// e.g. if you call map.toString(), we do not have a constraint
+			return taintCtxt;
 		for (int i = 0; i < constraints.length; i++) {
 			FlowConstraint c = constraints[i];
 			switch (c.getType()) {

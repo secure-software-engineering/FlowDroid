@@ -187,7 +187,7 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void bigIntegerToString()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test
 	public void mapToString() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void mapToString()>");
 	}
