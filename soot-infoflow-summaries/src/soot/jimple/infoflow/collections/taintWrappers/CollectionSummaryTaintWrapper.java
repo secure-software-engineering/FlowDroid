@@ -750,7 +750,7 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 
 		int lastCommonAPIdx = Math.min(flowSource.getAccessPathLength(), taint.getAccessPathLength());
 
-		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink));
+		Type sinkType = TypeUtils.getTypeFromString(getAssignmentType(flowSink, flow.methodSig()));
 		Type taintType = TypeUtils.getTypeFromString(getAssignmentType(taint, lastCommonAPIdx - 1));
 
 		// For type checking, we need types
