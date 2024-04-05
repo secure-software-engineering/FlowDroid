@@ -26,13 +26,17 @@
 		<method id="void putAll(java.util.Map)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] keys]"
+						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						  AccessPath="[java.util.Map: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -114,7 +118,9 @@
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
-					<to sourceSinkType="Return" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -135,16 +141,16 @@
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.Map$Entry: java.lang.Object key]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object key]"
+						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.Map$Entry: java.lang.Object value]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>

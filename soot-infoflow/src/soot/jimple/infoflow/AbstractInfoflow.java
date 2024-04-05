@@ -42,7 +42,11 @@ import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.aliasing.BackwardsFlowSensitiveAliasStrategy;
 import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.aliasing.NullAliasStrategy;
-import soot.jimple.infoflow.cfg.*;
+import soot.jimple.infoflow.cfg.BiDirICFGFactory;
+import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
+import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
+import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
+import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.codeOptimization.DeadCodeEliminator;
 import soot.jimple.infoflow.codeOptimization.ICodeOptimizer;
 import soot.jimple.infoflow.config.IInfoflowConfig;
@@ -90,10 +94,10 @@ import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.river.SecondaryFlowGenerator;
 import soot.jimple.infoflow.river.SecondaryFlowListener;
+import soot.jimple.infoflow.solver.DefaultSolverPeerGroup;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.ISolverPeerGroup;
 import soot.jimple.infoflow.solver.PredecessorShorteningMode;
-import soot.jimple.infoflow.solver.DefaultSolverPeerGroup;
 import soot.jimple.infoflow.solver.cfg.BackwardsInfoflowCFG;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
@@ -105,7 +109,11 @@ import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.solver.sparseSolver.SparseInfoflowSolver;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.manager.*;
+import soot.jimple.infoflow.sourcesSinks.manager.DefaultSourceSinkManager;
+import soot.jimple.infoflow.sourcesSinks.manager.IOneSourceAtATimeManager;
+import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
+import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
+import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.threading.DefaultExecutorFactory;
 import soot.jimple.infoflow.threading.IExecutorFactory;
@@ -505,7 +513,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	public void computeInfoflow(String appPath, String libPath, IEntryPointCreator entryPointCreator,
 			ISourceSinkManager sourcesSinks) {
 		if (sourcesSinks == null) {
-			logger.error("Sources are empty!");
+			logger.error("SourceSinkManager not specified");
 			return;
 		}
 
@@ -997,19 +1005,21 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				if (config.getAdditionalFlowsEnabled()) {
 					logger.info(
-							"IFDS problem with {} forward, {} backward, {} additional backward and {} additional" +
-									" forward edges, solved in {} seconds, processing {} results...",
+							"IFDS problem with {} forward, {} backward, {} additional backward and {} additional"
+									+ " forward edges, solved in {} seconds, processing {} results...",
 							forwardSolver.getPropagationCount(),
-							aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0
+									: aliasingStrategy.getSolver().getPropagationCount(),
 							additionalSolver == null ? 0 : additionalSolver.getPropagationCount(),
 							additionalAliasSolver == null ? 0 : additionalAliasSolver.getPropagationCount(),
 							taintPropagationSeconds, res == null ? 0 : res.size());
 				} else {
 					logger.info(
-							"IFDS problem with {} forward and {} backward edges solved in {} seconds, " +
-									"processing {} results...",
+							"IFDS problem with {} forward and {} backward edges solved in {} seconds, "
+									+ "processing {} results...",
 							forwardSolver.getPropagationCount(),
-							aliasingStrategy.getSolver() == null ? 0 : aliasingStrategy.getSolver().getPropagationCount(),
+							aliasingStrategy.getSolver() == null ? 0
+									: aliasingStrategy.getSolver().getPropagationCount(),
 							taintPropagationSeconds, res == null ? 0 : res.size());
 				}
 
@@ -1248,8 +1258,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			solverPeerGroup.addSolver(infoflowSolver);
 			return infoflowSolver;
 		case SparseContextFlowSensitive:
-			InfoflowConfiguration.SparsePropagationStrategy opt = config.getSolverConfiguration().getSparsePropagationStrategy();
-			logger.info("Using sparse context-sensitive and flow-sensitive solver with sparsification " + opt.toString());
+			InfoflowConfiguration.SparsePropagationStrategy opt = config.getSolverConfiguration()
+					.getSparsePropagationStrategy();
+			logger.info(
+					"Using sparse context-sensitive and flow-sensitive solver with sparsification " + opt.toString());
 			IInfoflowSolver sparseSolver = new SparseInfoflowSolver(problem, executor, opt);
 			solverPeerGroup.addSolver(sparseSolver);
 			return sparseSolver;
@@ -1321,7 +1333,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (definition instanceof MethodSourceSinkDefinition) {
 				MethodSourceSinkDefinition methodDef = (MethodSourceSinkDefinition) definition;
 				MethodSourceSinkDefinition.CallType callType = methodDef.getCallType();
-				if (callType == MethodSourceSinkDefinition.CallType.Callback || callType == MethodSourceSinkDefinition.CallType.Return)
+				if (callType == MethodSourceSinkDefinition.CallType.Callback
+						|| callType == MethodSourceSinkDefinition.CallType.Return)
 					return true;
 			}
 		}
@@ -1402,7 +1415,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param sourcesSinks The source/sink manager
 	 * @param s            The statement to check
 	 * @return An enumeration value that defines whether the given statement is a
-	 * source, a sink, or neither
+	 *         source, a sink, or neither
 	 */
 	protected abstract SourceOrSink scanStmtForSourcesSinks(final ISourceSinkManager sourcesSinks, Stmt s);
 

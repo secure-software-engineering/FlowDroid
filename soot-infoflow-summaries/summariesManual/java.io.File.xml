@@ -177,5 +177,17 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.io.File[] listFiles()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.io.File: java.lang.String fileName]"
+						  AccessPathTypes="[java.lang.String]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.io.File: java.lang.String fileName]"
+						AccessPathTypes="[java.lang.String]" />
+				</flow>
+			</flows>
+		</method>
 	</methods>
 </summary>

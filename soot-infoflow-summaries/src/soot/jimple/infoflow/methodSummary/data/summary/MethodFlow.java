@@ -246,6 +246,8 @@ public class MethodFlow extends AbstractMethodSummary {
 			if (typeChecking != null && !typeChecking.booleanValue()) {
 				if ("java.lang.Object[]".equals(to.getLastFieldType()))
 					return true;
+				if ("java.lang.Object[]".equals(from.getLastFieldType()))
+					return true;
 			}
 			return false;
 		}

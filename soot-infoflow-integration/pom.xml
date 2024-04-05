@@ -104,6 +104,13 @@
         </dependency>
         <dependency>
             <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+            <artifactId>soot-infoflow</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
             <artifactId>soot-infoflow-summaries</artifactId>
             <version>${revision}</version>
             <scope>test</scope>

@@ -360,13 +360,14 @@ public class TypeUtils {
 	}
 
 	/**
-	 * Checks whether "overriden" is an overriden version of "originalSubSig".
-	 * We have to check for covariance of the return value and the contra variance
-	 * of all parameters 
+	 * Checks whether "overriden" is an overriden version of "originalSubSig". We
+	 * have to check for covariance of the return value and the contra variance of
+	 * all parameters
 	 * 
-	 * @param fh 			 The {@link FastHierarchy}
-	 * @param originalSubSig The sub signature of the base method 
-	 * @param overriden 	 The potentially method overriding the method of "originalSubSig" 
+	 * @param fh             The {@link FastHierarchy}
+	 * @param originalSubSig The sub signature of the base method
+	 * @param overriden      The potentially method overriding the method of
+	 *                       "originalSubSig"
 	 * @return true if "overriden" overrides "originalSubSig"
 	 */
 	public static boolean isOverriden(FastHierarchy fh, MethodSubSignature originalSubSig, SootMethod overriden) {
@@ -386,12 +387,13 @@ public class TypeUtils {
 	}
 
 	/**
-	 * Checks whether "overriden" is an overriden version of "originalSubSig".
-	 * We have to check for covariance of the return value and the contra variance
-	 * of all parameters 
+	 * Checks whether "overriden" is an overriden version of "originalSubSig". We
+	 * have to check for covariance of the return value and the contra variance of
+	 * all parameters
 	 * 
-	 * @param originalSubSig The sub signature of the base method 
-	 * @param overriden 	 The potentially method overriding the method of "originalSubSig" 
+	 * @param originalSubSig The sub signature of the base method
+	 * @param overriden      The potentially method overriding the method of
+	 *                       "originalSubSig"
 	 * @return true if "overriden" overrides "originalSubSig"
 	 */
 	public boolean isOverriden(MethodSubSignature originalSubSig, SootMethod overriden) {
