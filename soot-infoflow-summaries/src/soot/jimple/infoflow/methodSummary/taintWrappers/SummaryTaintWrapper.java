@@ -957,34 +957,34 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 		final String subsig = method.getSubSignature();
 
 		ClassSummaries classSummaries = null;
-		if (!method.isConstructor() && !method.isStaticInitializer() && !method.isStatic()) {
-			// Check the callgraph
-			if (stmt != null) {
-				// Check the callees reported by the ICFG
-				for (SootMethod callee : manager.getICFG().getCalleesOfCallAt(stmt)) {
-					ClassMethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass(), subsig);
-					if (flows != null && !flows.isEmpty()) {
-						if (classSupported != null)
-							classSupported.value = true;
-						if (classSummaries == null)
-							classSummaries = new ClassSummaries();
-						classSummaries.merge("<dummy>", flows.getMethodSummaries());
-					}
-				}
-			}
+		SootClass morePreciseClass = getSummaryDeclaringClass(stmt,
+				taintedAbs == null ? null : taintedAbs.getAccessPath());
+		SummaryResponse response = summaryResolver
+				.resolve(new SummaryQuery(morePreciseClass, method.getDeclaringClass(), subsig));
+		if (response != null) {
+			if (classSupported != null)
+				classSupported.value = response.isClassSupported();
+			classSummaries = new ClassSummaries();
+			classSummaries.merge(response.getClassSummaries());
 		}
 
 		// Check the direct callee
 		if (classSummaries == null || classSummaries.isEmpty()) {
-			SootClass declaredClass = getSummaryDeclaringClass(stmt,
-					taintedAbs == null ? null : taintedAbs.getAccessPath());
-			SummaryResponse response = summaryResolver
-					.resolve(new SummaryQuery(method.getDeclaringClass(), declaredClass, subsig));
-			if (response != null) {
-				if (classSupported != null)
-					classSupported.value = response.isClassSupported();
-				classSummaries = new ClassSummaries();
-				classSummaries.merge(response.getClassSummaries());
+			if (!method.isConstructor() && !method.isStaticInitializer() && !method.isStatic()) {
+				// Check the callgraph
+				if (stmt != null) {
+					// Check the callees reported by the ICFG
+					for (SootMethod callee : manager.getICFG().getCalleesOfCallAt(stmt)) {
+						ClassMethodSummaries flows = this.flows.getMethodFlows(callee.getDeclaringClass(), subsig);
+						if (flows != null && !flows.isEmpty()) {
+							if (classSupported != null)
+								classSupported.value = true;
+							if (classSummaries == null)
+								classSummaries = new ClassSummaries();
+							classSummaries.merge("<dummy>", flows.getMethodSummaries());
+						}
+					}
+				}
 			}
 		}
 

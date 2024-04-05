@@ -140,6 +140,52 @@
                 </flow>
             </flows>
         </method>
+		<method id="java.lang.String toString()">
+			<flows>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: java.lang.Object objectField&gt;]"
+                          AccessPathTypes="[java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="true">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: java.lang.Object objectField2&gt;]"
+                          AccessPathTypes="[java.lang.Object]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: java.lang.String stringField&gt;]"
+                          AccessPathTypes="[java.lang.String]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.String" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: java.lang.String stringField2&gt;]"
+                          AccessPathTypes="[java.lang.String]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.String" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data: int value&gt;]"
+                          AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
+                </flow>
+                <flow isAlias="false">
+                    <from sourceSinkType="Field"
+                          BaseType="soot.jimple.infoflow.test.methodSummary.Data"
+                          AccessPath="[&lt;soot.jimple.infoflow.test.methodSummary.Data2: java.lang.Object c&gt;]"
+                          AccessPathTypes="[int]"></from>
+                    <to sourceSinkType="Return" BaseType="java.lang.Object" taintSubFields="true"></to>
+                </flow>
+			</flows>
+		</method>
     </methods>
     <gaps>
         <gap num="0" id="&lt;soot.jimple.infoflow.test.methodSummary.Data: void switchData()&gt;"></gap>

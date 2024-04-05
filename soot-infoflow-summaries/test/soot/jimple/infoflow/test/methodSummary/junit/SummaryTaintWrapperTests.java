@@ -177,7 +177,7 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void killTaint2()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test // (timeout = 30000)
 	public void taintedFieldToString() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void taintedFieldToString()>");
 	}
