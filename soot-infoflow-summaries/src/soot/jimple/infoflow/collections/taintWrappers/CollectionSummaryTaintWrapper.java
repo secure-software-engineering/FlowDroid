@@ -74,9 +74,6 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 	@Override
 	public Set<Abstraction> getTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs) {
 
-		if (stmt.toString().contains("StringBuilder"))
-			System.out.println();
-
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
