@@ -1,13 +1,12 @@
-package soot.jimple.infoflow.integration.test.junit;
+package soot.jimple.infoflow.integration.test.junit.river;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
 
 /**
- * Tests the RiverTestCode with the EasyTaintWrapper and no path reconstruction
- *
- * @author Tim Lange
+ * Tests the merging and separating of SourceSinkDefinitions referecing the same statement or method
+ * with path reconstruction disabled
  */
-public class EasyTaintWrapperRiverWithoutPathsTests extends EasyTaintWrapperRiverTests {
+public class MultipleSinksWithoutPathsTest extends MultipleSinkTests {
     @Override
     protected void setConfiguration(InfoflowConfiguration config) {
         super.setConfiguration(config);

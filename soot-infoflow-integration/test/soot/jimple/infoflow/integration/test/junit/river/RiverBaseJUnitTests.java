@@ -1,4 +1,4 @@
-package soot.jimple.infoflow.integration.test.junit;
+package soot.jimple.infoflow.integration.test.junit.river;
 
 import soot.jimple.infoflow.InfoflowConfiguration;
 
