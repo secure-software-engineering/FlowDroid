@@ -1581,12 +1581,6 @@
 						BaseType="char[]"></from>
 					<to sourceSinkType="Return" BaseType="int" taintSubFields="true"></to>
 				</flow>
-				<flow isAlias="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"
-						BaseType="char[]"></from>
-					<to sourceSinkType="Return" BaseType="char"
-						taintSubFields="true"></to>
-				</flow>
 			</flows>
 		</method>
 		<method

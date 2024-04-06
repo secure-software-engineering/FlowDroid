@@ -31,6 +31,10 @@ import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
+import soot.jimple.CmpExpr;
+import soot.jimple.CmpgExpr;
+import soot.jimple.CmplExpr;
+import soot.jimple.ConditionExpr;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
@@ -136,6 +140,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (!manager.getHierarchy().canStoreType(targetType, cast.getCastType()))
 							targetType = cast.getType();
 					}
+					// Comparisons don't propagate the type of the incoming tainted value
+					else if (rightValue instanceof CmpExpr || rightValue instanceof CmpgExpr
+							|| rightValue instanceof CmplExpr || rightValue instanceof ConditionExpr
+							|| rightValue instanceof LengthExpr)
+						targetType = null;
 					// Special type handling for certain operations
 					else if (rightValue instanceof InstanceOfExpr && manager.getConfig().getEnableInstanceOfTainting())
 						newAbs = source.deriveNewAbstraction(manager.getAccessPathFactory().createAccessPath(leftValue,
@@ -919,7 +928,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 			 * Maps the given access path into the scope of the callee
 			 * 
 			 * @param callee      The method that is being called
-			 * @param stmt		  The caller statement or null
+			 * @param stmt        The caller statement or null
 			 * @param ie          The invocation expression for the call
 			 * @param paramLocals The list of parameter locals in the callee
 			 * @param thisLocal   The "this" local in the callee
@@ -989,7 +998,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										.toArray(new Local[calleeParamCount]);
 
 							if (mapped == ICallerCalleeArgumentMapper.ALL_PARAMS) {
-								//Reflection
+								// Reflection
 
 								// Taint all parameters in the callee if the argument array of a reflective
 								// method call is tainted

@@ -684,4 +684,12 @@ public class TypeTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(array2[0].data);
 	}
+
+	public void wideningTest1() {
+		int value = TelephonyManager.getIMEI();
+		double imei = value;
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(imei);
+	}
+
 }

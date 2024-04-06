@@ -207,7 +207,7 @@ public class TypeUtils {
 		else if (TypeUtils.isObjectLikeType(tp2))
 			return tp1;
 		else if (tp1 instanceof PrimType && tp2 instanceof PrimType)
-			return tp1; // arbitrary choice
+			return null;
 		else if (fastHierarchy.canStoreType(tp2, tp1))
 			return tp2;
 		else if (fastHierarchy.canStoreType(tp1, tp2))
