@@ -37,7 +37,7 @@
                        ImplicitLocation="Next" />
             </constraints>
             <flows>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="false" typeChecking="false" final="true">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field"
                         AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
@@ -194,7 +194,8 @@
                 <flow isAlias="false" typeChecking="false" final="true">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-                          AccessPathTypes="[java.lang.Object[]]" />
+                          AccessPathTypes="[java.lang.Object[]]" 
+                          constrained="noMatch"/>
                     <to sourceSinkType="Field"
                         AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                         AccessPathTypes="[java.lang.Object[]]"
@@ -204,7 +205,8 @@
             <clears>
                 <clear sourceSinkType="Field"
                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]" />
+                       AccessPathTypes="[java.lang.Object[]]" 
+                       preventPropagation="false" />
             </clears>
         </method>
         <method id="void setElementAt(java.lang.Object,int)">
