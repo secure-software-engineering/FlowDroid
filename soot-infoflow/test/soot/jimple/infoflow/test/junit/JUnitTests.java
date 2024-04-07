@@ -144,7 +144,8 @@ public abstract class JUnitTests {
 					|| map.containsSinkMethod(sinkBoolean) || map.containsSinkMethod(sinkDouble));
 			assertTrue(map.isPathBetweenMethods(sink, sourceDeviceId) || map.isPathBetweenMethods(sink, sourceIMEI) // implicit
 																													// flows
-					|| map.isPathBetweenMethods(sink, sourcePwd) || map.isPathBetweenMethods(sink, sourceBundleGet)
+					|| map.isPathBetweenMethods(sinkDouble, sourceIMEI) || map.isPathBetweenMethods(sink, sourcePwd)
+					|| map.isPathBetweenMethods(sink, sourceBundleGet)
 					|| map.isPathBetweenMethods(sinkInt, sourceDeviceId)
 					|| map.isPathBetweenMethods(sinkInt, sourceIMEI) || map.isPathBetweenMethods(sinkInt, sourceIMSI)
 					|| map.isPathBetweenMethods(sinkInt, sourceLongitude)

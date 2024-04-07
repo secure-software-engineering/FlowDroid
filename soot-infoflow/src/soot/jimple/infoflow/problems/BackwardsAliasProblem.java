@@ -87,13 +87,6 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 				return abs;
 			}
 
-			private boolean isCircularType(Value val) {
-				if (!(val instanceof InstanceFieldRef))
-					return false;
-				InstanceFieldRef ref = (InstanceFieldRef) val;
-				return ref.getBase().getType() == ref.getField().getType();
-			}
-
 			@Override
 			public FlowFunction<Abstraction> getNormalFlowFunction(Unit srcUnit, Unit destUnit) {
 				if (!(srcUnit instanceof DefinitionStmt))

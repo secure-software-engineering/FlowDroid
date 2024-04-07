@@ -446,8 +446,13 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 			if (!AccessPath.canContainValue(paramVal))
 				return null;
 
-			return manager.getAccessPathFactory().createAccessPath(paramVal, baseType, baseContext, fragments,
-					t.taintSubFields(), false, true, ArrayTaintType.ContentsAndLength, false);
+			// If the target local's type does not agree with the precise type we have
+			// computed, we just take the target local's type
+			if (manager.getTypeUtils().getMorePreciseType(baseType, paramVal.getType()) == null)
+				baseType = null;
+
+			return manager.getAccessPathFactory().createAccessPath(paramVal, baseType, fragments, t.taintSubFields(),
+					false, true, ArrayTaintType.ContentsAndLength);
 		}
 
 		// If the taint is on the base value, we need to taint the base local
@@ -1478,7 +1483,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 
 		String sBaseType = sinkType == null ? null : "" + sinkType;
 		if (!flow.getIgnoreTypes()) {
-			// Compute the new base type
+			// Compute the new base type. We take the more precise type between incoming and
+			// outgoing taint. If the types are incompatible, even though the "ignore types"
+			// flag was not set, we nevertheless fall back to the declared type of the sink.
 			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
 			if (newBaseType == null)
 				newBaseType = sinkType;

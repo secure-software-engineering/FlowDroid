@@ -31,6 +31,10 @@ import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
+import soot.jimple.CmpExpr;
+import soot.jimple.CmpgExpr;
+import soot.jimple.CmplExpr;
+import soot.jimple.ConditionExpr;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
@@ -137,6 +141,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (!manager.getHierarchy().canStoreType(targetType, cast.getCastType()))
 							targetType = cast.getType();
 					}
+					// Comparisons don't propagate the type of the incoming tainted value
+					else if (rightValue instanceof CmpExpr || rightValue instanceof CmpgExpr
+							|| rightValue instanceof CmplExpr || rightValue instanceof ConditionExpr
+							|| rightValue instanceof LengthExpr)
+						targetType = null;
 					// Special type handling for certain operations
 					else if (rightValue instanceof InstanceOfExpr && manager.getConfig().getEnableInstanceOfTainting())
 						newAbs = source.deriveNewAbstraction(manager.getAccessPathFactory().createAccessPath(leftValue,

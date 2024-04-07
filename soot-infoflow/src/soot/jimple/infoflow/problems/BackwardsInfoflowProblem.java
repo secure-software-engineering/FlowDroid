@@ -61,12 +61,9 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  */
 public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
-	private IPropagationRuleManagerFactory rmf;
-
 	public BackwardsInfoflowProblem(InfoflowManager manager, Abstraction zeroValue,
 			IPropagationRuleManagerFactory ruleManagerFactory) {
 		super(manager, zeroValue, ruleManagerFactory);
-		this.rmf = ruleManagerFactory;
 	}
 
 	@Override
@@ -167,10 +164,10 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									cutFirstFieldLeft = (mappedAp.getFragmentCount() > 0
 											&& mappedAp.getFirstField() == instRef.getField());
 									// We can't really get more precise typewise
-									//                                    leftType = leftVal.getType();
+									// leftType = leftVal.getType();
 									if (!mappedAp.equals(ap)) {
 										ap = mappedAp;
-										//                                        source = source.deriveNewAbstraction(ap, null);
+										// source = source.deriveNewAbstraction(ap, null);
 									}
 								}
 								// whole object tainted
@@ -179,7 +176,7 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 									// $stack1 = o.x with t=o.* -> T={$stack1}.
 									addLeftValue = true;
 									createNewVal = true;
-									//                                    leftType = leftVal.getType();
+									// leftType = leftVal.getType();
 								}
 							} else if (rightVal instanceof ArrayRef) {
 								if (!getManager().getConfig().getEnableArrayTracking()
