@@ -49,7 +49,7 @@ public abstract class SingleJoinPointTests extends JUnitTests {
 	public void sharedMethodTest1c() {
 		System.out.println("Running test case sharedMethodTest1c...");
 		IInfoflow infoflow = initInfoflow(false);
-		infoflow.getConfig().getPathConfiguration().setPathReconstructionMode(PathReconstructionMode.Fast);
+		infoflow.getConfig().getPathConfiguration().setPathReconstructionMode(PathReconstructionMode.Precise);
 		infoflow.getConfig().getSolverConfiguration().setSingleJoinPointAbstraction(true);
 
 		List<String> epoints = new ArrayList<String>();

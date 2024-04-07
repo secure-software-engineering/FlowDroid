@@ -41,9 +41,4 @@ public class QueueTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(untaintedElement);
 	}
-	
-	
-	
-	
-
 }

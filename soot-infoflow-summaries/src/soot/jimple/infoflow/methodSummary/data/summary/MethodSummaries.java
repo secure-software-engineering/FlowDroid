@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import heros.solver.Pair;
 import soot.Scene;
@@ -26,6 +27,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	public static final MethodSummaries EMPTY_SUMMARIES = new ImmutableMethodSummaries();
 
 	private volatile MultiMap<String, MethodFlow> flows;
+	private volatile Map<String, Boolean> noImplicitIdentity;
 	private volatile MultiMap<String, MethodClear> clears;
 	private volatile Map<Integer, GapDefinition> gaps;
 	private volatile Set<String> excludedMethods;
@@ -85,7 +87,7 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	/**
 	 * Merges the given clears (kill flows) into the this method summary object
 	 * 
-	 * @param newFlows The new clears (kill flows) to be merged
+	 * @param newClears The new clears (kill flows) to be merged
 	 */
 	public void mergeClears(Collection<MethodClear> newClears) {
 		if (newClears != null && !newClears.isEmpty()) {
@@ -235,6 +237,52 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 		if (clears != null && !clears.isEmpty()) {
 			Set<MethodClear> sigClears = clears.get(signature);
 			if (sigClears != null && !sigClears.isEmpty()) {
+				if (summaries == null)
+					summaries = new MethodSummaries();
+				summaries.mergeClears(sigClears);
+			}
+		}
+
+		return summaries;
+	}
+
+	public MethodSummaries getApproximateFlows() {
+		if (flows == null || flows.isEmpty())
+			return null;
+
+		MethodSummaries summaries = new MethodSummaries();
+		for (Pair<String, MethodFlow> flow : flows)
+			if (flow.getO2().sink().anyShift())
+				summaries.addFlow(flow.getO2());
+
+		if (summaries.isEmpty())
+			return null;
+
+		if (clears != null && !clears.isEmpty())
+			summaries.mergeClears(clears.values());
+
+		return summaries;
+	}
+
+	public MethodSummaries filterForAliases() {
+		MethodSummaries summaries = null;
+
+		// Get the flows
+		if (flows != null && !flows.isEmpty()) {
+			Set<MethodFlow> sigFlows = flows.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE)
+					.collect(Collectors.toSet());
+			if (!sigFlows.isEmpty()) {
+				if (summaries == null)
+					summaries = new MethodSummaries();
+				summaries.mergeFlows(sigFlows);
+			}
+		}
+
+		// Get the clears
+		if (clears != null && !clears.isEmpty()) {
+			Set<MethodClear> sigClears = clears.values().stream().filter(f -> f.isAlias != IsAliasType.FALSE)
+					.collect(Collectors.toSet());
+			if (!sigClears.isEmpty()) {
 				if (summaries == null)
 					summaries = new MethodSummaries();
 				summaries.mergeClears(sigClears);

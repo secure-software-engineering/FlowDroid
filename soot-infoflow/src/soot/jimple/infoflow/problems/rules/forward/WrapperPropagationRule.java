@@ -17,6 +17,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
+import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -47,7 +48,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 	 * @param source The taint source
 	 * @return The taints computed by the wrapper
 	 */
-	private Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source,
+	protected Set<Abstraction> computeWrapperTaints(Abstraction d1, final Stmt iStmt, Abstraction source,
 			ByReferenceBoolean killSource) {
 		// Do not process zero abstractions
 		if (source == getZeroValue())
@@ -163,7 +164,9 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 			ByReferenceBoolean killAll) {
 		// If we have an exclusive taint wrapper for the target
 		// method, we do not perform an own taint propagation.
-		if (getManager().getTaintWrapper() != null && getManager().getTaintWrapper().isExclusive(stmt, source)) {
+		final InfoflowManager manager = getManager();
+		final ITaintPropagationWrapper tw = manager.getTaintWrapper();
+		if (tw != null && tw.isExclusive(stmt, source)) {
 			// taint is propagated in CallToReturnFunction, so we do not need any taint
 			// here:
 			killAll.value = true;

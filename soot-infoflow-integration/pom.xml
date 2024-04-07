@@ -114,11 +114,25 @@
             <artifactId>soot-infoflow-summaries</artifactId>
             <version>${revision}</version>
             <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
+            <artifactId>soot-infoflow-summaries</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
             <artifactId>soot-infoflow-android</artifactId>
             <version>${revision}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230618</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -59,7 +59,7 @@ public class IccInstrumentDestination {
 	 * 
 	 * @param compSootClass
 	 * @param intentSootField
-	 * @return
+	 * @return the construction method
 	 */
 	public SootMethod generateInitMethod(SootClass compSootClass, SootField intentSootField) {
 		String name = "<init>";
@@ -139,7 +139,7 @@ public class IccInstrumentDestination {
 	 * To extract the real binder type, Thus, a more precision way is to perform a
 	 * type analysis for IBinder reference
 	 * 
-	 * @return
+	 * @return the extracted type
 	 */
 	public Type extractBinderType(SootClass sootClass) {
 		SootMethod onBindMethod = null;

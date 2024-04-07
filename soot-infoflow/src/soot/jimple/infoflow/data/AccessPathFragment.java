@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.data;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import soot.SootField;
@@ -15,7 +16,16 @@ public class AccessPathFragment {
 
 	private final SootField field;
 	private final Type fieldType;
-	private final ContextDefinition context;
+	private final ContainerContext[] context;
+
+	/**
+	 * Creates a new {@link AccessPathFragment} without a context and using the fields type
+	 *
+	 * @param field     The field that is dereferenced
+	 */
+	public AccessPathFragment(SootField field) {
+		this(field, null, null);
+	}
 
 	/**
 	 * Creates a new {@link AccessPathFragment} without a context
@@ -24,9 +34,7 @@ public class AccessPathFragment {
 	 * @param fieldType The propagated type of the field that is dereferenced
 	 */
 	public AccessPathFragment(SootField field, Type fieldType) {
-		this.field = field;
-		this.fieldType = fieldType == null ? field.getType() : fieldType;
-		this.context = null;
+		this(field, fieldType, null);
 	}
 
 	/**
@@ -36,9 +44,9 @@ public class AccessPathFragment {
 	 * @param fieldType The propagated type of the field that is dereferenced
 	 * @param context   The context under which the access path is tainted
 	 */
-	public AccessPathFragment(SootField field, Type fieldType, ContextDefinition context) {
+	public AccessPathFragment(SootField field, Type fieldType, ContainerContext[] context) {
 		this.field = field;
-		this.fieldType = fieldType;
+		this.fieldType = fieldType == null ? field.getType() : fieldType;
 		this.context = context;
 	}
 
@@ -69,12 +77,25 @@ public class AccessPathFragment {
 	 * 
 	 * @return The context in which the access path is tainted
 	 */
-	public ContextDefinition getContext() {
+	public ContainerContext[] getContext() {
 		return context;
+	}
+
+	public boolean hasContext() {
+		return context != null;
 	}
 
 	@Override
 	public String toString() {
+		if (hasContext()) {
+			StringBuilder sb = new StringBuilder(field.toString());
+			sb.append("@[");
+			for (ContainerContext c : context) {
+				sb.append(c).append(",");
+			}
+			sb.append("]");
+			return sb.toString();
+		}
 		return field.toString();
 	}
 
@@ -95,18 +116,24 @@ public class AccessPathFragment {
 	 * @param fieldTypes The types of the fields in the sequence of dereferences
 	 * @return The sequence of access path fragments
 	 */
-	public static AccessPathFragment[] createFragmentArray(SootField[] fields, Type[] fieldTypes) {
+	public static AccessPathFragment[] createFragmentArray(SootField[] fields, Type[] fieldTypes, ContainerContext[][] contexts) {
 		if (fields == null || fields.length == 0)
 			return null;
-		AccessPathFragment fragments[] = new AccessPathFragment[fields.length];
+		AccessPathFragment[] fragments = new AccessPathFragment[fields.length];
 		for (int i = 0; i < fields.length; i++)
-			fragments[i] = new AccessPathFragment(fields[i], fieldTypes == null ? null : fieldTypes[i]);
+			fragments[i] = new AccessPathFragment(fields[i], fieldTypes == null ? null : fieldTypes[i], contexts == null ? null : contexts[i]);
 		return fragments;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(context, field, fieldType);
+		int result = Objects.hash(field, fieldType);
+		result = 31 * result + Arrays.hashCode(context);
+		return result;
+	}
+
+	public int hashCodeWithoutContext() {
+		return Objects.hash(field, fieldType);
 	}
 
 	@Override
@@ -118,7 +145,19 @@ public class AccessPathFragment {
 		if (getClass() != obj.getClass())
 			return false;
 		AccessPathFragment other = (AccessPathFragment) obj;
-		return Objects.equals(context, other.context) && Objects.equals(field, other.field)
+		return Arrays.equals(context, other.context) && Objects.equals(field, other.field)
+				&& Objects.equals(fieldType, other.fieldType);
+	}
+
+	public boolean equalsWithoutContext(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AccessPathFragment other = (AccessPathFragment) obj;
+		return Objects.equals(field, other.field)
 				&& Objects.equals(fieldType, other.fieldType);
 	}
 
@@ -133,4 +172,7 @@ public class AccessPathFragment {
 		return new AccessPathFragment(field, newType, context);
 	}
 
+	public AccessPathFragment copyWithNewContext(ContainerContext[] newContext) {
+		return new AccessPathFragment(field, fieldType, newContext);
+	}
 }

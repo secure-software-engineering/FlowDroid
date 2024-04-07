@@ -118,7 +118,8 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * @param apkFile the AppManifest within the given APK will be parsed.
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
-	 * @see {@link BaseProcessManifest#ProcessManifest(InputStream)}
+	 * @see BaseProcessManifest
+	 *      {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
 	public BaseProcessManifest(File apkFile) throws IOException, XmlPullParserException {
 		this(apkFile, ARSCFileParser.getInstance(apkFile));
@@ -131,7 +132,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * @param arscParser The parser for the Android resource database
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
-	 * @see {@link BaseProcessManifest#ProcessManifest(InputStream)}
+	 * @see BaseProcessManifest {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
 	public BaseProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException, XmlPullParserException {
 		if (!apkFile.exists())
@@ -287,8 +288,6 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Returns the <code>provider</code> which has the given <code>name</code>.
 	 *
 	 * @param name the provider's name
-	 *
-	 * @param name the provider's name
 	 * @return provider with <code>name</code>
 	 */
 	public AXmlNode getProvider(String name) {
@@ -398,13 +397,13 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 		return this.axml.toByteArray();
 	}
 
+	private String cache_PackageName = null;
+
 	/**
 	 * Gets the application's package name
 	 *
 	 * @return The package name of the application
 	 */
-	private String cache_PackageName = null;
-
 	public String getPackageName() {
 		if (cache_PackageName == null) {
 			AXmlAttribute<?> attr = this.manifest.getAttribute("package");
@@ -465,7 +464,6 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Gets the permissions this application requests
 	 *
 	 * @return The permissions requested by this application
-	 * @return
 	 */
 	public Set<String> getPermissions() {
 		List<AXmlNode> usesPerms = this.manifest.getChildrenWithTag("uses-permission");
@@ -539,7 +537,8 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	/**
 	 * Adds a new permission to the manifest.
 	 *
-	 * @param complete permission name e.g. "android.permission.INTERNET"
+	 * @param permissionName complete permission name e.g.
+	 *                       "android.permission.INTERNET"
 	 */
 	public void addPermission(String permissionName) {
 		AXmlNode permission = new AXmlNode("uses-permission", null, manifest, "");
@@ -603,7 +602,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Returns all activity nodes that are "launchable", i.e. that are called when
 	 * the user clicks on the button in the launcher.
 	 *
-	 * @return
+	 * @return all launchable activity nodes
 	 */
 	public Set<AXmlNode> getLaunchableActivityNodes() {
 		Set<AXmlNode> allLaunchableActivities = new LinkedHashSet<AXmlNode>();

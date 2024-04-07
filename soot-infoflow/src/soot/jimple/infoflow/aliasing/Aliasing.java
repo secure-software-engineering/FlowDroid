@@ -75,8 +75,6 @@ public class Aliasing {
 	 * @param taintSet    The set to which all generated alias taints shall be added
 	 * @param method      The method containing src
 	 * @param newAbs      The newly generated abstraction for the variable taint
-	 * @return The set of immediately available alias abstractions. If no such
-	 *         abstractions exist, null is returned
 	 */
 	public void computeAliases(final Abstraction d1, final Stmt src, final Value targetValue, Set<Abstraction> taintSet,
 			SootMethod method, Abstraction newAbs) {
@@ -152,12 +150,12 @@ public class Aliasing {
 
 								System.arraycopy(taintedAP.getFragments(), 0, cutFragments, 0, fieldIdx);
 								System.arraycopy(base, 0, cutFragments, fieldIdx, base.length);
-								System.arraycopy(taintedAP.getFragments(), fieldIdx, cutFragments, fieldIdx + base.length,
-										taintedAP.getFragmentCount() - fieldIdx);
+								System.arraycopy(taintedAP.getFragments(), fieldIdx, cutFragments,
+										fieldIdx + base.length, taintedAP.getFragmentCount() - fieldIdx);
 
 								return manager.getAccessPathFactory().createAccessPath(taintedAP.getPlainValue(),
-										taintedAP.getBaseType(), cutFragments, taintedAP.getTaintSubFields(), false, false,
-										taintedAP.getArrayTaintType());
+										taintedAP.getBaseType(), cutFragments, taintedAP.getTaintSubFields(), false,
+										false, taintedAP.getArrayTaintType());
 							}
 						}
 					}
@@ -273,8 +271,8 @@ public class Aliasing {
 	/**
 	 * Gets whether the two values must always point to the same runtime object
 	 * 
-	 * @param field1   The first value
-	 * @param field2   The second value
+	 * @param val1     The first value
+	 * @param val2     The second value
 	 * @param position The statement at which to check for an aliasing relationship
 	 * @return True if the two values must always point to the same runtime object,
 	 *         otherwise false
@@ -304,6 +302,18 @@ public class Aliasing {
 			// analysis for the respective method.
 			logger.error("Error in local must alias analysis", ex);
 			return false;
+		}
+	}
+
+	public LocalMustAliasAnalysis getMustAliasAnalysis(Stmt stmt) {
+		SootMethod method = manager.getICFG().getMethodOf(stmt);
+		if (excludedFromMustAliasAnalysis.contains(method))
+			return null;
+
+		try {
+			return strongAliasAnalysis.getUnchecked(method);
+		} catch (Exception ex) {
+			return null;
 		}
 	}
 

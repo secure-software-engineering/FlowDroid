@@ -4,30 +4,40 @@ import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_BASE
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_FLOWTYPE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_MATCH_STRICT;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PARAMETER_INDEX;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_PREVENT_PROPAGATION;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.ATTRIBUTE_TAINT_SUB_FIELDS;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_CLEAR;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_FLOW;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_METHOD;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SINK;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.TREE_SOURCE;
+import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.VALUE_FALSE;
 import static soot.jimple.infoflow.methodSummary.xml.XMLConstants.VALUE_TRUE;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import soot.jimple.infoflow.collections.data.IndexConstraint;
+import soot.jimple.infoflow.collections.data.KeyConstraint;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowClear;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowConstraint;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSink;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.GapDefinition;
+import soot.jimple.infoflow.methodSummary.data.summary.ImplicitLocation;
+import soot.jimple.infoflow.methodSummary.data.summary.IsAliasType;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodClear;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodFlow;
 import soot.jimple.infoflow.methodSummary.data.summary.MethodSummaries;
@@ -37,22 +47,22 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.AccessPathFragment;
 public class SummaryReader extends AbstractXMLReader {
 
 	// XML stuff incl. Verification against XSD
-	private static final String XSD_FILE_PATH = "schema/ClassSummary.xsd";
+	private static final String XSD_FILE_PATH = "schema/ClassSummaryC.xsd";
 
 	private boolean validateSummariesOnRead = false;
 
 	private enum State {
-		summary, hierarchy, intf, methods, method, flow, clear, gaps, gap
+		summary, hierarchy, intf, methods, method, flow, clear, gaps, gap, constraints, key, index
 	}
 
 	/**
 	 * Reads a summary xml and places the new summaries into the given data object.
 	 * This method closes the reader.
-	 * 
+	 *
 	 * @param reader    The reader from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
 	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
-	 * @throws IOException Thrown if the reader could not be read
+	 * @throws IOException        Thrown if the reader could not be read
 	 */
 	public void read(Reader reader, ClassMethodSummaries summaries)
 			throws XMLStreamException, SummaryXMLException, IOException {
@@ -67,13 +77,17 @@ public class SummaryReader extends AbstractXMLReader {
 			Map<String, String> sourceAttributes = new HashMap<String, String>();
 			Map<String, String> sinkAttributes = new HashMap<String, String>();
 			Map<String, String> clearAttributes = new HashMap<String, String>();
+			Map<String, String> constraintAttributes = new HashMap<>();
+			List<FlowConstraint> constraints = new ArrayList<>();
 
 			String currentMethod = "";
 			int currentID = -1;
-			boolean isAlias = false;
+			IsAliasType isAlias = IsAliasType.FALSE;
 			Boolean typeChecking = null;
 			Boolean ignoreTypes = null;
 			Boolean cutSubfields = null;
+			boolean isFinal = false;
+			boolean excludedOnClear = false;
 
 			State state = State.summary;
 			while (xmlreader.hasNext()) {
@@ -106,7 +120,7 @@ public class SummaryReader extends AbstractXMLReader {
 						// Some summaries are full signatures instead of subsignatures. We fix this on
 						// the fly.
 						if (currentMethod.contains(":"))
-							currentMethod = currentMethod.substring(currentMethod.indexOf(":") + 1);
+							currentMethod = currentMethod.substring(currentMethod.indexOf(":") + 1).trim();
 
 						String sIsExcluded = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_EXCLUDED);
 						if (sIsExcluded != null && sIsExcluded.equals(XMLConstants.VALUE_TRUE))
@@ -115,9 +129,10 @@ public class SummaryReader extends AbstractXMLReader {
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_METHOD) && xmlreader.isEndElement()) {
-					if (state == State.method)
+					if (state == State.method) {
 						state = State.methods;
-					else
+						constraints.clear();
+					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_FLOW) && xmlreader.isStartElement()) {
 					if (state == State.method) {
@@ -125,7 +140,7 @@ public class SummaryReader extends AbstractXMLReader {
 						sinkAttributes.clear();
 						state = State.flow;
 						String sAlias = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_IS_ALIAS);
-						isAlias = sAlias != null && sAlias.equals(XMLConstants.VALUE_TRUE);
+						isAlias = parseIsAlias(sAlias);
 
 						String sTypeChecking = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_TYPE_CHECKING);
 						if (sTypeChecking != null && !sTypeChecking.isEmpty())
@@ -139,6 +154,13 @@ public class SummaryReader extends AbstractXMLReader {
 						if (sIgnoreTypes != null && !sIgnoreTypes.isEmpty())
 							ignoreTypes = sIgnoreTypes.equals(XMLConstants.VALUE_TRUE);
 
+						String sIsFinal = getAttributeByName(xmlreader, XMLConstants.ATTRIBUTE_FINAL);
+						if (sIsFinal != null && !sIsFinal.isEmpty())
+							isFinal = sIsFinal.equals(VALUE_TRUE);
+
+						String sExcludedOnClear = getAttributeByName(xmlreader, XMLConstants.EXCLUDED_ON_CLEAR);
+						if (sExcludedOnClear != null && !sExcludedOnClear.isEmpty())
+							excludedOnClear = sExcludedOnClear.equals(VALUE_TRUE);
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isStartElement()) {
@@ -157,6 +179,8 @@ public class SummaryReader extends AbstractXMLReader {
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_SINK) && xmlreader.isStartElement()) {
 					if (state == State.flow) {
+						if (xmlreader.getAttributeCount() == 0)
+							throw new RuntimeException();
 						for (int i = 0; i < xmlreader.getAttributeCount(); i++)
 							sinkAttributes.put(xmlreader.getAttributeLocalName(i), xmlreader.getAttributeValue(i));
 					} else
@@ -165,16 +189,26 @@ public class SummaryReader extends AbstractXMLReader {
 					if (state == State.flow) {
 						state = State.method;
 						MethodFlow flow = new MethodFlow(currentMethod, createSource(summary, sourceAttributes),
-								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields);
+								createSink(summary, sinkAttributes), isAlias, typeChecking, ignoreTypes, cutSubfields,
+								constraints.toArray(new FlowConstraint[0]), isFinal, excludedOnClear);
 						summary.addFlow(flow);
 
-						isAlias = false;
+						isAlias = IsAliasType.FALSE;
+						isFinal = false;
+						excludedOnClear = false;
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(TREE_CLEAR) && xmlreader.isEndElement()) {
 					if (state == State.clear) {
 						state = State.method;
-						MethodClear clear = new MethodClear(currentMethod, createClear(summary, clearAttributes));
+
+						String sAlias = clearAttributes.get(XMLConstants.ATTRIBUTE_IS_ALIAS);
+						IsAliasType alias = parseIsAlias(sAlias);
+
+						String ppString = clearAttributes.get(ATTRIBUTE_PREVENT_PROPAGATION);
+						boolean preventProp = ppString == null || ppString.isEmpty() || ppString.equals(VALUE_TRUE);
+						MethodClear clear = new MethodClear(currentMethod, createClear(summary, clearAttributes),
+								constraints.toArray(new FlowConstraint[0]), alias, preventProp);
 						summary.addClear(clear);
 					} else
 						throw new SummaryXMLException();
@@ -228,6 +262,38 @@ public class SummaryReader extends AbstractXMLReader {
 						state = State.hierarchy;
 					} else
 						throw new SummaryXMLException();
+				} else if (localName.equals(XMLConstants.TREE_CONSTRAINTS) && xmlreader.isStartElement()) {
+					if (state != State.method)
+						throw new SummaryXMLException();
+					state = State.constraints;
+				} else if (localName.equals(XMLConstants.TREE_CONSTRAINTS) && xmlreader.isEndElement()) {
+					if (state != State.constraints)
+						throw new SummaryXMLException();
+					state = State.method;
+				} else if (localName.equals(XMLConstants.TREE_KEY) && xmlreader.isStartElement()) {
+					if (state != State.constraints)
+						throw new SummaryXMLException();
+					state = State.key;
+					for (int i = 0; i < xmlreader.getAttributeCount(); i++)
+						constraintAttributes.put(xmlreader.getAttributeLocalName(i), xmlreader.getAttributeValue(i));
+				} else if (localName.equals(XMLConstants.TREE_KEY) && xmlreader.isEndElement()) {
+					if (state != State.key)
+						throw new SummaryXMLException();
+					state = State.constraints;
+					constraints.add(createKeyConstraint(constraintAttributes));
+					constraintAttributes.clear();
+				} else if (localName.equals(XMLConstants.TREE_INDEX) && xmlreader.isStartElement()) {
+					if (state != State.constraints)
+						throw new SummaryXMLException();
+					state = State.index;
+					for (int i = 0; i < xmlreader.getAttributeCount(); i++)
+						constraintAttributes.put(xmlreader.getAttributeLocalName(i), xmlreader.getAttributeValue(i));
+				} else if (localName.equals(XMLConstants.TREE_INDEX) && xmlreader.isEndElement()) {
+					if (state != State.index)
+						throw new SummaryXMLException();
+					state = State.constraints;
+					constraints.add(createIndexConstraint(constraintAttributes));
+					constraintAttributes.clear();
 				}
 			}
 
@@ -241,16 +307,32 @@ public class SummaryReader extends AbstractXMLReader {
 		}
 	}
 
+	private IsAliasType parseIsAlias(String sAlias) throws SummaryXMLException {
+		if (sAlias == null)
+			return IsAliasType.FALSE;
+
+		switch (sAlias) {
+		case XMLConstants.VALUE_TRUE:
+			return IsAliasType.TRUE;
+		case "":
+		case XMLConstants.VALUE_FALSE:
+			return IsAliasType.FALSE;
+		case "withContext":
+			return IsAliasType.WITH_CONTEXT;
+		default:
+			throw new SummaryXMLException("Unknown isAlias value: " + sAlias);
+		}
+	}
+
 	/**
 	 * Reads a summary xml file and merges the summaries that are saved in that file
 	 * into the given data object
-	 * 
+	 *
 	 * @param fileName  The file from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
 	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
-	 * @throws IOException Thrown if the file could not be read
+	 * @throws IOException        Thrown if the file could not be read
 	 */
-
 	public void read(File fileName, ClassMethodSummaries summaries)
 			throws XMLStreamException, SummaryXMLException, IOException {
 		if (validateSummariesOnRead) {
@@ -266,7 +348,7 @@ public class SummaryReader extends AbstractXMLReader {
 
 	/**
 	 * Creates a new source data object from the given XML attributes
-	 * 
+	 *
 	 * @param summary    The method summary for which to create the new flow source
 	 * @param attributes The XML attributes for the source
 	 * @return The newly created source data object
@@ -277,14 +359,14 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowSource(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), isConstrained(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSource(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), isConstrained(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSource(SourceSinkType.GapBaseObject, getBaseType(attributes),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), isConstrained(attributes));
 		} else if (isReturn(attributes)) {
 			GapDefinition gap = getGapDefinition(attributes, summary);
 			if (gap == null)
@@ -293,14 +375,14 @@ public class SummaryReader extends AbstractXMLReader {
 
 			return new FlowSource(SourceSinkType.Return, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), isConstrained(attributes));
 		}
 		throw new SummaryXMLException("Invalid flow source definition");
 	}
 
 	/**
 	 * Creates a new sink data object from the given XML attributes
-	 * 
+	 *
 	 * @param summary    The method summary for which to create the new flow source
 	 * @param attributes The XML attributes for the sink
 	 * @return The newly created sink data object
@@ -310,25 +392,28 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowSink(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes),
+					isConstrained(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowSink(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes),
+					isConstrained(attributes));
 		} else if (isReturn(attributes)) {
 			return new FlowSink(SourceSinkType.Return, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					taintSubFields(attributes), getGapDefinition(attributes, summary), isMatchStrict(attributes),
+					isConstrained(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowSink(SourceSinkType.GapBaseObject, -1, getBaseType(attributes), false,
-					getGapDefinition(attributes, summary), isMatchStrict(attributes));
+					getGapDefinition(attributes, summary), isMatchStrict(attributes), isConstrained(attributes));
 		}
 		throw new SummaryXMLException();
 	}
 
 	/**
 	 * Creates a new taint kill data object from the given XML attributes
-	 * 
+	 *
 	 * @param summary    The method summary for which to create the new flow source
 	 * @param attributes The XML attributes for the source
 	 * @return The newly created source data object
@@ -338,16 +423,51 @@ public class SummaryReader extends AbstractXMLReader {
 		if (isField(attributes)) {
 			return new FlowClear(SourceSinkType.Field, getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isConstrained(attributes));
 		} else if (isParameter(attributes)) {
 			return new FlowClear(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
 					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isConstrained(attributes));
 		} else if (isGapBaseObject(attributes)) {
 			return new FlowClear(SourceSinkType.GapBaseObject, getBaseType(attributes),
-					getGapDefinition(attributes, summary));
+					getGapDefinition(attributes, summary), isConstrained(attributes));
 		}
 		throw new SummaryXMLException("Invalid flow clear definition");
+	}
+
+	private FlowConstraint createKeyConstraint(Map<String, String> attributes) throws SummaryXMLException {
+		if (isParameter(attributes))
+			return new KeyConstraint(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)));
+		if (isAny(attributes))
+			return new KeyConstraint(SourceSinkType.Any, -1, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)));
+		throw new SummaryXMLException();
+	}
+
+	private FlowConstraint createIndexConstraint(Map<String, String> attributes) throws SummaryXMLException {
+		if (isParameter(attributes))
+			return new IndexConstraint(SourceSinkType.Parameter, parameterIdx(attributes), getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)), null);
+		if (isImplicit(attributes))
+			return new IndexConstraint(SourceSinkType.Implicit, -1, getBaseType(attributes),
+					new AccessPathFragment(getAccessPath(attributes), getAccessPathTypes(attributes)),
+					getImplicitLocation(attributes));
+		throw new SummaryXMLException();
+	}
+
+	private ImplicitLocation getImplicitLocation(Map<String, String> attributes) {
+		String implLoc = attributes.get(XMLConstants.ATTRIBUTE_IMPL_LOC);
+		switch (implLoc.toLowerCase()) {
+		case "first":
+			return ImplicitLocation.First;
+		case "last":
+			return ImplicitLocation.Last;
+		case "next":
+			return ImplicitLocation.Next;
+		default:
+			throw new RuntimeException("Missing case!");
+		}
 	}
 
 	private boolean isReturn(Map<String, String> attributes) {
@@ -364,6 +484,43 @@ public class SummaryReader extends AbstractXMLReader {
 			return attr != null && attr.equals(SourceSinkType.Field.toString());
 		}
 		return false;
+	}
+
+	private boolean isImplicit(Map<String, String> attributes) {
+		if (attributes != null) {
+			String attr = attributes.get(ATTRIBUTE_FLOWTYPE);
+			return attr != null && attr.equals(SourceSinkType.Implicit.toString());
+		}
+		return false;
+	}
+
+	private ConstraintType isConstrained(Map<String, String> attributes) {
+		if (attributes != null) {
+			String attr = attributes.get(XMLConstants.ATTRIBUTE_CONSTRAINED);
+			if (attr == null)
+				return ConstraintType.FALSE;
+			switch (attr.toLowerCase()) {
+			case VALUE_TRUE:
+				return ConstraintType.TRUE;
+			case VALUE_FALSE:
+				return ConstraintType.FALSE;
+			case XMLConstants.CONSTRAINT_KEEP:
+				return ConstraintType.KEEP;
+			case XMLConstants.CONSTRAINT_RO:
+				return ConstraintType.READONLY;
+			case "shiftright":
+				return ConstraintType.SHIFT_RIGHT;
+			case "shiftleft":
+				return ConstraintType.SHIFT_LEFT;
+			case "nomatch":
+				return ConstraintType.NO_MATCH;
+			case "append":
+				return ConstraintType.APPEND;
+			default:
+				throw new RuntimeException("Unknown constraint type: " + attr);
+			}
+		}
+		return ConstraintType.FALSE;
 	}
 
 	private String[] getAccessPath(Map<String, String> attributes) {
@@ -413,6 +570,10 @@ public class SummaryReader extends AbstractXMLReader {
 		return attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Parameter.toString());
 	}
 
+	private boolean isAny(Map<String, String> attributes) {
+		return attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Any.toString());
+	}
+
 	private boolean isGapBaseObject(Map<String, String> attributes) {
 		return attributes != null && attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.GapBaseObject.toString());
 	}
@@ -452,7 +613,7 @@ public class SummaryReader extends AbstractXMLReader {
 
 	/**
 	 * Sets whether summaries shall be validated after they are read from disk
-	 * 
+	 *
 	 * @param validateSummariesOnRead True if summaries shall be validated after
 	 *                                they are read from disk, otherwise false
 	 */

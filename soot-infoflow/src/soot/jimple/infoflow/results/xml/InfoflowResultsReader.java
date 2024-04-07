@@ -31,8 +31,8 @@ public class InfoflowResultsReader {
 	 * 
 	 * @param fileName The file from which to read the data flows
 	 * @return The data flow result object read from the given file
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
-	 * @throws IOException Thrown if the file could not be read
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws IOException        Thrown if the file could not be read
 	 */
 	public SerializedInfoflowResults readResults(String fileName) throws XMLStreamException, IOException {
 		SerializedInfoflowResults results = new SerializedInfoflowResults();
@@ -87,7 +87,8 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
-					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
+					methodSourceSinkDefinition = getAttributeByName(reader,
+							XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.accessPath) && reader.isStartElement()) {
 					stateStack.push(State.accessPath);
 
@@ -124,7 +125,8 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
-					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
+					methodSourceSinkDefinition = getAttributeByName(reader,
+							XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.taintPath) && reader.isStartElement()
 						&& stateStack.peek() == State.source) {
 					stateStack.push(State.taintPath);
@@ -138,7 +140,8 @@ public class InfoflowResultsReader {
 					// Read the attributes
 					statement = getAttributeByName(reader, XmlConstants.Attributes.statement);
 					method = getAttributeByName(reader, XmlConstants.Attributes.method);
-					methodSourceSinkDefinition = getAttributeByName(reader, XmlConstants.Attributes.methodSourceSinkDefinition);
+					methodSourceSinkDefinition = getAttributeByName(reader,
+							XmlConstants.Attributes.methodSourceSinkDefinition);
 				} else if (reader.getLocalName().equals(XmlConstants.Tags.performanceData) && reader.isStartElement()
 						&& stateStack.peek() == State.dataFlowResults) {
 					stateStack.push(State.performanceData);
@@ -189,7 +192,8 @@ public class InfoflowResultsReader {
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.sink)) {
 						sink = new SerializedSinkInfo(ap, statement, method, methodSourceSinkDefinition);
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.source)) {
-						source = new SerializedSourceInfo(ap, statement, method, pathElements, methodSourceSinkDefinition);
+						source = new SerializedSourceInfo(ap, statement, method, pathElements,
+								methodSourceSinkDefinition);
 						results.addResult(source, sink);
 					} else if (reader.getLocalName().equals(XmlConstants.Tags.pathElement)) {
 						pathElements.add(new SerializedPathElement(ap, statement, method));

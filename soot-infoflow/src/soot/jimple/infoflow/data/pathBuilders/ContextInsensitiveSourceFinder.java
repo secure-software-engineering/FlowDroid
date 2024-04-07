@@ -22,11 +22,9 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	/**
 	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder} class
 	 * 
-	 * @param manager      The data flow manager that gives access to the icfg and
-	 *                     other objects
-	 * @param executor     The executor in which to run the path reconstruction
-	 *                     tasks
-	 * @param maxThreadNum The maximum number of threads to use
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
 	public ContextInsensitiveSourceFinder(InfoflowManager manager, InterruptableExecutor executor) {
 		this(manager, executor, -1);
@@ -35,13 +33,11 @@ public class ContextInsensitiveSourceFinder extends ConcurrentAbstractionPathBui
 	/**
 	 * Creates a new instance of the {@link ContextInsensitiveSourceFinder} class
 	 * 
-	 * @param manager      The data flow manager that gives access to the icfg and
-	 *                     other objects
-	 * @param executor     The executor in which to run the path reconstruction
-	 *                     tasks
-	 * @param maxThreadNum The maximum number of threads to use
-	 * @param numTasks     The maximum number of abstractions for which a path
-	 *                     reconstruction will be performed
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
+	 * @param numTasks The maximum number of abstractions for which a path
+	 *                 reconstruction will be performed
 	 */
 	public ContextInsensitiveSourceFinder(InfoflowManager manager, InterruptableExecutor executor, int numTasks) {
 		super(manager, executor);

@@ -8,7 +8,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
-import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
+import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
 
 /**
  * TaintPropagationHandler to record which statements secondary flows reach.

@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,11 +107,6 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @param callbackMethods The list of callback methods whose parameters are
 	 *                        sources through which the application receives data
 	 *                        from the operating system
-	 * @param weakMatching    True for weak matching: If an entry in the list has no
-	 *                        return type, it matches arbitrary return types if the
-	 *                        rest of the method signature is compatible. False for
-	 *                        strong matching: The method signature in the code
-	 *                        exactly match the one in the list.
 	 * @param config          The configuration of the data flow analyzer
 	 * @param layoutControls  A map from reference identifiers to the respective
 	 *                        Android layout controls
@@ -133,22 +130,14 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 		// methods may change through user's definition. We match all the
 		// ICC methods through their base class name.
 		if (iccBaseClasses == null)
-			iccBaseClasses = new SootClass[] { Scene.v().getSootClass("android.content.Context"), // activity,
-					// service
-					// and
-					// broadcast
-					Scene.v().getSootClass("android.content.ContentResolver"), // provider
-					Scene.v().getSootClass("android.app.Activity") // some
-					// methods
-					// (e.g.,
-					// onActivityResult)
-					// only
-					// defined
-					// in
-					// Activity
-					// class
-			};
-
+			iccBaseClasses = Stream.of(
+					// activity, service and broadcast
+					Scene.v().getSootClassUnsafe("android.content.Context"),
+					// provider
+					Scene.v().getSootClassUnsafe("android.content.ContentResolver"),
+					// some methods (e.g., onActivityResult) only defined in Activity class
+					Scene.v().getSootClassUnsafe("android.app.Activity")).filter(Objects::nonNull)
+					.toArray(SootClass[]::new);
 	}
 
 	/**
@@ -368,6 +357,11 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 		return control;
 	}
 
+	private boolean isResourceCall(SootMethod callee) {
+		return (smActivityFindViewById != null && smActivityFindViewById == callee)
+				|| (smViewFindViewById != null && smViewFindViewById == callee);
+	}
+
 	@Override
 	protected ISourceSinkDefinition getUISourceDefinition(Stmt sCallSite, IInfoflowCFG cfg) {
 		// If we match input controls, we need to check whether this is a call
@@ -384,10 +378,10 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 		SootMethod callee = ie.getMethod();
 
 		// Is this a call to resource-handling method?
-		boolean isResourceCall = callee == smActivityFindViewById || callee == smViewFindViewById;
+		boolean isResourceCall = isResourceCall(callee);
 		if (!isResourceCall) {
 			for (SootMethod cfgCallee : cfg.getCalleesOfCallAt(sCallSite)) {
-				if (cfgCallee == smActivityFindViewById || cfgCallee == smViewFindViewById) {
+				if (isResourceCall(cfgCallee)) {
 					isResourceCall = true;
 					break;
 				}
@@ -397,7 +391,7 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 		// We need special treatment for the Android support classes
 		if (!isResourceCall) {
 			if ((callee.getDeclaringClass().getName().startsWith("android.support.v")
-					|| callee.getDeclaringClass().getName().startsWith("androidx."))
+					|| callee.getDeclaringClass().getName().startsWith("androidx.")) && smActivityFindViewById != null
 					&& callee.getSubSignature().equals(smActivityFindViewById.getSubSignature()))
 				isResourceCall = true;
 		}
@@ -426,7 +420,8 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	}
 
 	@Override
-	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager,
+			AccessPath ap) {
 		Collection<ISourceSinkDefinition> definitions = super.getSinkDefinitions(sCallSite, manager, ap);
 		if (definitions.size() > 0)
 			return definitions;

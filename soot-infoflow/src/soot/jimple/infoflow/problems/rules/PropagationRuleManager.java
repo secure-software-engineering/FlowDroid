@@ -9,7 +9,6 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
-import soot.jimple.infoflow.problems.rules.forward.ITaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
@@ -24,27 +23,35 @@ public class PropagationRuleManager {
 	protected final Abstraction zeroValue;
 	protected final TaintPropagationResults results;
 	protected final ITaintPropagationRule[] rules;
+	protected IArrayContextProvider arrayRule;
 
-	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue,
-								  TaintPropagationResults results, ITaintPropagationRule[] rules) {
+	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results,
+			ITaintPropagationRule[] rules) {
 		this.manager = manager;
 		this.zeroValue = zeroValue;
 		this.results = results;
 		this.rules = rules;
+
+		if (rules != null) {
+			for (ITaintPropagationRule rule : rules) {
+				if (rule instanceof IArrayContextProvider) {
+					arrayRule = (IArrayContextProvider) rule;
+					break;
+				}
+			}
+		}
+		if (arrayRule == null)
+			arrayRule = new DummyArrayContext();
 	}
 
 	/**
 	 * Applies all rules to the normal flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param destStmt
-	 *            The next statement to which control flow will continue after
-	 *            processing stmt
+	 * @param d1       The context abstraction
+	 * @param source   The incoming taint to propagate over the given statement
+	 * @param stmt     The statement to which to apply the rules
+	 * @param destStmt The next statement to which control flow will continue after
+	 *                 processing stmt
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyNormalFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt) {
@@ -54,21 +61,15 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the normal flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param destStmt
-	 *            The next statement to which control flow will continue after
-	 *            processing stmt
-	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming taint
-	 *            abstraction shall be killed
-	 * @param killAll
-	 *            Outgoing value that receives whether all taints shall be killed
-	 *            and nothing shall be propagated onwards
+	 * @param d1         The context abstraction
+	 * @param source     The incoming taint to propagate over the given statement
+	 * @param stmt       The statement to which to apply the rules
+	 * @param destStmt   The next statement to which control flow will continue
+	 *                   after processing stmt
+	 * @param killSource Outgoing value for the rule to indicate whether the
+	 *                   incoming taint abstraction shall be killed
+	 * @param killAll    Outgoing value that receives whether all taints shall be
+	 *                   killed and nothing shall be propagated onwards
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyNormalFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -101,17 +102,12 @@ public class PropagationRuleManager {
 	/**
 	 * Propagates a flow across a call site
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The abstraction to propagate over the statement
-	 * @param stmt
-	 *            The statement at which to propagate the abstraction
-	 * @param dest
-	 *            The destination method into which to propagate the abstraction
-	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints shall be
-	 *            killed, i.e., nothing shall be propagated
+	 * @param d1      The context abstraction
+	 * @param source  The abstraction to propagate over the statement
+	 * @param stmt    The statement at which to propagate the abstraction
+	 * @param dest    The destination method into which to propagate the abstraction
+	 * @param killAll Outgoing value for the rule to specify whether all taints
+	 *                shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Set<Abstraction> applyCallFlowFunction(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
@@ -134,12 +130,9 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the call-to-return flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
+	 * @param d1     The context abstraction
+	 * @param source The incoming taint to propagate over the given statement
+	 * @param stmt   The statement to which to apply the rules
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyCallToReturnFlowFunction(Abstraction d1, Abstraction source, Stmt stmt) {
@@ -149,15 +142,11 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the call-to-return flow function
 	 * 
-	 * @param d1
-	 *            The context abstraction
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param killSource
-	 *            Outgoing value for the rule to indicate whether the incoming taint
-	 *            abstraction shall be killed
+	 * @param d1         The context abstraction
+	 * @param source     The incoming taint to propagate over the given statement
+	 * @param stmt       The statement to which to apply the rules
+	 * @param killSource Outgoing value for the rule to indicate whether the
+	 *                   incoming taint abstraction shall be killed
 	 * @return The collection of outgoing taints
 	 */
 	public Set<Abstraction> applyCallToReturnFlowFunction(Abstraction d1, Abstraction source, Stmt stmt,
@@ -179,9 +168,8 @@ public class PropagationRuleManager {
 		if (!noAddSource && !killSource.value) {
 			if (res == null) {
 				res = new HashSet<>();
-				res.add(source);
-			} else
-				res.add(source);
+			}
+			res.add(source);
 		}
 		return res;
 	}
@@ -189,29 +177,23 @@ public class PropagationRuleManager {
 	/**
 	 * Applies all rules to the return flow function
 	 * 
-	 * @param callerD1s
-	 *            The context abstraction at the caller side
+	 * @param callerD1s The context abstraction at the caller side
 	 * @param calleeD1
-	 * @param source
-	 *            The incoming taint to propagate over the given statement
-	 * @param stmt
-	 *            The statement to which to apply the rules
-	 * @param retSite
-	 *            The return site to which the execution returns after leaving the
-	 *            current method
-	 * @param callSite
-	 *            The call site of the call from which we return
-	 * @param killAll
-	 *            Outgoing value for the rule to specify whether all taints shall be
-	 *            killed, i.e., nothing shall be propagated
+	 * @param source    The incoming taint to propagate over the given statement
+	 * @param stmt      The statement to which to apply the rules
+	 * @param retSite   The return site to which the execution returns after leaving
+	 *                  the current method
+	 * @param callSite  The call site of the call from which we return
+	 * @param killAll   Outgoing value for the rule to specify whether all taints
+	 *                  shall be killed, i.e., nothing shall be propagated
 	 * @return The collection of outgoing taints
 	 */
-	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-			Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Set<Abstraction> applyReturnFlowFunction(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		Set<Abstraction> res = null;
 		for (ITaintPropagationRule rule : rules) {
-			Collection<Abstraction> ruleOut = rule.propagateReturnFlow(callerD1s, calleeD1, source, stmt, retSite, callSite,
-					killAll);
+			Collection<Abstraction> ruleOut = rule.propagateReturnFlow(callerD1s, calleeD1, source, stmt, retSite,
+					callSite, killAll);
 			if (killAll != null && killAll.value)
 				return null;
 			if (ruleOut != null && !ruleOut.isEmpty()) {
@@ -233,4 +215,7 @@ public class PropagationRuleManager {
 		return rules;
 	}
 
+	public IArrayContextProvider getArrayContextProvider() {
+		return arrayRule;
+	}
 }

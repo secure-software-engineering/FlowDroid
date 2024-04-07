@@ -17,7 +17,8 @@ import soot.tagkit.IntegerConstantValueTag;
 import soot.tagkit.Tag;
 
 /**
- * {@link AXmlHandler} provides functionality to parse a byte compressed android xml file and access all nodes.
+ * {@link AXmlHandler} provides functionality to parse a byte compressed android
+ * xml file and access all nodes.
  * 
  * @author Stefan Haas, Mario Schlipf
  */
@@ -25,7 +26,8 @@ public class AXmlHandler {
 	public static final String ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android";
 
 	/**
-	 * Contains the byte compressed xml which was parsed by this {@link AXmlHandler}.
+	 * Contains the byte compressed xml which was parsed by this
+	 * {@link AXmlHandler}.
 	 */
 	protected byte[] xml;
 
@@ -37,8 +39,8 @@ public class AXmlHandler {
 	/**
 	 * Creates a new {@link AXmlHandler} which parses the {@link InputStream}.
 	 * 
-	 * @param	aXmlIs					InputStream reading a byte compressed android xml file
-	 * @throws	IOException				if an I/O error occurs.
+	 * @param aXmlIs InputStream reading a byte compressed android xml file
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public AXmlHandler(InputStream aXmlIs) throws IOException {
 		this(aXmlIs, new AXML20Parser());
@@ -47,9 +49,9 @@ public class AXmlHandler {
 	/**
 	 * Creates a new {@link AXmlHandler} which parses the {@link InputStream}.
 	 * 
-	 * @param	aXmlIs					InputStream reading a byte compressed android xml file
-	 * @param	parser					The parser implementation to be used
-	 * @throws	IOException				if an I/O error occurs.
+	 * @param aXmlIs InputStream reading a byte compressed android xml file
+	 * @param parser The parser implementation to be used
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public AXmlHandler(InputStream aXmlIs, IBinaryXMLFileParser parser) throws IOException {
 		if (aXmlIs == null)
@@ -89,27 +91,28 @@ public class AXmlHandler {
 	/**
 	 * Returns the Android xml document.
 	 * 
-	 * @return	the Android xml document
+	 * @return the Android xml document
 	 */
 	public AXmlDocument getDocument() {
 		return parser.getDocument();
 	}
 
 	/**
-	 * Returns a list containing all nodes of the xml document which have the given tag.
+	 * Returns a list containing all nodes of the xml document which have the given
+	 * tag.
 	 * 
-	 * @param	tag		the tag being search for
-	 * @return	list pointing on all nodes which have the given tag.
+	 * @param tag the tag being search for
+	 * @return list pointing on all nodes which have the given tag.
 	 */
 	public List<AXmlNode> getNodesWithTag(String tag) {
 		return parser.getNodesWithTag(tag);
 	}
 
 	/**
-	 * Returns the xml document as a compressed android xml byte array.
-	 * This will consider all changes made to the root node and it's children.
+	 * Returns the xml document as a compressed android xml byte array. This will
+	 * consider all changes made to the root node and it's children.
 	 * 
-	 * @return	android byte compressed xml
+	 * @return android byte compressed xml
 	 */
 	public byte[] toByteArray() {
 		try {
@@ -136,10 +139,11 @@ public class AXmlHandler {
 
 	/**
 	 * Returns the Android resource Id of the attribute which has the given name.
+	 * See the android.R.attr class
 	 * 
-	 * @param	name	the attribute's name.
-	 * @return	the resource Id defined by Android or -1 if the attribute does not exist.
-	 * @see		android.R.attr
+	 * @param name the attribute's name.
+	 * @return the resource Id defined by Android or -1 if the attribute does not
+	 *         exist.
 	 */
 	public static int getAttributeResourceId(String name) {
 		// try to get attribute's resource Id from Androids R class. Since we
@@ -169,9 +173,11 @@ public class AXmlHandler {
 
 	/**
 	 * Writes out the given node
-	 * @param parentNodeVisitor The visitor associated with the parent node
-	 * under which the given node shall be registered as a child
-	 * @param node The child node to write out under the given parent node
+	 * 
+	 * @param parentNodeVisitor The visitor associated with the parent node under
+	 *                          which the given node shall be registered as a child
+	 * @param node              The child node to write out under the given parent
+	 *                          node
 	 */
 	private void writeNode(NodeVisitor parentNodeVisitor, AXmlNode node) {
 		NodeVisitor childNodeVisitor = parentNodeVisitor.child(node.getNamespace(), node.getTag());
@@ -213,9 +219,9 @@ public class AXmlHandler {
 	/**
 	 * Returns a textual representation of the given node and it's data.
 	 * 
-	 * @param	node	current node which will be printed
-	 * @param	depth	for the padding (indent)
-	 * @return	String representation of the given node, it's attributes and children
+	 * @param node  current node which will be printed
+	 * @param depth for the padding (indent)
+	 * @return String representation of the given node, it's attributes and children
 	 */
 	protected String toString(AXmlNode node, int depth) {
 		StringBuilder sb = new StringBuilder();

@@ -1,10 +1,7 @@
 package soot.jimple.infoflow.solver.cfg;
 
 import com.sun.istack.NotNull;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Unit;
-import soot.Value;
+import soot.*;
 import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.jimple.SwitchStmt;
@@ -178,6 +175,11 @@ public class BackwardsInfoflowCFG extends InfoflowCFG {
 	@Override
 	public void notifyMethodChanged(SootMethod m) {
 		baseCFG.notifyMethodChanged(m);
+	}
+
+	@Override
+	public void notifyNewBody(Body b) {
+		baseCFG.notifyNewBody(b);
 	}
 
 	@Override

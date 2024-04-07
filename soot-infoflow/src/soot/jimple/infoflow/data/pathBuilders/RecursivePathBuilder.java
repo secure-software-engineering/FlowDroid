@@ -31,13 +31,9 @@ public class RecursivePathBuilder extends AbstractAbstractionPathBuilder {
 	/**
 	 * Creates a new instance of the {@link RecursivePathBuilder} class
 	 * 
-	 * @param manager          The data flow manager that gives access to the icfg
-	 *                         and other objects
-	 * @param config           The configuration of the data flow solver
-	 * @param executor         The executor in which to run the path reconstruction
-	 *                         tasks
-	 * @param reconstructPaths True if the exact propagation path between source and
-	 *                         sink shall be reconstructed.
+	 * @param manager  The data flow manager that gives access to the icfg and other
+	 *                 objects
+	 * @param executor The executor in which to run the path reconstruction tasks
 	 */
 	public RecursivePathBuilder(InfoflowManager manager, CountingThreadPoolExecutor executor) {
 		super(manager);

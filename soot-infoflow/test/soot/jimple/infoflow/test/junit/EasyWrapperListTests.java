@@ -10,7 +10,6 @@
  ******************************************************************************/
 package soot.jimple.infoflow.test.junit;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
+import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 
 /**
  * tests functionality of TaintWrapper. Additionally all tests can be executed
@@ -27,10 +27,10 @@ import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
  */
 public abstract class EasyWrapperListTests extends JUnitTests {
 
-	private final EasyTaintWrapper easyWrapper;
+	protected ITaintPropagationWrapper easyWrapper;
 
 	public EasyWrapperListTests() throws IOException {
-		easyWrapper = new EasyTaintWrapper(new File("EasyTaintWrapperSource.txt"));
+		easyWrapper = EasyTaintWrapper.getDefault();
 	}
 
 	@Test(timeout = 300000)

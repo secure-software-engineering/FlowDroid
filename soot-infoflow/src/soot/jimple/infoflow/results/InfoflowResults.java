@@ -12,7 +12,13 @@ package soot.jimple.infoflow.results;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +68,7 @@ public class InfoflowResults {
 	 * Gets the exceptions that have happened during the data flow analysis. This
 	 * collection is immutable.
 	 *
-	 * @return
+	 * @return exceptions that occurred during the data flow analysis
 	 */
 	public List<String> getExceptions() {
 		return exceptions;
@@ -145,7 +151,7 @@ public class InfoflowResults {
 	}
 
 	public void addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
-						  Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt) {
+			Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt) {
 		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
 			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
 				this.addResult(new ResultSinkInfo(sinkDefinition, sink, sinkStmt),
@@ -154,8 +160,9 @@ public class InfoflowResults {
 		}
 	}
 
-	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
-			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(
+			Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
+			Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Abstraction> propagationPath, InfoflowManager manager) {
 		// Get the statements and the access paths from the abstractions
 		List<Stmt> stmtPath = null;
@@ -186,7 +193,7 @@ public class InfoflowResults {
 	 *
 	 * @param sinkDefinitions       The definition of the sink
 	 * @param sink                  The access path that arrived at the sink
- *                                  statement
+	 *                              statement
 	 * @param sinkStmt              The sink statement
 	 * @param sourceDefinitions     The definition of the source
 	 * @param source                The access path that originated from the source
@@ -199,18 +206,21 @@ public class InfoflowResults {
 	 *                              path
 	 * @return The new data flow result
 	 */
-	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
-			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(
+			Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
+			Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites) {
 		return addResult(sinkDefinitions, sink, sinkStmt, sourceDefinitions, source, sourceStmt, userData,
 				propagationPath, propagationAccessPath, propagationCallSites, null);
 	}
 
-	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink,
-			Stmt sinkStmt, Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
+	public Collection<Pair<ResultSourceInfo, ResultSinkInfo>> addResult(
+			Collection<ISourceSinkDefinition> sinkDefinitions, AccessPath sink, Stmt sinkStmt,
+			Collection<ISourceSinkDefinition> sourceDefinitions, AccessPath source, Stmt sourceStmt, Object userData,
 			List<Stmt> propagationPath, List<AccessPath> propagationAccessPath, List<Stmt> propagationCallSites,
 			InfoflowManager manager) {
-		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> results = new HashSet<>(sinkDefinitions.size() * sourceDefinitions.size());
+		Collection<Pair<ResultSourceInfo, ResultSinkInfo>> results = new HashSet<>(
+				sinkDefinitions.size() * sourceDefinitions.size());
 		for (ISourceSinkDefinition sourceDefinition : sourceDefinitions) {
 			for (ISourceSinkDefinition sinkDefinition : sinkDefinitions) {
 				ResultSourceInfo sourceObj = new ResultSourceInfo(sourceDefinition, source, sourceStmt, userData,
@@ -337,7 +347,7 @@ public class InfoflowResults {
 	 */
 	public Set<DataFlowResult> getResultSet() {
 		if (results == null || results.isEmpty())
-			return null;
+			return Collections.emptySet();
 
 		Set<DataFlowResult> set = new HashSet<>(results.size() * 10);
 		for (ResultSinkInfo sink : results.keySet()) {
@@ -350,8 +360,8 @@ public class InfoflowResults {
 	/**
 	 * Gets the additional data flow results in a flat set
 	 *
-	 * @return The additional data flow results in a flat set. If no data flows are available,
-	 *         the return value is null.
+	 * @return The additional data flow results in a flat set. If no data flows are
+	 *         available, the return value is null.
 	 */
 	public Set<DataFlowResult> getAdditionalResultSet() {
 		if (additionalResults == null || additionalResults.isEmpty())
@@ -619,7 +629,6 @@ public class InfoflowResults {
 		for (ResultSinkInfo sink : sinks)
 			remove(sink);
 	}
-
 
 	@Override
 	public String toString() {

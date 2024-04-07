@@ -96,7 +96,7 @@ public class IccRedirectionCreator {
 			return;
 
 		// Do not instrument code into system methods
-		if (SystemClassHandler.v().isClassInSystemPackage(link.getFromSM().getDeclaringClass().getName()))
+		if (SystemClassHandler.v().isClassInSystemPackage(link.getFromSM().getDeclaringClass()))
 			return;
 
 		// 1) generate redirect method

@@ -30,8 +30,10 @@ public class SootMethodRepresentationParser {
 
 	private static final SootMethodRepresentationParser instance = new SootMethodRepresentationParser();
 
-	private Pattern patternSubsigToName = null;
-	private Pattern patternMethodSig = null;
+	private static final Pattern patternSubsigToName = Pattern.compile("^\\s*(.+)\\s+(.+)\\((.*?)\\)\\s*$");
+	private static final Pattern patternMethodSig = Pattern
+			.compile("<(?<className>.*?): (?<returnType>.*?) (?<methodName>.*?)\\((?<parameters>.*?)\\)>");
+	private static final Pattern patternNoReturnValue = Pattern.compile("^\\s*(.+)\\((.*?)\\)\\s*$");
 
 	private SootMethodRepresentationParser() {
 
@@ -58,10 +60,6 @@ public class SootMethodRepresentationParser {
 			throw new IllegalArgumentException(
 					"Illegal format of " + parseString + " (should use soot method representation)");
 		}
-
-		if (patternMethodSig == null)
-			patternMethodSig = Pattern
-					.compile("<(?<className>.*?): (?<returnType>.*?) (?<methodName>.*?)\\((?<parameters>.*?)\\)>");
 
 		Matcher matcher = patternMethodSig.matcher(parseString);
 		if (matcher.find()) {
@@ -138,16 +136,13 @@ public class SootMethodRepresentationParser {
 	 *         be parsed successfully, otherwise an empty string.
 	 */
 	public String getMethodNameFromSubSignature(String subSignature) {
-		if (patternSubsigToName == null) {
-			Pattern pattern = Pattern.compile("^\\s*(.+)\\s+(.+)\\((.*?)\\)\\s*$");
-			this.patternSubsigToName = pattern;
-		}
 		Matcher matcher = patternSubsigToName.matcher(subSignature);
 
 		if (!matcher.find()) { // in case no return value exists
-			Pattern pattern = Pattern.compile("^\\s*(.+)\\((.*?)\\)\\s*$");
-			this.patternSubsigToName = pattern;
-			return getMethodNameFromSubSignature(subSignature);
+			matcher = patternNoReturnValue.matcher(subSignature);
+			if (!matcher.find())
+				;
+			return "";
 		}
 		String method = matcher.group(matcher.groupCount() - 1);
 		return method;
@@ -161,15 +156,12 @@ public class SootMethodRepresentationParser {
 	 *         the given subsignature could be parsed successfully, otherwise null.
 	 */
 	public String[] getParameterTypesFromSubSignature(String subSignature) {
-		if (patternSubsigToName == null) {
-			Pattern pattern = Pattern.compile("^\\s*(.+)\\s+(.+)\\((.*?)\\)\\s*$");
-			this.patternSubsigToName = pattern;
-		}
 		Matcher matcher = patternSubsigToName.matcher(subSignature);
 		if (!matcher.find()) { // in case no return value exists
-			Pattern pattern = Pattern.compile("^\\s*(.+)\\((.*?)\\)\\s*$");
-			this.patternSubsigToName = pattern;
-			return getParameterTypesFromSubSignature(subSignature);
+			matcher = patternNoReturnValue.matcher(subSignature);
+			if (!matcher.find())
+				;
+			return null;
 		}
 		String params = matcher.group(matcher.groupCount());
 		if (params.equals(""))

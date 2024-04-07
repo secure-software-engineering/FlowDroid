@@ -16,7 +16,7 @@ public interface IClassSummaryHandler {
 	 * Implementers can use this callback to skip over certain classes.
 	 * 
 	 * @param className
-	 * @return
+	 * @return false to skip, true to analyze
 	 */
 	public boolean onBeforeAnalyzeClass(String className);
 

@@ -47,6 +47,6 @@ public class DefaultSolverPeerGroup implements ISolverPeerGroup {
 
 		// The solver peer group already applies the summary for all solvers.
 		// Thus, no need to call the same method again in the IFDS solver.
-		return false;
+		return rec == null;
 	}
 }

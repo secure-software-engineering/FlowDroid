@@ -7,6 +7,7 @@ import java.util.*;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -19,6 +20,7 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
+import soot.jimple.infoflow.integration.test.junit.river.BaseJUnitTests;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
@@ -173,6 +175,27 @@ public class AndroidRegressionTests extends BaseJUnitTests {
         ssinks.add("<java.util.Locale: java.lang.String getCountry()> -> _SOURCE_");
         ssinks.add("<android.util.Log: int i(java.lang.String,java.lang.String)> -> _SINK_");
         InfoflowResults results = app.runInfoflow(PermissionMethodParser.fromStringList(ssinks));
+        Assert.assertEquals(1, results.size());
+    }
+
+
+    @Test
+    public void testThreadRunnable() throws XmlPullParserException, IOException {
+        SetupApplication app = initApplication("testAPKs/ThreadRunnable.apk");
+        // TODO: add support for parameter mismatch/virtualedges.xml
+        Assume.assumeTrue("There is no mechanism to fixup access paths at return edges",
+                app.getConfig().getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Forwards);
+        InfoflowResults results = app.runInfoflow("../soot-infoflow-android/SourcesAndSinks.txt");
+        Assert.assertEquals(1, results.size());
+    }
+
+    @Test
+    public void testThreadRunnableIndirect() throws XmlPullParserException, IOException {
+        SetupApplication app = initApplication("testAPKs/ThreadRunnableIndirect.apk");
+        // TODO: add support for parameter mismatch/virtualedges.xml
+        Assume.assumeTrue("There is no mechanism to fixup access paths at return edges",
+                app.getConfig().getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Forwards);
+        InfoflowResults results = app.runInfoflow("../soot-infoflow-android/SourcesAndSinks.txt");
         Assert.assertEquals(1, results.size());
     }
 }

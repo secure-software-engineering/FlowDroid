@@ -32,8 +32,8 @@ public class MetaDataReader extends AbstractXMLReader {
 	 * 
 	 * @param reader The reader from which to read the summary meta data
 	 * @return The summary data object read from the given reader
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
-	 * @throws IOException Thrown if the reader could not be read
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws IOException        Thrown if the reader could not be read
 	 */
 	public SummaryMetaData read(Reader reader) throws XMLStreamException, SummaryXMLException, IOException {
 		SummaryMetaData metaData = new SummaryMetaData();
@@ -131,8 +131,8 @@ public class MetaDataReader extends AbstractXMLReader {
 	 * 
 	 * @param fileName The file from which to read the method meta data
 	 * @return The summary data object read from the given file
-	 * @return XMLStreamException Thrown in case of a syntax error in the input file
-	 * @throws IOException Thrown if the file could not be read
+	 * @throws XMLStreamException Thrown in case of a syntax error in the input file
+	 * @throws IOException        Thrown if the file could not be read
 	 */
 
 	public SummaryMetaData read(File fileName) throws XMLStreamException, SummaryXMLException, IOException {

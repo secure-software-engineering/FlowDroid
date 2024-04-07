@@ -16,7 +16,6 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * 
  * @author Steven Arzt
  *
- * @param <D>
  * @param <N>
  */
 public class OnDemandReferenceProvider<N> extends AbstractReferenceProvider<SootMethod, N> {

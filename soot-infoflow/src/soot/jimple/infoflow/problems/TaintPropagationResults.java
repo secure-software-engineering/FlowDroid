@@ -3,8 +3,10 @@ package soot.jimple.infoflow.problems;
 import java.util.HashSet;
 import java.util.Set;
 
+import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
@@ -57,9 +59,12 @@ public class TaintPropagationResults {
 	 */
 	public boolean addResult(AbstractionAtSink resultAbs) {
 		// Check whether we need to filter a result in a system package
-		if (manager.getConfig().getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(
-				manager.getICFG().getMethodOf(resultAbs.getSinkStmt()).getDeclaringClass().getName()))
-			return true;
+		if (manager.getConfig().getIgnoreFlowsInSystemPackages()) {
+			SootMethod sm = manager.getICFG().getMethodOf(resultAbs.getSinkStmt());
+			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass())
+					&& !sm.hasTag(FlowDroidEssentialMethodTag.TAG_NAME))
+				return true;
+		}
 
 		// Construct the abstraction at the sink
 		Abstraction abs = resultAbs.getAbstraction();
@@ -93,7 +98,6 @@ public class TaintPropagationResults {
 	 * 
 	 * @return True if this result object is empty, i.e., there are no results yet,
 	 *         otherwise false
-	 * @return
 	 */
 	public boolean isEmpty() {
 		return this.results.isEmpty();

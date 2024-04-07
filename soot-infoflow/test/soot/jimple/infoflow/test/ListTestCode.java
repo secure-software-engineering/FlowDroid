@@ -47,7 +47,8 @@ public class ListTestCode {
 		list.add(tainted);
 
 		String taintedElement = list.get(1);
-		// because whole list is tainted, even untainted elements are tainted if they are fetched from the list
+		// because whole list is tainted, even untainted elements are tainted if they
+		// are fetched from the list
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(taintedElement);
 	}
@@ -106,7 +107,6 @@ public class ListTestCode {
 		String tainted = TelephonyManager.getDeviceId();
 		LinkedList<String> list = new LinkedList<String>();
 		list.add(tainted);
-		// because whole list is tainted, even untainted elements are tainted if they are fetched from the list
 		String taintedElement2 = list.get(0);
 
 		ConnectionManager cm = new ConnectionManager();
@@ -244,19 +244,19 @@ public class ListTestCode {
 	private void bar2(String s) {
 		c.add(s);
 	}
-	
-	public void listToStringTest() {
-        String secret = TelephonyManager.getDeviceId();
 
-        ArrayList<String> secretList = new ArrayList<String>();
-        secretList.add("asd");
-        secretList.add(secret);
-        secretList.add("aaa");
-        
-        ConnectionManager cm = new ConnectionManager();
-        cm.publish(secretList.toString());
+	public void listToStringTest() {
+		String secret = TelephonyManager.getDeviceId();
+
+		ArrayList<String> secretList = new ArrayList<String>();
+		secretList.add("asd");
+		secretList.add(secret);
+		secretList.add("aaa");
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(secretList.toString());
 	}
-	
+
 	public void iteratorHasNextTest() {
 		List<String> list = new ArrayList<String>();
 		list.add(TelephonyManager.getDeviceId());

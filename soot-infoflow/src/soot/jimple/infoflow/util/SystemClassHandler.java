@@ -10,6 +10,7 @@ import soot.jimple.Constant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
+import soot.jimple.infoflow.cfg.FlowDroidUserClass;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
 
@@ -51,7 +52,7 @@ public class SystemClassHandler {
 	 * @return True if the given class belongs to a system package, otherwise false
 	 */
 	public boolean isClassInSystemPackage(SootClass clazz) {
-		return clazz != null && isClassInSystemPackage(clazz.getName());
+		return clazz != null && !clazz.hasTag(FlowDroidUserClass.TAG_NAME) && isClassInSystemPackage(clazz.getName());
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class SystemClassHandler {
 	 */
 	public boolean isClassInSystemPackage(Type type) {
 		if (type instanceof RefType)
-			return isClassInSystemPackage(((RefType) type).getSootClass().getName());
+			return isClassInSystemPackage(((RefType) type).getSootClass());
 		return false;
 	}
 

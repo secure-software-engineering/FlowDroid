@@ -64,7 +64,7 @@ public interface IMethodSummaryProvider {
 	 * different overloads are functionally equivalent, but may use the different
 	 * types in order to be faster
 	 * 
-	 * @param sootClass       The class containing the method. If two classes B and
+	 * @param className       The class containing the method. If two classes B and
 	 *                        C inherit from some class A, methods in A can either
 	 *                        be evaluated in the context of B or C.
 	 * @param methodSignature The signature of the method for which to get the flow

@@ -56,6 +56,7 @@ import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.ContainerContext;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
@@ -156,8 +157,12 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				// Do we taint the contents of an array? If we do not
 				// differentiate, we do not set any special type.
 				ArrayTaintType arrayTaintType = source.getAccessPath().getArrayTaintType();
-				if (leftValue instanceof ArrayRef && manager.getConfig().getEnableArraySizeTainting())
+				ContainerContext[] baseCtxt = null;
+				if (leftValue instanceof ArrayRef && manager.getConfig().getEnableArraySizeTainting()) {
 					arrayTaintType = ArrayTaintType.Contents;
+					baseCtxt = propagationRules.getArrayContextProvider().getContextForArrayRef((ArrayRef) leftValue,
+							assignStmt);
+				}
 
 				// also taint the target of the assignment
 				if (newAbs == null)
@@ -166,7 +171,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								manager.getAccessPathFactory().createAccessPath(leftValue, true), assignStmt, true);
 					else {
 						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
-								leftValue, targetType, cutFirstField, true, arrayTaintType);
+								leftValue, targetType, cutFirstField, true, arrayTaintType, baseCtxt);
 						newAbs = source.deriveNewAbstraction(ap, assignStmt);
 					}
 
@@ -360,6 +365,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					@Override
 					public Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
 						// Check whether we must activate a taint
+						if (getManager().getICFG().getMethodOf(stmt).getName().equals("apply"))
+							System.out.println();
+						if (getManager().getICFG().getMethodOf(stmt).getName().contains("lambda"))
+							System.out.println();
 						final Abstraction newSource;
 						if (!source.isAbstractionActive() && src == source.getActivationUnit())
 							newSource = source.getActiveCopy();

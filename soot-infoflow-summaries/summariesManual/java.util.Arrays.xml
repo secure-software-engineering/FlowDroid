@@ -6,7 +6,7 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]" constrained="keep" />
 				</flow>
 			</flows>
 		</method>

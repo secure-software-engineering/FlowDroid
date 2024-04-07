@@ -62,26 +62,26 @@ public abstract class JUnitTests {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		File f = new File(".");
-		File testSrc1 = new File(f, "bin");
-		File testSrc2 = new File(f, "build" + File.separator + "classes");
-		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
-
-		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
-			fail("Test aborted - none of the test sources are available");
-		}
-
 		StringBuilder appPathBuilder = new StringBuilder();
-		appendWithSeparator(appPathBuilder, testSrc1);
-		appendWithSeparator(appPathBuilder, testSrc2);
-		appendWithSeparator(appPathBuilder, testSrc3);
-		appPath = appPathBuilder.toString();
+		addTestPathes(f, appPathBuilder);
 
+		File fi = new File("../soot-infoflow");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("../soot-infoflow-summaries");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		appPath = appPathBuilder.toString();
 		StringBuilder libPathBuilder = new StringBuilder();
 		appendWithSeparator(libPathBuilder,
 				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
 		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
 		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar"));
 		libPath = libPathBuilder.toString();
+		if (libPath.isEmpty())
+			throw new RuntimeException("Could not find rt.jar!");
 
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
@@ -100,6 +100,20 @@ public abstract class JUnitTests {
 		sinks.add(sinkDouble);
 	}
 
+	private static void addTestPathes(File f, StringBuilder appPathBuilder) throws IOException {
+		File testSrc1 = new File(f, "bin");
+		File testSrc2 = new File(f, "build" + File.separator + "classes");
+		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
+
+		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
+			fail("Test aborted - none of the test sources are available");
+		}
+
+		appendWithSeparator(appPathBuilder, testSrc1);
+		appendWithSeparator(appPathBuilder, testSrc2);
+		appendWithSeparator(appPathBuilder, testSrc3);
+	}
+
 	/**
 	 * Appends the given path to the given {@link StringBuilder} if it exists
 	 * 
@@ -107,7 +121,7 @@ public abstract class JUnitTests {
 	 * @param f  The path to append
 	 * @throws IOException
 	 */
-	private static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
+	protected static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
 		if (f.exists()) {
 			if (sb.length() > 0)
 				sb.append(System.getProperty("path.separator"));

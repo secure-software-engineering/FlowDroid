@@ -24,11 +24,6 @@ public class SummaryNativeCallHandler extends AbstractNativeCallHandler {
 
 	/**
 	 * Creates a new instance of the SummaryNativeCallHandler class
-	 * 
-	 * @param fallbackHandler
-	 *            The fallback native code handler to use. If the fallback handler
-	 *            supports a callee, its taints are used. Otherwise, the summary
-	 *            handler applies an over-approximation
 	 */
 	public SummaryNativeCallHandler() {
 		this(new DefaultNativeCallHandler());
@@ -37,10 +32,10 @@ public class SummaryNativeCallHandler extends AbstractNativeCallHandler {
 	/**
 	 * Creates a new instance of the SummaryNativeCallHandler class
 	 * 
-	 * @param fallbackHandler
-	 *            The fallback native code handler to use. If the fallback handler
-	 *            supports a callee, its taints are used. Otherwise, the summary
-	 *            handler applies an over-approximation
+	 * @param fallbackHandler The fallback native code handler to use. If the
+	 *                        fallback handler supports a callee, its taints are
+	 *                        used. Otherwise, the summary handler applies an
+	 *                        over-approximation
 	 */
 	public SummaryNativeCallHandler(INativeCallHandler fallbackHandler) {
 		this.fallbackHandler = fallbackHandler;

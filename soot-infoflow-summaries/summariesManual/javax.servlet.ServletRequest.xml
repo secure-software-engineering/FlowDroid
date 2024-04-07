@@ -2,25 +2,50 @@
 <summary fileFormatVersion="101">
 	<methods>
 		<method id="void setAttribute(java.lang.String,java.lang.Object)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						  AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
-						  AccessPathTypes="[java.lang.String[]]" />
+						  AccessPathTypes="[java.lang.Object[]]" constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="java.lang.Object getAttribute(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						  AccessPath="[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
-						  AccessPathTypes="[java.lang.String[]]" />
+						  AccessPathTypes="[java.lang.String[]]" constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
+		<method id="void removeAttribute(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[[javax.servlet.ServletRequest: java.lang.Object[] attributes]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
+		</method>
+=======
+>>>>>>> 7e6ec6c448d6407e7f6b98c3e85726b94483604e
 		<method id="java.util.Enumeration getAttributeNames()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">

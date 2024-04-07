@@ -44,7 +44,7 @@ public class ComponentReachableMethods {
 	private QueueReader<MethodOrMethodContext> unprocessedMethods;
 
 	/**
-	 * Creates a new instance of the {@link MyReachableMethods} class
+	 * Creates a new instance of the {@link ComponentReachableMethods} class
 	 * 
 	 * @param config            The configuration of the data flow solver
 	 * @param originalComponent The original component or which we are looking for
@@ -68,7 +68,7 @@ public class ComponentReachableMethods {
 
 	private void addMethod(MethodOrMethodContext m) {
 		// Filter out methods in system classes
-		if (!SystemClassHandler.v().isClassInSystemPackage(m.method().getDeclaringClass().getName())) {
+		if (!SystemClassHandler.v().isClassInSystemPackage(m.method().getDeclaringClass())) {
 			if (set.add(m)) {
 				reachables.add(m);
 			}
@@ -107,7 +107,7 @@ public class ComponentReachableMethods {
 							// We do not expect callback registrations in
 							// any
 							// calls to system classes
-							if (SystemClassHandler.v().isClassInSystemPackage(refMethod.getDeclaringClass().getName()))
+							if (SystemClassHandler.v().isClassInSystemPackage(refMethod.getDeclaringClass()))
 								return false;
 						}
 					} else if (config.getCallbackConfig().getFilterThreadCallbacks()) {

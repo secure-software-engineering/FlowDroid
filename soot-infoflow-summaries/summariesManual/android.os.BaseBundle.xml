@@ -1,6 +1,5 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
-	<hierarchy superClass="java.lang.Object" />
 	<methods>
 		<method id="void clear()">
 			<clears>
@@ -9,159 +8,250 @@
 			</clears>
 		</method>
 		<method id="java.lang.Object get(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="boolean getBoolean(java.lang.String,boolean)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="boolean getBoolean(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="boolean[] getBooleanArray(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="double getDouble(java.lang.String,double)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="double getDouble(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="double[] getDoubleArray(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="int getInt(java.lang.String,int)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="int getInt(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="int[] getIntArray(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="long getLong(java.lang.String,long)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="long getLong(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="long[] getLongArray(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="java.lang.String getString(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="java.lang.String getString(java.lang.String,java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="java.lang.String[] getStringArray(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						  AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -193,11 +283,15 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="keep" />
 				</flow>
 			</flows>
 		</method>
 		<method id="void putBoolean(java.lang.String,boolean)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -205,15 +299,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+			</clears>
 		</method>
 		<method id="void putBooleanArray(java.lang.String,boolean[])">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -221,15 +325,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putDouble(java.lang.String,double)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -237,15 +351,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putDoubleArray(java.lang.String,double[])">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -253,15 +377,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putInt(java.lang.String,int)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -269,15 +403,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putIntArray(java.lang.String,int[])">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -285,15 +429,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putLong(java.lang.String,long)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -301,15 +455,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putLongArray(java.lang.String,long[])">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -317,15 +481,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putString(java.lang.String,java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -333,15 +507,25 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 		<method id="void putStringArray(java.lang.String,java.lang.String[])">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<flows>
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -349,13 +533,31 @@
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
 				</flow>
 			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
+		</method>
+		<method id="void remove(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="true" />
+			</clears>
 		</method>
 	</methods>
 </summary>

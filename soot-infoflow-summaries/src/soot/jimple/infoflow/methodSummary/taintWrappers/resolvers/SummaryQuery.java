@@ -16,7 +16,13 @@ import soot.jimple.Stmt;
  */
 public class SummaryQuery {
 
+	/**
+	 * The actual class, we search first for this class
+	 */
 	public final SootClass calleeClass;
+	/**
+	 * Fallback class (declared class type)
+	 */
 	public final SootClass declaredClass;
 	public final String subsignature;
 
