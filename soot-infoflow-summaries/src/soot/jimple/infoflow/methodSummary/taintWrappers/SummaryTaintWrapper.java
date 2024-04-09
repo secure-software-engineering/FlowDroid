@@ -740,7 +740,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 					AccessPathPropagator newPropagator = applyFlow(flow, curPropagator);
 					if (newPropagator == null) {
 						// Can we reverse the flow and apply it in the other direction?
-						flow = getReverseFlowForAlias(flow);
+						flow = getReverseFlowForAlias(flow, curPropagator.getTaint());
 						if (flow == null)
 							continue;
 
@@ -783,13 +783,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper {
 	 * be applied in reverse
 	 * 
 	 * @param flow The flow to check
+	 * @param taint 
 	 * @return The reverse flow if the given flow works in both directions, null
 	 *         otherwise
 	 */
-	protected MethodFlow getReverseFlowForAlias(MethodFlow flow) {
+	protected MethodFlow getReverseFlowForAlias(MethodFlow flow, Taint taint) {
 		// Reverse flows can only be applied if the flow is an
 		// aliasing relationship
-		if (!flow.isAlias())
+		if (!flow.isAlias(taint))
 			return null;
 
 		// Reverse flows can only be applied to heap objects

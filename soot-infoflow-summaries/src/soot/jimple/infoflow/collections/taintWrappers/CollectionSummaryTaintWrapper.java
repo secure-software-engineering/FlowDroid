@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 import soot.ArrayType;
 import soot.Local;
@@ -25,6 +24,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.collections.ICollectionsSupport;
 import soot.jimple.infoflow.collections.context.UnknownContext;
 import soot.jimple.infoflow.collections.strategies.containers.IContainerStrategy;
+import soot.jimple.infoflow.collections.strategies.containers.IContainerStrategyFactory;
 import soot.jimple.infoflow.collections.util.NonNullHashSet;
 import soot.jimple.infoflow.collections.util.Tristate;
 import soot.jimple.infoflow.data.Abstraction;
@@ -51,7 +51,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implements ICollectionsSupport {
 	protected IContainerStrategy containerStrategy;
-	protected Function<InfoflowManager, IContainerStrategy> gen;
+	protected IContainerStrategyFactory containerStrategyFactory;
 
 	/**
 	 * Creates a new instance of the {@link SummaryTaintWrapper} class
@@ -59,16 +59,16 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 	 * @param flows The flows loaded from disk
 	 */
 	public CollectionSummaryTaintWrapper(IMethodSummaryProvider flows,
-			Function<InfoflowManager, IContainerStrategy> gen) {
+			IContainerStrategyFactory containerStrategyFactory) {
 		super(flows);
-		this.gen = gen;
+		this.containerStrategyFactory = containerStrategyFactory;
 	}
 
 	@Override
 	public void initialize(InfoflowManager manager) {
 		super.initialize(manager);
 
-		this.containerStrategy = gen.apply(manager);
+		this.containerStrategy = containerStrategyFactory.create(manager);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 		if (!killIncomingTaint.value && (resAbs == null || resAbs.isEmpty())) {
 			// Is this method explicitly excluded?
 			if (!this.flows.isMethodExcluded(callee.getDeclaringClass().getName(), callee.getSubSignature())) {
-//				wrapperMisses.incrementAndGet();
+				//				wrapperMisses.incrementAndGet();
 
 				if (classSupported.value)
 					return Collections.singleton(taintedAbs);
@@ -274,7 +274,7 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 	 */
 	private Set<AccessPath> computeTaintsForMethod(Stmt stmt, Abstraction d1, Abstraction taintedAbs,
 			final SootMethod method, ByReferenceBoolean killIncomingTaint, ByReferenceBoolean classSupported) {
-//		wrapperHits.incrementAndGet();
+		//		wrapperHits.incrementAndGet();
 
 		// Get the cached data flows
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
@@ -427,29 +427,6 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 			}
 		}
 		return res;
-	}
-
-	protected MethodFlow getReverseFlowForAlias(MethodFlow flow, Taint t) {
-		MethodFlow reversed = flow.reverse();
-		// Reverse flows can only be applied if the flow is an
-		// aliasing relationship
-		if (!reversed.isAlias(t))
-			return null;
-
-		// Reverse flows can only be applied to heap objects
-		if (!canTypeAlias(flow.source().getLastFieldType()))
-			return null;
-		if (!canTypeAlias(flow.sink().getLastFieldType()))
-			return null;
-
-		// There cannot be any flows to the return values of
-		// gaps
-		if (flow.source().getGap() != null && flow.source().getType() == SourceSinkType.Return)
-			return null;
-		if (flow.sink().getGap() != null && flow.sink().getType() == SourceSinkType.Return)
-			return null;
-
-		return reversed;
 	}
 
 	/**
@@ -960,7 +937,7 @@ public class CollectionSummaryTaintWrapper extends SummaryTaintWrapper implement
 
 		// We always retain the incoming taint
 		if (res == null || res.isEmpty())
-			return killIncomingTaint.value ? Collections.emptySet() : Collections.singleton(taintedAbs);
+			return killIncomingTaint.value ? null : Collections.singleton(taintedAbs);
 
 		// Create abstractions from the access paths
 		Set<Abstraction> resAbs = new HashSet<>(res.size() + 1);
