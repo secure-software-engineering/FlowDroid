@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.PreciseCollectionStrategy;
 import soot.jimple.infoflow.collections.problems.rules.forward.ArrayWithIndexPropagationRule;
 import soot.jimple.infoflow.collections.problems.rules.forward.CollectionWrapperPropagationRule;
+import soot.jimple.infoflow.config.PreciseCollectionStrategy;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.forward.ArrayPropagationRule;

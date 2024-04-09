@@ -3,6 +3,8 @@ package soot.jimple.infoflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.jimple.infoflow.config.PreciseCollectionStrategy;
+
 /**
  * Central configuration class for FlowDroid
  * 

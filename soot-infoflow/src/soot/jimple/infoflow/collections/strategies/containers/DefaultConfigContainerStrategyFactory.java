@@ -1,7 +1,7 @@
 package soot.jimple.infoflow.collections.strategies.containers;
 
 import soot.jimple.infoflow.InfoflowManager;
-import soot.jimple.infoflow.PreciseCollectionStrategy;
+import soot.jimple.infoflow.config.PreciseCollectionStrategy;
 
 /**
  * Selects the container strategy based on the infoflow configuration

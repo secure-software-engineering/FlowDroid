@@ -1,4 +1,4 @@
-package soot.jimple.infoflow;
+package soot.jimple.infoflow.config;
 
 /**
  * Allows to configure the strategy to use with collections and maps.
