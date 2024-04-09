@@ -1516,57 +1516,58 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		}
 
 		ContainerContext[] baseCtxt = null;
-
-		if (flow.sink().isConstrained()) {
-			ContainerContext[] ctxt = concretizeFlowConstraints(flow.getConstraints(), stmt,
-					taint.hasAccessPath() ? taint.getAccessPath().getFirstFieldContext() : null);
-			if (appendedFields != null && ctxt != null && !containerStrategy.shouldSmash(ctxt))
-				appendedFields = appendedFields.addContext(ctxt);
-		} else if (flow.sink().append() && !appendInfiniteAscendingChain(flow, stmt)) {
-			ContainerContext[] stmtCtxt = concretizeFlowConstraints(flow.getConstraints(), stmt, null);
-			ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
-			ContainerContext[] ctxt = containerStrategy.append(stmtCtxt, taintCtxt);
-			if (ctxt != null && !containerStrategy.shouldSmash(ctxt) && appendedFields != null)
-				appendedFields = appendedFields.addContext(ctxt);
-		} else if (flow.sink().shiftLeft() && !inversePropagator) {
-			ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
-			if (taintCtxt != null) {
-				Tristate lte = flowShiftLeft(flowSource, flow, taint, stmt);
-				if (!lte.isFalse()) {
-					ContainerContext newCtxt = containerStrategy.shift(taintCtxt[0], -1, lte.isTrue());
-					if (newCtxt != null && appendedFields != null) {
-						appendedFields = appendedFields
-								.addContext(newCtxt.containsInformation() ? new ContainerContext[] { newCtxt } : null);
-					}
-				}
-			}
-		} else if (flow.sink().shiftRight() && !inversePropagator) {
-			ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
-			if (taintCtxt != null) {
-				Tristate lte = flowShiftRight(flowSource, flow, taint, stmt);
-				if (!lte.isFalse()) {
-					ContainerContext newCtxt = containerStrategy.shift(taintCtxt[0], 1, lte.isTrue());
-					if (newCtxt != null && appendedFields != null) {
-						appendedFields = appendedFields
-								.addContext(newCtxt.containsInformation() ? new ContainerContext[] { newCtxt } : null);
-					}
-				}
-			}
-		} else if (flow.sink().keepConstraint() || (flow.sink().keepOnRO() && containerStrategy.isReadOnly(stmt))) {
-			ContainerContext[] ctxt;
-			if (lastCommonAPIdx == 0)
-				ctxt = taint.getBaseContext();
-			else
-				ctxt = taint.getAccessPath().getContext(lastCommonAPIdx - 1);
-
-			if (ctxt != null) {
-				// We may only address one constraint in the source and have another constraint
-				// that is kept in the sink. Here we filter the used constraints out.
-				ctxt = filterContexts(ctxt, flow.getConstraints());
-				if (appendedFields == null || appendedFields.isEmpty())
-					baseCtxt = ctxt;
-				else
+		if (containerStrategy != null) {
+			if (flow.sink().isConstrained()) {
+				ContainerContext[] ctxt = concretizeFlowConstraints(flow.getConstraints(), stmt,
+						taint.hasAccessPath() ? taint.getAccessPath().getFirstFieldContext() : null);
+				if (appendedFields != null && ctxt != null && !containerStrategy.shouldSmash(ctxt))
 					appendedFields = appendedFields.addContext(ctxt);
+			} else if (flow.sink().append() && !appendInfiniteAscendingChain(flow, stmt)) {
+				ContainerContext[] stmtCtxt = concretizeFlowConstraints(flow.getConstraints(), stmt, null);
+				ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
+				ContainerContext[] ctxt = containerStrategy.append(stmtCtxt, taintCtxt);
+				if (ctxt != null && !containerStrategy.shouldSmash(ctxt) && appendedFields != null)
+					appendedFields = appendedFields.addContext(ctxt);
+			} else if (flow.sink().shiftLeft() && !inversePropagator) {
+				ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
+				if (taintCtxt != null) {
+					Tristate lte = flowShiftLeft(flowSource, flow, taint, stmt);
+					if (!lte.isFalse()) {
+						ContainerContext newCtxt = containerStrategy.shift(taintCtxt[0], -1, lte.isTrue());
+						if (newCtxt != null && appendedFields != null) {
+							appendedFields = appendedFields.addContext(
+									newCtxt.containsInformation() ? new ContainerContext[] { newCtxt } : null);
+						}
+					}
+				}
+			} else if (flow.sink().shiftRight() && !inversePropagator) {
+				ContainerContext[] taintCtxt = taint.getAccessPath().getFirstFieldContext();
+				if (taintCtxt != null) {
+					Tristate lte = flowShiftRight(flowSource, flow, taint, stmt);
+					if (!lte.isFalse()) {
+						ContainerContext newCtxt = containerStrategy.shift(taintCtxt[0], 1, lte.isTrue());
+						if (newCtxt != null && appendedFields != null) {
+							appendedFields = appendedFields.addContext(
+									newCtxt.containsInformation() ? new ContainerContext[] { newCtxt } : null);
+						}
+					}
+				}
+			} else if (flow.sink().keepConstraint() || (flow.sink().keepOnRO() && containerStrategy.isReadOnly(stmt))) {
+				ContainerContext[] ctxt;
+				if (lastCommonAPIdx == 0)
+					ctxt = taint.getBaseContext();
+				else
+					ctxt = taint.getAccessPath().getContext(lastCommonAPIdx - 1);
+
+				if (ctxt != null) {
+					// We may only address one constraint in the source and have another constraint
+					// that is kept in the sink. Here we filter the used constraints out.
+					ctxt = filterContexts(ctxt, flow.getConstraints());
+					if (appendedFields == null || appendedFields.isEmpty())
+						baseCtxt = ctxt;
+					else
+						appendedFields = appendedFields.addContext(ctxt);
+				}
 			}
 		}
 
