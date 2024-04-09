@@ -78,7 +78,6 @@ import soot.jimple.infoflow.taintWrappers.IReversibleTaintWrapper;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
-import soot.jimple.infoflow.util.ConstantByReferenceBoolean;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.util.ConcurrentHashMultiMap;
@@ -109,7 +108,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 	protected IContainerStrategy containerStrategy;
 	protected IContainerStrategyFactory containerStrategyFactory;
-	private static final ByReferenceBoolean doNotKillIncomingTaint = ConstantByReferenceBoolean.FALSE;
 
 	/**
 	 * Handler that is used for injecting taints from callbacks implemented in user
@@ -155,7 +153,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 							.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
 					AccessPathPropagator rootPropagator = getOriginalCallSite(propagator);
 					Set<AccessPath> resultAPs = applyFlowsIterative(flowsInTarget, new ArrayList<>(workSet),
-							reverseFlows, rootPropagator.getStmt(), d2, doNotKillIncomingTaint);
+							reverseFlows, rootPropagator.getStmt(), d2, true);
 
 					// Propagate the access paths
 					if (resultAPs != null && !resultAPs.isEmpty()) {
@@ -717,7 +715,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 			// Apply the data flows until we reach a fixed point
 			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, false, stmt, taintedAbs,
-					killIncomingTaint);
+					killIncomingTaint.value);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
@@ -743,7 +741,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	 * @return The set of outgoing access paths
 	 */
 	private Set<AccessPath> applyFlowsIterative(MethodSummaries flowsInCallee, List<AccessPathPropagator> workList,
-			boolean reverseFlows, Stmt stmt, Abstraction incoming, ByReferenceBoolean killIncomingTaint) {
+			boolean reverseFlows, Stmt stmt, Abstraction incoming, boolean killIncomingTaint) {
 		Set<AccessPath> res = null;
 		Set<AccessPathPropagator> doneSet = new HashSet<AccessPathPropagator>(workList);
 		while (!workList.isEmpty()) {
@@ -775,7 +773,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 				if (reverseFlows)
 					flowsInTarget = flowsInTarget.reverse();
 				for (MethodFlow flow : flowsInTarget) {
-					if (flow.isExcludedOnClear() && killIncomingTaint.value)
+					if (flow.isExcludedOnClear() && killIncomingTaint)
 						continue;
 
 					// Apply the flow summary
@@ -1944,8 +1942,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			}
 
 			// Apply the data flows until we reach a fixed point
-			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, false, stmt, taintedAbs,
-					killIncomingTaint);
+			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, false, stmt, taintedAbs, false);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
@@ -2056,8 +2053,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			}
 
 			// Apply the data flows until we reach a fixed point
-			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, true, stmt, taintedAbs,
-					doNotKillIncomingTaint);
+			Set<AccessPath> resCallee = applyFlowsIterative(flowsInCallee, workList, true, stmt, taintedAbs, false);
 			if (resCallee != null && !resCallee.isEmpty()) {
 				if (res == null)
 					res = new HashSet<>();
