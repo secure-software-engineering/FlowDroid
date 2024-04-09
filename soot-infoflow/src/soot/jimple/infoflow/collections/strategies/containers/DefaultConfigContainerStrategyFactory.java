@@ -3,6 +3,9 @@ package soot.jimple.infoflow.collections.strategies.containers;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.PreciseCollectionStrategy;
 
+/**
+ * Selects the container strategy based on the infoflow configuration
+ */
 public class DefaultConfigContainerStrategyFactory implements IContainerStrategyFactory {
 
 	@Override
