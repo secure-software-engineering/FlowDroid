@@ -8,38 +8,39 @@ import org.junit.Test;
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.PreciseCollectionStrategy;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
 import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
+import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 
 public class VectorTests extends soot.jimple.infoflow.test.junit.VectorTests {
-    @Override
-    protected AbstractInfoflow createInfoflowInstance() {
+	@Override
+	protected AbstractInfoflow createInfoflowInstance() {
 
-        AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
-        result.getConfig().setPreciseCollectionTracking(true);
-        try {
-            ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
-            providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
-            PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
-            result.setTaintWrapper(new CollectionSummaryTaintWrapper(sp, TestConstantStrategy::new));
-        } catch (Exception e) {
-            throw new RuntimeException();
-        }
-        return result;
-    }
+		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
+		try {
+			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
+			providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
+			PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
+			result.setTaintWrapper(new SummaryTaintWrapper(sp).setContainerStrategyFactory(TestConstantStrategy::new));
+		} catch (Exception e) {
+			throw new RuntimeException();
+		}
+		return result;
+	}
 
-    @Test(timeout = 300000)
-    public void vectorRWPos1Test() {
-        IInfoflow infoflow = initInfoflow();
-        List<String> epoints = new ArrayList<String>();
-        epoints.add("<soot.jimple.infoflow.test.VectorTestCode: void concreteWriteReadPos1Test()>");
-        infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
-        // We are more precise :D
-        negativeCheckInfoflow(infoflow);
-    }
+	@Test(timeout = 300000)
+	public void vectorRWPos1Test() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.VectorTestCode: void concreteWriteReadPos1Test()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		// We are more precise :D
+		negativeCheckInfoflow(infoflow);
+	}
 }

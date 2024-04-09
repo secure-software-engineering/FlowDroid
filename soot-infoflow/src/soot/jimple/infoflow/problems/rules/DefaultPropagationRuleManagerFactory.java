@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import soot.jimple.infoflow.InfoflowManager;
+import soot.jimple.infoflow.PreciseCollectionStrategy;
 import soot.jimple.infoflow.collections.problems.rules.forward.ArrayWithIndexPropagationRule;
 import soot.jimple.infoflow.collections.problems.rules.forward.CollectionWrapperPropagationRule;
 import soot.jimple.infoflow.data.Abstraction;
@@ -37,8 +38,10 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 		ruleList.add(new SinkPropagationRule(manager, zeroValue, results));
 		ruleList.add(new StaticPropagationRule(manager, zeroValue, results));
 
+		boolean preciseCollectionTrackingEnabled = manager.getConfig()
+				.getPreciseCollectionStrategy() != PreciseCollectionStrategy.NONE;
 		if (manager.getConfig().getEnableArrayTracking()) {
-			if (manager.getConfig().getPreciseCollectionTracking())
+			if (preciseCollectionTrackingEnabled)
 				ruleList.add(new ArrayWithIndexPropagationRule(manager, zeroValue, results));
 			else
 				ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
@@ -46,7 +49,7 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 		if (manager.getConfig().getEnableExceptionTracking())
 			ruleList.add(new ExceptionPropagationRule(manager, zeroValue, results));
 		if (manager.getTaintWrapper() != null) {
-			if (manager.getConfig().getPreciseCollectionTracking())
+			if (preciseCollectionTrackingEnabled)
 				ruleList.add(new CollectionWrapperPropagationRule(manager, zeroValue, results));
 			else
 				ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));

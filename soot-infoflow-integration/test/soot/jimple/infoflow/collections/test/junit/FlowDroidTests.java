@@ -2,8 +2,6 @@ package soot.jimple.infoflow.collections.test.junit;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,15 +13,19 @@ import org.junit.Before;
 import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.*;
+import soot.jimple.infoflow.AbstractInfoflow;
+import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
+import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.PreciseCollectionStrategy;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.cfg.DefaultBiDiICFGFactory;
-import soot.jimple.infoflow.collections.strategies.containers.shift.PreciseShift;
-import soot.jimple.infoflow.collections.taintWrappers.CollectionSummaryTaintWrapper;
 import soot.jimple.infoflow.collections.strategies.containers.TestConstantStrategy;
+import soot.jimple.infoflow.collections.strategies.containers.shift.PreciseShift;
 import soot.jimple.infoflow.collections.taintWrappers.PrioritizingMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
+import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -133,7 +135,9 @@ public abstract class FlowDroidTests {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
 			providers.add(new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR));
 			PrioritizingMethodSummaryProvider sp = new PrioritizingMethodSummaryProvider(providers);
-			return new CollectionSummaryTaintWrapper(sp, m -> new TestConstantStrategy(m, new PreciseShift()));
+
+			return new SummaryTaintWrapper(sp)
+					.setContainerStrategyFactory(m -> new TestConstantStrategy(m, new PreciseShift()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -143,7 +147,7 @@ public abstract class FlowDroidTests {
 
 	protected IInfoflow initInfoflow() {
 		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
-		result.getConfig().setPreciseCollectionTracking(true);
+		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		result.setThrowExceptions(true);
 		result.setTaintWrapper(getTaintWrapper());
 		setConfiguration(result.getConfig());
@@ -167,11 +171,10 @@ public abstract class FlowDroidTests {
 		return setupApplication;
 	}
 
-
 	/**
 	 * Test that the correct index was leaked
 	 *
-	 * @param res results
+	 * @param res    results
 	 * @param substr substring identifying the correct index
 	 * @return true if given substring matches a statement
 	 */
