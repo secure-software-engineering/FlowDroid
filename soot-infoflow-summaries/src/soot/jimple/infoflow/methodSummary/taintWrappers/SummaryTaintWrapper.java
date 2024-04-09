@@ -2221,6 +2221,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 	protected ContainerContext[] concretizeFlowConstraints(FlowConstraint[] constraints, Stmt stmt,
 			ContainerContext[] taintCtxt) {
+		if (containerStrategy == null)
+			return taintCtxt;
 		assert stmt.containsInvokeExpr();
 		InvokeExpr ie = stmt.getInvokeExpr();
 		ContainerContext[] ctxt = new ContainerContext[constraints.length];
