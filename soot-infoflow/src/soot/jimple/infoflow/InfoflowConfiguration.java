@@ -3,6 +3,8 @@ package soot.jimple.infoflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import soot.jimple.infoflow.config.PreciseCollectionStrategy;
+
 /**
  * Central configuration class for FlowDroid
  * 
@@ -1401,7 +1403,7 @@ public class InfoflowConfiguration {
 	private int maxAliasingBases = Integer.MAX_VALUE;
 	private boolean additionalFlowsEnabled = false;
 	private boolean filterConditionalSinks = true;
-	private boolean preciseCollectionTracking;
+	private PreciseCollectionStrategy preciseCollectionTracking = PreciseCollectionStrategy.NONE;
 
 	private static String baseDirectory = "";
 
@@ -2411,13 +2413,13 @@ public class InfoflowConfiguration {
 	}
 
 	/**
-	 * Returns whether precise tracking through collections is enabled. Works best
-	 * if constant propagation is enabled. Note that this option incurs a
-	 * performance penalty and is usually not worth it.
+	 * Returns whether precise tracking through collections is enabled and the
+	 * corresponding strategy. Works best if constant propagation is enabled. Note
+	 * that this option incurs a performance penalty and is usually not worth it.
 	 * 
 	 * @return whether precise collection tracking is enabled
 	 */
-	public boolean getPreciseCollectionTracking() {
+	public PreciseCollectionStrategy getPreciseCollectionStrategy() {
 		return preciseCollectionTracking;
 	}
 
@@ -2426,9 +2428,9 @@ public class InfoflowConfiguration {
 	 * constant propagation is enabled. Note that this option incurs a performance
 	 * penalty and is usually not worth it.
 	 * 
-	 * @param value if true, enable precise collection tracking
+	 * @param value the strategy to use for precise collection tracking
 	 */
-	public void setPreciseCollectionTracking(boolean value) {
+	public void setPreciseCollectionTracking(PreciseCollectionStrategy value) {
 		preciseCollectionTracking = value;
 	}
 
