@@ -398,10 +398,6 @@ public class AccessPathFactory {
 		}
 
 		// Type checks
-		if (!(value == null || !(!(baseType instanceof ArrayType) && !TypeUtils.isObjectLikeType(baseType)
-				&& value.getType() instanceof ArrayType)))
-			System.out.println("x");
-
 		assert value == null || !(!(baseType instanceof ArrayType) && !TypeUtils.isObjectLikeType(baseType)
 				&& value.getType() instanceof ArrayType);
 		assert value == null || !(baseType instanceof ArrayType && !(value.getType() instanceof ArrayType)
