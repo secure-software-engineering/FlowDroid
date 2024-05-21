@@ -35,7 +35,8 @@ public abstract class BaseSummaryTaintWrapperTests {
 	private String[] source = new String[] {
 			"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.Object source()>",
 			"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: int intSource()>",
-			"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource()>" };
+			"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource()>",
+			"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource2()>" };
 	private String sink = "<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void sink(java.lang.Object)>";
 	private ITaintPropagationWrapper summaryWrapper;
 
@@ -46,6 +47,10 @@ public abstract class BaseSummaryTaintWrapperTests {
 	}
 
 	protected void testFlowForMethod(String m) {
+		testFlowForMethod(m, 1);
+	}
+
+	protected void testFlowForMethod(String m, int count) {
 		IInfoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
@@ -55,7 +60,7 @@ public abstract class BaseSummaryTaintWrapperTests {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		checkInfoflow(iFlow, 1);
+		checkInfoflow(iFlow, count);
 	}
 
 	protected void testNoFlowForMethod(String m) {
@@ -80,8 +85,8 @@ public abstract class BaseSummaryTaintWrapperTests {
 
 			assertTrue(map.containsSinkMethod(sink));
 			assertTrue(map.isPathBetweenMethods(sink, source[0]) || map.isPathBetweenMethods(sink, source[1])
-					|| map.isPathBetweenMethods(sink, source[2]));
-			assertEquals(resultCount, map.size());
+					|| map.isPathBetweenMethods(sink, source[2]) || map.isPathBetweenMethods(sink, source[3]));
+			assertEquals(resultCount, infoflow.getResults().numConnections());
 		} else {
 			fail("result is not available");
 		}

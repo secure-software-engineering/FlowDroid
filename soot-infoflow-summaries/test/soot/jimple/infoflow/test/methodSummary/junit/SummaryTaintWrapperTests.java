@@ -8,11 +8,6 @@ import java.net.URISyntaxException;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.jimple.infoflow.AbstractInfoflow;
-import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.InfoflowConfiguration;
-import soot.jimple.infoflow.config.IInfoflowConfig;
-import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 
@@ -182,7 +177,7 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testNoFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void killTaint2()>");
 	}
 
-	@Test // (timeout = 30000)
+	@Test(timeout = 30000)
 	public void taintedFieldToString() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void taintedFieldToString()>");
 	}
@@ -218,6 +213,16 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 	public void matchGapReturnOnlyWithReturnTaints() {
 		testNoFlowForMethod(
 				"<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void matchGapReturnOnlyWithReturnTaints()>");
+	}
+
+	@Test(timeout = 30000)
+	public void setterOverwriteTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void doubleSetterCall()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void appendStringTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void stringAppendCall()>", 2);
 	}
 
 	@Test
