@@ -106,7 +106,7 @@
                     AccessPathTypes="[java.lang.Object]" taintSubFields="true" />
 			</clears>
             <flows>
-                <flow isAlias="true">
+                <flow isAlias="true" final="true">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.Object"></from>
                     <to sourceSinkType="Field"
                         BaseType="soot.jimple.infoflow.test.methodSummary.Data"
