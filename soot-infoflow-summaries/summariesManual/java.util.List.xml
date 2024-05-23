@@ -69,7 +69,7 @@
         </method>
         <method id="java.util.ListIterator listIterator()">
             <flows>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -77,7 +77,7 @@
                         AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
                         AccessPathTypes="[java.lang.Object]" />
                 </flow>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -96,7 +96,7 @@
         </method>
         <method id="java.util.ListIterator listIterator(int)">
             <flows>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -104,7 +104,7 @@
                         AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
                         AccessPathTypes="[java.lang.Object]" />
                 </flow>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
