@@ -106,7 +106,7 @@ public abstract class JUnitTests {
 		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
 
 		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
-			fail("Test aborted - none of the test sources are available");
+			fail(String.format("Test aborted - none of the test sources are available at root %s", f.toString()));
 		}
 
 		appendWithSeparator(appPathBuilder, testSrc1);
