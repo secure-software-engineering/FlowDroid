@@ -41,7 +41,7 @@
 						  AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.Iterator: java.lang.Object innerArray]"
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
