@@ -5,14 +5,14 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
+					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -20,8 +20,8 @@
 		<method id="java.lang.Object next()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						  AccessPathTypes="[java.lang.Object]" />
+					<from sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -29,8 +29,8 @@
 		<method id="java.lang.Object previous()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						  AccessPathTypes="[java.lang.Object]" />
+					<from sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -39,8 +39,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>

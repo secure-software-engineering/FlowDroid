@@ -9,8 +9,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field" />
-					<to sourceSinkType="Return" AccessPath="[java.util.Spliterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" AccessPath="[java.util.Spliterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>

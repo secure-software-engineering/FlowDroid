@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+    <hierarchy>
+        <interface name="java.util.Spliterator$OfPrimitive" />
+    </hierarchy>
+	<methods>
+		<method id="void forEachRemaining(java.util.function.DoubleConsumer)">
+			<flows>
+				<!-- Base Object is tainted -->
+				<flow isAlias="false" typeChecking="false"
+					  cutFirstField="true">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Spliterator: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<!-- Lambda is tainted -->
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						gap="1" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean tryAdvance(java.util.function.DoubleConsumer)">
+			<flows>
+				<!-- Base Object is tainted -->
+				<flow isAlias="false" typeChecking="false"
+					  cutFirstField="true">
+					<from sourceSinkType="Field"
+						  AccessPath="[java.util.Spliterator: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]"
+						  constrained="true" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<!-- Lambda is tainted -->
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						gap="1" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Spliterator trySplit()()">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+    <gaps>
+        <!-- Gaps need the signature to match the exact class because there is no lookup for methods in superclasses -->
+        <gap num="1" id="&lt;java.util.function.DoubleConsumer: void accept(double)&gt;" />
+    </gaps>
+</summary>

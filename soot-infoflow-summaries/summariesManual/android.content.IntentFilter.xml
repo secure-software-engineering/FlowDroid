@@ -42,8 +42,8 @@
 						AccessPath="[android.content.IntentFilter: java.lang.String[] actions]"
 						AccessPathTypes="[java.lang.String[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -142,16 +142,16 @@
 						AccessPath="[android.content.IntentFilter: java.lang.String[] hosts]"
 						AccessPathTypes="[java.lang.String[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[android.content.IntentFilter: int[] ports]"
 						AccessPathTypes="[int[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -162,8 +162,8 @@
 						AccessPath="[android.content.IntentFilter: java.lang.String[] categories]"
 						AccessPathTypes="[java.lang.String[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray[]]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -270,8 +270,8 @@
 						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] dataPaths]"
 						AccessPathTypes="[android.os.PatternMatcher[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray[]]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -282,8 +282,8 @@
 						AccessPath="[android.content.IntentFilter: android.os.PatternMatcher[] ssps]"
 						AccessPathTypes="[android.os.PatternMatcher[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -294,8 +294,8 @@
 						AccessPath="[android.content.IntentFilter: java.lang.String[] dataSchemes]"
 						AccessPathTypes="[java.lang.String[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -316,8 +316,8 @@
 						AccessPath="[android.content.IntentFilter: java.lang.String[] dataTypes]"
 						AccessPathTypes="[java.lang.String[]]" />
 					<to sourceSinkType="Return" BaseType="java.util.Iterator"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>
