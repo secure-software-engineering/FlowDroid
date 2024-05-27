@@ -1224,7 +1224,7 @@ public class InfoflowConfiguration {
 	public static class AccessPathConfiguration {
 
 		private int accessPathLength = 5;
-		private boolean useRecursiveAccessPaths = true;
+		private boolean useRecursiveAccessPaths = false;
 		private boolean useThisChainReduction = true;
 		private boolean useSameFieldReduction = true;
 

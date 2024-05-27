@@ -14,7 +14,6 @@ import soot.ArrayType;
 import soot.Local;
 import soot.PrimType;
 import soot.RefLikeType;
-import soot.RefType;
 import soot.SootField;
 import soot.Type;
 import soot.Value;
@@ -26,6 +25,8 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
+import soot.jimple.infoflow.data.accessPaths.SameFieldReductionStrategy;
+import soot.jimple.infoflow.data.accessPaths.This0ReductionStrategy;
 import soot.jimple.infoflow.typing.TypeUtils;
 
 public class AccessPathFactory {
@@ -34,6 +35,9 @@ public class AccessPathFactory {
 
 	private final InfoflowConfiguration config;
 	private final TypeUtils typeUtils;
+
+	private final static SameFieldReductionStrategy SAME_FIELD_REDUCTION = new SameFieldReductionStrategy();
+	private final static This0ReductionStrategy THIS0_REDUCTION = new This0ReductionStrategy();
 
 	/**
 	 * Specialized pair class for field bases
@@ -222,34 +226,7 @@ public class AccessPathFactory {
 		// <java.lang.ThreadGroup: java.lang.Thread[] threads> *
 		if (config.getAccessPathConfiguration().getUseSameFieldReduction() && fragments != null
 				&& fragments.length > 1) {
-			for (int bucketStart = fragments.length - 2; bucketStart >= 0; bucketStart--) {
-				// Check if we have a repeating field
-				int repeatPos = -1;
-				for (int i = bucketStart + 1; i < fragments.length; i++)
-					if (fragments[i].getField() == fragments[bucketStart].getField()
-							&& Arrays.equals(fragments[i].getContext(), fragments[bucketStart].getContext())) {
-						repeatPos = i;
-						break;
-					}
-				int repeatLen = repeatPos - bucketStart;
-				if (repeatPos < 0)
-					continue;
-
-				// Check that everything between bucketStart and repeatPos
-				// really repeats after bucketStart
-				boolean matches = true;
-				for (int i = 0; i < repeatPos - bucketStart; i++)
-					matches &= (repeatPos + i < fragments.length)
-							&& fragments[bucketStart + i].getField() == fragments[repeatPos + i].getField();
-				if (matches) {
-					AccessPathFragment[] newFragments = new AccessPathFragment[fragments.length - repeatLen];
-					System.arraycopy(fragments, 0, newFragments, 0, bucketStart + 1);
-					System.arraycopy(fragments, repeatPos + 1, newFragments, bucketStart + 1,
-							fragments.length - repeatPos - 1);
-					fragments = newFragments;
-					break;
-				}
-			}
+			fragments = SAME_FIELD_REDUCTION.reduceAccessPath(value, fragments);
 		}
 
 		// Make sure that the actual types are always as precise as the declared
@@ -298,40 +275,7 @@ public class AccessPathFactory {
 		// We can always merge a.inner.this$0.c to a.c. We do this first so that
 		// we don't create recursive bases for stuff we don't need anyway.
 		if (accessPathConfig.getUseThisChainReduction() && reduceBases && fragments != null) {
-			for (int i = 0; i < fragments.length; i++) {
-				// Is this a reference to an outer class?
-				SootField curField = fragments[i].getField();
-				if (curField.getName().startsWith("this$")) {
-					// Get the name of the outer class
-					String outerClassName = ((RefType) curField.getType()).getClassName();
-
-					// Check the base object
-					int startIdx = -1;
-					if (value != null && value.getType() instanceof RefType
-							&& ((RefType) value.getType()).getClassName().equals(outerClassName)) {
-						startIdx = 0;
-					} else {
-						// Scan forward to find the same reference
-						for (int j = 0; j < i; j++) {
-							SootField nextField = fragments[j].getField();
-							if (nextField.getType() instanceof RefType
-									&& ((RefType) nextField.getType()).getClassName().equals(outerClassName)) {
-								startIdx = j;
-								break;
-							}
-						}
-					}
-
-					if (startIdx >= 0) {
-						AccessPathFragment[] newFragments = new AccessPathFragment[fragments.length - (i - startIdx)
-								- 1];
-						System.arraycopy(fragments, 0, newFragments, 0, startIdx);
-						System.arraycopy(fragments, i + 1, newFragments, startIdx, fragments.length - i - 1);
-						fragments = newFragments;
-						break;
-					}
-				}
-			}
+			fragments = THIS0_REDUCTION.reduceAccessPath(value, fragments);
 		}
 
 		// Check for recursive data structures. If a last field maps back to

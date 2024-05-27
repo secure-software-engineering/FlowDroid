@@ -101,6 +101,16 @@ public abstract class MapTests extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
+	public void mapIteratorTest2() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void iteratorTest2()>");
+		infoflow.getConfig().setFlowSensitiveAliasing(false);
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
 	public void mapEntryTest() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();
