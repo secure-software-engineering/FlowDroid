@@ -189,6 +189,14 @@
 						AccessPath="[java.io.InputStream: java.net.URL url]"
 						AccessPathTypes="[java.net.URL]" />
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: java.net.URL url]"
+						AccessPathTypes="[java.net.URL]" />
+					<to sourceSinkType="Return" BaseType="java.io.InputStream"
+						AccessPath="[java.io.InputStream: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="java.io.OutputStream getOutputStream()">
@@ -200,6 +208,14 @@
 					<to sourceSinkType="Return" BaseType="java.io.OutputStream"
 						AccessPath="[java.io.OutputStream: java.net.URL url]"
 						AccessPathTypes="[java.net.URL]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: byte[] bytesWritten]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" BaseType="java.io.OutputStream"
+						AccessPath="[java.io.OutputStream: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
 				</flow>
 			</flows>
 		</method>
