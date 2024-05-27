@@ -56,6 +56,7 @@ import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.collect.MutableTwoElementSet;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler.FlowFunctionType;
 import soot.jimple.infoflow.problems.rules.EmptyPropagationRuleManagerFactory;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
@@ -234,6 +235,11 @@ public class AliasProblem extends AbstractInfoflowProblem {
 							// boolean which is a primitive and thus cannot
 							// have aliases
 							return res;
+						} else if (defStmt.getRightOp() instanceof ArrayRef
+								&& source.getAccessPath().getArrayTaintType() == ArrayTaintType.Length) {
+							// ignore. If only the length of the array is tainted, we cannot make any
+							// assumptions on the taint state of the elements.
+							return res;
 						}
 
 						AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(source.getAccessPath(),
@@ -242,7 +248,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 					}
 
 					if (newLeftAbs != null && !newLeftAbs.getAccessPath().equals(source.getAccessPath())) {
-						// Only inject the new alias into the forward solver but never propagate it upwards
+						// Only inject the new alias into the forward solver but never propagate it
+						// upwards
 						// because the alias was created at this program point and won't be valid above.
 						for (Unit u : interproceduralCFG().getPredsOf(defStmt))
 							manager.getMainSolver().processEdge(new PathEdge<Unit, Abstraction>(d1, u, newLeftAbs));
@@ -283,7 +290,8 @@ public class AliasProblem extends AbstractInfoflowProblem {
 					} else if (leftValue instanceof ArrayRef) {
 						ArrayRef ar = (ArrayRef) leftValue;
 						Local leftBase = (Local) ar.getBase();
-						if (leftBase == source.getAccessPath().getPlainValue()) {
+						if (leftBase == source.getAccessPath().getPlainValue()
+								&& source.getAccessPath().getArrayTaintType() != ArrayTaintType.Length) {
 							addRightValue = true;
 							targetType = source.getAccessPath().getBaseType();
 						}
@@ -719,7 +727,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 										}
 
 										// A foo(A a) {
-										//   return a;
+										// return a;
 										// }
 										// A b = foo(a);
 										// An alias is created using the returned value. If no assignment
