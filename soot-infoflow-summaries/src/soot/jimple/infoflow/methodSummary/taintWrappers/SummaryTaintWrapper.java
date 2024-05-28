@@ -2265,6 +2265,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 	protected Tristate matchesConstraints(final AbstractFlowSinkSource flowSource, final AbstractMethodSummary flow,
 			final Taint taint, final Stmt stmt) {
+		// If the source tries to impose an action on a constraint, this is
+		// inconsistent. Probably the flow was not meant in this direction.
+		if (flowSource.getConstraintType().isAction())
+			return Tristate.FALSE();
 		// If no constrains apply to the flow source, we can unconditionally use it
 		if (!flowSource.isConstrained())
 			return Tristate.TRUE();
