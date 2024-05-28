@@ -45,8 +45,8 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

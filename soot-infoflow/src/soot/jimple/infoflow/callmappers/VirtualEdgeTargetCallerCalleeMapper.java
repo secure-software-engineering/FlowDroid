@@ -14,19 +14,21 @@ import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.AbstractParameterMap
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.DirectParameterMapping;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.DirectTarget;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.IndirectTarget;
+import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.InvocationVirtualEdgeTarget;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdge;
 import soot.jimple.toolkits.callgraph.VirtualEdgesSummaries.VirtualEdgeTarget;
 
 /**
  * Maps caller and callee parameters in a reflective method call
+ * 
  * @author Marc Miltenberger
  */
 public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumentMapper {
 
 	private DirectTarget directTarget;
-	private VirtualEdgeTarget virtualEdgeTarget;
+	private InvocationVirtualEdgeTarget virtualEdgeTarget;
 
-	public VirtualEdgeTargetCallerCalleeMapper(VirtualEdgeTarget t, DirectTarget dt) {
+	public VirtualEdgeTargetCallerCalleeMapper(InvocationVirtualEdgeTarget t, DirectTarget dt) {
 		this.virtualEdgeTarget = t;
 		this.directTarget = dt;
 	}
@@ -52,7 +54,7 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 	@Override
 	public int getCalleeIndexOfCallerParameter(int callerParamIndex) {
 		if (callerParamIndex == BASE_OBJECT)
-			//The base object of the caller is not relevant for virtual edges
+			// The base object of the caller is not relevant for virtual edges
 			return UNKNOWN;
 		else {
 			for (AbstractParameterMapping i : directTarget.getParameterMappings()) {
@@ -79,35 +81,37 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 			summary = summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(ie.getMethod().makeRef()));
 		if (summary != null) {
 			for (VirtualEdgeTarget t : summary.getTargets()) {
-				DirectTarget dt = null;
-				if (t instanceof IndirectTarget) {
-					ArrayDeque<IndirectTarget> targetQueue = new ArrayDeque<>();
-					targetQueue.add((IndirectTarget) t);
-					IndirectTarget c;
-					boolean matched = false;
-					while ((c = targetQueue.poll()) != null) {
-						for (VirtualEdgeTarget d : c.getTargets()) {
-							if (d instanceof IndirectTarget)
-								targetQueue.add(((IndirectTarget) d));
-							else if (d instanceof DirectTarget) {
-								dt = (DirectTarget) d;
-								if (matchDirectTarget(manager, dt, callee)) {
-									matched = true;
-									break;
+				if (t instanceof InvocationVirtualEdgeTarget) {
+					DirectTarget dt = null;
+					if (t instanceof IndirectTarget) {
+						ArrayDeque<IndirectTarget> targetQueue = new ArrayDeque<>();
+						targetQueue.add((IndirectTarget) t);
+						IndirectTarget c;
+						boolean matched = false;
+						while ((c = targetQueue.poll()) != null) {
+							for (VirtualEdgeTarget d : c.getTargets()) {
+								if (d instanceof IndirectTarget)
+									targetQueue.add(((IndirectTarget) d));
+								else if (d instanceof DirectTarget) {
+									dt = (DirectTarget) d;
+									if (matchDirectTarget(manager, dt, callee)) {
+										matched = true;
+										break;
+									}
 								}
+
 							}
-
 						}
+						if (!matched)
+							continue;
+					} else {
+						dt = (DirectTarget) t;
+						if (!matchDirectTarget(manager, dt, callee))
+							continue;
 					}
-					if (!matched)
-						continue;
-				} else {
-					dt = (DirectTarget) t;
-					if (!matchDirectTarget(manager, dt, callee))
-						continue;
-				}
 
-				return new VirtualEdgeTargetCallerCalleeMapper(t, dt);
+					return new VirtualEdgeTargetCallerCalleeMapper((InvocationVirtualEdgeTarget) t, dt);
+				}
 			}
 		}
 		return null;

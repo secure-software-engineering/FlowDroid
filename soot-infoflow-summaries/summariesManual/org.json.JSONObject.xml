@@ -303,8 +303,8 @@
 						AccessPath="[org.json.JSONObject: java.lang.String[] keys]"
 						AccessPathTypes="[java.lang.Object[]]"/>
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.Iterator: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+						AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
 		</method>

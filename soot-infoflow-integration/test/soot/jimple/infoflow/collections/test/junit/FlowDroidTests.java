@@ -97,6 +97,8 @@ public abstract class FlowDroidTests {
 			appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
 			// Try the default path on fedora
 			appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-1.8.0/jre/lib/rt.jar"));
+			// Try the default path on Windows
+			appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar"));
 		}
 		libPath = libPathBuilder.toString();
 		if (libPath.isEmpty())
