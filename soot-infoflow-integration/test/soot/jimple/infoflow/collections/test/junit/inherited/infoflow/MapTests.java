@@ -69,11 +69,19 @@ public class MapTests extends soot.jimple.infoflow.test.junit.MapTests {
 	@Test(timeout = 300000)
 	public void mapOverwriteTest() {
 		IInfoflow infoflow = initInfoflow();
-		infoflow.getConfig().setEnableArraySizeTainting(false);
 		List<String> epoints = new ArrayList<String>();
 		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void mapOverwriteTest()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
+	}
+
+	@Test(timeout = 300000)
+	public void mapReadWriteTest() {
+		IInfoflow infoflow = initInfoflow();
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void mapReadWriteTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
 	}
 
 }
