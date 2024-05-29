@@ -18,6 +18,7 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 
 public class MapTests extends soot.jimple.infoflow.test.junit.MapTests {
+
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
@@ -64,4 +65,15 @@ public class MapTests extends soot.jimple.infoflow.test.junit.MapTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		negativeCheckInfoflow(infoflow);
 	}
+
+	@Test(timeout = 300000)
+	public void mapOverwriteTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setEnableArraySizeTainting(false);
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.MapTestCode: void mapOverwriteTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		negativeCheckInfoflow(infoflow);
+	}
+
 }
