@@ -67,9 +67,9 @@
                 </flow>
             </flows>
         </method>
-        <method id="java.util.ListIterator listIterator()">
+        <method id="java.util.ListIterator listIterator(int)">
             <flows>
-                <flow isAlias="true" typeChecking="false">
+                <flow isAlias="true" typeChecking="false" final="true">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
