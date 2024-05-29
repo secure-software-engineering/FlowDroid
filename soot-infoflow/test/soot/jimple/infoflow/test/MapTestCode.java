@@ -175,4 +175,28 @@ public class MapTestCode {
 		cm.publish(tainted);
 	}
 
+	public void mapReadWriteTest() {
+		String tainted = TelephonyManager.getDeviceId();
+		HashMap<String, Object> map87432 = new HashMap<>();
+		map87432.put("keyA-87432", "a-Value");
+		map87432.put("keyB-87432", tainted);
+		map87432.put("keyC", "another-Value");
+		String s = (String) map87432.get("keyB-87432");
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(s);
+	}
+
+	public void mapOverwriteTest() {
+		String tainted = TelephonyManager.getDeviceId();
+		HashMap<String, Object> map87432 = new HashMap<>();
+		map87432.put("keyA", "a-Value");
+		map87432.put("keyB", tainted);
+		map87432.put("keyB", "another-Value");
+		String s = (String) map87432.get("keyB");
+
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(s);
+	}
+
 }

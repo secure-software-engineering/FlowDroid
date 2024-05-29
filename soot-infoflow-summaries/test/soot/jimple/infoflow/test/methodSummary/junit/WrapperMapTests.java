@@ -1,11 +1,11 @@
 package soot.jimple.infoflow.test.methodSummary.junit;
 
-
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.test.junit.MapTests;
 
 public abstract class WrapperMapTests extends MapTests {
+
 	@Override
 	protected IInfoflow initInfoflow(boolean useTaintWrapper) {
 		IInfoflow result = super.initInfoflow(useTaintWrapper);
@@ -18,4 +18,5 @@ public abstract class WrapperMapTests extends MapTests {
 		}
 		return result;
 	}
+
 }
