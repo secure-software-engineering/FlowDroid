@@ -850,6 +850,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		if (flow.sink().getGap() != null && flow.sink().getType() == SourceSinkType.Return)
 			return null;
 
+		// If the flow manipulates a constraint, the outcome may be questionable
+		if (flow.sink().getConstraintType().isAction())
+			return null;
+
 		// Reverse the flow if necessary
 		return flow.reverse();
 	}
@@ -2265,10 +2269,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 	protected Tristate matchesConstraints(final AbstractFlowSinkSource flowSource, final AbstractMethodSummary flow,
 			final Taint taint, final Stmt stmt) {
-		// If the source tries to impose an action on a constraint, this is
-		// inconsistent. Probably the flow was not meant in this direction.
-		if (flowSource.getConstraintType().isAction())
-			return Tristate.FALSE();
 		// If no constrains apply to the flow source, we can unconditionally use it
 		if (!flowSource.isConstrained())
 			return Tristate.TRUE();
