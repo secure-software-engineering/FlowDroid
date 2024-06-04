@@ -3,7 +3,7 @@
 	<methods>
 		<method id="java.lang.Object next()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						  AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />

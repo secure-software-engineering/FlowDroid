@@ -69,7 +69,7 @@
         </method>
         <method id="java.util.ListIterator listIterator()">
             <flows>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -77,7 +77,7 @@
                         AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -96,7 +96,7 @@
         </method>
         <method id="java.util.ListIterator listIterator(int)">
             <flows>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -104,7 +104,7 @@
                         AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
-                <flow isAlias="false" typeChecking="false">
+                <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -341,7 +341,7 @@
         </method>
         <method id="java.lang.Object[] toArray()">
             <flows>
-                <flow>
+                <flow isAlias="true">
                     <from sourceSinkType="Field"
                           AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
                           AccessPathTypes="[java.lang.Object[]]" />
@@ -349,16 +349,19 @@
                 </flow>
             </flows>
         </method>
-        <method id="java.lang.Object[] toArray(java.lang.Object[])">
-            <flows>
-                <flow>
-                    <from sourceSinkType="Field"
-                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-                          AccessPathTypes="[java.lang.Object[]]" />
-                    <to sourceSinkType="Return" constrained="keep" />
-                </flow>
-            </flows>
-        </method>
+		<method id="java.lang.Object[] toArray(java.lang.Object[])">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" constrained="keep" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" constrained="keep" />
+				</flow>
+			</flows>
+		</method>
     </methods>
     <gaps>
         <!-- Gaps need the signature to match the exact class because there is no lookup for methods in superclasses -->
