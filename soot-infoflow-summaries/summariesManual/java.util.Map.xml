@@ -500,7 +500,7 @@
 		</method>
 		<method id="java.lang.String toString()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
