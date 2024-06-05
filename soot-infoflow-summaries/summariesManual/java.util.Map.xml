@@ -99,7 +99,7 @@
 					 ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -118,7 +118,7 @@
 		<method
 			id="java.lang.Object replace(java.lang.Object,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -185,7 +185,7 @@
 		</method>
 		<method id="java.util.Collection values()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -197,7 +197,7 @@
 		</method>
 		<method id="java.util.Set keySet()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -207,7 +207,7 @@
 		</method>
 		<method id="java.util.Set entrySet()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -215,7 +215,7 @@
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object key]"
 						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />

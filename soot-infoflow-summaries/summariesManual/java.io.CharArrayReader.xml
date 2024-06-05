@@ -24,7 +24,9 @@
 		<method id="int read()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]"  />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -32,7 +34,9 @@
 		<method id="int read(char[])">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field" 
+						AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -40,7 +44,9 @@
 		<method id="int read(char[],int,int)" >
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]"  />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
 				</flow>
 			</flows>
@@ -48,7 +54,9 @@
 		<method id="int read(java.nio.CharBuffer)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field" 
+						AccessPath="[java.io.CharArrayReader: char[] array]"
+						AccessPathTypes="[char[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[java.nio.CharBuffer: char[] buffer]"
 						AccessPathTypes="[char[]]" />

@@ -339,13 +339,5 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.lang.String toString()">
-			<flows>
-				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
-					<to sourceSinkType="Return" />
-				</flow>
-			</flows>
-		</method>
   </methods>
 </summary>

@@ -24,7 +24,9 @@
     <method id="int read()">
       <flows>
         <flow isAlias="false" cutSubfields="true" typeChecking="false">
-          <from sourceSinkType="Field" />
+          <from sourceSinkType="Field" 
+            AccessPath="[java.io.InputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]"/>
           <to sourceSinkType="Return" />
         </flow>
       </flows>
@@ -32,7 +34,9 @@
     <method id="int read(byte[])">
       <flows>
         <flow isAlias="false" cutSubfields="true" typeChecking="false">
-          <from sourceSinkType="Field" />
+          <from sourceSinkType="Field" 
+            AccessPath="[java.io.InputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]"/>
           <to sourceSinkType="Parameter" ParameterIndex="0" />
         </flow>
       </flows>
@@ -40,7 +44,9 @@
     <method id="int read(byte[],int,int)">
       <flows>
         <flow isAlias="false" cutSubfields="true" typeChecking="false">
-          <from sourceSinkType="Field" />
+          <from sourceSinkType="Field" 
+            AccessPath="[java.io.InputStream: byte[] innerArray]"
+            AccessPathTypes="[byte[]]"/>
           <to sourceSinkType="Parameter" ParameterIndex="0" />
         </flow>
       </flows>
