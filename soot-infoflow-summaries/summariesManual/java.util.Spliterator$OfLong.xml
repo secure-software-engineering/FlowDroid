@@ -50,8 +50,10 @@
 		</method>
 		<method id="java.util.Spliterator trySplit()()">
 			<flows>
-				<flow isAlias="false">
-					<from sourceSinkType="Field" />
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[java.util.Spliterator: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

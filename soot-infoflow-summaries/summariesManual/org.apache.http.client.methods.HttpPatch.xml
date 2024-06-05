@@ -51,7 +51,9 @@
 		<method id="java.lang.Object clone()">
 			<flows>
 				<flow isAlias="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field" 
+						AccessPath="[org.apache.http.client.methods.HttpRequestBase: java.lang.String uri]"
+						AccessPathTypes="[java.lang.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

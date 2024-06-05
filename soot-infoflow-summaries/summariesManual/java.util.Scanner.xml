@@ -148,7 +148,9 @@
 		<method id="java.util.regex.MatchResult match()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -156,7 +158,9 @@
 		<method id="java.lang.String next()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -164,7 +168,9 @@
 		<method id="java.lang.String next(java.lang.String)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -172,7 +178,9 @@
 		<method id="java.lang.String next(java.util.regex.Pattern)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -180,7 +188,9 @@
 		<method id="java.lang.String nextLine()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -188,7 +198,9 @@
 		<method id="java.lang.String findInLine(java.lang.String)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -196,7 +208,9 @@
 		<method id="java.lang.String findInLine(java.util.regex.Pattern)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -204,7 +218,9 @@
 		<method id="java.lang.String findWithinHorizon(java.lang.String,int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -212,7 +228,9 @@
 		<method id="java.lang.String findWithinHorizon(java.util.regex.Pattern,int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -220,7 +238,9 @@
 		<method id="boolean nextBoolean()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -228,7 +248,9 @@
 		<method id="byte nextByte()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -236,7 +258,9 @@
 		<method id="byte nextByte(int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -244,7 +268,9 @@
 		<method id="short nextShort()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -252,7 +278,9 @@
 		<method id="int nextInt()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -260,7 +288,9 @@
 		<method id="int nextInt(int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -268,7 +298,9 @@
 		<method id="long nextLong(int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -276,7 +308,9 @@
 		<method id="float nextFloat()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -284,7 +318,9 @@
 		<method id="double nextDouble()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -292,7 +328,9 @@
 		<method id="java.math.BigInteger nextBigInteger()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -300,7 +338,9 @@
 		<method id="java.math.BigInteger nextBigInteger(int)">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]"/>
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -308,7 +348,9 @@
 		<method id="java.math.BigDecimal nextBigDecimal()">
 			<flows>
 				<flow isAlias="false" cutSubfields="true" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field"
+						AccessPath="[java.io.InputStream: java.io.InputStream innerStream]"
+						AccessPathTypes="[java.io.InputStream]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

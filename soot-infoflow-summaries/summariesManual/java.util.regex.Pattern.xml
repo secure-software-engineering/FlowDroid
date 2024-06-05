@@ -40,7 +40,9 @@
 		<method id="java.util.regex.Matcher matcher(java.lang.CharSequence)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field" />
+					<from sourceSinkType="Field" 
+						AccessPath="[java.util.regex.Pattern: java.lang.String pattern]"
+						AccessPathTypes="[java.lang.String]"  />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.regex.Matcher: java.util.regex.Pattern pattern]"
 						AccessPathTypes="[java.util.regex.Pattern]" />
