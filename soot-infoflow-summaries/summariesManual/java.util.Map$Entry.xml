@@ -3,7 +3,7 @@
 	<methods>
 		<method id="java.lang.Object getKey()">
 			<flows>
-				<flow isAlias="false" typeChecking="false" ignoreTypes="true">
+				<flow isAlias="true" typeChecking="false" ignoreTypes="true">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map$Entry: java.lang.Object key]"
 						AccessPathTypes="[java.lang.Object]" />
@@ -13,7 +13,7 @@
 		</method>
 		<method id="java.lang.Object getValue()" ignoreTypes="true">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map$Entry: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
@@ -34,6 +34,22 @@
 					<to sourceSinkType="Field"
 						AccessPath="[java.util.Map$Entry: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String toString()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map$Entry: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map$Entry: java.lang.Object key]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
