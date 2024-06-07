@@ -207,7 +207,8 @@
 		</method>
 		<method id="java.util.Set entrySet()">
 			<flows>
-				<flow isAlias="true" typeChecking="false">
+			<!--  isAlias=false, since we obtain Map.Entry instances, which do not alias -->
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -215,7 +216,7 @@
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray,java.util.Map$Entry: java.lang.Object key]"
 						AccessPathTypes="[java.lang.Object[],java.lang.Object]" />
 				</flow>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
