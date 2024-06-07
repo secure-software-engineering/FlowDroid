@@ -7,7 +7,7 @@
 	<methods>
 		<method id="java.util.Spliterator spliterator()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" />
 					<to sourceSinkType="Return" AccessPath="[java.util.Spliterator: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />

@@ -3,4 +3,23 @@
 	<hierarchy>
 		<interface name="java.util.List" />
 	</hierarchy>
+	<methods>
+        <method id="void &lt;init&gt;(java.util.Collection)">
+            <constraints>
+                <index sourceSinkType="Implicit"
+                       ImplicitLocation="Next" />
+            </constraints>
+            <flows>
+                <flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Parameter" ParameterIndex="0"
+                          AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                          AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]"
+                        constrained="append" />
+                </flow>
+            </flows>
+        </method>
+     </methods>
 </summary>
