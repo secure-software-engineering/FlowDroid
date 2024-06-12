@@ -51,9 +51,9 @@ public class LayoutFileParser extends AbstractResourceParser {
 	protected final ARSCFileParser resParser;
 
 	private boolean loadOnlySensitiveControls = false;
-	private SootClass scViewGroup = null;
-	private SootClass scView = null;
-	private SootClass scWebView = null;
+	protected SootClass scViewGroup = null;
+	protected SootClass scView = null;
+	protected SootClass scWebView = null;
 
 	private LayoutControlFactory controlFactory = new LayoutControlFactory();
 
@@ -240,7 +240,7 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * @param layoutFile The full path and file name of the file being parsed
 	 * @param rootNode   The root node from where to start parsing
 	 */
-	private void parseLayoutNode(String layoutFile, AXmlNode rootNode) {
+	protected void parseLayoutNode(String layoutFile, AXmlNode rootNode) {
 		if (rootNode.getTag() == null || rootNode.getTag().isEmpty()) {
 			logger.warn("Encountered a null or empty node name in file %s, skipping node...", layoutFile);
 			return;
