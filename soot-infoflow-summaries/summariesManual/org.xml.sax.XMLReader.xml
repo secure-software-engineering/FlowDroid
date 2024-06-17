@@ -102,7 +102,15 @@
 			</flows>
 		</method>
 		<method id="void setFeature(java.lang.String,boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.XMLReader: java.lang.String[] featureKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.XMLReader: boolean[] featureValues]"
+						AccessPathTypes="[boolean[]]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

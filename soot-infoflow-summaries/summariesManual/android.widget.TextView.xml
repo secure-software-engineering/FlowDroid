@@ -62,7 +62,12 @@
 			</flows>
 		</method>
 		<method id="void setError(java.lang.CharSequence)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence error]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -72,7 +77,12 @@
 			</flows>
 		</method>
 		<method id="void setHint(java.lang.CharSequence)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: java.lang.CharSequence hint]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -82,7 +92,12 @@
 			</flows>
 		</method>
 		<method id="void setText(java.lang.CharSequence)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -92,7 +107,12 @@
 			</flows>
 		</method>
 		<method id="void setText(java.lang.CharSequence,android.widget.TextView$BufferType)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -102,7 +122,12 @@
 			</flows>
 		</method>
 		<method id="void setText(char[],int,int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.TextView: android.text.Editable content,android.text.Editable: java.lang.String content]"
+						AccessPathTypes="[android.text.Editable,java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

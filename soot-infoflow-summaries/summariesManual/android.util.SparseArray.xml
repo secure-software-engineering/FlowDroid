@@ -112,7 +112,12 @@
             </clears>
         </method>
         <method id="void setValueAt(int,java.lang.Object)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.util.SparseArray"
+                        AccessPath="[android.util.SparseArray: byte[] data]"
+                        AccessPathTypes="[byte[]]" />
+             </clears>
+             <flows> 
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"

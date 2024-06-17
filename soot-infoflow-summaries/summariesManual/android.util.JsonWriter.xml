@@ -64,7 +64,11 @@
 			</flows>
 		</method>
 		<method id="void setIndent(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"
+						AccessPathTypes="[java.io.Writer]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" AccessPath="[android.util.JsonWriter: java.io.Writer writer]"

@@ -148,7 +148,12 @@
 			</flows>
 		</method>
 		<method id="void setName(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.lang.Thread"
+						AccessPath="[java.lang.Thread: java.lang.String name]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.lang.Thread"
@@ -158,7 +163,12 @@
 			</flows>
 		</method>
 		<method id="void setPriority(int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.lang.Thread"
+						AccessPath="[java.lang.Thread: int priority]"
+						AccessPathTypes="[int]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.lang.Thread"

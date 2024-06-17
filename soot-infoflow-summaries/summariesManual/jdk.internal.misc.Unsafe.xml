@@ -311,7 +311,10 @@
 		</method> <!-- frage am ende -->
 		
 		<method id="void setMemory(java.lang.Object,long,long,byte)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0">
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="3" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
@@ -320,7 +323,10 @@
 		</method> <!-- how to describe setting relative memory -->
 		
 		<method id="void setMemory(long,long,byte)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0">
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="3" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>

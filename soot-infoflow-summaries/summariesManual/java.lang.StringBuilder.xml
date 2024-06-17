@@ -399,7 +399,11 @@
 			</flows>
 		</method>
 		<method id="void setCharAt(int,char)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"

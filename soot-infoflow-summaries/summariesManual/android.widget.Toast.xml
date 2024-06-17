@@ -48,7 +48,12 @@
 			</flows>
 		</method>
 		<method id="void setDuration(int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: int duration]"
+						AccessPathTypes="[int]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -58,7 +63,12 @@
 			</flows>
 		</method>
 		<method id="void setText(java.lang.CharSequence)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: java.lang.CharSequence text]"
+						AccessPathTypes="[java.lang.CharSequence]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -68,7 +78,12 @@
 			</flows>
 		</method>
 		<method id="void setView(android.view.View)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.widget.Toast: android.view.View view]"
+						AccessPathTypes="[android.view.View]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

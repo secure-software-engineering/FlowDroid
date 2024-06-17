@@ -170,7 +170,12 @@
 			</flows>
 		</method>
 		<method id="void set(long)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicLong: long value]"
+						AccessPathTypes="[long]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

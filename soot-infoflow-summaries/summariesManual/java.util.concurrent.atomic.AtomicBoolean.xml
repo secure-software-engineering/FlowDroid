@@ -58,7 +58,12 @@
 			</flows>
 		</method>
 		<method id="void set(boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[java.util.concurrent.atomic.AtomicBoolean: boolean value]"
+						AccessPathTypes="[boolean]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

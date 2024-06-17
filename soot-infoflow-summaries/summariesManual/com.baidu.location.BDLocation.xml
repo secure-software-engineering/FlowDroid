@@ -25,7 +25,12 @@
             </flows>
         </method>
         <method id="void setAddrStr(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String p&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -55,7 +60,12 @@
             </flows>
         </method>
         <method id="void setUserIndoorState(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int E&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -65,7 +75,12 @@
             </flows>
         </method>
         <method id="void setParkAvailable(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int z&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -95,7 +110,15 @@
             </flows>
         </method>
         <method id="void setTime(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String b&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String N&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -131,7 +154,12 @@
             </flows>
         </method>
         <method id="void setPoiList(java.util.List)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.util.List L&gt;]"
+                        AccessPathTypes="[java.util.List]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="true">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.util.List"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -151,7 +179,12 @@
             </flows>
         </method>
         <method id="void setLatitude(double)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: double c&gt;]"
+                        AccessPathTypes="[double]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="double"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -161,7 +194,12 @@
             </flows>
         </method>
         <method id="void setBuildingName(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String x&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -181,7 +219,12 @@
             </flows>
         </method>
         <method id="void setLocType(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int a&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -191,7 +234,12 @@
             </flows>
         </method>
         <method id="void setLocationID(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String N&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -221,7 +269,12 @@
             </flows>
         </method>
         <method id="void setGpsCheckStatus(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int Q&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -241,7 +294,12 @@
             </flows>
         </method>
         <method id="void setCoorType(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String n&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -251,7 +309,12 @@
             </flows>
         </method>
         <method id="void setGpsAccuracyStatus(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int P&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -291,7 +354,12 @@
             </flows>
         </method>
         <method id="void setLocationDescribe(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String q&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -301,7 +369,12 @@
             </flows>
         </method>
         <method id="void setAltitude(double)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: double f&gt;]"
+                        AccessPathTypes="[double]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="double"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -311,7 +384,12 @@
             </flows>
         </method>
         <method id="void setIndoorSurpportPolygon(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String K&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -341,7 +419,12 @@
             </flows>
         </method>
         <method id="void setBuildingID(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String w&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -351,7 +434,12 @@
             </flows>
         </method>
         <method id="void setLongitude(double)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: double d&gt;]"
+                        AccessPathTypes="[double]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="double"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -391,7 +479,12 @@
             </flows>
         </method>
         <method id="void setLocationWhere(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int A&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -421,7 +514,12 @@
             </flows>
         </method>
         <method id="void setNetworkLocationType(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String B&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -431,7 +529,12 @@
             </flows>
         </method>
         <method id="void setSatelliteNumber(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int l&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -481,7 +584,12 @@
             </flows>
         </method>
         <method id="void setIndoorLocMode(boolean)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: boolean y&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="boolean"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -521,7 +629,12 @@
             </flows>
         </method>
         <method id="void setIndoorNetworkState(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int G&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -541,7 +654,12 @@
             </flows>
         </method>
         <method id="void setDirection(float)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: float m&gt;]"
+                        AccessPathTypes="[float]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -609,7 +727,12 @@
             </flows>
         </method>
         <method id="void setIndoorLocationSurpport(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int F&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -619,7 +742,12 @@
             </flows>
         </method>
         <method id="void setFloor(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String v&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -639,7 +767,12 @@
             </flows>
         </method>
         <method id="void setAddr(com.baidu.location.Address)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: com.baidu.location.Address u&gt;]"
+                        AccessPathTypes="[com.baidu.location.Address]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="true">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="com.baidu.location.Address"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -649,7 +782,12 @@
             </flows>
         </method>
         <method id="void setRadius(float)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: float j&gt;]"
+                        AccessPathTypes="[float]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -659,7 +797,12 @@
             </flows>
         </method>
         <method id="void setSpeed(float)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: float h&gt;]"
+                        AccessPathTypes="[float]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="float"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -749,7 +892,12 @@
             </flows>
         </method>
         <method id="void setLocTypeDescription(java.lang.String)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String M&gt;]"
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="java.lang.String"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -779,7 +927,12 @@
             </flows>
         </method>
         <method id="void setIndoorLocationSource(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int H&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
@@ -809,7 +962,12 @@
             </flows>
         </method>
         <method id="void setOperators(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
+                        AccessPath="[&lt;com.baidu.location.BDLocation: int C&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true">
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int"></from>
                     <to sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
