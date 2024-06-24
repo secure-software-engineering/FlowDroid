@@ -214,10 +214,14 @@
 			</flows>
 		</method>
 		<method id="void setAddressLine(int,java.lang.String)">
+			<constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
 			<clears>
 				<clear sourceSinkType="Field"
 						AccessPath="[android.location.Address: java.lang.String[] addressLines]"
-						AccessPathTypes="[java.lang.String[]]" />
+						AccessPathTypes="[java.lang.String[]]" 
+						constrained="true" />
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">

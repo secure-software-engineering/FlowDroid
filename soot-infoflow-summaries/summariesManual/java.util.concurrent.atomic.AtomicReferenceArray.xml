@@ -58,10 +58,14 @@
 			</flows>
 		</method>
 		<method id="void set(int,java.lang.Object)">
+			<constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
 			<clears>
 				<clear sourceSinkType="Field"
 						AccessPath="[java.util.concurrent.atomic.AtomicReferenceArray: java.lang.Object[] values]"
-						AccessPathTypes="[java.lang.Object[]]" />
+						AccessPathTypes="[java.lang.Object[]]" 
+						constrained="true" />
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">

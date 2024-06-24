@@ -36,10 +36,6 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.Object)">
-			<clears>
-				<clear sourceSinkType="Field" AccessPath="[java.util.Iterator: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]" />
-			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
