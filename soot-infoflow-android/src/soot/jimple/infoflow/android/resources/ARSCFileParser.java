@@ -2651,9 +2651,6 @@ public class ARSCFileParser extends AbstractResourceParser {
 		offset += 1;
 
 		typeSpecTable.res1 = readUInt16(data, offset);
-		if (typeSpecTable.res1 != 0) {
-			raiseFormatViolationIssue("File format violation in type spec table: res1 is not zero", offset);
-		}
 		offset += 2;
 
 		typeSpecTable.entryCount = readUInt32(data, offset);
