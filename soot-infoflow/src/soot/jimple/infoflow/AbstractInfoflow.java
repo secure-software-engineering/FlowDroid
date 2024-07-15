@@ -922,16 +922,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 					@Override
 					public Thread newThread(Runnable r) {
-						Thread thrPath = new Thread(r);
-						thrPath.setDaemon(true);
-						thrPath.setName("FlowDroid Path Reconstruction");
-						return thrPath;
+						return createNewThread(r);
 					}
 				});
 
 				// Create the path builder
 				final IAbstractionPathBuilder builder = createPathBuilder(resultExecutor);
-//							final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
+				//							final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
 
 				// If we want incremental result reporting, we have to
 				// initialize it before we start the taint tracking
@@ -1227,6 +1224,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				}
 			}
 		}
+	}
+
+	protected Thread createNewThread(Runnable r) {
+		Thread thrPath = new Thread(r);
+		thrPath.setDaemon(true);
+		thrPath.setName("FlowDroid Path Reconstruction");
+		return thrPath;
 	}
 
 	/**
