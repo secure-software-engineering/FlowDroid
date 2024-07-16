@@ -10,10 +10,10 @@
  ******************************************************************************/
 package soot.jimple.infoflow.data;
 
+import java.util.Collection;
+
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-
-import java.util.Collection;
 
 public class AbstractionAtSink {
 
@@ -29,10 +29,26 @@ public class AbstractionAtSink {
 	 * @param abstraction     The abstraction with which the sink has been reached
 	 * @param sinkStmt        The statement that triggered the sink
 	 */
-	public AbstractionAtSink(Collection<ISourceSinkDefinition> sinkDefinitions, Abstraction abstraction, Stmt sinkStmt) {
+	public AbstractionAtSink(Collection<ISourceSinkDefinition> sinkDefinitions, Abstraction abstraction,
+			Stmt sinkStmt) {
 		this.sinkDefinitions = sinkDefinitions;
-		this.abstraction = abstraction;
+		this.abstraction = cleanse(abstraction);
 		this.sinkStmt = sinkStmt;
+	}
+
+	/**
+	 * Cleanses the given abstraction from all information that is irrelevant for a
+	 * result
+	 * 
+	 * @param abs The abstraction to cleanse
+	 * @return The original abstraction if there was no need for cleansing, or a
+	 *         reduced abstraction otherwise
+	 */
+	private static Abstraction cleanse(Abstraction abs) {
+		if (abs.getTurnUnit() == null)
+			return abs;
+
+		return abs.deriveNewAbstractionWithTurnUnit(null);
 	}
 
 	/**
