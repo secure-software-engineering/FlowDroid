@@ -33,6 +33,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
+import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowSolver;
 import soot.jimple.infoflow.InfoflowConfiguration.PathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
@@ -928,7 +929,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// Create the path builder
 				final IAbstractionPathBuilder builder = createPathBuilder(resultExecutor);
-				//							final IAbstractionPathBuilder builder = new DebuggingPathBuilder(pathBuilderFactory, manager);
+				// final IAbstractionPathBuilder builder = new
+				// DebuggingPathBuilder(pathBuilderFactory, manager);
 
 				// If we want incremental result reporting, we have to
 				// initialize it before we start the taint tracking
@@ -991,7 +993,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				// We need to prune access paths that are entailed by
 				// another one
-				removeEntailedAbstractions(res);
+				if (config.getDataFlowDirection() != DataFlowDirection.Backwards)
+					removeEntailedAbstractions(res);
 
 				if (config.getAdditionalFlowsEnabled()) {
 					res = new HashSet<>(res);
@@ -1794,7 +1797,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			AbstractionAtSink curAbs = absAtSinkIt.next();
 			for (AbstractionAtSink checkAbs : res) {
 				if (checkAbs != curAbs && checkAbs.getSinkStmt() == curAbs.getSinkStmt()
-						&& checkAbs.getAbstraction().localEquals(curAbs.getAbstraction())) {
+						&& checkAbs.getAbstraction().localEquals(curAbs.getAbstraction())
+						&& checkAbs.getSinkDefinitions().equals(curAbs.getSinkDefinitions())) {
 					if (checkAbs.getAbstraction().getAccessPath().entails(curAbs.getAbstraction().getAccessPath())) {
 						absAtSinkIt.remove();
 						break;
