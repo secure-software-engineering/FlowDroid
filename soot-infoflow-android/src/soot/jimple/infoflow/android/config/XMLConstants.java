@@ -65,4 +65,5 @@ class XMLConstants {
 	public static final String ATTR_ID = "id";
 	public static final String ATTR_MODE = "mode";
 
+    public static final String TAG_PATH_RECONSTRUCTION_TOTAL_TIME = "pathReconstructionTotalTime";
 }

@@ -56,6 +56,9 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 
 		// Start the propagation tasks
 		int curResIdx = 0;
+		long startTime = System.nanoTime();
+		long totalTime=manager.getConfig().getPathConfiguration().getPathReconstructionTotalTime();
+
 		for (final AbstractionAtSink abs : res) {
 			// We need to reset the executor before we can submit new jobs
 			executor.reset();
@@ -67,8 +70,21 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 				break;
 			}
 
+			curResIdx++;
+			// checking if the execution time exceeds the configured totalTime and logging
+			long executionNanoTime = System.nanoTime() - startTime;
+			if (totalTime > 0 && executionNanoTime / 1E9 >= totalTime) {
+				logger.info("Path Reconstruction has terminated because it exceeds the pathReconstructionTotalTime.");
+				logger.info("The pathReconstructionTotalTime is set to " + totalTime + " seconds.");
+				logger.info("Now the current resId:" + curResIdx );
+				logger.info("The number of remaining res:" + (res.size() - curResIdx));
+				break;
+			} else {
+				logger.info("Path Reconstruction has used " + executionNanoTime / 1E9 + " seconds");
+			}
+
 			// Schedule the main abstraction
-			logger.info(String.format("Building path %d...", ++curResIdx));
+			logger.info(String.format("Building path %d...", curResIdx));
 			Runnable task = getTaintPathTask(abs);
 			if (task != null)
 				executor.execute(task);
