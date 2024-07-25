@@ -138,6 +138,8 @@ public class XMLConfigurationWriter {
 				Integer.toString(pathConfig.getPathReconstructionBatchSize()));
 		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_WRITE_OUTPUT_FILES,
 				Boolean.toString(config.getWriteOutputFiles()));
+		appendSimpleTag(document, dataFlowConfigTag, XMLConstants.TAG_PATH_RECONSTRUCTION_TOTAL_TIME,
+				Long.toString(pathConfig.getPathReconstructionTotalTime()));
 	}
 
 	/**
