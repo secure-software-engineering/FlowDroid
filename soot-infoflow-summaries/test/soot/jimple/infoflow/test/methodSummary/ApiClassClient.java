@@ -366,4 +366,13 @@ public class ApiClassClient {
 		d.appendString(stringSource2());
 		sink(d.getString());
 	}
+
+	public void streamWriteRead() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+
+		String taintedElement = list.stream().findFirst().orElse("anyOther");
+		sink(taintedElement);
+	}
 }
