@@ -74,8 +74,11 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.Object,int,java.lang.Object)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true" />
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -85,8 +88,11 @@
 			</flows>
 		</method>
 		<method id="void setBoolean(java.lang.Object,int,boolean)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -96,8 +102,11 @@
 			</flows>
 		</method>
 		<method id="void setByte(java.lang.Object,int,byte)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -107,8 +116,11 @@
 			</flows>
 		</method>
 		<method id="void setChar(java.lang.Object,int,char)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -118,8 +130,11 @@
 			</flows>
 		</method>
 		<method id="void setShort(java.lang.Object,int,short)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -129,8 +144,11 @@
 			</flows>
 		</method>
 		<method id="void setInt(java.lang.Object,int,int)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -140,8 +158,11 @@
 			</flows>
 		</method>
 		<method id="void setLong(java.lang.Object,int,long)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -151,8 +172,11 @@
 			</flows>
 		</method>
 		<method id="void setFloat(java.lang.Object,int,float)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
@@ -162,8 +186,11 @@
 			</flows>
 		</method>
 		<method id="void setDouble(java.lang.Object,int,double)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">

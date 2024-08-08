@@ -599,17 +599,6 @@
             </flows>
         </method>
         <method id="void setPixel(int,int,int)">
-            <clears>
-            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
-                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
-                        AccessPathTypes="[int]" />
-            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
-                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
-                        AccessPathTypes="[int]" />
-            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
-                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
-                        AccessPathTypes="[int]" />
-             </clears>
              <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
@@ -632,11 +621,6 @@
             </flows>
         </method>
         <method id="void setPixels(int[],int,int,int,int,int,int)">
-            <clears>
-            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
-                        AccessPath="[&lt;android.graphics.Bitmap: int mNativeBitmap&gt;]"
-                        AccessPathTypes="[int]" />
-             </clears>
              <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="2" />

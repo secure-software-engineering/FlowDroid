@@ -429,9 +429,11 @@
 			</flows>
 		</method>
 		<method id="void setCharAt(int,char)">
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
 			<clears>
-				<clear sourceSinkType="Field" 
-						 />
+				<clear sourceSinkType="Field" constrained="true"/>
 			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">

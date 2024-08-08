@@ -297,9 +297,6 @@
 		</method> <!-- doubt -->
 		
 		<method id="void setMemory(long,long,byte)">
-			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0">
-			 </clears>
 			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
