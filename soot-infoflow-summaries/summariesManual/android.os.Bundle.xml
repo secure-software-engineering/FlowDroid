@@ -121,7 +121,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -168,7 +168,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -196,7 +196,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -215,7 +215,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -229,7 +229,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -276,7 +276,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -290,7 +290,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -305,7 +305,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -320,7 +320,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -335,7 +335,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -350,7 +350,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -397,7 +397,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -472,7 +472,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"
@@ -507,13 +507,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -527,7 +527,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -547,13 +547,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -567,7 +567,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -587,7 +587,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -607,7 +607,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -627,13 +627,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -647,13 +647,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<!-- TODO -->
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -670,7 +670,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -690,13 +690,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -710,13 +710,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -732,13 +732,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[android.os.Parcelable: byte[] data]"
 						AccessPathTypes="[byte[]]" />
@@ -754,13 +754,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[android.os.Parcelable: byte[] data]"
 						AccessPathTypes="[byte[]]" />
@@ -776,13 +776,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -798,13 +798,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -820,7 +820,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -840,13 +840,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] values]"
@@ -860,7 +860,7 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
@@ -922,13 +922,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[android.util.SparseArray: byte[] data]"
 						AccessPathTypes="[byte[]]" />/>
@@ -944,13 +944,13 @@
 				<key sourceSinkType="Parameter" ParameterIndex="0" />
 			</constraints>
 			<flows>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[android.os.BaseBundle: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
