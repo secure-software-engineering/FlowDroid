@@ -28,7 +28,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String p&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -63,7 +63,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int E&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -78,7 +78,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int z&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -113,10 +113,10 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String b&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String N&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -157,7 +157,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.util.List L&gt;]"
-                        AccessPathTypes="[java.util.List]" taintSubFields="true">
+                        AccessPathTypes="[java.util.List]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="true">
@@ -182,7 +182,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: double c&gt;]"
-                        AccessPathTypes="[double]" taintSubFields="true">
+                        AccessPathTypes="[double]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -197,7 +197,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String x&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -222,7 +222,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int a&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -237,7 +237,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String N&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -272,7 +272,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int Q&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -297,7 +297,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String n&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -312,7 +312,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int P&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -357,7 +357,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String q&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -372,7 +372,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: double f&gt;]"
-                        AccessPathTypes="[double]" taintSubFields="true">
+                        AccessPathTypes="[double]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -387,7 +387,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String K&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -422,7 +422,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String w&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -437,7 +437,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: double d&gt;]"
-                        AccessPathTypes="[double]" taintSubFields="true">
+                        AccessPathTypes="[double]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -482,7 +482,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int A&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -517,7 +517,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String B&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -532,7 +532,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int l&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -587,7 +587,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: boolean y&gt;]"
-                        AccessPathTypes="[boolean]" taintSubFields="true">
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -632,7 +632,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int G&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -657,7 +657,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: float m&gt;]"
-                        AccessPathTypes="[float]" taintSubFields="true">
+                        AccessPathTypes="[float]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -730,7 +730,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int F&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -745,7 +745,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String v&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -770,7 +770,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: com.baidu.location.Address u&gt;]"
-                        AccessPathTypes="[com.baidu.location.Address]" taintSubFields="true">
+                        AccessPathTypes="[com.baidu.location.Address]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="true">
@@ -785,7 +785,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: float j&gt;]"
-                        AccessPathTypes="[float]" taintSubFields="true">
+                        AccessPathTypes="[float]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -800,7 +800,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: float h&gt;]"
-                        AccessPathTypes="[float]" taintSubFields="true">
+                        AccessPathTypes="[float]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -895,7 +895,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: java.lang.String M&gt;]"
-                        AccessPathTypes="[java.lang.String]" taintSubFields="true">
+                        AccessPathTypes="[java.lang.String]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -930,7 +930,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int H&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
@@ -965,7 +965,7 @@
             <clears>
             	<clear sourceSinkType="Field" BaseType="com.baidu.location.BDLocation"
                         AccessPath="[&lt;com.baidu.location.BDLocation: int C&gt;]"
-                        AccessPathTypes="[int]" taintSubFields="true">
+                        AccessPathTypes="[int]" taintSubFields="true" />
              </clears>
              <flows> 
                 <flow isAlias="false">
