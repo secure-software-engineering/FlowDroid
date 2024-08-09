@@ -324,7 +324,24 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.URL"
@@ -358,7 +375,30 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.String,java.lang.String,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String protocol]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String host]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: int port]"
+						AccessPathTypes="[int]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String userInfo]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String file]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String query]"
+						AccessPathTypes="[java.lang.String]" />
+				<clear sourceSinkType="Field" BaseType="java.net.URL"
+						AccessPath="[java.net.URL: java.lang.String ref]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.URL"

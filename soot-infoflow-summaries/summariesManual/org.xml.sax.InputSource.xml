@@ -82,7 +82,12 @@
 			</flows>
 		</method>
 		<method id="void setByteStream(java.io.InputStream)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.InputSource: java.io.InputStream byteStream]"
+						AccessPathTypes="[java.io.InputStream]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -92,7 +97,12 @@
 			</flows>
 		</method>
 		<method id="void setCharacterStream(java.io.Reader)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.InputSource: java.io.Reader characterStream]"
+						AccessPathTypes="[java.io.Reader]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -102,7 +112,12 @@
 			</flows>
 		</method>
 		<method id="void setEncoding(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.InputSource: java.lang.String encoding]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -112,7 +127,12 @@
 			</flows>
 		</method>
 		<method id="void setPublicId(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.InputSource: java.lang.String publicId]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -122,7 +142,12 @@
 			</flows>
 		</method>
 		<method id="void setSystemId(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.xml.sax.InputSource: java.lang.String systemId]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

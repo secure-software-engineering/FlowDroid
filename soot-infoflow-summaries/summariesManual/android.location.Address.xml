@@ -214,7 +214,16 @@
 			</flows>
 		</method>
 		<method id="void setAddressLine(int,java.lang.String)">
-			<flows>
+			<constraints>
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String[] addressLines]"
+						AccessPathTypes="[java.lang.String[]]" 
+						constrained="true" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
@@ -224,7 +233,12 @@
 			</flows>
 		</method>
 		<method id="void setAdminArea(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String adminArea]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -234,7 +248,12 @@
 			</flows>
 		</method>
 		<method id="void setCountryCode(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String countryCode]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -244,7 +263,12 @@
 			</flows>
 		</method>
 		<method id="void setCountryName(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String countryName]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -254,7 +278,15 @@
 			</flows>
 		</method>
 		<method id="void setExtras(android.os.Bundle)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Address: java.lang.String[] extraKeys]"
+						AccessPathTypes="[java.lang.String[]]" />
+				<clear sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.location.Address: java.lang.Object[] extraValues]"
+						AccessPathTypes="[java.lang.Object[]]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0"
 						AccessPath="[android.location.Address: java.lang.String[] keys]"
@@ -274,7 +306,12 @@
 			</flows>
 		</method>
 		<method id="void setFeatureName(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String featureName]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -284,7 +321,12 @@
 			</flows>
 		</method>
 		<method id="void setLatitude(double)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: double latitude]"
+						AccessPathTypes="[double]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -294,7 +336,12 @@
 			</flows>
 		</method>
 		<method id="void setLocality(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String locality]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -304,7 +351,12 @@
 			</flows>
 		</method>
 		<method id="void setLongitude(double)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: double longitude]"
+						AccessPathTypes="[double]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -314,7 +366,12 @@
 			</flows>
 		</method>
 		<method id="void setPhone(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String phone]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -324,7 +381,12 @@
 			</flows>
 		</method>
 		<method id="void setPostalCode(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String postalCode]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -334,7 +396,12 @@
 			</flows>
 		</method>
 		<method id="void setPremises(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String premises]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -344,7 +411,12 @@
 			</flows>
 		</method>
 		<method id="void setSubAdminArea(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String subAdminArea]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -354,7 +426,12 @@
 			</flows>
 		</method>
 		<method id="void setSubLocality(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String subLocality]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -364,7 +441,12 @@
 			</flows>
 		</method>
 		<method id="void setSubThoroughfare(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String subThoroughfare]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -374,7 +456,12 @@
 			</flows>
 		</method>
 		<method id="void setUrl(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.location.Address: java.lang.String url]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"

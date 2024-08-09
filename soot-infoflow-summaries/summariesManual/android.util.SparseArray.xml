@@ -3,14 +3,14 @@
     <methods>
         <method id="void append(int,java.lang.Object)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="true" typeChecking="false" final="true">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: byte[] data]"
-                        AccessPathTypes="[byte[]]"
+                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
             </flows>
@@ -18,28 +18,29 @@
         <method id="void clear()">
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: byte[] data]" />
+                       AccessPath="[android.util.SparseArray: Object[] mValues]" 
+                       constrained="true"/>
             </clears>
         </method>
         <method id="void delete(int)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: byte[] data]"
+                       AccessPath="[android.util.SparseArray: Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
         <method id="java.lang.Object get(int)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="true" typeChecking="false" final="true">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: byte[] data]"
-                          AccessPathTypes="[byte[]]"
+                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPathTypes="[Object[]]"
                           constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
@@ -47,13 +48,13 @@
         </method>
         <method id="java.lang.Object get(int,java.lang.Object)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: byte[] data]"
-                          AccessPathTypes="[byte[]]"
+                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPathTypes="[Object[]]"
                           constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
@@ -65,59 +66,69 @@
         </method>
         <method id="void put(int,java.lang.Object)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: byte[] data]"
-                        AccessPathTypes="[byte[]]"
+                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: byte[] data]"
+                       AccessPath="[android.util.SparseArray: Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
         <method id="void remove(int)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: byte[] data]"
+                       AccessPath="[android.util.SparseArray: Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
         <method id="void set(int,java.lang.Object)">
             <constraints>
-                <key sourceSinkType="Parameter" ParameterIndex="0" />
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: byte[] data]"
-                        AccessPathTypes="[byte[]]"
+                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: byte[] data]"
+                       AccessPath="[android.util.SparseArray: Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
         <method id="void setValueAt(int,java.lang.Object)">
-            <flows>
+			<constraints>
+                <index sourceSinkType="Parameter" ParameterIndex="0" />
+            </constraints>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.util.SparseArray"
+                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPathTypes="[Object[]]" 
+                        constrained="true" 
+                        isAlias="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: byte[] data]"
-                        AccessPathTypes="[byte[]]" />
+                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPathTypes="[Object[]]" />
                 </flow>
             </flows>
         </method>
@@ -125,8 +136,8 @@
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: byte[] data]"
-                          AccessPathTypes="[byte[]]" />
+                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPathTypes="[Object[]]" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>

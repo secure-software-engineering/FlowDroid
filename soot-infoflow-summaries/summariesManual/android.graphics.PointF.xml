@@ -102,7 +102,15 @@
 			</flows>
 		</method>
 		<method id="void set(android.graphics.PointF)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="android.graphics.PointF"
+						AccessPath="[android.graphics.PointF: float y]"
+						AccessPathTypes="[float]" />
+				<clear sourceSinkType="Field" BaseType="android.graphics.PointF"
+						AccessPath="[android.graphics.PointF: float x]"
+						AccessPathTypes="[float]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1"
 						BaseType="android.graphics.PointF"
@@ -124,7 +132,15 @@
 			</flows>
 		</method>
 		<method id="void set(float,float)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="android.graphics.PointF"
+						AccessPath="[android.graphics.PointF: float y]"
+						AccessPathTypes="[float]" />
+				<clear sourceSinkType="Field" BaseType="android.graphics.PointF"
+						AccessPath="[android.graphics.PointF: float x]"
+						AccessPathTypes="[float]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" BaseType="int" />
 					<to sourceSinkType="Field" BaseType="android.graphics.PointF"

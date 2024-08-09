@@ -5,7 +5,12 @@
             <constraints>
                 <key sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field"
+                        AccessPath="[javax.servlet.http.HttpSession: java.lang.Object[] attributes]"
+                        AccessPathTypes="[java.lang.String[]]" constrained="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field"

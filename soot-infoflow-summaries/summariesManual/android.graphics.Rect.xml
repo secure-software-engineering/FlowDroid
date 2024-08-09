@@ -266,7 +266,21 @@
 			</flows>
 		</method>
 		<method id="void set(int,int,int,int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int left]"
+						AccessPathTypes="[int]" />
+				<clear sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int top]"
+						AccessPathTypes="[int]" />
+				<clear sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int right]"
+						AccessPathTypes="[int]" />
+				<clear sourceSinkType="Field" BaseType="android.graphics.Rect"
+						AccessPath="[android.graphics.Rect: int bottom]"
+						AccessPathTypes="[int]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.graphics.Rect"
@@ -294,7 +308,10 @@
 			</flows>
 		</method>
 		<method id="void set(android.graphics.Rect)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />

@@ -74,7 +74,13 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.Object,int,java.lang.Object)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -82,7 +88,13 @@
 			</flows>
 		</method>
 		<method id="void setBoolean(java.lang.Object,int,boolean)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -90,7 +102,13 @@
 			</flows>
 		</method>
 		<method id="void setByte(java.lang.Object,int,byte)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -98,7 +116,13 @@
 			</flows>
 		</method>
 		<method id="void setChar(java.lang.Object,int,char)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -106,7 +130,13 @@
 			</flows>
 		</method>
 		<method id="void setShort(java.lang.Object,int,short)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -114,7 +144,13 @@
 			</flows>
 		</method>
 		<method id="void setInt(java.lang.Object,int,int)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -122,7 +158,13 @@
 			</flows>
 		</method>
 		<method id="void setLong(java.lang.Object,int,long)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -130,7 +172,13 @@
 			</flows>
 		</method>
 		<method id="void setFloat(java.lang.Object,int,float)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -138,7 +186,13 @@
 			</flows>
 		</method>
 		<method id="void setDouble(java.lang.Object,int,double)">
-			<flows>
+			<constraints>
+				<index sourceSinkType="Parameter" ParameterIndex="1" />
+			</constraints>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" constrained="true"/>
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />

@@ -196,7 +196,12 @@
 			</flows>
 		</method>
 		<method id="void setComment(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String comment]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -206,7 +211,12 @@
 			</flows>
 		</method>
 		<method id="void setCommentURL(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String commentURL]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -216,7 +226,12 @@
 			</flows>
 		</method>
 		<method id="void setDiscard(boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean discard]"
+						AccessPathTypes="[boolean]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -226,7 +241,12 @@
 			</flows>
 		</method>
 		<method id="void setDomain(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String domain]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -236,7 +256,12 @@
 			</flows>
 		</method>
 		<method id="void setHttpOnly(boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean httpOnly]"
+						AccessPathTypes="[boolean]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -246,7 +271,12 @@
 			</flows>
 		</method>
 		<method id="void setMaxAge(long)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: long maxAge]"
+						AccessPathTypes="[long]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -256,7 +286,12 @@
 			</flows>
 		</method>
 		<method id="void setPath(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String path]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -266,7 +301,12 @@
 			</flows>
 		</method>
 		<method id="void setPortlist(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String portlist]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -276,7 +316,12 @@
 			</flows>
 		</method>
 		<method id="void setSecure(boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: boolean secure]"
+						AccessPathTypes="[boolean]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -286,7 +331,12 @@
 			</flows>
 		</method>
 		<method id="void setValue(java.lang.String)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: java.lang.String value]"
+						AccessPathTypes="[java.lang.String]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"
@@ -296,7 +346,12 @@
 			</flows>
 		</method>
 		<method id="void setVersion(int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="java.net.HttpCookie"
+						AccessPath="[java.net.HttpCookie: int version]"
+						AccessPathTypes="[int]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="java.net.HttpCookie"

@@ -1406,7 +1406,12 @@
 			</flows>
 		</method>
 		<method id="void setClipData(android.content.ClipData)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[android.content.Intent: android.content.ClipData clipData]"
+						AccessPathTypes="[android.content.ClipData]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
@@ -1512,7 +1517,12 @@
 			</flows>
 		</method>
 		<method id="void setSelector(android.content.Intent)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field" BaseType="android.content.Intent"
+						AccessPath="[android.content.Intent: android.content.Intent selector]"
+						AccessPathTypes="[android.content.Intent]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" BaseType="android.content.Intent"

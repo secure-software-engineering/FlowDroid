@@ -509,7 +509,12 @@
             </flows>
         </method>
         <method id="void setDensity(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mDensity&gt;]"
+                        AccessPathTypes="[int]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -519,7 +524,12 @@
             </flows>
         </method>
         <method id="void setHasAlpha(boolean)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasAlpha&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -529,7 +539,12 @@
             </flows>
         </method>
         <method id="void setHasMipMap(boolean)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mHasMipMap&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -539,7 +554,12 @@
             </flows>
         </method>
         <method id="void setHeight(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mHeight&gt;]"
+                        AccessPathTypes="[int]" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -549,7 +569,12 @@
             </flows>
         </method>
         <method id="void setLayoutBounds(int[])">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int[] mLayoutBounds&gt;]"
+                        AccessPathTypes="[int[]]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="int[]" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -559,7 +584,12 @@
             </flows>
         </method>
         <method id="void setNinePatchChunk(byte[])">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: byte[] mNinePatchChunk&gt;]"
+                        AccessPathTypes="[byte[]]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" BaseType="byte[]" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -569,7 +599,7 @@
             </flows>
         </method>
         <method id="void setPixel(int,int,int)">
-            <flows>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -591,7 +621,7 @@
             </flows>
         </method>
         <method id="void setPixels(int[],int,int,int,int,int,int)">
-            <flows>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="2" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -601,7 +631,12 @@
             </flows>
         </method>
         <method id="void setPremultiplied(boolean)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: boolean mPremultiplied&gt;]"
+                        AccessPathTypes="[boolean]" taintSubFields="true" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"
@@ -611,7 +646,12 @@
             </flows>
         </method>
         <method id="void setWidth(int)">
-            <flows>
+            <clears>
+            	<clear sourceSinkType="Field" BaseType="android.graphics.Bitmap"
+                        AccessPath="[&lt;android.graphics.Bitmap: int mWidth&gt;]"
+                        AccessPathTypes="[int]" />
+             </clears>
+             <flows> 
                 <flow isAlias="false">
                     <from sourceSinkType="Parameter" ParameterIndex="0" />
                     <to sourceSinkType="Field" BaseType="android.graphics.Bitmap"

@@ -90,7 +90,10 @@
 			</flows>
 		</method>
 		<method id="void set(java.lang.Object,java.lang.Object)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -98,7 +101,10 @@
 			</flows>
 		</method>
 		<method id="void setBoolean(java.lang.Object,boolean)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -106,7 +112,10 @@
 			</flows>
 		</method>
 		<method id="void setByte(java.lang.Object,byte)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -114,7 +123,10 @@
 			</flows>
 		</method>
 		<method id="void setChar(java.lang.Object,char)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -122,7 +134,10 @@
 			</flows>
 		</method>
 		<method id="void setShort(java.lang.Object,short)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -130,7 +145,10 @@
 			</flows>
 		</method>
 		<method id="void setInt(java.lang.Object,int)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -138,7 +156,10 @@
 			</flows>
 		</method>
 		<method id="void setLong(java.lang.Object,long)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -146,7 +167,10 @@
 			</flows>
 		</method>
 		<method id="void setFloat(java.lang.Object,float)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />
@@ -154,7 +178,10 @@
 			</flows>
 		</method>
 		<method id="void setDouble(java.lang.Object,double)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Parameter" ParameterIndex="0" />

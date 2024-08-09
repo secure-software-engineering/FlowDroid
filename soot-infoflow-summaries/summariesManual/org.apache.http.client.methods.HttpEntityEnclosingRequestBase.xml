@@ -17,7 +17,12 @@
 			</flows>
 		</method>
 		<method id="void setEntity(org.apache.http.HttpEntity)">
-			<flows>
+			<clears>
+				<clear sourceSinkType="Field"
+						AccessPath="[org.apache.http.client.methods.HttpEntityEnclosingRequestBase: org.apache.http.HttpEntity entity]"
+						AccessPathTypes="[org.apache.http.HttpEntity]" />
+			 </clears>
+			 <flows> 
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
