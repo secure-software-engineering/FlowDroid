@@ -4,12 +4,12 @@
 		<method id="int getInt(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putInt(java.lang.Object,long,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -18,16 +18,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="java.lang.Object getObject(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putObject(java.lang.Object,long,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -36,16 +36,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="boolean getBoolean(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putBoolean(java.lang.Object,long,boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -54,16 +54,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="byte getByte(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putByte(java.lang.Object,long,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -72,34 +72,34 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="short getShort(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putShort(java.lang.Object,long,short)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="char getChar(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putChar(java.lang.Object,long,char)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -108,16 +108,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="long getLong(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -126,16 +126,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="float getFloat(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putFloat(java.lang.Object,long,float)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -144,16 +144,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="double getDouble(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putDouble(java.lang.Object,long,double)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -162,19 +162,19 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<!-- how do I express that the object that lies in the address given by the
 		the parameter "long address" can be tainted? -->
-		
+
 		<method id="byte getByte(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putByte(long,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -182,17 +182,18 @@
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
-		</method> <!-- doubt,can address taint object? different abstraction levels -->
-		
+		</method> <!--
+		doubt,can address taint object? different abstraction levels -->
+
 		<method id="int getInt(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putInt(long,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -201,16 +202,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="long getLong(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putLong(long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -219,16 +220,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="float getFloat(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putFloat(long,float)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -237,16 +238,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="double getDouble(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putDouble(long,double)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -255,16 +256,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="long getAddress(long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putAddress(long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -272,39 +273,37 @@
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
-		</method> <!-- maybe not needed, no taint possible?-->
+		</method> <!--
+		maybe not needed, no taint possible?-->
 
-		
+
 		<method id="long reallocateMemory(long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
-		</method> <!-- frage am ende -->
-		
+			</flows>
+		</method>
+
 		<method id="void setMemory(java.lang.Object,long,long,byte)">
-		<clears>
-			<clear sourceSinkType="Parameter" ParameterIndex="0">
-		 </clears>
-		 <flows> 
+			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="3" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
-		</method> <!-- doubt -->
-		
+		</method>
+
 		<method id="void setMemory(long,long,byte)">
-			 <flows> 
+			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="void copyMemory(java.lang.Object,long,java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -313,7 +312,7 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="void copyMemory(long,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -321,15 +320,16 @@
 					<to sourceSinkType="Parameter" ParameterIndex="1"></to>
 				</flow>
 			</flows>
-		</method> <!-- doubt -->
-		
+		</method>
+
 		<method id="void freeMemory(long)">
 			<clears>
 				<clear sourceSinkType="Parameter" ParameterIndex="0" />
 			</clears>
 		</method>
-			
-		<method id="boolean compareAndSwapObject(java.lang.Object,long,java.lang.Object,java.lang.Object)">
+
+		<method
+			id="boolean compareAndSwapObject(java.lang.Object,long,java.lang.Object,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="3" />
@@ -337,7 +337,7 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="boolean compareAndSwapInt(java.lang.Object,long,int,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -346,7 +346,7 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="boolean compareAndSwapLong(java.lang.Object,long,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -355,16 +355,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="java.lang.Object getObjectVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putObjectVolatile(java.lang.Object,long,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -373,16 +373,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="int getIntVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putIntVolatile(java.lang.Object,long,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -391,16 +391,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="boolean getBooleanVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putBooleanVolatile(java.lang.Object,long,boolean)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -409,16 +409,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="byte getByteVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putByteVolatile(java.lang.Object,long,byte)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -427,34 +427,34 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="short getShortVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putShortVolatile(java.lang.Object,long,short)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="char getCharVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putCharVolatile(java.lang.Object,long,char)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -463,16 +463,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="long getLongVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putLongVolatile(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -481,16 +481,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="float getFloatVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putFloatVolatile(java.lang.Object,long,float)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -499,16 +499,16 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="double getDoubleVolatile(java.lang.Object,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putDoubleVolatile(java.lang.Object,long,double)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -517,110 +517,110 @@
 				</flow>
 			</flows>
 		</method>
-		
+
 		<method id="void putOrderedObject(java.lang.Object,long,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putOrderedInt(java.lang.Object,long,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="void putOrderedLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<!-- no data exchange with methods park() unpark() getLoadAverage()-->
 
-		
+
 		<method id="int getAndAddInt(java.lang.Object,long,int)">
 			<!-- 2 flow clauses in the flows clause -->
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="long getAndAddLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="int getAndSetInt(java.lang.Object,long,int)">
 			<!-- 2 flow clauses in the flows clause -->
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="long getAndSetLong(java.lang.Object,long,long)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<method id="Object getAndSetObject(java.lang.Object,long,java.lang.Object)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0"/>
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"></to>
 				</flow>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="2"/>
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Parameter" ParameterIndex="0"></to>
 				</flow>
-                	</flows>
+			</flows>
 		</method>
-		
+
 		<!-- no data exchange with methods loadFence() storeFence() fullFence()-->
-		
+
 		<method id="void invokeCleaner(java.nio.ByteBuffer)">
 			<!-- is there a tainting possibility associated with this method? -->
 			<clears>
-				<clear sourceSinkType="Parameter" ParameterIndex="0"/>
+				<clear sourceSinkType="Parameter" ParameterIndex="0" />
 			</clears>
 		</method>
 	</methods>
