@@ -613,7 +613,10 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 					boolean actionFilter = false;
 					boolean categoryFilter = false;
 					for (AXmlNode intentFilter : activityChildren.getChildren()) {
-						String name = intentFilter.getAttribute("name").asString(arscParser);
+						AXmlAttribute<?> aname = intentFilter.getAttribute("name");
+						if (aname == null)
+							continue;
+						String name = aname.asString(arscParser);
 						String tag = intentFilter.getTag();
 						if (tag.equals("action") && name.equals("android.intent.action.MAIN"))
 							actionFilter = true;
