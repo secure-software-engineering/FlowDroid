@@ -2277,9 +2277,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 						resType.configurations.add(config);
 
 						boolean isSparse = ((typeTable.flags & FLAG_SPARSE) == FLAG_SPARSE);
-						boolean isOffset64 = ((typeTable.flags & FLAG_OFFSET16) == FLAG_OFFSET16);
+						boolean isOffset16 = ((typeTable.flags & FLAG_OFFSET16) == FLAG_OFFSET16);
 
-						if (isOffset64) {
+						if (isOffset16) {
 							throw new RuntimeException("Unsupported resource type entry: FLAG_OFFSET16");
 						}
 
