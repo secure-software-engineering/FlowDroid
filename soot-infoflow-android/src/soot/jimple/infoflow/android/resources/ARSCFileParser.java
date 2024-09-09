@@ -242,14 +242,43 @@ public class ARSCFileParser extends AbstractResourceParser {
 	 * followed by an array of ResTable_Map structures.
 	 */
 	public final static int FLAG_COMPLEX = 0x0001;
+
 	/**
 	 * If set, this resource has been declared public, so libraries are allowed to
 	 * reference it.
 	 */
 	public final static int FLAG_PUBLIC = 0x0002;
 
-	private final Map<Integer, String> stringTable = new HashMap<Integer, String>();
-	private final List<ResPackage> packages = new ArrayList<ResPackage>();
+	/**
+	 * If set, this is a weak resource and may be overridden by strong resources of
+	 * the same name/type. This is only useful during linking with other resource
+	 * tables.
+	 */
+	public final static int FLAG_WEAK = 0x0004;
+
+	/**
+	 * If set, this is a compact entry with data type and value directly encoded in
+	 * the entry.
+	 */
+	public final static int FLAG_COMPACT = 0x0008;
+
+	/**
+	 * If set, the entry is sparse, and encodes both the entry ID and offset into
+	 * each entry, and a binary search is used to find the key. Only available on
+	 * platforms >= O. Mark any types that use this with a v26 qualifier to prevent
+	 * runtime issues on older platforms. {@link ResTable_Type#flags}
+	 */
+	public final static int FLAG_SPARSE = 0x01;
+
+	/**
+	 * If set, the offsets to the entries are encoded in 16-bit,
+	 * <code>real_offset = offset * 4u</code> An 16-bit offset of 0xffffu means a
+	 * NO_ENTRY {@link ResTable_Type#flags}
+	 */
+	public final static int FLAG_OFFSET16 = 0x02;
+
+	private final Map<Integer, String> stringTable = new HashMap<>();
+	private final List<ResPackage> packages = new ArrayList<>();
 
 	public static class ResPackage {
 		private int packageId;
@@ -1520,7 +1549,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int id; // uint8
 		/**
-		 * Must be 0 or 1 (sparse).
+		 * Combination of {@link ARSCFileParser#FLAG_SPARSE} and
+		 * {@link ARSCFileParser#FLAG_OFFSET16}
 		 */
 		int flags; // uint8
 		/**
@@ -2165,8 +2195,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 					int beforeStringBlock = typeStringsOffset;
 					ResChunk_Header typePoolHeader = new ResChunk_Header();
 					typeStringsOffset = readChunkHeader(typePoolHeader, remainingData, typeStringsOffset);
-					if (typePoolHeader.type != RES_STRING_POOL_TYPE)
+					if (typePoolHeader.type != RES_STRING_POOL_TYPE) {
 						throw new RuntimeException("Unexpected block type for package type strings");
+					}
 
 					ResStringPool_Header typePool = new ResStringPool_Header();
 					typePool.header = typePoolHeader;
@@ -2183,8 +2214,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 					beforeStringBlock = keyStringsOffset;
 					ResChunk_Header keyPoolHeader = new ResChunk_Header();
 					keyStringsOffset = readChunkHeader(keyPoolHeader, remainingData, keyStringsOffset);
-					if (keyPoolHeader.type != RES_STRING_POOL_TYPE)
+					if (keyPoolHeader.type != RES_STRING_POOL_TYPE) {
 						throw new RuntimeException("Unexpected block type for package key strings");
+					}
 
 					ResStringPool_Header keyPool = new ResStringPool_Header();
 					keyPool.header = keyPoolHeader;
@@ -2237,13 +2269,19 @@ public class ARSCFileParser extends AbstractResourceParser {
 								resType = rt;
 								break;
 							}
-						if (resType == null)
+						if (resType == null) {
 							throw new RuntimeException("Reference to undeclared type found");
+						}
 						ResConfig config = new ResConfig();
 						config.config = typeTable.config;
 						resType.configurations.add(config);
 
-						boolean isSparse = (typeTable.flags == 1);
+						boolean isSparse = ((typeTable.flags & FLAG_SPARSE) == FLAG_SPARSE);
+						boolean isOffset64 = ((typeTable.flags & FLAG_OFFSET16) == FLAG_OFFSET16);
+
+						if (isOffset64) {
+							throw new RuntimeException("Unsupported resource type entry: FLAG_OFFSET16");
+						}
 
 						// Read the table entries
 						for (int i = 0; i < typeTable.entryCount; i++) {
@@ -2479,6 +2517,14 @@ public class ARSCFileParser extends AbstractResourceParser {
 		offset += 2;
 		entry.flagsComplex = (flags & FLAG_COMPLEX) == FLAG_COMPLEX;
 		entry.flagsPublic = (flags & FLAG_PUBLIC) == FLAG_PUBLIC;
+
+		boolean flagsWeak = (flags & FLAG_WEAK) == FLAG_WEAK;
+		boolean flagsCompact = (flags & FLAG_COMPACT) == FLAG_COMPACT;
+
+		if (flagsWeak || flagsCompact) {
+			logger.warn("Unsupported ResTable entry flags encountered: {} {}", flagsWeak ? "FLAG_WEAK" : "",
+					flagsCompact ? "FLAG_COMPACT" : "");
+		}
 
 		entry.key = readUInt32(data, offset);
 		offset += 4;
