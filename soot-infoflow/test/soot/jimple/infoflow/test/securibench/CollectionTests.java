@@ -16,14 +16,14 @@ import java.util.List;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
 
 public class CollectionTests extends JUnitTests {
 
 	@Test
 	public void collections1() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -32,7 +32,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections2() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -41,7 +42,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections3() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 2);
@@ -50,7 +52,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections4() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections4: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections4: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -59,7 +62,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections5() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections5: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections5: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -68,7 +72,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections6() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections6: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections6: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -77,7 +82,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections7() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections7: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections7: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -86,7 +92,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections8() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections8: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections8: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -95,7 +102,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections9() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections9: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections9: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		negativeCheckInfoflow(infoflow);
@@ -105,7 +113,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections10() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections10: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections10: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -114,7 +123,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections11() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections11: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections11: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -123,7 +133,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections12() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections12: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections12: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -132,7 +143,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections13() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections13: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections13: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -141,7 +153,8 @@ public class CollectionTests extends JUnitTests {
 	@Test
 	public void collections14() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.collections.Collections14: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.collections.Collections14: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);

@@ -31,6 +31,7 @@ import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
+import soot.jimple.infoflow.test.base.AbstractJUnitTests;
 
 /**
  * abstract super class of all test cases which handles initialization, keeps
@@ -38,7 +39,7 @@ import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
  * debug)
  *
  */
-public abstract class JUnitTests {
+public abstract class JUnitTests extends AbstractJUnitTests {
 
 	protected static String appPath, libPath;
 
@@ -74,11 +75,9 @@ public abstract class JUnitTests {
 			addTestPathes(fi, appPathBuilder);
 		}
 		appPath = appPathBuilder.toString();
+
 		StringBuilder libPathBuilder = new StringBuilder();
-		appendWithSeparator(libPathBuilder,
-				new File(System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"));
-		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
-		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar"));
+		addRtJarPath(libPathBuilder);
 		libPath = libPathBuilder.toString();
 		if (libPath.isEmpty())
 			throw new RuntimeException("Could not find rt.jar!");
@@ -98,36 +97,6 @@ public abstract class JUnitTests {
 		sinks.add(sinkInt);
 		sinks.add(sinkBoolean);
 		sinks.add(sinkDouble);
-	}
-
-	private static void addTestPathes(File f, StringBuilder appPathBuilder) throws IOException {
-		File testSrc1 = new File(f, "bin");
-		File testSrc2 = new File(f, "build" + File.separator + "classes");
-		File testSrc3 = new File(f, "build" + File.separator + "testclasses");
-
-		if (!(testSrc1.exists() || testSrc2.exists() || testSrc3.exists())) {
-			fail(String.format("Test aborted - none of the test sources are available at root %s",
-					f.getCanonicalPath()));
-		}
-
-		appendWithSeparator(appPathBuilder, testSrc1);
-		appendWithSeparator(appPathBuilder, testSrc2);
-		appendWithSeparator(appPathBuilder, testSrc3);
-	}
-
-	/**
-	 * Appends the given path to the given {@link StringBuilder} if it exists
-	 * 
-	 * @param sb The {@link StringBuilder} to which to append the path
-	 * @param f  The path to append
-	 * @throws IOException
-	 */
-	protected static void appendWithSeparator(StringBuilder sb, File f) throws IOException {
-		if (f.exists()) {
-			if (sb.length() > 0)
-				sb.append(System.getProperty("path.separator"));
-			sb.append(f.getCanonicalPath());
-		}
 	}
 
 	@Before

@@ -26,7 +26,6 @@ public class DummyHttpResponse implements HttpServletResponse {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public java.util.Collection<java.lang.String> getHeaders(String arg0) {
 		return Arrays.asList("secret1", "secret2", "secret3");
 	}
@@ -47,7 +46,6 @@ public class DummyHttpResponse implements HttpServletResponse {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public java.util.Collection<java.lang.String> getHeaderNames() {
 		return Arrays.asList("secret1", "secret2", "secret3");
 	}
@@ -172,6 +170,10 @@ public class DummyHttpResponse implements HttpServletResponse {
 
 	@Override
 	public void setContentLengthLong(long len) {
+	}
+
+	@Override
+	public void sendRedirect(String location, int sc, boolean clearBuffer) throws IOException {
 	}
 
 }

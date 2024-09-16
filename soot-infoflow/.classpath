@@ -11,6 +11,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="src" output="build/testclasses" path="securiBench">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" output="build/testclasses" path="test">
 		<attributes>
 			<attribute name="test" value="true"/>

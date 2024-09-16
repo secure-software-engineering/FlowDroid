@@ -25,14 +25,14 @@ import org.junit.BeforeClass;
 
 import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigSecuriBench;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
+import soot.jimple.infoflow.test.base.AbstractJUnitTests;
 
-public abstract class JUnitTests {
+public abstract class JUnitTests extends AbstractJUnitTests {
 
 	protected static String appPath, libPath;
 
@@ -88,13 +88,14 @@ public abstract class JUnitTests {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		File f = new File(".");
-		appPath = f.getCanonicalPath() + File.separator + "bin" + File.pathSeparator + f.getCanonicalPath()
-				+ File.separator + "build" + File.separator + "classes" + File.pathSeparator + f.getCanonicalPath()
-				+ File.separator + "build" + File.separator + "testclasses";
-		libPath = System.getProperty("java.home") + File.separator + "lib" + File.separator + "rt.jar"
-				+ File.pathSeparator + f.getCanonicalPath() + File.separator + "lib" + File.separator + "j2ee.jar"
-				+ File.pathSeparator + f.getCanonicalPath() + File.separator + "lib" + File.separator + "cos.jar";
-		System.out.println("Using following locations as sources for classes: " + appPath + ", " + libPath);
+		StringBuilder appPathBuilder = new StringBuilder();
+		addTestPathes(f, appPathBuilder);
+		appPath = appPathBuilder.toString();
+
+		StringBuilder libPathBuilder = new StringBuilder();
+		addRtJarPath(libPathBuilder);
+		libPath = libPathBuilder.toString();
+
 		sources = Arrays.asList(sourceArray);
 		sinks = Arrays.asList(sinkArray);
 	}

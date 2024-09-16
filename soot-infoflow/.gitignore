@@ -6,3 +6,4 @@ target
 /ant.settings
 reports
 /build
+/testclasses/

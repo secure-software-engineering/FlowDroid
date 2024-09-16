@@ -16,14 +16,14 @@ import java.util.List;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
 
 public class FactoryTests extends JUnitTests {
 
 	@Test
 	public void factories1() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.factories.Factories1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.factories.Factories1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -32,7 +32,8 @@ public class FactoryTests extends JUnitTests {
 	@Test
 	public void factories2() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.factories.Factories2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.factories.Factories2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -41,7 +42,8 @@ public class FactoryTests extends JUnitTests {
 	@Test
 	public void factories3() {
 		List<String> epoints = new ArrayList<String>();
-		epoints.add("<securibench.micro.factories.Factories3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+		epoints.add(
+				"<securibench.micro.factories.Factories3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);

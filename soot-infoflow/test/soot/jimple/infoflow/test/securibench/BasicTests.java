@@ -16,7 +16,6 @@ import java.util.List;
 import org.junit.Test;
 
 import soot.jimple.infoflow.IInfoflow;
-import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 
 public class BasicTests extends JUnitTests {
