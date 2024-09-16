@@ -1413,9 +1413,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (!isValidSeedMethod(m))
 				return sinkCount;
 
-			if (m.getName().equals("doGet"))
-				System.out.println("x");
-
 			// Look for a source in the method. Also look for sinks. If we
 			// have no sink in the program, we don't need to perform any
 			// analysis
