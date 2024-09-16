@@ -129,13 +129,13 @@
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
+			<version>6.1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-			<version>3.0.3</version>
+			<artifactId>core</artifactId>
+			<version>3.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
