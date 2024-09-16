@@ -7,33 +7,34 @@ package securibench.micro.pred;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="using an array element as in a predicate" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description="using an array element as in a predicate"
+ * @servlet vuln_count = "1"
+ */
 public class Pred9 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
+	private static final String FIELD_NAME = "name";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {       
-        String name = req.getParameter(FIELD_NAME);
-        String array[] = new String[] {name, "abc"};
-        
-        if(array[1].equals(name)) {
-            PrintWriter writer = resp.getWriter();
-            writer.println(name);              /* BAD */     // could be equal
-        }
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter(FIELD_NAME);
+		String array[] = new String[] { name, "abc" };
 
-    public String getDescription() {
-        return "using an array element as in a predicate";
-    }
+		if (array[1].equals(name)) {
+			PrintWriter writer = resp.getWriter();
+			writer.println(name); /* BAD */ // could be equal
+		}
+	}
 
-    public int getVulnerabilityCount() {
-        return 1;
-    }    
+	public String getDescription() {
+		return "using an array element as in a predicate";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

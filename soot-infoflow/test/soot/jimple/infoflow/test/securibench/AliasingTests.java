@@ -23,7 +23,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing1() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing1: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -33,7 +33,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing2() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing2: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		negativeCheckInfoflow(infoflow);
@@ -43,7 +43,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing3() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing3: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		negativeCheckInfoflow(infoflow);
@@ -55,7 +55,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing4() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing4: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing4: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 2);
@@ -65,7 +65,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing5() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing5: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing5: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -75,7 +75,7 @@ public class AliasingTests extends JUnitTests {
 	public void aliasing6() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.aliasing.Aliasing6: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.aliasing.Aliasing6: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 7);

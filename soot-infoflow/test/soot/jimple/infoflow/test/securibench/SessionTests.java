@@ -22,7 +22,7 @@ public class SessionTests extends JUnitTests {
 	public void session1() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.session.Session1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.session.Session1: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -32,7 +32,7 @@ public class SessionTests extends JUnitTests {
 	public void session2() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.session.Session2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.session.Session2: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -42,7 +42,7 @@ public class SessionTests extends JUnitTests {
 	public void session3() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.session.Session3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.session.Session3: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);

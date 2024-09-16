@@ -28,7 +28,7 @@ public class BasicTests extends JUnitTests {
 	public void basic0() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic0: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic0: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -38,7 +38,7 @@ public class BasicTests extends JUnitTests {
 	public void basic1() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic1: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic1: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -48,7 +48,7 @@ public class BasicTests extends JUnitTests {
 	public void basic2() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic2: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic2: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
 		checkInfoflow(infoflow, 1);
@@ -58,7 +58,7 @@ public class BasicTests extends JUnitTests {
 	public void basic3() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic3: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic3: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -69,7 +69,7 @@ public class BasicTests extends JUnitTests {
 	public void basic4() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic4: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic4: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -80,7 +80,7 @@ public class BasicTests extends JUnitTests {
 	public void basic5() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic5: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic5: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -91,7 +91,7 @@ public class BasicTests extends JUnitTests {
 	public void basic6() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic6: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic6: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -102,7 +102,7 @@ public class BasicTests extends JUnitTests {
 	public void basic7() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic7: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic7: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -113,7 +113,7 @@ public class BasicTests extends JUnitTests {
 	public void basic8() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic8: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic8: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -124,7 +124,7 @@ public class BasicTests extends JUnitTests {
 	public void basic9() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic9: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic9: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -135,7 +135,7 @@ public class BasicTests extends JUnitTests {
 	public void basic10() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic10: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic10: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -146,7 +146,7 @@ public class BasicTests extends JUnitTests {
 	public void basic11() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic11: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic11: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -157,7 +157,7 @@ public class BasicTests extends JUnitTests {
 	public void basic12() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic12: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic12: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -168,7 +168,7 @@ public class BasicTests extends JUnitTests {
 	public void basic13() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic13: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic13: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -179,7 +179,7 @@ public class BasicTests extends JUnitTests {
 	public void basic14() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic14: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic14: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -190,7 +190,7 @@ public class BasicTests extends JUnitTests {
 	public void basic15() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic15: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic15: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -201,7 +201,7 @@ public class BasicTests extends JUnitTests {
 	public void basic16() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic16: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic16: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -212,7 +212,7 @@ public class BasicTests extends JUnitTests {
 	public void basic17() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic17: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic17: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -223,7 +223,7 @@ public class BasicTests extends JUnitTests {
 	public void basic18() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic18: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic18: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -234,7 +234,7 @@ public class BasicTests extends JUnitTests {
 	public void basic19() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic19: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic19: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -245,7 +245,7 @@ public class BasicTests extends JUnitTests {
 	public void basic20() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic20: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic20: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -256,7 +256,7 @@ public class BasicTests extends JUnitTests {
 	public void basic21() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic21: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic21: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -267,7 +267,7 @@ public class BasicTests extends JUnitTests {
 	public void basic22() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic22: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic22: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -278,7 +278,7 @@ public class BasicTests extends JUnitTests {
 	public void basic23() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic23: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic23: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -289,7 +289,7 @@ public class BasicTests extends JUnitTests {
 	public void basic24() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic24: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic24: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -300,7 +300,7 @@ public class BasicTests extends JUnitTests {
 	public void basic25() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic25: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic25: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -311,7 +311,7 @@ public class BasicTests extends JUnitTests {
 	public void basic26() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic26: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic26: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -322,7 +322,7 @@ public class BasicTests extends JUnitTests {
 	public void basic27() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic27: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic27: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -333,7 +333,7 @@ public class BasicTests extends JUnitTests {
 	public void basic28() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic28: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic28: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -344,7 +344,7 @@ public class BasicTests extends JUnitTests {
 	public void basic29() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic29: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic29: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -355,7 +355,7 @@ public class BasicTests extends JUnitTests {
 	public void basic30() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic30: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic30: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -366,7 +366,7 @@ public class BasicTests extends JUnitTests {
 	public void basic31() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic31: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic31: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -377,7 +377,7 @@ public class BasicTests extends JUnitTests {
 	public void basic32() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic32: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic32: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -388,7 +388,7 @@ public class BasicTests extends JUnitTests {
 	public void basic33() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic33: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic33: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -399,7 +399,7 @@ public class BasicTests extends JUnitTests {
 	public void basic34() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic34: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic34: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -410,7 +410,7 @@ public class BasicTests extends JUnitTests {
 	public void basic35() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic35: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic35: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -421,7 +421,7 @@ public class BasicTests extends JUnitTests {
 	public void basic36() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic36: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic36: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -432,7 +432,7 @@ public class BasicTests extends JUnitTests {
 	public void basic37() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic37: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic37: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -443,7 +443,7 @@ public class BasicTests extends JUnitTests {
 	public void basic38() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic38: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic38: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -454,7 +454,7 @@ public class BasicTests extends JUnitTests {
 	public void basic39() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic39: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic39: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -465,7 +465,7 @@ public class BasicTests extends JUnitTests {
 	public void basic40() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic40: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic40: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -477,7 +477,7 @@ public class BasicTests extends JUnitTests {
 	public void basic41() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic41: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic41: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);
@@ -488,7 +488,7 @@ public class BasicTests extends JUnitTests {
 	public void basic42() {
 		List<String> epoints = new ArrayList<String>();
 		epoints.add(
-				"<securibench.micro.basic.Basic42: void doGet(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)>");
+				"<securibench.micro.basic.Basic42: void doGet(jakarta.servlet.http.HttpServletRequest,jakarta.servlet.http.HttpServletResponse)>");
 		IInfoflow infoflow = initInfoflow(epoints);
 		infoflow.getConfig().setStaticFieldTrackingMode(StaticFieldTrackingMode.None);
 		infoflow.computeInfoflow(appPath, libPath, entryPointCreator, sources, sinks);

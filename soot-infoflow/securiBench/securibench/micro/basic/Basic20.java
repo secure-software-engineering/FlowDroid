@@ -10,43 +10,45 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="simple SQL injection" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description="simple SQL injection"
+ * @servlet vuln_count = "1"
+ */
 public class Basic20 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
+	private static final String FIELD_NAME = "name";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter(FIELD_NAME);
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter(FIELD_NAME);
 
-        Connection con = null;
-        try {
-            con = DriverManager.getConnection(MicroTestCase.CONNECTION_STRING);
-            Statement stmt = con.createStatement();
-            stmt.execute("select * from Users where name=" + name);     /* BAD */
-        } catch (SQLException e) {
-            System.err.println("An error occurred");
-        } finally {
-            try {
-                if(con != null) con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-        
-    }
-    
-    public String getDescription() {
-        return "simple SQL injection";
-    }
-    
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+		Connection con = null;
+		try {
+			con = DriverManager.getConnection(MicroTestCase.CONNECTION_STRING);
+			Statement stmt = con.createStatement();
+			stmt.execute("select * from Users where name=" + name); /* BAD */
+		} catch (SQLException e) {
+			System.err.println("An error occurred");
+		} finally {
+			try {
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public String getDescription() {
+		return "simple SQL injection";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

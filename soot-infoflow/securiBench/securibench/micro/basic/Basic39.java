@@ -8,8 +8,9 @@ package securibench.micro.basic;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
@@ -18,22 +19,22 @@ import securibench.micro.MicroTestCase;
  * @servlet vuln_count = "1"
  */
 public class Basic39 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
-      
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter(FIELD_NAME);
-        StringTokenizer tok = new StringTokenizer(name, "\t");
-        while(tok.hasMoreElements()) {
-            PrintWriter writer = resp.getWriter();        
-            writer.println(tok.nextElement());              /* BAD */    
-        }
-    }
+	private static final String FIELD_NAME = "name";
 
-    public String getDescription() {
-        return "StringTokenizer test";
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter(FIELD_NAME);
+		StringTokenizer tok = new StringTokenizer(name, "\t");
+		while (tok.hasMoreElements()) {
+			PrintWriter writer = resp.getWriter();
+			writer.println(tok.nextElement()); /* BAD */
+		}
+	}
 
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+	public String getDescription() {
+		return "StringTokenizer test";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

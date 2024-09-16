@@ -9,9 +9,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
@@ -20,20 +21,20 @@ import securibench.micro.MicroTestCase;
  * @servlet vuln_count = "1"
  */
 public class Basic36 extends BasicTestCase implements MicroTestCase {
-      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        ServletInputStream in = req.getInputStream();
-        BufferedReader r = new BufferedReader(new InputStreamReader(in));
-        String line = r.readLine();
-        
-        PrintWriter writer = resp.getWriter();        
-        writer.println(line);              /* BAD */
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		ServletInputStream in = req.getInputStream();
+		BufferedReader r = new BufferedReader(new InputStreamReader(in));
+		String line = r.readLine();
 
-    public String getDescription() {
-        return "values obtained from HttpServletRequest input stream";
-    }
+		PrintWriter writer = resp.getWriter();
+		writer.println(line); /* BAD */
+	}
 
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+	public String getDescription() {
+		return "values obtained from HttpServletRequest input stream";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -1331,6 +1332,40 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		protected SinkInfo getSinkInfo() {
 			return sinkInfo;
 		}
+
+		@Override
+		public String toString() {
+			switch (state) {
+			case SOURCE:
+				return "Source";
+			case SINK:
+				return "Sink";
+			case BOTH:
+				return "Source and Sink";
+			case NEITHER:
+				return "Neither";
+			default:
+				return "Unknown. That's a bad state to be in.";
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(sinkInfo, sourceInfo, state);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SourceOrSink other = (SourceOrSink) obj;
+			return Objects.equals(sinkInfo, other.sinkInfo) && Objects.equals(sourceInfo, other.sourceInfo)
+					&& state == other.state;
+		}
 	}
 
 	/**
@@ -1377,6 +1412,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Check whether this is a system class we need to ignore
 			if (!isValidSeedMethod(m))
 				return sinkCount;
+
+			if (m.getName().equals("doGet"))
+				System.out.println("x");
 
 			// Look for a source in the method. Also look for sinks. If we
 			// have no sink in the program, we don't need to perform any

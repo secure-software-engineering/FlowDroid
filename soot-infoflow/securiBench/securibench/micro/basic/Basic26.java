@@ -10,34 +10,35 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="test getParameterMap" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description="test getParameterMap"
+ * @servlet vuln_count = "1"
+ */
 public class Basic26 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
+	private static final String FIELD_NAME = "name";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-       Map m = req.getParameterMap();
-       for(Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
-           Map.Entry e = (Entry) iter.next();
-           if(e.getKey().equals(FIELD_NAME)) {
-               PrintWriter writer = resp.getWriter();
-               writer.println(e.getValue());        
-           }           
-       }
-    }
-    
-    public String getDescription() {
-        return "test getParameterMap";
-    }
-    
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		Map m = req.getParameterMap();
+		for (Iterator iter = m.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry e = (Entry) iter.next();
+			if (e.getKey().equals(FIELD_NAME)) {
+				PrintWriter writer = resp.getWriter();
+				writer.println(e.getValue());
+			}
+		}
+	}
+
+	public String getDescription() {
+		return "test getParameterMap";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

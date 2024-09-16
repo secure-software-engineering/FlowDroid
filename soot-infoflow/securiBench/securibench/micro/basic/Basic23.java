@@ -9,36 +9,39 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="path traversal" 
- *  @servlet vuln_count = "3" 
- *  */
+/**
+ * @servlet description="path traversal"
+ * @servlet vuln_count = "3"
+ */
 public class Basic23 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
+	private static final String FIELD_NAME = "name";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String s = req.getParameter(FIELD_NAME);
-        String name = s.toLowerCase(Locale.UK);
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String s = req.getParameter(FIELD_NAME);
+		String name = s.toLowerCase(Locale.UK);
 
-        try {
-            /* FileWriter fw = */ new FileWriter(name);                        /* BAD */
-            /* FileWriter fr = */ new FileWriter(name);                        /* BAD */
-            /* FileInputStream fis = */ new FileInputStream(name);             /* BAD */
-        } catch(Throwable e) {
-            System.err.println("An error occurred");
-        }
-    }
-    
-    public String getDescription() {
-        return "path traversal";
-    }
-    
-    public int getVulnerabilityCount() {
-        return 3;
-    }
+		try {
+			/* FileWriter fw = */ new FileWriter(name);
+			/* BAD */
+			/* FileWriter fr = */ new FileWriter(name);
+			/* BAD */
+			/* FileInputStream fis = */ new FileInputStream(name); /* BAD */
+		} catch (Throwable e) {
+			System.err.println("An error occurred");
+		}
+	}
+
+	public String getDescription() {
+		return "path traversal";
+	}
+
+	public int getVulnerabilityCount() {
+		return 3;
+	}
 }

@@ -7,8 +7,9 @@ package securibench.micro.basic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
@@ -17,125 +18,125 @@ import securibench.micro.MicroTestCase;
  * @servlet vuln_count = "2"
  */
 public class Basic28 extends BasicTestCase implements MicroTestCase {
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter("name");
-        boolean b[] = new boolean[3];
-        PrintWriter writer = resp.getWriter();
-        if (b[0]) {
-            if (b[0]) {
-                if (b[0]) {
-                    if (b[0]) {
-                        if (b[0]) {
-                            if (b[0]) {
-                                if (b[0]) {
-                                    if (b[0]) {
-                                        if (b[0]) {
-                                        }
-                                    } else {
-                                    }
-                                } else {
-                                }
-                                if (b[0]) {
-                                }
-                            } else {
-                            }
-                        } else {
-                            if (b[0]) {
-                                if (b[0]) {
-                                    if (b[0]) {
-                                    }
-                                } else {
-                                }
-                            } else {
-                            }
-                        }
-                    } else {
-                        if (b[0]) {
-                            if (b[0]) {
-                                if (b[0]) {
-                                }
-                                writer.println(name);       /* BAD */
-                            } else {
-                            }
-                        } else {
-                        }
-                    }
-                } else {
-                    if (b[0]) {
-                        if (b[0]) {
-                            if (b[0]) {
-                            }
-                        } else {
-                        }
-                    } else {
-                    }
-                }
-            } else {
-                if (b[0]) {
-                    if (b[0]) {
-                        if (b[0]) {
-                            if (b[0]) {
-                                if (b[0]) {
-                                }
-                            } else {
-                            }
-                        } else {
-                            if (b[0]) {
-                                if (b[0]) {
-                                    if (b[0]) {
-                                    }
-                                } else {
-                                }
-                            } else {
-                            }
-                        }
-                    } else {
-                        if (b[0]) {
-                            if (b[0]) {
-                                if (b[0]) {
-                                }
-                            } else {
-                            }
-                        } else {
-                        }
-                    }
-                } else {
-                    if (b[0]) {
-                        if (b[0]) {
-                            if (b[0]) {
-                            }
-                        } else {
-                        }
-                    } else {
-                        if (b[0]) {
-                            if (b[0]) {
-                                if (b[0]) {
-                                }
-                            } else {
-                            }
-                        } else {
-                        }
-                    }
-                }
-            }
-        } else {
-            if (b[0]) {
-                if (b[0]) {
-                    if (b[0]) {
-                        writer.println(name);       /* BAD */
-                    }
-                } else {
-                }
-            } else {
-            }
-        }
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter("name");
+		boolean b[] = new boolean[3];
+		PrintWriter writer = resp.getWriter();
+		if (b[0]) {
+			if (b[0]) {
+				if (b[0]) {
+					if (b[0]) {
+						if (b[0]) {
+							if (b[0]) {
+								if (b[0]) {
+									if (b[0]) {
+										if (b[0]) {
+										}
+									} else {
+									}
+								} else {
+								}
+								if (b[0]) {
+								}
+							} else {
+							}
+						} else {
+							if (b[0]) {
+								if (b[0]) {
+									if (b[0]) {
+									}
+								} else {
+								}
+							} else {
+							}
+						}
+					} else {
+						if (b[0]) {
+							if (b[0]) {
+								if (b[0]) {
+								}
+								writer.println(name); /* BAD */
+							} else {
+							}
+						} else {
+						}
+					}
+				} else {
+					if (b[0]) {
+						if (b[0]) {
+							if (b[0]) {
+							}
+						} else {
+						}
+					} else {
+					}
+				}
+			} else {
+				if (b[0]) {
+					if (b[0]) {
+						if (b[0]) {
+							if (b[0]) {
+								if (b[0]) {
+								}
+							} else {
+							}
+						} else {
+							if (b[0]) {
+								if (b[0]) {
+									if (b[0]) {
+									}
+								} else {
+								}
+							} else {
+							}
+						}
+					} else {
+						if (b[0]) {
+							if (b[0]) {
+								if (b[0]) {
+								}
+							} else {
+							}
+						} else {
+						}
+					}
+				} else {
+					if (b[0]) {
+						if (b[0]) {
+							if (b[0]) {
+							}
+						} else {
+						}
+					} else {
+						if (b[0]) {
+							if (b[0]) {
+								if (b[0]) {
+								}
+							} else {
+							}
+						} else {
+						}
+					}
+				}
+			}
+		} else {
+			if (b[0]) {
+				if (b[0]) {
+					if (b[0]) {
+						writer.println(name); /* BAD */
+					}
+				} else {
+				}
+			} else {
+			}
+		}
+	}
 
-    public String getDescription() {
-        return "complicated control flow";
-    }
+	public String getDescription() {
+		return "complicated control flow";
+	}
 
-    public int getVulnerabilityCount() {
-        return 2;
-    }
+	public int getVulnerabilityCount() {
+		return 2;
+	}
 }

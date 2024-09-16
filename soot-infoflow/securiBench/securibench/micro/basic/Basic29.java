@@ -7,8 +7,9 @@ package securibench.micro.basic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
@@ -17,29 +18,29 @@ import securibench.micro.MicroTestCase;
  * @servlet vuln_count = "2"
  */
 public class Basic29 extends BasicTestCase implements MicroTestCase {
-    class Node {
-        String value;
-        Node   next = null;
-    }
-    
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter("name");
-        Node head = new Node();
-        Node next = new Node();
-        head.next = next;
-        next.value = name;
-        
-        PrintWriter writer = resp.getWriter();
-        writer.println(next.value);                  /* BAD */
-        writer.println(head.next.value);             /* BAD */
-        writer.println(head.value);                  /* OK */
-    }
+	class Node {
+		String value;
+		Node next = null;
+	}
 
-    public String getDescription() {
-        return "recursive data structures";
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter("name");
+		Node head = new Node();
+		Node next = new Node();
+		head.next = next;
+		next.value = name;
 
-    public int getVulnerabilityCount() {
-        return 2;
-    }
+		PrintWriter writer = resp.getWriter();
+		writer.println(next.value); /* BAD */
+		writer.println(head.next.value); /* BAD */
+		writer.println(head.value); /* OK */
+	}
+
+	public String getDescription() {
+		return "recursive data structures";
+	}
+
+	public int getVulnerabilityCount() {
+		return 2;
+	}
 }

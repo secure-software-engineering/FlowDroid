@@ -16,6 +16,10 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import jakarta.servlet.http.HttpServlet;
+
 /**
  * Abstract base class for JUnit tests
  * 
@@ -77,13 +81,12 @@ public abstract class AbstractJUnitTests {
 		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
 		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar"));
 
-		appendWithSeparator(libPathBuilder, new File(javaBaseDir + "j2ee.jar"));
-		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/j2ee.jar"));
-		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\j2ee.jar"));
+		String jakartaJAR = HttpServlet.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		appendWithSeparator(libPathBuilder, new File(jakartaJAR));
 
-		appendWithSeparator(libPathBuilder, new File(javaBaseDir + "cos.jar"));
-		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/cos.jar"));
-		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\cos.jar"));
+		String springJAR = MultipartHttpServletRequest.class.getProtectionDomain().getCodeSource().getLocation()
+				.getPath();
+		appendWithSeparator(libPathBuilder, new File(springJAR));
 	}
 
 }

@@ -9,17 +9,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 
-import javax.servlet.ServletResponse;
+import jakarta.servlet.ServletResponse;
 
-/** 
- *  @servlet description = "simple collection deposit/retrieve" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description = "simple collection deposit/retrieve"
+ * @servlet vuln_count = "1"
+ */
 class Collections11b {
-    protected void foo(Object o, ServletResponse resp) throws IOException {
-    	Collection c = (Collection) o;
-        String str = c.toString();
-        PrintWriter writer = resp.getWriter();  
-        writer.println(str);                    /* BAD */
-    }
+	protected void foo(Object o, ServletResponse resp) throws IOException {
+		Collection c = (Collection) o;
+		String str = c.toString();
+		PrintWriter writer = resp.getWriter();
+		writer.println(str); /* BAD */
+	}
 }

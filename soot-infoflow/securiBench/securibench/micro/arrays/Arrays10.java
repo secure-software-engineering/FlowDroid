@@ -7,31 +7,32 @@ package securibench.micro.arrays;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description = "comple multidimentional array test" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description = "comple multidimentional array test"
+ * @servlet vuln_count = "1"
+ */
 public class Arrays10 extends BasicTestCase implements MicroTestCase {
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String name = req.getParameter("name");
-        String[][] array = new String[3][5];
-        array[0] = new String[] {name, "abc"};
-        
-        PrintWriter writer = resp.getWriter();
-        writer.println(array[0][0]);         /* BAD */
-        writer.println(array[0][2]);         /* OK */
-    }
-    
-    public String getDescription() {
-        return "comple multidimentional array test";
-    }
-    
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter("name");
+		String[][] array = new String[3][5];
+		array[0] = new String[] { name, "abc" };
+
+		PrintWriter writer = resp.getWriter();
+		writer.println(array[0][0]); /* BAD */
+		writer.println(array[0][2]); /* OK */
+	}
+
+	public String getDescription() {
+		return "comple multidimentional array test";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }

@@ -23,8 +23,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.IInfoflow;
+import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigSecuriBench;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
@@ -46,39 +46,39 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 			"<java.sql.Statement: int executeUpdate(java.lang.String,int)>",
 			"<java.sql.Statement: int executeUpdate(java.lang.String,java.lang.String[])>",
 			"<java.sql.Statement: java.sql.ResultSet executeQuery(java.lang.String)>",
-			"<javax.servlet.http.HttpServletResponse: void sendRedirect(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletResponse: void sendRedirect(java.lang.String)>",
 			"<java.io.File: void <init>(java.lang.String)>", "<java.io.FileWriter: void <init>(java.lang.String)>",
 			"<java.io.FileInputStream: void <init>(java.lang.String)>" };
 
 	protected static final String[] sourceArray = new String[] {
-			"<javax.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getParameter(java.lang.String)>",
-			"<javax.servlet.ServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
-			"<javax.servlet.ServletRequest: java.util.Map getParameterMap()>",
-			"<javax.servlet.http.HttpServletRequest: java.util.Map getParameterMap()>",
-			"<javax.servlet.ServletConfig: java.lang.String getInitParameter(java.lang.String)>",
+			"<jakarta.servlet.ServletRequest: java.lang.String getParameter(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getParameter(java.lang.String)>",
+			"<jakarta.servlet.ServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
+			"<jakarta.servlet.ServletRequest: java.util.Map getParameterMap()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.util.Map getParameterMap()>",
+			"<jakarta.servlet.ServletConfig: java.lang.String getInitParameter(java.lang.String)>",
 			"<soot.jimple.infoflow.test.securibench.supportClasses.DummyServletConfig: java.lang.String getInitParameter(java.lang.String)>",
-			"<javax.servlet.ServletConfig: java.util.Enumeration getInitParameterNames()>",
-			"<javax.servlet.ServletContext: java.lang.String getInitParameter(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getParameter(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.util.Map getParameterMap()>",
-			"<javax.servlet.http.HttpServletRequest: javax.servlet.http.Cookie[] getCookies()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getHeader(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.util.Enumeration getHeaders(java.lang.String)>",
-			"<javax.servlet.http.HttpServletRequest: java.util.Enumeration getHeaderNames()>",
-			"<javax.servlet.ServletRequest: java.lang.String getProtocol()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getProtocol()>",
-			"<javax.servlet.ServletRequest: java.lang.String getScheme()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getScheme()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getAuthType()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getQueryString()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.String getRemoteUser()>",
-			"<javax.servlet.http.HttpServletRequest: java.lang.StringBuffer getRequestURL()>",
-			"<javax.servlet.http.HttpServletRequest: javax.servlet.ServletInputStream getInputStream()>",
-			"<javax.servlet.ServletRequest: javax.servlet.ServletInputStream getInputStream()>",
-			"<com.oreilly.servlet.MultipartRequest: java.lang.String getParameter(java.lang.String)>" };
+			"<jakarta.servlet.ServletConfig: java.util.Enumeration getInitParameterNames()>",
+			"<jakarta.servlet.ServletContext: java.lang.String getInitParameter(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getParameter(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String[] getParameterValues(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.util.Map getParameterMap()>",
+			"<jakarta.servlet.http.HttpServletRequest: javax.servlet.http.Cookie[] getCookies()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getHeader(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.util.Enumeration getHeaders(java.lang.String)>",
+			"<jakarta.servlet.http.HttpServletRequest: java.util.Enumeration getHeaderNames()>",
+			"<jakarta.servlet.ServletRequest: java.lang.String getProtocol()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getProtocol()>",
+			"<jakarta.servlet.ServletRequest: java.lang.String getScheme()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getScheme()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getAuthType()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getQueryString()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.String getRemoteUser()>",
+			"<jakarta.servlet.http.HttpServletRequest: java.lang.StringBuffer getRequestURL()>",
+			"<jakarta.servlet.http.HttpServletRequest: javax.servlet.ServletInputStream getInputStream()>",
+			"<jakarta.servlet.ServletRequest: javax.servlet.ServletInputStream getInputStream()>",
+			"<org.springframework.web.multipart.MultipartHttpServletRequest: java.lang.String getParameter(java.lang.String)>" };
 
 	protected static boolean taintWrapper = false;
 	protected static boolean substituteCallParams = true;
@@ -165,8 +165,8 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 		entryPointCreator.setSubstituteClasses(substClasses);
 		this.entryPointCreator = entryPointCreator;
 
-		BackwardsInfoflow result = new BackwardsInfoflow();
-//		Infoflow result = new Infoflow();
+//		BackwardsInfoflow result = new BackwardsInfoflow();
+		Infoflow result = new Infoflow();
 
 		result.setSootConfig(new ConfigSecuriBench());
 		result.getConfig().setInspectSinks(false);

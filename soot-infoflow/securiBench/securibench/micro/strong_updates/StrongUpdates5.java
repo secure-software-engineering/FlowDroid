@@ -7,35 +7,36 @@ package securibench.micro.strong_updates;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="making a shared servlet field thread-local" 
- *  @servlet vuln_count = "0" 
- *  */
+/**
+ * @servlet description="making a shared servlet field thread-local"
+ * @servlet vuln_count = "0"
+ */
 public class StrongUpdates5 extends BasicTestCase implements MicroTestCase {
-    private static final String FIELD_NAME = "name";
-    private String name;
+	private static final String FIELD_NAME = "name";
+	private String name;
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // access to this.name is protected within the block, so we are safe
-        synchronized (this.name) {
-            name = req.getParameter(FIELD_NAME);
-            name = "abc";
-    
-            PrintWriter writer = resp.getWriter();
-            writer.println(name);              /* OK */
-        }        
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// access to this.name is protected within the block, so we are safe
+		synchronized (this.name) {
+			name = req.getParameter(FIELD_NAME);
+			name = "abc";
 
-    public String getDescription() {
-        return "making a shared servlet field thread-local";
-    }
+			PrintWriter writer = resp.getWriter();
+			writer.println(name); /* OK */
+		}
+	}
 
-    public int getVulnerabilityCount() {
-        return 0;
-    }    
+	public String getDescription() {
+		return "making a shared servlet field thread-local";
+	}
+
+	public int getVulnerabilityCount() {
+		return 0;
+	}
 }

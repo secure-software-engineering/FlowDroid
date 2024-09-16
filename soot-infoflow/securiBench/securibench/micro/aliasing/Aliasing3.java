@@ -8,35 +8,34 @@ package securibench.micro.aliasing;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import securibench.micro.BasicTestCase;
 import securibench.micro.MicroTestCase;
 
-/** 
- *  @servlet description="simple aliasing of an array element" 
- *  @servlet vuln_count = "1" 
- *  */
+/**
+ * @servlet description="simple aliasing of an array element"
+ * @servlet vuln_count = "1"
+ */
 public class Aliasing3 extends BasicTestCase implements MicroTestCase {
 	private static final String FIELD_NAME = "name";
 
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-       String name = req.getParameter(FIELD_NAME);
-       String[] a = new String[10];
-       String str = a[5];
-       a[5] = name;
-       name = str;
-              
-       PrintWriter writer = resp.getWriter();
-       writer.println(str);                              /* BAD */
-    }
-    
-    public String getDescription() {
-        return "simple aliasing of an array element";
-    }
-    
-    public int getVulnerabilityCount() {
-        return 1;
-    }
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		String name = req.getParameter(FIELD_NAME);
+		String[] a = new String[10];
+		String str = a[5];
+		a[5] = name;
+		name = str;
+
+		PrintWriter writer = resp.getWriter();
+		writer.println(str); /* BAD */
+	}
+
+	public String getDescription() {
+		return "simple aliasing of an array element";
+	}
+
+	public int getVulnerabilityCount() {
+		return 1;
+	}
 }
