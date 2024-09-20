@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData;
+import soot.jimple.infoflow.methodSummary.data.summary.SummaryMetaData.ClassInformation;
 
 /**
  * Class for parsing summary meta data from XML files
@@ -47,6 +48,7 @@ public class MetaDataReader extends AbstractXMLReader {
 			String name = "";
 			String type = "";
 			String superclass = "";
+			Boolean isInterface = null;
 
 			State state = State.summaryMetaData;
 			while (xmlreader.hasNext()) {
@@ -101,6 +103,10 @@ public class MetaDataReader extends AbstractXMLReader {
 
 						name = getAttributeByName(xmlreader, XMLMetaDataConstants.ATTRIBUTE_NAME);
 						superclass = getAttributeByName(xmlreader, XMLMetaDataConstants.ATTRIBUTE_SUPERCLASS);
+						String sisInterface = getAttributeByName(xmlreader,
+								XMLMetaDataConstants.ATTRIBUTE_IS_INTERFACE);
+						if (sisInterface != null && !sisInterface.isEmpty())
+							isInterface = Boolean.valueOf(sisInterface);
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(XMLMetaDataConstants.TREE_CLASS) && xmlreader.isEndElement()) {
@@ -108,7 +114,9 @@ public class MetaDataReader extends AbstractXMLReader {
 						state = State.hierarchy;
 
 						// Record the hierarchy element
-						metaData.setSuperclass(name, superclass);
+						ClassInformation classInfo = metaData.getOrCreateClassInfo(name);
+						classInfo.setSuperclass(superclass);
+						classInfo.setIsInterface(isInterface);
 					} else
 						throw new SummaryXMLException();
 				} else if (localName.equals(XMLMetaDataConstants.TREE_HIERARCHY) && xmlreader.isEndElement()) {

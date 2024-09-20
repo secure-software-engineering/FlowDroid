@@ -1,8 +1,10 @@
 package soot.jimple.infoflow.methodSummary.data.summary;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -13,9 +15,70 @@ import java.util.Set;
  */
 public class SummaryMetaData {
 
+	/**
+	 * Meta data about a class
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	public static class ClassInformation {
+
+		protected final String className;
+		protected String superclass;
+		protected Boolean isInterface;
+
+		public ClassInformation(String className) {
+			this.className = className;
+		}
+
+		public String getClassName() {
+			return className;
+		}
+
+		@Override
+		public String toString() {
+			return className;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(className, isInterface, superclass);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ClassInformation other = (ClassInformation) obj;
+			return Objects.equals(className, other.className) && Objects.equals(isInterface, other.isInterface)
+					&& Objects.equals(superclass, other.superclass);
+		}
+
+		public String getSuperclass() {
+			return superclass;
+		}
+
+		public void setSuperclass(String superclass) {
+			this.superclass = superclass;
+		}
+
+		public Boolean getIsInterface() {
+			return isInterface;
+		}
+
+		public void setIsInterface(Boolean isInterface) {
+			this.isInterface = isInterface;
+		}
+
+	}
+
 	private final Set<String> exclusiveClasses = new HashSet<>();
 	private final Set<String> exclusivePackages = new HashSet<>();
-	private final Map<String, String> classToSuperclass = new HashMap<>();
+	private final Map<String, ClassInformation> classInformation = new HashMap<>();
 
 	public SummaryMetaData() {
 		//
@@ -98,17 +161,19 @@ public class SummaryMetaData {
 	 * @param superclass The name of the superclass
 	 */
 	public void setSuperclass(String name, String superclass) {
-		classToSuperclass.put(name, superclass);
+		classInformation.computeIfAbsent(name, n -> new ClassInformation(n)).setSuperclass(superclass);
 	}
 
 	/**
 	 * Gets the name of the superclass of the given class
 	 * 
 	 * @param name The class name
-	 * @return The name of the superclass of the given class
+	 * @return The name of the superclass of the given class or <code>null</code> if
+	 *         the given class is unknown
 	 */
 	public String getSuperclass(String name) {
-		return classToSuperclass.get(name);
+		ClassInformation info = classInformation.get(name);
+		return info == null ? null : info.getSuperclass();
 	}
 
 	/**
@@ -117,11 +182,38 @@ public class SummaryMetaData {
 	 * @param summaries The summaries into which to merge the hierarchy data
 	 */
 	public void mergeHierarchyData(ClassSummaries summaries) {
-		for (String className : classToSuperclass.keySet()) {
+		for (String className : classInformation.keySet()) {
 			ClassMethodSummaries clazzSummaries = summaries.getOrCreateClassSummaries(className);
-			if (!clazzSummaries.hasSuperclass())
-				clazzSummaries.setSuperClass(classToSuperclass.get(className));
+			ClassInformation classInfo = classInformation.get(className);
+			if (classInfo != null) {
+				if (!clazzSummaries.hasSuperclass())
+					clazzSummaries.setSuperClass(classInfo.getSuperclass());
+				if (classInfo.getIsInterface() != null)
+					clazzSummaries.setInterface(classInfo.getIsInterface());
+			}
 		}
+	}
+
+	/**
+	 * Returns the {@link ClassInformation} object for the given class. If no such
+	 * object exists, a new one is created.
+	 * 
+	 * @param name The name of the class for which to create the
+	 *             {@link ClassInformation} object
+	 * @return The {@link ClassInformation} object for the given class
+	 */
+	public ClassInformation getOrCreateClassInfo(String name) {
+		return classInformation.computeIfAbsent(name, n -> new ClassInformation(name));
+	}
+
+	/**
+	 * Gets all classes for which there is hierarchy information in the metadata
+	 * 
+	 * @return The set of all classes for which there is hierarchy information in
+	 *         the metadata
+	 */
+	public Collection<? extends String> getClassesWithHierarchyInfo() {
+		return classInformation.keySet();
 	}
 
 	@Override

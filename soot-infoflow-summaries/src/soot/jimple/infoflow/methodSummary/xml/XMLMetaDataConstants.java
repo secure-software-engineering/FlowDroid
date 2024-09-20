@@ -17,6 +17,7 @@ public class XMLMetaDataConstants {
 	public static final String ATTRIBUTE_TYPE = "type";
 	public static final String ATTRIBUTE_NAME = "name";
 	public static final String ATTRIBUTE_SUPERCLASS = "superClass";
+	public static final String ATTRIBUTE_IS_INTERFACE = "isInterface";
 
 	public static final String VALUE_CLASS = "class";
 	public static final String VALUE_PACKAGE = "package";

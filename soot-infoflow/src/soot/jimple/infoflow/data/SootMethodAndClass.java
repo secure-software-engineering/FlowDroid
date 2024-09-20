@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.data;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,19 @@ public class SootMethodAndClass extends AbstractMethodAndClass {
 	public SootMethodAndClass(SootMethodAndClass methodAndClass) {
 		super(methodAndClass.methodName, methodAndClass.className, methodAndClass.returnType,
 				new ArrayList<String>(methodAndClass.parameters));
+	}
+
+	/**
+	 * Creates a new {@link SootMethodAndClass} from a Java reflection method
+	 * 
+	 * @param method The Java reflection method to translate into a Soot method
+	 * @return The {@link SootMethodAndClass} that corresponds to the given Java
+	 *         reflection method
+	 */
+	public static SootMethodAndClass fromMethod(Method method) {
+		List<String> parameters = Arrays.stream(method.getParameterTypes()).map(Class::getName).toList();
+		return new SootMethodAndClass(method.getName(), method.getDeclaringClass().getName(),
+				method.getReturnType().getName(), parameters);
 	}
 
 	@Override

@@ -116,8 +116,10 @@ public abstract class XMLSummaryProvider extends AbstractMethodSummaryProvider {
 		}
 
 		// Merge the hierarchy from the meta data into the summaries
-		if (metadata != null)
+		if (metadata != null) {
 			metadata.mergeHierarchyData(summaries);
+			loadedClasses.addAll(metadata.getClassesWithHierarchyInfo());
+		}
 	}
 
 	protected void loadSummariesFromJAR(String folderInJar, Class<?> parentClass, Consumer<Path> summaryLoader)

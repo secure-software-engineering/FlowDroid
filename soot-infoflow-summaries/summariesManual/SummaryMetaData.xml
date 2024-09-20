@@ -29,5 +29,50 @@
 		<class
 			name="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$MvcMatchersAuthorizedUrl"
 			superClass="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$AuthorizedUrl" />
+
+		<!-- java.util.function -->
+		<class name="java.util.function.BiConsumer" isInterface="true" />
+		<class name="java.util.function.BiFunction" isInterface="true" />
+		<class name="java.util.function.BinaryOperator" isInterface="true" />
+		<class name="java.util.function.BiPredicate" isInterface="true" />
+		<class name="java.util.function.BooleanSupplier" isInterface="true" />
+		<class name="java.util.function.Consumer" isInterface="true" />
+		<class name="java.util.function.DoubleBinaryOperator" isInterface="true" />
+		<class name="java.util.function.DoubleConsumer" isInterface="true" />
+		<class name="java.util.function.DoubleFunction" isInterface="true" />
+		<class name="java.util.function.DoublePredicate" isInterface="true" />
+		<class name="java.util.function.DoubleSupplier" isInterface="true" />
+		<class name="java.util.function.DoubleToIntFunction" isInterface="true" />
+		<class name="java.util.function.DoubleToLongFunction" isInterface="true" />
+		<class name="java.util.function.DoubleUnaryOperator" isInterface="true" />
+		<class name="java.util.function.Function" isInterface="true" />
+		<class name="java.util.function.IntBinaryOperator" isInterface="true" />
+		<class name="java.util.function.IntConsumer" isInterface="true" />
+		<class name="java.util.function.IntFunction" isInterface="true" />
+		<class name="java.util.function.IntPredicate" isInterface="true" />
+		<class name="java.util.function.IntSupplier" isInterface="true" />
+		<class name="java.util.function.IntToDoubleFunction" isInterface="true" />
+		<class name="java.util.function.IntToLongFunction" isInterface="true" />
+		<class name="java.util.function.IntUnaryOperator" isInterface="true" />
+		<class name="java.util.function.LongBinaryOperator" isInterface="true" />
+		<class name="java.util.function.LongConsumer" isInterface="true" />
+		<class name="java.util.function.LongFunction" isInterface="true" />
+		<class name="java.util.function.LongPredicate" isInterface="true" />
+		<class name="java.util.function.LongSupplier" isInterface="true" />
+		<class name="java.util.function.LongToDoubleFunction" isInterface="true" />
+		<class name="java.util.function.LongToIntFunction" isInterface="true" />
+		<class name="java.util.function.LongUnaryOperator" isInterface="true" />
+		<class name="java.util.function.ObjDoubleConsumer" isInterface="true" />
+		<class name="java.util.function.ObjIntConsumer" isInterface="true" />
+		<class name="java.util.function.ObjLongConsumer" isInterface="true" />
+		<class name="java.util.function.Predicate" isInterface="true" />
+		<class name="java.util.function.Supplier" isInterface="true" />
+		<class name="java.util.function.ToDoubleBiFunction" isInterface="true" />
+		<class name="java.util.function.ToDoubleFunction" isInterface="true" />
+		<class name="java.util.function.ToIntBiFunction" isInterface="true" />
+		<class name="java.util.function.ToIntFunction" isInterface="true" />
+		<class name="java.util.function.ToLongBiFunction" isInterface="true" />
+		<class name="java.util.function.ToLongFunction" isInterface="true" />
+		<class name="java.util.function.UnaryOperator" isInterface="true" />
 	</hierarchy>
 </summaryMetaData>
