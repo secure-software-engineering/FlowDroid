@@ -84,7 +84,7 @@ public class SummaryResolver {
 				 * @return True if summaries were found, false otherwise
 				 */
 				private boolean getSummaries(final String methodSig, final ClassSummaries summaries, SootClass clazz,
-											 ByReferenceBoolean classSupported) {
+						ByReferenceBoolean classSupported) {
 					// Do we have direct support for the target class?
 					if (summaries.merge(flows.getMethodFlows(clazz, methodSig)))
 						return true;
@@ -169,24 +169,26 @@ public class SummaryResolver {
 				 * @return True if summaries were found, false otherwise
 				 */
 				private boolean checkInterfaces(String methodSig, ClassSummaries summaries, SootClass clazz,
-												ByReferenceBoolean classSupported) {
+						ByReferenceBoolean classSupported) {
+					boolean hasSummaries = false;
 					for (SootClass intf : clazz.getInterfaces()) {
 						// Directly check the interface
 						if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-							return true;
+							hasSummaries = true;
 
 						for (SootClass parent : getAllParentClasses(intf)) {
 							// Do we have support for the interface?
 							if (summaries.merge(flows.getMethodFlows(parent, methodSig)))
-								return true;
+								hasSummaries = true;
 
 							updateClassExclusive(classSupported, parent, methodSig);
 						}
 					}
 
-					// We inject the hierarchy from summaries before the data flow analysis, thus the
+					// We inject the hierarchy from summaries before the data flow analysis, thus
+					// the
 					// soot hierarchy already contains the manual information provided in the xmls.
-					return false;
+					return hasSummaries;
 				}
 
 			});

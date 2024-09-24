@@ -25,6 +25,63 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.lang.Object collect(java.util.stream.Collector)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object collect(java.util.function.Supplier,java.util.function.BiConsumer,java.util.function.BiConsumer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Supplier"
+						gap="2" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.BiConsumer"
+						gap="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.BiConsumer"
+						gap="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="2" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="3" />
+					<to sourceSinkType="Return"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.util.stream.Stream concat(java.util.stream.Stream,java.util.stream.Stream)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -62,6 +119,21 @@
 		<method id="java.util.stream.Stream filter(java.util.function.Predicate)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Supplier"
+						gap="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
@@ -71,13 +143,26 @@
 				</flow>
 			</flows>
 		</method>
-		<!-- We need to build a proper gap here -->
 		<method id="java.util.stream.Stream flatMap(java.util.function.Function)">
 			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="1" />
+				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="1" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
@@ -87,11 +172,25 @@
 		<method id="java.util.stream.DoubleStream flatMapToDouble(java.util.function.Function)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="1" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPath="[java.util.stream.DoubleStream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -99,11 +198,25 @@
 		<method id="java.util.stream.IntStream flatMapToInt(java.util.function.Function)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="1" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPath="[java.util.stream.IntStream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
@@ -111,18 +224,144 @@
 		<method id="java.util.stream.LongStream flatMapToLong(java.util.function.Function)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="1" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.LongStream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void forEach(java.util.function.Consumer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="5" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="5" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void forEachOrdered(java.util.function.Consumer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="5" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="5" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.stream.Stream generate(java.util.function.Supplier)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Supplier"
+						gap="2" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="2" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
-
-		<!-- TODO: other functions that require a proper gap -->
-
+		<method id="java.util.stream.Stream iterate(java.lang.Object,java.util.function.UnaryOperator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.UnaryOperator"
+						gap="6" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						BaseType="java.lang.Object"
+						gap="6" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="6" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.stream.Stream map(java.util.function.Function)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.Function"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="1" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.util.stream.Stream of(java.lang.Object[])">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -248,4 +487,12 @@
 			</flows>
 		</method>
 	</methods>
+	<gaps>
+		<gap num="1" id="&lt;java.util.function.Function: java.lang.Object apply(java.lang.Object)&gt;" />
+		<gap num="2" id="&lt;java.util.function.Supplier: java.lang.Object get()&gt;" />
+		<gap num="3" id="&lt;java.util.function.BiConsumer: void accept(java.lang.Object,java.lang.Object)&gt;" />
+		<gap num="4" id="&lt;java.util.function.Predicate: boolean test(java.lang.Object)&gt;" />
+		<gap num="5" id="&lt;java.util.function.Consumer: void accept(java.lang.Object)&gt;" />
+		<gap num="6" id="&lt;java.util.function.UnaryOperator: java.lang.Object apply(java.lang.Object)&gt;" />
+	</gaps>
 </summary>

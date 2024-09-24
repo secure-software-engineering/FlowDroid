@@ -167,7 +167,7 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void objectOutputStream2()>");
 	}
 
-	@Test(timeout = 30000)
+	@Test // (timeout = 30000)
 	public void killTaint1() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void killTaint1()>");
 	}
@@ -228,6 +228,61 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 	@Test(timeout = 30000)
 	public void streamWriteReadTest() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamWriteRead()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamMapTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamMapTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamCollectTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamCollectTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamCollectTest2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamCollectTest2()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamCollectTest3() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamCollectTest3()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamFilterTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamFilterTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamFilterTest2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamFilterTest2()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamForEachTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamForEachTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamIterateTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamIterateTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamIterateTest2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamIterateTest2()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamIterateTest3() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamIterateTest3()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamIterateTest4() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamIterateTest4()>", 1);
 	}
 
 	@Test

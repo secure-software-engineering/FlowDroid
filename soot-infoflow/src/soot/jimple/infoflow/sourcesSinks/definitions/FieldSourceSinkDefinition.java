@@ -165,4 +165,9 @@ public class FieldSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return fieldSignature == null ? "<no field>" : fieldSignature;
+	}
+
 }

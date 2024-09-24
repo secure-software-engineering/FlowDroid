@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApiClassClient {
 	public Object source() {
@@ -374,5 +377,102 @@ public class ApiClassClient {
 
 		String taintedElement = list.stream().findFirst().orElse("anyOther");
 		sink(taintedElement);
+	}
+
+	public void streamMapTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.stream().map(s -> sinkAndReturn(s));
+	}
+
+	public void streamCollectTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		StringBuilder sb = list.stream().collect(StringBuilder::new, StringBuilder::append, StringBuilder::append);
+		sink(sb.toString());
+	}
+
+	public void streamCollectTest2() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add("Hello ");
+		list.add(" ");
+		list.add("World");
+		StringBuilder sb = list.stream().collect(() -> new StringBuilder(tainted), StringBuilder::append,
+				StringBuilder::append);
+		sink(sb.toString());
+	}
+
+	public void streamCollectTest3() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		StringBuilder sb = list.stream().collect(() -> new StringBuilder(), (r, s) -> r.append(s),
+				(r, s) -> r.append(s));
+		sink(sb.toString());
+	}
+
+	public void streamFilterTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		Set<String> strings = list.stream().filter(s -> s.startsWith("x")).collect(Collectors.toSet());
+		sink(strings.toString());
+	}
+
+	public void streamFilterTest2() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().filter(s -> checkAndLeak(s));
+	}
+
+	public void streamForEachTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().forEach(s -> checkAndLeak(s));
+	}
+
+	public void streamIterateTest() {
+		Stream<String> stream = Stream.iterate("", s -> stringSource());
+		stream.forEach(s -> checkAndLeak(s));
+	}
+
+	public void streamIterateTest2() {
+		Stream<String> stream = Stream.iterate("", s -> stringSource());
+		sink(stream.findFirst().get());
+	}
+
+	public void streamIterateTest3() {
+		Stream<String> stream = Stream.iterate(stringSource(), s -> s);
+		sink(stream.findFirst().get());
+	}
+
+	public void streamIterateTest4() {
+		Stream<String> stream = Stream.iterate(stringSource(), s -> s);
+		stream.forEach(s -> checkAndLeak(s));
+	}
+
+	private boolean checkAndLeak(String s) {
+		sink(s);
+		return true;
+	}
+
+	private String sinkAndReturn(String s) {
+		sink(s);
+		return s;
 	}
 }

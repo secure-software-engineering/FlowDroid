@@ -74,5 +74,12 @@
 		<class name="java.util.function.ToLongBiFunction" isInterface="true" />
 		<class name="java.util.function.ToLongFunction" isInterface="true" />
 		<class name="java.util.function.UnaryOperator" isInterface="true" />
+
+		<!-- java.util.stream -->
+		<class name="java.util.stream.Collector" isInterface="true" />
+		<class name="java.util.stream.DoubleStream" isInterface="true" />
+		<class name="java.util.stream.IntStream" isInterface="true" />
+		<class name="java.util.stream.LongStream" isInterface="true" />
+		<class name="java.util.stream.Stream" isInterface="true" />
 	</hierarchy>
 </summaryMetaData>

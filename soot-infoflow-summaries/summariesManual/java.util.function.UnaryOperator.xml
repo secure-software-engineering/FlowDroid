@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101" isInterface="true">
+	<hierarchy>
+		<interface name="java.util.function.Function" />
+	</hierarchy>
+</summary>

@@ -27,7 +27,6 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 	public static final MethodSummaries EMPTY_SUMMARIES = new ImmutableMethodSummaries();
 
 	private volatile MultiMap<String, MethodFlow> flows;
-	private volatile Map<String, Boolean> noImplicitIdentity;
 	private volatile MultiMap<String, MethodClear> clears;
 	private volatile Map<Integer, GapDefinition> gaps;
 	private volatile Set<String> excludedMethods;
@@ -792,6 +791,20 @@ public class MethodSummaries implements Iterable<MethodFlow> {
 		} else if (!gaps.equals(other.gaps))
 			return false;
 		return true;
+	}
+
+	/**
+	 * Creates a new instance of the {@link MethodSummaries} class with a single
+	 * flow
+	 * 
+	 * @param flow The flow to add
+	 * @return A new instance of the {@link MethodSummaries} class with a single
+	 *         flow
+	 */
+	public static MethodSummaries fromSingleFlow(MethodFlow flow) {
+		MethodSummaries summaries = new MethodSummaries();
+		summaries.addFlow(flow);
+		return summaries;
 	}
 
 }
