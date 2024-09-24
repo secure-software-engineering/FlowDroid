@@ -30,6 +30,9 @@
 			name="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$MvcMatchersAuthorizedUrl"
 			superClass="org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer$AuthorizedUrl" />
 
+		<!-- java.util -->
+		<class name="java.util.Comparator" isInterface="true" />
+
 		<!-- java.util.function -->
 		<class name="java.util.function.BiConsumer" isInterface="true" />
 		<class name="java.util.function.BiFunction" isInterface="true" />
