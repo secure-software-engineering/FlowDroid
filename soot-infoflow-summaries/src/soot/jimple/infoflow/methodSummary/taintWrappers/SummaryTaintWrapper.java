@@ -122,62 +122,31 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 		@Override
 		public void handleFollowReturnsPastSeeds(Abstraction d1, Unit u, Abstraction d2) {
-			// Obtain some settings
-			final boolean reverseFlows = manager.getConfig()
-					.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
-
 			// We first check whether we return from a gap into which we have previous
 			// descended
 			SootMethod sm = manager.getICFG().getMethodOf(u);
 			Set<AccessPathPropagator> propagators = getUserCodeTaints(d1, sm);
-			if (propagators != null && !propagators.isEmpty()) {
-				for (AccessPathPropagator propagator : propagators) {
-					// Propagate these taints up. We leave the current gap
-					AccessPathPropagator parent = safePopParent(propagator);
-					GapDefinition parentGap = propagator.getParent() == null ? null : propagator.getParent().getGap();
+			if (propagators != null && !propagators.isEmpty())
+				handleFlowBackFromGap(u, d2, propagators);
+			else
+				handleFlowSourceInGap(u, d2);
+		}
 
-					// Create taints from the abstractions
-					Set<Taint> returnTaints = createTaintFromAccessPathOnReturn(d2.getAccessPath(), (Stmt) u,
-							propagator.getGap());
-					if (returnTaints == null)
-						continue;
-
-					// Get the correct set of flows to apply
-					MethodSummaries flowsInTarget = parentGap == null ? getFlowsInOriginalCallee(propagator)
-							: getFlowSummariesForGap(parentGap);
-
-					// Create the new propagator, one for every taint
-					Set<AccessPathPropagator> workSet = new HashSet<>();
-					for (Taint returnTaint : returnTaints) {
-						AccessPathPropagator newPropagator = new AccessPathPropagator(returnTaint, parentGap, parent,
-								propagator.getParent() == null ? null : propagator.getParent().getStmt(),
-								propagator.getParent() == null ? null : propagator.getParent().getD1(),
-								propagator.getParent() == null ? null : propagator.getParent().getD2());
-						workSet.add(newPropagator);
-					}
-
-					// Apply the aggregated propagators
-					AccessPathPropagator rootPropagator = getOriginalCallSite(propagator);
-					Set<AccessPath> resultAPs = applyFlowsIterative(flowsInTarget, new ArrayList<>(workSet),
-							reverseFlows, rootPropagator.getStmt(), d2, true);
-
-					// Propagate the access paths
-					if (resultAPs != null && !resultAPs.isEmpty()) {
-						for (AccessPath ap : resultAPs) {
-							Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap,
-									rootPropagator.getStmt());
-							for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
-								manager.getMainSolver().processEdge(
-										new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
-						}
-					}
-				}
-			}
-
-			// We might have returned into a summary with a new taint
+		/**
+		 * Handles the case in which the source of the data flow was located inside a
+		 * gap and the FRPS case now injects the taint into the analysis for the first
+		 * time
+		 * 
+		 * @param u  The return statement inside the gap
+		 * @param d2 The abstraction at the return statement inside the gap
+		 */
+		protected void handleFlowSourceInGap(Unit u, Abstraction d2) {
+			final boolean reverseFlows = manager.getConfig()
+					.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
 			if (u instanceof ReturnStmt) {
 				ReturnStmt retStmt = (ReturnStmt) u;
 				if (retStmt.getOp() == d2.getAccessPath().getPlainValue()) {
+					SootMethod sm = manager.getICFG().getMethodOf(u);
 					for (Unit callSite : manager.getICFG().getCallersOf(sm)) {
 						Stmt sCallSite = (Stmt) callSite;
 						ClassSummaries summaries = getFlowSummariesForMethod(sCallSite,
@@ -213,6 +182,60 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 							}
 						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * Handles data flows that were originally passed into a gap, have been
+		 * propagated through the gap, and must now return to user code
+		 * 
+		 * @param u           The return statement in the gap
+		 * @param d2          The abstraction the return statement in the gap
+		 * @param propagators The propagators from which the taint propagation can
+		 *                    continue after the gap
+		 */
+		protected void handleFlowBackFromGap(Unit u, Abstraction d2, Set<AccessPathPropagator> propagators) {
+			final boolean reverseFlows = manager.getConfig()
+					.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
+			for (AccessPathPropagator propagator : propagators) {
+				// Propagate these taints up. We leave the current gap
+				AccessPathPropagator parent = safePopParent(propagator);
+				GapDefinition parentGap = propagator.getParent() == null ? null : propagator.getParent().getGap();
+
+				// Create taints from the abstractions
+				Set<Taint> returnTaints = createTaintFromAccessPathOnReturn(d2.getAccessPath(), (Stmt) u,
+						propagator.getGap());
+				if (returnTaints == null)
+					continue;
+
+				// Get the correct set of flows to apply
+				MethodSummaries flowsInTarget = parentGap == null ? getFlowsInOriginalCallee(propagator)
+						: getFlowSummariesForGap(parentGap);
+
+				// Create the new propagator, one for every taint
+				Set<AccessPathPropagator> workSet = new HashSet<>();
+				for (Taint returnTaint : returnTaints) {
+					AccessPathPropagator newPropagator = new AccessPathPropagator(returnTaint, parentGap, parent,
+							propagator.getParent() == null ? null : propagator.getParent().getStmt(),
+							propagator.getParent() == null ? null : propagator.getParent().getD1(),
+							propagator.getParent() == null ? null : propagator.getParent().getD2());
+					workSet.add(newPropagator);
+				}
+
+				// Apply the aggregated propagators
+				AccessPathPropagator rootPropagator = getOriginalCallSite(propagator);
+				Set<AccessPath> resultAPs = applyFlowsIterative(flowsInTarget, new ArrayList<>(workSet), reverseFlows,
+						rootPropagator.getStmt(), d2, true);
+
+				// Propagate the access paths
+				if (resultAPs != null && !resultAPs.isEmpty()) {
+					for (AccessPath ap : resultAPs) {
+						Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap, rootPropagator.getStmt());
+						for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
+							manager.getMainSolver().processEdge(
+									new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
 					}
 				}
 			}
@@ -2342,6 +2365,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			ContainerContext[] taintCtxt) {
 		if (containerStrategy == null)
 			return taintCtxt;
+		if (stmt == null)
+			System.out.println("x");
 		assert stmt.containsInvokeExpr();
 		InvokeExpr ie = stmt.getInvokeExpr();
 		ContainerContext[] ctxt = new ContainerContext[constraints.length];

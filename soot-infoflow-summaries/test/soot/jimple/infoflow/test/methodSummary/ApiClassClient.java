@@ -475,4 +475,105 @@ public class ApiClassClient {
 		sink(s);
 		return s;
 	}
+
+	public void streamMaxTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().max((r, s) -> sinkAndReturnInt(s));
+	}
+
+	public void streamMaxTest2() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		sink(list.stream().max((r, s) -> r.compareTo(s)).get());
+	}
+
+	private int sinkAndReturnInt(String s) {
+		sink(s);
+		return 42;
+	}
+
+	public void streamNoneMatchTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().noneMatch(s -> sinkAndReturnBoolean(s));
+	}
+
+	private boolean sinkAndReturnBoolean(String s) {
+		sink(s);
+		return true;
+	}
+
+	public void streamReduceTest() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().reduce((r, s) -> concatAndLeak(r, s));
+	}
+
+	private String concatAndLeak(String r, String s) {
+		sink(r);
+		return r + s;
+	}
+
+	public void streamReduceTest2() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().reduce((r, s) -> concatAndLeak2(r, s));
+	}
+
+	public void streamReduceTest3() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(" ");
+		list.add("World");
+		sink(list.stream().reduce(tainted, (r, s) -> r + s));
+	}
+
+	public void streamReduceTest4() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		sink(list.stream().reduce(tainted, (r, s) -> r + s, (t, u) -> t + u));
+	}
+
+	public void streamReduceTest5() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().reduce("", (r, s) -> concatAndLeak(r, s), (t, u) -> t + u);
+	}
+
+	public void streamReduceTest6() {
+		String tainted = stringSource();
+		List<String> list = new ArrayList<>();
+		list.add(tainted);
+		list.add(" ");
+		list.add("World");
+		list.stream().reduce("", (t, u) -> t + u, (r, s) -> concatAndLeak(r, s));
+	}
+
+	private String concatAndLeak2(String r, String s) {
+		sink(s);
+		return r + s;
+	}
+
 }

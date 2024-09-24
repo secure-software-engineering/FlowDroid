@@ -336,6 +336,14 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.util.stream.Stream limit(long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.util.stream.Stream map(java.util.function.Function)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -362,6 +370,173 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.util.stream.DoubleStream mapToDouble(java.util.function.ToDoubleFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.ToDoubleFunction"
+						gap="7" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="7" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="7" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.stream.DoubleStream mapToInt(java.util.function.ToIntFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.ToIntFunction"
+						gap="8" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="8" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="8" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.stream.DoubleStream mapToLong(java.util.function.ToLongFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.ToLongFunction"
+						gap="9" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="9" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="9" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Optional max(java.util.Comparator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Optional: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Optional min(java.util.Comparator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return"
+						AccessPath="[java.util.Optional: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="boolean noneMatch(java.util.function.Predicate)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="4" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="4" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.util.stream.Stream of(java.lang.Object[])">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
@@ -384,48 +559,179 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.util.Optional reduce(java.util.Function.BinaryOperator)">
+		<method id="java.util.stream.Stream peek(java.util.function.Consumer)">
 			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="5" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="5" />
+				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 					<to sourceSinkType="Return"
-						AccessPath="[java.util.Optional: java.lang.Object value]"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
 			</flows>
 		</method>
-		<method id="java.util.Optional reduce(java.lang.Object,java.util.Function.BinaryOperator)">
+		<method id="java.util.Optional reduce(java.util.function.BinaryOperator)">
 			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="11" />
+				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.Optional: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
+			</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object reduce(java.lang.Object,java.util.function.BinaryOperator)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.BinaryOperator"
+						gap="11" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
-					<to sourceSinkType="Return"
-						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
-						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
 				</flow>
-			</flows>
-		</method>
-		<method id="java.lang.Object reduce(java.lang.Object,java.util.Function.BiFunction,java.util.Function.BinaryOperator)">
-			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
 						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
 					<to sourceSinkType="Return" />
 				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object reduce(java.lang.Object,java.util.function.BiFunction,java.util.function.BinaryOperator)">
+			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="2" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.BinaryOperator"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="11" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="11" />
+					<to sourceSinkType="Return" />
+				</flow>
+
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.function.BinaryOperator"
+						gap="12" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="12" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="12" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="12" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="12" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Return"
+						gap="12" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -439,10 +745,11 @@
 					<to sourceSinkType="Return"
 						AccessPath="[java.util.Optional: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
+						
 				</flow>
 			</flows>
 		</method>
-		<method id="java.util.Optional sorted()">
+		<method id="java.util.stream.Stream sorted()">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
@@ -454,8 +761,31 @@
 				</flow>
 			</flows>
 		</method>
-		<method id="java.util.Optional sorted(java.util.Comparator)">
+		<method id="java.util.stream.Stream sorted(java.util.Comparator)">
 			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="java.util.Comparator"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="10" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="10" />
+				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[java.util.stream.Stream: java.lang.Object innerCollection]"
@@ -494,5 +824,11 @@
 		<gap num="4" id="&lt;java.util.function.Predicate: boolean test(java.lang.Object)&gt;" />
 		<gap num="5" id="&lt;java.util.function.Consumer: void accept(java.lang.Object)&gt;" />
 		<gap num="6" id="&lt;java.util.function.UnaryOperator: java.lang.Object apply(java.lang.Object)&gt;" />
+		<gap num="7" id="&lt;java.util.function.ToDoubleFunction: double applyAsDouble(java.lang.Object)&gt;" />
+		<gap num="8" id="&lt;java.util.function.ToIntFunction: int applyAsInt(java.lang.Object)&gt;" />
+		<gap num="9" id="&lt;java.util.function.ToLongFunction: long applyAsLong(java.lang.Object)&gt;" />
+		<gap num="10" id="&lt;java.util.Comparator: int compare(java.lang.Object,java.lang.Object)&gt;" />
+		<gap num="11" id="&lt;java.util.function.BinaryOperator: java.lang.Object apply(java.lang.Object,java.lang.Object)&gt;" />
+		<gap num="12" id="&lt;java.util.function.BiFunction: java.lang.Object apply(java.lang.Object,java.lang.Object)&gt;" />
 	</gaps>
 </summary>

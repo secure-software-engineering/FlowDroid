@@ -285,6 +285,51 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamIterateTest4()>", 1);
 	}
 
+	@Test(timeout = 30000)
+	public void streamMaxTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamMaxTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamMaxTest2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamMaxTest2()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamNoneMatchTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamNoneMatchTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest2()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest3() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest3()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest4() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest4()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest5() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest5()>", 1);
+	}
+
+	@Test(timeout = 30000)
+	public void streamReduceTest6() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest6()>", 1);
+	}
+
 	@Test
 	public void testAllSummaries() throws URISyntaxException, IOException {
 		EagerSummaryProvider provider = new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);
