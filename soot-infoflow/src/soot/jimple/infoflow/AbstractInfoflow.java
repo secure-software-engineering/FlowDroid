@@ -526,9 +526,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	private void patchDynamicInvokeInstructions() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
-				if (sm.getName().equals("constantExceptionTest1"))
-					System.out.println("x");
-
 				if (sm.hasActiveBody()) {
 					Body body = sm.getActiveBody();
 					patchDynamicInvokeInstructions(body);
@@ -565,10 +562,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					case "java.lang.invoke.StringConcatFactory":
 						newStmts = patchStringConcatInstruction(stmt, diexpr, body);
 					}
-					if (newStmts != null && !newStmts.isEmpty()) {
+					if (newStmts != null && !newStmts.isEmpty())
 						body.getUnits().insertAfter(newStmts, stmt);
-						System.out.println("x");
-					}
 				}
 			}
 		}
