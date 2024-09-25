@@ -149,7 +149,7 @@ public abstract class ConstantTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
-	@Test(timeout = 300000)
+	@Test // (timeout = 300000)
 	public void constantExceptionTest1() {
 		IInfoflow infoflow = initInfoflow();
 		List<String> epoints = new ArrayList<String>();

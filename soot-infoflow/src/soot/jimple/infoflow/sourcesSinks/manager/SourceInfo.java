@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import heros.solver.Pair;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.util.HashMultiMap;
 
@@ -90,8 +89,8 @@ public class SourceInfo extends AbstractSourceSinkInfo {
 	}
 
 	/**
-	 * Get all definitions that match the access path
-	 * Precondition: This SourceInfo contains the access path
+	 * Get all definitions that match the access path Precondition: This SourceInfo
+	 * contains the access path
 	 *
 	 * @param ap access path
 	 * @return all definitions which match the access path

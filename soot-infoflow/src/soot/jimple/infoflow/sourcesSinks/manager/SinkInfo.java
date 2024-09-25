@@ -1,10 +1,9 @@
 package soot.jimple.infoflow.sourcesSinks.manager;
 
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
  * Class containing additional information about a sink. Users of FlowDroid can

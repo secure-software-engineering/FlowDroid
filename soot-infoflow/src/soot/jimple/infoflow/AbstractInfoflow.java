@@ -20,16 +20,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import heros.solver.Pair;
+import soot.Body;
 import soot.FastHierarchy;
 import soot.G;
+import soot.Local;
+import soot.LocalGenerator;
 import soot.MethodOrMethodContext;
+import soot.MethodSource;
 import soot.PackManager;
 import soot.PatchingChain;
 import soot.PointsToAnalysis;
+import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.Unit;
+import soot.javaToJimple.DefaultLocalGenerator;
+import soot.jimple.AssignStmt;
+import soot.jimple.DynamicInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
@@ -62,6 +73,7 @@ import soot.jimple.infoflow.data.pathBuilders.IAbstractionPathBuilder.OnPathBuil
 import soot.jimple.infoflow.data.pathBuilders.IPathBuilderFactory;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
+import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
@@ -125,6 +137,7 @@ import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.ReachableMethods;
 import soot.jimple.toolkits.pointer.DumbPointerAnalysis;
 import soot.options.Options;
+import soot.util.NumberedString;
 
 /**
  * Abstract base class for all data/information flow analyses in FlowDroid
@@ -465,6 +478,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (ipcManager != null)
 				ipcManager.updateJimpleForICC();
 
+			// We might need to patch invokedynamic instructions
+			if (config.isPatchInvokeDynamicInstructions())
+				patchDynamicInvokeInstructions();
+
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
 				tr.onBeforeCallgraphConstruction();
@@ -501,6 +518,146 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			for (PreAnalysisHandler tr : preProcessors)
 				tr.onAfterCallgraphConstruction();
 		}
+	}
+
+	/**
+	 * Re-writes dynamic invocation instructions into traditional invcations
+	 */
+	private void patchDynamicInvokeInstructions() {
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod sm : sc.getMethods()) {
+				if (sm.getName().equals("constantExceptionTest1"))
+					System.out.println("x");
+
+				if (sm.hasActiveBody()) {
+					Body body = sm.getActiveBody();
+					patchDynamicInvokeInstructions(body);
+				} else if (!(sm.getSource() instanceof MethodSourceInjector)) {
+					sm.setSource(new MethodSourceInjector(sm.getSource()) {
+
+						@Override
+						protected void onMethodSourceLoaded(SootMethod m, Body b) {
+							patchDynamicInvokeInstructions(b);
+						}
+
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * Patches the dynamic invocation instructions in the given method body
+	 * 
+	 * @param body The method body in which to patch the dynamic invocation
+	 *             instructions
+	 */
+	protected static void patchDynamicInvokeInstructions(Body body) {
+		for (Iterator<Unit> unitIt = body.getUnits().snapshotIterator(); unitIt.hasNext();) {
+			Stmt stmt = (Stmt) unitIt.next();
+			if (stmt.containsInvokeExpr()) {
+				InvokeExpr iexpr = stmt.getInvokeExpr();
+				if (iexpr instanceof DynamicInvokeExpr) {
+					DynamicInvokeExpr diexpr = (DynamicInvokeExpr) iexpr;
+					SootMethodRef bsmRef = diexpr.getBootstrapMethodRef();
+					List<Stmt> newStmts = null;
+					switch (bsmRef.getDeclaringClass().getName()) {
+					case "java.lang.invoke.StringConcatFactory":
+						newStmts = patchStringConcatInstruction(stmt, diexpr, body);
+					}
+					if (newStmts != null && !newStmts.isEmpty()) {
+						body.getUnits().insertAfter(newStmts, stmt);
+						System.out.println("x");
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Wrapper around a method source to be notified when a new body is loaded
+	 * 
+	 * @author Steven Arzt
+	 *
+	 */
+	private abstract static class MethodSourceInjector implements MethodSource {
+
+		private MethodSource innerSource;
+
+		public MethodSourceInjector(MethodSource innerSource) {
+			this.innerSource = innerSource;
+		}
+
+		@Override
+		public Body getBody(SootMethod m, String phaseName) {
+			Body b = innerSource.getBody(m, phaseName);
+			onMethodSourceLoaded(m, b);
+			return b;
+		}
+
+		protected abstract void onMethodSourceLoaded(SootMethod m, Body b);
+
+	}
+
+	/**
+	 * Patches a specific string concatenation instruction
+	 * 
+	 * @param callSite The call site of the concatenation instruction
+	 * @param diexpr   The dynamic invocation instruction
+	 * @param b        The body that contains the dynamic invocation instruction
+	 * @return The new statements that must be added after the dynamic invocation
+	 *         instruction
+	 */
+	private static List<Stmt> patchStringConcatInstruction(Stmt callSite, DynamicInvokeExpr diexpr, Body b) {
+		final String SIG_CONCAT_CONSTANTS = "java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])";
+		final String SIG_CONCAT = "java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType)";
+
+		Scene scene = Scene.v();
+		Jimple jimple = Jimple.v();
+		LocalGenerator lg = new DefaultLocalGenerator(b);
+
+		RefType rtStringBuilder = RefType.v("java.lang.StringBuilder");
+		SootClass scStringBuilder = rtStringBuilder.getSootClass();
+		SootMethodRef appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(java.lang.Object)")
+				.makeRef();
+		SootMethodRef toStringRef = scene.getObjectType().getSootClass().getMethod("java.lang.String toString()")
+				.makeRef();
+
+		List<Stmt> newStmts = new ArrayList<>();
+		NumberedString calleeSubSig = diexpr.getBootstrapMethodRef().getSubSignature();
+		if (calleeSubSig.equals(scene.getSubSigNumberer().findOrAdd(SIG_CONCAT_CONSTANTS))
+				|| calleeSubSig.equals(scene.getSubSigNumberer().findOrAdd(SIG_CONCAT))) {
+			// We initialize a StringBuilder
+			Local sb = lg.generateLocal(rtStringBuilder);
+
+			Stmt stmt = jimple.newAssignStmt(sb, jimple.newNewExpr(rtStringBuilder));
+			stmt.addTag(SimulatedCodeElementTag.TAG);
+			newStmts.add(stmt);
+
+			stmt = jimple.newInvokeStmt(jimple.newSpecialInvokeExpr(sb,
+					scStringBuilder.getMethod("void <init>(java.lang.String)").makeRef()));
+			stmt.addTag(SimulatedCodeElementTag.TAG);
+			newStmts.add(stmt);
+
+			// Add all partial strings
+			for (int i = 0; i < diexpr.getArgCount(); i++) {
+				// Call toString() on the argument
+				stmt = jimple.newInvokeStmt(jimple.newVirtualInvokeExpr(sb, appendRef,
+						Collections.singletonList((Local) diexpr.getArg(i))));
+				stmt.addTag(SimulatedCodeElementTag.TAG);
+				newStmts.add(stmt);
+			}
+
+			// Obtain the result
+			if (callSite instanceof AssignStmt) {
+				AssignStmt assignStmt = (AssignStmt) callSite;
+				stmt = jimple.newAssignStmt((Local) assignStmt.getLeftOp(),
+						jimple.newVirtualInvokeExpr(sb, toStringRef));
+				stmt.addTag(SimulatedCodeElementTag.TAG);
+				newStmts.add(stmt);
+			}
+		}
+		return newStmts;
 	}
 
 	protected LibraryClassPatcher getLibraryClassPatcher() {

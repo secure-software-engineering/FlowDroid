@@ -444,9 +444,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (source == getZeroValue())
 							return null;
 
-						if (dest.getName().equals("lambda$3"))
-							System.out.println("x");
-
 						// Do not propagate into Soot library classes if that
 						// optimization is enabled
 						if (isExcluded(dest))

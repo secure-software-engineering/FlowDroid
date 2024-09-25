@@ -5,18 +5,18 @@ import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.google.common.html.HtmlEscapers;
 
 import soot.jimple.infoflow.data.Abstraction;
 import soot.util.IdentityHashSet;
 
 /**
- * Creates a Graphviz/dot graph of a {@link Abstraction} tree.
- * Contains the abstractions as well as its predecessors an neighbors
+ * Creates a Graphviz/dot graph of a {@link Abstraction} tree. Contains the
+ * abstractions as well as its predecessors an neighbors
  * 
  * @author Marc Miltenberger
  */
@@ -28,9 +28,10 @@ public final class DebugAbstractionTree {
 	}
 
 	/**
-	 * Creates a dot graph with indices as labels for the abstractions (otherwise, it would be way too large).
-	 * The correspondence is printed to log.
-	 * @param absStart start abstraction of the tree (root)
+	 * Creates a dot graph with indices as labels for the abstractions (otherwise,
+	 * it would be way too large). The correspondence is printed to log.
+	 * 
+	 * @param absStart       start abstraction of the tree (root)
 	 * @param printNeighbors whether to print neighbors
 	 * @return the dot graph
 	 */
@@ -39,11 +40,12 @@ public final class DebugAbstractionTree {
 	}
 
 	/**
-	 * Creates a dot graph with indices as labels for the abstractions (otherwise, it would be way too large).
-	 * The correspondence is printed to log.
-	 * @param absStart start abstraction of the tree (root) 
+	 * Creates a dot graph with indices as labels for the abstractions (otherwise,
+	 * it would be way too large). The correspondence is printed to log.
+	 * 
+	 * @param absStart       start abstraction of the tree (root)
 	 * @param printNeighbors whether to print neighbors
-	 * @param verbose whether to print the access path and statement
+	 * @param verbose        whether to print the access path and statement
 	 * @return the dot graph
 	 */
 	public static String createDotGraph(Abstraction absStart, boolean printNeighbors, boolean verbose) {

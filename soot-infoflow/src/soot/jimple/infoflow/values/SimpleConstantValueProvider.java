@@ -1,16 +1,34 @@
 package soot.jimple.infoflow.values;
 
-import soot.*;
-import soot.jimple.*;
-import soot.tagkit.*;
+import java.util.List;
+
+import soot.Local;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Unit;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
+import soot.jimple.DoubleConstant;
+import soot.jimple.FieldRef;
+import soot.jimple.FloatConstant;
+import soot.jimple.IntConstant;
+import soot.jimple.LongConstant;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.tagkit.ConstantValueTag;
+import soot.tagkit.DoubleConstantValueTag;
+import soot.tagkit.FloatConstantValueTag;
+import soot.tagkit.IntegerConstantValueTag;
+import soot.tagkit.LongConstantValueTag;
+import soot.tagkit.StringConstantValueTag;
 import soot.toolkits.graph.BriefUnitGraph;
 import soot.toolkits.scalar.SimpleLocalDefs;
 
-import java.util.List;
-
 /**
  * Simple constant value provider that checks whether the queried value is
- * directly a Soot constant or is derived from a field with a {@link ConstantValueTag}
+ * directly a Soot constant or is derived from a field with a
+ * {@link ConstantValueTag}
  * 
  * @author Steven Arzt
  *

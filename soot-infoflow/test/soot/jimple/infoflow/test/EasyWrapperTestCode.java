@@ -10,7 +10,6 @@
  ******************************************************************************/
 package soot.jimple.infoflow.test;
 
-import soot.jimple.StringConstant;
 import soot.jimple.infoflow.test.android.AccountManager;
 import soot.jimple.infoflow.test.android.ConnectionManager;
 import soot.jimple.infoflow.test.android.TelephonyManager;
@@ -21,33 +20,33 @@ import soot.jimple.infoflow.test.android.TelephonyManager;
  * @author Steven Arzt
  */
 public class EasyWrapperTestCode {
-	
+
 	private class A {
 		String data;
-		
+
 		public A(String data) {
 			this.data = data;
 		}
-		
+
 		@Override
 		public boolean equals(Object other) {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data);
 			return super.equals(other);
 		}
-		
+
 		@Override
 		public int hashCode() {
 			ConnectionManager cm = new ConnectionManager();
 			cm.publish(data);
-			return super.hashCode();			
+			return super.hashCode();
 		}
-		
+
 		public String getConstant() {
 			return "Hello World";
 		}
 	}
-	
+
 	public void equalsTest() {
 		String tainted = TelephonyManager.getDeviceId();
 		A a = new A(tainted);
@@ -61,13 +60,13 @@ public class EasyWrapperTestCode {
 		System.out.println("Hello World " + a.hashCode());
 	}
 
-	private class B {	
+	private class B {
 		String data;
-		
+
 		public B(String data) {
 			this.data = data;
 		}
-		
+
 		@Override
 		public boolean equals(Object other) {
 			if (other == null || !(other instanceof B))
@@ -77,13 +76,13 @@ public class EasyWrapperTestCode {
 			B otherB = (B) other;
 			return this.data.equals(otherB.data);
 		}
-		
+
 		@Override
 		public int hashCode() {
-			return 31 * this.data.hashCode();			
+			return 31 * this.data.hashCode();
 		}
 	}
-	
+
 	public void equalsTest2() {
 		String tainted = TelephonyManager.getDeviceId();
 		B b = new B(tainted);
@@ -98,44 +97,45 @@ public class EasyWrapperTestCode {
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish("" + b.hashCode());
 	}
-	
+
 	public void constantTest1() {
 		String tainted = TelephonyManager.getDeviceId();
 		A a = new A(tainted);
 		ConnectionManager cm = new ConnectionManager();
 		cm.publish(a.getConstant());
 	}
-	
+
 	private interface I1 {
 		public String getSecret();
+
 		public void taintMe(String s);
 	}
-	
+
 	private interface I2 extends I1 {
-		
+
 	}
-	
+
 	private class C implements I2 {
 		private String data;
-		
+
 		public C(String data) {
 			this.data = data;
 		}
-		
+
 		public String getSecret() {
 			return "Fake secret";
 		}
-		
+
 		public void taintMe(String s) {
 			// do nothing
 		}
-		
+
 		public String getData() {
 			return this.data;
 		}
-		
+
 	}
-	
+
 	public void interfaceInheritanceTest() {
 		String tainted = TelephonyManager.getDeviceId();
 		C c = new C(tainted);
@@ -168,7 +168,7 @@ public class EasyWrapperTestCode {
 		cm.publish(c.getData());
 		i2.taintMe(tainted);
 	}
-	
+
 	public void stringConcatTest() {
 		String tainted = TelephonyManager.getDeviceId();
 		String tainted2 = (new AccountManager()).getPassword();

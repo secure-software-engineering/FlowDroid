@@ -13,28 +13,30 @@ import soot.jimple.infoflow.typing.TypeUtils;
  * @author Tim Lange
  */
 public class AliasAbstractionSet extends HashSet<Abstraction> {
-    private Abstraction checkAbstraction(Abstraction abs) {
-        if (abs == null)
-            return null;
 
-        Type t;
-        if (abs.getAccessPath().isStaticFieldRef())
-            t = abs.getAccessPath().getFirstFieldType();
-        else
-            t = abs.getAccessPath().getBaseType();
+	private static final long serialVersionUID = -2347968480500330461L;
 
-        if (t instanceof PrimType
-                || (TypeUtils.isStringType(t) && !abs.getAccessPath().getCanHaveImmutableAliases()))
-            return null;
+	private Abstraction checkAbstraction(Abstraction abs) {
+		if (abs == null)
+			return null;
 
-        return abs;
-    }
+		Type t;
+		if (abs.getAccessPath().isStaticFieldRef())
+			t = abs.getAccessPath().getFirstFieldType();
+		else
+			t = abs.getAccessPath().getBaseType();
 
-    @Override
-    public boolean add(Abstraction abs) {
-        abs = checkAbstraction(abs);
-        if (abs != null)
-            return super.add(abs);
-        return false;
-    }
+		if (t instanceof PrimType || (TypeUtils.isStringType(t) && !abs.getAccessPath().getCanHaveImmutableAliases()))
+			return null;
+
+		return abs;
+	}
+
+	@Override
+	public boolean add(Abstraction abs) {
+		abs = checkAbstraction(abs);
+		if (abs != null)
+			return super.add(abs);
+		return false;
+	}
 }
