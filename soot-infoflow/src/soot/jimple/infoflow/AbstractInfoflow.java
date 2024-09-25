@@ -21,10 +21,17 @@ import org.slf4j.LoggerFactory;
 
 import heros.solver.Pair;
 import soot.Body;
+import soot.BooleanType;
+import soot.ByteType;
+import soot.CharType;
+import soot.DoubleType;
 import soot.FastHierarchy;
+import soot.FloatType;
 import soot.G;
+import soot.IntType;
 import soot.Local;
 import soot.LocalGenerator;
+import soot.LongType;
 import soot.MethodOrMethodContext;
 import soot.MethodSource;
 import soot.PackManager;
@@ -35,7 +42,9 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
+import soot.Type;
 import soot.Unit;
+import soot.Value;
 import soot.javaToJimple.DefaultLocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DynamicInvokeExpr;
@@ -613,7 +622,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 		RefType rtStringBuilder = RefType.v("java.lang.StringBuilder");
 		SootClass scStringBuilder = rtStringBuilder.getSootClass();
-		SootMethodRef appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(java.lang.Object)")
+		SootMethodRef appendObjectRef = scStringBuilder.getMethod("java.lang.StringBuilder append(java.lang.Object)")
 				.makeRef();
 		SootMethodRef toStringRef = scene.getObjectType().getSootClass().getMethod("java.lang.String toString()")
 				.makeRef();
@@ -637,8 +646,32 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Add all partial strings
 			for (int i = 0; i < diexpr.getArgCount(); i++) {
 				// Call toString() on the argument
-				stmt = jimple.newInvokeStmt(jimple.newVirtualInvokeExpr(sb, appendRef,
-						Collections.singletonList((Local) diexpr.getArg(i))));
+				Value arg = diexpr.getArg(i);
+				Type argType = arg.getType();
+				SootMethodRef appendRef;
+				if (argType instanceof RefType)
+					appendRef = appendObjectRef;
+				else if (argType instanceof ByteType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(byte)").makeRef();
+				else if (argType instanceof BooleanType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(boolean)").makeRef();
+				else if (argType instanceof CharType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(char)").makeRef();
+				else if (argType instanceof IntType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(int)").makeRef();
+				else if (argType instanceof LongType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(long)").makeRef();
+				else if (argType instanceof FloatType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(float)").makeRef();
+				else if (argType instanceof DoubleType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(doble)").makeRef();
+				else {
+					throw new RuntimeException(String.format(
+							"Invalid type %s for string concatenation in dynamic invocation", argType.toString()));
+				}
+
+				stmt = jimple.newInvokeStmt(
+						jimple.newVirtualInvokeExpr(sb, appendRef, Collections.singletonList((Local) arg)));
 				stmt.addTag(SimulatedCodeElementTag.TAG);
 				newStmts.add(stmt);
 			}
