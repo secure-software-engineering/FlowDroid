@@ -170,25 +170,24 @@ public class SummaryResolver {
 				 */
 				private boolean checkInterfaces(String methodSig, ClassSummaries summaries, SootClass clazz,
 						ByReferenceBoolean classSupported) {
-					boolean hasSummaries = false;
 					for (SootClass intf : clazz.getInterfaces()) {
 						// Directly check the interface
 						if (summaries.merge(flows.getMethodFlows(intf, methodSig)))
-							hasSummaries = true;
+							return true;
 
 						for (SootClass parent : getAllParentClasses(intf)) {
 							// Do we have support for the interface?
 							if (summaries.merge(flows.getMethodFlows(parent, methodSig)))
-								hasSummaries = true;
+								return true;
 
 							updateClassExclusive(classSupported, parent, methodSig);
 						}
 					}
 
 					// We inject the hierarchy from summaries before the data flow analysis, thus
-					// the
-					// soot hierarchy already contains the manual information provided in the xmls.
-					return hasSummaries;
+					// the soot hierarchy already contains the manual information provided in the
+					// xmls.
+					return false;
 				}
 
 			});

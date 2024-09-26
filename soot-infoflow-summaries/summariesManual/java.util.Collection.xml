@@ -22,8 +22,10 @@
 		<method id="boolean addAll(java.util.Collection)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
+					<from sourceSinkType="Parameter" ParameterIndex="0"
+						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				  <to sourceSinkType="Field"
 						AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
