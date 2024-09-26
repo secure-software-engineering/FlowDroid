@@ -670,8 +670,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 							"Invalid type %s for string concatenation in dynamic invocation", argType.toString()));
 				}
 
-				stmt = jimple.newInvokeStmt(
-						jimple.newVirtualInvokeExpr(sb, appendRef, Collections.singletonList((Local) arg)));
+				stmt = jimple.newInvokeStmt(jimple.newVirtualInvokeExpr(sb, appendRef, Collections.singletonList(arg)));
 				stmt.addTag(SimulatedCodeElementTag.TAG);
 				newStmts.add(stmt);
 			}
