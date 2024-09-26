@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import heros.solver.Pair;
+import soot.ArrayType;
 import soot.Body;
 import soot.BooleanType;
 import soot.ByteType;
@@ -39,6 +40,7 @@ import soot.PatchingChain;
 import soot.PointsToAnalysis;
 import soot.RefType;
 import soot.Scene;
+import soot.ShortType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
@@ -627,6 +629,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		SootMethodRef toStringRef = scene.getObjectType().getSootClass().getMethod("java.lang.String toString()")
 				.makeRef();
 
+		SootClass scArrays = Scene.v().getSootClass("java.util.Arrays");
+
 		List<Stmt> newStmts = new ArrayList<>();
 		NumberedString calleeSubSig = diexpr.getBootstrapMethodRef().getSubSignature();
 		if (calleeSubSig.equals(scene.getSubSigNumberer().findOrAdd(SIG_CONCAT_CONSTANTS))
@@ -657,6 +661,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(boolean)").makeRef();
 				else if (argType instanceof CharType)
 					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(char)").makeRef();
+				else if (argType instanceof ShortType)
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(short)").makeRef();
 				else if (argType instanceof IntType)
 					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(int)").makeRef();
 				else if (argType instanceof LongType)
@@ -664,8 +670,47 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				else if (argType instanceof FloatType)
 					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(float)").makeRef();
 				else if (argType instanceof DoubleType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(doble)").makeRef();
-				else {
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(double)").makeRef();
+				else if (argType instanceof ArrayType) {
+					// For an array argument, we need to Arrays.toString() first
+					ArrayType at = (ArrayType) argType;
+					Type elementType = at.getElementType();
+
+					Local sarg = lg.generateLocal(RefType.v("java.lang.String"));
+					SootMethodRef elementToStringRef = null;
+					if (elementType instanceof RefType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(java.lang.Object[])")
+								.makeRef();
+					else if (elementType instanceof ByteType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(byte[])").makeRef();
+					else if (elementType instanceof BooleanType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(boolean[])").makeRef();
+					else if (elementType instanceof CharType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(char[])").makeRef();
+					else if (elementType instanceof ShortType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(short[])").makeRef();
+					else if (elementType instanceof IntType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(int[])").makeRef();
+					else if (elementType instanceof LongType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(long[])").makeRef();
+					else if (elementType instanceof FloatType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(float[])").makeRef();
+					else if (elementType instanceof DoubleType)
+						elementToStringRef = scArrays.getMethod("java.lang.String toString(double[])").makeRef();
+					else {
+						throw new RuntimeException(String.format(
+								"Invalid array element type %s for string concatenation in dynamic invocation",
+								elementType.toString()));
+					}
+
+					Stmt toStringStmt = jimple.newAssignStmt(sarg,
+							jimple.newStaticInvokeExpr(elementToStringRef, Collections.singletonList(arg)));
+					toStringStmt.addTag(SimulatedCodeElementTag.TAG);
+					newStmts.add(toStringStmt);
+
+					arg = sarg;
+					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(java.lang.String)").makeRef();
+				} else {
 					throw new RuntimeException(String.format(
 							"Invalid type %s for string concatenation in dynamic invocation", argType.toString()));
 				}
