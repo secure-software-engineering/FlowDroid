@@ -33,6 +33,9 @@
 		<!-- java.util -->
 		<class name="java.util.Comparator" isInterface="true" />
 
+		<class name="java.util.ArrayList$ListItr" superClass="java.util.ArrayList$Itr" />
+		<class name="java.util.ArrayList$Itr" superClass="java.lang.Object" />
+
 		<!-- java.util.function -->
 		<class name="java.util.function.BiConsumer" isInterface="true" />
 		<class name="java.util.function.BiFunction" isInterface="true" />

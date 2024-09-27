@@ -20,7 +20,7 @@ public class HierarchyTests {
 
 	@Test
 	public void superClassesTest() {
-		List<String> superclasses = testProvider.getSuperclassesOf("java.util.ArrayList$ListItr");
+		List<String> superclasses = manualProvider.getSuperclassesOf("java.util.ArrayList$ListItr");
 		assertEquals(2, superclasses.size());
 		assertEquals("java.util.ArrayList$Itr", superclasses.get(0));
 		assertEquals("java.lang.Object", superclasses.get(1));
