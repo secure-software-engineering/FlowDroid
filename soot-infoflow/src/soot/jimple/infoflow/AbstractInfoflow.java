@@ -624,10 +624,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 		RefType rtStringBuilder = RefType.v("java.lang.StringBuilder");
 		SootClass scStringBuilder = rtStringBuilder.getSootClass();
-		SootMethodRef appendObjectRef = scStringBuilder.getMethod("java.lang.StringBuilder append(java.lang.Object)")
-				.makeRef();
-		SootMethodRef toStringRef = scene.getObjectType().getSootClass().getMethod("java.lang.String toString()")
-				.makeRef();
+		SootMethodRef appendObjectRef = scene.makeMethodRef(scStringBuilder,
+				"java.lang.StringBuilder append(java.lang.Object)", false);
+		SootMethodRef toStringRef = scene.makeMethodRef(scene.getObjectType().getSootClass(),
+				"java.lang.String toString()", false);
 
 		SootClass scArrays = Scene.v().getSootClass("java.util.Arrays");
 
@@ -643,7 +643,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			newStmts.add(stmt);
 
 			stmt = jimple.newInvokeStmt(jimple.newSpecialInvokeExpr(sb,
-					scStringBuilder.getMethod("void <init>(java.lang.String)").makeRef()));
+					scene.makeMethodRef(scStringBuilder, "void <init>(java.lang.String)", false)));
 			stmt.addTag(SimulatedCodeElementTag.TAG);
 			newStmts.add(stmt);
 
@@ -656,21 +656,21 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				if (argType instanceof RefType)
 					appendRef = appendObjectRef;
 				else if (argType instanceof ByteType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(byte)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(byte)", false);
 				else if (argType instanceof BooleanType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(boolean)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(boolean)", false);
 				else if (argType instanceof CharType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(char)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(char)", false);
 				else if (argType instanceof ShortType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(short)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(short)", false);
 				else if (argType instanceof IntType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(int)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(int)", false);
 				else if (argType instanceof LongType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(long)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(long)", false);
 				else if (argType instanceof FloatType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(float)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(float)", false);
 				else if (argType instanceof DoubleType)
-					appendRef = scStringBuilder.getMethod("java.lang.StringBuilder append(double)").makeRef();
+					appendRef = scene.makeMethodRef(scStringBuilder, "java.lang.StringBuilder append(double)", false);
 				else if (argType instanceof ArrayType) {
 					// For an array argument, we need to Arrays.toString() first
 					ArrayType at = (ArrayType) argType;
@@ -679,24 +679,25 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					Local sarg = lg.generateLocal(RefType.v("java.lang.String"));
 					SootMethodRef elementToStringRef = null;
 					if (elementType instanceof RefType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(java.lang.Object[])")
-								.makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays,
+								"java.lang.String toString(java.lang.Object[])", true);
 					else if (elementType instanceof ByteType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(byte[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(byte[])", true);
 					else if (elementType instanceof BooleanType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(boolean[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(boolean[])",
+								true);
 					else if (elementType instanceof CharType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(char[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(char[])", true);
 					else if (elementType instanceof ShortType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(short[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(short[])", true);
 					else if (elementType instanceof IntType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(int[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(int[])", true);
 					else if (elementType instanceof LongType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(long[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(long[])", true);
 					else if (elementType instanceof FloatType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(float[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(float[])", true);
 					else if (elementType instanceof DoubleType)
-						elementToStringRef = scArrays.getMethod("java.lang.String toString(double[])").makeRef();
+						elementToStringRef = scene.makeMethodRef(scArrays, "java.lang.String toString(double[])", true);
 					else {
 						throw new RuntimeException(String.format(
 								"Invalid array element type %s for string concatenation in dynamic invocation",
