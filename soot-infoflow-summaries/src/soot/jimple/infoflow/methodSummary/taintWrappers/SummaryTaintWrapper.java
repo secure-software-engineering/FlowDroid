@@ -61,6 +61,7 @@ import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowConstraint;
+import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSink;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.FlowSource;
 import soot.jimple.infoflow.methodSummary.data.summary.AbstractMethodSummary;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
@@ -143,43 +144,69 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		protected void handleFlowSourceInGap(Unit u, Abstraction d2) {
 			final boolean reverseFlows = manager.getConfig()
 					.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards;
-			if (u instanceof ReturnStmt) {
-				ReturnStmt retStmt = (ReturnStmt) u;
-				if (retStmt.getOp() == d2.getAccessPath().getPlainValue()) {
-					SootMethod sm = manager.getICFG().getMethodOf(u);
-					for (Unit callSite : manager.getICFG().getCallersOf(sm)) {
-						Stmt sCallSite = (Stmt) callSite;
-						ClassSummaries summaries = getFlowSummariesForMethod(sCallSite,
-								sCallSite.getInvokeExpr().getMethod(), null);
-						for (MethodFlow flow : summaries.getAllFlows()) {
-							FlowSource src = flow.source();
-							if (src.hasGap() && src.isReturn() && isImplementationOf(sm, src.getGap().getSignature())) {
-								// We have a flow from the return value of the gap to somewhere
 
-								// Create taints from the abstractions
-								Set<Taint> returnTaints = createTaintFromAccessPathOnReturn(d2.getAccessPath(),
-										(Stmt) u, src.getGap());
-								if (returnTaints == null)
-									continue;
+			// We can only handle an FRPS case if the taint actually leaves the method
+			boolean taintLeavesMethod = false;
+			SootMethod callee = manager.getICFG().getMethodOf(u);
+			if (reverseFlows) {
+				taintLeavesMethod = callee.getActiveBody().getParameterLocals()
+						.contains(d2.getAccessPath().getPlainValue());
+			} else {
+				if (u instanceof ReturnStmt) {
+					ReturnStmt retStmt = (ReturnStmt) u;
+					taintLeavesMethod = retStmt.getOp() == d2.getAccessPath().getPlainValue();
+				}
+			}
+			if (!taintLeavesMethod)
+				return;
 
-								// Create the new propagator, one for every taint
-								for (Taint returnTaint : returnTaints) {
-									AccessPathPropagator propagator = new AccessPathPropagator(returnTaint);
-									AccessPathPropagator newPropagator = applyFlow(flow, propagator);
-									if (newPropagator != null) {
-										AccessPath ap = createAccessPathFromTaint(newPropagator.getTaint(), sCallSite,
-												reverseFlows);
-										if (ap != null) {
-											Abstraction zeroValue = manager.getMainSolver().getTabulationProblem()
-													.zeroValue();
-											Abstraction abs = d2.deriveNewAbstraction(ap, sCallSite);
-											for (Unit succUnit : manager.getICFG().getSuccsOf(callSite))
-												manager.getMainSolver().processEdge(
-														new PathEdge<Unit, Abstraction>(zeroValue, succUnit, abs));
-										}
-									}
-								}
+			for (Unit callSite : manager.getICFG().getCallersOf(callee)) {
+				Stmt sCallSite = (Stmt) callSite;
+				ClassSummaries summaries = getFlowSummariesForMethod(sCallSite, sCallSite.getInvokeExpr().getMethod(),
+						null);
+				for (MethodFlow flow : summaries.getAllFlows()) {
+					FlowSource src = flow.source();
+					FlowSink tgt = flow.sink();
 
+					boolean flowMatchesTaint = false;
+					if (!reverseFlows && src.isReturn() && src.hasGap()
+							&& isImplementationOf(callee, src.getGap().getSignature())) {
+						// We have a flow from the return value of the gap to somewhere
+						flowMatchesTaint = true;
+					} else if (reverseFlows && tgt.isParameter() && tgt.hasGap()
+							&& isImplementationOf(callee, tgt.getGap().getSignature())) {
+						// We have a backward flow to a parameter
+						flowMatchesTaint = true;
+					}
+					if (!flowMatchesTaint)
+						continue;
+
+					// Create the taint from the incoming access path
+					Set<Taint> returnTaints = createTaintFromAccessPathOnReturn(d2.getAccessPath(), (Stmt) u,
+							reverseFlows ? tgt.getGap() : src.getGap());
+					if (returnTaints == null)
+						continue;
+
+					// Create the new propagator, one for every taint
+					for (Taint returnTaint : returnTaints) {
+						MethodFlow curFlow = flow;
+						AccessPathPropagator propagator = new AccessPathPropagator(returnTaint);
+						if (reverseFlows) {
+							propagator = propagator.deriveInversePropagator();
+							curFlow = flow.reverse();
+						}
+						AccessPathPropagator newPropagator = applyFlow(curFlow, propagator);
+						if (newPropagator != null) {
+							AccessPath ap = createAccessPathFromTaint(newPropagator.getTaint(), sCallSite,
+									reverseFlows);
+							if (ap != null) {
+								Abstraction zeroValue = manager.getMainSolver().getTabulationProblem().zeroValue();
+								Abstraction abs = d2.deriveNewAbstraction(ap, reverseFlows ? sCallSite : (Stmt) u);
+								if (reverseFlows)
+									abs.setCorrespondingCallSite(sCallSite);
+								for (Unit succUnit : manager.getICFG().getSuccsOf(callSite))
+									manager.getMainSolver()
+											.processEdge(new PathEdge<Unit, Abstraction>(zeroValue, succUnit, abs));
 							}
 						}
 					}
@@ -2147,6 +2174,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
+
+		SootMethod sm = manager.getICFG().getMethodOf(stmt);
 
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 		// Get the cached data flows
