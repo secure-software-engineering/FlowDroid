@@ -79,9 +79,9 @@ public abstract class BaseJUnitTests extends JUnitTests {
 	 */
 	public static File getIntegrationRoot() {
 		File testRoot = new File(".");
-		if (!new File(testRoot, "src").exists())
+		if (!new File(testRoot, "testAPKs").exists())
 			testRoot = new File(testRoot, "soot-infoflow-integration");
-		if (!new File(testRoot, "src").exists())
+		if (!new File(testRoot, "testAPKs").exists())
 			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
 		return testRoot;
 	}
