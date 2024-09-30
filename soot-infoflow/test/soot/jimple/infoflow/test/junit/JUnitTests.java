@@ -62,24 +62,16 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		File f = new File(".");
+		File f = getTestRoot();
 		StringBuilder appPathBuilder = new StringBuilder();
 		addTestPathes(f, appPathBuilder);
 
-		File fi = new File("../soot-infoflow");
+		File fi = new File(f, "../soot-infoflow");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
 			addTestPathes(fi, appPathBuilder);
 		}
-		fi = new File("../soot-infoflow-summaries");
+		fi = new File(f, "../soot-infoflow-summaries");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
-			addTestPathes(fi, appPathBuilder);
-		}
-		fi = new File("soot-infoflow");
-		if (fi.exists()) {
-			addTestPathes(fi, appPathBuilder);
-		}
-		fi = new File("soot-infoflow-summaries");
-		if (fi.exists()) {
 			addTestPathes(fi, appPathBuilder);
 		}
 		appPath = appPathBuilder.toString();
@@ -192,4 +184,19 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 	protected void onlyForwards(IInfoflow infoflow, String message) {
 		Assume.assumeTrue("Test is only applicable on forwards analysis: " + message, infoflow instanceof Infoflow);
 	}
+
+	/**
+	 * Gets the root in which the StubDroid project is located
+	 * 
+	 * @return The directory in which StubDroid is located
+	 */
+	public static File getTestRoot() {
+		File testRoot = new File(".");
+		if (!new File(testRoot, "src").exists())
+			testRoot = new File(testRoot, "soot-infoflow");
+		if (!new File(testRoot, "src").exists())
+			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
+		return testRoot;
+	}
+
 }
