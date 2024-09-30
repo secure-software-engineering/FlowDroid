@@ -13,7 +13,7 @@ public class EasyWrapperTests extends soot.jimple.infoflow.test.junit.EasyWrappe
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

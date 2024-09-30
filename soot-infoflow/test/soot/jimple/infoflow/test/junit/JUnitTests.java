@@ -62,7 +62,7 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		File f = getTestRoot();
+		File f = getInfoflowRoot();
 		StringBuilder appPathBuilder = new StringBuilder();
 		addTestPathes(f, appPathBuilder);
 
@@ -72,6 +72,14 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 		}
 		fi = new File(f, "../soot-infoflow-summaries");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("soot-infoflow");
+		if (fi.exists()) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("soot-infoflow-summaries");
+		if (fi.exists()) {
 			addTestPathes(fi, appPathBuilder);
 		}
 		appPath = appPathBuilder.toString();
@@ -186,11 +194,11 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 	}
 
 	/**
-	 * Gets the root in which the StubDroid project is located
+	 * Gets the root in which the FlowDroid main project is located
 	 * 
-	 * @return The directory in which StubDroid is located
+	 * @return The directory in which the FlowDroid main project is located
 	 */
-	public static File getTestRoot() {
+	public static File getInfoflowRoot() {
 		File testRoot = new File(".");
 		if (!new File(testRoot, "src").exists())
 			testRoot = new File(testRoot, "soot-infoflow");

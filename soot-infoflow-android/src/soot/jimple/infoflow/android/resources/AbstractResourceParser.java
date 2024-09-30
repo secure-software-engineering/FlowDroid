@@ -38,13 +38,12 @@ public abstract class AbstractResourceParser {
 	 *                       (excluding extension) in this set will be analyzed.
 	 * @param handler        The handler for processing the apk file
 	 */
-	protected void handleAndroidResourceFiles(String apk, Set<String> fileNameFilter, IResourceHandler handler) {
-		File apkF = new File(apk);
-		if (!apkF.exists())
+	protected void handleAndroidResourceFiles(File apk, Set<String> fileNameFilter, IResourceHandler handler) {
+		if (!apk.exists())
 			throw new RuntimeException("file '" + apk + "' does not exist!");
 
 		try {
-			try (ZipFile archive = new ZipFile(apkF)) {
+			try (ZipFile archive = new ZipFile(apk)) {
 				Enumeration<?> entries = archive.entries();
 				while (entries.hasMoreElements()) {
 					ZipEntry entry = (ZipEntry) entries.nextElement();

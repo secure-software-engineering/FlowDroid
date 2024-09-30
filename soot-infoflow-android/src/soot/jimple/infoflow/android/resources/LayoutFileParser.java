@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.resources;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -169,13 +170,13 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * user controls in it. This method only registers a Soot phase that is run when
 	 * the Soot packs are next run
 	 * 
-	 * @param fileName The APK file in which to look for user controls
+	 * @param apkFile The APK file in which to look for user controls
 	 */
-	public void parseLayoutFile(final String fileName) {
+	public void parseLayoutFile(final File apkFile) {
 		Transform transform = new Transform("wjtp.lfp", new SceneTransformer() {
 			@Override
 			protected void internalTransform(String phaseName, @SuppressWarnings("rawtypes") Map options) {
-				parseLayoutFileDirect(fileName);
+				parseLayoutFileDirect(apkFile);
 			}
 
 		});
@@ -187,10 +188,10 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 * user controls in it. This method directly executes the analyses witout
 	 * registering any Soot phases.
 	 * 
-	 * @param fileName The APK file in which to look for user controls
+	 * @param apkFile The APK file in which to look for user controls
 	 */
-	public void parseLayoutFileDirect(final String fileName) {
-		handleAndroidResourceFiles(fileName, /* classes, */ null, new IResourceHandler() {
+	public void parseLayoutFileDirect(final File apkFile) {
+		handleAndroidResourceFiles(apkFile, /* classes, */ null, new IResourceHandler() {
 
 			@Override
 			public void handleResourceFile(final String fileName, Set<String> fileNameFilter, InputStream stream) {

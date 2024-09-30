@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.integration.test.junit.river;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -47,14 +48,14 @@ public abstract class BaseJUnitTests extends JUnitTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.setThrowExceptions(true);
 		result.setTaintWrapper(getTaintWrapper());
 		setConfiguration(result.getConfig());
 		return result;
 	}
 
-	protected SetupApplication initApplication(String fileName) {
+	protected SetupApplication initApplication(File apkFile) {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
 			androidJars = System.getProperty("ANDROID_JARS");
@@ -62,7 +63,7 @@ public abstract class BaseJUnitTests extends JUnitTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		SetupApplication setupApplication = new SetupApplication(androidJars, fileName);
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 
 		setupApplication.getConfig().setMergeDexFiles(true);
 		setupApplication.setTaintWrapper(getTaintWrapper());
@@ -70,4 +71,19 @@ public abstract class BaseJUnitTests extends JUnitTests {
 
 		return setupApplication;
 	}
+
+	/**
+	 * Gets the root in which the FlowDroid main project is located
+	 * 
+	 * @return The directory in which the FlowDroid main project is located
+	 */
+	public static File getIntegrationRoot() {
+		File testRoot = new File(".");
+		if (!new File(testRoot, "src").exists())
+			testRoot = new File(testRoot, "soot-infoflow-integration");
+		if (!new File(testRoot, "src").exists())
+			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
+		return testRoot;
+	}
+
 }

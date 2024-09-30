@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.test.junit.backward;
 
+import java.io.File;
+
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.BackwardsInfoflow;
 import soot.jimple.infoflow.InfoflowConfiguration;
@@ -8,8 +10,7 @@ import soot.jimple.infoflow.solver.PredecessorShorteningMode;
 
 public class AlwaysShortenTests extends soot.jimple.infoflow.test.junit.AlwaysShortenTests {
 	class AlwaysShortenBackwardsInfoflow extends BackwardsInfoflow {
-		public AlwaysShortenBackwardsInfoflow(String androidPath, boolean forceAndroidJar,
-				BiDirICFGFactory icfgFactory) {
+		public AlwaysShortenBackwardsInfoflow(File androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
 			super(androidPath, forceAndroidJar, icfgFactory);
 		}
 
@@ -22,7 +23,7 @@ public class AlwaysShortenTests extends soot.jimple.infoflow.test.junit.AlwaysSh
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		AbstractInfoflow infoflow = new AlwaysShortenBackwardsInfoflow("", false, null);
+		AbstractInfoflow infoflow = new AlwaysShortenBackwardsInfoflow(null, false, null);
 		infoflow.getConfig().getPathConfiguration()
 				.setPathReconstructionMode(InfoflowConfiguration.PathReconstructionMode.Fast);
 		return infoflow;

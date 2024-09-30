@@ -7,7 +7,7 @@ public class OverwriteTests extends soot.jimple.infoflow.test.junit.OverwriteTes
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

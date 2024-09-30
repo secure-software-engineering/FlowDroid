@@ -17,7 +17,7 @@ public class QueueTests extends soot.jimple.infoflow.test.junit.QueueTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();

@@ -21,7 +21,7 @@ public class VectorTests extends soot.jimple.infoflow.test.junit.VectorTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();

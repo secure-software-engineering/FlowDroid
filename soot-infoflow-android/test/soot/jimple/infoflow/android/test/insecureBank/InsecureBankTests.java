@@ -21,10 +21,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
 import soot.jimple.infoflow.android.SetupApplication;
+import soot.jimple.infoflow.android.test.BaseJUnitTests;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 
-public class InsecureBankTests {
+public class InsecureBankTests extends BaseJUnitTests {
 
 	private final static String sharedPrefs_putString = "<android.content.SharedPreferences$Editor: android.content.SharedPreferences$Editor putString(java.lang.String,java.lang.String)>";
 
@@ -56,17 +57,18 @@ public class InsecureBankTests {
 		System.out.println("Loading Android.jar files from " + androidJars);
 
 		// Find the taint wrapper file
-		File taintWrapperFile = new File("EasyTaintWrapperSource.txt");
+		File rootDir = getInfoflowAndroidRoot();
+		File taintWrapperFile = new File(rootDir, "EasyTaintWrapperSource.txt");
 		if (!taintWrapperFile.exists())
-			taintWrapperFile = new File("../soot-infoflow/EasyTaintWrapperSource.txt");
+			taintWrapperFile = new File(rootDir, "../soot-infoflow/EasyTaintWrapperSource.txt");
 
-		SetupApplication setupApplication = new SetupApplication(androidJars,
-				"insecureBank" + File.separator + "InsecureBank.apk");
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars),
+				new File(new File(rootDir, "insecureBank"), "InsecureBank.apk"));
 		setupApplication.setTaintWrapper(new EasyTaintWrapper(taintWrapperFile));
 		setupApplication.getConfig().setImplicitFlowMode(
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);
 		setupApplication.getConfig().getSourceSinkConfig().setLayoutMatchingMode(LayoutMatchingMode.MatchAll);
-		return setupApplication.runInfoflow("SourcesAndSinks.txt");
+		return setupApplication.runInfoflow(new File(rootDir, "SourcesAndSinks.txt"));
 	}
 
 	@Test

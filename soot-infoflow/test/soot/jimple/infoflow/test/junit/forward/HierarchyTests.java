@@ -7,7 +7,7 @@ public class HierarchyTests extends soot.jimple.infoflow.test.junit.HierarchyTes
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.integration.test.junit.river;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +83,8 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
 
 	private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
 		try {
-			XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/RiverSourcesAndSinks.xml");
+			XMLSourceSinkParser parser = XMLSourceSinkParser
+					.fromFile(new File(getIntegrationRoot(), "./build/classes/res/RiverSourcesAndSinks.xml"));
 			return new SimpleSourceSinkManager(parser.getSources(), parser.getSinks(), infoflow.getConfig());
 		} catch (IOException e) {
 			throw new RuntimeException(e);

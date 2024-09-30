@@ -15,33 +15,33 @@ import java.io.IOException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.SetupApplication;
+import soot.jimple.infoflow.android.test.BaseJUnitTests;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 
-public class JUnitTests {
+public class JUnitTests extends BaseJUnitTests {
 
 	/**
 	 * Analyzes the given APK file for data flows
 	 * 
-	 * @param fileName The full path and file name of the APK file to analyze
+	 * @param apkFile The full path and file name of the APK file to analyze
 	 * @return The data leaks found in the given APK file
 	 * @throws IOException            Thrown if the given APK file or any other
 	 *                                required file could not be found
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	public InfoflowResults analyzeAPKFile(String fileName) throws IOException, XmlPullParserException {
-		return analyzeAPKFile(fileName, false, true, false);
+	public InfoflowResults analyzeAPKFile(File apkFile) throws IOException, XmlPullParserException {
+		return analyzeAPKFile(apkFile, false, true, false);
 	}
 
 	/**
 	 * Analyzes the given APK file for data flows
 	 * 
-	 * @param fileName              The full path and file name of the APK file to
+	 * @param apkFile               The full path and file name of the APK file to
 	 *                              analyze
 	 * @param enableImplicitFlows   True if implicit flows shall be tracked,
 	 *                              otherwise false
@@ -55,7 +55,7 @@ public class JUnitTests {
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	public InfoflowResults analyzeAPKFile(String fileName, boolean enableImplicitFlows, boolean enableStaticFields,
+	public InfoflowResults analyzeAPKFile(File apkFile, boolean enableImplicitFlows, boolean enableStaticFields,
 			boolean flowSensitiveAliasing) throws IOException, XmlPullParserException {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
@@ -64,7 +64,8 @@ public class JUnitTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		SetupApplication setupApplication = new SetupApplication(androidJars, fileName);
+		File rootDir = getInfoflowAndroidRoot();
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 
 		// Find the taint wrapper file
 		File taintWrapperFile = new File("EasyTaintWrapperSource.txt");
@@ -81,7 +82,7 @@ public class JUnitTests {
 
 //		setupApplication.getConfig().setDataFlowDirection(InfoflowConfiguration.DataFlowDirection.Backwards);
 
-		return setupApplication.runInfoflow("SourcesAndSinks.txt");
+		return setupApplication.runInfoflow(new File(rootDir, "SourcesAndSinks.txt"));
 	}
 
 }

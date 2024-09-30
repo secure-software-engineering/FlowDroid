@@ -174,7 +174,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	protected Collection<PreAnalysisHandler> preProcessors = new ArrayList<>();
 	protected Collection<PostAnalysisHandler> postProcessors = new ArrayList<>();
 
-	protected final String androidPath;
+	protected final File androidPath;
 	protected final boolean forceAndroidJar;
 	protected IInfoflowConfig sootConfig;
 	protected FastHierarchy hierarchy;
@@ -206,7 +206,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * Creates a new instance of the abstract info flow problem
 	 */
 	public AbstractInfoflow() {
-		this(null, "", false);
+		this(null, null, false);
 	}
 
 	/**
@@ -222,10 +222,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 *                        false if Soot shall pick the appropriate platform
 	 *                        version
 	 */
-	public AbstractInfoflow(BiDirICFGFactory icfgFactory, String androidPath, boolean forceAndroidJar) {
+	public AbstractInfoflow(BiDirICFGFactory icfgFactory, File androidPath, boolean forceAndroidJar) {
 		if (icfgFactory == null) {
 			DefaultBiDiICFGFactory factory = new DefaultBiDiICFGFactory();
-			factory.setIsAndroid(androidPath != null && !androidPath.isEmpty());
+			factory.setIsAndroid(androidPath != null && androidPath.exists());
 			this.icfgFactory = factory;
 		} else
 			this.icfgFactory = icfgFactory;
@@ -438,12 +438,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	protected void setSourcePrec() {
-		if (!this.androidPath.isEmpty()) {
+		if (this.androidPath != null) {
 			Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
 			if (this.forceAndroidJar)
-				soot.options.Options.v().set_force_android_jar(this.androidPath);
+				soot.options.Options.v().set_force_android_jar(this.androidPath.getAbsolutePath());
 			else
-				soot.options.Options.v().set_android_jars(this.androidPath);
+				soot.options.Options.v().set_android_jars(this.androidPath.getAbsolutePath());
 		} else
 			Options.v().set_src_prec(Options.src_prec_java);
 	}

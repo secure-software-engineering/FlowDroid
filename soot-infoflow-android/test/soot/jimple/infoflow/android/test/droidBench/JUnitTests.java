@@ -19,10 +19,11 @@ import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.SetupApplication;
+import soot.jimple.infoflow.android.test.BaseJUnitTests;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 
-public abstract class JUnitTests {
+public abstract class JUnitTests extends BaseJUnitTests {
 	protected enum TestResultMode {
 		DROIDBENCH, // the actual expected values of droidbench
 		FLOWDROID_BACKWARDS, // the values from FlowDroid backwards analysis, use to test regressions/fixes
@@ -143,13 +144,14 @@ public abstract class JUnitTests {
 			throw new RuntimeException("DroidBench dir not set");
 		System.out.println("Loading DroidBench from " + droidBenchDir);
 
-		SetupApplication setupApplication = new SetupApplication(androidJars,
-				droidBenchDir + File.separator + fileName);
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars),
+				new File(new File(droidBenchDir), fileName));
 
 		// Find the taint wrapper file
-		File taintWrapperFile = new File("EasyTaintWrapperSource.txt");
+		File rootDir = getInfoflowAndroidRoot();
+		File taintWrapperFile = new File(rootDir, "EasyTaintWrapperSource.txt");
 		if (!taintWrapperFile.exists())
-			taintWrapperFile = new File("../soot-infoflow/EasyTaintWrapperSource.txt");
+			taintWrapperFile = new File(rootDir, "../soot-infoflow/EasyTaintWrapperSource.txt");
 
 		// Make sure to apply the settings before we calculate entry points
 		if (configCallback != null)
@@ -162,6 +164,6 @@ public abstract class JUnitTests {
 		if (iccModel != null && iccModel.length() > 0) {
 			setupApplication.getConfig().getIccConfig().setIccModel(iccModel);
 		}
-		return setupApplication.runInfoflow("SourcesAndSinks.txt");
+		return setupApplication.runInfoflow(new File(rootDir, "SourcesAndSinks.txt"));
 	}
 }

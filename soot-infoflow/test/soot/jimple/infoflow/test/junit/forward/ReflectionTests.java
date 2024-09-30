@@ -7,7 +7,7 @@ public class ReflectionTests extends soot.jimple.infoflow.test.junit.ReflectionT
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

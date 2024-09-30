@@ -7,7 +7,7 @@ public class ContextSensitivityTests extends soot.jimple.infoflow.test.junit.Con
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

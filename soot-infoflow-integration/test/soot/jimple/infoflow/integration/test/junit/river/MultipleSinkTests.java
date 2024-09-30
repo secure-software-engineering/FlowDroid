@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.integration.test.junit.river;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,7 +28,8 @@ import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 public class MultipleSinkTests extends RiverBaseJUnitTests {
 	private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
 		try {
-			XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile("./build/classes/res/MultipleSinkDefs.xml");
+			XMLSourceSinkParser parser = XMLSourceSinkParser
+					.fromFile(new File(getIntegrationRoot(), "./build/classes/res/MultipleSinkDefs.xml"));
 			// Hacky way to get the access paths in the source sink xml working
 			InfoflowAndroidConfiguration aconfig = new InfoflowAndroidConfiguration();
 			aconfig.merge(infoflow.getConfig());

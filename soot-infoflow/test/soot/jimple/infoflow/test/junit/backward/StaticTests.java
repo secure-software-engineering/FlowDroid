@@ -13,7 +13,7 @@ public class StaticTests extends soot.jimple.infoflow.test.junit.StaticTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 	@Test(timeout = 300000)

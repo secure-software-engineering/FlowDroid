@@ -28,9 +28,10 @@ import soot.jimple.infoflow.util.DebugFlowFunctionTaintPropagationHandler;
 public class OutputStreamTests extends RiverBaseJUnitTests {
 	private ISourceSinkManager getSourceSinkManager(IInfoflow infoflow) {
 		try {
-			File sourcesSinks = new File("./build/classes/res/OutputStreamAndWriters.xml");
+			File rootDir = getIntegrationRoot();
+			File sourcesSinks = new File(rootDir, "./build/classes/res/OutputStreamAndWriters.xml");
 			if (!sourcesSinks.exists())
-				sourcesSinks = new File("./res/OutputStreamAndWriters.xml");
+				sourcesSinks = new File(rootDir, "./res/OutputStreamAndWriters.xml");
 			if (!sourcesSinks.exists())
 				throw new RuntimeException("Source/sink definition file not found");
 			XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile(sourcesSinks.getAbsolutePath());
@@ -43,8 +44,8 @@ public class OutputStreamTests extends RiverBaseJUnitTests {
 	@Override
 	protected ITaintPropagationWrapper getTaintWrapper() {
 		try {
-			return TaintWrapperFactory
-					.createTaintWrapper(Collections.singleton("../soot-infoflow-summaries/summariesManual"));
+			return TaintWrapperFactory.createTaintWrapperFromFiles(Collections
+					.singleton(new File(getIntegrationRoot(), "../soot-infoflow-summaries/summariesManual")));
 		} catch (IOException | XMLStreamException e) {
 			throw new RuntimeException("Could not initialized Taintwrapper:");
 		}

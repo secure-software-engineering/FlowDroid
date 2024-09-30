@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Set;
 
 import javax.xml.parsers.SAXParser;
@@ -55,6 +54,10 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 		return fromFile(fileName, null);
 	}
 
+	public static XMLSourceSinkParser fromFile(File file) throws IOException {
+		return fromFile(file, null);
+	}
+
 	public static XMLSourceSinkParser fromFile(String fileName, ICategoryFilter categoryFilter) throws IOException {
 		logger.info(String.format("Loading sources and sinks from %s...", fileName));
 		try (InputStream is = getStream(fileName)) {
@@ -62,6 +65,17 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 		}
 
 		try (InputStream inputStream = getStream(fileName)) {
+			return fromStream(inputStream, categoryFilter);
+		}
+	}
+
+	public static XMLSourceSinkParser fromFile(File file, ICategoryFilter categoryFilter) throws IOException {
+		logger.info(String.format("Loading sources and sinks from %s...", file.getAbsolutePath()));
+		try (InputStream is = new FileInputStream(file)) {
+			verifyXML(is);
+		}
+
+		try (InputStream inputStream = new FileInputStream(file)) {
 			return fromStream(inputStream, categoryFilter);
 		}
 	}

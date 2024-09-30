@@ -7,7 +7,7 @@ public class BytecodeTests extends soot.jimple.infoflow.test.junit.BytecodeTests
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

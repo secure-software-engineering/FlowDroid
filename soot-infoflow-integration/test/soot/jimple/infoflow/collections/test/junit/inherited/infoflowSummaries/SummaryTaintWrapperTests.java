@@ -28,7 +28,7 @@ public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSu
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 
-		Infoflow inf = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		Infoflow inf = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		inf.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		return inf;
 	}

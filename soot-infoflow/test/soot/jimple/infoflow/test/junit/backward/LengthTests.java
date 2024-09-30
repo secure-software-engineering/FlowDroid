@@ -7,7 +7,7 @@ public class LengthTests extends soot.jimple.infoflow.test.junit.LengthTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

@@ -7,7 +7,7 @@ public class HeapTests extends soot.jimple.infoflow.test.junit.HeapTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

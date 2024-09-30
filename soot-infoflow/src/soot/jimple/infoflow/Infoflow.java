@@ -9,6 +9,8 @@
  ******************************************************************************/
 package soot.jimple.infoflow;
 
+import java.io.File;
+
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.SolverConfiguration;
@@ -64,7 +66,7 @@ public class Infoflow extends AbstractInfoflow {
 	 *                        false if Soot shall pick the appropriate platform
 	 *                        version
 	 */
-	public Infoflow(String androidPath, boolean forceAndroidJar) {
+	public Infoflow(File androidPath, boolean forceAndroidJar) {
 		super(null, androidPath, forceAndroidJar);
 	}
 
@@ -81,7 +83,7 @@ public class Infoflow extends AbstractInfoflow {
 	 * @param icfgFactory     The interprocedural CFG to be used by the
 	 *                        InfoFlowProblem
 	 */
-	public Infoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
+	public Infoflow(File androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
 		super(icfgFactory, androidPath, forceAndroidJar);
 		setNativeCallHandler(new DefaultNativeCallHandler());
 	}
@@ -101,8 +103,8 @@ public class Infoflow extends AbstractInfoflow {
 		InfoflowManager aliasManager = null;
 		switch (getConfig().getAliasingAlgorithm()) {
 		case FlowSensitive:
-			aliasManager = new InfoflowManager(config, backSolver, new BackwardsInfoflowCFG(iCfg), sourcesSinks, taintWrapper,
-					hierarchy, manager);
+			aliasManager = new InfoflowManager(config, backSolver, new BackwardsInfoflowCFG(iCfg), sourcesSinks,
+					taintWrapper, hierarchy, manager);
 			backProblem = new AliasProblem(aliasManager);
 			// We need to create the right data flow solver
 			SolverConfiguration solverConfig = config.getSolverConfiguration();

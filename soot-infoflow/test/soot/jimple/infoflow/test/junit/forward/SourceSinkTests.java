@@ -7,7 +7,7 @@ public class SourceSinkTests extends soot.jimple.infoflow.test.junit.SourceSinkT
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

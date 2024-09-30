@@ -47,9 +47,9 @@ public class RIFLSourceSinkDefinitionProvider implements ISourceSinkDefinitionPr
 	 * @throws SAXException Thrown in the case of an XML error while parsing the
 	 *                      RIFL file
 	 */
-	public RIFLSourceSinkDefinitionProvider(String file) throws SAXException, IOException {
+	public RIFLSourceSinkDefinitionProvider(File file) throws SAXException, IOException {
 		RIFLParser parser = new RIFLParser();
-		RIFLDocument doc = parser.parseRIFL(new File(file));
+		RIFLDocument doc = parser.parseRIFL(file);
 
 		// Collect the sources and sinks
 		for (Assignable assign : doc.getInterfaceSpec().getSourcesSinks()) {

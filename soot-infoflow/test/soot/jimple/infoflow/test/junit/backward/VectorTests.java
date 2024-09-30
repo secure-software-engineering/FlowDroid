@@ -7,7 +7,7 @@ public class VectorTests extends soot.jimple.infoflow.test.junit.VectorTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

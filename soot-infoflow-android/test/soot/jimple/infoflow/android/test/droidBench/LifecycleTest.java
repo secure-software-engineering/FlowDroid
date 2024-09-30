@@ -13,7 +13,6 @@ package soot.jimple.infoflow.android.test.droidBench;
 import java.io.IOException;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -33,9 +32,11 @@ public abstract class LifecycleTest extends JUnitTests {
 	@Test(timeout = 300000)
 	public void runTestActivityEventSequence2() throws IOException, XmlPullParserException {
 		// Quote from Steven's Thesis:
-		// "This test case was contributed by a different research group. We were unable to reproduce the data flow
-		//  claimed in the test case's documentation during our tests with the app. We therefore do not count a false
-		//  positive even though FLOWDROID does not find the proclaimed leak."
+		// "This test case was contributed by a different research group. We were unable
+		// to reproduce the data flow
+		// claimed in the test case's documentation during our tests with the app. We
+		// therefore do not count a false
+		// positive even though FLOWDROID does not find the proclaimed leak."
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.size());
@@ -132,7 +133,6 @@ public abstract class LifecycleTest extends JUnitTests {
 		Assert.assertEquals(1, res.size());
 	}
 
-	
 	@Test(timeout = 300000)
 	public void runTestBroadcastReceiverLifecycle2() throws IOException, XmlPullParserException {
 		int expected = 1;
@@ -168,7 +168,7 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	 // not supported yet
+	// not supported yet
 	public void runTestFragmentLifecycle2() throws IOException, XmlPullParserException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
@@ -179,7 +179,7 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	
+
 	public void runTestServiceEventSequence1() throws IOException, XmlPullParserException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)

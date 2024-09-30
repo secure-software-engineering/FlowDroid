@@ -1,5 +1,6 @@
 package soot.jimple.infoflow;
 
+import java.io.File;
 import java.util.Set;
 
 import soot.SootMethod;
@@ -49,7 +50,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	 *                        false if Soot shall pick the appropriate platform
 	 *                        version
 	 */
-	public BackwardsInfoflow(String androidPath, boolean forceAndroidJar) {
+	public BackwardsInfoflow(File androidPath, boolean forceAndroidJar) {
 		super(null, androidPath, forceAndroidJar);
 		config.setDataFlowDirection(DataFlowDirection.Backwards);
 		setNativeCallHandler(new BackwardNativeCallHandler());
@@ -68,7 +69,7 @@ public class BackwardsInfoflow extends AbstractInfoflow {
 	 * @param icfgFactory     The interprocedural CFG to be used by the
 	 *                        InfoFlowProblem
 	 */
-	public BackwardsInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
+	public BackwardsInfoflow(File androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory) {
 		super(icfgFactory, androidPath, forceAndroidJar);
 		config.setDataFlowDirection(DataFlowDirection.Backwards);
 		setNativeCallHandler(new BackwardNativeCallHandler());

@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.integration.test.junit.river;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,8 +27,8 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
 	@Override
 	protected ITaintPropagationWrapper getTaintWrapper() {
 		try {
-			return TaintWrapperFactory
-					.createTaintWrapper(Collections.singleton("../soot-infoflow-summaries/summariesManual"));
+			return TaintWrapperFactory.createTaintWrapperFromFiles(Collections
+					.singletonList(new File(getIntegrationRoot(), "../soot-infoflow-summaries/summariesManual")));
 		} catch (IOException | XMLStreamException e) {
 			throw new RuntimeException("Could not initialized Taintwrapper:");
 		}
@@ -38,9 +39,10 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
 		// The test apk has two java.io.OutputStream: void write(byte[]) sinks.
 		// One is located in the KeepFlow activity and is a stream to the internet.
 		// The other one is in the DiscardFlow activity and is a ByteArrayOutputStream.
-		SetupApplication app = initApplication("testAPKs/ConditionalFlowTest.apk");
+		final File rootDir = getIntegrationRoot();
+		SetupApplication app = initApplication(new File(rootDir, "testAPKs/ConditionalFlowTest.apk"));
 		XMLSourceSinkParser parser = XMLSourceSinkParser
-				.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+				.fromFile(new File(rootDir, "./build/classes/res/AndroidRiverSourcesAndSinks.xml"));
 		InfoflowResults results = app.runInfoflow(parser);
 		Assert.assertEquals(2, results.size());
 
@@ -70,9 +72,10 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
 		// FileWriter fw = new FileWriter(f);
 		// BufferedWriter bw = new BufferedWriter(fw);
 		// fw.append(tainted);
-		SetupApplication app = initApplication("testAPKs/ExternalFileWithNativeName.apk");
+		final File rootDir = getIntegrationRoot();
+		SetupApplication app = initApplication(new File(rootDir, "testAPKs/ExternalFileWithNativeName.apk"));
 		XMLSourceSinkParser parser = XMLSourceSinkParser
-				.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+				.fromFile(new File(rootDir, "./build/classes/res/AndroidRiverSourcesAndSinks.xml"));
 		InfoflowResults results = app.runInfoflow(parser);
 		Assert.assertEquals(1, results.size());
 	}
@@ -81,10 +84,11 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
 	public void printWriterTestApk() throws IOException {
 		// Also see OutputStreamTestCode#testPrintWriter3 but this time in Android
 		// because Soot generates different jimple for Android and Java.
-		SetupApplication app = initApplication("testAPKs/PrintWriterTest.apk");
+		final File rootDir = getIntegrationRoot();
+		SetupApplication app = initApplication(new File(rootDir, "testAPKs/PrintWriterTest.apk"));
 		app.getConfig().setWriteOutputFiles(true);
 		XMLSourceSinkParser parser = XMLSourceSinkParser
-				.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+				.fromFile(new File(rootDir, "./build/classes/res/AndroidRiverSourcesAndSinks.xml"));
 		InfoflowResults results = app.runInfoflow(parser);
 		Assert.assertEquals(1, results.size());
 	}
@@ -92,9 +96,10 @@ public class AndroidRiverTests extends RiverBaseJUnitTests {
 	@Test
 	public void externalCacheDirTest() throws IOException {
 		// Test flow with getExternalCacheDir wrapped in another File constructor
-		SetupApplication app = initApplication("testAPKs/ExternalCacheDirTest.apk");
+		final File rootDir = getIntegrationRoot();
+		SetupApplication app = initApplication(new File(rootDir, "testAPKs/ExternalCacheDirTest.apk"));
 		XMLSourceSinkParser parser = XMLSourceSinkParser
-				.fromFile("./build/classes/res/AndroidRiverSourcesAndSinks.xml");
+				.fromFile(new File(rootDir, "./build/classes/res/AndroidRiverSourcesAndSinks.xml"));
 		InfoflowResults results = app.runInfoflow(parser);
 		Assert.assertEquals(1, results.size());
 	}

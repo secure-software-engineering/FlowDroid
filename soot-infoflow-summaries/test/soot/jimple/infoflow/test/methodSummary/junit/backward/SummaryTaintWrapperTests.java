@@ -4,8 +4,8 @@ import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.BackwardsInfoflow;
 
 public class SummaryTaintWrapperTests extends soot.jimple.infoflow.test.methodSummary.junit.SummaryTaintWrapperTests {
-    @Override
-    protected AbstractInfoflow createInfoflowInstance() {
-        return new BackwardsInfoflow("", false, null);
-    }
+	@Override
+	protected AbstractInfoflow createInfoflowInstance() {
+		return new BackwardsInfoflow(null, false, null);
+	}
 }

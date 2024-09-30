@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -272,13 +273,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Creates a new instance of the {@link SetupApplication} class
 	 * 
-	 * @param androidJar      The path to the Android SDK's "platforms" directory if
-	 *                        Soot shall automatically select the JAR file to be
-	 *                        used or the path to a single JAR file to force one.
-	 * @param apkFileLocation The path to the APK file to be analyzed
+	 * @param androidJar The path to the Android SDK's "platforms" directory if Soot
+	 *                   shall automatically select the JAR file to be used or the
+	 *                   path to a single JAR file to force one.
+	 * @param apkFile    The APK file to be analyzed
 	 */
-	public SetupApplication(String androidJar, String apkFileLocation) {
-		this(getConfig(androidJar, apkFileLocation));
+	public SetupApplication(File androidJar, File apkFile) {
+		this(getConfig(androidJar, apkFile));
 	}
 
 	/**
@@ -291,7 +292,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param ipcManager      The IPC manager to use for modeling inter-component
 	 *                        and inter-application data flows
 	 */
-	public SetupApplication(String androidJar, String apkFileLocation, IIPCManager ipcManager) {
+	public SetupApplication(File androidJar, File apkFileLocation, IIPCManager ipcManager) {
 		this(getConfig(androidJar, apkFileLocation), ipcManager);
 	}
 
@@ -304,7 +305,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param apkFileLocation The path to the APK file to be analyzed
 	 * @return The new configuration
 	 */
-	private static InfoflowAndroidConfiguration getConfig(String androidJar, String apkFileLocation) {
+	private static InfoflowAndroidConfiguration getConfig(File androidJar, File apkFileLocation) {
 		InfoflowAndroidConfiguration config = new InfoflowAndroidConfiguration();
 		config.getAnalysisFileConfig().setTargetAPKFile(apkFileLocation);
 		config.getAnalysisFileConfig().setAndroidPlatformDir(androidJar);
@@ -325,11 +326,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// We can use either a specific platform JAR file or automatically
 		// select the right one
 		if (config.getSootIntegrationMode() == SootIntegrationMode.CreateNewInstance) {
-			String platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
-			if (platformDir == null || platformDir.isEmpty())
+			File platformDir = config.getAnalysisFileConfig().getAndroidPlatformDir();
+			if (platformDir == null || !platformDir.exists())
 				throw new RuntimeException("Android platform directory not specified");
-			File f = new File(platformDir);
-			this.forceAndroidJar = f.isFile();
+			this.forceAndroidJar = platformDir.isFile();
 		} else {
 			this.forceAndroidJar = false;
 		}
@@ -472,7 +472,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 *                                be read.
 	 */
 	protected void parseAppResources() throws IOException, XmlPullParserException {
-		final File targetAPK = new File(config.getAnalysisFileConfig().getTargetAPKFile());
+		final File targetAPK = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (!targetAPK.exists())
 			throw new RuntimeException(
 					String.format("Target APK file %s does not exist", targetAPK.getCanonicalPath()));
@@ -480,7 +480,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Parse the resource file
 		long beforeARSC = System.nanoTime();
 		this.resources = new ARSCFileParser();
-		this.resources.parse(targetAPK.getAbsolutePath());
+		this.resources.parse(targetAPK);
 		logger.info("ARSC file parsing took " + (System.nanoTime() - beforeARSC) / 1E9 + " seconds");
 
 		// To look for callbacks, we need to start somewhere. We use the Android
@@ -1211,11 +1211,12 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @return The classpath to be used for the taint analysis
 	 */
 	private String getClasspath() {
-		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
-		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
+		final File androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
+		final File apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		final String additionalClasspath = config.getAnalysisFileConfig().getAdditionalClasspath();
 
-		String classpath = forceAndroidJar ? androidJar : Scene.v().getAndroidJarPath(androidJar, apkFileLocation);
+		String classpath = forceAndroidJar ? androidJar.getAbsolutePath()
+				: Scene.v().getAndroidJarPath(androidJar.getAbsolutePath(), apkFileLocation.getAbsolutePath());
 		if (additionalClasspath != null && !additionalClasspath.isEmpty())
 			classpath += File.pathSeparator + additionalClasspath;
 		logger.debug("soot classpath: " + classpath);
@@ -1229,8 +1230,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	private void initializeSoot() {
 		logger.info("Initializing Soot...");
 
-		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
-		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
+		final File androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
+		final File apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 
 		// Clean up any old Soot instance we may have
 		G.reset();
@@ -1242,11 +1243,11 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		else
 			Options.v().set_output_format(Options.output_format_none);
 		Options.v().set_whole_program(true);
-		Options.v().set_process_dir(Collections.singletonList(apkFileLocation));
+		Options.v().set_process_dir(Collections.singletonList(apkFileLocation.getAbsolutePath()));
 		if (forceAndroidJar)
-			Options.v().set_force_android_jar(androidJar);
+			Options.v().set_force_android_jar(androidJar.getAbsolutePath());
 		else
-			Options.v().set_android_jars(androidJar);
+			Options.v().set_android_jars(androidJar.getAbsolutePath());
 		Options.v().set_src_prec(Options.src_prec_apk_class_jimple);
 		Options.v().set_keep_offset(false);
 		Options.v().set_keep_line_number(config.getEnableLineNumbers());
@@ -1357,7 +1358,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		 *                                    point creator that are not directly entry
 		 *                                    ypoints on their own
 		 */
-		public InPlaceInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
+		public InPlaceInfoflow(File androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
 				Collection<SootMethod> additionalEntryPointMethods) {
 			super(androidPath, forceAndroidJar, icfgFactory);
 			this.additionalEntryPointMethods = additionalEntryPointMethods;
@@ -1409,7 +1410,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		 *                                    point creator that are not directly entry
 		 *                                    ypoints on their own
 		 */
-		public InPlaceBackwardsInfoflow(String androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
+		public InPlaceBackwardsInfoflow(File androidPath, boolean forceAndroidJar, BiDirICFGFactory icfgFactory,
 				Collection<SootMethod> additionalEntryPointMethods) {
 			super(androidPath, forceAndroidJar, icfgFactory);
 			this.additionalEntryPointMethods = additionalEntryPointMethods;
@@ -1511,8 +1512,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	public InfoflowResults runInfoflow(String sourceSinkFile) throws IOException, XmlPullParserException {
-		if (sourceSinkFile != null && !sourceSinkFile.isEmpty())
+	public InfoflowResults runInfoflow(File sourceSinkFile) throws IOException, XmlPullParserException {
+		if (sourceSinkFile != null && sourceSinkFile.exists())
 			config.getAnalysisFileConfig().setSourceSinkFile(sourceSinkFile);
 
 		return runInfoflow();
@@ -1529,20 +1530,20 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	public InfoflowResults runInfoflow() throws IOException, XmlPullParserException {
 		// If we don't have a source/sink file by now, we cannot run the data
 		// flow analysis
-		String sourceSinkFile = config.getAnalysisFileConfig().getSourceSinkFile();
-		if (sourceSinkFile == null || sourceSinkFile.isEmpty())
+		File sourceSinkFile = config.getAnalysisFileConfig().getSourceSinkFile();
+		if (sourceSinkFile == null || !sourceSinkFile.exists())
 			throw new RuntimeException("No source/sink file specified for the data flow analysis");
-		String fileExtension = sourceSinkFile.substring(sourceSinkFile.lastIndexOf("."));
+		String fileExtension = FilenameUtils.getExtension(sourceSinkFile.getName());
 		fileExtension = fileExtension.toLowerCase();
 
 		ISourceSinkDefinitionProvider parser = null;
 		try {
-			if (fileExtension.equals(".xml")) {
+			if (fileExtension.equals("xml")) {
 				parser = XMLSourceSinkParser.fromFile(sourceSinkFile,
 						new ConfigurationBasedCategoryFilter(config.getSourceSinkConfig()));
-			} else if (fileExtension.equals(".txt"))
+			} else if (fileExtension.equals("txt"))
 				parser = PermissionMethodParser.fromFile(sourceSinkFile);
-			else if (fileExtension.equals(".rifl"))
+			else if (fileExtension.equals("rifl"))
 				parser = new RIFLSourceSinkDefinitionProvider(sourceSinkFile);
 			else
 				throw new UnsupportedSourceSinkFormatException("The Inputfile isn't a .txt or .xml file.");
@@ -1654,7 +1655,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 		final Collection<? extends ISourceSinkDefinition> sources = getSources();
 		final Collection<? extends ISourceSinkDefinition> sinks = getSinks();
-		final String apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
+		final File apkFileLocation = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (config.getOneComponentAtATime())
 			logger.info("Running data flow analysis on {} (component {}/{}: {}) with {} sources and {} sinks...",
 					apkFileLocation, (entrypoints.size() - numEntryPoints), entrypoints.size(), entrypoint,
@@ -1834,7 +1835,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @return The data flow engine
 	 */
 	protected IInPlaceInfoflow createInfoflowInternal(Collection<SootMethod> lifecycleMethods) {
-		final String androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
+		final File androidJar = config.getAnalysisFileConfig().getAndroidPlatformDir();
 		if (config.getDataFlowDirection() == InfoflowConfiguration.DataFlowDirection.Backwards)
 			return new InPlaceBackwardsInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);
 		return new InPlaceInfoflow(androidJar, forceAndroidJar, cfgFactory, lifecycleMethods);

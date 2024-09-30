@@ -7,7 +7,7 @@ public class ConstantTests extends soot.jimple.infoflow.test.junit.ConstantTests
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

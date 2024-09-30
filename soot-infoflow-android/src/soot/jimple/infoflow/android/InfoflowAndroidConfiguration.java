@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.android;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,9 +24,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	 */
 	public static class AnalysisFileConfiguration {
 
-		private String targetAPKFile = "";
-		private String sourceSinkFile = "";
-		private String androidPlatformDir = "";
+		private File targetAPKFile;
+		private File sourceSinkFile;
+		private File androidPlatformDir;
 		private String additionalClasspath = "";
 		private String outputFile = "";
 
@@ -49,8 +50,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return True if this configuration is complete and valid, otherwise false
 		 */
 		public boolean validate() {
-			return targetAPKFile != null && !targetAPKFile.isEmpty() && sourceSinkFile != null
-					&& !sourceSinkFile.isEmpty() && androidPlatformDir != null && !androidPlatformDir.isEmpty();
+			return targetAPKFile != null && targetAPKFile.exists() && sourceSinkFile != null && sourceSinkFile.exists()
+					&& androidPlatformDir != null && androidPlatformDir.exists();
 		}
 
 		/**
@@ -59,7 +60,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @return The target APK file on which the data flow analysis shall be
 		 *         conducted
 		 */
-		public String getTargetAPKFile() {
+		public File getTargetAPKFile() {
 			return targetAPKFile;
 		}
 
@@ -69,7 +70,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @param targetAPKFile The target APK file on which the data flow analysis
 		 *                      shall be conducted
 		 */
-		public void setTargetAPKFile(String targetAPKFile) {
+		public void setTargetAPKFile(File targetAPKFile) {
 			this.targetAPKFile = targetAPKFile;
 		}
 
@@ -78,7 +79,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * 
 		 * @return The directory in which the Android platform JARs are located
 		 */
-		public String getAndroidPlatformDir() {
+		public File getAndroidPlatformDir() {
 			return androidPlatformDir;
 		}
 
@@ -88,7 +89,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * @param androidPlatformDir The directory in which the Android platform JARs
 		 *                           are located
 		 */
-		public void setAndroidPlatformDir(String androidPlatformDir) {
+		public void setAndroidPlatformDir(File androidPlatformDir) {
 			this.androidPlatformDir = androidPlatformDir;
 		}
 
@@ -97,7 +98,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * 
 		 * @return The source and sink file
 		 */
-		public String getSourceSinkFile() {
+		public File getSourceSinkFile() {
 			return sourceSinkFile;
 		}
 
@@ -106,7 +107,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		 * 
 		 * @param sourceSinkFile The source and sink file
 		 */
-		public void setSourceSinkFile(String sourceSinkFile) {
+		public void setSourceSinkFile(File sourceSinkFile) {
 			this.sourceSinkFile = sourceSinkFile;
 		}
 

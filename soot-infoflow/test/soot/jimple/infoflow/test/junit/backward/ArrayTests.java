@@ -7,7 +7,7 @@ public class ArrayTests extends soot.jimple.infoflow.test.junit.ArrayTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

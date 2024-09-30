@@ -1,13 +1,14 @@
 package soot.jimple.infoflow.android.test.sourceToSinks;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.SetupApplication;
+import soot.jimple.infoflow.android.test.BaseJUnitTests;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 
@@ -15,31 +16,30 @@ import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
  * provides methods for the test cases to run the analyze
  *
  */
-public class JUnitTests {
+public class JUnitTests extends BaseJUnitTests {
 
 	/**
 	 * Analyzes the given APK file for data flows with a given xml file
 	 * 
-	 * @param apkFileName The full path and file name of the APK file to analyze
-	 * @param xmlFileName The full path and file name of the xml file where sources
-	 *                    and sinks are defined
+	 * @param apkFile The full path and file name of the APK file to analyze
+	 * @param xmlFile The full path and file name of the xml file where sources and
+	 *                sinks are defined
 	 * @return The data leaks found in the given APK file
 	 * @throws IOException            Thrown if the given APK file or any other
 	 *                                required file could not be found
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	public InfoflowResults analyzeAPKFile(String apkFileName, String xmlFileName)
-			throws IOException, XmlPullParserException {
-		return analyzeAPKFile(apkFileName, xmlFileName, false, false, false);
+	public InfoflowResults analyzeAPKFile(File apkFile, File xmlFile) throws IOException, XmlPullParserException {
+		return analyzeAPKFile(apkFile, xmlFile, false, false, false);
 	}
 
 	/**
 	 * Analyzes the given APK file for data flows with a given xml file
 	 * 
-	 * @param apkFileName         The full path and file name of the APK file to
+	 * @param apkFile             The full path and file name of the APK file to
 	 *                            analyze
-	 * @param xmlFileName         The full path and file name of the xml file where
+	 * @param xmlFile             The full path and file name of the xml file where
 	 *                            sources and sinks are defined
 	 * @param enableImplicitFlows True if implicit flows shall be tracked, otherwise
 	 *                            false
@@ -49,7 +49,7 @@ public class JUnitTests {
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	public InfoflowResults analyzeAPKFile(String apkFileName, String xmlFileName, boolean enableImplicitFlows,
+	public InfoflowResults analyzeAPKFile(File apkFile, File xmlFile, boolean enableImplicitFlows,
 			boolean enableStaticFields, boolean flowSensitiveAliasing) throws IOException, XmlPullParserException {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
@@ -58,7 +58,7 @@ public class JUnitTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		SetupApplication setupApplication = new SetupApplication(androidJars, apkFileName);
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 		setupApplication.setTaintWrapper(EasyTaintWrapper.getDefault());
 		setupApplication.getConfig().setImplicitFlowMode(
 				enableImplicitFlows ? ImplicitFlowMode.AllImplicitFlows : ImplicitFlowMode.NoImplicitFlows);
@@ -68,6 +68,6 @@ public class JUnitTests {
 
 //		setupApplication.getConfig().setDataFlowDirection(InfoflowConfiguration.DataFlowDirection.Backwards);
 
-		return setupApplication.runInfoflow(xmlFileName);
+		return setupApplication.runInfoflow(xmlFile);
 	}
 }

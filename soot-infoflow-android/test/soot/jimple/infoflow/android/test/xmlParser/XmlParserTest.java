@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.android.test.xmlParser;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,11 +11,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.xmlpull.v1.XmlPullParserException;
 
-import soot.SootClass;
-import soot.SootMethod;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
+import soot.jimple.infoflow.android.test.BaseJUnitTests;
 import soot.jimple.infoflow.river.AdditionalFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
@@ -27,7 +27,7 @@ import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
  * @author Jannik Juergens
  *
  */
-public class XmlParserTest {
+public class XmlParserTest extends BaseJUnitTests {
 
 	/**
 	 * Compares the new and the old Parser for different xml files
@@ -36,7 +36,7 @@ public class XmlParserTest {
 	 * @param oldXmlFile
 	 * @throws IOException
 	 */
-	private void compareParserResults(String xmlFile, String oldXmlFile) throws IOException {
+	private void compareParserResults(File xmlFile, File oldXmlFile) throws IOException {
 		XMLSourceSinkParser newParser = XMLSourceSinkParser.fromFile(xmlFile);
 		PermissionMethodParser oldParser = PermissionMethodParser.fromFile(oldXmlFile);
 
@@ -67,7 +67,7 @@ public class XmlParserTest {
 	 */
 	@Test(expected = IOException.class)
 	public void emptyXmlTest() throws IOException {
-		String xmlFile = "testXmlParser/empty.xml";
+		File xmlFile = new File(getInfoflowAndroidRoot(), "testXmlParser/empty.xml");
 		compareParserResults(xmlFile, xmlFile);
 	}
 
@@ -78,8 +78,9 @@ public class XmlParserTest {
 	 */
 	@Test
 	public void completeXmlTest() throws IOException {
-		String xmlFile = "testXmlParser/complete.xml";
-		String oldXmlFile = "testXmlParser/completeOld.txt";
+		File rootDir = getInfoflowAndroidRoot();
+		File xmlFile = new File(rootDir, "testXmlParser/complete.xml");
+		File oldXmlFile = new File(rootDir, "testXmlParser/completeOld.txt");
 		compareParserResults(xmlFile, oldXmlFile);
 	}
 
@@ -90,7 +91,7 @@ public class XmlParserTest {
 	 */
 	@Test(expected = IOException.class)
 	public void emptyTxtTest() throws IOException {
-		String xmlFile = "testXmlParser/empty.txt";
+		File xmlFile = new File(getInfoflowAndroidRoot(), "testXmlParser/empty.txt");
 		compareParserResults(xmlFile, xmlFile);
 	}
 
@@ -101,8 +102,9 @@ public class XmlParserTest {
 	 */
 	@Test
 	public void completeTxtTest() throws IOException {
-		String xmlFile = "testXmlParser/complete.txt";
-		String oldXmlFile = "testXmlParser/completeOld.txt";
+		File rootDir = getInfoflowAndroidRoot();
+		File xmlFile = new File(rootDir, "testXmlParser/complete.txt");
+		File oldXmlFile = new File(rootDir, "testXmlParser/completeOld.txt");
 		compareParserResults(xmlFile, oldXmlFile);
 	}
 
@@ -113,8 +115,9 @@ public class XmlParserTest {
 	 */
 	@Test
 	public void missingPartsXmlTest() throws IOException {
-		String xmlFile = "testXmlParser/missingParts.xml";
-		String oldXmlFile = "testXmlParser/missingPartsOld.txt";
+		File rootDir = getInfoflowAndroidRoot();
+		File xmlFile = new File(rootDir, "testXmlParser/missingParts.xml");
+		File oldXmlFile = new File(rootDir, "testXmlParser/missingPartsOld.txt");
 		compareParserResults(xmlFile, oldXmlFile);
 	}
 
@@ -125,8 +128,9 @@ public class XmlParserTest {
 	 */
 	@Test(expected = IOException.class)
 	public void notValidXmlTest() throws IOException {
-		String xmlFile = "testXmlParser/notValid.xml";
-		String oldXmlFile = "testXmlParser/completeOld.txt";
+		File rootDir = getInfoflowAndroidRoot();
+		File xmlFile = new File(rootDir, "testXmlParser/notValid.xml");
+		File oldXmlFile = new File(rootDir, "testXmlParser/completeOld.txt");
 		compareParserResults(xmlFile, oldXmlFile);
 	}
 
@@ -139,7 +143,7 @@ public class XmlParserTest {
 	@Test
 	public void verifyParserResultTest() throws IOException, XmlPullParserException {
 		// parsing data from xml file
-		String xmlFile = "testXmlParser/complete.xml";
+		File xmlFile = new File(getInfoflowAndroidRoot(), "testXmlParser/complete.xml");
 		XMLSourceSinkParser newParser = XMLSourceSinkParser.fromFile(xmlFile);
 		Set<? extends ISourceSinkDefinition> sourceListParser = newParser.getSources();
 		Set<? extends ISourceSinkDefinition> sinkListParser = newParser.getSinks();
@@ -190,7 +194,7 @@ public class XmlParserTest {
 	 */
 	@Test
 	public void additionalFlowsXMLTest() throws IOException {
-		String xmlFile = "testXmlParser/additionalFlows.xml";
+		File xmlFile = new File(getInfoflowAndroidRoot(), "testXmlParser/additionalFlows.xml");
 		XMLSourceSinkParser parser = XMLSourceSinkParser.fromFile(xmlFile);
 		Set<ISourceSinkDefinition> sinkSet = parser.getSinks();
 
@@ -214,68 +218,68 @@ public class XmlParserTest {
 
 			Set<SourceSinkCondition> conds = sink.getConditions();
 			switch (methodSig) {
-				case stringWriteSig: {
-					Assert.assertEquals(1, conds.size());
-					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
-					Set<String> mRefs = cond.getSignaturesOnPath();
+			case stringWriteSig: {
+				Assert.assertEquals(1, conds.size());
+				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				Set<String> mRefs = cond.getSignaturesOnPath();
+				Assert.assertEquals(1, mRefs.size());
+				Assert.assertTrue(mRefs.contains(openConSig));
+				Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+				Assert.assertEquals(0, cond.getExcludedClassNames().size());
+				foundStrSig = true;
+				break;
+			}
+			case stringOffsetWriteSig: {
+				Assert.assertEquals(1, conds.size());
+				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				Assert.assertEquals(0, cond.getSignaturesOnPath().size());
+				Set<String> cRefs = cond.getClassNamesOnPath();
+				Assert.assertEquals(1, cRefs.size());
+				Assert.assertTrue(cRefs.contains("java.lang.String"));
+				Assert.assertEquals(0, cond.getExcludedClassNames().size());
+				foundStrOffsetSig = true;
+				break;
+			}
+			case intWriteSig: {
+				Assert.assertEquals(1, conds.size());
+				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				Set<String> mRefs = cond.getSignaturesOnPath();
+				Assert.assertEquals(2, mRefs.size());
+				Assert.assertTrue(mRefs.contains(servletSig));
+				Assert.assertTrue(mRefs.contains(httpSrvSig));
+				Assert.assertEquals(0, cond.getClassNamesOnPath().size());
+				Assert.assertEquals(0, cond.getExcludedClassNames().size());
+				foundIntSig = true;
+				break;
+			}
+			case byteWriteSig: {
+				Assert.assertEquals(2, conds.size());
+				boolean foundServlet = false, foundHttpServlet = false;
+				for (SourceSinkCondition cond : conds) {
+					Set<String> mRefs = ((AdditionalFlowCondition) cond).getSignaturesOnPath();
 					Assert.assertEquals(1, mRefs.size());
-					Assert.assertTrue(mRefs.contains(openConSig));
-					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
-					Assert.assertEquals(0, cond.getExcludedClassNames().size());
-					foundStrSig = true;
-					break;
-				}
-				case stringOffsetWriteSig: {
-					Assert.assertEquals(1, conds.size());
-					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
-					Assert.assertEquals(0, cond.getSignaturesOnPath().size());
-					Set<String> cRefs = cond.getClassNamesOnPath();
-					Assert.assertEquals(1, cRefs.size());
-					Assert.assertTrue(cRefs.contains("java.lang.String"));
-					Assert.assertEquals(0, cond.getExcludedClassNames().size());
-					foundStrOffsetSig = true;
-					break;
-				}
-				case intWriteSig: {
-					Assert.assertEquals(1, conds.size());
-					AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
-					Set<String> mRefs = cond.getSignaturesOnPath();
-					Assert.assertEquals(2, mRefs.size());
-					Assert.assertTrue(mRefs.contains(servletSig));
-					Assert.assertTrue(mRefs.contains(httpSrvSig));
-					Assert.assertEquals(0, cond.getClassNamesOnPath().size());
-					Assert.assertEquals(0, cond.getExcludedClassNames().size());
-					foundIntSig = true;
-					break;
-				}
-				case byteWriteSig: {
-					Assert.assertEquals(2, conds.size());
-					boolean foundServlet = false, foundHttpServlet = false;
-					for (SourceSinkCondition cond : conds) {
-						Set<String> mRefs = ((AdditionalFlowCondition) cond).getSignaturesOnPath();
-						Assert.assertEquals(1, mRefs.size());
-						Assert.assertEquals(0, ((AdditionalFlowCondition) cond).getClassNamesOnPath().size());
+					Assert.assertEquals(0, ((AdditionalFlowCondition) cond).getClassNamesOnPath().size());
 
-						if (mRefs.contains(servletSig)) {
-							foundServlet = true;
-							Assert.assertEquals(2, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
-							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
-									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.Object")));
-						} else if (mRefs.contains(httpSrvSig)) {
-							foundHttpServlet = true;
-							Assert.assertEquals(1, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
-							Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames()
-									.stream().allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.String")));
-						} else {
-							Assert.fail();
-						}
+					if (mRefs.contains(servletSig)) {
+						foundServlet = true;
+						Assert.assertEquals(2, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+						Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames().stream()
+								.allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.Object")));
+					} else if (mRefs.contains(httpSrvSig)) {
+						foundHttpServlet = true;
+						Assert.assertEquals(1, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
+						Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames().stream()
+								.allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.String")));
+					} else {
+						Assert.fail();
 					}
-					Assert.assertTrue(foundServlet && foundHttpServlet);
-					foundByteSig = true;
-					break;
 				}
-				default:
-					Assert.fail();
+				Assert.assertTrue(foundServlet && foundHttpServlet);
+				foundByteSig = true;
+				break;
+			}
+			default:
+				Assert.fail();
 			}
 		}
 		Assert.assertTrue(foundStrSig && foundStrOffsetSig && foundIntSig && foundByteSig);

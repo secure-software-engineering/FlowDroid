@@ -7,7 +7,7 @@ public class ListTests extends soot.jimple.infoflow.test.junit.ListTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

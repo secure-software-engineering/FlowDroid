@@ -7,7 +7,7 @@ public class ImplicitFlowTests extends soot.jimple.infoflow.test.junit.ImplicitF
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

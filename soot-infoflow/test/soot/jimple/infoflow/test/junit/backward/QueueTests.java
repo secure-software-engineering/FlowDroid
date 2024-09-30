@@ -7,7 +7,7 @@ public class QueueTests extends soot.jimple.infoflow.test.junit.QueueTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

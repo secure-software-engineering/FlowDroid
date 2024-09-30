@@ -68,7 +68,8 @@ public abstract class FlowDroidTests {
 	}
 
 	public static void commonSetup() throws IOException {
-		File testSrc = new File("build" + File.separator + "testclasses");
+		File rootDir = getIntegrationRoot();
+		File testSrc = new File(new File(rootDir, "build"), "testclasses");
 		if (!testSrc.exists()) {
 			Assert.fail("Test aborted - none of the test sources are available");
 		}
@@ -148,7 +149,7 @@ public abstract class FlowDroidTests {
 	protected abstract void setConfiguration(InfoflowConfiguration config);
 
 	protected IInfoflow initInfoflow() {
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		result.setThrowExceptions(true);
 		result.setTaintWrapper(getTaintWrapper());
@@ -156,7 +157,7 @@ public abstract class FlowDroidTests {
 		return result;
 	}
 
-	protected SetupApplication initApplication(String fileName) {
+	protected SetupApplication initApplication(File apkFile) {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
 			androidJars = System.getProperty("ANDROID_JARS");
@@ -164,7 +165,7 @@ public abstract class FlowDroidTests {
 			throw new RuntimeException("Android JAR dir not set");
 		System.out.println("Loading Android.jar files from " + androidJars);
 
-		SetupApplication setupApplication = new SetupApplication(androidJars, fileName);
+		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 		setupApplication.getConfig().setPerformConstantPropagation(true);
 		setupApplication.getConfig().setMergeDexFiles(true);
 		setupApplication.setTaintWrapper(getTaintWrapper());
@@ -189,4 +190,19 @@ public abstract class FlowDroidTests {
 		}
 		return false;
 	}
+
+	/**
+	 * Gets the root in which the FlowDroid main project is located
+	 * 
+	 * @return The directory in which the FlowDroid main project is located
+	 */
+	public static File getIntegrationRoot() {
+		File testRoot = new File(".");
+		if (!new File(testRoot, "src").exists())
+			testRoot = new File(testRoot, "soot-infoflow-integration");
+		if (!new File(testRoot, "src").exists())
+			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
+		return testRoot;
+	}
+
 }

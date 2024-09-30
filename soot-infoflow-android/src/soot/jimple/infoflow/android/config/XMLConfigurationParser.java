@@ -152,11 +152,11 @@ public class XMLConfigurationParser {
 					AnalysisFileConfiguration fileConfig = config.getAnalysisFileConfig();
 
 					if (currentElement.equals(XMLConstants.TAG_TARGET_APK_FILE))
-						fileConfig.setTargetAPKFile(data);
+						fileConfig.setTargetAPKFile(new File(data));
 					else if (currentElement.equals(XMLConstants.TAG_SOURCE_SINK_FILE))
-						fileConfig.setSourceSinkFile(data);
+						fileConfig.setSourceSinkFile(new File(data));
 					else if (currentElement.equals(XMLConstants.TAG_ANDROID_PLATFORM_DIR))
-						fileConfig.setAndroidPlatformDir(data);
+						fileConfig.setAndroidPlatformDir(new File(data));
 					else if (currentElement.equals(XMLConstants.TAG_OUTPUT_FILE))
 						fileConfig.setOutputFile(data);
 				} else if (parseStack.peek() == XMLSection.ANDROID_CONFIGURATION) {

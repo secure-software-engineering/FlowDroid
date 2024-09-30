@@ -7,7 +7,7 @@ public class StringTests extends soot.jimple.infoflow.test.junit.StringTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

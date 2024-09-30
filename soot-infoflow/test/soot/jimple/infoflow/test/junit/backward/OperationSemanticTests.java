@@ -7,7 +7,7 @@ public class OperationSemanticTests extends soot.jimple.infoflow.test.junit.Oper
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new BackwardsInfoflow("", false, null);
+		return new BackwardsInfoflow(null, false, null);
 	}
 
 }

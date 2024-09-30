@@ -7,7 +7,7 @@ public class MultiTest extends soot.jimple.infoflow.test.junit.MultiTest {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

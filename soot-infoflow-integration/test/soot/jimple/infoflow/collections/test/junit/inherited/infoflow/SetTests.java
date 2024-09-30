@@ -19,7 +19,7 @@ public class SetTests extends soot.jimple.infoflow.test.junit.SetTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
 
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();

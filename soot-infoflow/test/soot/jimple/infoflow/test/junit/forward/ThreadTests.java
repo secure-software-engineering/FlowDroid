@@ -7,7 +7,7 @@ public class ThreadTests extends soot.jimple.infoflow.test.junit.ThreadTests {
 
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 
 }

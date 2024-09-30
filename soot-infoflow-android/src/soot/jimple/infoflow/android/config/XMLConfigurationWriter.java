@@ -260,11 +260,11 @@ public class XMLConfigurationWriter {
 		parentElement.appendChild(inputFileTag);
 
 		appendSimpleTag(document, inputFileTag, XMLConstants.TAG_TARGET_APK_FILE,
-				config.getAnalysisFileConfig().getTargetAPKFile());
+				config.getAnalysisFileConfig().getTargetAPKFile().getAbsolutePath());
 		appendSimpleTag(document, inputFileTag, XMLConstants.TAG_SOURCE_SINK_FILE,
-				config.getAnalysisFileConfig().getSourceSinkFile());
+				config.getAnalysisFileConfig().getSourceSinkFile().getAbsolutePath());
 		appendSimpleTag(document, inputFileTag, XMLConstants.TAG_ANDROID_PLATFORM_DIR,
-				config.getAnalysisFileConfig().getAndroidPlatformDir());
+				config.getAnalysisFileConfig().getAndroidPlatformDir().getAbsolutePath());
 		appendSimpleTag(document, inputFileTag, XMLConstants.TAG_OUTPUT_FILE,
 				config.getAnalysisFileConfig().getOutputFile());
 	}

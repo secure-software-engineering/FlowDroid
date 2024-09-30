@@ -6,6 +6,6 @@ import soot.jimple.infoflow.Infoflow;
 public class WrapperSetTests extends soot.jimple.infoflow.test.methodSummary.junit.WrapperSetTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		return new Infoflow("", false, null);
+		return new Infoflow(null, false, null);
 	}
 }

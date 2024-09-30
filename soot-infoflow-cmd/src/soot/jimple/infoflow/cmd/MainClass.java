@@ -288,7 +288,7 @@ public class MainClass {
 
 			// We can analyze whole directories of apps. In that case, we must gather the
 			// target APKs.
-			File targetFile = new File(config.getAnalysisFileConfig().getTargetAPKFile());
+			File targetFile = config.getAnalysisFileConfig().getTargetAPKFile();
 			if (!targetFile.exists()) {
 				System.err.println(String.format("Target APK file %s does not exist", targetFile.getCanonicalPath()));
 				return;
@@ -336,7 +336,7 @@ public class MainClass {
 						apksToAnalyze.size()));
 
 				// Configure the analyzer for the current APK file
-				config.getAnalysisFileConfig().setTargetAPKFile(apkFile.getCanonicalPath());
+				config.getAnalysisFileConfig().setTargetAPKFile(apkFile);
 				if (outputFile != null) {
 					if (apksToAnalyze.size() > 1 || (outputFile.exists() && outputFile.isDirectory())) {
 						String outputFileName = apkFile.getName().replace(".apk", ".xml");
@@ -698,17 +698,17 @@ public class MainClass {
 		{
 			String apkFile = cmd.getOptionValue(OPTION_APK_FILE);
 			if (apkFile != null && !apkFile.isEmpty())
-				config.getAnalysisFileConfig().setTargetAPKFile(apkFile);
+				config.getAnalysisFileConfig().setTargetAPKFile(new File(apkFile));
 		}
 		{
 			String platformsDir = cmd.getOptionValue(OPTION_PLATFORMS_DIR);
 			if (platformsDir != null && !platformsDir.isEmpty())
-				config.getAnalysisFileConfig().setAndroidPlatformDir(platformsDir);
+				config.getAnalysisFileConfig().setAndroidPlatformDir(new File(platformsDir));
 		}
 		{
 			String sourcesSinks = cmd.getOptionValue(OPTION_SOURCES_SINKS_FILE);
 			if (sourcesSinks != null && !sourcesSinks.isEmpty())
-				config.getAnalysisFileConfig().setSourceSinkFile(sourcesSinks);
+				config.getAnalysisFileConfig().setSourceSinkFile(new File(sourcesSinks));
 		}
 		{
 			String outputFile = cmd.getOptionValue(OPTION_OUTPUT_FILE);

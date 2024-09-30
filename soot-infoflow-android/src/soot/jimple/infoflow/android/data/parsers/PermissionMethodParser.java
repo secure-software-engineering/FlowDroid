@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.android.data.parsers;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +31,11 @@ import org.slf4j.LoggerFactory;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.data.SootFieldAndClass;
-import soot.jimple.infoflow.sourcesSinks.definitions.*;
+import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
 
 /**
  * Parser for the permissions to method map of Adrienne Porter Felt.
@@ -57,9 +62,9 @@ public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
 
 	private final String fieldRegex = "^<(.+):\\s*(.+)\\s+([a-zA-Z_$][a-zA-Z_$0-9]*)\\s*>\\s*(.*?)(\\s+->\\s+(.*))?$";
 
-	public static PermissionMethodParser fromFile(String fileName) throws IOException {
+	public static PermissionMethodParser fromFile(File file) throws IOException {
 		PermissionMethodParser pmp = new PermissionMethodParser();
-		pmp.readFile(fileName);
+		pmp.readFile(file);
 		return pmp;
 	}
 
@@ -81,14 +86,9 @@ public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
 		this.data = data;
 	}
 
-	private void readFile(String fileName) throws IOException {
-		FileReader fr = null;
-		try {
-			fr = new FileReader(fileName);
+	private void readFile(File file) throws IOException {
+		try (FileReader fr = new FileReader(file)) {
 			readReader(fr);
-		} finally {
-			if (fr != null)
-				fr.close();
 		}
 	}
 
@@ -133,12 +133,12 @@ public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
 		for (String line : this.data) {
 			if (line.isEmpty() || line.startsWith("%"))
 				continue;
-			//match field regex
+			// match field regex
 			Matcher fieldMatch = fieldPattern.matcher(line);
 			if (fieldMatch.find()) {
 				createField(fieldMatch);
-			}else{
-				//match method regex
+			} else {
+				// match method regex
 				Matcher m = p.matcher(line);
 				if (m.find()) {
 					createMethod(m);
@@ -304,7 +304,7 @@ public class PermissionMethodParser implements ISourceSinkDefinitionProvider {
 		String fieldName = m.group(groupIdx++).trim();
 
 		// SourceSinkType
-		String sourceSinkTypeString = m.group(groupIdx).replace("->", "").replace("_","").trim();
+		String sourceSinkTypeString = m.group(groupIdx).replace("->", "").replace("_", "").trim();
 		SourceSinkType sourceSinkType = SourceSinkType.fromString(sourceSinkTypeString);
 
 		// create Field signature

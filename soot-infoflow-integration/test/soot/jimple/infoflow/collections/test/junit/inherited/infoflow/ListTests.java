@@ -20,7 +20,7 @@ import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 public class ListTests extends soot.jimple.infoflow.test.junit.ListTests {
 	@Override
 	protected AbstractInfoflow createInfoflowInstance() {
-		AbstractInfoflow result = new Infoflow("", false, new DefaultBiDiICFGFactory());
+		AbstractInfoflow result = new Infoflow(null, false, new DefaultBiDiICFGFactory());
 		result.getConfig().setPreciseCollectionTracking(PreciseCollectionStrategy.CONSTANT_MAP_SUPPORT);
 		try {
 			ArrayList<IMethodSummaryProvider> providers = new ArrayList<>();
