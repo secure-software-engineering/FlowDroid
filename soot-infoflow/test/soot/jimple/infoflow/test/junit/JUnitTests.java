@@ -74,6 +74,14 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
 			addTestPathes(fi, appPathBuilder);
 		}
+		fi = new File("soot-infoflow");
+		if (fi.exists()) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("soot-infoflow-summaries");
+		if (fi.exists()) {
+			addTestPathes(fi, appPathBuilder);
+		}
 		appPath = appPathBuilder.toString();
 
 		StringBuilder libPathBuilder = new StringBuilder();
