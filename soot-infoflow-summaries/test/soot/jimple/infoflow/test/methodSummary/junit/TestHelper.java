@@ -52,7 +52,8 @@ public abstract class TestHelper {
 		File testSrc2 = new File(f, "build" + File.separator + "testclasses");
 
 		if (!(testSrc1.exists() || testSrc2.exists()))
-			fail("Test aborted - none of the test sources are available");
+			fail(String.format("Test aborted - none of the test sources are available in root %s",
+					f.getCanonicalPath()));
 
 		StringBuilder appPathBuilder = new StringBuilder();
 		appendWithSeparator(appPathBuilder, testSrc1);
