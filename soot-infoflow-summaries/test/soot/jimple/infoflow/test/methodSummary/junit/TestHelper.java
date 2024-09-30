@@ -51,6 +51,10 @@ public abstract class TestHelper {
 		File testSrc1 = new File(f, "testBin");
 		File testSrc2 = new File(f, "build" + File.separator + "testclasses");
 
+		// We might have the FlowDroid root, not the StubDroid root
+		if (!testSrc1.exists() && !testSrc2.exists() && !f.getName().equals("soot-infoflow-summaries"))
+			f = new File(f, "soot-infoflow-summaries");
+
 		if (!(testSrc1.exists() || testSrc2.exists()))
 			fail(String.format("Test aborted - none of the test sources are available in root %s",
 					f.getCanonicalPath()));
