@@ -135,7 +135,7 @@ public abstract class BaseSummaryTaintWrapperTests {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		StringBuilder appPathBuilder = new StringBuilder();
-		File f = new File(".");
+		File f = getTestRoot();
 		addTestPathes(f, appPathBuilder);
 
 		File fi = new File("../soot-infoflow");
