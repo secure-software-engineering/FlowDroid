@@ -17,9 +17,13 @@
 	<build>
 		<finalName>soot-infoflow-android-classes</finalName>
 		<sourceDirectory>src</sourceDirectory>
+		<!--
 		<testSourceDirectory>test</testSourceDirectory>
+		-->
 		<outputDirectory>build/classes</outputDirectory>
+		<!--
 		<testOutputDirectory>build/testclasses</testOutputDirectory>
+		-->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
