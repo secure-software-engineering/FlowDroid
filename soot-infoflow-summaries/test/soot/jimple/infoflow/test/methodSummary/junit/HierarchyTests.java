@@ -15,8 +15,14 @@ import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 
 public class HierarchyTests {
 
-	protected final IMethodSummaryProvider testProvider = new EagerSummaryProvider(new File("testSummaries"));
-	protected final IMethodSummaryProvider manualProvider = new EagerSummaryProvider(new File("summariesManual"));
+	protected final IMethodSummaryProvider testProvider;
+	protected final IMethodSummaryProvider manualProvider;
+
+	public HierarchyTests() {
+		File testRoot = BaseSummaryTaintWrapperTests.getTestRoot();
+		testProvider = new EagerSummaryProvider(new File(testRoot, "testSummaries"));
+		manualProvider = new EagerSummaryProvider(new File(testRoot, "summariesManual"));
+	}
 
 	@Test
 	public void superClassesTest() {

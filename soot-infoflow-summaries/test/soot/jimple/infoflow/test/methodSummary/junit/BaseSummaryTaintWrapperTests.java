@@ -118,14 +118,16 @@ public abstract class BaseSummaryTaintWrapperTests {
 		};
 		result.setSootConfig(testConfig);
 
-		Set<String> summaryFiles = new HashSet<String>();
-		summaryFiles.add("./testSummaries/soot.jimple.infoflow.test.methodSummary.ApiClass.xml");
-		summaryFiles.add("./testSummaries/soot.jimple.infoflow.test.methodSummary.GapClass.xml");
-		summaryFiles.add("./testSummaries/soot.jimple.infoflow.test.methodSummary.Data.xml");
-		summaryFiles.add("./testSummaries/soot.jimple.infoflow.test.methodSummary.TestCollection.xml");
-		summaryFiles.add("./summariesManual");
+		File testRoot = getTestRoot();
+		Set<File> summaryFiles = new HashSet<>();
+		summaryFiles.add(new File(testRoot, "./testSummaries/soot.jimple.infoflow.test.methodSummary.ApiClass.xml"));
+		summaryFiles.add(new File(testRoot, "./testSummaries/soot.jimple.infoflow.test.methodSummary.GapClass.xml"));
+		summaryFiles.add(new File(testRoot, "./testSummaries/soot.jimple.infoflow.test.methodSummary.Data.xml"));
+		summaryFiles
+				.add(new File(testRoot, "./testSummaries/soot.jimple.infoflow.test.methodSummary.TestCollection.xml"));
+		summaryFiles.add(new File(testRoot, "./summariesManual"));
 
-		summaryWrapper = TaintWrapperFactory.createTaintWrapper(summaryFiles);
+		summaryWrapper = TaintWrapperFactory.createTaintWrapperFromFiles(summaryFiles);
 		result.setTaintWrapper(summaryWrapper);
 		return result;
 	}
@@ -181,6 +183,20 @@ public abstract class BaseSummaryTaintWrapperTests {
 				sb.append(System.getProperty("path.separator"));
 			sb.append(f.getCanonicalPath());
 		}
+	}
+
+	/**
+	 * Gets the root in which the StubDroid project is located
+	 * 
+	 * @return The directory in which StubDroid is located
+	 */
+	public static File getTestRoot() {
+		File testRoot = new File(".");
+		if (!new File(testRoot, "testSummaries").exists())
+			testRoot = new File(testRoot, "soot-infoflow-summaries");
+		if (!new File(testRoot, "testSummaries").exists())
+			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
+		return testRoot;
 	}
 
 }

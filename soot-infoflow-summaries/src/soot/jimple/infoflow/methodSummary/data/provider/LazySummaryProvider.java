@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
@@ -48,8 +49,8 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 	 * @throws IOException
 	 */
 	public LazySummaryProvider(String folderInJar, Class<?> parentClass) throws URISyntaxException, IOException {
-		logger.warn("Lazy loading summaries from a jar/zip file might throw a ClosedChannelException. " +
-				"Use the EagerSummaryProvider instead.");
+		logger.warn("Lazy loading summaries from a jar/zip file might throw a ClosedChannelException. "
+				+ "Use the EagerSummaryProvider instead.");
 		loadSummariesFromJAR(folderInJar, parentClass, p -> {
 			this.pathes.add(p);
 			loadableClasses.add(fileToClass(getFileName(p)));
@@ -70,7 +71,7 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 	 * 
 	 * @param files The files to load
 	 */
-	public LazySummaryProvider(List<File> files) {
+	public LazySummaryProvider(Collection<File> files) {
 		loadSummariesFromFiles(files, f -> {
 			this.files.add(f);
 			loadableClasses.add(fileToClass(f));

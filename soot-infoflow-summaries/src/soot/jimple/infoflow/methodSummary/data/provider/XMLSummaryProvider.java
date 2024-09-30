@@ -18,9 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -83,12 +83,12 @@ public abstract class XMLSummaryProvider extends AbstractMethodSummaryProvider {
 	 *              directories, all summary files within those directories are
 	 *              loaded
 	 */
-	protected void loadSummariesFromFiles(List<File> files, Consumer<File> summaryLoader) {
+	protected void loadSummariesFromFiles(Collection<File> files, Consumer<File> summaryLoader) {
 		SummaryMetaData metadata = null;
 		for (File f : files) {
 			// Check if the file exists
 			if (!f.exists())
-				throw new RuntimeException("Input file does not exist: " + f);
+				throw new RuntimeException("Input file does not exist: " + f.getAbsolutePath());
 
 			// Distinguish between files and directories
 			if (f.isFile())

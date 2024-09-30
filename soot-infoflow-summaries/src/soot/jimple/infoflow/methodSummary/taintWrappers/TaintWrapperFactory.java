@@ -25,12 +25,22 @@ public class TaintWrapperFactory {
 		return new SummaryTaintWrapper(new LazySummaryProvider(fs));
 	}
 
+	public static SummaryTaintWrapper createTaintWrapperFromFiles(Collection<File> files)
+			throws FileNotFoundException, XMLStreamException {
+		return new SummaryTaintWrapper(new LazySummaryProvider(files));
+	}
+
 	public static SummaryTaintWrapper createTaintWrapperEager(Collection<String> files)
 			throws FileNotFoundException, XMLStreamException {
 		List<File> fs = new LinkedList<File>();
 		for (String s : files)
 			fs.add(new File(s));
 		return new SummaryTaintWrapper(new EagerSummaryProvider(fs));
+	}
+
+	public static SummaryTaintWrapper createTaintWrapperEagerFromFiles(Collection<File> files)
+			throws FileNotFoundException, XMLStreamException {
+		return new SummaryTaintWrapper(new EagerSummaryProvider(files));
 	}
 
 	public static SummaryTaintWrapper createTaintWrapper(String f) throws FileNotFoundException, XMLStreamException {

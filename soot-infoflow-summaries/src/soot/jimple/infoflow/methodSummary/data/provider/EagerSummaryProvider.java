@@ -1,13 +1,13 @@
 package soot.jimple.infoflow.methodSummary.data.provider;
 
-import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
+
+import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
 
 /**
  * This class loads all method summary xml files.
@@ -40,7 +40,8 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 		loadSummariesFromJAR(folderInJar, parentClass, p -> loadClass(p));
 	}
 
-	public EagerSummaryProvider(String folderInJar, Class<?> parentClass, SummaryReader reader) throws URISyntaxException, IOException {
+	public EagerSummaryProvider(String folderInJar, Class<?> parentClass, SummaryReader reader)
+			throws URISyntaxException, IOException {
 		super(reader);
 		loadSummariesFromJAR(folderInJar, parentClass, p -> loadClass(p));
 	}
@@ -59,7 +60,7 @@ public class EagerSummaryProvider extends XMLSummaryProvider {
 	 * 
 	 * @param files The files to load
 	 */
-	public EagerSummaryProvider(List<File> files) {
+	public EagerSummaryProvider(Collection<File> files) {
 		loadSummariesFromFiles(files, f -> loadClass(f));
 	}
 
