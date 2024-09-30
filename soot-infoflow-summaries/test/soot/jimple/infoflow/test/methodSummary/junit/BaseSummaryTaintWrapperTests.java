@@ -138,11 +138,11 @@ public abstract class BaseSummaryTaintWrapperTests {
 		File f = getTestRoot();
 		addTestPathes(f, appPathBuilder);
 
-		File fi = new File("../soot-infoflow");
+		File fi = new File(f, "../soot-infoflow");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
 			addTestPathes(fi, appPathBuilder);
 		}
-		fi = new File("../soot-infoflow-summaries");
+		fi = new File(f, "../soot-infoflow-summaries");
 		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
 			addTestPathes(fi, appPathBuilder);
 		}
