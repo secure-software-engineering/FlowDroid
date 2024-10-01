@@ -698,7 +698,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final IccConfiguration iccConfig = new IccConfiguration();
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
-	private boolean mergeDexFiles = false;
+	private boolean mergeDexFiles = true;
 
 	private boolean performConstantPropagation;
 	private static boolean createActivityEntryMethods = true;
