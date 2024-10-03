@@ -9,7 +9,7 @@
                 <flow isAlias="true" typeChecking="false" final="true">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                         AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
@@ -18,7 +18,7 @@
         <method id="void clear()">
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: Object[] mValues]" 
+                       AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]" 
                        constrained="true"/>
             </clears>
         </method>
@@ -28,7 +28,7 @@
             </constraints>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: Object[] mValues]"
+                       AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
@@ -39,7 +39,7 @@
             <flows>
                 <flow isAlias="true" typeChecking="false" final="true">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                           AccessPathTypes="[Object[]]"
                           constrained="true" />
                     <to sourceSinkType="Return" />
@@ -53,7 +53,7 @@
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                           AccessPathTypes="[Object[]]"
                           constrained="true" />
                     <to sourceSinkType="Return" />
@@ -72,14 +72,14 @@
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                         AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: Object[] mValues]"
+                       AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
@@ -89,7 +89,7 @@
             </constraints>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: Object[] mValues]"
+                       AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
@@ -101,14 +101,14 @@
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                         AccessPathTypes="[Object[]]"
                         constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <clear sourceSinkType="Field"
-                       AccessPath="[android.util.SparseArray: Object[] mValues]"
+                       AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                        constrained="true" />
             </clears>
         </method>
@@ -118,7 +118,7 @@
             </constraints>
             <clears>
             	<clear sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                         AccessPathTypes="[Object[]]" 
                         constrained="true" 
                         isAlias="true" />
@@ -127,7 +127,7 @@
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Parameter" ParameterIndex="1" />
                     <to sourceSinkType="Field" BaseType="android.util.SparseArray"
-                        AccessPath="[android.util.SparseArray: Object[] mValues]"
+                        AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                         AccessPathTypes="[Object[]]" />
                 </flow>
             </flows>
@@ -136,7 +136,7 @@
             <flows>
                 <flow isAlias="true" typeChecking="false">
                     <from sourceSinkType="Field" BaseType="android.util.SparseArray"
-                          AccessPath="[android.util.SparseArray: Object[] mValues]"
+                          AccessPath="[android.util.SparseArray: java.lang.Object[] mValues]"
                           AccessPathTypes="[Object[]]" />
                     <to sourceSinkType="Return" />
                 </flow>
