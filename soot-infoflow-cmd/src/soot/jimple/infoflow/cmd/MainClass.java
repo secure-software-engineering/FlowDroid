@@ -33,6 +33,7 @@ import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration.CallbackAnalyzer;
 import soot.jimple.infoflow.android.SetupApplication;
 import soot.jimple.infoflow.android.config.XMLConfigurationParser;
+import soot.jimple.infoflow.android.resources.ARSCFileParser;
 import soot.jimple.infoflow.methodSummary.data.provider.LazySummaryProvider;
 import soot.jimple.infoflow.methodSummary.taintWrappers.ReportMissingSummaryWrapper;
 import soot.jimple.infoflow.methodSummary.taintWrappers.SummaryTaintWrapper;
@@ -103,6 +104,7 @@ public class MainClass {
 	private static final String OPTION_MAX_CALLBACKS_DEPTH = "md";
 	private static final String OPTION_PATH_SPECIFIC_RESULTS = "ps";
 	private static final String OPTION_MAX_THREAD_NUMBER = "mt";
+	private static final String OPTION_LENIENT_PARSING_MODE = "lp";
 
 	// Inter-component communication
 	private static final String OPTION_ICC_MODEL = "im";
@@ -249,6 +251,8 @@ public class MainClass {
 		options.addOption(OPTION_CALLGRAPH_FILE, "callgraphdir", true,
 				"The file in which to store and from which to read serialized callgraphs");
 		options.addOption(OPTION_CALLGRAPH_ONLY, "callgraphonly", false, "Only compute the callgraph and terminate");
+		options.addOption(OPTION_LENIENT_PARSING_MODE, "lenientparsing", false,
+				"Enables non-strict parsing, i.e. tries to continue rather than fail in case of a parsing error");
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -882,6 +886,9 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_ANALYZE_FRAMEWORKS)) {
 			config.setExcludeSootLibraryClasses(false);
 			config.setIgnoreFlowsInSystemPackages(false);
+		}
+		if (cmd.hasOption(OPTION_LENIENT_PARSING_MODE)) {
+			ARSCFileParser.STRICT_MODE = false;
 		}
 
 		// Callgraph-specific options
