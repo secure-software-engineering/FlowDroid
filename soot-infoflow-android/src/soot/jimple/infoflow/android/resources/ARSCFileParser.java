@@ -1481,9 +1481,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 		 */
 		int res0; // uint8
 		/**
-		 * Must be 1.
+		 * Specifies the number of ResTable_type entries
 		 */
-		int res1; // uint16
+		int typesCount; // uint16
 		/**
 		 * Number of uint32_t entry configuration masks that follow.
 		 */
@@ -1497,7 +1497,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 			result = prime * result + ((header == null) ? 0 : header.hashCode());
 			result = prime * result + id;
 			result = prime * result + res0;
-			result = prime * result + res1;
+			result = prime * result + typesCount;
 			return result;
 		}
 
@@ -1521,7 +1521,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 				return false;
 			if (res0 != other.res0)
 				return false;
-			if (res1 != other.res1)
+			if (typesCount != other.typesCount)
 				return false;
 			return true;
 		}
@@ -2696,10 +2696,8 @@ public class ARSCFileParser extends AbstractResourceParser {
 		}
 		offset += 1;
 
-		typeSpecTable.res1 = readUInt16(data, offset);
-		if (typeSpecTable.res1 != 0) {
-			raiseFormatViolationIssue("File format violation in type spec table: res1 is not zero", offset);
-		}
+		//this was reserved before and is now used! 
+		typeSpecTable.typesCount = readUInt16(data, offset);
 		offset += 2;
 
 		typeSpecTable.entryCount = readUInt32(data, offset);
