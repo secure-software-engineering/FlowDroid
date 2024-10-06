@@ -31,6 +31,7 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
@@ -906,6 +907,15 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			// implementations in the application code
 			if ((flowsInTarget == null || flowsInTarget.isEmpty()) && curGap != null) {
 				SootMethod callee = Scene.v().grabMethod(curGap.getSignature());
+				if (callee == null) {
+					SootMethodAndClass smac = SootMethodRepresentationParser.v()
+							.parseSootMethodString(curGap.getSignature());
+					SootClass declClass = Scene.v().getSootClassUnsafe(smac.getClassName());
+					if (declClass != null) {
+						SootMethodRef ref = Scene.v().makeMethodRef(declClass, smac.getSubSignature(), false);
+						callee = ref.tryResolve();
+					}
+				}
 				if (callee != null) {
 					for (SootMethod implementor : getImplementors(stmt, callee)) {
 						Set<AccessPathPropagator> implementorPropagators = spawnAnalysisIntoClientCode(implementor,
