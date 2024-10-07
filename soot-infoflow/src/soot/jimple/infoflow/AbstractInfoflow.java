@@ -540,7 +540,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				if (sm.hasActiveBody()) {
 					Body body = sm.getActiveBody();
 					patchDynamicInvokeInstructions(body);
-				} else if (!(sm.getSource() instanceof MethodSourceInjector)) {
+				} else if (!(sm.getSource() instanceof MethodSourceInjector) && sm.getSource() != null) {
 					sm.setSource(new MethodSourceInjector(sm.getSource()) {
 
 						@Override
