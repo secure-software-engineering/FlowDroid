@@ -198,8 +198,8 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 	 * 
 	 * @return The directory in which the FlowDroid main project is located
 	 */
-	public static File getInfoflowRoot() {
-		File testRoot = new File(".");
+	public static File getInfoflowRoot() throws IOException {
+		File testRoot = new File(".").getCanonicalFile();
 
 		if (!new File(testRoot, "src").exists()) {
 			// Try a subfolder
