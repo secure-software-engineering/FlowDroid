@@ -200,8 +200,18 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 	 */
 	public static File getInfoflowRoot() {
 		File testRoot = new File(".");
-		if (!new File(testRoot, "src").exists())
-			testRoot = new File(testRoot, "soot-infoflow");
+
+		if (!new File(testRoot, "src").exists()) {
+			// Try a subfolder
+			File subFolder = new File(testRoot, "soot-infoflow");
+			if (subFolder.exists())
+				testRoot = subFolder;
+			else {
+				// Try a sibling folder
+				testRoot = new File(testRoot.getParentFile(), "soot-infoflow");
+			}
+		}
+
 		if (!new File(testRoot, "src").exists())
 			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
 		return testRoot;
