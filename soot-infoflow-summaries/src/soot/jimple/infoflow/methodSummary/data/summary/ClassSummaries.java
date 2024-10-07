@@ -128,6 +128,26 @@ public class ClassSummaries {
 	}
 
 	/**
+	 * Gets all method summaries for the sole class in this object. Note that this
+	 * method will throw an exception in case there are summaries for more than one
+	 * class.
+	 * 
+	 * @return The method summaries for all methods in the only class contained in
+	 *         this object
+	 */
+	public MethodSummaries getMergedMethodSummaries() {
+		if (getClasses().size() > 1)
+			throw new RuntimeException("Summaries for different classes cannot be merged");
+		MethodSummaries summaries = new MethodSummaries();
+		for (ClassMethodSummaries classSummaries : this.summaries.values()) {
+			if (classSummaries != null) {
+				summaries.merge(classSummaries.getMethodSummaries());
+			}
+		}
+		return summaries;
+	}
+
+	/**
 	 * Gets all flows across all classes and methods
 	 * 
 	 * @return All flows registered in this data object

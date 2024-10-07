@@ -36,7 +36,8 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Steven Arzt
  * @author Tim Lange
  */
-public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule implements IAdditionalFlowSinkPropagationRule {
+public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
+		implements IAdditionalFlowSinkPropagationRule {
 
 	private boolean killState = false;
 
@@ -93,8 +94,8 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 			for (Value val : BaseSelector.selectBaseList(retVal, false)) {
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sourceInfo = ssm.getInverseSourceInfo(stmt, getManager(), source.getAccessPath());
-					if (sourceInfo != null
-							&& !getResults().addResult(new AbstractionAtSink(sourceInfo.getDefinitions(), source, stmt)))
+					if (sourceInfo != null && !getResults()
+							.addResult(new AbstractionAtSink(sourceInfo.getDefinitions(), source, stmt)))
 						killState = true;
 				}
 			}
@@ -151,6 +152,11 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
+
+		if (stmt.toString().equals(
+				"r1 = virtualinvoke r0.<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource()>()"))
+			System.out.println("x");
+
 		if (!(manager.getSourceSinkManager() instanceof IReversibleSourceSinkManager))
 			return null;
 		final IReversibleSourceSinkManager ssm = (IReversibleSourceSinkManager) manager.getSourceSinkManager();
@@ -191,10 +197,14 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		return null;
 	}
 
-	// Note: Do not get confused with on the terms source/sink. In the general case, the backward
-	// analysis starts the analysis at sinks and records results at the source. For secondary flows,
-	// the secondary source is equal to the primary sink and the secondary sink is an interesting
-	// statement (an additional flow condition or a usage context) at which we record a result.
+	// Note: Do not get confused with on the terms source/sink. In the general case,
+	// the backward
+	// analysis starts the analysis at sinks and records results at the source. For
+	// secondary flows,
+	// the secondary source is equal to the primary sink and the secondary sink is
+	// an interesting
+	// statement (an additional flow condition or a usage context) at which we
+	// record a result.
 	// That's why the backward source rule is also the secondary flow sink rule. */
 	@Override
 	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt) {
@@ -206,6 +216,7 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
 			return;
 
-		getResults().addResult(new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
+		getResults().addResult(
+				new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
 	}
 }

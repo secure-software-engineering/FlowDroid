@@ -165,6 +165,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 				Stmt sCallSite = (Stmt) callSite;
 				ClassSummaries summaries = getFlowSummariesForMethod(sCallSite, sCallSite.getInvokeExpr().getMethod(),
 						null);
+
+				List<AccessPathPropagator> worklist = new ArrayList<>();
 				for (MethodFlow flow : summaries.getAllFlows()) {
 					FlowSource src = flow.source();
 					FlowSink tgt = flow.sink();
@@ -190,25 +192,26 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 					// Create the new propagator, one for every taint
 					for (Taint returnTaint : returnTaints) {
-						MethodFlow curFlow = flow;
-						AccessPathPropagator propagator = new AccessPathPropagator(returnTaint);
-						if (reverseFlows) {
+						AccessPathPropagator propagator = new AccessPathPropagator(returnTaint, null, null, sCallSite,
+								manager.getMainSolver().getTabulationProblem().zeroValue(), d2);
+						if (reverseFlows)
 							propagator = propagator.deriveInversePropagator();
-							curFlow = flow.reverse();
-						}
-						AccessPathPropagator newPropagator = applyFlow(curFlow, propagator);
-						if (newPropagator != null) {
-							AccessPath ap = createAccessPathFromTaint(newPropagator.getTaint(), sCallSite,
-									reverseFlows);
-							if (ap != null) {
-								Abstraction zeroValue = manager.getMainSolver().getTabulationProblem().zeroValue();
-								Abstraction abs = d2.deriveNewAbstraction(ap, reverseFlows ? sCallSite : (Stmt) u);
-								if (reverseFlows)
-									abs.setCorrespondingCallSite(sCallSite);
-								for (Unit succUnit : manager.getICFG().getSuccsOf(callSite))
-									manager.getMainSolver()
-											.processEdge(new PathEdge<Unit, Abstraction>(zeroValue, succUnit, abs));
-							}
+						worklist.add(propagator);
+					}
+				}
+
+				if (!worklist.isEmpty()) {
+					Set<AccessPath> newAPs = applyFlowsIterative(summaries.getMergedMethodSummaries(), worklist,
+							reverseFlows, sCallSite, d2, true);
+					if (newAPs != null && !newAPs.isEmpty()) {
+						Abstraction zeroValue = manager.getMainSolver().getTabulationProblem().zeroValue();
+						for (AccessPath ap : newAPs) {
+							Abstraction abs = d2.deriveNewAbstraction(ap, reverseFlows ? sCallSite : (Stmt) u);
+							if (reverseFlows)
+								abs.setCorrespondingCallSite(sCallSite);
+							for (Unit succUnit : manager.getICFG().getSuccsOf(callSite))
+								manager.getMainSolver()
+										.processEdge(new PathEdge<Unit, Abstraction>(zeroValue, succUnit, abs));
 						}
 					}
 				}
@@ -261,6 +264,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 				if (resultAPs != null && !resultAPs.isEmpty()) {
 					for (AccessPath ap : resultAPs) {
 						Abstraction newAbs = rootPropagator.getD2().deriveNewAbstraction(ap, rootPropagator.getStmt());
+						if (rootPropagator.isInversePropagator())
+							newAbs.setCorrespondingCallSite(rootPropagator.getStmt());
 						for (Unit succUnit : manager.getICFG().getSuccsOf(rootPropagator.getStmt()))
 							manager.getMainSolver().processEdge(
 									new PathEdge<Unit, Abstraction>(rootPropagator.getD1(), succUnit, newAbs));
@@ -334,6 +339,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			}
 			return null;
 		}
+
 	}
 
 	/**
@@ -2184,8 +2190,6 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		// We only care about method invocations
 		if (!stmt.containsInvokeExpr())
 			return Collections.singleton(taintedAbs);
-
-		SootMethod sm = manager.getICFG().getMethodOf(stmt);
 
 		ByReferenceBoolean classSupported = new ByReferenceBoolean(false);
 		// Get the cached data flows

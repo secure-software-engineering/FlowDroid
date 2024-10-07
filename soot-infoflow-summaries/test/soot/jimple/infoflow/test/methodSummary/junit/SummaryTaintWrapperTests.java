@@ -305,7 +305,7 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest()>", 1);
 	}
 
-	@Test // (timeout = 30000)
+	@Test(timeout = 30000)
 	public void streamReduceTest2() {
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void streamReduceTest2()>", 1);
 	}

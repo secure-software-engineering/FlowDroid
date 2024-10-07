@@ -34,11 +34,9 @@
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
 					<skipTests>true</skipTests>
-					<!--
 					<includes>
 						<include>soot/jimple/infoflow/test/junit/**</include>
 					</includes>
-					-->
 				</configuration>
 			</plugin>
 			<plugin>
