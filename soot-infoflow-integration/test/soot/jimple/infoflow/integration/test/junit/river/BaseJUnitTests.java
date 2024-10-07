@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import soot.SootMethod;
 import soot.jimple.infoflow.AbstractInfoflow;
@@ -33,6 +34,39 @@ public abstract class BaseJUnitTests extends JUnitTests {
 		protected boolean isEntryPointMethod(SootMethod method) {
 			return false;
 		}
+	}
+
+	@BeforeClass
+	public static void setUp() throws IOException {
+		File f = getIntegrationRoot();
+		StringBuilder appPathBuilder = new StringBuilder();
+		addTestPathes(f, appPathBuilder);
+
+		File fi = new File(f, "../soot-infoflow");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File(f, "../soot-infoflow-summaries");
+		if (!fi.getCanonicalFile().equals(f.getCanonicalFile())) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("soot-infoflow");
+		if (fi.exists()) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		fi = new File("soot-infoflow-summaries");
+		if (fi.exists()) {
+			addTestPathes(fi, appPathBuilder);
+		}
+		appPath = appPathBuilder.toString();
+
+		StringBuilder libPathBuilder = new StringBuilder();
+		addRtJarPath(libPathBuilder);
+		libPath = libPathBuilder.toString();
+		if (libPath.isEmpty())
+			throw new RuntimeException("Could not find rt.jar!");
+
+		initializeSourceSinks();
 	}
 
 	@Before

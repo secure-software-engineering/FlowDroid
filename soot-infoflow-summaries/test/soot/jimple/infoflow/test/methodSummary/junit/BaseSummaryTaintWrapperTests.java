@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +93,7 @@ public abstract class BaseSummaryTaintWrapperTests {
 
 	protected abstract AbstractInfoflow createInfoflowInstance();
 
-	protected IInfoflow initInfoflow() throws FileNotFoundException, XMLStreamException {
+	protected IInfoflow initInfoflow() throws IOException, XMLStreamException {
 		IInfoflow result = createInfoflowInstance();
 		result.getConfig().getAccessPathConfiguration().setUseRecursiveAccessPaths(false);
 		IInfoflowConfig testConfig = new IInfoflowConfig() {
@@ -190,10 +189,18 @@ public abstract class BaseSummaryTaintWrapperTests {
 	 * 
 	 * @return The directory in which StubDroid is located
 	 */
-	public static File getTestRoot() {
-		File testRoot = new File(".");
-		if (!new File(testRoot, "testSummaries").exists())
-			testRoot = new File(testRoot, "soot-infoflow-summaries");
+	public static File getTestRoot() throws IOException {
+		File testRoot = new File(".").getCanonicalFile();
+		if (!new File(testRoot, "testSummaries").exists()) {
+			// Try a subfolder
+			File subFolder = new File(testRoot, "soot-infoflow-summaries");
+			if (subFolder.exists())
+				testRoot = subFolder;
+			else {
+				// Try a sibling folder
+				testRoot = new File(testRoot.getParentFile(), "soot-infoflow-summaries");
+			}
+		}
 		if (!new File(testRoot, "testSummaries").exists())
 			throw new RuntimeException(String.format("Test root not found in %s", testRoot.getAbsolutePath()));
 		return testRoot;

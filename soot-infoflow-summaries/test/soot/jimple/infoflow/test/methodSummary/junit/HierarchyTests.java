@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,7 @@ public class HierarchyTests {
 	protected final IMethodSummaryProvider testProvider;
 	protected final IMethodSummaryProvider manualProvider;
 
-	public HierarchyTests() {
+	public HierarchyTests() throws IOException {
 		File testRoot = BaseSummaryTaintWrapperTests.getTestRoot();
 		testProvider = new EagerSummaryProvider(new File(testRoot, "testSummaries"));
 		manualProvider = new EagerSummaryProvider(new File(testRoot, "summariesManual"));

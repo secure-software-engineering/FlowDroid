@@ -90,6 +90,10 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 		if (libPath.isEmpty())
 			throw new RuntimeException("Could not find rt.jar!");
 
+		initializeSourceSinks();
+	}
+
+	protected static void initializeSourceSinks() {
 		sources = new ArrayList<String>();
 		sources.add(sourcePwd);
 		sources.add(sourceUserData);
