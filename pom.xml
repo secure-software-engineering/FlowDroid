@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.fraunhofer.sit.sse.flowdroid</groupId>
 	<artifactId>parent</artifactId>
-	<version>2.14.1-SNAPSHOT</version>
+	<version>2.14.1</version>
 	<name>FlowDroid Parent Module</name>
 	<description>Parent module for the FlowDroid data flow tracker</description>
 	<url>https://github.com/secure-software-engineering/FlowDroid</url>	
 	<packaging>pom</packaging>
 
 	<properties>
-		<revision>2.14.1-SNAPSHOT</revision>
+		<revision>2.14.1</revision>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
