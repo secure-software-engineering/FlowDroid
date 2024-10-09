@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
@@ -18,10 +17,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * very simple testcase
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest1() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest1() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink1.apk"),
 				sourcesSinksFile);
@@ -33,10 +31,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * testing with different parameter in sinks
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest2() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest2() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink2.apk"),
 				sourcesSinksFile);
@@ -48,10 +45,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * testing with different parameter in sources
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest3() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest3() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink3.apk"),
 				sourcesSinksFile);
@@ -63,10 +59,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * testing with a base in sinks
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest4() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest4() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink4.apk"),
 				sourcesSinksFile);
@@ -78,10 +73,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * testing with a base in sources
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest5() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest5() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink5.apk"),
 				sourcesSinksFile);
@@ -93,10 +87,9 @@ public class SourceToSinksTest extends JUnitTests {
 	 * a more complex testcase
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test(timeout = 300000)
-	public void runSourceToSinkTest6() throws IOException, XmlPullParserException {
+	public void runSourceToSinkTest6() throws IOException {
 		InfoflowResults res = analyzeAPKFile(
 				new File(getInfoflowAndroidRoot(), "testAPKs/SourceSinkDefinitions/SourceToSink6.apk"),
 				sourcesSinksFile);

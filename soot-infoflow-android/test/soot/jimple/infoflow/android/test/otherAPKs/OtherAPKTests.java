@@ -6,14 +6,13 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
 public class OtherAPKTests extends JUnitTests {
 
 	@Test
-	public void runTest1() throws IOException, XmlPullParserException {
+	public void runTest1() throws IOException {
 		File rootDir = getInfoflowAndroidRoot();
 		InfoflowResults res = analyzeAPKFile(new File(rootDir, "testAPKs/9458cfb51c90130938abcef7173c3f6d44a02720.apk"),
 				false, false, false);
@@ -23,7 +22,7 @@ public class OtherAPKTests extends JUnitTests {
 
 	@Ignore("APK file missing")
 	@Test
-	public void runTest2() throws IOException, XmlPullParserException {
+	public void runTest2() throws IOException {
 		File rootDir = getInfoflowAndroidRoot();
 		InfoflowResults res = analyzeAPKFile(new File(rootDir, "testAPKs/enriched1.apk"), false, false, false);
 		Assert.assertNotNull(res);
@@ -31,7 +30,7 @@ public class OtherAPKTests extends JUnitTests {
 	}
 
 	@Test
-	public void runReturnParameterTest() throws IOException, XmlPullParserException {
+	public void runReturnParameterTest() throws IOException {
 		File rootDir = getInfoflowAndroidRoot();
 		InfoflowResults res = analyzeAPKFile(new File(rootDir, "testAPKs/ReturnParameterTest.apk"), false, false,
 				false);

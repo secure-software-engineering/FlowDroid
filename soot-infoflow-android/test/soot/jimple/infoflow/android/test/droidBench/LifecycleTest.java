@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
@@ -23,14 +22,14 @@ import soot.jimple.infoflow.results.InfoflowResults;
 public abstract class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
-	public void runTestActivityEventSequence1() throws IOException, XmlPullParserException {
+	public void runTestActivityEventSequence1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityEventSequence2() throws IOException, XmlPullParserException {
+	public void runTestActivityEventSequence2() throws IOException {
 		// Quote from Steven's Thesis:
 		// "This test case was contributed by a different research group. We were unable
 		// to reproduce the data flow
@@ -43,42 +42,42 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityEventSequence3() throws IOException, XmlPullParserException {
+	public void runTestActivityEventSequence3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityEventSequence3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityLifecycle1() throws IOException, XmlPullParserException {
+	public void runTestActivityLifecycle1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityLifecycle1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityLifecycle2() throws IOException, XmlPullParserException {
+	public void runTestActivityLifecycle2() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityLifecycle2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityLifecycle3() throws IOException, XmlPullParserException {
+	public void runTestActivityLifecycle3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityLifecycle3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivityLifecycle4() throws IOException, XmlPullParserException {
+	public void runTestActivityLifecycle4() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivityLifecycle4.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestActivitySavedState1() throws IOException, XmlPullParserException {
+	public void runTestActivitySavedState1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ActivitySavedState1.apk", null,
 				new AnalysisConfigurationCallback() {
 
@@ -96,14 +95,14 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestApplicationLifecycle1() throws IOException, XmlPullParserException {
+	public void runTestApplicationLifecycle1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ApplicationLifecycle1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestApplicationLifecycle2() throws IOException, XmlPullParserException {
+	public void runTestApplicationLifecycle2() throws IOException {
 		int expected = 2;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 1;
@@ -113,28 +112,28 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestApplicationLifecycle3() throws IOException, XmlPullParserException {
+	public void runTestApplicationLifecycle3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ApplicationLifecycle3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestAsynchronousEventOrdering1() throws IOException, XmlPullParserException {
+	public void runTestAsynchronousEventOrdering1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/AsynchronousEventOrdering1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestBroadcastReceiverLifecycle1() throws IOException, XmlPullParserException {
+	public void runTestBroadcastReceiverLifecycle1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/BroadcastReceiverLifecycle1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestBroadcastReceiverLifecycle2() throws IOException, XmlPullParserException {
+	public void runTestBroadcastReceiverLifecycle2() throws IOException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 2;
@@ -144,21 +143,21 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestBroadcastReceiverLifecycle3() throws IOException, XmlPullParserException {
+	public void runTestBroadcastReceiverLifecycle3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/BroadcastReceiverLifecycle3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestEventOrdering1() throws IOException, XmlPullParserException {
+	public void runTestEventOrdering1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/EventOrdering1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestFragmentLifecycle1() throws IOException, XmlPullParserException {
+	public void runTestFragmentLifecycle1() throws IOException {
 		int expected = 0;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 1;
@@ -169,7 +168,7 @@ public abstract class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	// not supported yet
-	public void runTestFragmentLifecycle2() throws IOException, XmlPullParserException {
+	public void runTestFragmentLifecycle2() throws IOException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 0;
@@ -180,7 +179,7 @@ public abstract class LifecycleTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 
-	public void runTestServiceEventSequence1() throws IOException, XmlPullParserException {
+	public void runTestServiceEventSequence1() throws IOException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 0;
@@ -190,7 +189,7 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestServiceEventSequence2() throws IOException, XmlPullParserException {
+	public void runTestServiceEventSequence2() throws IOException {
 		int expected = 1;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 0;
@@ -200,28 +199,28 @@ public abstract class LifecycleTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestServiceEventSequence3() throws IOException, XmlPullParserException {
+	public void runTestServiceEventSequence3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ServiceEventSequence3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestServiceLifecycle1() throws IOException, XmlPullParserException {
+	public void runTestServiceLifecycle1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ServiceLifecycle1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestServiceLifecycle2() throws IOException, XmlPullParserException {
+	public void runTestServiceLifecycle2() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/ServiceLifecycle2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestSharedPreferenceChanged1() throws IOException, XmlPullParserException {
+	public void runTestSharedPreferenceChanged1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Lifecycle/SharedPreferenceChanged1.apk", null,
 				new AnalysisConfigurationCallback() {
 

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlNode;
@@ -20,7 +19,7 @@ public class ProcessManifestTest {
 
 		try {
 			manifest = new ProcessManifest("testAPKs/enriched1.apk");
-		} catch (IOException | XmlPullParserException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -44,7 +43,7 @@ public class ProcessManifestTest {
 
 		try {
 			manifest = new ProcessManifest("testAPKs/enriched1.apk");
-		} catch (IOException | XmlPullParserException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -65,7 +64,7 @@ public class ProcessManifestTest {
 		ProcessManifest manifest = null;
 		try {
 			manifest = new ProcessManifest("testAPKs/FlowDroidAliasActivity.apk");
-		} catch (IOException | XmlPullParserException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

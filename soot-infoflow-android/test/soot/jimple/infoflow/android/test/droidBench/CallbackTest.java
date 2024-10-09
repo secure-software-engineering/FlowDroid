@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.InfoflowConfiguration.CallbackSourceMode;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
@@ -24,7 +23,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 public abstract class CallbackTest extends JUnitTests {
 
 	@Test(timeout = 300000)
-	public void runTestAnonymousClass1() throws IOException, XmlPullParserException {
+	public void runTestAnonymousClass1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/AnonymousClass1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size()); // loc + lat, but single parameter
@@ -32,14 +31,14 @@ public abstract class CallbackTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestButton1() throws IOException, XmlPullParserException {
+	public void runTestButton1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/Button1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestButton2() throws IOException, XmlPullParserException {
+	public void runTestButton2() throws IOException {
 		int expected = 3;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 4;
@@ -50,21 +49,21 @@ public abstract class CallbackTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestButton3() throws IOException, XmlPullParserException {
+	public void runTestButton3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/Button3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestButton4() throws IOException, XmlPullParserException {
+	public void runTestButton4() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/Button4.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestButton5() throws IOException, XmlPullParserException {
+	public void runTestButton5() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/Button5.apk", null, new AnalysisConfigurationCallback() {
 
 			@Override
@@ -79,56 +78,56 @@ public abstract class CallbackTest extends JUnitTests {
 	}
 
 	@Test(timeout = 300000)
-	public void runTestLocationLeak1() throws IOException, XmlPullParserException {
+	public void runTestLocationLeak1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/LocationLeak1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(2, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestLocationLeak2() throws IOException, XmlPullParserException {
+	public void runTestLocationLeak2() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/LocationLeak2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(2, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestLocationLeak3() throws IOException, XmlPullParserException {
+	public void runTestLocationLeak3() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/LocationLeak3.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size()); // loc + lat, but single parameter
 	}
 
 	@Test(timeout = 300000)
-	public void runTestMethodOverride1() throws IOException, XmlPullParserException {
+	public void runTestMethodOverride1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/MethodOverride1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestMultiHandlers1() throws IOException, XmlPullParserException {
+	public void runTestMultiHandlers1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/MultiHandlers1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOrdering1() throws IOException, XmlPullParserException {
+	public void runTestOrdering1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/Ordering1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(0, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestRegisterGlobal1() throws IOException, XmlPullParserException {
+	public void runTestRegisterGlobal1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/RegisterGlobal1.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestRegisterGlobal2() throws IOException, XmlPullParserException {
+	public void runTestRegisterGlobal2() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Callbacks/RegisterGlobal2.apk");
 		Assert.assertNotNull(res);
 		Assert.assertEquals(1, res.size());
@@ -136,7 +135,7 @@ public abstract class CallbackTest extends JUnitTests {
 
 	@Test(timeout = 300000)
 	// Unregistering callbacks is not supported
-	public void runTestUnregister1() throws IOException, XmlPullParserException {
+	public void runTestUnregister1() throws IOException {
 		int expected = 0;
 		if (mode == TestResultMode.FLOWDROID_BACKWARDS || mode == TestResultMode.FLOWDROID_FORWARDS)
 			expected = 1;

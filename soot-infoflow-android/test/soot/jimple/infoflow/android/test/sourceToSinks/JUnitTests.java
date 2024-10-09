@@ -3,8 +3,6 @@ package soot.jimple.infoflow.android.test.sourceToSinks;
 import java.io.File;
 import java.io.IOException;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.android.SetupApplication;
@@ -25,12 +23,10 @@ public class JUnitTests extends BaseJUnitTests {
 	 * @param xmlFile The full path and file name of the xml file where sources and
 	 *                sinks are defined
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
-	public InfoflowResults analyzeAPKFile(File apkFile, File xmlFile) throws IOException, XmlPullParserException {
+	public InfoflowResults analyzeAPKFile(File apkFile, File xmlFile) throws IOException {
 		return analyzeAPKFile(apkFile, xmlFile, false, false, false);
 	}
 
@@ -44,13 +40,11 @@ public class JUnitTests extends BaseJUnitTests {
 	 * @param enableImplicitFlows True if implicit flows shall be tracked, otherwise
 	 *                            false
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
 	public InfoflowResults analyzeAPKFile(File apkFile, File xmlFile, boolean enableImplicitFlows,
-			boolean enableStaticFields, boolean flowSensitiveAliasing) throws IOException, XmlPullParserException {
+			boolean enableStaticFields, boolean flowSensitiveAliasing) throws IOException {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
 			androidJars = System.getProperty("ANDROID_JARS");

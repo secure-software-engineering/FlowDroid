@@ -16,7 +16,6 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.InfoflowConfiguration.LayoutMatchingMode;
@@ -48,7 +47,7 @@ public class InsecureBankTests extends BaseJUnitTests {
 	 * @throws XmlPullParserException Thrown if the Android manifest file could not
 	 *                                be read.
 	 */
-	private InfoflowResults analyzeAPKFile(boolean enableImplicitFlows) throws IOException, XmlPullParserException {
+	private InfoflowResults analyzeAPKFile(boolean enableImplicitFlows) throws IOException {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
 			androidJars = System.getProperty("ANDROID_JARS");
@@ -73,7 +72,7 @@ public class InsecureBankTests extends BaseJUnitTests {
 
 	@Test
 	@Ignore("Package is com.android, filteres out as system package")
-	public void runTestInsecureBank() throws IOException, XmlPullParserException {
+	public void runTestInsecureBank() throws IOException {
 		InfoflowResults res = analyzeAPKFile(false);
 		// 7 leaks + 1x inter-component communication (server ip going through
 		// an intent)

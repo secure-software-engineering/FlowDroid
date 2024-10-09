@@ -15,7 +15,6 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.results.InfoflowResults;
 
@@ -23,61 +22,61 @@ import soot.jimple.infoflow.results.InfoflowResults;
 public abstract class ReflectionICCTest extends JUnitTests {
 
 	@Test(timeout = 300000)
-	public void runTestActivityCommunication2() throws IOException, XmlPullParserException {
+	public void runTestActivityCommunication2() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/ActivityCommunication2.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestAllReflection() throws IOException, XmlPullParserException {
+	public void runTestAllReflection() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/AllReflection.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyIntent() throws IOException, XmlPullParserException {
+	public void runTestOnlyIntent() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyIntent.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyIntentReceive() throws IOException, XmlPullParserException {
+	public void runTestOnlyIntentReceive() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyIntentReceive.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlySMS() throws IOException, XmlPullParserException {
+	public void runTestOnlySMS() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlySMS.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyTelephony() throws IOException, XmlPullParserException {
+	public void runTestOnlyTelephony() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyTelephony.apk");
 		Assert.assertEquals(2, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyTelephony_Dynamic() throws IOException, XmlPullParserException {
+	public void runTestOnlyTelephony_Dynamic() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyTelephony_Dynamic.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyTelephony_Reverse() throws IOException, XmlPullParserException {
+	public void runTestOnlyTelephony_Reverse() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyTelephony_Reverse.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestOnlyTelephony_Substring() throws IOException, XmlPullParserException {
+	public void runTestOnlyTelephony_Substring() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/OnlyTelephony_Substring.apk");
 		Assert.assertEquals(1, res.size());
 	}
 
 	@Test(timeout = 300000)
-	public void runTestSharedPreferences1() throws IOException, XmlPullParserException {
+	public void runTestSharedPreferences1() throws IOException {
 		InfoflowResults res = analyzeAPKFile("Reflection_ICC/SharedPreferences1.apk");
 		Assert.assertEquals(1, res.size());
 	}

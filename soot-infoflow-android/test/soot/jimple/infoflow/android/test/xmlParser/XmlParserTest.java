@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
@@ -138,10 +137,9 @@ public class XmlParserTest extends BaseJUnitTests {
 	 * manual verification of the parser result
 	 * 
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
 	@Test
-	public void verifyParserResultTest() throws IOException, XmlPullParserException {
+	public void verifyParserResultTest() throws IOException {
 		// parsing data from xml file
 		File xmlFile = new File(getInfoflowAndroidRoot(), "testXmlParser/complete.xml");
 		XMLSourceSinkParser newParser = XMLSourceSinkParser.fromFile(xmlFile);

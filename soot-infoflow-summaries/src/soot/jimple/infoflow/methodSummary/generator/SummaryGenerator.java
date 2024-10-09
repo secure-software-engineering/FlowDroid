@@ -23,7 +23,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.config.IInfoflowConfig;
 import soot.jimple.infoflow.data.pathBuilders.DefaultPathBuilderFactory;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
@@ -760,8 +759,10 @@ public class SummaryGenerator {
 			iFlow.setNativeCallHandler(new SummaryNativeCallHandler(nativeCallHandler));
 
 		final SummaryGenerationTaintWrapper summaryGenWrapper = createTaintWrapper(summaries, gapManager);
-		// We only want to compute summaries for methods we do not have summaries. Thus, we register the
-		// summary generation wrapper as a fallback to the SummaryTaintWrapper such that it is only queried
+		// We only want to compute summaries for methods we do not have summaries. Thus,
+		// we register the
+		// summary generation wrapper as a fallback to the SummaryTaintWrapper such that
+		// it is only queried
 		// when the SummaryTaintWrapper doesn't know the method.
 		summaryTaintWrapper.setFallbackTaintWrapper(summaryGenWrapper);
 		iFlow.setTaintWrapper(summaryTaintWrapper);

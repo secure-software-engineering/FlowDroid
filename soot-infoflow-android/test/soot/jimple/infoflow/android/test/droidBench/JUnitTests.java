@@ -13,8 +13,6 @@ package soot.jimple.infoflow.android.test.droidBench;
 import java.io.File;
 import java.io.IOException;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.InfoflowConfiguration.ImplicitFlowMode;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
@@ -39,12 +37,10 @@ public abstract class JUnitTests extends BaseJUnitTests {
 	 *
 	 * @param fileName The full path and file name of the APK file to analyze
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
-	public InfoflowResults analyzeAPKFile(String fileName) throws IOException, XmlPullParserException {
+	public InfoflowResults analyzeAPKFile(String fileName) throws IOException {
 		return analyzeAPKFile(fileName, false);
 	}
 
@@ -54,12 +50,10 @@ public abstract class JUnitTests extends BaseJUnitTests {
 	 * @param fileName The full path and file name of the APK file to analyze
 	 * @param iccModel The full path and file name of the ICC model to use
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
-	public InfoflowResults analyzeAPKFile(String fileName, String iccModel) throws IOException, XmlPullParserException {
+	public InfoflowResults analyzeAPKFile(String fileName, String iccModel) throws IOException {
 		return analyzeAPKFile(fileName, iccModel, null);
 	}
 
@@ -71,13 +65,10 @@ public abstract class JUnitTests extends BaseJUnitTests {
 	 * @param enableImplicitFlows True if implicit flows shall be tracked, otherwise
 	 *                            false
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
-	public InfoflowResults analyzeAPKFile(String fileName, final boolean enableImplicitFlows)
-			throws IOException, XmlPullParserException {
+	public InfoflowResults analyzeAPKFile(String fileName, final boolean enableImplicitFlows) throws IOException {
 		return analyzeAPKFile(fileName, null, new AnalysisConfigurationCallback() {
 
 			@Override
@@ -116,13 +107,11 @@ public abstract class JUnitTests extends BaseJUnitTests {
 	 *                       change the analyzer configuration when necessary. Pass
 	 *                       null to ignore the callback.
 	 * @return The data leaks found in the given APK file
-	 * @throws IOException            Thrown if the given APK file or any other
-	 *                                required file could not be found
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given APK file or any other required file
+	 *                     could not be found
 	 */
 	public InfoflowResults analyzeAPKFile(String fileName, String iccModel,
-			AnalysisConfigurationCallback configCallback) throws IOException, XmlPullParserException {
+			AnalysisConfigurationCallback configCallback) throws IOException {
 		String androidJars = System.getenv("ANDROID_JARS");
 		if (androidJars == null)
 			androidJars = System.getProperty("ANDROID_JARS");
