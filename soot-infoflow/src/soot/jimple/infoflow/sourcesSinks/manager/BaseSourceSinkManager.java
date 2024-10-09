@@ -2,7 +2,15 @@ package soot.jimple.infoflow.sourcesSinks.manager;
 
 import static soot.SootClass.DANGLING;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -11,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.sun.istack.NotNull;
 
 import heros.solver.IDESolver;
 import heros.solver.Pair;
@@ -261,9 +268,10 @@ public abstract class BaseSourceSinkManager
 	 *                  the interprocedural control flow graph
 	 * @param ap        The incoming tainted access path
 	 * @return The sink definition of the method that is called at the given call
-	 * site if such a definition exists, otherwise null
+	 *         site if such a definition exists, otherwise null
 	 */
-	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+	protected Collection<ISourceSinkDefinition> getSinkDefinitions(Stmt sCallSite, InfoflowManager manager,
+			AccessPath ap) {
 		// Do we have a statement-specific definition?
 		{
 			Collection<ISourceSinkDefinition> def = sinkStatements.get(sCallSite);
@@ -319,7 +327,8 @@ public abstract class BaseSourceSinkManager
 		return Collections.emptySet();
 	}
 
-	protected Collection<ISourceSinkDefinition> getInverseSourceDefinition(Stmt sCallSite, InfoflowManager manager, AccessPath ap) {
+	protected Collection<ISourceSinkDefinition> getInverseSourceDefinition(Stmt sCallSite, InfoflowManager manager,
+			AccessPath ap) {
 		// Do we have a statement-specific definition?
 		{
 			Collection<ISourceSinkDefinition> defs = sourceStatements.get(sCallSite);
@@ -413,7 +422,7 @@ public abstract class BaseSourceSinkManager
 		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}
 
-		@Override
+	@Override
 	public SourceInfo getInverseSinkInfo(Stmt sCallSite, InfoflowManager manager) {
 		if (oneSourceAtATime) {
 			logger.error("This does not support one source at a time for inverse methods.");
@@ -427,11 +436,13 @@ public abstract class BaseSourceSinkManager
 			return null;
 
 		Collection<ISourceSinkDefinition> defs = getInverseSinkDefinition(sCallSite, manager.getICFG());
-		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createInverseSinkInfoPairs(sCallSite, manager, defs);
+		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createInverseSinkInfoPairs(sCallSite, manager,
+				defs);
 		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}
 
-	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createSourceInfoPairs(Stmt sCallSite, InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
+	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createSourceInfoPairs(Stmt sCallSite,
+			InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
 		HashSet<Pair<AccessPath, ISourceSinkDefinition>> sourcePairs = new HashSet<>();
 		for (ISourceSinkDefinition def : defs) {
 			// If we don't have an invocation, we just taint the left side of the
@@ -439,9 +450,8 @@ public abstract class BaseSourceSinkManager
 			if (!sCallSite.containsInvokeExpr()) {
 				if (sCallSite instanceof DefinitionStmt) {
 					DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
-					AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null,
-							null, true, false, true,
-							ArrayTaintType.ContentsAndLength, false);
+					AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
+							true, false, true, ArrayTaintType.ContentsAndLength, false);
 					sourcePairs.add(new Pair<>(ap, def));
 				}
 				continue;
@@ -455,8 +465,8 @@ public abstract class BaseSourceSinkManager
 			if (sCallSite instanceof DefinitionStmt && returnType != null && returnType != VoidType.v()) {
 				DefinitionStmt defStmt = (DefinitionStmt) sCallSite;
 				// no immutable aliases, we overwrite the return values as a whole
-				AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null,
-						true, false, true, ArrayTaintType.ContentsAndLength, false);
+				AccessPath ap = manager.getAccessPathFactory().createAccessPath(defStmt.getLeftOp(), null, null, true,
+						false, true, ArrayTaintType.ContentsAndLength, false);
 				sourcePairs.add(new Pair<>(ap, def));
 			} else if (iexpr instanceof InstanceInvokeExpr && returnType == VoidType.v()) {
 				InstanceInvokeExpr iinv = (InstanceInvokeExpr) sCallSite.getInvokeExpr();
@@ -467,8 +477,8 @@ public abstract class BaseSourceSinkManager
 		return sourcePairs;
 	}
 
-	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createInverseSinkInfoPairs(Stmt sCallSite, InfoflowManager manager,
-																							 Collection<ISourceSinkDefinition> defs) {
+	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createInverseSinkInfoPairs(Stmt sCallSite,
+			InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
 		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = new HashSet<>();
 		for (ISourceSinkDefinition def : defs) {
 			HashSet<AccessPath> aps = new HashSet<>();
@@ -503,10 +513,12 @@ public abstract class BaseSourceSinkManager
 			for (AccessPath ap : aps)
 				pairs.add(new Pair<>(ap, def));
 
-			if (pairs.isEmpty() && manager.getConfig().getImplicitFlowMode()
-									!= InfoflowConfiguration.ImplicitFlowMode.NoImplicitFlows) {
-				// We have to create at least one pair regardless whether we could find any access path
-				// if implicit flows are enabled. Think of a method with only constant arguments but
+			if (pairs.isEmpty() && manager.getConfig()
+					.getImplicitFlowMode() != InfoflowConfiguration.ImplicitFlowMode.NoImplicitFlows) {
+				// We have to create at least one pair regardless whether we could find any
+				// access path
+				// if implicit flows are enabled. Think of a method with only constant arguments
+				// but
 				// is influenced by a tainted condition.
 				pairs.add(new Pair<>(AccessPath.getEmptyAccessPath(), def));
 			}
@@ -545,7 +557,8 @@ public abstract class BaseSourceSinkManager
 		return getDefsFromMap(this.sourceMethods, method);
 	}
 
-	private Collection<ISourceSinkDefinition> getDefsFromMap(MultiMap<SootMethod, ISourceSinkDefinition> map, SootMethod method) {
+	private Collection<ISourceSinkDefinition> getDefsFromMap(MultiMap<SootMethod, ISourceSinkDefinition> map,
+			SootMethod method) {
 		if (oneSourceAtATime) {
 			if (osaatType == SourceType.MethodCall && currentSource == method)
 				return map.get(method);
@@ -581,7 +594,7 @@ public abstract class BaseSourceSinkManager
 	 * @param sCallSite The statement to check for a source
 	 * @param cfg       An interprocedural CFG containing the statement
 	 * @return The definition of the discovered source if the given statement is a
-	 * source, null otherwise
+	 *         source, null otherwise
 	 */
 	protected Collection<ISourceSinkDefinition> getSource(Stmt sCallSite, IInfoflowCFG cfg) {
 		assert cfg != null;
@@ -915,7 +928,7 @@ public abstract class BaseSourceSinkManager
 	 *                     and its parameters
 	 * @return The soot method of the given class and sub signature or null
 	 */
-	private SootMethod matchMethodWithoutReturn(@NotNull SootClass sootClass, String subSignature) {
+	private SootMethod matchMethodWithoutReturn(SootClass sootClass, String subSignature) {
 		if (sootClass.resolvingLevel() == DANGLING) {
 			List<SootMethod> sootMethods = sootClass.getMethods();
 
@@ -1076,7 +1089,8 @@ public abstract class BaseSourceSinkManager
 	}
 
 	/**
-	 * Returns whether the callee is excluded from the additional flow condition for the matched sink.
+	 * Returns whether the callee is excluded from the additional flow condition for
+	 * the matched sink.
 	 *
 	 * @param matchedSink Sink method
 	 * @return true if class is excluded in the condition

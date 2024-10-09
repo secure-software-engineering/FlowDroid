@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import soot.jimple.infoflow.android.axml.AXmlNode;
 import soot.jimple.infoflow.android.manifest.binary.BinaryManifestActivity;
 import soot.jimple.infoflow.android.manifest.binary.BinaryManifestBroadcastReceiver;
@@ -27,20 +25,19 @@ import soot.jimple.infoflow.android.resources.ARSCFileParser;
 public class ProcessManifest extends
 		BaseProcessManifest<BinaryManifestActivity, BinaryManifestService, BinaryManifestContentProvider, BinaryManifestBroadcastReceiver> {
 
-	public ProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException, XmlPullParserException {
+	public ProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException {
 		super(apkFile, arscParser);
 	}
 
-	public ProcessManifest(File apkFile) throws IOException, XmlPullParserException {
+	public ProcessManifest(File apkFile) throws IOException {
 		super(apkFile);
 	}
 
-	public ProcessManifest(InputStream manifestIS, ARSCFileParser arscParser)
-			throws IOException, XmlPullParserException {
+	public ProcessManifest(InputStream manifestIS, ARSCFileParser arscParser) throws IOException {
 		super(manifestIS, arscParser);
 	}
 
-	public ProcessManifest(String apkPath) throws IOException, XmlPullParserException {
+	public ProcessManifest(String apkPath) throws IOException {
 		super(apkPath);
 	}
 

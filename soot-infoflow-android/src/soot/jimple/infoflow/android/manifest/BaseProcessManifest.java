@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import pxb.android.axml.AxmlVisitor;
 import soot.jimple.infoflow.android.axml.AXmlAttribute;
 import soot.jimple.infoflow.android.axml.AXmlDocument;
@@ -105,10 +103,9 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * path.
 	 *
 	 * @param apkPath file path to an APK.
-	 * @throws IOException            if an I/O error occurs.
-	 * @throws XmlPullParserException can occur due to a malformed manifest.
+	 * @throws IOException if an I/O error occurs.
 	 */
-	public BaseProcessManifest(String apkPath) throws IOException, XmlPullParserException {
+	public BaseProcessManifest(String apkPath) throws IOException {
 		this(new File(apkPath));
 	}
 
@@ -116,12 +113,11 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * Processes an AppManifest which is within the given {@link File}.
 	 *
 	 * @param apkFile the AppManifest within the given APK will be parsed.
-	 * @throws IOException            if an I/O error occurs.
-	 * @throws XmlPullParserException can occur due to a malformed manifest.
+	 * @throws IOException if an I/O error occurs.
 	 * @see BaseProcessManifest
 	 *      {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
-	public BaseProcessManifest(File apkFile) throws IOException, XmlPullParserException {
+	public BaseProcessManifest(File apkFile) throws IOException {
 		this(apkFile, ARSCFileParser.getInstance(apkFile));
 	}
 
@@ -130,11 +126,11 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 *
 	 * @param apkFile    the AppManifest within the given APK will be parsed.
 	 * @param arscParser The parser for the Android resource database
-	 * @throws IOException            if an I/O error occurs.
-	 * @throws XmlPullParserException can occur due to a malformed manifest.
-	 * @see BaseProcessManifest {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
+	 * @throws IOException if an I/O error occurs.
+	 * @see BaseProcessManifest
+	 *      {@link BaseProcessManifest#BaseProcessManifest(InputStream,ARSCFileParser)}
 	 */
-	public BaseProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException, XmlPullParserException {
+	public BaseProcessManifest(File apkFile, ARSCFileParser arscParser) throws IOException {
 		if (!apkFile.exists())
 			throw new RuntimeException(
 					String.format("The given APK file %s does not exist", apkFile.getCanonicalPath()));
@@ -155,11 +151,9 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 *
 	 * @param manifestIS InputStream for an AppManifest.
 	 * @param arscParser The Android resource file parser
-	 * @throws IOException            if an I/O error occurs.
-	 * @throws XmlPullParserException can occur due to a malformed manifest.
+	 * @throws IOException if an I/O error occurs.
 	 */
-	public BaseProcessManifest(InputStream manifestIS, ARSCFileParser arscParser)
-			throws IOException, XmlPullParserException {
+	public BaseProcessManifest(InputStream manifestIS, ARSCFileParser arscParser) throws IOException {
 		this.arscParser = arscParser;
 		this.handle(manifestIS);
 	}
@@ -172,7 +166,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * @throws IOException            if an I/O error occurs.
 	 * @throws XmlPullParserException can occur due to a malformed manifest.
 	 */
-	protected void handle(InputStream manifestIS) throws IOException, XmlPullParserException {
+	protected void handle(InputStream manifestIS) throws IOException {
 		this.axml = new AXmlHandler(manifestIS);
 
 		// get manifest node

@@ -1,15 +1,22 @@
 package soot.jimple.infoflow.solver.cfg;
 
-import com.sun.istack.NotNull;
-import soot.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import soot.Body;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Unit;
+import soot.Value;
 import soot.jimple.IfStmt;
 import soot.jimple.Stmt;
 import soot.jimple.SwitchStmt;
 import soot.jimple.toolkits.ide.icfg.BackwardsInterproceduralCFG;
 import soot.toolkits.graph.DirectedGraph;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Inverse interprocedural control-flow graph for the infoflow solver
@@ -105,12 +112,12 @@ public class BackwardsInfoflowCFG extends InfoflowCFG {
 
 	/**
 	 * Finds all possible interprocedural conditionals recursive
-	 * @param unit start unit
+	 * 
+	 * @param unit         start unit
 	 * @param conditionals result list
-	 * @param doneSet already processed units
+	 * @param doneSet      already processed units
 	 */
-	private void getConditionalsRecursive(@NotNull Unit unit, @NotNull List<Unit> conditionals,
-										  @NotNull Set<Unit> doneSet) {
+	private void getConditionalsRecursive(Unit unit, List<Unit> conditionals, Set<Unit> doneSet) {
 		SootMethod sm = getMethodOf(unit);
 		// Exclude the dummy method
 		if (sm.getDeclaringClass().getName().equals("dummyMainClass") && sm.getName().equals("dummy"))
@@ -129,7 +136,8 @@ public class BackwardsInfoflowCFG extends InfoflowCFG {
 
 			// call sites
 			if (item instanceof Stmt && ((Stmt) item).containsInvokeExpr()) {
-				List<Unit> entryPoints = getPredsOf(item).stream().filter(pred -> getMethodOf(pred) != sm).collect(Collectors.toList());
+				List<Unit> entryPoints = getPredsOf(item).stream().filter(pred -> getMethodOf(pred) != sm)
+						.collect(Collectors.toList());
 				entryPoints.removeIf(doneSet::contains);
 				for (Unit entryPoint : entryPoints) {
 					getConditionalsRecursive(entryPoint, conditionals, doneSet);

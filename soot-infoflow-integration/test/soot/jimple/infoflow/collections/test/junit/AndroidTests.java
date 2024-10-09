@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.Value;
 import soot.jimple.Constant;
@@ -23,7 +22,7 @@ public class AndroidTests extends FlowDroidTests {
 	}
 
 	@Test
-	public void testResourceResolving() throws XmlPullParserException, IOException {
+	public void testResourceResolving() throws IOException {
 		File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/Collections/StringResourcesTest.apk"));
 		app.getConfig().getPathConfiguration()
@@ -45,7 +44,7 @@ public class AndroidTests extends FlowDroidTests {
 	}
 
 	@Test
-	public void testConstants() throws XmlPullParserException, IOException {
+	public void testConstants() throws IOException {
 		File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/Collections/AppWithConstantFields.apk"));
 		app.getConfig().getPathConfiguration()

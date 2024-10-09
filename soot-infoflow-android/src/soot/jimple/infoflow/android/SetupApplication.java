@@ -28,7 +28,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlPullParserException;
 
 import heros.solver.Pair;
 import soot.G;
@@ -466,12 +465,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Parses common app resources such as the manifest file
 	 * 
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
-	protected void parseAppResources() throws IOException, XmlPullParserException {
+	protected void parseAppResources() throws IOException {
 		final File targetAPK = config.getAnalysisFileConfig().getTargetAPKFile();
 		if (!targetAPK.exists())
 			throw new RuntimeException(
@@ -511,9 +507,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * @param targetAPK The target APK file
 	 * @return The manifest handler for reading the given app's manifest file
 	 * @throws IOException
-	 * @throws XmlPullParserException
 	 */
-	protected IManifestHandler createManifestParser(final File targetAPK) throws IOException, XmlPullParserException {
+	protected IManifestHandler createManifestParser(final File targetAPK) throws IOException {
 		return new ProcessManifest(targetAPK, resources);
 	}
 
@@ -523,13 +518,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @param sourcesAndSinks A provider from which the analysis can obtain the list
 	 *                        of sources and sinks
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
-	private void calculateCallbacks(ISourceSinkDefinitionProvider sourcesAndSinks)
-			throws IOException, XmlPullParserException {
+	private void calculateCallbacks(ISourceSinkDefinitionProvider sourcesAndSinks) throws IOException {
 		calculateCallbacks(sourcesAndSinks, null);
 	}
 
@@ -541,13 +532,10 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 *                        of sources and sinks
 	 * @param entryPoint      The entry point for which to calculate the callbacks.
 	 *                        Pass null to calculate callbacks for all entry points.
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
 	private void calculateCallbacks(ISourceSinkDefinitionProvider sourcesAndSinks, SootClass entryPoint)
-			throws IOException, XmlPullParserException {
+			throws IOException {
 		// Add the callback methods
 		LayoutFileParser lfp = null;
 		final CallbackConfiguration callbackConfig = config.getCallbackConfig();
@@ -1462,13 +1450,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @param sources The methods that shall be considered as sources
 	 * @param sinks   The methods that shall be considered as sinks
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
-	public InfoflowResults runInfoflow(Set<AndroidMethod> sources, Set<AndroidMethod> sinks)
-			throws IOException, XmlPullParserException {
+	public InfoflowResults runInfoflow(Set<AndroidMethod> sources, Set<AndroidMethod> sinks) throws IOException {
 		final Set<ISourceSinkDefinition> sourceDefs = new HashSet<>(sources.size());
 		final Set<ISourceSinkDefinition> sinkDefs = new HashSet<>(sinks.size());
 
@@ -1507,12 +1491,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * 
 	 * @param sourceSinkFile The full path and file name of the file containing the
 	 *                       sources and sinks
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
-	public InfoflowResults runInfoflow(File sourceSinkFile) throws IOException, XmlPullParserException {
+	public InfoflowResults runInfoflow(File sourceSinkFile) throws IOException {
 		if (sourceSinkFile != null && sourceSinkFile.exists())
 			config.getAnalysisFileConfig().setSourceSinkFile(sourceSinkFile);
 
@@ -1522,12 +1503,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	/**
 	 * Runs the data flow analysis.
 	 * 
-	 * @throws IOException            Thrown if the given source/sink file could not
-	 *                                be read.
-	 * @throws XmlPullParserException Thrown if the Android manifest file could not
-	 *                                be read.
+	 * @throws IOException Thrown if the given source/sink file could not be read.
 	 */
-	public InfoflowResults runInfoflow() throws IOException, XmlPullParserException {
+	public InfoflowResults runInfoflow() throws IOException {
 		// If we don't have a source/sink file by now, we cannot run the data
 		// flow analysis
 		File sourceSinkFile = config.getAnalysisFileConfig().getSourceSinkFile();
@@ -1582,7 +1560,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// Perform basic app parsing
 		try {
 			parseAppResources();
-		} catch (IOException | XmlPullParserException e) {
+		} catch (IOException e) {
 			logger.error("Parse app resource failed", e);
 			throw new RuntimeException("Parse app resource failed", e);
 		}
@@ -1645,7 +1623,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				calculateCallbacks(sourcesAndSinks, entrypoint);
 			else
 				calculateCallbacks(sourcesAndSinks);
-		} catch (IOException | XmlPullParserException e) {
+		} catch (IOException e) {
 			logger.error("Callgraph construction failed: " + e.getMessage(), e);
 			throw new RuntimeException("Callgraph construction failed", e);
 		}

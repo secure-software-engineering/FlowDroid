@@ -15,7 +15,6 @@ import javax.xml.stream.XMLStreamException;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.xmlpull.v1.XmlPullParserException;
 
 import soot.Body;
 import soot.SootMethod;
@@ -61,7 +60,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
 	 * Tests that the alias analysis correctly stops when an overwrite happens
 	 */
 	@Test
-	public void testFlowSensitivityWithOverwrite() throws XmlPullParserException, IOException {
+	public void testFlowSensitivityWithOverwrite() throws IOException {
 		final File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/flowsensitiveOverwrite.apk"));
 		InfoflowResults results = app.runInfoflow(new File(rootDir, "../soot-infoflow-android/SourcesAndSinks.txt"));
@@ -75,7 +74,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
 	 * SummaryTaintWrapper#getSummaryDeclaringClass().
 	 */
 	@Test
-	public void testTypeHierarchyFromSummary() throws XmlPullParserException, IOException {
+	public void testTypeHierarchyFromSummary() throws IOException {
 		final File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/TypeHierarchyTest.apk"));
 		InfoflowResults results = app.runInfoflow(new File(rootDir, "../soot-infoflow-android/SourcesAndSinks.txt"));
@@ -120,7 +119,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
 	 * by a taint wrapper that marked the method as exclusive.
 	 */
 	@Test
-	public void testMapClear() throws XmlPullParserException, IOException {
+	public void testMapClear() throws IOException {
 		SetupApplication app = initApplication(new File(getIntegrationRoot(), "testAPKs/MapClearTest.apk"));
 		InfoflowResults results = app
 				.runInfoflow(new File(getIntegrationRoot(), "../soot-infoflow-android/SourcesAndSinks.txt"));
@@ -193,7 +192,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
 	}
 
 	@Test
-	public void testThreadRunnable() throws XmlPullParserException, IOException {
+	public void testThreadRunnable() throws IOException {
 		final File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/ThreadRunnable.apk"));
 		// TODO: add support for parameter mismatch/virtualedges.xml
@@ -204,7 +203,7 @@ public class AndroidRegressionTests extends BaseJUnitTests {
 	}
 
 	@Test
-	public void testThreadRunnableIndirect() throws XmlPullParserException, IOException {
+	public void testThreadRunnableIndirect() throws IOException {
 		final File rootDir = getIntegrationRoot();
 		SetupApplication app = initApplication(new File(rootDir, "testAPKs/ThreadRunnableIndirect.apk"));
 		// TODO: add support for parameter mismatch/virtualedges.xml
