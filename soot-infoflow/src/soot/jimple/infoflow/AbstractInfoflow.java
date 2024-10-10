@@ -47,7 +47,6 @@ import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
-import soot.UnitPatchingChain;
 import soot.Value;
 import soot.javaToJimple.DefaultLocalGenerator;
 import soot.jimple.AssignStmt;
@@ -929,14 +928,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
 					Body body = sm.getActiveBody();
-					UnitPatchingChain u = body.getUnits();
-					Unit crt = u.getFirst();
-					while (crt != null) {
-						Unit nxt = u.getSuccOf(crt);
+					Iterator<Unit> it = body.getUnits().iterator();
+					while (it.hasNext()) {
+						Unit crt = it.next();
 						if (crt.getTag(SimulatedDynamicInvokeTag.TAG_NAME) != null) {
-							u.remove(crt);
+							it.remove();
 						}
-						crt = nxt;
 					}
 				}
 			}
