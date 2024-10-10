@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
+import soot.UnitPatchingChain;
 import soot.Value;
 import soot.javaToJimple.DefaultLocalGenerator;
 import soot.jimple.AssignStmt;
@@ -85,6 +87,7 @@ import soot.jimple.infoflow.data.pathBuilders.IPathBuilderFactory;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.entryPointCreators.SimulatedDynamicInvokeTag;
 import soot.jimple.infoflow.globalTaints.GlobalTaintManager;
 import soot.jimple.infoflow.handlers.PostAnalysisHandler;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
@@ -489,10 +492,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (ipcManager != null)
 				ipcManager.updateJimpleForICC();
 
-			// We might need to patch invokedynamic instructions
-			if (config.isPatchInvokeDynamicInstructions())
-				patchDynamicInvokeInstructions();
-
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
 				tr.onBeforeCallgraphConstruction();
@@ -533,8 +532,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	/**
 	 * Re-writes dynamic invocation instructions into traditional invcations
+	 * @param patchDynamicInvoke 
 	 */
-	private void patchDynamicInvokeInstructions() {
+	private void patchDynamicInvokeInstructions(AtomicBoolean patchDynamicInvoke) {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
@@ -545,7 +545,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 						@Override
 						protected void onMethodSourceLoaded(SootMethod m, Body b) {
-							patchDynamicInvokeInstructions(b);
+							if (patchDynamicInvoke.get())
+								patchDynamicInvokeInstructions(b);
 						}
 
 					});
@@ -640,11 +641,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			Stmt stmt = jimple.newAssignStmt(sb, jimple.newNewExpr(rtStringBuilder));
 			stmt.addTag(SimulatedCodeElementTag.TAG);
+			stmt.addTag(SimulatedDynamicInvokeTag.TAG);
 			newStmts.add(stmt);
 
 			stmt = jimple.newInvokeStmt(jimple.newSpecialInvokeExpr(sb,
 					scene.makeMethodRef(scStringBuilder, "void <init>(java.lang.String)", false)));
 			stmt.addTag(SimulatedCodeElementTag.TAG);
+			stmt.addTag(SimulatedDynamicInvokeTag.TAG);
 			newStmts.add(stmt);
 
 			// Add all partial strings
@@ -707,6 +710,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					Stmt toStringStmt = jimple.newAssignStmt(sarg,
 							jimple.newStaticInvokeExpr(elementToStringRef, Collections.singletonList(arg)));
 					toStringStmt.addTag(SimulatedCodeElementTag.TAG);
+					toStringStmt.addTag(SimulatedDynamicInvokeTag.TAG);
 					newStmts.add(toStringStmt);
 
 					arg = sarg;
@@ -718,6 +722,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 				stmt = jimple.newInvokeStmt(jimple.newVirtualInvokeExpr(sb, appendRef, Collections.singletonList(arg)));
 				stmt.addTag(SimulatedCodeElementTag.TAG);
+				stmt.addTag(SimulatedDynamicInvokeTag.TAG);
 				newStmts.add(stmt);
 			}
 
@@ -727,6 +732,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				stmt = jimple.newAssignStmt((Local) assignStmt.getLeftOp(),
 						jimple.newVirtualInvokeExpr(sb, toStringRef));
 				stmt.addTag(SimulatedCodeElementTag.TAG);
+				stmt.addTag(SimulatedDynamicInvokeTag.TAG);
 				newStmts.add(stmt);
 			}
 		}
@@ -871,8 +877,24 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			IInfoflowCFG iCfg = icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(),
 					config.getEnableExceptionTracking());
 
-			if (config.isTaintAnalysisEnabled())
-				runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+			if (config.isTaintAnalysisEnabled()) {
+				AtomicBoolean patchDynamicInvoke = new AtomicBoolean(config.isPatchInvokeDynamicInstructions());
+				try {
+
+					// We might need to patch invokedynamic instructions
+					if (patchDynamicInvoke.get()) {
+						patchDynamicInvokeInstructions(patchDynamicInvoke);
+					}
+					runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+				} finally {
+					if (patchDynamicInvoke.get()) {
+						//make sure that method sources will not be patched in the future
+						patchDynamicInvoke.set(false);
+						undoDynamicInvokeInstructions();
+					}
+
+				}
+			}
 
 			// Gather performance data
 			performanceData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeCallgraph) / 1E9));
@@ -897,6 +919,29 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (throwExceptions)
 				throw ex;
 		}
+	}
+
+	/**
+	 * Since these simulations are not perfect, we should remove them afterwards
+	 */
+	private void undoDynamicInvokeInstructions() {
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod sm : sc.getMethods()) {
+				if (sm.hasActiveBody()) {
+					Body body = sm.getActiveBody();
+					UnitPatchingChain u = body.getUnits();
+					Unit crt = u.getFirst();
+					while (crt != null) {
+						Unit nxt = u.getSuccOf(crt);
+						if (crt.getTag(SimulatedDynamicInvokeTag.TAG_NAME) != null) {
+							u.remove(crt);
+						}
+						crt = nxt;
+					}
+				}
+			}
+		}
+
 	}
 
 	private void runTaintAnalysis(final ISourceSinkManager sourcesSinks, final Set<String> additionalSeeds,
