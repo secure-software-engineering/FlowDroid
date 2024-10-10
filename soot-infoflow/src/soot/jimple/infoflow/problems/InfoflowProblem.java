@@ -210,8 +210,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 			private Set<Abstraction> createNewTaintOnAssignment(final AssignStmt assignStmt, final Value[] rightVals,
 					Abstraction d1, final Abstraction newSource) {
-				if (true)
-					return Collections.EMPTY_SET;
 				final Value leftValue = assignStmt.getLeftOp();
 				final Value rightValue = assignStmt.getRightOp();
 				boolean addLeftValue = false;
