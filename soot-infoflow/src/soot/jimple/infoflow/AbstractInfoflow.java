@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -491,6 +490,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (ipcManager != null)
 				ipcManager.updateJimpleForICC();
 
+			// We might need to patch invokedynamic instructions
+			if (config.isPatchInvokeDynamicInstructions())
+				patchDynamicInvokeInstructions();
+
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
 				tr.onBeforeCallgraphConstruction();
@@ -531,9 +534,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	/**
 	 * Re-writes dynamic invocation instructions into traditional invcations
-	 * @param patchDynamicInvoke 
 	 */
-	private void patchDynamicInvokeInstructions(AtomicBoolean patchDynamicInvoke) {
+	private void patchDynamicInvokeInstructions() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
@@ -544,8 +546,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 						@Override
 						protected void onMethodSourceLoaded(SootMethod m, Body b) {
-							if (patchDynamicInvoke.get())
-								patchDynamicInvokeInstructions(b);
+							patchDynamicInvokeInstructions(b);
 						}
 
 					});
@@ -876,24 +877,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			IInfoflowCFG iCfg = icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(),
 					config.getEnableExceptionTracking());
 
-			if (config.isTaintAnalysisEnabled()) {
-				AtomicBoolean patchDynamicInvoke = new AtomicBoolean(config.isPatchInvokeDynamicInstructions());
-				try {
-
-					// We might need to patch invokedynamic instructions
-					if (patchDynamicInvoke.get()) {
-						patchDynamicInvokeInstructions(patchDynamicInvoke);
-					}
-					runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
-				} finally {
-					if (patchDynamicInvoke.get()) {
-						//make sure that method sources will not be patched in the future
-						patchDynamicInvoke.set(false);
-						undoDynamicInvokeInstructions();
-					}
-
-				}
-			}
+			if (config.isTaintAnalysisEnabled())
+				runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
 
 			// Gather performance data
 			performanceData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeCallgraph) / 1E9));
@@ -923,7 +908,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	/**
 	 * Since these simulations are not perfect, we should remove them afterwards
 	 */
-	private void undoDynamicInvokeInstructions() {
+	public void undoDynamicInvokeInstructions() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
