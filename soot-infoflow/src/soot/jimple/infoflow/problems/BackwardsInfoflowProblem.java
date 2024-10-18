@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.problems;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import soot.ArrayType;
 import soot.Local;
 import soot.NullType;
 import soot.PrimType;
+import soot.RefType;
 import soot.SootMethod;
 import soot.Type;
 import soot.Unit;
@@ -28,6 +30,7 @@ import soot.jimple.InstanceFieldRef;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InstanceOfExpr;
 import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
 import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.ReturnStmt;
@@ -378,6 +381,15 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 										if (isPrimitiveOrStringBase(source)) {
 											newAbs = newAbs.deriveNewAbstractionWithTurnUnit(srcUnit);
+
+											// In some weird cases, aliases are created between the "new" statement and
+											// the constructor call
+											if (isUninitializedObject(rightVal, srcUnit)) {
+												// Compute aliases
+												for (Unit pred : manager.getICFG().getPredsOf(assignStmt))
+													aliasing.computeAliases(d1, (Stmt) pred, rightVal, res,
+															interproceduralCFG().getMethodOf(pred), newAbs, true);
+											}
 										} else if (leftVal instanceof FieldRef
 												&& isPrimitiveOrStringType(((FieldRef) leftVal).getField().getType())
 												&& !ap.getCanHaveImmutableAliases()) {
@@ -397,7 +409,43 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 						return res;
 					}
+
 				};
+			}
+
+			/**
+			 * Checks whether the given value is uninitialized, i.e., the constructor has
+			 * not been called yet, at the given unit
+			 * 
+			 * @param value The value to check
+			 * @param unit  The unit at which to check
+			 * @return True the given value is uninitialized at the given unit, false
+			 *         otherwise
+			 */
+			private boolean isUninitializedObject(Value value, Unit unit) {
+				if (value instanceof Local && value.getType() instanceof RefType) {
+					// We check whether we may have seen a constructor call before
+					Set<Unit> doneSet = new HashSet<>();
+					List<Unit> workList = new ArrayList<>();
+					workList.add(unit);
+					while (!workList.isEmpty()) {
+						Unit u = workList.remove(workList.size() - 1);
+						if (doneSet.add(u)) {
+							if (u instanceof InvokeStmt) {
+								InvokeStmt invoke = (InvokeStmt) u;
+								InvokeExpr iexpr = invoke.getInvokeExpr();
+								if (iexpr instanceof InstanceInvokeExpr) {
+									InstanceInvokeExpr iiexpr = (InstanceInvokeExpr) iexpr;
+									if (iiexpr.getBase() == value && iexpr.getMethodRef().isConstructor())
+										return true;
+								}
+							}
+							workList.addAll(interproceduralCFG().getPredsOf(u));
+						}
+					}
+					return true;
+				}
+				return false;
 			}
 
 			@Override

@@ -78,8 +78,25 @@ public class Aliasing {
 	 */
 	public void computeAliases(final Abstraction d1, final Stmt src, final Value targetValue, Set<Abstraction> taintSet,
 			SootMethod method, Abstraction newAbs) {
+		computeAliases(d1, src, targetValue, taintSet, method, newAbs, false);
+	}
+
+	/**
+	 * Computes the taints for the aliases of a given tainted variable
+	 * 
+	 * @param d1          The context in which the variable has been tainted
+	 * @param src         The statement that tainted the variable
+	 * @param targetValue The target value which has been tainted
+	 * @param taintSet    The set to which all generated alias taints shall be added
+	 * @param method      The method containing src
+	 * @param newAbs      The newly generated abstraction for the variable taint
+	 * @param force       True if all checks on whether aliases are possible shall
+	 *                    be ignored
+	 */
+	public void computeAliases(final Abstraction d1, final Stmt src, final Value targetValue, Set<Abstraction> taintSet,
+			SootMethod method, Abstraction newAbs, boolean force) {
 		// Can we have aliases at all?
-		if (!canHaveAliases(newAbs.getAccessPath()) && !isStringConstructorCall(src))
+		if (!force && !canHaveAliases(newAbs.getAccessPath()) && !isStringConstructorCall(src))
 			return;
 
 		// If we are not in a conditionally-called method, we run the
