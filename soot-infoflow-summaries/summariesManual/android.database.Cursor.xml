@@ -1,7 +1,54 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="102">
+<summary fileFormatVersion="102" isInterface="true">
+	<hierarchy>
+		<interface name="java.io.Closeable" />
+	</hierarchy>
     <methods>
-        <method id="java.lang.String getString(int)">
+        <method id="void copyStringToBuffer(int,android.database.CharArrayBuffer)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Parameter" ParameterIndex="1"
+                    AccessPath="[android.database.CharArrayBuffer: char[] data]"
+                    AccessPathTypes="[char[]]" />
+            </flow>
+        </method>
+        <method id="byte[] getBlob(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="double getDouble(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="float getFloat(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="float getInt(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="long getLong(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="short getShort(int)" typeChecking="false">
+            <flow>
+                <from sourceSinkType="Field" />
+                <to sourceSinkType="Return" />
+            </flow>
+        </method>
+        <method id="java.lang.String getString(int)" typeChecking="false">
             <flow>
                 <from sourceSinkType="Field" />
                 <to sourceSinkType="Return" />
