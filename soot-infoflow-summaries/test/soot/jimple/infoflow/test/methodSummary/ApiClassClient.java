@@ -576,4 +576,9 @@ public class ApiClassClient {
 		return r + s;
 	}
 
+	public void stringConcatTest() {
+		String s = "World " + source() + " Hello";
+		sink(s);
+	}
+
 }

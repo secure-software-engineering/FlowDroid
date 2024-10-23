@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -50,9 +51,15 @@ public abstract class BaseSummaryTaintWrapperTests {
 	}
 
 	protected void testFlowForMethod(String m, int count) {
+
+	}
+
+	protected void testFlowForMethod(String m, int count, Consumer<InfoflowConfiguration> configCallback) {
 		IInfoflow iFlow = null;
 		try {
 			iFlow = initInfoflow();
+			if (configCallback != null)
+				configCallback.accept(iFlow.getConfig());
 			iFlow.getConfig().getAccessPathConfiguration().setAccessPathLength(3);
 			iFlow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(Collections.singletonList(m)),
 					Arrays.asList(source), Collections.singletonList(sink));
