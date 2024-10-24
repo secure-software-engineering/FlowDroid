@@ -12,7 +12,6 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPathFragment;
-import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.InfoflowPerformanceData;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
@@ -211,7 +210,8 @@ public class InfoflowResultsSerializer {
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
 			if (ms.getMethod() != null)
-				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition,
+						ms.getMethod().getSignature());
 		}
 
 		writeAdditionalSourceInfo(source, writer);
@@ -265,16 +265,19 @@ public class InfoflowResultsSerializer {
 		if (config.getEnableLineNumbers())
 			writer.writeAttribute(XmlConstants.Attributes.linenumber,
 					String.valueOf(sink.getStmt().getJavaSourceStartLineNumber()));
-		if (sink.getDefinition().getCategory() != null)
-			writer.writeAttribute(XmlConstants.Attributes.category,
-					sink.getDefinition().getCategory().getHumanReadableDescription());
+		if (sink.getDefinition().getCategory() != null) {
+			String catStr = sink.getDefinition().getCategory().getHumanReadableDescription();
+			if (catStr != null)
+				writer.writeAttribute(XmlConstants.Attributes.category, catStr);
+		}
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(sink.getStmt()).getSignature());
 		ISourceSinkDefinition def = sink.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
 			if (ms.getMethod() != null)
-				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition, ms.getMethod().getSignature());
+				writer.writeAttribute(XmlConstants.Attributes.methodSourceSinkDefinition,
+						ms.getMethod().getSignature());
 		}
 		writeAdditionalSinkInfo(sink, writer);
 		writeAccessPath(sink.getAccessPath(), writer);
