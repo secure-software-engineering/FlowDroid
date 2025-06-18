@@ -483,7 +483,6 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 							ConstantPropagatorAndFolder.v().transform(caller.getActiveBody());
 							checkAndAddMethod(caller);
 						}
-						caller.getActiveBody().getUnits().remove(assignConst);
 
 						Stmt inv = Jimple.v().newInvokeStmt(assign.getInvokeExpr());
 						caller.getActiveBody().getUnits().swapWith(assign, inv);
