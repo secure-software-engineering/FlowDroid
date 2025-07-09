@@ -66,9 +66,9 @@ public class MemoryWarningSystem {
 	private final static NotificationListener memoryListener;
 	private boolean isClosed = false;
 
-	private long threshold;
+	long threshold;
 
-	private static Thread thrLowMemoryWarningThread;
+	static Thread thrLowMemoryWarningThread;
 
 	private static TreeSet<MemoryWarningSystem> warningSystems = new TreeSet<>(new Comparator<MemoryWarningSystem>() {
 
@@ -103,7 +103,7 @@ public class MemoryWarningSystem {
 
 	}
 
-	private static long triggerNotification() {
+	static long triggerNotification() {
 		long maxMemory = tenuredGenPool.getUsage().getMax();
 		long usedMemory = tenuredGenPool.getUsage().getUsed();
 
@@ -206,54 +206,9 @@ public class MemoryWarningSystem {
 			if (useOwnImplementation) {
 				// No JVM support is available, use our own implementation
 				if (thrLowMemoryWarningThread == null) {
-					thrLowMemoryWarningThread = ThreadUtils.createGenericThread(new Runnable() {
-
-						@Override
-						public void run() {
-							while (true) {
-								MemoryWarningSystem l;
-								synchronized (warningSystems) {
-									if (warningSystems.isEmpty()) {
-										thrLowMemoryWarningThread = null;
-										return;
-									}
-									l = warningSystems.iterator().next();
-								}
-								long nextThreshold = l.threshold;
-								MemoryUsage usage = tenuredGenPool.getUsage();
-								if (usage == null) {
-									logger.warn(MessageFormat.format("Memory usage of {0} could not be estimated",
-											tenuredGenPool.getName()));
-									return;
-								} else {
-									long used = usage.getUsed();
-									if (used >= l.threshold) {
-										nextThreshold = triggerNotification();
-										if (nextThreshold == -1) {
-											synchronized (warningSystems) {
-												if (warningSystems.isEmpty()) {
-													thrLowMemoryWarningThread = null;
-													return;
-												}
-											}
-										}
-									}
-								}
-								long used = usage.getUsed();
-								// Depending on how far we are from the next threshold, we can rest longer
-								// or shorter
-								long missing = nextThreshold - used;
-								if (missing <= 0)
-									continue;
-								try {
-									long wait = (long) ((missing / (double) tenuredGenPool.getUsage().getMax()) * 500);
-									Thread.sleep(wait);
-								} catch (InterruptedException e) {
-								}
-							}
-						}
-
-					}, "Low memory monitor", true);
+					thrLowMemoryWarningThread = ThreadUtils.createGenericThread(
+							new MemoryWarningThreadRunnable(tenuredGenPool, warningSystems, logger),
+							"Low memory monitor", true);
 					thrLowMemoryWarningThread.setPriority(Thread.MIN_PRIORITY);
 					thrLowMemoryWarningThread.start();
 				}
@@ -281,6 +236,7 @@ public class MemoryWarningSystem {
 			// Doesn't matter, we wanted to get rid of it anyway
 		}
 		isClosed = true;
+		listeners.clear();
 	}
 
 }

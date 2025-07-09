@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.android.iccta;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,6 +44,8 @@ public class IccInstrumenter implements PreAnalysisHandler {
 	protected final SootMethod smSendMessage;
 	protected final Set<SootMethod> processedMethods = new HashSet<>();
 	protected final MultiMap<Body, Unit> instrumentedUnits = new HashMultiMap<>();
+
+	private Collection<SootClass> handlers;
 
 	public IccInstrumenter(String iccModel, SootClass dummyMainClass,
 			ComponentEntryPointCollection componentToEntryPoint) {
@@ -174,7 +177,8 @@ public class IccInstrumenter implements PreAnalysisHandler {
 						if (callee == smMessengerSend || callee == smSendMessage) {
 							// collect the value for sendMessage()
 							String hc = appClasses.get(stmt.getInvokeExpr().getUseBoxes().get(1).getValue());
-							Set<SootClass> handlers = MessageHandler.v().getAllHandlers();
+							if (handlers == null)
+								handlers = MessageHandler.getAllHandlers();
 							for (SootClass handler : handlers) {
 								// matching the handler and its signature
 								if (hc != null && handlerInner.get(hc) == handler.getName()) {

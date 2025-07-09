@@ -4,34 +4,25 @@
         <method id="java.util.Set cellSet()">
             <flows>
                 <flow isAlias="false" typeChecking="false">
-                    <from sourceSinkType="Field"
-                        AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
-                    <to sourceSinkType="Return"
-                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-                        AccessPathTypes="[java.lang.Object[]]" />
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
+                    <to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
             </flows>
         </method>
         <method id="void clear()">
             <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
+                <clear sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
             </clears>
         </method>
         <method id="java.util.Map column(java.lang.Object)">
             <constraints>
                 <key sourceSinkType="Any" />
-                <key sourceSinkType="Parameter"
-                     ParameterIndex="0" />
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
             </constraints>
             <flows>
                 <flow isAlias="false" typeChecking="false">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
-                    <to sourceSinkType="Return"
-                        AccessPath="[java.util.Map: java.lang.Object[] values]"
-                        constrained="keep" />
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
+                    <to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]" constrained="keep" />
                 </flow>
             </flows>
         </method>
@@ -46,10 +37,8 @@
                 <key sourceSinkType="Parameter" ParameterIndex="1" />
             </constraints>
             <flows>
-                <flow isAlias="false" typeChecking="false">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
+                <flow isAlias="false" typeChecking="false" ignoreTypes="true">
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
@@ -62,38 +51,26 @@
             </constraints>
             <flows>
                 <!-- get prev element -->
-                <flow isAlias="false" typeChecking="false" final="true">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
+                <flow isAlias="false" typeChecking="false" final="true" ignoreTypes="true">
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
                 <!-- add new element -->
                 <flow isAlias="false" typeChecking="false" final="true">
-                    <from sourceSinkType="Parameter"
-                          ParameterIndex="2" />
-                    <to   sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
+                    <from sourceSinkType="Parameter" ParameterIndex="2" />
+                    <to sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
                 </flow>
             </flows>
             <clears>
                 <!-- remove prev element -->
-                <clear sourceSinkType="Field"
-                       AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                       preventPropagation="false"
-                       constrained="true" />
+                <clear sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" preventPropagation="false" constrained="true" />
             </clears>
         </method>
         <method id="void putAll(com.google.common.collect.Table)">
             <flows>
                 <flow isAlias="false" typeChecking="false" final="true">
-                    <from sourceSinkType="Parameter"
-                          ParameterIndex="0"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
-                    <to sourceSinkType="Field"
-                        AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                        constrained="keep" />
+                    <from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
+                    <to sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="keep" />
                 </flow>
             </flows>
         </method>
@@ -103,34 +80,24 @@
                 <key sourceSinkType="Parameter" ParameterIndex="1" />
             </constraints>
             <flows>
-                <flow isAlias="false" typeChecking="false" final="true">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
+                <flow isAlias="false" typeChecking="false" final="true" ignoreTypes="true">
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
                     <to sourceSinkType="Return" />
                 </flow>
             </flows>
             <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                       constrained="true"
-                       preventPropagation="false" />
+                <clear sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" preventPropagation="false" />
             </clears>
         </method>
         <method id="java.util.Map row(java.lang.Object)">
             <constraints>
-                <key sourceSinkType="Parameter"
-                     ParameterIndex="0" />
+                <key sourceSinkType="Parameter" ParameterIndex="0" />
                 <key sourceSinkType="Any" />
             </constraints>
             <flows>
                 <flow isAlias="false" typeChecking="false">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]"
-                          constrained="true" />
-                    <to sourceSinkType="Return"
-                        AccessPath="[java.util.Map: java.lang.Object[] values]"
-                        constrained="keep" />
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" constrained="true" />
+                    <to sourceSinkType="Return" AccessPath="[java.util.Map: java.lang.Object[] values]" constrained="keep" />
                 </flow>
             </flows>
         </method>
@@ -142,10 +109,8 @@
         <method id="java.util.Collection values()">
             <flows>
                 <flow isAlias="false" typeChecking="false">
-                    <from sourceSinkType="Field"
-                          AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
-                    <to sourceSinkType="Return"
-                        AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
+                    <from sourceSinkType="Field" AccessPath="[com.google.common.collect.Table: java.lang.Object[][] table]" />
+                    <to sourceSinkType="Return" AccessPath="[java.util.Collection: java.lang.Object[] innerArray]" />
                 </flow>
             </flows>
         </method>

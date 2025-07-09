@@ -280,6 +280,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 	private final Map<Integer, String> stringTable = new HashMap<>();
 	private final List<ResPackage> packages = new ArrayList<>();
 
+	private boolean warnedUnsupportedWeak = false;
+	private boolean warnedUnsupportedCompact = false;
+
 	public static class ResPackage {
 		private int packageId;
 		private String packageName;
@@ -2522,8 +2525,18 @@ public class ARSCFileParser extends AbstractResourceParser {
 		boolean flagsCompact = (flags & FLAG_COMPACT) == FLAG_COMPACT;
 
 		if (flagsWeak || flagsCompact) {
-			logger.warn("Unsupported ResTable entry flags encountered: {} {}", flagsWeak ? "FLAG_WEAK" : "",
-					flagsCompact ? "FLAG_COMPACT" : "");
+			boolean doWarn = false;
+			if (flagsWeak) {
+				doWarn = !warnedUnsupportedWeak;
+				warnedUnsupportedWeak = true;
+			}
+			if (flagsCompact) {
+				doWarn |= !warnedUnsupportedCompact;
+				warnedUnsupportedCompact = true;
+			}
+			if (doWarn)
+				logger.warn("Unsupported ResTable entry flags encountered: {} {}", flagsWeak ? "FLAG_WEAK" : "",
+						flagsCompact ? "FLAG_COMPACT" : "");
 		}
 
 		entry.key = readUInt32(data, offset);

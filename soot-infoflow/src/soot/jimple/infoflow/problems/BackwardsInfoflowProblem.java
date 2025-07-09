@@ -371,6 +371,17 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 								AccessPath newAp = manager.getAccessPathFactory().copyWithNewValue(ap, rightVal,
 										rightType, cutFirstField);
+								if (rightOp instanceof CastExpr) {
+									Type castObjType = newAp.getBaseType();
+									Type castToType = rightOp.getType();
+									if (castObjType instanceof ArrayType && castToType instanceof ArrayType) {
+										ArrayType acastObjType = (ArrayType) castObjType;
+										ArrayType acastToType = (ArrayType) castToType;
+										if (acastObjType.numDimensions != acastToType.numDimensions)
+											// Cast incompatible
+											continue;
+									}
+								}
 								Abstraction newAbs = source.deriveNewAbstraction(newAp, assignStmt);
 								if (newAbs != null) {
 									if (rightVal instanceof StaticFieldRef && manager.getConfig()

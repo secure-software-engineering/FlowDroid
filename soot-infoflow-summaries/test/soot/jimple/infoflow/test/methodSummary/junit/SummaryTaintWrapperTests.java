@@ -346,6 +346,11 @@ public abstract class SummaryTaintWrapperTests extends BaseSummaryTaintWrapperTe
 		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void testTypeNarrowing()>", 1);
 	}
 
+	@Test(timeout = 30000)
+	public void testTypeNarrowing2() {
+		testFlowForMethod("<soot.jimple.infoflow.test.methodSummary.ApiClassClient: void testTypeNarrowing2()>", 1);
+	}
+
 	@Test
 	public void testAllSummaries() throws URISyntaxException, IOException {
 		EagerSummaryProvider provider = new EagerSummaryProvider(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);

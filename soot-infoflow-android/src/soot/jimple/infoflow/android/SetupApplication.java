@@ -728,8 +728,8 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		// filter out callbacks even if the respective component is only
 		// analyzed later.
 		AbstractCallbackAnalyzer jimpleClass = callbackClasses == null
-				? new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackFile)
-				: new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackClasses);
+				? createCallbackAnalyzerFromFile(config, entryPointClasses, callbackMethods, callbackFile)
+				: createCallbackAnalyzerFromClassesSet(config, entryPointClasses, callbackMethods, callbackClasses);
 		if (valueProvider != null)
 			jimpleClass.setValueProvider(valueProvider);
 		jimpleClass.addCallbackFilter(new AlienHostComponentFilter(entrypoints));
@@ -907,6 +907,18 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 			CollectedCallbacks callbacks = new CollectedCallbacks(entryPointClasses, callbackMethods, fragmentClasses);
 			CollectedCallbacksSerializer.serialize(callbacks, callbackConfig);
 		}
+	}
+
+	protected AbstractCallbackAnalyzer createCallbackAnalyzerFromClassesSet(InfoflowAndroidConfiguration config,
+			Set<SootClass> entryPointClasses, MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods,
+			Set<String> callbackClasses) throws IOException {
+		return new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackClasses);
+	}
+
+	protected AbstractCallbackAnalyzer createCallbackAnalyzerFromFile(InfoflowAndroidConfiguration config,
+			Set<SootClass> entryPointClasses, MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods,
+			String callbackFile) throws IOException {
+		return new DefaultCallbackAnalyzer(config, entryPointClasses, callbackMethods, callbackFile);
 	}
 
 	/**

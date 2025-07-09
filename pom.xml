@@ -17,15 +17,15 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 
-		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
 		<maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
 		<maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
 		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-		<maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+		<maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
-		<maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
+		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
 		
 		<slf4j.version>2.0.13</slf4j.version>
 		<log4j.version>2.24.0</log4j.version>

@@ -355,6 +355,8 @@ public class TypeTestCode {
 		cm.publish(x2.b.data);
 	}
 
+	// An ClassCastException is happening: class [Ljava.lang.Object; cannot be cast
+	// to class [[Ljava.lang.String; ([Ljava.lang.Object; and [[Ljava.lang.String
 	public void twoDimensionArrayTest() {
 		String[] x = new String[1];
 		Object y = x;

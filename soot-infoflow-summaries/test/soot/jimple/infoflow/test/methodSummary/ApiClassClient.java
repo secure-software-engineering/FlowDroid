@@ -604,4 +604,10 @@ public class ApiClassClient {
 		Object[] splitted = secret.split(";");
 		sink(splitted);
 	}
+
+	public void testTypeNarrowing2() {
+		int secret = intSource();
+		String formatted = String.format("%d", secret);
+		sink(formatted);
+	}
 }

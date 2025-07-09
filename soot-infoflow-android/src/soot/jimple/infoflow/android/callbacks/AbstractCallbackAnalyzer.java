@@ -38,7 +38,6 @@ import soot.AnySubType;
 import soot.Body;
 import soot.FastHierarchy;
 import soot.Local;
-import soot.PointsToSet;
 import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
@@ -314,15 +313,13 @@ public abstract class AbstractCallbackAnalyzer {
 
 						// This call must be to a system API in order to
 						// register an OS-level callback
-						if (!SystemClassHandler.v()
-								.isClassInSystemPackage(iinv.getMethod().getDeclaringClass()))
+						if (!SystemClassHandler.v().isClassInSystemPackage(iinv.getMethod().getDeclaringClass()))
 							continue;
 						// We have a formal parameter type that corresponds to one of the Android
 						// callback interfaces. Look for definitions of the parameter to estimate the
 						// actual type.
 						if (arg instanceof Local) {
-							Set<Type> possibleTypes = Scene.v().getPointsToAnalysis().reachingObjects((Local) arg)
-									.possibleTypes();
+							Set<Type> possibleTypes = getPossibleTypes(stmt, (Local) arg);
 							// If we don't have pointsTo information, we take
 							// the type of the local
 							if (possibleTypes.isEmpty()) {
@@ -341,6 +338,10 @@ public abstract class AbstractCallbackAnalyzer {
 		// Analyze all found callback classes
 		for (SootClass callbackClass : callbackClasses)
 			analyzeClassInterfaceCallbacks(callbackClass, callbackClass, lifecycleElement);
+	}
+
+	protected Set<Type> getPossibleTypes(Stmt stmt, Local arg) {
+		return Scene.v().getPointsToAnalysis().reachingObjects((Local) arg).possibleTypes();
 	}
 
 	/**
@@ -478,9 +479,9 @@ public abstract class AbstractCallbackAnalyzer {
 					Value br = iexpr.getArg(1);
 
 					// We need all possible types for the parameter
-					if (br instanceof Local && Scene.v().hasPointsToAnalysis()) {
-						PointsToSet pts = Scene.v().getPointsToAnalysis().reachingObjects((Local) br);
-						for (Type tp : pts.possibleTypes()) {
+					if (br instanceof Local && canGatherTypes()) {
+						Set<Type> types = getPossibleTypes(stmt, (Local) br);
+						for (Type tp : types) {
 							if (tp instanceof RefType) {
 								RefType rt = (RefType) tp;
 								if (!SystemClassHandler.v().isClassInSystemPackage(rt.getSootClass()))
@@ -498,6 +499,10 @@ public abstract class AbstractCallbackAnalyzer {
 				}
 			}
 		}
+	}
+
+	protected boolean canGatherTypes() {
+		return Scene.v().hasPointsToAnalysis();
 	}
 
 	/**
@@ -829,8 +834,7 @@ public abstract class AbstractCallbackAnalyzer {
 			return;
 
 		// Do not start the search in system classes
-		if (config.getIgnoreFlowsInSystemPackages()
-				&& SystemClassHandler.v().isClassInSystemPackage(sootClass))
+		if (config.getIgnoreFlowsInSystemPackages() && SystemClassHandler.v().isClassInSystemPackage(sootClass))
 			return;
 
 		// There are also some classes that implement interesting callback

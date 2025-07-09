@@ -1720,7 +1720,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 		String sBaseType = sinkType == null ? null : "" + sinkType;
 		if (!flow.getIgnoreTypes()) {
 			// Compute the new base type
-			Type newBaseType = manager.getTypeUtils().getMorePreciseType(sinkType, taintType);
+			Type newBaseType = manager.getTypeUtils().getMorePreciseType(taintType, sinkType);
 			if (newBaseType == null)
 				newBaseType = sinkType;
 

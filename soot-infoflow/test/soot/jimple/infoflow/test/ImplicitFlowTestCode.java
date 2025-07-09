@@ -671,4 +671,43 @@ public class ImplicitFlowTestCode {
 		}
 		return 0;
 	}
+
+	public abstract static class AbstractClassWithFieldSetter {
+
+		int foo;
+
+		abstract public void set();
+
+	}
+
+	public static class ClassWithFieldSetterA extends AbstractClassWithFieldSetter {
+
+		@Override
+		public void set() {
+			foo = 42;
+		}
+
+	}
+
+	public static class ClassWithFieldSetterB extends AbstractClassWithFieldSetter {
+
+		@Override
+		public void set() {
+			foo = 1704;
+		}
+
+	}
+
+	public void dataClassSetterTest() {
+		int tainted = TelephonyManager.getIMEI();
+		AbstractClassWithFieldSetter clazz;
+		if (tainted > 42)
+			clazz = new ClassWithFieldSetterA();
+		else
+			clazz = new ClassWithFieldSetterB();
+		clazz.set();
+		ConnectionManager cm = new ConnectionManager();
+		cm.publish(clazz.foo);
+	}
+
 }

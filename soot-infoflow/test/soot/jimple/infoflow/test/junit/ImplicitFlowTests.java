@@ -691,4 +691,17 @@ public abstract class ImplicitFlowTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
+
+	@Test(timeout = 300000)
+	public void dataClassSetterTest() {
+		IInfoflow infoflow = initInfoflow();
+		infoflow.getConfig().setInspectSinks(false);
+		infoflow.getConfig().setCodeEliminationMode(InfoflowConfiguration.CodeEliminationMode.NoCodeElimination);
+
+		List<String> epoints = new ArrayList<String>();
+		epoints.add("<soot.jimple.infoflow.test.ImplicitFlowTestCode: void dataClassSetterTest()>");
+		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
+		checkInfoflow(infoflow, 1);
+	}
+
 }
