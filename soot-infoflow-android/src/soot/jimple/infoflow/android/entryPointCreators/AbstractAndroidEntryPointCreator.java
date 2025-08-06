@@ -11,7 +11,6 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
-import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
@@ -47,13 +46,16 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 			return null;
 
 		// If the method is in one of the predefined Android classes, it cannot
-		// contain custom code, so we do not need to call it
-		if (AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName()))
+		// contain custom code, so we do not need to call it (unless directly requested)
+		if (AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName())
+				&& currentClass != method.getDeclaringClass())
 			return null;
 
 		// If this method is part of the Android framework, we don't need to
-		// call it
-		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass()))
+		// call it, unless it was explicitly requested. Due to virtual method invocations
+		// application code could be called!
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass())
+				&& currentClass.isApplicationClass())
 			return null;
 
 		assert method.isStatic() || classLocal != null

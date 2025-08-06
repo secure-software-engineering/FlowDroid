@@ -25,6 +25,7 @@ import soot.Type;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
@@ -32,10 +33,12 @@ import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
+import soot.tagkit.ExpectedTypeTag;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -60,12 +63,18 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 
+	protected final SootField instantiatorField;
+	protected final SootField classLoaderField;
+
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField) {
 		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;
 		this.overwriteDummyMainMethod = true;
+		this.instantiatorField = instantiatorField;
+		this.classLoaderField = classLoaderField;
+
 	}
 
 	public void setCallbacks(Set<SootMethod> callbacks) {
@@ -118,7 +127,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		List<Type> argList = new ArrayList<>(defaultParams);
 		if (additionalParams != null && !additionalParams.isEmpty())
 			argList.addAll(additionalParams);
-		mainMethod = Scene.v().makeSootMethod(methodName, argList, component.getType());
+		mainMethod = Scene.v().makeSootMethod(methodName, argList, getModelledClass().getType());
 
 		// Create the body
 		JimpleBody body = Jimple.v().newBody();
@@ -147,6 +156,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			}
 		}
 	}
+
+	protected abstract SootClass getModelledClass();
 
 	/**
 	 * Gets the default parameter types that every component main method shall have
@@ -506,5 +517,34 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
 				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));
 		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
+	}
+
+	public Local generateInstantiator(SootClass createdClass, String creatorMethodSubset, Value... values) {
+
+		// If we already have a class local of that type, we re-use it
+		Local existingLocal = localVarsForClasses.get(createdClass);
+		if (existingLocal != null)
+			return existingLocal;
+
+		RefType rt = (RefType) instantiatorField.getType();
+		SootMethod m = rt.getSootClass().getMethod(creatorMethodSubset);
+		Local instantiatorLocal = generator.generateLocal(instantiatorField.getType());
+		Local classLoaderLocal = generator.generateLocal(classLoaderField.getType());
+
+		Local varLocal = generator.generateLocal(m.getReturnType());
+		Jimple j = Jimple.v();
+		body.getUnits().add(j.newAssignStmt(instantiatorLocal, j.newStaticFieldRef(instantiatorField.makeRef())));
+		body.getUnits().add(j.newAssignStmt(classLoaderLocal, j.newStaticFieldRef(classLoaderField.makeRef())));
+		List<Value> params = new ArrayList<>();
+		params.add(classLoaderLocal);
+		params.add(StringConstant.v(createdClass.getName()));
+		for (Value v : values) {
+			params.add(v);
+		}
+		AssignStmt s = j.newAssignStmt(varLocal, j.newVirtualInvokeExpr(instantiatorLocal, m.makeRef(), params));
+		s.addTag(new ExpectedTypeTag(createdClass.getType()));
+		body.getUnits().add(s);
+		localVarsForClasses.put(createdClass, varLocal);
+		return varLocal;
 	}
 }

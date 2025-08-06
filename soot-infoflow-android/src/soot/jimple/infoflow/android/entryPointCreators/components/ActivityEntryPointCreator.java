@@ -46,15 +46,26 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 	public ActivityEntryPointCreator(SootClass component, SootClass applicationClass,
 			MultiMap<SootClass, String> activityLifecycleCallbacks, Map<SootClass, SootField> callbackClassToField,
-			Map<SootClass, SootMethod> fragmentToMainMethod, IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+			Map<SootClass, SootMethod> fragmentToMainMethod, IManifestHandler manifest, SootField instantiatorField,
+			SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
 		this.activityLifecycleCallbacks = activityLifecycleCallbacks;
 		this.callbackClassToField = callbackClassToField;
 		this.fragmentToMainMethod = fragmentToMainMethod;
 	}
 
 	@Override
+	protected Local generateClassConstructor(SootClass createdClass) {
+		if (createdClass == component && instantiatorField != null) {
+			return super.generateInstantiator(createdClass,
+					AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATEACTIVITY, body.getParameterLocal(0));
+		}
+		return super.generateClassConstructor(createdClass);
+	}
+
+	@Override
 	protected void generateComponentLifecycle() {
+		SootClass activityClass = getModelledClass();
 		Set<SootClass> currentClassSet = Collections.singleton(component);
 		final Body body = mainMethod.getActiveBody();
 
@@ -86,7 +97,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// 1. onCreate:
 		{
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATE, component, thisLocal);
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATE, activityClass, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED,
 						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
@@ -110,7 +121,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// 2. onStart:
 		Stmt onStartStmt;
 		{
-			onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTART, component, thisLocal);
+			onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTART, activityClass, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				Stmt s = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTARTED,
 						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
@@ -130,23 +141,23 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		{
 			Stmt afterOnRestore = Jimple.v().newNopStmt();
 			createIfStmt(afterOnRestore);
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTOREINSTANCESTATE, component, thisLocal,
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTOREINSTANCESTATE, activityClass, thisLocal,
 					currentClassSet);
 			body.getUnits().add(afterOnRestore);
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTCREATE, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTCREATE, activityClass, thisLocal);
 
 		// 3. onResume:
 		Stmt onResumeStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(onResumeStmt);
 		{
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESUME, component, thisLocal);
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESUME, activityClass, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYRESUMED,
 						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
 			}
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTRESUME, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTRESUME, activityClass, thisLocal);
 
 		// Scan for other entryPoints of this class:
 		if (this.callbacks != null && !this.callbacks.isEmpty()) {
@@ -163,13 +174,13 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		}
 
 		// 4. onPause:
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPAUSE, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPAUSE, activityClass, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYPAUSED, callbackClass,
 					localVarsForClasses.get(callbackClass), currentClassSet);
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATEDESCRIPTION, component, thisLocal);
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSAVEINSTANCESTATE, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATEDESCRIPTION, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSAVEINSTANCESTATE, activityClass, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSAVEINSTANCESTATE,
 					callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
@@ -181,7 +192,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
 		// 5. onStop:
-		Stmt onStop = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTOP, component, thisLocal);
+		Stmt onStop = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTOP, activityClass, thisLocal);
 		boolean hasAppOnStop = false;
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			Stmt onActStoppedStmt = searchAndBuildMethod(
@@ -199,12 +210,12 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
 		// 6. onRestart:
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, activityClass, thisLocal);
 		body.getUnits().add(Jimple.v().newGotoStmt(onStartStmt)); // jump to onStart()
 
 		// 7. onDestroy
 		body.getUnits().add(stopToDestroyStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONDESTROY, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONDESTROY, activityClass, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED,
 					callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
@@ -242,7 +253,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 	 * the correct field
 	 */
 	private void createSetIntentMethod() {
-		// We need to create an implementation of "getIntent". If there is already such
+		// We need to create an implementation of "setIntent". If there is already such
 		// an implementation, we don't touch it.
 		if (component.declaresMethod("void setIntent(android.content.Intent)"))
 			return;
@@ -311,6 +322,11 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		activityInfo.setIntentField(intentField);
 		activityInfo.setResultIntentField(resultIntentField);
 		return activityInfo;
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.ACTIVITYCLASS);
 	}
 
 }

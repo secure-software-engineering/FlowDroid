@@ -3,7 +3,15 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 import java.util.Collections;
 import java.util.List;
 
-import soot.*;
+import soot.Local;
+import soot.Modifier;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
@@ -23,8 +31,9 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 	protected SootField binderField = null;
 
-	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
+			SootField instantiatorField, SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
 	}
 
 	@Override
@@ -216,9 +225,13 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	@Override
 	public ComponentEntryPointInfo getComponentInfo() {
 		ServiceEntryPointInfo serviceInfo = new ServiceEntryPointInfo(mainMethod);
-		serviceInfo.setIntentField(intentField);
 		serviceInfo.setBinderField(binderField);
 		return serviceInfo;
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.SERVICECLASS);
 	}
 
 }

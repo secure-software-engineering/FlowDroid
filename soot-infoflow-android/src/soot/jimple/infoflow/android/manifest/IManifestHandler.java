@@ -105,16 +105,20 @@ public interface IManifestHandler<A extends IActivity, S extends IService, C ext
 		for (IAndroidComponent node : getAllComponents())
 			checkAndAddComponent(entryPoints, node);
 
-		if (entryPoints.isEmpty()){
+		if (entryPoints.isEmpty()) {
 			//if no entry point is detected at all, the app is likely be malware, add all components
-			List<IAndroidComponent> allEnabled = getAllComponents().stream().filter(c -> c.isEnabled()).collect(Collectors.toList());
-			allEnabled.forEach(e->entryPoints.add(e.getNameString()));
+			List<IAndroidComponent> allEnabled = getAllComponents().stream().filter(c -> c.isEnabled())
+					.collect(Collectors.toList());
+			allEnabled.forEach(e -> entryPoints.add(e.getNameString()));
 		}
 
 		if (app != null) {
 			String appName = app.getName();
 			if (appName != null && !appName.isEmpty())
 				entryPoints.add(appName);
+			String factory = app.getAppComponentFactory();
+			if (factory != null && !factory.isEmpty())
+				entryPoints.add(factory);
 		}
 
 		return entryPoints;

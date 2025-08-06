@@ -11,6 +11,7 @@
 package soot.jimple.infoflow.android.entryPointCreators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,17 +32,20 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.Value;
 import soot.jimple.AssignStmt;
+import soot.jimple.ClassConstant;
 import soot.jimple.IfStmt;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
 import soot.jimple.infoflow.android.entryPointCreators.components.AbstractComponentEntryPointCreator;
 import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointCreator;
@@ -62,6 +66,7 @@ import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.options.Options;
+import soot.tagkit.ExpectedTypeTag;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -86,7 +91,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private static final boolean DEBUG = false;
 
-	protected MultiMap<SootClass, SootMethod> callbackFunctions = new HashMultiMap<>();;
+	protected MultiMap<SootClass, SootMethod> callbackFunctions = new HashMultiMap<>();
 
 	private SootClass applicationClass = null;
 	private Local applicationLocal = null;
@@ -101,6 +106,12 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private Collection<SootClass> components;
 
 	private MultiMap<SootMethod, Stmt> javascriptInterfaceStmts;
+
+	private SootClass applicationComponentFactoryClass;
+
+	private SootField classLoaderField;
+
+	private SootField instantiatorField;
 
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
@@ -153,18 +164,63 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				createIfStmt(beforeContentProvidersStmt);
 		}
 
+		// If the application tag in the manifest specifies a appComponentFactory, it needs to be called first
+		initializeApplComponentFactory();
+
 		// If we have an implementation of android.app.Application, this needs
 		// special treatment
 		initializeApplicationClass();
+		Jimple j = Jimple.v();
 
+		//due to app component factories, that could be another application class!
+		SootClass applicationClassUse = Scene.v().getSootClass(AndroidEntryPointConstants.APPLICATIONCLASS);
+		;
 		// If we have an application, we need to start it in the very beginning
-		if (applicationClass != null) {
-			// Create the application
-			applicationLocal = generateClassConstructor(applicationClass);
+		if (applicationClass != null || applicationComponentFactoryClass != null) {
+			if (applicationComponentFactoryClass != null) {
+				Local factory = generateClassConstructor(applicationComponentFactoryClass);
+				SootMethodRef mrInstantiate = Scene.v().makeMethodRef(
+						Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.APPCOMPONENTFACTORYCLASS),
+						AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATEAPPLICATION, false);
+				SootMethodRef mrInstantiateClassLoader = Scene.v().makeMethodRef(
+						Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.APPCOMPONENTFACTORYCLASS),
+						AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATECLASSLOADER, false);
+				SootMethodRef mrGetClassLoader = Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.Class"),
+						"java.lang.ClassLoader getClassLoader()", false);
+				applicationLocal = j.newLocal("application", RefType.v(AndroidEntryPointConstants.APPLICATIONCLASS));
+				body.getLocals().add(applicationLocal);
+				String classAppl = applicationClass.getName();
+				if (classAppl == null)
+					classAppl = "android.app.Application";
+				Local clazzL = j.newLocal("clazz", RefType.v("java.lang.Class"));
+				body.getLocals().add(clazzL);
+				Local classLoader = j.newLocal("classLoader", RefType.v("java.lang.ClassLoader"));
+				body.getLocals().add(classLoader);
+
+				body.getUnits().add(j.newAssignStmt(clazzL, ClassConstant.v(dummyClassName)));
+				body.getUnits().add(j.newAssignStmt(classLoader, j.newVirtualInvokeExpr(clazzL, mrGetClassLoader)));
+
+				AssignStmt instantiateCL = j.newAssignStmt(classLoader, j.newVirtualInvokeExpr(factory,
+						mrInstantiateClassLoader, Arrays.asList(classLoader, createApplicationInfo())));
+				body.getUnits().add(instantiateCL);
+
+				classLoaderField = createField(RefType.v("java.lang.ClassLoader"), "cl");
+				instantiatorField = createField(RefType.v("android.app.AppComponentFactory"), "cl");
+
+				AssignStmt instantiate = j.newAssignStmt(applicationLocal, j.newVirtualInvokeExpr(factory,
+						mrInstantiate, Arrays.asList(classLoader, StringConstant.v(classAppl))));
+				instantiate.addTag(new ExpectedTypeTag(applicationClass.getType()));
+				body.getUnits().add(instantiate);
+				body.getUnits().add(j.newAssignStmt(j.newStaticFieldRef(classLoaderField.makeRef()), classLoader));
+				body.getUnits().add(j.newAssignStmt(j.newStaticFieldRef(instantiatorField.makeRef()), factory));
+			} else {
+				// Create the application
+				applicationLocal = generateClassConstructor(applicationClass);
+				//we know for sure that there is no other application class in question
+				applicationClassUse = applicationClass;
+			}
 			localVarsForClasses.put(applicationClass, applicationLocal);
 			if (applicationLocal != null) {
-				localVarsForClasses.put(applicationClass, applicationLocal);
-
 				boolean hasApplicationCallbacks = applicationCallbackClasses != null
 						&& !applicationCallbackClasses.isEmpty();
 				boolean hasActivityLifecycleCallbacks = activityLifecycleCallbacks != null
@@ -196,7 +252,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				}
 
 				// Call the onCreate() method
-				searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONCREATE, applicationClass,
+				searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONCREATE, applicationClassUse,
 						applicationLocal);
 
 				//////////////
@@ -226,7 +282,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			Set<SootClass> fragments = fragmentClasses.get(parentActivity);
 			for (SootClass fragment : fragments) {
 				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass,
-						this.manifest);
+						this.manifest, instantiatorField, classLoaderField);
 				entryPointCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
 				entryPointCreator.setCallbacks(callbackFunctions.get(fragment));
 
@@ -260,25 +316,28 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 							curActivityToFragmentMethod.put(fragment, fragmentToMainMethod.get(fragment));
 					}
 				}
-				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClass,
-						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod, this.manifest);
+				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClassUse,
+						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod, this.manifest,
+						instantiatorField, classLoaderField);
 				break;
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
 			case HostApduService:
-				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClass, this.manifest);
+				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClassUse, this.manifest,
+						instantiatorField, classLoaderField);
 				break;
 			case ServiceConnection:
-				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClass,
-						this.manifest);
+				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClassUse,
+						this.manifest, instantiatorField, classLoaderField);
 				break;
 			case BroadcastReceiver:
-				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClass,
-						this.manifest);
+				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClassUse,
+						this.manifest, instantiatorField, classLoaderField);
 				break;
 			case ContentProvider:
-				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClass, this.manifest);
+				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClassUse,
+						this.manifest, instantiatorField, classLoaderField);
 				break;
 			default:
 				componentCreator = null;
@@ -321,7 +380,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		// Add a call to application.onTerminate()
 		if (applicationLocal != null)
-			searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONTERMINATE, applicationClass,
+			searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONTERMINATE, applicationClassUse,
 					applicationLocal);
 
 		body.getUnits().add(Jimple.v().newReturnVoidStmt());
@@ -335,6 +394,61 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			mainMethod.getActiveBody().validate();
 
 		return mainMethod;
+	}
+
+	private Value createApplicationInfo() {
+		SootClass p = Scene.v().getSootClassUnsafe("android.content.pm.ApplicationInfo");
+		if (p != null) {
+			return generateClassConstructor(p);
+		} else {
+			return NullConstant.v();
+		}
+	}
+
+	private void initializeApplComponentFactory() {
+
+		IAndroidApplication app = manifest.getApplication();
+		if (app != null) {
+			String componentFactoryName = app.getAppComponentFactory();
+			// We can only look for callbacks if we have an application class
+			if (componentFactoryName == null || componentFactoryName.isEmpty())
+				return;
+
+			// Find the application class
+			for (SootClass currentClass : components) {
+				// Is this the application class?
+				if (entryPointUtils.isComponentFactoryClass(currentClass)
+						&& currentClass.getName().equals(componentFactoryName)) {
+					applicationComponentFactoryClass = currentClass;
+					break;
+				}
+			}
+		}
+
+		// We can only look for callbacks if we have an application class
+		if (applicationClass == null)
+			return;
+
+		// Look into the application class' callbacks
+		Collection<SootMethod> callbacks = callbackFunctions.get(applicationClass);
+		if (callbacks != null) {
+			for (SootMethod smCallback : callbacks) {
+				if (smCallback != null) {
+					applicationCallbackClasses.put(smCallback.getDeclaringClass(), smCallback.getSignature());
+				}
+			}
+		}
+
+		// Create fields for the activity lifecycle classes
+		for (SootClass callbackClass : activityLifecycleCallbacks.keySet()) {
+			String baseName = callbackClass.getName();
+			if (baseName.contains("."))
+				baseName = baseName.substring(baseName.lastIndexOf(".") + 1);
+
+			// Generate a fresh field name
+			SootField fld = createField(RefType.v(callbackClass), baseName);
+			callbackClassToField.put(callbackClass, fld);
+		}
 	}
 
 	private void createJavascriptCallbacks() {

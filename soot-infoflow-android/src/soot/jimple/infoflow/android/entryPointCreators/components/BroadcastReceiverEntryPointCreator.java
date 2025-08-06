@@ -1,6 +1,9 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
+import soot.Local;
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
@@ -16,13 +19,24 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public BroadcastReceiverEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+	}
+
+	@Override
+	protected Local generateClassConstructor(SootClass createdClass) {
+		if (createdClass == component && instantiatorField != null) {
+			return super.generateInstantiator(createdClass,
+					AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATERECEIVER, body.getParameterLocal(0));
+		}
+		return super.generateClassConstructor(createdClass);
 	}
 
 	@Override
 	protected void generateComponentLifecycle() {
-		Stmt onReceiveStmt = searchAndBuildMethod(AndroidEntryPointConstants.BROADCAST_ONRECEIVE, component, thisLocal);
+		SootClass broadCastClass = getModelledClass();
+		Stmt onReceiveStmt = searchAndBuildMethod(AndroidEntryPointConstants.BROADCAST_ONRECEIVE, broadCastClass,
+				thisLocal);
 
 		// methods
 		NopStmt startWhileStmt = Jimple.v().newNopStmt();
@@ -43,4 +57,8 @@ public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPo
 		createGetIntentMethod();
 	}
 
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.BROADCASTRECEIVERCLASS);
+	}
 }

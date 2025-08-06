@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
@@ -15,8 +17,8 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public ServiceConnectionEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
 	}
 
 	@Override
@@ -33,6 +35,11 @@ public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPo
 		createIfStmt(startWhileStmt);
 
 		searchAndBuildMethod(AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICEDISCONNECTED, component, thisLocal);
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.SERVICECONNECTIONINTERFACE);
 	}
 
 }

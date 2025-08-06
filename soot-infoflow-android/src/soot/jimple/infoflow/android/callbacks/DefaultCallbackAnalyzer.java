@@ -291,7 +291,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 	@Override
 	public void forceTerminate(ISolverTerminationReason reason) {
-		this.isKilled = reason;
+		//this.isKilled = reason;
 	}
 
 	@Override

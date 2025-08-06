@@ -110,14 +110,13 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 			return true;
 
 		String subSig = callback.getSubSignature();
+		String name = callback.getName();
 		final FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
 		final RefType callbackType = callback.getDeclaringClass().getType();
 		if (AndroidEntryPointConstants.getActivityLifecycleCallbackMethods().contains(subSig))
 			return fh.canStoreType(callbackType, this.activityLifecycleCallbacks);
 		if (AndroidEntryPointConstants.getComponentCallbackMethods().contains(subSig))
 			return fh.canStoreType(callbackType, this.componentCallbacks);
-		if (AndroidEntryPointConstants.getComponentCallback2Methods().contains(subSig))
-			return fh.canStoreType(callbackType, this.componentCallbacks2);
 
 		return true;
 	}

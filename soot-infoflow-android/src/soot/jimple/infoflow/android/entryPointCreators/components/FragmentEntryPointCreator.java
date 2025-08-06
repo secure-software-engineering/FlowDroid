@@ -6,7 +6,9 @@ import java.util.List;
 import heros.TwoElementSet;
 import soot.Local;
 import soot.RefType;
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.Type;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
@@ -23,8 +25,9 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
  */
 public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreator {
 
-	public FragmentEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+	public FragmentEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
+			SootField instantiatorField, SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
 	}
 
 	@Override
@@ -132,6 +135,11 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 	@Override
 	protected List<Type> getAdditionalMainMethodParams() {
 		return Collections.singletonList((Type) RefType.v(AndroidEntryPointConstants.ACTIVITYCLASS));
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.FRAGMENTCLASS);
 	}
 
 }

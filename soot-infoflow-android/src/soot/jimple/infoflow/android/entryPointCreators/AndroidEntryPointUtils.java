@@ -16,6 +16,8 @@ import soot.MethodOrMethodContext;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Type;
+import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.tagkit.AnnotationTag;
 import soot.tagkit.Tag;
@@ -34,6 +36,7 @@ public class AndroidEntryPointUtils {
 	private Map<SootClass, ComponentType> componentTypeCache = new HashMap<>();
 
 	private SootClass osClassApplication;
+	private SootClass osClassComponentFactory;
 	private SootClass osClassActivity;
 	private SootClass osClassMapActivity;
 	private SootClass osClassService;
@@ -64,6 +67,7 @@ public class AndroidEntryPointUtils {
 	public AndroidEntryPointUtils() {
 		// Get some commonly used OS classes
 		osClassApplication = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.APPLICATIONCLASS);
+		osClassComponentFactory = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.APPCOMPONENTFACTORYCLASS);
 		osClassActivity = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.ACTIVITYCLASS);
 		osClassService = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.SERVICECLASS);
 		osClassFragment = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.FRAGMENTCLASS);
@@ -165,6 +169,18 @@ public class AndroidEntryPointUtils {
 	public boolean isApplicationClass(SootClass clazz) {
 		return osClassApplication != null
 				&& Scene.v().getOrMakeFastHierarchy().canStoreType(clazz.getType(), osClassApplication.getType());
+	}
+
+	/**
+	 * Checks whether the given class is derived from android.app.AppComponentFactory
+	 * 
+	 * @param clazz The class to check
+	 * @return True if the given class is derived from android.app.AppComponentFactory,
+	 *         otherwise false
+	 */
+	public boolean isComponentFactoryClass(SootClass clazz) {
+		return osClassComponentFactory != null
+				&& Scene.v().getOrMakeFastHierarchy().canStoreType(clazz.getType(), osClassComponentFactory.getType());
 	}
 
 	/**
@@ -272,15 +288,42 @@ public class AndroidEntryPointUtils {
 	 */
 	private static Collection<? extends MethodOrMethodContext> getLifecycleMethods(SootClass sc, List<String> methods) {
 		Set<MethodOrMethodContext> lifecycleMethods = new HashSet<>();
-		SootClass currentClass = sc;
-		while (currentClass != null) {
-			for (String sig : methods) {
-				SootMethod sm = currentClass.getMethodUnsafe(sig);
-				if (sm != null)
-					if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
-						lifecycleMethods.add(sm);
+		SootMethodRepresentationParser parser = SootMethodRepresentationParser.v();
+
+		Scene scene = Scene.v();
+		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		nextMethod: for (String sig : methods) {
+			SootClass currentClass = sc;
+			String name = parser.getMethodNameFromSubSignature(sig);
+			String[] params = parser.getParameterTypesFromSubSignature(sig);
+			String sreturnType = parser.getReturnTypeFromSubSignature(sig);
+
+			Type returnType = scene.getTypeUnsafe(sreturnType, false);
+			if (returnType != null) {
+				while (currentClass != null) {
+					Collection<SootMethod> sms = currentClass.getMethodsByNameAndParamCount(name,
+							params == null ? 0 : params.length);
+					for (SootMethod sm : sms) {
+						if (!fh.canStoreType(sm.getReturnType(), returnType)) {
+							continue;
+						}
+						if (params != null) {
+							for (int i = 0; i < params.length; i++) {
+								Type pType = scene.getTypeUnsafe(params[i], false);
+								if (pType == null)
+									continue nextMethod;
+								if (pType != sm.getParameterType(i))
+									continue nextMethod;
+							}
+						}
+						if (!SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass())) {
+							lifecycleMethods.add(sm);
+						}
+						continue nextMethod;
+					}
+					currentClass = currentClass.getSuperclassUnsafe();
+				}
 			}
-			currentClass = currentClass.hasSuperclass() ? currentClass.getSuperclass() : null;
 		}
 		return lifecycleMethods;
 	}

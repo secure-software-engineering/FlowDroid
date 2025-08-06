@@ -1,6 +1,9 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
+import soot.Local;
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.SootMethod;
 import soot.UnitPatchingChain;
 import soot.jimple.Jimple;
@@ -16,9 +19,18 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
  */
 public class ContentProviderEntryPointCreator extends AbstractComponentEntryPointCreator {
 
-	public ContentProviderEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+	public ContentProviderEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
+			SootField instantiatorField, SootField classLoaderField) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+	}
+
+	@Override
+	protected Local generateClassConstructor(SootClass createdClass) {
+		if (createdClass == component && instantiatorField != null) {
+			return super.generateInstantiator(createdClass,
+					AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATEPROVIDER);
+		}
+		return super.generateClassConstructor(createdClass);
 	}
 
 	@Override
@@ -43,8 +55,9 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 
 		NopStmt beforeCallbacksStmt = Jimple.v().newNopStmt();
 		units.add(beforeCallbacksStmt);
+		SootClass providerClass = getModelledClass();
 		for (String methodSig : AndroidEntryPointConstants.getContentproviderLifecycleMethods()) {
-			SootMethod sm = findMethod(component, methodSig);
+			SootMethod sm = findMethod(providerClass, methodSig);
 			if (sm != null && !sm.getSubSignature().equals(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE)) {
 				NopStmt afterMethodStmt = Jimple.v().newNopStmt();
 				createIfStmt(afterMethodStmt);
@@ -57,4 +70,8 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 		units.add(endWhileStmt);
 	}
 
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.CONTENTPROVIDERCLASS);
+	}
 }

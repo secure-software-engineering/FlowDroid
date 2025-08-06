@@ -171,4 +171,13 @@ public class SootMethodRepresentationParser {
 
 	}
 
+	/**
+	 * Returns the return type of the sub signature
+	 * @param subsig the sub signature
+	 * @return the return type
+	 */
+	public String getReturnTypeFromSubSignature(String subsig) {
+		return subsig.substring(0, subsig.indexOf(" "));
+	}
+
 }
