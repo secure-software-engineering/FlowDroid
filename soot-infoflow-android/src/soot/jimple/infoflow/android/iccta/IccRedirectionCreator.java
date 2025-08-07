@@ -33,7 +33,6 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointInfo;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointInfo;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
