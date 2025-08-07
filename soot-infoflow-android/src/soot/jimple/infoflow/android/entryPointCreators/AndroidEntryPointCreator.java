@@ -155,8 +155,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		for (String clzName : new String[] { AndroidEntryPointConstants.ACTIVITYCLASS,
 				AndroidEntryPointConstants.BROADCASTRECEIVERCLASS, AndroidEntryPointConstants.CONTENTPROVIDERCLASS,
 				AndroidEntryPointConstants.SERVICECLASS }) {
-			SootClass sc = Scene.v().getSootClassUnsafe(clzName);
-			if (sc != null) {
+			SootClass sc = Scene.v().getSootClassUnsafe(clzName, false);
+			if (sc != null && !sc.isPhantom()) {
 				allComponentClasses.addAll(h.getSubclassesOf(sc));
 			}
 		}
