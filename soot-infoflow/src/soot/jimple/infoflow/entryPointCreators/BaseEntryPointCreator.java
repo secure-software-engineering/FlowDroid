@@ -186,7 +186,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	protected SootClass generateOrGetGeneratedClass(String name) {
-		SootClass mainClass = Scene.v().getSootClassUnsafe(name);
+		SootClass mainClass = Scene.v().getSootClassUnsafe(name, false);
 		int i = 1;
 		String n = name;
 		while (true) {
@@ -196,7 +196,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 				}
 				i++;
 				n = name + i;
-				mainClass = Scene.v().getSootClassUnsafe(n);
+				mainClass = Scene.v().getSootClassUnsafe(n, false);
 			} else {
 				mainClass = Scene.v().makeSootClass(n);
 				mainClass.setResolvingLevel(SootClass.BODIES);
