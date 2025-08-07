@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
 import soot.ArrayType;
 import soot.Body;
 import soot.BooleanType;
+import soot.ByteConstant;
 import soot.ByteType;
+import soot.CharConstant;
 import soot.CharType;
 import soot.DoubleType;
 import soot.FloatType;
@@ -39,6 +41,7 @@ import soot.LongType;
 import soot.PrimType;
 import soot.RefType;
 import soot.Scene;
+import soot.ShortConstant;
 import soot.ShortType;
 import soot.SootClass;
 import soot.SootMethod;
@@ -177,13 +180,31 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @return The class tha contains the dummy main method
 	 */
 	protected SootClass getOrCreateDummyMainClass() {
-		SootClass mainClass = Scene.v().getSootClassUnsafe(dummyClassName);
-		if (mainClass == null) {
-			mainClass = Scene.v().makeSootClass(dummyClassName);
-			mainClass.setResolvingLevel(SootClass.BODIES);
-			Scene.v().addClass(mainClass);
+		SootClass sc = generateOrGetGeneratedClass(dummyClassName);
+		dummyClassName = sc.getName();
+		return sc;
+	}
+
+	protected SootClass generateOrGetGeneratedClass(String name) {
+		SootClass mainClass = Scene.v().getSootClassUnsafe(name);
+		int i = 1;
+		String n = name;
+		while (true) {
+			if (mainClass != null) {
+				if (mainClass.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
+					return mainClass;
+				}
+				i++;
+				n = name + i;
+				mainClass = Scene.v().getSootClassUnsafe(n);
+			} else {
+				mainClass = Scene.v().makeSootClass(n);
+				mainClass.setResolvingLevel(SootClass.BODIES);
+				mainClass.addTag(SimulatedCodeElementTag.TAG);
+				Scene.v().addClass(mainClass);
+				return mainClass;
+			}
 		}
-		return mainClass;
 	}
 
 	/**
@@ -745,11 +766,11 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		if (t == RefType.v("java.lang.String"))
 			return StringConstant.v("");
 		if (t instanceof CharType)
-			return IntConstant.v(0);
+			return CharConstant.v(0);
 		if (t instanceof ByteType)
-			return IntConstant.v(0);
+			return ByteConstant.v(0);
 		if (t instanceof ShortType)
-			return IntConstant.v(0);
+			return ShortConstant.v(0);
 		if (t instanceof IntType)
 			return IntConstant.v(0);
 		if (t instanceof FloatType)
@@ -763,26 +784,6 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 		// also for arrays etc.
 		return NullConstant.v();
-	}
-
-	/**
-	 * Finds a method with the given signature in the given class or one of its
-	 * super classes
-	 * 
-	 * @param currentClass The current class in which to start the search
-	 * @param subsignature The subsignature of the method to find
-	 * @return The method with the given signature if it has been found, otherwise
-	 *         null
-	 */
-	protected SootMethod findMethod(SootClass currentClass, String subsignature) {
-		SootMethod m = currentClass.getMethodUnsafe(subsignature);
-		if (m != null) {
-			return m;
-		}
-		if (currentClass.hasSuperclass()) {
-			return findMethod(currentClass.getSuperclass(), subsignature);
-		}
-		return null;
 	}
 
 	/**

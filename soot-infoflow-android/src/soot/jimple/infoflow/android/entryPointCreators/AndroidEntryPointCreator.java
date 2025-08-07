@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import soot.Body;
+import soot.Hierarchy;
 import soot.Local;
 import soot.Modifier;
 import soot.RefType;
@@ -37,11 +38,13 @@ import soot.Type;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.Value;
+import soot.VoidType;
 import soot.jimple.AssignStmt;
 import soot.jimple.ClassConstant;
 import soot.jimple.IfStmt;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
@@ -63,6 +66,7 @@ import soot.jimple.infoflow.entryPointCreators.IEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.options.Options;
@@ -113,6 +117,27 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private SootField instantiatorField;
 
+	//Contains *all* potential component classes, irregular of whether
+	//they are defined in the manifest or not. Note that the app component
+	//factory might create other classes than those listed in the manifest, which makes
+	//everything quite complex.
+	//In other words, this set contains *all* possible components
+	private Set<SootClass> allComponentClasses = new HashSet<>();
+
+	private String getResultIntentName;
+
+	private String getIntentName;
+
+	private String setIntentName;
+
+	private static final String DEFAULT_COMPONENTDATAEXCHANGENAME = "ComponentDataExchangeInterface";
+
+	private SootClass componentDataExchangeInterface;
+
+	private SootMethod getResultIntentMethod;
+	private SootMethod getIntentMethod;
+	private SootMethod setIntentMethod;
+
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -125,6 +150,58 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		super(manifest);
 		this.components = components;
 		this.overwriteDummyMainMethod = true;
+		Hierarchy h = Scene.v().getActiveHierarchy();
+		for (String clzName : new String[] { AndroidEntryPointConstants.ACTIVITYCLASS,
+				AndroidEntryPointConstants.BROADCASTRECEIVERCLASS, AndroidEntryPointConstants.CONTENTPROVIDERCLASS,
+				AndroidEntryPointConstants.SERVICECLASS }) {
+			SootClass sc = Scene.v().getSootClassUnsafe(clzName);
+			if (sc != null) {
+				allComponentClasses.addAll(h.getSubclassesOf(sc));
+			}
+		}
+		getResultIntentName = findUniqueMethodName("getResultIntent", allComponentClasses);
+		//just choose a different name other than "getIntent"
+		getIntentName = findUniqueMethodName("getDataIntent", allComponentClasses);
+		setIntentName = findUniqueMethodName("setDataIntent", allComponentClasses);
+
+		ComponentExchangeInfo info = generateComponentDataExchangeInterface();
+		initializeComponentDataTransferMethods(info);
+
+	}
+
+	private ComponentExchangeInfo generateComponentDataExchangeInterface() {
+		SootClass s = generateOrGetGeneratedClass(DEFAULT_COMPONENTDATAEXCHANGENAME);
+		s.setModifiers(Modifier.PUBLIC | Modifier.INTERFACE);
+		componentDataExchangeInterface = s;
+
+		RefType intent = RefType.v("android.content.Intent");
+		Scene sc = Scene.v();
+		getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent);
+		componentDataExchangeInterface.addMethod(getResultIntentMethod);
+		getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent);
+		componentDataExchangeInterface.addMethod(getIntentMethod);
+		setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v());
+		componentDataExchangeInterface.addMethod(setIntentMethod);
+		ComponentExchangeInfo info = new ComponentExchangeInfo(componentDataExchangeInterface, getIntentMethod,
+				setIntentMethod, getResultIntentMethod);
+		componentToInfo.setComponentExchangeInfo(info);
+		return info;
+
+	}
+
+	private String findUniqueMethodName(String name, Collection<SootClass> classes) {
+		String tryName = name;
+		int i = 1;
+		nextTry: while (true) {
+			for (SootClass clz : classes) {
+				if (clz.getMethodByNameUnsafe(tryName) != null) {
+					i++;
+					tryName = name + i;
+					continue nextTry;
+				}
+			}
+			return tryName;
+		}
 	}
 
 	@Override
@@ -282,7 +359,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			Set<SootClass> fragments = fragmentClasses.get(parentActivity);
 			for (SootClass fragment : fragments) {
 				FragmentEntryPointCreator entryPointCreator = new FragmentEntryPointCreator(fragment, applicationClass,
-						this.manifest, instantiatorField, classLoaderField);
+						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				entryPointCreator.setDummyClassName(mainMethod.getDeclaringClass().getName());
 				entryPointCreator.setCallbacks(callbackFunctions.get(fragment));
 
@@ -318,26 +395,26 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				}
 				componentCreator = new ActivityEntryPointCreator(currentClass, applicationClassUse,
 						activityLifecycleCallbacks, callbackClassToField, curActivityToFragmentMethod, this.manifest,
-						instantiatorField, classLoaderField);
+						instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			case Service:
 			case GCMBaseIntentService:
 			case GCMListenerService:
 			case HostApduService:
 				componentCreator = new ServiceEntryPointCreator(currentClass, applicationClassUse, this.manifest,
-						instantiatorField, classLoaderField);
+						instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			case ServiceConnection:
 				componentCreator = new ServiceConnectionEntryPointCreator(currentClass, applicationClassUse,
-						this.manifest, instantiatorField, classLoaderField);
+						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			case BroadcastReceiver:
 				componentCreator = new BroadcastReceiverEntryPointCreator(currentClass, applicationClassUse,
-						this.manifest, instantiatorField, classLoaderField);
+						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			case ContentProvider:
 				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClassUse,
-						this.manifest, instantiatorField, classLoaderField);
+						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			default:
 				componentCreator = null;
@@ -394,6 +471,77 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			mainMethod.getActiveBody().validate();
 
 		return mainMethod;
+	}
+
+	private void initializeComponentDataTransferMethods(ComponentExchangeInfo info) {
+
+		for (SootClass s : allComponentClasses) {
+			s.addInterface(s);
+
+			Scene sc = Scene.v();
+			Jimple j = Jimple.v();
+
+			// Create a name for a field for the result intent of this component
+			String fieldName = "ipcResultIntent";
+			int fieldIdx = 0;
+			while (s.declaresFieldByName(fieldName))
+				fieldName = "ipcResultIntent_" + fieldIdx++;
+
+			// Create the field itself
+			SootField resultIntentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"),
+					Modifier.PUBLIC);
+			resultIntentField.addTag(SimulatedCodeElementTag.TAG);
+			s.addField(resultIntentField);
+			SootMethod getResultIntentMethod = sc.makeSootMethod(info.getResultIntentMethod.getName(),
+					info.getResultIntentMethod.getParameterTypes(), info.getResultIntentMethod.getReturnType());
+			getResultIntentMethod.addTag(SimulatedCodeElementTag.TAG);
+			JimpleBody jb = j.newBody(getResultIntentMethod);
+			getResultIntentMethod.setActiveBody(jb);
+			s.addMethod(getResultIntentMethod);
+
+			jb.insertIdentityStmts();
+			Local lcl = j.newLocal("ret", getResultIntentMethod.getReturnType());
+			jb.getLocals().add(lcl);
+			jb.getUnits()
+					.add(j.newAssignStmt(lcl, j.newInstanceFieldRef(jb.getThisLocal(), resultIntentField.makeRef())));
+			jb.getUnits().add(j.newReturnStmt(lcl));
+
+			// Create a name for a field for the intent with which the component is started
+			fieldName = "ipcIntent";
+			fieldIdx = 0;
+			while (s.declaresFieldByName(fieldName))
+				fieldName = "ipcIntent_" + fieldIdx++;
+
+			// Create the field itself
+			SootField intentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"),
+					Modifier.PUBLIC);
+			intentField.addTag(SimulatedCodeElementTag.TAG);
+			s.addField(intentField);
+
+			SootMethod getIntentMethod = sc.makeSootMethod(info.getIntentMethod.getName(),
+					info.getIntentMethod.getParameterTypes(), info.getIntentMethod.getReturnType());
+			jb = j.newBody(getIntentMethod);
+			getIntentMethod.addTag(SimulatedCodeElementTag.TAG);
+			getIntentMethod.setActiveBody(jb);
+			s.addMethod(getIntentMethod);
+			jb.insertIdentityStmts();
+			lcl = j.newLocal("ret", getIntentMethod.getReturnType());
+			jb.getLocals().add(lcl);
+			jb.getUnits().add(j.newAssignStmt(lcl, j.newInstanceFieldRef(jb.getThisLocal(), intentField.makeRef())));
+			jb.getUnits().add(j.newReturnStmt(lcl));
+
+			SootMethod setIntentMethod = sc.makeSootMethod(info.setIntentMethod.getName(),
+					info.setIntentMethod.getParameterTypes(), info.setIntentMethod.getReturnType());
+			jb = j.newBody(setIntentMethod);
+			s.addMethod(setIntentMethod);
+			setIntentMethod.addTag(SimulatedCodeElementTag.TAG);
+			setIntentMethod.setActiveBody(jb);
+			jb.insertIdentityStmts();
+			jb.getUnits().add(j.newAssignStmt(j.newInstanceFieldRef(jb.getThisLocal(), intentField.makeRef()),
+					jb.getParameterLocal(0)));
+			jb.getUnits().add(j.newReturnVoidStmt());
+
+		}
 	}
 
 	private Value createApplicationInfo() {
@@ -629,7 +777,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			for (String methodSig : applicationCallbackClasses.get(sc)) {
 				SootMethodAndClass methodAndClass = SootMethodRepresentationParser.v().parseSootMethodString(methodSig);
 				String subSig = methodAndClass.getSubSignature();
-				SootMethod method = findMethod(Scene.v().getSootClass(sc.getName()), subSig);
+				SootMethod method = SootUtils.findMethod(Scene.v().getSootClass(sc.getName()), subSig);
 
 				// We do not consider lifecycle methods which are directly
 				// inserted at their respective positions
@@ -721,6 +869,15 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	@Override
 	public void reset() {
 		super.reset();
+
+		for (SootClass sc : allComponentClasses) {
+			for (String mn : new String[] { getIntentName, getResultIntentName }) {
+				SootMethod m = sc.getMethodByNameUnsafe(mn);
+				if (m != null && m.isDeclared())
+					sc.removeMethod(m);
+			}
+			sc.removeInterface(componentDataExchangeInterface);
+		}
 
 		// Get rid of the generated component methods
 		for (SootMethod sm : getAdditionalMethods()) {

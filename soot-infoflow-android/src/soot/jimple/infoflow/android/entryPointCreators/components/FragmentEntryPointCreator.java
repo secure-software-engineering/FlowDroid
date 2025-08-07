@@ -15,6 +15,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
@@ -26,8 +27,8 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public FragmentEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
-			SootField instantiatorField, SootField classLoaderField) {
-		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+			SootField instantiatorField, SootField classLoaderField, ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override

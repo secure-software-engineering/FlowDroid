@@ -9,7 +9,9 @@ import soot.UnitPatchingChain;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
+import soot.jimple.infoflow.util.SootUtils;
 
 /**
  * Entry point creator for content providers
@@ -20,8 +22,8 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class ContentProviderEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public ContentProviderEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
-			SootField instantiatorField, SootField classLoaderField) {
-		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+			SootField instantiatorField, SootField classLoaderField, ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override
@@ -57,7 +59,7 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 		units.add(beforeCallbacksStmt);
 		SootClass providerClass = getModelledClass();
 		for (String methodSig : AndroidEntryPointConstants.getContentproviderLifecycleMethods()) {
-			SootMethod sm = findMethod(providerClass, methodSig);
+			SootMethod sm = SootUtils.findMethod(providerClass, methodSig);
 			if (sm != null && !sm.getSubSignature().equals(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE)) {
 				NopStmt afterMethodStmt = Jimple.v().newNopStmt();
 				createIfStmt(afterMethodStmt);

@@ -12,6 +12,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCreator {
@@ -41,7 +42,7 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		if (currentClass == null || classLocal == null)
 			return null;
 
-		SootMethod method = findMethod(currentClass, subsignature);
+		SootMethod method = SootUtils.findMethod(currentClass, subsignature);
 		if (method == null)
 			return null;
 

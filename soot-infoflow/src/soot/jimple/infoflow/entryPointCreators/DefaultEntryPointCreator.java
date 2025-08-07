@@ -34,6 +34,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.toolkits.scalar.NopEliminator;
 
 /**
@@ -93,7 +94,7 @@ public class DefaultEntryPointCreator extends BaseEntryPointCreator {
 			Local classLocal = localVarsForClasses.get(entry.getKey());
 			for (String method : entry.getValue()) {
 				SootMethodAndClass methodAndClass = SootMethodRepresentationParser.v().parseSootMethodString(method);
-				SootMethod currentMethod = findMethod(Scene.v().getSootClass(methodAndClass.getClassName()),
+				SootMethod currentMethod = SootUtils.findMethod(Scene.v().getSootClass(methodAndClass.getClassName()),
 						methodAndClass.getSubSignature());
 				if (currentMethod == null) {
 					logger.warn("Entry point not found: {}", method);

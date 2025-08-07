@@ -2,6 +2,7 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,6 +36,7 @@ import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
@@ -59,21 +61,24 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 	protected Local thisLocal = null;
 	protected Local intentLocal = null;
-	protected SootField intentField = null;
 
 	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 
 	protected final SootField instantiatorField;
 	protected final SootField classLoaderField;
 
+	protected ComponentExchangeInfo componentExchangeInfo;
+
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField) {
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField,
+			ComponentExchangeInfo componentExchangeInfo) {
 		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;
 		this.overwriteDummyMainMethod = true;
 		this.instantiatorField = instantiatorField;
 		this.classLoaderField = classLoaderField;
+		this.componentExchangeInfo = componentExchangeInfo;
 
 	}
 
@@ -85,16 +90,6 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	protected void createAdditionalFields() {
 		super.createAdditionalFields();
 
-		// Create a name for a field for the intent with which the component is started
-		String fieldName = "ipcIntent";
-		int fieldIdx = 0;
-		while (component.declaresFieldByName(fieldName))
-			fieldName = "ipcIntent_" + fieldIdx++;
-
-		// Create the field itself
-		intentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
-		intentField.addTag(SimulatedCodeElementTag.TAG);
-		component.addField(intentField);
 	}
 
 	@Override
@@ -203,8 +198,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				localVarsForClasses.put(component, thisLocal);
 
 				// Store the intent
-				body.getUnits().add(Jimple.v()
-						.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, intentField.makeRef()), intentLocal));
+				body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(thisLocal,
+						componentExchangeInfo.setIntentMethod.makeRef(), Arrays.asList(intentLocal))));
 
 				// Create calls to the lifecycle methods
 				generateComponentLifecycle();
@@ -318,10 +313,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 	@Override
 	public Collection<SootField> getAdditionalFields() {
-		if (intentField == null)
-			return Collections.emptySet();
-
-		return Collections.singleton(intentField);
+		return Collections.emptySet();
 	}
 
 	/**
@@ -471,24 +463,13 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		}
 	}
 
-	@Override
-	protected void reset() {
-		super.reset();
-
-		// Get rid of our dummy fields
-		component.removeField(intentField);
-		intentField = null;
-	}
-
 	/**
 	 * Gets the data object that describes the generated entry point
 	 * 
 	 * @return The data object that describes the generated entry point
 	 */
 	public ComponentEntryPointInfo getComponentInfo() {
-		ComponentEntryPointInfo info = new ComponentEntryPointInfo(mainMethod);
-		info.setIntentField(intentField);
-		return info;
+		return new ComponentEntryPointInfo(mainMethod);
 	}
 
 	/**
@@ -506,7 +487,6 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				Modifier.PUBLIC);
 		sm.addTag(SimulatedCodeElementTag.TAG);
 		component.addMethod(sm);
-		sm.addTag(SimulatedCodeElementTag.TAG);
 
 		JimpleBody b = Jimple.v().newBody(sm);
 		sm.setActiveBody(b);
@@ -514,8 +494,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		LocalGenerator localGen = Scene.v().createLocalGenerator(b);
 		Local lcIntent = localGen.generateLocal(intentType);
-		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
-				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));
+		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent, Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
+				componentExchangeInfo.getIntentMethod.makeRef(), Collections.emptyList())));
 		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
 	}
 

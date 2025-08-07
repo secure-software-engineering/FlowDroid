@@ -66,6 +66,7 @@ import soot.jimple.infoflow.android.source.parsers.xml.ResourceUtils;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.infoflow.values.IValueProvider;
 import soot.jimple.infoflow.values.SimpleConstantValueProvider;
@@ -869,16 +870,6 @@ public abstract class AbstractCallbackAnalyzer {
 		}
 	}
 
-	private SootMethod getMethodFromHierarchyEx(SootClass c, String methodSignature) {
-		SootMethod m = c.getMethodUnsafe(methodSignature);
-		if (m != null)
-			return m;
-		SootClass superClass = c.getSuperclassUnsafe();
-		if (superClass != null)
-			return getMethodFromHierarchyEx(superClass, methodSignature);
-		return null;
-	}
-
 	protected void analyzeClassInterfaceCallbacks(SootClass baseClass, SootClass sootClass,
 			SootClass lifecycleElement) {
 		// We cannot create instances of abstract classes anyway, so there is no
@@ -926,7 +917,7 @@ public abstract class AbstractCallbackAnalyzer {
 		if (androidCallbacks.contains(sc.getName())) {
 			CallbackType callbackType = isUICallback(sc) ? CallbackType.Widget : CallbackType.Default;
 			for (SootMethod sm : sc.getMethods()) {
-				SootMethod callbackImplementation = getMethodFromHierarchyEx(baseClass, sm.getSubSignature());
+				SootMethod callbackImplementation = SootUtils.findMethod(baseClass, sm.getSubSignature());
 				if (callbackImplementation != null)
 					checkAndAddMethod(callbackImplementation, sm, lifecycleElement, callbackType);
 			}

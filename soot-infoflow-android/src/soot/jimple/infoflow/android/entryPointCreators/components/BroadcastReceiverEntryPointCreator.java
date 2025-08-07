@@ -8,6 +8,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
@@ -19,8 +20,9 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public BroadcastReceiverEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField) {
-		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField,
+			ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override

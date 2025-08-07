@@ -18,8 +18,10 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.util.SootUtils;
 
 /**
  * Entry point creator for Android services
@@ -32,8 +34,8 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	protected SootField binderField = null;
 
 	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
-			SootField instantiatorField, SootField classLoaderField) {
-		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+			SootField instantiatorField, SootField classLoaderField, ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override
@@ -98,7 +100,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService)
 			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
+				SootMethod sm = SootUtils.findMethod(component, sig);
 				if (sm != null && !sm.getName().equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
 					if (createPlainMethodCall(thisLocal, sm))
 						hasAdditionalMethods = true;
@@ -137,7 +139,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	protected boolean createSpecialServiceMethodCalls(List<String> methodSigs, String parentClass) {
 		boolean hasAdditionalMethods = false;
 		for (String sig : methodSigs) {
-			SootMethod sm = findMethod(component, sig);
+			SootMethod sm = SootUtils.findMethod(component, sig);
 			if (sm != null && !sm.getDeclaringClass().getName().equals(parentClass))
 				if (createPlainMethodCall(thisLocal, sm))
 					hasAdditionalMethods = true;
@@ -175,7 +177,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	 * passed in as an argument, in the global field
 	 */
 	private void instrumentOnBind() {
-		SootMethod sm = component.getMethodUnsafe("android.os.IBinder onBind(android.content.Intent)");
+		SootMethod sm = SootUtils.findMethod(component, "android.os.IBinder onBind(android.content.Intent)");
 		final Type intentType = RefType.v("android.content.Intent");
 		final Type binderType = RefType.v("android.os.IBinder");
 		if (sm == null || !sm.isConcrete()) {

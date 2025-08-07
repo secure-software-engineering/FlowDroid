@@ -1,6 +1,7 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.cfg.LibraryClassPatcher;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
@@ -42,13 +44,11 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 	private final Map<SootClass, SootField> callbackClassToField;
 	private final Map<SootClass, SootMethod> fragmentToMainMethod;
 
-	protected SootField resultIntentField = null;
-
 	public ActivityEntryPointCreator(SootClass component, SootClass applicationClass,
 			MultiMap<SootClass, String> activityLifecycleCallbacks, Map<SootClass, SootField> callbackClassToField,
 			Map<SootClass, SootMethod> fragmentToMainMethod, IManifestHandler manifest, SootField instantiatorField,
-			SootField classLoaderField) {
-		super(component, applicationClass, manifest, instantiatorField, classLoaderField);
+			SootField classLoaderField, ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 		this.activityLifecycleCallbacks = activityLifecycleCallbacks;
 		this.callbackClassToField = callbackClassToField;
 		this.fragmentToMainMethod = fragmentToMainMethod;
@@ -223,23 +223,8 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 	}
 
 	@Override
-	protected void createAdditionalFields() {
-		super.createAdditionalFields();
-
-		// Create a name for a field for the result intent of this component
-		String fieldName = "ipcResultIntent";
-		int fieldIdx = 0;
-		while (component.declaresFieldByName(fieldName))
-			fieldName = "ipcResultIntent_" + fieldIdx++;
-
-		// Create the field itself
-		resultIntentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
-		resultIntentField.addTag(SimulatedCodeElementTag.TAG);
-		component.addField(resultIntentField);
-	}
-
-	@Override
 	protected void createAdditionalMethods() {
+		super.createAdditionalMethods();
 		if (InfoflowAndroidConfiguration.getCreateActivityEntryMethods()) {
 
 			createGetIntentMethod();
@@ -269,8 +254,8 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		b.insertIdentityStmts();
 
 		Local lcIntent = b.getParameterLocal(0);
-		b.getUnits().add(Jimple.v()
-				.newAssignStmt(Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef()), lcIntent));
+		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
+				componentExchangeInfo.setIntentMethod.makeRef(), Arrays.asList(lcIntent))));
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
 	}
 
@@ -297,8 +282,8 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		b.insertIdentityStmts();
 
 		Local lcIntent = b.getParameterLocal(1);
-		b.getUnits().add(Jimple.v().newAssignStmt(
-				Jimple.v().newInstanceFieldRef(b.getThisLocal(), resultIntentField.makeRef()), lcIntent));
+		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
+				componentExchangeInfo.setIntentMethod.makeRef(), Arrays.asList(lcIntent))));
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
 
 		// Activity.setResult() is final. We need to change that
@@ -306,22 +291,6 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 				.grabMethod("<android.app.Activity: void setResult(int,android.content.Intent)>");
 		if (smSetResult != null && smSetResult.getDeclaringClass().isApplicationClass())
 			smSetResult.setModifiers(smSetResult.getModifiers() & ~Modifier.FINAL);
-	}
-
-	@Override
-	protected void reset() {
-		super.reset();
-
-		component.removeField(resultIntentField);
-		resultIntentField = null;
-	}
-
-	@Override
-	public ComponentEntryPointInfo getComponentInfo() {
-		ActivityEntryPointInfo activityInfo = new ActivityEntryPointInfo(mainMethod);
-		activityInfo.setIntentField(intentField);
-		activityInfo.setResultIntentField(resultIntentField);
-		return activityInfo;
 	}
 
 	@Override
