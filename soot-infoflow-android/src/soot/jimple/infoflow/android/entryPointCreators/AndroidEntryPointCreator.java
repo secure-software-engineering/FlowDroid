@@ -170,7 +170,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	}
 
 	private ComponentExchangeInfo generateComponentDataExchangeInterface() {
-		SootClass s = generateOrGetGeneratedClass(DEFAULT_COMPONENTDATAEXCHANGENAME);
+		SootClass s = getOrCreateClass(DEFAULT_COMPONENTDATAEXCHANGENAME);
 		s.setModifiers(Modifier.PUBLIC | Modifier.INTERFACE);
 		componentDataExchangeInterface = s;
 

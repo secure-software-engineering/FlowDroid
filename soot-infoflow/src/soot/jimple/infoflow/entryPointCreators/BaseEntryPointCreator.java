@@ -180,12 +180,12 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	 * @return The class tha contains the dummy main method
 	 */
 	protected SootClass getOrCreateDummyMainClass() {
-		SootClass sc = generateOrGetGeneratedClass(dummyClassName);
+		SootClass sc = getOrCreateClass(dummyClassName);
 		dummyClassName = sc.getName();
 		return sc;
 	}
 
-	protected SootClass generateOrGetGeneratedClass(String name) {
+	protected SootClass getOrCreateClass(String name) {
 		SootClass mainClass = Scene.v().getSootClassUnsafe(name, false);
 		int i = 1;
 		String n = name;
