@@ -179,9 +179,12 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		Scene sc = Scene.v();
 		getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent);
 		componentDataExchangeInterface.addMethod(getResultIntentMethod);
+		getResultIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
 		getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent);
+		getIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(getIntentMethod);
 		setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v());
+		setIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(setIntentMethod);
 		ComponentExchangeInfo info = new ComponentExchangeInfo(componentDataExchangeInterface, getIntentMethod,
 				setIntentMethod, getResultIntentMethod);
