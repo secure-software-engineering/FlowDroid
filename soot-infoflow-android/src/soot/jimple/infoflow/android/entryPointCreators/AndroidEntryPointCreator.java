@@ -117,11 +117,12 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private SootField instantiatorField;
 
-	//Contains *all* potential component classes, irregular of whether
-	//they are defined in the manifest or not. Note that the app component
-	//factory might create other classes than those listed in the manifest, which makes
-	//everything quite complex.
-	//In other words, this set contains *all* possible components
+	// Contains *all* potential component classes, irregular of whether
+	// they are defined in the manifest or not. Note that the app component
+	// factory might create other classes than those listed in the manifest, which
+	// makes
+	// everything quite complex.
+	// In other words, this set contains *all* possible components
 	private Set<SootClass> allComponentClasses = new HashSet<>();
 
 	private String getResultIntentName;
@@ -160,7 +161,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			}
 		}
 		getResultIntentName = findUniqueMethodName("getResultIntent", allComponentClasses);
-		//just choose a different name other than "getIntent"
+		// just choose a different name other than "getIntent"
 		getIntentName = findUniqueMethodName("getDataIntent", allComponentClasses);
 		setIntentName = findUniqueMethodName("setDataIntent", allComponentClasses);
 
@@ -210,6 +211,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// from previous runs
 		reset();
 
+		for (SootClass s : allComponentClasses) {
+			s.addInterface(componentDataExchangeInterface);
+		}
 		logger.info(String.format("Creating Android entry point for %d components...", components.size()));
 
 		// For some weird reason unknown to anyone except the flying spaghetti
@@ -241,7 +245,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				createIfStmt(beforeContentProvidersStmt);
 		}
 
-		// If the application tag in the manifest specifies a appComponentFactory, it needs to be called first
+		// If the application tag in the manifest specifies a appComponentFactory, it
+		// needs to be called first
 		initializeApplComponentFactory();
 
 		// If we have an implementation of android.app.Application, this needs
@@ -249,7 +254,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		initializeApplicationClass();
 		Jimple j = Jimple.v();
 
-		//due to app component factories, that could be another application class!
+		// due to app component factories, that could be another application class!
 		SootClass applicationClassUse = Scene.v().getSootClass(AndroidEntryPointConstants.APPLICATIONCLASS);
 		;
 		// If we have an application, we need to start it in the very beginning
@@ -293,7 +298,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			} else {
 				// Create the application
 				applicationLocal = generateClassConstructor(applicationClass);
-				//we know for sure that there is no other application class in question
+				// we know for sure that there is no other application class in question
 				applicationClassUse = applicationClass;
 			}
 			localVarsForClasses.put(applicationClass, applicationLocal);
@@ -476,7 +481,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private void initializeComponentDataTransferMethods(ComponentExchangeInfo info) {
 
 		for (SootClass s : allComponentClasses) {
-			s.addInterface(s);
 
 			Scene sc = Scene.v();
 			Jimple j = Jimple.v();
@@ -533,9 +537,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			SootMethod setIntentMethod = sc.makeSootMethod(info.setIntentMethod.getName(),
 					info.setIntentMethod.getParameterTypes(), info.setIntentMethod.getReturnType());
 			jb = j.newBody(setIntentMethod);
+			setIntentMethod.setActiveBody(jb);
 			s.addMethod(setIntentMethod);
 			setIntentMethod.addTag(SimulatedCodeElementTag.TAG);
-			setIntentMethod.setActiveBody(jb);
 			jb.insertIdentityStmts();
 			jb.getUnits().add(j.newAssignStmt(j.newInstanceFieldRef(jb.getThisLocal(), intentField.makeRef()),
 					jb.getParameterLocal(0)));
@@ -612,7 +616,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					f = mainMethod.getDeclaringClass().getFieldByNameUnsafe(dm.getFieldName());
 				}
 				if (f == null) {
-					//create field
+					// create field
 					f = createField(arg.getType(), "jsInterface");
 					AssignStmt assign = j.newAssignStmt(j.newStaticFieldRef(f.makeRef()), arg);
 					assign.addTag(SimulatedCodeElementTag.TAG);
@@ -876,7 +880,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				if (m != null && m.isDeclared())
 					sc.removeMethod(m);
 			}
-			sc.removeInterface(componentDataExchangeInterface);
+			if (sc.getInterfaces().contains(componentDataExchangeInterface))
+				sc.removeInterface(componentDataExchangeInterface);
 		}
 
 		// Get rid of the generated component methods
