@@ -41,12 +41,12 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	@Override
 	protected void generateComponentLifecycle() {
 		// 1. onCreate:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, thisLocal);
 
 		// service has two different lifecycles:
 		// lifecycle1:
 		// 2. onStart:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, thisLocal);
 
 		// onStartCommand can be called an arbitrary number of times, or never
 		NopStmt beforeStartCommand = Jimple.v().newNopStmt();
@@ -54,7 +54,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		body.getUnits().add(beforeStartCommand);
 		createIfStmt(afterStartCommand);
 
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, thisLocal);
 		createIfStmt(beforeStartCommand);
 		body.getUnits().add(afterStartCommand);
 
@@ -89,7 +89,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// lifecycle2 start
 		// onBind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, thisLocal);
 
 		NopStmt beforemethodsStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(beforemethodsStmt);
@@ -112,18 +112,18 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// onUnbind:
 		Stmt onDestroyStmt = Jimple.v().newNopStmt();
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, thisLocal);
 		createIfStmt(onDestroyStmt); // fall through to rebind or go to destroy
 
 		// onRebind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, thisLocal);
 		createIfStmt(beforemethodsStmt);
 
 		// lifecycle2 end
 
 		// onDestroy:
 		body.getUnits().add(onDestroyStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, thisLocal);
 	}
 
 	/**

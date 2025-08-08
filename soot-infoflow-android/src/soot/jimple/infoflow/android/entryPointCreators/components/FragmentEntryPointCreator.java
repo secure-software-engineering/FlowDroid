@@ -45,8 +45,7 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 		TwoElementSet<SootClass> classAndFragment = new TwoElementSet<SootClass>(component, scActivity);
 		Stmt afterOnAttachFragment = Jimple.v().newNopStmt();
 		createIfStmt(afterOnAttachFragment);
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONATTACHFRAGMENT, component, thisLocal,
-				classAndFragment);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONATTACHFRAGMENT, thisLocal, classAndFragment);
 		body.getUnits().add(afterOnAttachFragment);
 
 		// Render the fragment lifecycle
@@ -65,68 +64,64 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 		createIfStmt(endFragmentStmt);
 
 		// 1. onAttach:
-		Stmt onAttachStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONATTACH, currentClass, classLocal,
+		Stmt onAttachStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONATTACH, classLocal,
 				Collections.singleton(activity));
 		if (onAttachStmt == null)
 			body.getUnits().add(onAttachStmt = Jimple.v().newNopStmt());
 
 		// 2. onCreate:
-		Stmt onCreateStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONCREATE, currentClass,
-				classLocal);
+		Stmt onCreateStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONCREATE, classLocal);
 		if (onCreateStmt == null)
 			body.getUnits().add(onCreateStmt = Jimple.v().newNopStmt());
 
 		// 3. onCreateView:
-		Stmt onCreateViewStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONCREATEVIEW, currentClass,
-				classLocal);
+		Stmt onCreateViewStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONCREATEVIEW, classLocal);
 		if (onCreateViewStmt == null)
 			body.getUnits().add(onCreateViewStmt = Jimple.v().newNopStmt());
 
-		Stmt onViewCreatedStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONVIEWCREATED, currentClass,
-				classLocal);
+		Stmt onViewCreatedStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONVIEWCREATED, classLocal);
 		if (onViewCreatedStmt == null)
 			body.getUnits().add(onViewCreatedStmt = Jimple.v().newNopStmt());
 
 		// 0. onActivityCreated:
-		Stmt onActCreatedStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONACTIVITYCREATED,
-				currentClass, classLocal);
+		Stmt onActCreatedStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONACTIVITYCREATED, classLocal);
 		if (onActCreatedStmt == null)
 			body.getUnits().add(onActCreatedStmt = Jimple.v().newNopStmt());
 
 		// 4. onStart:
-		Stmt onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSTART, currentClass, classLocal);
+		Stmt onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSTART, classLocal);
 		if (onStartStmt == null)
 			body.getUnits().add(onStartStmt = Jimple.v().newNopStmt());
 
 		// 5. onResume:
 		Stmt onResumeStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(onResumeStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONRESUME, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONRESUME, classLocal);
 
 		// Add the fragment callbacks
 		addCallbackMethods();
 
 		// 6. onPause:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONPAUSE, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONPAUSE, classLocal);
 		createIfStmt(onResumeStmt);
 
 		// 7. onSaveInstanceState:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSAVEINSTANCESTATE, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSAVEINSTANCESTATE, classLocal);
 
 		// 8. onStop:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSTOP, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONSTOP, classLocal);
 		createIfStmt(onCreateViewStmt);
 		createIfStmt(onStartStmt);
 
 		// 9. onDestroyView:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDESTROYVIEW, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDESTROYVIEW, classLocal);
 		createIfStmt(onCreateViewStmt);
 
 		// 10. onDestroy:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDESTROY, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDESTROY, classLocal);
 
 		// 11. onDetach:
-		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDETACH, currentClass, classLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.FRAGMENT_ONDETACH, classLocal);
 		createIfStmt(onAttachStmt);
 
 		body.getUnits().add(Jimple.v().newAssignStmt(classLocal, NullConstant.v()));

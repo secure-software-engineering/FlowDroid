@@ -97,10 +97,10 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// 1. onCreate:
 		{
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATE, activityClass, thisLocal);
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATE, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED,
-						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
+						localVarsForClasses.get(callbackClass), currentClassSet);
 			}
 		}
 
@@ -121,10 +121,10 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// 2. onStart:
 		Stmt onStartStmt;
 		{
-			onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTART, activityClass, thisLocal);
+			onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTART, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				Stmt s = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTARTED,
-						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
+						localVarsForClasses.get(callbackClass), currentClassSet);
 				if (onStartStmt == null)
 					onStartStmt = s;
 			}
@@ -141,23 +141,23 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		{
 			Stmt afterOnRestore = Jimple.v().newNopStmt();
 			createIfStmt(afterOnRestore);
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTOREINSTANCESTATE, activityClass, thisLocal,
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTOREINSTANCESTATE, thisLocal,
 					currentClassSet);
 			body.getUnits().add(afterOnRestore);
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTCREATE, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTCREATE, thisLocal);
 
 		// 3. onResume:
 		Stmt onResumeStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(onResumeStmt);
 		{
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESUME, activityClass, thisLocal);
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESUME, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 				searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYRESUMED,
-						callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
+						localVarsForClasses.get(callbackClass), currentClassSet);
 			}
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTRESUME, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTRESUME, thisLocal);
 
 		// Scan for other entryPoints of this class:
 		if (this.callbacks != null && !this.callbacks.isEmpty()) {
@@ -174,16 +174,16 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		}
 
 		// 4. onPause:
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPAUSE, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPAUSE, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
-			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYPAUSED, callbackClass,
+			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYPAUSED,
 					localVarsForClasses.get(callbackClass), currentClassSet);
 		}
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATEDESCRIPTION, activityClass, thisLocal);
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSAVEINSTANCESTATE, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATEDESCRIPTION, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSAVEINSTANCESTATE, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSAVEINSTANCESTATE,
-					callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
+					localVarsForClasses.get(callbackClass), currentClassSet);
 		}
 
 		// goTo Stop, Resume or Create:
@@ -192,11 +192,11 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
 		// 5. onStop:
-		Stmt onStop = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTOP, activityClass, thisLocal);
+		Stmt onStop = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTOP, thisLocal);
 		boolean hasAppOnStop = false;
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			Stmt onActStoppedStmt = searchAndBuildMethod(
-					AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTOPPED, callbackClass,
+					AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTOPPED,
 					localVarsForClasses.get(callbackClass), currentClassSet);
 			hasAppOnStop |= onActStoppedStmt != null;
 		}
@@ -210,15 +210,15 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
 		// 6. onRestart:
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, thisLocal);
 		body.getUnits().add(Jimple.v().newGotoStmt(onStartStmt)); // jump to onStart()
 
 		// 7. onDestroy
 		body.getUnits().add(stopToDestroyStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONDESTROY, activityClass, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONDESTROY, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED,
-					callbackClass, localVarsForClasses.get(callbackClass), currentClassSet);
+					localVarsForClasses.get(callbackClass), currentClassSet);
 		}
 	}
 
@@ -283,7 +283,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		Local lcIntent = b.getParameterLocal(1);
 		b.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
-				componentExchangeInfo.setIntentMethod.makeRef(), Arrays.asList(lcIntent))));
+				componentExchangeInfo.setResultIntentMethod.makeRef(), Arrays.asList(lcIntent))));
 		b.getUnits().add(Jimple.v().newReturnVoidStmt());
 
 		// Activity.setResult() is final. We need to change that

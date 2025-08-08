@@ -127,6 +127,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	private String getResultIntentName;
 
+	private String setResultIntentName;
+
 	private String getIntentName;
 
 	private String setIntentName;
@@ -136,6 +138,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private SootClass componentDataExchangeInterface;
 
 	private SootMethod getResultIntentMethod;
+	private SootMethod setResultIntentMethod;
 	private SootMethod getIntentMethod;
 	private SootMethod setIntentMethod;
 
@@ -161,6 +164,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			}
 		}
 		getResultIntentName = findUniqueMethodName("getResultIntent", allComponentClasses);
+		setResultIntentName = findUniqueMethodName("setResultIntent", allComponentClasses);
 		// just choose a different name other than "getIntent"
 		getIntentName = findUniqueMethodName("getDataIntent", allComponentClasses);
 		setIntentName = findUniqueMethodName("setDataIntent", allComponentClasses);
@@ -177,17 +181,20 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		RefType intent = RefType.v("android.content.Intent");
 		Scene sc = Scene.v();
-		getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent);
+		getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent,
+				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(getResultIntentMethod);
-		getResultIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
-		getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent);
-		getIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
+		getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent,
+				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(getIntentMethod);
-		setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v());
-		setIntentMethod.setModifiers(Modifier.PUBLIC | Modifier.ABSTRACT);
+		setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v(),
+				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(setIntentMethod);
+		setResultIntentMethod = sc.makeSootMethod(setResultIntentName, Arrays.asList(intent), VoidType.v(),
+				Modifier.PUBLIC | Modifier.ABSTRACT);
+		componentDataExchangeInterface.addMethod(setResultIntentMethod);
 		ComponentExchangeInfo info = new ComponentExchangeInfo(componentDataExchangeInterface, getIntentMethod,
-				setIntentMethod, getResultIntentMethod);
+				setIntentMethod, getResultIntentMethod, setResultIntentMethod);
 		componentToInfo.setComponentExchangeInfo(info);
 		return info;
 
@@ -214,9 +221,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// from previous runs
 		reset();
 
-		for (SootClass s : allComponentClasses) {
-			s.addInterface(componentDataExchangeInterface);
-		}
 		logger.info(String.format("Creating Android entry point for %d components...", components.size()));
 
 		// For some weird reason unknown to anyone except the flying spaghetti
@@ -237,7 +241,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 					// Conditionally call the onCreate method
 					NopStmt thenStmt = Jimple.v().newNopStmt();
 					createIfStmt(thenStmt);
-					searchAndBuildMethod(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE, currentClass, localVal);
+					searchAndBuildMethod(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE, localVal);
 					body.getUnits().add(thenStmt);
 					hasContentProviders = true;
 				}
@@ -337,8 +341,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				}
 
 				// Call the onCreate() method
-				searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONCREATE, applicationClassUse,
-						applicationLocal);
+				searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONCREATE, applicationLocal);
 
 				//////////////
 				// Initializes the ApplicationHolder static field with the
@@ -465,8 +468,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		// Add a call to application.onTerminate()
 		if (applicationLocal != null)
-			searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONTERMINATE, applicationClassUse,
-					applicationLocal);
+			searchAndBuildMethod(AndroidEntryPointConstants.APPLICATION_ONTERMINATE, applicationLocal);
 
 		body.getUnits().add(Jimple.v().newReturnVoidStmt());
 
@@ -485,6 +487,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		for (SootClass s : allComponentClasses) {
 
+			s.addInterface(componentDataExchangeInterface);
 			Scene sc = Scene.v();
 			Jimple j = Jimple.v();
 
@@ -500,7 +503,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			resultIntentField.addTag(SimulatedCodeElementTag.TAG);
 			s.addField(resultIntentField);
 			SootMethod getResultIntentMethod = sc.makeSootMethod(info.getResultIntentMethod.getName(),
-					info.getResultIntentMethod.getParameterTypes(), info.getResultIntentMethod.getReturnType());
+					info.getResultIntentMethod.getParameterTypes(), info.getResultIntentMethod.getReturnType(),
+					Modifier.PUBLIC);
 			getResultIntentMethod.addTag(SimulatedCodeElementTag.TAG);
 			JimpleBody jb = j.newBody(getResultIntentMethod);
 			getResultIntentMethod.setActiveBody(jb);
@@ -525,20 +529,32 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			intentField.addTag(SimulatedCodeElementTag.TAG);
 			s.addField(intentField);
 
+			SootMethod setResultIntentMethod = sc.makeSootMethod(info.setResultIntentMethod.getName(),
+					info.setResultIntentMethod.getParameterTypes(), info.setResultIntentMethod.getReturnType(),
+					Modifier.PUBLIC);
+
+			jb = j.newBody(setResultIntentMethod);
+			setResultIntentMethod.setActiveBody(jb);
+			s.addMethod(setResultIntentMethod);
+			setResultIntentMethod.addTag(SimulatedCodeElementTag.TAG);
+			jb.insertIdentityStmts();
+			jb.getUnits().add(j.newAssignStmt(j.newInstanceFieldRef(jb.getThisLocal(), resultIntentField.makeRef()),
+					jb.getParameterLocal(0)));
+			jb.getUnits().add(j.newReturnVoidStmt());
 			SootMethod getIntentMethod = sc.makeSootMethod(info.getIntentMethod.getName(),
-					info.getIntentMethod.getParameterTypes(), info.getIntentMethod.getReturnType());
+					info.getIntentMethod.getParameterTypes(), info.getIntentMethod.getReturnType(), Modifier.PUBLIC);
 			jb = j.newBody(getIntentMethod);
 			getIntentMethod.addTag(SimulatedCodeElementTag.TAG);
 			getIntentMethod.setActiveBody(jb);
 			s.addMethod(getIntentMethod);
 			jb.insertIdentityStmts();
-			lcl = j.newLocal("ret", getIntentMethod.getReturnType());
+			lcl = j.newLocal("retValue", getIntentMethod.getReturnType());
 			jb.getLocals().add(lcl);
 			jb.getUnits().add(j.newAssignStmt(lcl, j.newInstanceFieldRef(jb.getThisLocal(), intentField.makeRef())));
 			jb.getUnits().add(j.newReturnStmt(lcl));
 
 			SootMethod setIntentMethod = sc.makeSootMethod(info.setIntentMethod.getName(),
-					info.setIntentMethod.getParameterTypes(), info.setIntentMethod.getReturnType());
+					info.setIntentMethod.getParameterTypes(), info.setIntentMethod.getReturnType(), Modifier.PUBLIC);
 			jb = j.newBody(setIntentMethod);
 			setIntentMethod.setActiveBody(jb);
 			s.addMethod(setIntentMethod);
@@ -876,16 +892,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	@Override
 	public void reset() {
 		super.reset();
-
-		for (SootClass sc : allComponentClasses) {
-			for (String mn : new String[] { getIntentName, getResultIntentName }) {
-				SootMethod m = sc.getMethodByNameUnsafe(mn);
-				if (m != null && m.isDeclared())
-					sc.removeMethod(m);
-			}
-			if (sc.getInterfaces().contains(componentDataExchangeInterface))
-				sc.removeInterface(componentDataExchangeInterface);
-		}
 
 		// Get rid of the generated component methods
 		for (SootMethod sm : getAdditionalMethods()) {
