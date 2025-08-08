@@ -193,7 +193,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			createIfStmt(endClassStmt);
 
 			// Create a new instance of the component
-			thisLocal = generateClassConstructor(component);
+			if (thisLocal == null)
+				thisLocal = generateClassConstructor(component);
 			if (thisLocal != null) {
 				localVarsForClasses.put(component, thisLocal);
 

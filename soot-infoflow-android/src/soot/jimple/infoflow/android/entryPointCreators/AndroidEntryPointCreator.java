@@ -10,6 +10,7 @@
  ******************************************************************************/
 package soot.jimple.infoflow.android.entryPointCreators;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -142,6 +143,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	private SootMethod getIntentMethod;
 	private SootMethod setIntentMethod;
 
+	private AbstractCollection<SootMethod> additionalMethods;
+
 	/**
 	 * Creates a new instance of the {@link AndroidEntryPointCreator} class and
 	 * registers a list of classes to be automatically scanned for Android lifecycle
@@ -220,37 +223,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		// Make sure that we don't have any leftover state
 		// from previous runs
 		reset();
+		additionalMethods = new HashSet<>();
 
 		logger.info(String.format("Creating Android entry point for %d components...", components.size()));
-
-		// For some weird reason unknown to anyone except the flying spaghetti
-		// monster, the onCreate() methods of content providers run even before
-		// the application object's onCreate() is called.
-		{
-			boolean hasContentProviders = false;
-			NopStmt beforeContentProvidersStmt = Jimple.v().newNopStmt();
-			body.getUnits().add(beforeContentProvidersStmt);
-			for (SootClass currentClass : components) {
-				if (entryPointUtils.getComponentType(currentClass) == ComponentType.ContentProvider) {
-					// Create an instance of the content provider
-					Local localVal = generateClassConstructor(currentClass);
-					if (localVal == null)
-						continue;
-					localVarsForClasses.put(currentClass, localVal);
-
-					// Conditionally call the onCreate method
-					NopStmt thenStmt = Jimple.v().newNopStmt();
-					createIfStmt(thenStmt);
-					searchAndBuildMethod(AndroidEntryPointConstants.CONTENTPROVIDER_ONCREATE, localVal);
-					body.getUnits().add(thenStmt);
-					hasContentProviders = true;
-				}
-			}
-			// Jump back to the beginning of this section to overapproximate the
-			// order in which the methods are called
-			if (hasContentProviders)
-				createIfStmt(beforeContentProvidersStmt);
-		}
 
 		// If the application tag in the manifest specifies a appComponentFactory, it
 		// needs to be called first
@@ -262,10 +237,12 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		Jimple j = Jimple.v();
 
 		// due to app component factories, that could be another application class!
+		// The application class gets instantiated first. Note that although it's
+		// created now, it's onCreate method gets called *after*
+		// all content providers.
 		SootClass applicationClassUse = Scene.v().getSootClass(AndroidEntryPointConstants.APPLICATIONCLASS);
-		;
-		// If we have an application, we need to start it in the very beginning
-		if (applicationClass != null || applicationComponentFactoryClass != null) {
+		boolean generateApplicationCode = applicationClass != null || applicationComponentFactoryClass != null;
+		if (generateApplicationCode) {
 			if (applicationComponentFactoryClass != null) {
 				Local factory = generateClassConstructor(applicationComponentFactoryClass);
 				SootMethodRef mrInstantiate = Scene.v().makeMethodRef(
@@ -294,8 +271,10 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 						mrInstantiateClassLoader, Arrays.asList(classLoader, createApplicationInfo())));
 				body.getUnits().add(instantiateCL);
 
-				classLoaderField = createField(RefType.v("java.lang.ClassLoader"), "cl");
-				instantiatorField = createField(RefType.v("android.app.AppComponentFactory"), "cl");
+				if (classLoaderField == null)
+					classLoaderField = createField(RefType.v("java.lang.ClassLoader"), "cl");
+				if (instantiatorField == null)
+					instantiatorField = createField(RefType.v("android.app.AppComponentFactory"), "cl");
 
 				AssignStmt instantiate = j.newAssignStmt(applicationLocal, j.newVirtualInvokeExpr(factory,
 						mrInstantiate, Arrays.asList(classLoader, StringConstant.v(classAppl))));
@@ -310,6 +289,41 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				applicationClassUse = applicationClass;
 			}
 			localVarsForClasses.put(applicationClass, applicationLocal);
+		}
+
+		Map<SootClass, ContentProviderEntryPointCreator> cpComponents = new HashMap<>();
+		// For some weird reason unknown to anyone except the flying spaghetti
+		// monster, the onCreate() methods of content providers run even before
+		// the application object's onCreate() is called (but after the creation of the
+		// application).
+		// See https://issuetracker.google.com/issues/36917845#comment4
+		{
+			boolean hasContentProviders = false;
+			NopStmt beforeContentProvidersStmt = Jimple.v().newNopStmt();
+			body.getUnits().add(beforeContentProvidersStmt);
+			for (SootClass currentClass : components) {
+				if (entryPointUtils.getComponentType(currentClass) == ComponentType.ContentProvider) {
+					// Create an instance of the content provider
+					ContentProviderEntryPointCreator cpc = new ContentProviderEntryPointCreator(currentClass,
+							applicationClassUse, this.manifest, instantiatorField, classLoaderField,
+							componentToInfo.getComponentExchangeInfo());
+					SootMethod m = cpc.createInit();
+					Local cpLocal = generator.generateLocal(RefType.v(AndroidEntryPointConstants.CONTENTPROVIDERCLASS));
+					body.getUnits().add(Jimple.v().newAssignStmt(cpLocal, Jimple.v().newStaticInvokeExpr(m.makeRef())));
+					localVarsForClasses.put(currentClass, cpLocal);
+					cpComponents.put(currentClass, cpc);
+
+					hasContentProviders = true;
+				}
+			}
+			// Jump back to the beginning of this section to overapproximate the
+			// order in which the methods are called
+			if (hasContentProviders)
+				createIfStmt(beforeContentProvidersStmt);
+		}
+
+		// If we have an application, we need to start it in the very beginning
+		if (generateApplicationCode) {
 			if (applicationLocal != null) {
 				boolean hasApplicationCallbacks = applicationCallbackClasses != null
 						&& !applicationCallbackClasses.isEmpty();
@@ -395,6 +409,7 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			// Generate the lifecycles for the different kinds of Android
 			// classes
 			AbstractComponentEntryPointCreator componentCreator = null;
+			List<Value> params = Collections.singletonList(NullConstant.v());
 			switch (componentType) {
 			case Activity:
 				Map<SootClass, SootMethod> curActivityToFragmentMethod = new HashMap<>();
@@ -425,8 +440,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
 				break;
 			case ContentProvider:
-				componentCreator = new ContentProviderEntryPointCreator(currentClass, applicationClassUse,
-						this.manifest, instantiatorField, classLoaderField, componentToInfo.getComponentExchangeInfo());
+				componentCreator = cpComponents.get(currentClass);
+				//We need to pass on the content provider instance
+				params = Arrays.asList(NullConstant.v(), localVarsForClasses.get(currentClass));
 				break;
 			default:
 				componentCreator = null;
@@ -443,11 +459,11 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				SootMethod lifecycleMethod = componentCreator.createDummyMain();
 				componentToInfo.put(currentClass, componentCreator.getComponentInfo());
 
+				additionalMethods.addAll(componentCreator.getAdditionalMethods());
 				// dummyMain(component, intent)
 				if (shouldAddLifecycleCall(currentClass)) {
-					body.getUnits()
-							.add(Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(),
-									Collections.singletonList(NullConstant.v()))));
+					body.getUnits().add(Jimple.v()
+							.newInvokeStmt(Jimple.v().newStaticInvokeExpr(lifecycleMethod.makeRef(), params)));
 				}
 			}
 
@@ -853,7 +869,10 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 	@Override
 	public Collection<SootMethod> getAdditionalMethods() {
-		return componentToInfo.getLifecycleMethods();
+		List<SootMethod> r = new ArrayList<>(componentToInfo.getLifecycleMethods());
+		if (additionalMethods != null)
+			r.addAll(additionalMethods);
+		return r;
 	}
 
 	@Override
