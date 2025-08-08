@@ -278,9 +278,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 						"java.lang.ClassLoader getClassLoader()", false);
 				applicationLocal = j.newLocal("application", RefType.v(AndroidEntryPointConstants.APPLICATIONCLASS));
 				body.getLocals().add(applicationLocal);
-				String classAppl = applicationClass.getName();
-				if (classAppl == null)
-					classAppl = "android.app.Application";
+				String classAppl = "android.app.Application";
+				if (applicationClass != null)
+					classAppl = applicationClass.getName();
 				Local clazzL = j.newLocal("clazz", RefType.v("java.lang.Class"));
 				body.getLocals().add(clazzL);
 				Local classLoader = j.newLocal("classLoader", RefType.v("java.lang.ClassLoader"));
