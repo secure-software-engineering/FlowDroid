@@ -541,6 +541,10 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 		// constructor information for them
 		if (!clazz.getName().equals("android.view.View")) {
 			if (clazz.isPhantom() || clazz.isPhantomClass()) {
+				clazz.setLibraryClass();
+			}
+			Scene.v().forceResolve(clazz.getName(), SootClass.SIGNATURES);
+			if (clazz.isPhantom() || clazz.isPhantomClass()) {
 				logger.warn("Cannot generate constructor for phantom class {}", clazz.getName());
 				return false;
 			}
