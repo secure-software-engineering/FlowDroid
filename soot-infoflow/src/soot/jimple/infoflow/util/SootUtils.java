@@ -44,8 +44,8 @@ public class SootUtils {
 	 */
 	public static SootMethod findMethod(SootClass currentClass, String subsignature) {
 		Scene sc = Scene.v();
-		return sc.getOrMakeFastHierarchy().resolveConcreteDispatch(currentClass,
-				sc.makeMethodRef(currentClass, subsignature, false));
+		return sc.getOrMakeFastHierarchy().resolveMethod(currentClass,
+				sc.makeMethodRef(currentClass, subsignature, false), true);
 	}
 
 }
