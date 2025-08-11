@@ -72,6 +72,7 @@ import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.scalar.NopEliminator;
 import soot.options.Options;
 import soot.tagkit.ExpectedTypeTag;
+import soot.toDex.SootToDexUtils;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -264,7 +265,8 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				Local classLoader = j.newLocal("classLoader", RefType.v("java.lang.ClassLoader"));
 				body.getLocals().add(classLoader);
 
-				body.getUnits().add(j.newAssignStmt(clazzL, ClassConstant.v(dummyClassName)));
+				body.getUnits()
+						.add(j.newAssignStmt(clazzL, ClassConstant.v(SootToDexUtils.getDexClassName(dummyClassName))));
 				body.getUnits().add(j.newAssignStmt(classLoader, j.newVirtualInvokeExpr(clazzL, mrGetClassLoader)));
 
 				AssignStmt instantiateCL = j.newAssignStmt(classLoader, j.newVirtualInvokeExpr(factory,
