@@ -95,6 +95,7 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 		JimpleBody body = j.newBody(smInstantiate);
 		if (smInstantiate.isPhantom())
 			smInstantiate.setPhantom(false);
+		smInstantiate.setModifiers(Modifier.PUBLIC);
 		smInstantiate.setActiveBody(body);
 		body.insertIdentityStmts();
 		Chain<Local> locals = body.getLocals();
