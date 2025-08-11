@@ -93,6 +93,8 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 		SootMethod smInstantiate = getOrCreateMethod(sc, subsig);
 		Jimple j = Jimple.v();
 		JimpleBody body = j.newBody(smInstantiate);
+		if (smInstantiate.isPhantom())
+			smInstantiate.setPhantom(false);
 		smInstantiate.setActiveBody(body);
 		body.insertIdentityStmts();
 		Chain<Local> locals = body.getLocals();
