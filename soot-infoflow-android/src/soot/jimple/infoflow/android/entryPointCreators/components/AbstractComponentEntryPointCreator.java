@@ -267,7 +267,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			JimpleBody body = (JimpleBody) method.retrieveActiveBody();
 
 			// Some component types such as fragments don't have a getIntent() method
-			SootMethod m = hostComponent.getMethodUnsafe("android.content.Intent getIntent()");
+			SootMethod m = hostComponent.getMethodUnsafe(componentExchangeInfo.getIntentMethod.getSubSignature());
 			if (m != null) {
 				UnitPatchingChain units = body.getUnits();
 				Local thisLocal = body.getThisLocal();
@@ -277,7 +277,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
 					Stmt stmt = (Stmt) iter.next();
 					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
-						if (stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethod().equals(m))
+						if (stmt.containsInvokeExpr()
+								&& stmt.getInvokeExpr().getMethod().equals(componentExchangeInfo.getIntentMethod))
 							return;
 					}
 				}
@@ -293,7 +294,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				 * com.google.android.gcm.GCMBroadcastReceiver
 				 */
 				Unit setIntentU = Jimple.v().newAssignStmt(intentV,
-						Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
+						Jimple.v().newVirtualInvokeExpr(thisLocal, componentExchangeInfo.getIntentMethod.makeRef()));
 
 				setIntentU.addTag(SimulatedCodeElementTag.TAG);
 				units.insertBefore(setIntentU, stmt);

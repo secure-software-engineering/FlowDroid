@@ -84,7 +84,7 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 		return names.toArray(new String[names.size()]);
 	}
 
-	private void patchInstantiate(SootClass sc, String subsig, String... name) {
+	protected void patchInstantiate(SootClass sc, String subsig, String... names) {
 
 		if (!sc.isLibraryClass())
 			sc.setLibraryClass();
@@ -111,7 +111,7 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 
 		Local cmp = null;
 		NopStmt next = null;
-		for (String n : name) {
+		for (String n : names) {
 			if (n != null) {
 				RefType p = RefType.v(n);
 				if (p.hasSootClass() && p.getSootClass().isApplicationClass()) {
