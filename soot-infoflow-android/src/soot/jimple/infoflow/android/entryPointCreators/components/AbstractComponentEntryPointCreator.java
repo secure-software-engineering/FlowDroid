@@ -501,6 +501,14 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
 	}
 
+	/**
+	 * Returns a local that will contain a new instance of a given class using an instantiator/factory.
+	 *  
+	 * @param createdClass the class/type that should be created
+	 * @param creatorMethodSubset the subsignature of the factory class that instantiates the desired instance type
+	 * @param values the values to pass on to the <i>creatorMethodSubset</i> method of the factory class
+	 * @return the local (might be new or reused)
+	 */
 	public Local generateInstantiator(SootClass createdClass, String creatorMethodSubset, Value... values) {
 
 		// If we already have a class local of that type, we re-use it

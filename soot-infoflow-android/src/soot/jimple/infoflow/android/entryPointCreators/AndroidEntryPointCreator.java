@@ -510,6 +510,10 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 		return mainMethod;
 	}
 
+	/**
+	 * Initializes the methods intended for transferring data (usually intents) between components.
+	 * @param info contains information about the commonly used method names for the interface methods
+	 */
 	private void initializeComponentDataTransferMethods(ComponentExchangeInfo info) {
 
 		for (SootClass s : allComponentClasses) {
