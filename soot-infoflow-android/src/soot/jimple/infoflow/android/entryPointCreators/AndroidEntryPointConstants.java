@@ -194,6 +194,8 @@ public class AndroidEntryPointConstants {
 	private static final String[] serviceConnectionMethods = { SERVICECONNECTION_ONSERVICECONNECTED,
 			SERVICECONNECTION_ONSERVICEDISCONNECTED };
 	private static final List<String> serviceConnectionMethodList = Arrays.asList(serviceConnectionMethods);
+	public static final String ATTACH_BASE_CONTEXT = "void attachBaseContext(android.content.Context)";
+	public static final String CONTEXT_WRAPPER = "android.content.ContextWrapper";
 	/*
 	 * ========================================================================
 	 */

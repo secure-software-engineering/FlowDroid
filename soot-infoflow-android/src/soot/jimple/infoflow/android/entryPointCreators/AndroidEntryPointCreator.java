@@ -293,6 +293,12 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			localVarsForClasses.put(applicationClass, applicationLocal);
 		}
 
+		body.getUnits()
+				.add(j.newInvokeStmt(j.newVirtualInvokeExpr(applicationLocal,
+						Scene.v().makeMethodRef(
+								Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.CONTEXT_WRAPPER),
+								AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, false))));
+
 		Map<SootClass, ContentProviderEntryPointCreator> cpComponents = new HashMap<>();
 		// For some weird reason unknown to anyone except the flying spaghetti
 		// monster, the onCreate() methods of content providers run even before

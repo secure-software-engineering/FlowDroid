@@ -846,7 +846,7 @@ public abstract class AbstractCallbackAnalyzer {
 		for (SootClass parentClass : Scene.v().getActiveHierarchy().getSuperclassesOf(sootClass)) {
 			if (SystemClassHandler.v().isClassInSystemPackage(parentClass))
 				for (SootMethod sm : parentClass.getMethods())
-					if (!sm.isConstructor())
+					if (!sm.isConstructor() && (sm.isProtected() || sm.isPublic()) && !sm.isStatic())
 						systemMethods.put(sm.getSubSignature(), sm);
 		}
 
@@ -957,7 +957,8 @@ public abstract class AbstractCallbackAnalyzer {
 			return false;
 
 		// Skip empty methods
-		if (method.isConcrete() && isEmpty(method.retrieveActiveBody()))
+		if (config.getCallbackConfig().getExcludeStubsFromCallGraph() && method.isConcrete()
+				&& isEmpty(method.retrieveActiveBody()))
 			return false;
 
 		// Skip constructors

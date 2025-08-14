@@ -95,7 +95,10 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 			localVarsForClasses.put(sc, callbackLocal);
 		}
 
-		// 1. onCreate:
+		// 1. attachBaseContext
+		searchAndBuildMethod(AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, applicationLocal);
+
+		// 2. onCreate:
 		{
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONCREATE, thisLocal);
 			for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
@@ -118,7 +121,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 			}
 		}
 
-		// 2. onStart:
+		// 3. onStart:
 		Stmt onStartStmt;
 		{
 			onStartStmt = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTART, thisLocal);
@@ -147,7 +150,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		}
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPOSTCREATE, thisLocal);
 
-		// 3. onResume:
+		// 4. onResume:
 		Stmt onResumeStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(onResumeStmt);
 		{
@@ -173,7 +176,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 			createIfStmt(startWhileStmt);
 		}
 
-		// 4. onPause:
+		// 5. onPause:
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONPAUSE, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
 			searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITYLIFECYCLECALLBACK_ONACTIVITYPAUSED,
@@ -191,7 +194,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		createIfStmt(onResumeStmt);
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
-		// 5. onStop:
+		// 6. onStop:
 		Stmt onStop = searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONSTOP, thisLocal);
 		boolean hasAppOnStop = false;
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {
@@ -209,11 +212,11 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		createIfStmt(stopToDestroyStmt);
 		// createIfStmt(onCreateStmt); // no, the process gets killed in between
 
-		// 6. onRestart:
+		// 7. onRestart:
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONRESTART, thisLocal);
 		body.getUnits().add(Jimple.v().newGotoStmt(onStartStmt)); // jump to onStart()
 
-		// 7. onDestroy
+		// 8. onDestroy
 		body.getUnits().add(stopToDestroyStmt);
 		searchAndBuildMethod(AndroidEntryPointConstants.ACTIVITY_ONDESTROY, thisLocal);
 		for (SootClass callbackClass : this.activityLifecycleCallbacks.keySet()) {

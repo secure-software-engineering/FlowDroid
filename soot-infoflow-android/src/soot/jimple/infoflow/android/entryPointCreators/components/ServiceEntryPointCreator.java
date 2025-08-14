@@ -40,12 +40,16 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 	@Override
 	protected void generateComponentLifecycle() {
-		// 1. onCreate:
+
+		// 1. attachBaseContext
+		searchAndBuildMethod(AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, thisLocal);
+
+		// 2. onCreate:
 		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, thisLocal);
 
 		// service has two different lifecycles:
 		// lifecycle1:
-		// 2. onStart:
+		// 3. onStart:
 		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, thisLocal);
 
 		// onStartCommand can be called an arbitrary number of times, or never
