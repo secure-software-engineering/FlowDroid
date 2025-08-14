@@ -96,7 +96,7 @@ public class ActivityEntryPointCreator extends AbstractComponentEntryPointCreato
 		}
 
 		// 1. attachBaseContext
-		searchAndBuildMethod(AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, applicationLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, thisLocal);
 
 		// 2. onCreate:
 		{

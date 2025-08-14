@@ -293,11 +293,14 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 			localVarsForClasses.put(applicationClass, applicationLocal);
 		}
 
-		body.getUnits()
-				.add(j.newInvokeStmt(j.newVirtualInvokeExpr(applicationLocal,
-						Scene.v().makeMethodRef(
-								Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.CONTEXT_WRAPPER),
-								AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, false))));
+		SootClass cw = Scene.v().getSootClassUnsafe(AndroidEntryPointConstants.CONTEXT_WRAPPER);
+		if (cw == null) {
+			//use application local type as a fallback, since this class also implements context wrapper
+			cw = ((RefType) applicationLocal.getType()).getSootClass();
+		}
+		if (cw != null)
+			body.getUnits().add(j.newInvokeStmt(j.newVirtualInvokeExpr(applicationLocal,
+					Scene.v().makeMethodRef(cw, AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, false))));
 
 		Map<SootClass, ContentProviderEntryPointCreator> cpComponents = new HashMap<>();
 		// For some weird reason unknown to anyone except the flying spaghetti
