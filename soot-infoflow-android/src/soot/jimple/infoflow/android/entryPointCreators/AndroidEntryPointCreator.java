@@ -127,22 +127,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 	// In other words, this set contains *all* possible components
 	private Set<SootClass> allComponentClasses = new HashSet<>();
 
-	private String getResultIntentName;
-
-	private String setResultIntentName;
-
-	private String getIntentName;
-
-	private String setIntentName;
-
 	private static final String DEFAULT_COMPONENTDATAEXCHANGENAME = "ComponentDataExchangeInterface";
 
 	private SootClass componentDataExchangeInterface;
-
-	private SootMethod getResultIntentMethod;
-	private SootMethod setResultIntentMethod;
-	private SootMethod getIntentMethod;
-	private SootMethod setIntentMethod;
 
 	private AbstractCollection<SootMethod> additionalMethods;
 
@@ -167,11 +154,6 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 				allComponentClasses.addAll(h.getSubclassesOf(sc));
 			}
 		}
-		getResultIntentName = findUniqueMethodName("getResultIntent", allComponentClasses);
-		setResultIntentName = findUniqueMethodName("setResultIntent", allComponentClasses);
-		// just choose a different name other than "getIntent"
-		getIntentName = findUniqueMethodName("getDataIntent", allComponentClasses);
-		setIntentName = findUniqueMethodName("setDataIntent", allComponentClasses);
 
 		ComponentExchangeInfo info = generateComponentDataExchangeInterface();
 		initializeComponentDataTransferMethods(info);
@@ -185,18 +167,25 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 
 		RefType intent = RefType.v("android.content.Intent");
 		Scene sc = Scene.v();
-		getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent,
+		String getResultIntentName = findUniqueMethodName("getResultIntent", allComponentClasses);
+		String setResultIntentName = findUniqueMethodName("setResultIntent", allComponentClasses);
+		// just choose a different name other than "getIntent"
+		String getIntentName = findUniqueMethodName("getDataIntent", allComponentClasses);
+		String setIntentName = findUniqueMethodName("setDataIntent", allComponentClasses);
+
+		SootMethod getResultIntentMethod = sc.makeSootMethod(getResultIntentName, Collections.emptyList(), intent,
 				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(getResultIntentMethod);
-		getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent,
+		SootMethod getIntentMethod = sc.makeSootMethod(getIntentName, Collections.emptyList(), intent,
 				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(getIntentMethod);
-		setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v(),
+		SootMethod setIntentMethod = sc.makeSootMethod(setIntentName, Arrays.asList(intent), VoidType.v(),
 				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(setIntentMethod);
-		setResultIntentMethod = sc.makeSootMethod(setResultIntentName, Arrays.asList(intent), VoidType.v(),
+		SootMethod setResultIntentMethod = sc.makeSootMethod(setResultIntentName, Arrays.asList(intent), VoidType.v(),
 				Modifier.PUBLIC | Modifier.ABSTRACT);
 		componentDataExchangeInterface.addMethod(setResultIntentMethod);
+
 		ComponentExchangeInfo info = new ComponentExchangeInfo(componentDataExchangeInterface, getIntentMethod,
 				setIntentMethod, getResultIntentMethod, setResultIntentMethod);
 		componentToInfo.setComponentExchangeInfo(info);
