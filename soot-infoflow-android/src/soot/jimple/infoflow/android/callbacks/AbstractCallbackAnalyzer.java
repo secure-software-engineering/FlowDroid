@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -523,31 +524,27 @@ public abstract class AbstractCallbackAnalyzer {
 
 		// first check if there is a Fragment manager, a fragment transaction
 		// and a call to the add method which adds the fragment to the transaction
-		boolean isFragmentManager = false;
-		boolean isFragmentTransaction = false;
-		boolean isAddTransaction = false;
+		boolean isAddOrReplaceTransaction = false;
 		for (Unit u : method.getActiveBody().getUnits()) {
 			Stmt stmt = (Stmt) u;
 			if (stmt.containsInvokeExpr()) {
 				final String methodName = stmt.getInvokeExpr().getMethod().getName();
-				if (methodName.equals("getFragmentManager") || methodName.equals("getSupportFragmentManager"))
-					isFragmentManager = true;
-				else if (methodName.equals("beginTransaction"))
-					isFragmentTransaction = true;
-				else if (methodName.equals("add") || methodName.equals("replace"))
-					isAddTransaction = true;
+				if (methodName.equals("add") || methodName.equals("replace"))
+					isAddOrReplaceTransaction = true;
 				else if (methodName.equals("inflate") && stmt.getInvokeExpr().getArgCount() > 1) {
 					Value arg = stmt.getInvokeExpr().getArg(0);
-					Integer fragmentID = valueProvider.getValue(method, stmt, arg, Integer.class);
-					if (fragmentID != null)
-						fragmentIDs.put(lifecycleElement, fragmentID);
+					Set<Integer> fragmentID = valueProvider.getValue(method, stmt, arg, Integer.class);
+					if (fragmentID != null) {
+						for (int f : fragmentID)
+							fragmentIDs.put(lifecycleElement, f);
+					}
 				}
 			}
 		}
 
 		// now get the fragment class from the second argument of the add method
 		// from the transaction
-		if (isFragmentManager && isFragmentTransaction && isAddTransaction)
+		if (isAddOrReplaceTransaction)
 			for (Unit u : method.getActiveBody().getUnits()) {
 				Stmt stmt = (Stmt) u;
 				if (stmt.containsInvokeExpr()) {
@@ -557,34 +554,56 @@ public abstract class AbstractCallbackAnalyzer {
 
 						// Make sure that we referring to the correct class and
 						// method
-						isFragmentTransaction = scFragmentTransaction != null && Scene.v().getFastHierarchy()
+						boolean isFragmentTransaction = scFragmentTransaction != null && Scene.v().getFastHierarchy()
 								.canStoreType(iinvExpr.getBase().getType(), scFragmentTransaction.getType());
 						isFragmentTransaction |= scSupportFragmentTransaction != null && Scene.v().getFastHierarchy()
 								.canStoreType(iinvExpr.getBase().getType(), scSupportFragmentTransaction.getType());
 						isFragmentTransaction |= scAndroidXFragmentTransaction != null && Scene.v().getFastHierarchy()
 								.canStoreType(iinvExpr.getBase().getType(), scAndroidXFragmentTransaction.getType());
-						isAddTransaction = stmt.getInvokeExpr().getMethod().getName().equals("add")
+						isAddOrReplaceTransaction = stmt.getInvokeExpr().getMethod().getName().equals("add")
 								|| stmt.getInvokeExpr().getMethod().getName().equals("replace");
 
-						if (isFragmentTransaction && isAddTransaction) {
+						if (isFragmentTransaction && isAddOrReplaceTransaction) {
 							// We take all fragments passed to the method
 							for (int i = 0; i < stmt.getInvokeExpr().getArgCount(); i++) {
 								Value br = stmt.getInvokeExpr().getArg(i);
 
-								// Is this a fragment?
-								if (br.getType() instanceof RefType) {
-									RefType rt = (RefType) br.getType();
-									if (br instanceof ClassConstant)
-										rt = (RefType) ((ClassConstant) br).toSootType();
+								Type pt = stmt.getInvokeExpr().getMethodRef().getParameterType(i);
+								if (pt instanceof RefType) {
+									RefType rpt = (RefType) pt;
+									//skip tag parameter
+									if (rpt.getClassName().equals("java.lang.String"))
+										continue;
+									Set<Type> possibleTypes = Collections.emptySet();
+									if (((RefType) pt).getSootClass().getName().equals("java.lang.Class")) {
+										Set<ClassConstant> ct = valueProvider.getValue(method, stmt, br,
+												ClassConstant.class);
+										if (ct != null) {
+											possibleTypes = new HashSet<>();
+											for (ClassConstant p : ct) {
+												possibleTypes.add((RefType) (p.toSootType()));
+											}
+										}
 
-									boolean addFragment = scFragment != null
-											&& Scene.v().getFastHierarchy().canStoreType(rt, scFragment.getType());
-									addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
-											.canStoreType(rt, scSupportFragment.getType());
-									addFragment |= scAndroidXFragment != null && Scene.v().getFastHierarchy()
-											.canStoreType(rt, scAndroidXFragment.getType());
-									if (addFragment)
-										checkAndAddFragment(method.getDeclaringClass(), rt.getSootClass());
+									} else {
+										possibleTypes = valueProvider.getType(method, stmt, br);
+									}
+
+									for (Type t : possibleTypes) {
+										if (t instanceof RefType) {
+											RefType frt = (RefType) t;
+											// Is this a fragment?
+											boolean addFragment = scFragment != null && Scene.v().getFastHierarchy()
+													.canStoreType(frt, scFragment.getType());
+											addFragment |= scSupportFragment != null && Scene.v().getFastHierarchy()
+													.canStoreType(frt, scSupportFragment.getType());
+											addFragment |= scAndroidXFragment != null && Scene.v().getFastHierarchy()
+													.canStoreType(frt, scAndroidXFragment.getType());
+											if (addFragment)
+												checkAndAddFragment(method.getDeclaringClass(), frt.getSootClass());
+										}
+									}
+
 								}
 							}
 						}
