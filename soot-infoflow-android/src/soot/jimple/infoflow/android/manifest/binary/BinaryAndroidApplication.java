@@ -22,6 +22,7 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 	protected boolean allowBackup;
 	protected String name;
 	protected Boolean usesCleartextTraffic;
+	private String appComponentFactory;
 
 	public BinaryAndroidApplication(AXmlNode node, BaseProcessManifest<?, ?, ?, ?> manifest) {
 		this.node = node;
@@ -41,7 +42,8 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 		if (attrCleartextTraffic != null)
 			usesCleartextTraffic = attrCleartextTraffic.asBoolean(arscParser);
 
-		this.name = loadApplicationName();
+		this.name = expandClassAttribute("name");
+		this.appComponentFactory = expandClassAttribute("appComponentFactory");
 	}
 
 	@Override
@@ -50,12 +52,28 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 	}
 
 	/**
-	 * Gets the name of the Android application class
-	 *
-	 * @return The name of the Android application class
+	 * Returns the value of an attribute describing a class
+	 * @param attrName the attribute name
+	 * @return the value (or null if not set)
 	 */
-	private String loadApplicationName() {
-		AXmlAttribute<?> attr = node.getAttribute("name");
+	private String expandClassAttribute(String attrName) {
+		String n = expandAttribute(attrName);
+		if (n != null) {
+			if (n.startsWith(".")) {
+				n = manifest.getPackageName() + n;
+			}
+		}
+		return n;
+	}
+
+	/**
+	 * Returns the value of an attribute while resolving resources, e.g. if a
+	 * string resource is referenced
+	 * @param attrName the attribute name
+	 * @return the value (or null if not set)
+	 */
+	private String expandAttribute(String attrName) {
+		AXmlAttribute<?> attr = node.getAttribute(attrName);
 		if (attr != null)
 			return attr.asString(manifest.getArscParser());
 		return null;
@@ -83,6 +101,11 @@ public class BinaryAndroidApplication implements IAndroidApplication {
 	@Override
 	public Boolean isUsesCleartextTraffic() {
 		return usesCleartextTraffic;
+	}
+
+	@Override
+	public String getAppComponentFactory() {
+		return appComponentFactory;
 	}
 
 }

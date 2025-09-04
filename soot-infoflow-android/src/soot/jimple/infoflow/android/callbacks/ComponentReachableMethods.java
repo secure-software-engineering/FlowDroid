@@ -17,7 +17,6 @@ import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.callgraph.EdgePredicate;
 import soot.jimple.toolkits.callgraph.Filter;
-import soot.jimple.toolkits.callgraph.ReachableMethods;
 import soot.jimple.toolkits.callgraph.Targets;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;

@@ -1,9 +1,12 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
@@ -15,13 +18,14 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public ServiceConnectionEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField,
+			ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override
 	protected void generateComponentLifecycle() {
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICECONNECTED, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICECONNECTED, thisLocal);
 
 		// methods
 		NopStmt startWhileStmt = Jimple.v().newNopStmt();
@@ -32,7 +36,12 @@ public class ServiceConnectionEntryPointCreator extends AbstractComponentEntryPo
 		body.getUnits().add(endWhileStmt);
 		createIfStmt(startWhileStmt);
 
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICEDISCONNECTED, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICECONNECTION_ONSERVICEDISCONNECTED, thisLocal);
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.SERVICECONNECTIONINTERFACE);
 	}
 
 }

@@ -320,6 +320,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		private int maxCallbackAnalysisDepth = -1;
 		private boolean serializeCallbacks = false;
 		private String callbacksFile = "";
+		private boolean excludeStubsFromCallGraph = true;
 
 		/**
 		 * Copies the settings of the given configuration into this configuration object
@@ -335,6 +336,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.maxCallbackAnalysisDepth = cbConfig.maxCallbackAnalysisDepth;
 			this.serializeCallbacks = cbConfig.serializeCallbacks;
 			this.callbacksFile = cbConfig.callbacksFile;
+			this.excludeStubsFromCallGraph = cbConfig.excludeStubsFromCallGraph;
 		}
 
 		/**
@@ -510,6 +512,22 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.callbacksFile = callbacksFile;
 		}
 
+		/**
+		 * Returns whether FlowDroid should exclude stub methods when computing the call graph
+		 * @return true if stubs should be excluded
+		 */
+		public boolean getExcludeStubsFromCallGraph() {
+			return excludeStubsFromCallGraph;
+		}
+
+		/**
+		 * Sets whether FlowDroid should exclude stub methods when computing the call graph
+		 * @param value true if stubs should be excluded
+		 */
+		public void setExcludeStubsFromCallGraph(boolean value) {
+			this.excludeStubsFromCallGraph = value;
+		}
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -522,6 +540,7 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			result = prime * result + maxCallbackAnalysisDepth;
 			result = prime * result + maxCallbacksPerComponent;
 			result = prime * result + (serializeCallbacks ? 1231 : 1237);
+			result = prime * result + (excludeStubsFromCallGraph ? 1231 : 1237);
 			return result;
 		}
 
@@ -552,6 +571,8 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			if (maxCallbacksPerComponent != other.maxCallbacksPerComponent)
 				return false;
 			if (serializeCallbacks != other.serializeCallbacks)
+				return false;
+			if (excludeStubsFromCallGraph != other.excludeStubsFromCallGraph)
 				return false;
 			return true;
 		}

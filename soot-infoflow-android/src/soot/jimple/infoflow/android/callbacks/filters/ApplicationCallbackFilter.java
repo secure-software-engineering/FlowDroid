@@ -118,7 +118,6 @@ public class ApplicationCallbackFilter extends AbstractCallbackFilter {
 			return fh.canStoreType(callbackType, this.componentCallbacks);
 		if (AndroidEntryPointConstants.getComponentCallback2Methods().contains(subSig))
 			return fh.canStoreType(callbackType, this.componentCallbacks2);
-
 		return true;
 	}
 

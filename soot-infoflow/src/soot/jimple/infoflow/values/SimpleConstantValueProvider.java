@@ -1,10 +1,14 @@
 package soot.jimple.infoflow.values;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import soot.Local;
 import soot.SootField;
 import soot.SootMethod;
+import soot.Type;
 import soot.Unit;
 import soot.Value;
 import soot.jimple.AssignStmt;
@@ -16,7 +20,6 @@ import soot.jimple.IntConstant;
 import soot.jimple.LongConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
-import soot.tagkit.ConstantValueTag;
 import soot.tagkit.DoubleConstantValueTag;
 import soot.tagkit.FloatConstantValueTag;
 import soot.tagkit.IntegerConstantValueTag;
@@ -37,14 +40,19 @@ public class SimpleConstantValueProvider implements IValueProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object getValue(SootMethod sm, Stmt stmt, Value value, Class type) {
-		if (value instanceof Constant)
-			return getConstantOfType(value, type);
+	public Set<Object> getValue(SootMethod sm, Stmt stmt, Value value, Class type) {
+		if (value instanceof Constant) {
+			Object c = getConstantOfType(value, type);
+			if (c != null)
+				return Collections.singleton(c);
+			return null;
+		}
 
 		if (value instanceof Local) {
 			// Find the defs
 			BriefUnitGraph ug = new BriefUnitGraph(sm.getActiveBody());
 			SimpleLocalDefs du = new SimpleLocalDefs(ug);
+			Set<Object> ret = new HashSet<>();
 			List<Unit> defs = du.getDefsOfAt((Local) value, stmt);
 			for (Unit def : defs) {
 				if (!(def instanceof AssignStmt))
@@ -58,8 +66,9 @@ public class SimpleConstantValueProvider implements IValueProvider {
 				// Use the ConstantTag to retrieve the constant value
 				Object constant = getConstantFromTag(((FieldRef) rightOp).getField(), type);
 				if (constant != null)
-					return constant;
+					ret.add(constant);
 			}
+			return ret;
 		}
 
 		return null;
@@ -82,6 +91,8 @@ public class SimpleConstantValueProvider implements IValueProvider {
 			if (value instanceof StringConstant)
 				return ((StringConstant) value).value;
 		}
+		if (type.isInstance(value))
+			return value;
 		return null;
 	}
 
@@ -103,5 +114,10 @@ public class SimpleConstantValueProvider implements IValueProvider {
 			return t == null ? null : t.getStringValue();
 		}
 		return null;
+	}
+
+	@Override
+	public Set<Type> getType(SootMethod sm, Stmt stmt, Value value) {
+		return Collections.singleton(value.getType());
 	}
 }

@@ -33,10 +33,10 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.android.entryPointCreators.components.ActivityEntryPointInfo;
 import soot.jimple.infoflow.android.entryPointCreators.components.ComponentEntryPointCollection;
 import soot.jimple.infoflow.android.entryPointCreators.components.ServiceEntryPointInfo;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.tagkit.Tag;
 import soot.util.HashMultiMap;
@@ -196,7 +196,6 @@ public class IccRedirectionCreator {
 
 		// call onCreate
 		Local componentLocal = lg.generateLocal(destComp.getType());
-		ActivityEntryPointInfo entryPointInfo = (ActivityEntryPointInfo) componentToEntryPoint.get(destComp);
 		{
 			SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(destComp);
 			if (targetDummyMain == null)
@@ -208,12 +207,14 @@ public class IccRedirectionCreator {
 
 		// Get the activity result
 		Local arIntentLocal = lg.generateLocal(INTENT_TYPE);
-		b.getUnits().add(Jimple.v().newAssignStmt(arIntentLocal,
-				Jimple.v().newInstanceFieldRef(componentLocal, entryPointInfo.getResultIntentField().makeRef())));
+		b.getUnits().add(Jimple.v().newAssignStmt(arIntentLocal, Jimple.v().newInterfaceInvokeExpr(componentLocal,
+				componentToEntryPoint.getComponentExchangeInfo().getResultIntentMethod.makeRef())));
 
 		// some apps do not have an onActivityResult method even they use
 		// startActivityForResult to communicate with other components.
-		SootMethod method = originActivity.getMethodUnsafe("void onActivityResult(int,int,android.content.Intent)");
+
+		SootMethod method = SootUtils.findMethod(originActivity,
+				"void onActivityResult(int,int,android.content.Intent)");
 		if (method != null) {
 			List<Value> args = new ArrayList<>();
 			args.add(IntConstant.v(-1));
