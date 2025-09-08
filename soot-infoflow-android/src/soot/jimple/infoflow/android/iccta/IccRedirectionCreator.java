@@ -194,21 +194,27 @@ public class IccRedirectionCreator {
 		Local intentParameterLocal = lg.generateLocal(INTENT_TYPE);
 		b.getUnits().add(Jimple.v().newIdentityStmt(intentParameterLocal, Jimple.v().newParameterRef(INTENT_TYPE, 1)));
 
+		Value arIntentLocal;
 		// call onCreate
-		Local componentLocal = lg.generateLocal(destComp.getType());
-		{
-			SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(destComp);
-			if (targetDummyMain == null)
-				throw new RuntimeException(
-						String.format("Destination component %s has no dummy main method", destComp.getName()));
-			b.getUnits().add(Jimple.v().newAssignStmt(componentLocal, Jimple.v()
-					.newStaticInvokeExpr(targetDummyMain.makeRef(), Collections.singletonList(intentParameterLocal))));
-		}
+		if (destComp != null) {
+			Local componentLocal = lg.generateLocal(destComp.getType());
+			{
+				SootMethod targetDummyMain = componentToEntryPoint.getEntryPoint(destComp);
+				if (targetDummyMain == null)
+					throw new RuntimeException(
+							String.format("Destination component %s has no dummy main method", destComp.getName()));
+				b.getUnits().add(Jimple.v().newAssignStmt(componentLocal, Jimple.v().newStaticInvokeExpr(
+						targetDummyMain.makeRef(), Collections.singletonList(intentParameterLocal))));
+			}
 
-		// Get the activity result
-		Local arIntentLocal = lg.generateLocal(INTENT_TYPE);
-		b.getUnits().add(Jimple.v().newAssignStmt(arIntentLocal, Jimple.v().newInterfaceInvokeExpr(componentLocal,
-				componentToEntryPoint.getComponentExchangeInfo().getResultIntentMethod.makeRef())));
+			// Get the activity result
+			arIntentLocal = lg.generateLocal(INTENT_TYPE);
+			b.getUnits().add(Jimple.v().newAssignStmt(arIntentLocal, Jimple.v().newInterfaceInvokeExpr(componentLocal,
+					componentToEntryPoint.getComponentExchangeInfo().getResultIntentMethod.makeRef())));
+		} else {
+			//Nonetheless, we want to have onActivityResult in the call graph.
+			arIntentLocal = NullConstant.v();
+		}
 
 		// some apps do not have an onActivityResult method even they use
 		// startActivityForResult to communicate with other components.
