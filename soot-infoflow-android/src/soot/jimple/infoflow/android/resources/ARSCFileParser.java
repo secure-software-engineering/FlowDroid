@@ -377,7 +377,11 @@ public class ARSCFileParser extends AbstractResourceParser {
 	public static class ResType {
 		private int id;
 		private String typeName;
-		private List<ResConfig> configurations = new ArrayList<ResConfig>();
+		private List<ResConfig> configurations = new ArrayList<>();
+
+		public int getId() {
+			return id;
+		}
 
 		public String getTypeName() {
 			return this.typeName;
