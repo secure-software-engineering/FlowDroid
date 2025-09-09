@@ -1,0 +1,175 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object" />
+	<methods>
+		<method id="android.os.ParcelFileDescriptor openFile(android.net.Uri,java.lang.String,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.content.res.AssetFileDescriptor openTypedAssetFileDescriptor(android.net.Uri,java.lang.String,android.os.Bundle)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.os.ParcelFileDescriptor openFileDescriptor(android.net.Uri,java.lang.String,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.database.Cursor query(android.net.Uri,java.lang.String[],android.os.Bundle,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.content.res.AssetFileDescriptor openAssetFileDescriptor(android.net.Uri,java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.content.res.AssetFileDescriptor openTypedAssetFile(android.net.Uri,java.lang.String,android.os.Bundle,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.content.res.AssetFileDescriptor openAssetFileDescriptor(android.net.Uri,java.lang.String,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="java.io.OutputStream openOutputStream(android.net.Uri)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.net.Uri canonicalize(android.net.Uri)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.content.res.AssetFileDescriptor openAssetFile(android.net.Uri,java.lang.String,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.net.Uri uncanonicalize(android.net.Uri)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="android.content.res.AssetFileDescriptor openTypedAssetFileDescriptor(android.net.Uri,java.lang.String,android.os.Bundle,android.os.CancellationSignal)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="java.io.InputStream openInputStream(android.net.Uri)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.io.OutputStream openOutputStream(android.net.Uri,java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.os.ParcelFileDescriptor openFileDescriptor(android.net.Uri,java.lang.String)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
