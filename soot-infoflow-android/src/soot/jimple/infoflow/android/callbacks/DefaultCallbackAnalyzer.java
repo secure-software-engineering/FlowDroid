@@ -270,17 +270,19 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 															// the
 															// fragments
 							for (Value val : inv.getArgs()) {
-								Integer intValue = valueProvider.getValue(sm, stmt, val, Integer.class);
-								if (intValue != null) {
-									this.layoutClasses.put(sm.getDeclaringClass(), intValue);
+								Set<Integer> intValues = valueProvider.getValue(sm, stmt, val, Integer.class);
+								if (intValues != null) {
+									for (int iv : intValues)
+										this.layoutClasses.put(sm.getDeclaringClass(), iv);
 								}
 
 							}
 						}
 						if (invokesInflate(inv)) {
-							Integer intValue = valueProvider.getValue(sm, stmt, inv.getArg(0), Integer.class);
-							if (intValue != null) {
-								this.layoutClasses.put(sm.getDeclaringClass(), intValue);
+							Set<Integer> intValues = valueProvider.getValue(sm, stmt, inv.getArg(0), Integer.class);
+							if (intValues != null) {
+								for (int iv : intValues)
+									this.layoutClasses.put(sm.getDeclaringClass(), iv);
 							}
 						}
 					}

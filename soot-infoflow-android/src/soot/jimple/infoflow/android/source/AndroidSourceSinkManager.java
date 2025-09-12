@@ -320,7 +320,7 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 	 * @return The layout control that is being accessed at the given statement, or
 	 *         <code>null</code> if no such control could be found
 	 */
-	protected AndroidLayoutControl getLayoutControl(Stmt sCallSite, IInfoflowCFG cfg) {
+	protected Set<AndroidLayoutControl> getLayoutControl(Stmt sCallSite, IInfoflowCFG cfg) {
 		// If we don't have a layout control list, we cannot perform any
 		// more specific checks
 		if (this.layoutControls == null)
@@ -340,21 +340,27 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 			return null;
 		}
 
-		Integer id = valueProvider.getValue(uiMethod, sCallSite, iexpr.getArg(0), Integer.class);
-		if (id == null && iexpr.getArg(0) instanceof Local) {
-			id = findLastResIDAssignment(sCallSite, (Local) iexpr.getArg(0), cfg,
+		Set<Integer> ids = valueProvider.getValue(uiMethod, sCallSite, iexpr.getArg(0), Integer.class);
+		if ((ids == null || ids.isEmpty()) && iexpr.getArg(0) instanceof Local) {
+			Integer id = findLastResIDAssignment(sCallSite, (Local) iexpr.getArg(0), cfg,
 					new HashSet<Stmt>(cfg.getMethodOf(sCallSite).getActiveBody().getUnits().size()));
+			if (id != null)
+				ids = Collections.singleton(id);
 		}
-		if (id == null) {
+		if (ids == null || ids.isEmpty()) {
 			logger.debug("Could not find assignment to local " + ((Local) iexpr.getArg(0)).getName() + " in method "
 					+ cfg.getMethodOf(sCallSite).getSignature());
 			return null;
 		}
 
-		AndroidLayoutControl control = this.layoutControls.get(id);
-		if (control == null)
-			return null;
-		return control;
+		Set<AndroidLayoutControl> set = new HashSet<AndroidLayoutControl>();
+		for (int id : ids) {
+			AndroidLayoutControl control = this.layoutControls.get(id);
+			if (control != null)
+				set.add(control);
+		}
+
+		return set;
 	}
 
 	private boolean isResourceCall(SootMethod callee) {
@@ -403,11 +409,13 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 				return MethodSourceSinkDefinition.createReturnSource(CallType.MethodCall);
 			}
 
-			AndroidLayoutControl control = getLayoutControl(sCallSite, cfg);
-			if (control != null) {
-				if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly
-						&& control.isSensitive()) {
-					return control.getSourceDefinition();
+			Set<AndroidLayoutControl> control = getLayoutControl(sCallSite, cfg);
+			if (control != null && !control.isEmpty()) {
+				for (AndroidLayoutControl c : control) {
+					if (sourceSinkConfig.getLayoutMatchingMode() == LayoutMatchingMode.MatchSensitiveOnly
+							&& c.isSensitive()) {
+						return c.getSourceDefinition();
+					}
 				}
 			}
 		}

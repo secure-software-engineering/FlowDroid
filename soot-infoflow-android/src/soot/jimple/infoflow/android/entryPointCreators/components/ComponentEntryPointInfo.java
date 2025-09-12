@@ -16,7 +16,6 @@ import soot.SootMethod;
 public class ComponentEntryPointInfo {
 
 	private final SootMethod entryPoint;
-	private SootField intentField;
 
 	public ComponentEntryPointInfo(SootMethod entryPoint) {
 		this.entryPoint = entryPoint;
@@ -26,18 +25,8 @@ public class ComponentEntryPointInfo {
 		return entryPoint;
 	}
 
-	void setIntentField(SootField intentField) {
-		this.intentField = intentField;
-	}
-
-	public SootField getIntentField() {
-		return intentField;
-	}
-
 	public Set<SootField> getAdditionalFields() {
-		if (intentField == null)
-			return Collections.emptySet();
-		return Collections.singleton(intentField);
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -45,7 +34,6 @@ public class ComponentEntryPointInfo {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((entryPoint == null) ? 0 : entryPoint.hashCode());
-		result = prime * result + ((intentField == null) ? 0 : intentField.hashCode());
 		return result;
 	}
 
@@ -62,11 +50,6 @@ public class ComponentEntryPointInfo {
 			if (other.entryPoint != null)
 				return false;
 		} else if (!entryPoint.equals(other.entryPoint))
-			return false;
-		if (intentField == null) {
-			if (other.intentField != null)
-				return false;
-		} else if (!intentField.equals(other.intentField))
 			return false;
 		return true;
 	}

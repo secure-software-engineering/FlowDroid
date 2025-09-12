@@ -2,6 +2,7 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import soot.Type;
 import soot.Unit;
 import soot.UnitPatchingChain;
 import soot.Value;
+import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
@@ -32,10 +34,13 @@ import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
 import soot.jimple.infoflow.android.entryPointCreators.AbstractAndroidEntryPointCreator;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
 import soot.jimple.toolkits.scalar.NopEliminator;
+import soot.tagkit.ExpectedTypeTag;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -56,16 +61,25 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 	protected Local thisLocal = null;
 	protected Local intentLocal = null;
-	protected SootField intentField = null;
 
 	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 
+	protected final SootField instantiatorField;
+	protected final SootField classLoaderField;
+
+	protected ComponentExchangeInfo componentExchangeInfo;
+
 	public AbstractComponentEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField,
+			ComponentExchangeInfo componentExchangeInfo) {
 		super(manifest);
 		this.component = component;
 		this.applicationClass = applicationClass;
 		this.overwriteDummyMainMethod = true;
+		this.instantiatorField = instantiatorField;
+		this.classLoaderField = classLoaderField;
+		this.componentExchangeInfo = componentExchangeInfo;
+
 	}
 
 	public void setCallbacks(Set<SootMethod> callbacks) {
@@ -76,16 +90,6 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	protected void createAdditionalFields() {
 		super.createAdditionalFields();
 
-		// Create a name for a field for the intent with which the component is started
-		String fieldName = "ipcIntent";
-		int fieldIdx = 0;
-		while (component.declaresFieldByName(fieldName))
-			fieldName = "ipcIntent_" + fieldIdx++;
-
-		// Create the field itself
-		intentField = Scene.v().makeSootField(fieldName, RefType.v("android.content.Intent"), Modifier.PUBLIC);
-		intentField.addTag(SimulatedCodeElementTag.TAG);
-		component.addField(intentField);
 	}
 
 	@Override
@@ -118,7 +122,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		List<Type> argList = new ArrayList<>(defaultParams);
 		if (additionalParams != null && !additionalParams.isEmpty())
 			argList.addAll(additionalParams);
-		mainMethod = Scene.v().makeSootMethod(methodName, argList, component.getType());
+		mainMethod = Scene.v().makeSootMethod(methodName, argList, getModelledClass().getType());
 
 		// Create the body
 		JimpleBody body = Jimple.v().newBody();
@@ -147,6 +151,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			}
 		}
 	}
+
+	protected abstract SootClass getModelledClass();
 
 	/**
 	 * Gets the default parameter types that every component main method shall have
@@ -187,13 +193,14 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			createIfStmt(endClassStmt);
 
 			// Create a new instance of the component
-			thisLocal = generateClassConstructor(component);
+			if (thisLocal == null)
+				thisLocal = generateClassConstructor(component);
 			if (thisLocal != null) {
 				localVarsForClasses.put(component, thisLocal);
 
 				// Store the intent
-				body.getUnits().add(Jimple.v()
-						.newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal, intentField.makeRef()), intentLocal));
+				body.getUnits().add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(thisLocal,
+						componentExchangeInfo.setIntentMethod.makeRef(), Arrays.asList(intentLocal))));
 
 				// Create calls to the lifecycle methods
 				generateComponentLifecycle();
@@ -260,7 +267,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 			JimpleBody body = (JimpleBody) method.retrieveActiveBody();
 
 			// Some component types such as fragments don't have a getIntent() method
-			SootMethod m = hostComponent.getMethodUnsafe("android.content.Intent getIntent()");
+			SootMethod m = hostComponent.getMethodUnsafe(componentExchangeInfo.getIntentMethod.getSubSignature());
 			if (m != null) {
 				UnitPatchingChain units = body.getUnits();
 				Local thisLocal = body.getThisLocal();
@@ -270,7 +277,8 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				for (Iterator<Unit> iter = units.snapshotIterator(); iter.hasNext();) {
 					Stmt stmt = (Stmt) iter.next();
 					if (stmt.getTag(SimulatedCodeElementTag.TAG_NAME) != null) {
-						if (stmt.containsInvokeExpr() && stmt.getInvokeExpr().getMethod().equals(m))
+						if (stmt.containsInvokeExpr()
+								&& stmt.getInvokeExpr().getMethod().equals(componentExchangeInfo.getIntentMethod))
 							return;
 					}
 				}
@@ -286,7 +294,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				 * com.google.android.gcm.GCMBroadcastReceiver
 				 */
 				Unit setIntentU = Jimple.v().newAssignStmt(intentV,
-						Jimple.v().newVirtualInvokeExpr(thisLocal, m.makeRef()));
+						Jimple.v().newVirtualInvokeExpr(thisLocal, componentExchangeInfo.getIntentMethod.makeRef()));
 
 				setIntentU.addTag(SimulatedCodeElementTag.TAG);
 				units.insertBefore(setIntentU, stmt);
@@ -307,10 +315,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 	@Override
 	public Collection<SootField> getAdditionalFields() {
-		if (intentField == null)
-			return Collections.emptySet();
-
-		return Collections.singleton(intentField);
+		return Collections.emptySet();
 	}
 
 	/**
@@ -460,24 +465,13 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 		}
 	}
 
-	@Override
-	protected void reset() {
-		super.reset();
-
-		// Get rid of our dummy fields
-		component.removeField(intentField);
-		intentField = null;
-	}
-
 	/**
 	 * Gets the data object that describes the generated entry point
 	 * 
 	 * @return The data object that describes the generated entry point
 	 */
 	public ComponentEntryPointInfo getComponentInfo() {
-		ComponentEntryPointInfo info = new ComponentEntryPointInfo(mainMethod);
-		info.setIntentField(intentField);
-		return info;
+		return new ComponentEntryPointInfo(mainMethod);
 	}
 
 	/**
@@ -495,7 +489,6 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				Modifier.PUBLIC);
 		sm.addTag(SimulatedCodeElementTag.TAG);
 		component.addMethod(sm);
-		sm.addTag(SimulatedCodeElementTag.TAG);
 
 		JimpleBody b = Jimple.v().newBody(sm);
 		sm.setActiveBody(b);
@@ -503,8 +496,45 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 
 		LocalGenerator localGen = Scene.v().createLocalGenerator(b);
 		Local lcIntent = localGen.generateLocal(intentType);
-		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent,
-				Jimple.v().newInstanceFieldRef(b.getThisLocal(), intentField.makeRef())));
+		b.getUnits().add(Jimple.v().newAssignStmt(lcIntent, Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
+				componentExchangeInfo.getIntentMethod.makeRef(), Collections.emptyList())));
 		b.getUnits().add(Jimple.v().newReturnStmt(lcIntent));
+	}
+
+	/**
+	 * Returns a local that will contain a new instance of a given class using an instantiator/factory.
+	 *  
+	 * @param createdClass the class/type that should be created
+	 * @param creatorMethodSubset the subsignature of the factory class that instantiates the desired instance type
+	 * @param values the values to pass on to the <i>creatorMethodSubset</i> method of the factory class
+	 * @return the local (might be new or reused)
+	 */
+	public Local generateInstantiator(SootClass createdClass, String creatorMethodSubset, Value... values) {
+
+		// If we already have a class local of that type, we re-use it
+		Local existingLocal = localVarsForClasses.get(createdClass);
+		if (existingLocal != null)
+			return existingLocal;
+
+		RefType rt = (RefType) instantiatorField.getType();
+		SootMethod m = rt.getSootClass().getMethod(creatorMethodSubset);
+		Local instantiatorLocal = generator.generateLocal(instantiatorField.getType());
+		Local classLoaderLocal = generator.generateLocal(classLoaderField.getType());
+
+		Local varLocal = generator.generateLocal(m.getReturnType());
+		Jimple j = Jimple.v();
+		body.getUnits().add(j.newAssignStmt(instantiatorLocal, j.newStaticFieldRef(instantiatorField.makeRef())));
+		body.getUnits().add(j.newAssignStmt(classLoaderLocal, j.newStaticFieldRef(classLoaderField.makeRef())));
+		List<Value> params = new ArrayList<>();
+		params.add(classLoaderLocal);
+		params.add(StringConstant.v(createdClass.getName()));
+		for (Value v : values) {
+			params.add(v);
+		}
+		AssignStmt s = j.newAssignStmt(varLocal, j.newVirtualInvokeExpr(instantiatorLocal, m.makeRef(), params));
+		s.addTag(new ExpectedTypeTag(createdClass.getType()));
+		body.getUnits().add(s);
+		localVarsForClasses.put(createdClass, varLocal);
+		return varLocal;
 	}
 }

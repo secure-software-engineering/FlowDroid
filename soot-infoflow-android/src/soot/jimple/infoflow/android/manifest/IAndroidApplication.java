@@ -45,4 +45,10 @@ public interface IAndroidApplication {
 	 */
 	public Boolean isUsesCleartextTraffic();
 
+	/**
+	 * Returns the value of appComponentFactory, which specifies a factory used to create the android components
+	 * @return The fully-qualified class name of the factory class or null 
+	 */
+	public String getAppComponentFactory();
+
 }

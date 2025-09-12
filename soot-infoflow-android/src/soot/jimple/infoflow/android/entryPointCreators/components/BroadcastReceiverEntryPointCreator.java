@@ -1,10 +1,14 @@
 package soot.jimple.infoflow.android.entryPointCreators.components;
 
+import soot.Local;
+import soot.Scene;
 import soot.SootClass;
+import soot.SootField;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 
 /**
@@ -16,13 +20,23 @@ import soot.jimple.infoflow.android.manifest.IManifestHandler;
 public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPointCreator {
 
 	public BroadcastReceiverEntryPointCreator(SootClass component, SootClass applicationClass,
-			IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+			IManifestHandler manifest, SootField instantiatorField, SootField classLoaderField,
+			ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
+	}
+
+	@Override
+	protected Local generateClassConstructor(SootClass createdClass) {
+		if (createdClass == component && instantiatorField != null) {
+			return super.generateInstantiator(createdClass,
+					AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATERECEIVER, body.getParameterLocal(0));
+		}
+		return super.generateClassConstructor(createdClass);
 	}
 
 	@Override
 	protected void generateComponentLifecycle() {
-		Stmt onReceiveStmt = searchAndBuildMethod(AndroidEntryPointConstants.BROADCAST_ONRECEIVE, component, thisLocal);
+		Stmt onReceiveStmt = searchAndBuildMethod(AndroidEntryPointConstants.BROADCAST_ONRECEIVE, thisLocal);
 
 		// methods
 		NopStmt startWhileStmt = Jimple.v().newNopStmt();
@@ -43,4 +57,8 @@ public class BroadcastReceiverEntryPointCreator extends AbstractComponentEntryPo
 		createGetIntentMethod();
 	}
 
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.BROADCASTRECEIVERCLASS);
+	}
 }

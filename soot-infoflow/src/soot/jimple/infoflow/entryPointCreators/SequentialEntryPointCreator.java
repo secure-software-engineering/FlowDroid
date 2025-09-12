@@ -12,6 +12,7 @@ import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+import soot.jimple.infoflow.util.SootUtils;
 
 /**
  * Simple entry point creator that builds a sequential list of method
@@ -57,7 +58,7 @@ public class SequentialEntryPointCreator extends BaseEntryPointCreator {
 			// Create the method calls
 			for (String method : classMap.get(className)) {
 				SootMethodAndClass methodAndClass = SootMethodRepresentationParser.v().parseSootMethodString(method);
-				SootMethod methodToInvoke = findMethod(Scene.v().getSootClass(methodAndClass.getClassName()),
+				SootMethod methodToInvoke = SootUtils.findMethod(Scene.v().getSootClass(methodAndClass.getClassName()),
 						methodAndClass.getSubSignature());
 
 				if (methodToInvoke == null)

@@ -9,6 +9,7 @@ import java.util.Map;
 import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 
 /**
  * Mapping class for associating components with the data object for their
@@ -20,6 +21,11 @@ import soot.SootMethod;
 public class ComponentEntryPointCollection {
 
 	protected Map<SootClass, ComponentEntryPointInfo> componentToEntryPointInfo = new HashMap<>();
+	private ComponentExchangeInfo componentExchangeInfo;
+
+	public ComponentExchangeInfo getComponentExchangeInfo() {
+		return componentExchangeInfo;
+	}
 
 	public void put(SootClass component, ComponentEntryPointInfo info) {
 		componentToEntryPointInfo.put(component, info);
@@ -58,6 +64,11 @@ public class ComponentEntryPointCollection {
 
 	public boolean hasEntryPointForComponent(SootClass component) {
 		return componentToEntryPointInfo.containsKey(component);
+	}
+
+	public void setComponentExchangeInfo(ComponentExchangeInfo n) {
+		this.componentExchangeInfo = n;
+
 	}
 
 }

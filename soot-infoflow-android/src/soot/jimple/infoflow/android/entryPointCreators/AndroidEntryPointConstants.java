@@ -107,6 +107,13 @@ public class AndroidEntryPointConstants {
 	public static final String SERVICECONNECTION_ONSERVICECONNECTED = "void onServiceConnected(android.content.ComponentName,android.os.IBinder)";
 	public static final String SERVICECONNECTION_ONSERVICEDISCONNECTED = "void onServiceDisconnected(android.content.ComponentName)";
 
+	public static final String APPCOMPONENTFACTORYCLASS = "android.app.AppComponentFactory";
+	public static final String APPCOMPONENTFACTORY_INSTANTIATEACTIVITY = "android.app.Activity instantiateActivity(java.lang.ClassLoader,java.lang.String,android.content.Intent)";
+	public static final String APPCOMPONENTFACTORY_INSTANTIATERECEIVER = "android.content.BroadcastReceiver instantiateReceiver(java.lang.ClassLoader,java.lang.String,android.content.Intent)";
+	public static final String APPCOMPONENTFACTORY_INSTANTIATEAPPLICATION = "android.app.Application instantiateApplication(java.lang.ClassLoader,java.lang.String)";
+	public static final String APPCOMPONENTFACTORY_INSTANTIATECLASSLOADER = "java.lang.ClassLoader instantiateClassLoader(java.lang.ClassLoader,android.content.pm.ApplicationInfo)";
+	public static final String APPCOMPONENTFACTORY_INSTANTIATEPROVIDER = "android.content.ContentProvider instantiateProvider(java.lang.ClassLoader,java.lang.String)";
+
 	public static final String ACTIVITYLIFECYCLECALLBACKSINTERFACE = "android.app.Application$ActivityLifecycleCallbacks";
 	public static final String ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTARTED = "void onActivityStarted(android.app.Activity)";
 	public static final String ACTIVITYLIFECYCLECALLBACK_ONACTIVITYSTOPPED = "void onActivityStopped(android.app.Activity)";
@@ -172,6 +179,11 @@ public class AndroidEntryPointConstants {
 			ACTIVITYLIFECYCLECALLBACK_ONACTIVITYDESTROYED, ACTIVITYLIFECYCLECALLBACK_ONACTIVITYCREATED };
 	private static final List<String> activityLifecycleMethodList = Arrays.asList(activityLifecycleMethods);
 
+	private static final String[] componentFactoryLifecycleMethods = { APPCOMPONENTFACTORY_INSTANTIATEACTIVITY,
+			APPCOMPONENTFACTORY_INSTANTIATEAPPLICATION, APPCOMPONENTFACTORY_INSTANTIATECLASSLOADER,
+			APPCOMPONENTFACTORY_INSTANTIATEPROVIDER, APPCOMPONENTFACTORY_INSTANTIATERECEIVER };
+	private static final List<String> componentFactoryMethodList = Arrays.asList(componentFactoryLifecycleMethods);
+
 	private static final String[] componentCallbackMethods = { COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED,
 			COMPONENTCALLBACKS_ONLOWMEMORY };
 	private static final List<String> componentCallbackMethodList = Arrays.asList(componentCallbackMethods);
@@ -182,6 +194,8 @@ public class AndroidEntryPointConstants {
 	private static final String[] serviceConnectionMethods = { SERVICECONNECTION_ONSERVICECONNECTED,
 			SERVICECONNECTION_ONSERVICEDISCONNECTED };
 	private static final List<String> serviceConnectionMethodList = Arrays.asList(serviceConnectionMethods);
+	public static final String ATTACH_BASE_CONTEXT = "void attachBaseContext(android.content.Context)";
+	public static final String CONTEXT_WRAPPER = "android.content.ContextWrapper";
 	/*
 	 * ========================================================================
 	 */
@@ -224,6 +238,10 @@ public class AndroidEntryPointConstants {
 
 	public static List<String> getActivityLifecycleCallbackMethods() {
 		return activityLifecycleMethodList;
+	}
+
+	public static List<String> getComponentFactoryCallbackMethods() {
+		return componentFactoryMethodList;
 	}
 
 	public static List<String> getComponentCallbackMethods() {

@@ -1286,7 +1286,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	}
 
 	protected LibraryClassPatcher getLibraryClassPatcher() {
-		return new LibraryClassPatcher();
+		return new AndroidLibraryClassPatcher();
 	}
 
 	/**
@@ -1913,6 +1913,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 
 			IAndroidApplication app = manifest.getApplication();
 			if (app != null) {
+				String factoryName = app.getAppComponentFactory();
+				if (factoryName != null && !factoryName.isEmpty())
+					components.add(Scene.v().getSootClassUnsafe(factoryName));
 				String applicationName = app.getName();
 				if (applicationName != null && !applicationName.isEmpty())
 					components.add(Scene.v().getSootClassUnsafe(applicationName));

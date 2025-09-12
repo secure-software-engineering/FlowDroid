@@ -43,7 +43,7 @@ public class IccInstrumentDestination {
 		return s;
 	}
 
-	private static RefType INTENT_TYPE = RefType.v("android.content.Intent");
+	private RefType INTENT_TYPE = RefType.v("android.content.Intent");
 	private IccLink iccLink = null;
 
 	public SootClass instrumentDestinationForContentProvider(String destination) {

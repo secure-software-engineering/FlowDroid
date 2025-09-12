@@ -5,14 +5,15 @@ import java.util.Collections;
 import java.util.Set;
 
 import soot.Local;
+import soot.RefType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
-import soot.jimple.infoflow.cfg.FlowDroidEssentialMethodTag;
 import soot.jimple.infoflow.entryPointCreators.BaseEntryPointCreator;
+import soot.jimple.infoflow.util.SootUtils;
 import soot.jimple.infoflow.util.SystemClassHandler;
 
 public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCreator {
@@ -33,27 +34,31 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 		return super.createDummyMain();
 	}
 
-	protected Stmt searchAndBuildMethod(String subsignature, SootClass currentClass, Local classLocal) {
-		return searchAndBuildMethod(subsignature, currentClass, classLocal, Collections.<SootClass>emptySet());
+	protected Stmt searchAndBuildMethod(String subsignature, Local classLocal) {
+		return searchAndBuildMethod(subsignature, classLocal, Collections.<SootClass>emptySet());
 	}
 
-	protected Stmt searchAndBuildMethod(String subsignature, SootClass currentClass, Local classLocal,
-			Set<SootClass> parentClasses) {
-		if (currentClass == null || classLocal == null)
+	protected Stmt searchAndBuildMethod(String subsignature, Local classLocal, Set<SootClass> parentClasses) {
+		if (classLocal == null)
 			return null;
+		SootClass currentClass = ((RefType) classLocal.getType()).getSootClass();
 
-		SootMethod method = findMethod(currentClass, subsignature);
+		SootMethod method = SootUtils.findMethod(currentClass, subsignature);
 		if (method == null)
 			return null;
 
 		// If the method is in one of the predefined Android classes, it cannot
-		// contain custom code, so we do not need to call it
-		if (AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName()))
+		// contain custom code, so we do not need to call it (unless directly requested)
+		if (AndroidEntryPointConstants.isLifecycleClass(method.getDeclaringClass().getName())
+				&& currentClass != method.getDeclaringClass())
 			return null;
 
 		// If this method is part of the Android framework, we don't need to
-		// call it
-		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass()))
+		// call it, unless it was explicitly requested. Due to virtual method
+		// invocations
+		// application code could be called!
+		if (SystemClassHandler.v().isClassInSystemPackage(method.getDeclaringClass())
+				&& currentClass.isApplicationClass())
 			return null;
 
 		assert method.isStatic() || classLocal != null

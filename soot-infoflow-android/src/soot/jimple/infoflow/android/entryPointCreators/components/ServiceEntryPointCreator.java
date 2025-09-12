@@ -3,15 +3,25 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 import java.util.Collections;
 import java.util.List;
 
-import soot.*;
+import soot.Local;
+import soot.Modifier;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils.ComponentType;
+import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.entryPointCreators.SimulatedCodeElementTag;
+import soot.jimple.infoflow.util.SootUtils;
 
 /**
  * Entry point creator for Android services
@@ -23,19 +33,24 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 	protected SootField binderField = null;
 
-	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest) {
-		super(component, applicationClass, manifest);
+	public ServiceEntryPointCreator(SootClass component, SootClass applicationClass, IManifestHandler manifest,
+			SootField instantiatorField, SootField classLoaderField, ComponentExchangeInfo componentExchangeInfo) {
+		super(component, applicationClass, manifest, instantiatorField, classLoaderField, componentExchangeInfo);
 	}
 
 	@Override
 	protected void generateComponentLifecycle() {
-		// 1. onCreate:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, component, thisLocal);
+
+		// 1. attachBaseContext
+		searchAndBuildMethod(AndroidEntryPointConstants.ATTACH_BASE_CONTEXT, thisLocal);
+
+		// 2. onCreate:
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONCREATE, thisLocal);
 
 		// service has two different lifecycles:
 		// lifecycle1:
-		// 2. onStart:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, component, thisLocal);
+		// 3. onStart:
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART1, thisLocal);
 
 		// onStartCommand can be called an arbitrary number of times, or never
 		NopStmt beforeStartCommand = Jimple.v().newNopStmt();
@@ -43,7 +58,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		body.getUnits().add(beforeStartCommand);
 		createIfStmt(afterStartCommand);
 
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONSTART2, thisLocal);
 		createIfStmt(beforeStartCommand);
 		body.getUnits().add(afterStartCommand);
 
@@ -78,7 +93,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// lifecycle2 start
 		// onBind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONBIND, thisLocal);
 
 		NopStmt beforemethodsStmt = Jimple.v().newNopStmt();
 		body.getUnits().add(beforemethodsStmt);
@@ -89,7 +104,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 		hasAdditionalMethods = false;
 		if (componentType == ComponentType.GCMBaseIntentService)
 			for (String sig : AndroidEntryPointConstants.getGCMIntentServiceMethods()) {
-				SootMethod sm = findMethod(component, sig);
+				SootMethod sm = SootUtils.findMethod(component, sig);
 				if (sm != null && !sm.getName().equals(AndroidEntryPointConstants.GCMBASEINTENTSERVICECLASS))
 					if (createPlainMethodCall(thisLocal, sm))
 						hasAdditionalMethods = true;
@@ -101,18 +116,18 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 
 		// onUnbind:
 		Stmt onDestroyStmt = Jimple.v().newNopStmt();
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONUNBIND, thisLocal);
 		createIfStmt(onDestroyStmt); // fall through to rebind or go to destroy
 
 		// onRebind:
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONREBIND, thisLocal);
 		createIfStmt(beforemethodsStmt);
 
 		// lifecycle2 end
 
 		// onDestroy:
 		body.getUnits().add(onDestroyStmt);
-		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, component, thisLocal);
+		searchAndBuildMethod(AndroidEntryPointConstants.SERVICE_ONDESTROY, thisLocal);
 	}
 
 	/**
@@ -128,7 +143,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	protected boolean createSpecialServiceMethodCalls(List<String> methodSigs, String parentClass) {
 		boolean hasAdditionalMethods = false;
 		for (String sig : methodSigs) {
-			SootMethod sm = findMethod(component, sig);
+			SootMethod sm = SootUtils.findMethod(component, sig);
 			if (sm != null && !sm.getDeclaringClass().getName().equals(parentClass))
 				if (createPlainMethodCall(thisLocal, sm))
 					hasAdditionalMethods = true;
@@ -166,7 +181,7 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	 * passed in as an argument, in the global field
 	 */
 	private void instrumentOnBind() {
-		SootMethod sm = component.getMethodUnsafe("android.os.IBinder onBind(android.content.Intent)");
+		SootMethod sm = SootUtils.findMethod(component, "android.os.IBinder onBind(android.content.Intent)");
 		final Type intentType = RefType.v("android.content.Intent");
 		final Type binderType = RefType.v("android.os.IBinder");
 		if (sm == null || !sm.isConcrete()) {
@@ -216,9 +231,13 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 	@Override
 	public ComponentEntryPointInfo getComponentInfo() {
 		ServiceEntryPointInfo serviceInfo = new ServiceEntryPointInfo(mainMethod);
-		serviceInfo.setIntentField(intentField);
 		serviceInfo.setBinderField(binderField);
 		return serviceInfo;
+	}
+
+	@Override
+	protected SootClass getModelledClass() {
+		return Scene.v().getSootClass(AndroidEntryPointConstants.SERVICECLASS);
 	}
 
 }
