@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="System.Object" />
+    <methods>
+		<!--  <method id="System.Object Deserialize(System.Text.Json.JsonDocument,System.Text.Json.JsonSerializerOptions)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+			</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonDocument,System.Type,System.Text.Json.JsonSerializerOptions)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonDocument,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonDocument,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonDocument,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonElement,System.Text.Json.JsonSerializerOptions)">
+		    <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonElement,System.Type,System.Text.Json.JsonSerializerOptions)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonElement,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonElement,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.JsonElement,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.Nodes.JsonNode,System.Text.Json.JsonSerializerOptions)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.Nodes.JsonNode,System.Type,System.Text.Json.JsonSerializerOptions)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		<method id="System.Object Deserialize(System.Text.Json.Nodes.JsonNode,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+            	</flow>
+                </flow>
+           	</flows>
+		</method>
+		  <method id="System.Object Deserialize(System.Text.Json.Nodes.JsonNode,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.Text.Json.Nodes.JsonNode,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonDocument SerializeToDocument(System.Object,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonDocument SerializeToDocument(System.Object,System.Type,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonDocument SerializeToDocument(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonDocument SerializeToDocument(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonDocument SerializeToDocument(System.Object,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonElement SerializeToElement(System.Object,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonElement SerializeToElement(System.Object,System.Type,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonElement SerializeToElement(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonElement SerializeToElement(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.JsonElement SerializeToElement(System.Object,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Nodes.JsonNode SerializeToNode(System.Object,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Nodes.JsonNode SerializeToNode(System.Object,System.Type,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Nodes.JsonNode SerializeToNode(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Nodes.JsonNode SerializeToNode(System.Object,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Nodes.JsonNode SerializeToNode(System.Object,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean IsValidNumberHandlingValue(System.Text.Json.Serialization.JsonNumberHandling)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean IsValidCreationHandlingValue(System.Text.Json.Serialization.JsonObjectCreationHandling)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean IsValidUnmappedMemberHandlingValue(System.Text.Json.Serialization.JsonUnmappedMemberHandling)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object UnboxOnRead(System.Object)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object UnboxOnWrite(System.Object)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean TryReadMetadata(System.Text.Json.Serialization.JsonConverter,System.Text.Json.Serialization.Metadata.JsonTypeInfo,ByReferenceWrappers.Wrapper,ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean IsMetadataPropertyName(System.ReadOnlySpan`1,System.Text.Json.Serialization.Metadata.PolymorphicTypeResolver)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.MetadataPropertyName GetMetadataPropertyName(System.ReadOnlySpan`1,System.Text.Json.Serialization.Metadata.PolymorphicTypeResolver)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean TryHandleReferenceFromJsonElement(ByReferenceWrappers.Wrapper,ByReferenceWrappers.Wrapper,System.Text.Json.JsonElement,ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean TryHandleReferenceFromJsonNode(ByReferenceWrappers.Wrapper,ByReferenceWrappers.Wrapper,System.Text.Json.Nodes.JsonNode,ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="void ValidateMetadataForObjectConverter(ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="void ValidateMetadataForArrayConverter(System.Text.Json.Serialization.JsonConverter,ByReferenceWrappers.Wrapper,ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object ResolveReferenceId(ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Text.Json.Serialization.Metadata.JsonPropertyInfo LookupProperty(System.Object,System.ReadOnlySpan`1,ByReferenceWrappers.Wrapper,System.Text.Json.JsonSerializerOptions,ByReferenceWrappers.Wrapper,boolean)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.ReadOnlySpan`1 GetPropertyName(ByReferenceWrappers.Wrapper,ByReferenceWrappers.Wrapper)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="void CreateExtensionDataProperty(System.Object,System.Text.Json.Serialization.Metadata.JsonPropertyInfo,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.ReadOnlySpan`1,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.ReadOnlySpan`1,System.Type,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.ReadOnlySpan`1,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.ReadOnlySpan`1,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.ReadOnlySpan`1,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Threading.Tasks.ValueTask`1 DeserializeAsync(System.IO.Stream,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.IO.Stream,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Threading.Tasks.ValueTask`1 DeserializeAsync(System.IO.Stream,System.Type,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.IO.Stream,System.Type,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Threading.Tasks.ValueTask`1 DeserializeAsync(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Threading.Tasks.ValueTask`1 DeserializeAsync(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Threading.Tasks.ValueTask`1 DeserializeAsync(System.IO.Stream,System.Type,System.Text.Json.Serialization.JsonSerializerContext,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.IO.Stream,System.Type,System.Text.Json.Serialization.JsonSerializerContext)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Collections.Generic.IAsyncEnumerable`1 DeserializeAsyncEnumerable(System.IO.Stream,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Collections.Generic.IAsyncEnumerable`1 DeserializeAsyncEnumerable(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo`1,System.Threading.CancellationToken)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="System.Object Deserialize(System.String,System.Text.Json.JsonSerializerOptions)">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>
+
+                <method id="boolean get_IsReflectionEnabledByDefault()">
+                        <flows>
+                                <flow isAlias="false">
+                 ...
+                                </flow>
+                        </flows>
+                </method>-->
+        </methods>
+</summary>

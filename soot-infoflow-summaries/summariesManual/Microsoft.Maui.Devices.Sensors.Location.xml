@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="System.Object" />
+    <methods>
+   		<method id="void &lt;init&gt;(double,double)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Latitude]"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="1" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Longitude"
+            			AccessPathType="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(double,double,System.DateTimeOffset)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Latitude]"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="1" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Longitude"
+            			AccessPathType="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(Microsoft.Maui.Devices.Sensors.Location)">
+			<flows>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Latitude]"
+            			AccessPathType="[double]" />
+				</flow>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Longitude]"
+            			AccessPathType="[double]" />
+				</flow>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: System.DateTimeOffset Timestamp]"
+            			AccessPathType="[System.DateTimeOffset]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: System.Nullable`1 Altitude]"
+            			AccessPathType="[System.Nullable`1]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Accuracy]"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double VerticalAccuracy]"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: System.Nullable`1 Speed]"
+            			AccessPathType="[System.Nullable`1]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: System.Nullable`1 Course]"
+            			AccessPathType="[System.Nullable`1]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(double,double,double)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="0" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Latitude]"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="1" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Longitude"
+            			AccessPathType="[double]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+            		<from sourceSinkType="Parameter" ParameterIndex="2" />
+            		<to	sourceSinkType="Field" 
+            			AccessPath="[Microsoft.Maui.Devices.Sensors: double Altitude"
+            			AccessPathType="[double]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="double CalculateDistance(double,double,Microsoft.Maui.Devices.Sensors.Location,Microsoft.Maui.Devices.Sensors.DistanceUnits)">
+        	<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return" />
+           		</flow>
+        	</flows>
+		</method>
+		<method id="double CalculateDistance(Microsoft.Maui.Devices.Sensors.Location,double,double,Microsoft.Maui.Devices.Sensors.DistanceUnits)">
+        	<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return" />
+           		</flow>
+        	</flows>
+		</method>
+		<method id="double CalculateDistance(Microsoft.Maui.Devices.Sensors.Location,Microsoft.Maui.Devices.Sensors.Location,Microsoft.Maui.Devices.Sensors.DistanceUnits)">
+	        <flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+           		</flow>
+        	</flows>
+		</method>
+		<method id="double CalculateDistance(double,double,double,double,Microsoft.Maui.Devices.Sensors.DistanceUnits)">
+	        <flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="2" />
+					<to sourceSinkType="Return" />
+           		</flow>
+           		<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="3" />
+					<to sourceSinkType="Return" />
+           		</flow>
+        	</flows>
+		</method>
+		<method id="System.String ToString()">
+        	<flows>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Latitude"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Longitude"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.DateTimeOffset Timestamp"
+        				AccessPathType="[System.DateTimeOffset]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Altitude"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Accuracy"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Verticalaccuracy"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Speed"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        		<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Course"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+        	</flows>
+		</method>
+		<method id="System.DateTimeOffset get_Timestamp()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.DateTimeOffset Timestamp"
+        				AccessPathType="[System.DateTimeOffset]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Timestamp(System.DateTimeOffset)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.DateTimeOffset Timestamp"
+						AccessPathTypes="[System.DateTimeOffset]" />
+            	</flow>
+            </flows>
+	    </method>
+		<method id="double get_Latitude()">
+			<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Latitude"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Latitude(double)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: double Latitude"
+						AccessPathTypes="[double]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="double get_Longitude()">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: double Longitude"
+        				AccessPathType="[double]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Longitude(double)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: double Longitude"
+						AccessPathTypes="[double]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="System.Nullable`1 get_Altitude()">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Altitude"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Altitude(System.Nullable`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Altitude"
+						AccessPathTypes="[System.Nullable`1]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="System.Nullable`1 get_Accuracy()">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Accuracy"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Accuracy(System.Nullable`1)">
+		    <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Accuracy"
+						AccessPathTypes="[System.Nullable`1]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="System.Nullable`1 get_VerticalAccuracy()">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Accuracy"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_VerticalAccuracy(System.Nullable`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 VerticalAccuracy"
+						AccessPathTypes="[System.Nullable`1]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="System.Nullable`1 get_Speed()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Speed"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Speed(System.Nullable`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Speed"
+						AccessPathTypes="[System.Nullable`1]" />
+            	</flow>
+            </flows>
+		</method>
+		<method id="System.Nullable`1 get_Course()">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+        				AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Course"
+        				AccessPathType="[System.Nullable`1]"/>
+					<to sourceSinkType="Return" />
+        		</flow>
+			</flows>
+		</method>
+		<method id="void set_Course(System.Nullable`1)">
+	        <flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="Microsoft.Maui.Devices.Sensors: System.Nullable`1 Speed"
+						AccessPathTypes="[System.Nullable`1]" />
+            	</flow>
+            </flows>
+		</method>
+	</methods>
+</summary>

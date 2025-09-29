@@ -3,73 +3,156 @@
 	<methods>
 		<method id="void &lt;init&gt;(System.String)">
         	<flows>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Message]"
+						AccessPath="[System.Exception: System.String _message]"
 						AccessPathTypes="[System.String]" />
 				</flow>
 			</flows>
 		</method>
 		<method id="void &lt;init&gt;(System.String,System.Exception)">
         	<flows>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Message]"
+						AccessPath="[System.Exception: System.String _message]"
 						AccessPathTypes="[System.String]" />
 				</flow>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
-						AccessPath="System.Exception: System.Exception InnerException]"
+						AccessPath="System.Exception: System.Exception _innerException]"
 						AccessPathTypes="[System.Exception]" />
 				</flow>
 			</flows>
 		</method>
-		<!-- abstract field description -->
 		<method id="void &lt;init&gt;(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
         	<flows>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"/>
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.String _message]"
+						AccessPathTypes="[System.String]"/>
 				</flow>
-				<flow isAlias="true" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="1" />
-					<to sourceSinkType="Field" />
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.Collections.IDictionary _data]"
+						AccessPathTypes="[System.Collections.IDictionary]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.Exception _innerException]"
+						AccessPathTypes="[System.Exception]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.String _helpURL]"
+						AccessPathTypes="[System.String]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.String _stackTraceString]"
+						AccessPathTypes="[System.String]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.String _remoteStackTraceString]"
+						AccessPathTypes="[System.String]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.Int32 _HResult]"
+						AccessPathTypes="[System.Int32]"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" 
+						AccessPath="[System.Exception: System.String _source]"
+						AccessPathTypes="[System.String]"/>
 				</flow>
 			</flows>
 		</method>
 		<method id="System.Exception GetBaseException()">
 			<flows>
-				<flow isAlias="true" typeChecking="false">
+				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Exception InnerException]"
+						AccessPath="[System.Exception: System.Exception _innerException]"
 						AccessPathTypes="[System.Exception]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
         <method id="void GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-                   <!-- use phantom fields?? -->
+             <flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.Exception _innerException]"
+						AccessPathTypes="[System.Exception]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.String _message]"
+						AccessPathTypes="[System.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.Collections.IDictionary _data]"
+						AccessPathTypes="[System.Collections.IDictionary]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.String _helpURL]"
+						AccessPathTypes="[System.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.String _stackTraceString]"
+						AccessPathTypes="[System.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.String _remoteStackTraceString]"
+						AccessPathTypes="[System.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[System.Exception: System.String _source]"
+						AccessPathTypes="[System.String]" />
+					<to sourceSinkType="Parameter" ParameterIndex="0"/>
+				</flow>
+			</flows>
 		</method>
 		<method id="System.String ToString()">
         	<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Message]"
+						AccessPath="[System.Exception: System.String _message]"
 						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Exception InnerException]"
+						AccessPath="[System.Exception: System.Exception _innerException]"
 						AccessPathTypes="[System.Exception]" />
 					<to sourceSinkType="Return" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String StackTrace]"
+						AccessPath="[System.Exception: System.String _stackTraceString]"
 						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -78,11 +161,10 @@
 		<method id="void SetCurrentStackTrace()">
         	<clears>
 				<clear sourceSinkType="Field"
-						AccessPath="[System.Path: System.String StackTrace]"
+						AccessPath="[System.Path: System.String _stackTraceString]" 
 						AccessPathTypes="[System.String]" />
 			 </clears>
         </method>
-        <!-- accesses hidden field -->
 		<method id="void SetRemoteStackTrace(System.String)">
         	<clears>
 				<clear sourceSinkType="Field"
@@ -98,21 +180,11 @@
 				</flow>
 			</flows>
         </method>
-		<method id="System.Reflection.MethodBase get_TargetSite()">
-			<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Reflection.MethodBase TargetSite]"
-						AccessPathTypes="[System.Reflection.MethodBase]" />
-					<to sourceSinkType="Return" />
-				</flow>
-			</flows>
-		</method>
         <method id="System.String get_Message()">
         	<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Message]"
+						AccessPath="[System.Exception: System.String _message]"
 						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -122,7 +194,7 @@
         	<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Collections.IDictionary Data]"
+						AccessPath="[System.Exception: System.Collections.IDictionary _data]"
 						AccessPathTypes="[System.Collections.IDictionary]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -132,7 +204,7 @@
         	<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Exception InnerException]"
+						AccessPath="[System.Exception: System.Exception _innerException]"
 						AccessPathTypes="[System.Exception]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -142,8 +214,8 @@
        		<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Exception InnerException]"
-						AccessPathTypes="[System.Exception]" />
+						AccessPath="[System.Exception: System.String _helpURL]"
+						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -153,7 +225,7 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String HelpLink]"
+						AccessPath="[System.Exception: System.String _helpURL]"
 						AccessPathTypes="[System.String]" />
 				</flow>
 			</flows>
@@ -162,7 +234,7 @@
        		<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Source]"
+						AccessPath="[System.Exception: System.String _source]"
 						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -173,40 +245,20 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String Source]"
+						AccessPath="[System.Exception: System.String _source]"
 						AccessPathTypes="[System.String]" />
 				</flow>
 			</flows>
 		</method>
-		<method id="int get_HResult()">
-			<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Int32 HResult]"
-						AccessPathTypes="[System.Int32]" />
-					<to sourceSinkType="Return" />
-				</flow>
-			</flows>
-		</method>
-		<method id="void set_HResult(int)">
-        	<flows>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[System.Exception: System.Int32 HResult]"
-						AccessPathTypes="[System.Int32]" />
-				</flow>
-			</flows>
-		</method>
-		<method id="System.String get_StackTrace()">
+		<!--  wuerde ich rausnehmen, weil StackTrace unbekannt in diesem Kontext <method id="System.String get_StackTrace()">
         	<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[System.Exception: System.String StackTrace]"
+						AccessPath="[System.Exception: System.String _stackTraceString]"
 						AccessPathTypes="[System.String]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
-		</method>
+		</method> -->
 	</methods>
 </summary>
