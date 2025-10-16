@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import soot.Body;
+import soot.DefaultLocalGenerator;
 import soot.Local;
 import soot.RefType;
 import soot.Scene;
@@ -16,7 +17,6 @@ import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
 import soot.UnitPatchingChain;
-import soot.javaToJimple.DefaultLocalGenerator;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
