@@ -26,6 +26,7 @@ import soot.Body;
 import soot.BooleanType;
 import soot.ByteType;
 import soot.CharType;
+import soot.DefaultLocalGenerator;
 import soot.DoubleType;
 import soot.FastHierarchy;
 import soot.FloatType;
@@ -48,7 +49,6 @@ import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
-import soot.javaToJimple.DefaultLocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -451,7 +451,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			else
 				soot.options.Options.v().set_android_jars(this.androidPath.getAbsolutePath());
 		} else
-			Options.v().set_src_prec(Options.src_prec_java);
+			Options.v().set_src_prec(Options.src_prec_class);
 	}
 
 	private void setChaOptions() {
