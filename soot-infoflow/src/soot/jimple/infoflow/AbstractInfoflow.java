@@ -451,7 +451,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			else
 				soot.options.Options.v().set_android_jars(this.androidPath.getAbsolutePath());
 		} else
-			Options.v().set_src_prec(Options.src_prec_java);
+			Options.v().set_src_prec(Options.src_prec_class);
 	}
 
 	private void setChaOptions() {
