@@ -695,7 +695,7 @@ public class InfoflowConfiguration {
 		 * longer than this limit, the path reconstruction is aborted and the respective
 		 * path is skipped.
 		 *
-		 * @return The maximum length of a taint propagtation path3
+		 * @return The maximum length of a taint propagation path
 		 */
 		public int getMaxPathLength() {
 			return maxPathLength;
