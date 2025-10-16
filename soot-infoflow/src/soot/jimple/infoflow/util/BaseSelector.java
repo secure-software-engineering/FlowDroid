@@ -16,6 +16,7 @@ import soot.jimple.BinopExpr;
 import soot.jimple.CastExpr;
 import soot.jimple.InstanceOfExpr;
 import soot.jimple.NewArrayExpr;
+import soot.jimple.NewMultiArrayExpr;
 import soot.jimple.UnopExpr;
 
 /**
@@ -54,6 +55,7 @@ public class BaseSelector {
 	 * the operations that are not relevant for analysis like "not" or casts
 	 * are removed - array refs are only removed if explicitly stated
 	 * BinOpExpr are divided into two values
+     * NewMultiArrayExpr are divided into their sizes
 	 * @param val the value which should be pruned
 	 * @param keepArrayRef if false then array refs are pruned to the base array object
 	 * @return one or more values 
@@ -65,6 +67,10 @@ public class BaseSelector {
 			set[0] = expr.getOp1();
 			set[1] = expr.getOp2();
 			return set;
+		}
+        else if (val instanceof NewMultiArrayExpr) {
+			NewMultiArrayExpr expr = (NewMultiArrayExpr) val;
+			return expr.getSizes().toArray(new Value[0]);
 		}
 		else
 			return new Value[] { selectBase(val, keepArrayRef) };
