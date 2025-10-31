@@ -53,6 +53,8 @@ public class SystemClassHandler {
 	 * @return True if the given class belongs to a system package, otherwise false
 	 */
 	public boolean isClassInSystemPackage(SootClass clazz) {
+		if (clazz == null)
+			return false;
 		FlowDroidSystemClassChecked checked = (FlowDroidSystemClassChecked) clazz
 				.getTag(FlowDroidSystemClassChecked.TAG_NAME);
 		boolean r;
