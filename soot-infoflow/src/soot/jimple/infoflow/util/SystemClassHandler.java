@@ -56,15 +56,11 @@ public class SystemClassHandler {
 		if (clazz == null)
 			return false;
 		FlowDroidSystemClassChecked checked = (FlowDroidSystemClassChecked) clazz
-				.getTag(FlowDroidSystemClassChecked.TAG_NAME);
-		boolean r;
-		if (checked != null)
-			r = checked.result;
-		else {
-			r = !clazz.hasTag(FlowDroidUserClass.TAG_NAME) && isClassInSystemPackage(clazz.getName());
-			clazz.addTag(FlowDroidSystemClassChecked.v(r));
-		}
-		return r;
+				.getOrComputeTag(FlowDroidSystemClassChecked.TAG_NAME, () -> {
+					return FlowDroidSystemClassChecked
+							.v(!clazz.hasTag(FlowDroidUserClass.TAG_NAME) && isClassInSystemPackage(clazz.getName()));
+				});
+		return checked.result;
 	}
 
 	/**
