@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
@@ -127,10 +128,10 @@ public abstract class AbstractCallbackAnalyzer {
 
 	protected final MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods = new HashMultiMap<>();
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
-	protected final Set<SootClass> dynamicManifestComponents = new HashSet<>();
+	protected final Set<SootClass> dynamicManifestComponents = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
 	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new HashMultiMap<>();
-	protected final Map<SootClass, Integer> fragmentIDs = new HashMap<>();
+	protected final Map<SootClass, Integer> fragmentIDs = new ConcurrentHashMap<>();
 
 	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
 	protected final Set<SootClass> excludedEntryPoints = new HashSet<>();
@@ -381,7 +382,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * @return True if all filters accept the given component-callback mapping,
 	 *         otherwise false
 	 */
-	private boolean filterAccepts(SootClass lifecycleElement, SootClass targetClass) {
+	protected boolean filterAccepts(SootClass lifecycleElement, SootClass targetClass) {
 		for (ICallbackFilter filter : callbackFilters)
 			if (!filter.accepts(lifecycleElement, targetClass))
 				return false;
@@ -397,7 +398,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 * @return True if all filters accept the given component-callback mapping,
 	 *         otherwise false
 	 */
-	private boolean filterAccepts(SootClass lifecycleElement, SootMethod targetMethod) {
+	protected boolean filterAccepts(SootClass lifecycleElement, SootMethod targetMethod) {
 		for (ICallbackFilter filter : callbackFilters)
 			if (!filter.accepts(lifecycleElement, targetMethod))
 				return false;
@@ -453,7 +454,9 @@ public abstract class AbstractCallbackAnalyzer {
 				final SootMethodRef methodRef = iexpr.getMethodRef();
 				if (methodRef.getName().equals("addJavascriptInterface") && iexpr.getArgCount() == 2
 						&& fastHierarchy.canStoreType(methodRef.getDeclaringClass().getType(), webViewType)) {
-					this.javaScriptInterfaces.put(method, stmt);
+					synchronized (javaScriptInterfaces) {
+						this.javaScriptInterfaces.put(method, stmt);
+					}
 				}
 			}
 		}
@@ -990,8 +993,10 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		return this.callbackMethods.put(lifecycleClass,
-				new AndroidCallbackDefinition(method, parentMethod, callbackType));
+		synchronized (this.callbackMethods) {
+			return this.callbackMethods.put(lifecycleClass,
+					new AndroidCallbackDefinition(method, parentMethod, callbackType));
+		}
 	}
 
 	/**
@@ -1001,7 +1006,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 *                       fragment belongs
 	 * @param fragmentClass  The fragment class
 	 */
-	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
+	protected synchronized void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
 		this.fragmentClasses.put(componentClass, fragmentClass);
 		this.fragmentClassesRev.put(fragmentClass, componentClass);
 	}

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import heros.solver.Pair;
 import soot.MethodOrMethodContext;
@@ -28,6 +30,7 @@ import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstant
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointUtils;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.util.ReusableExecutor;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
@@ -93,23 +96,34 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 					// Find the mappings between classes and layouts
 					findClassLayoutMappings();
+					ReusableExecutor executionService = new ReusableExecutor(
+							Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
 
-					// Process the callback classes directly reachable from the
-					// entry points
-					for (SootClass sc : entryPointClasses) {
-						// Check whether we're still running
-						if (isKilled != null)
-							break;
+					try {
+						// Process the callback classes directly reachable from the
+						// entry points
+						for (SootClass sc : entryPointClasses) {
+							// Check whether we're still running
+							if (isKilled != null)
+								break;
 
-						List<MethodOrMethodContext> methods = new ArrayList<MethodOrMethodContext>(
-								entryPointUtils.getLifecycleMethods(sc));
+							List<MethodOrMethodContext> methods = new ArrayList<MethodOrMethodContext>(
+									entryPointUtils.getLifecycleMethods(sc));
 
-						// Check for callbacks registered in the code
-						analyzeReachableMethods(sc, methods);
+							// Check for callbacks registered in the code
+							analyzeReachableMethods(executionService, sc, methods);
 
-						// Check for method overrides
-						analyzeMethodOverrideCallbacks(sc);
-						analyzeClassInterfaceCallbacks(sc, sc, sc);
+							// Check for method overrides
+							analyzeMethodOverrideCallbacks(sc);
+							analyzeClassInterfaceCallbacks(sc, sc, sc);
+						}
+					} finally {
+						executionService.shutdown();
+						try {
+							executionService.awaitTermination(1, TimeUnit.DAYS);
+						} catch (InterruptedException e) {
+							logger.error("Interrupted searching for callbacks");
+						}
 					}
 					reachableChangedListener = Scene.v().getReachableMethods().listener();
 					logger.info("Callback analysis done.");
@@ -132,47 +146,58 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 					// Incremental mode, only process the worklist
 					logger.info(String.format("Running incremental callback analysis for %d components...",
 							callbackWorklist.size()));
+					ReusableExecutor executionService = new ReusableExecutor(
+							Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
 
 					MultiMap<SootClass, SootMethod> workList = new HashMultiMap<>(callbackWorklist);
-					for (Iterator<SootClass> it = workList.keySet().iterator(); it.hasNext();) {
-						// Check whether we're still running
-						if (isKilled != null)
-							break;
+					try {
+						for (Iterator<SootClass> it = workList.keySet().iterator(); it.hasNext();) {
+							// Check whether we're still running
+							if (isKilled != null)
+								break;
 
-						SootClass componentClass = it.next();
-						Set<SootMethod> callbacks = callbackWorklist.get(componentClass);
-						callbackWorklist.remove(componentClass);
+							SootClass componentClass = it.next();
+							Set<SootMethod> callbacks = callbackWorklist.get(componentClass);
+							callbackWorklist.remove(componentClass);
 
-						Set<SootClass> activityComponents = fragmentClassesRev.get(componentClass);
-						if (activityComponents == null || activityComponents.isEmpty())
-							activityComponents = Collections.singleton(componentClass);
+							Set<SootClass> activityComponents = fragmentClassesRev.get(componentClass);
+							if (activityComponents == null || activityComponents.isEmpty())
+								activityComponents = Collections.singleton(componentClass);
 
-						// Check whether we're already beyond the maximum number
-						// of callbacks for the current component
-						if (config.getCallbackConfig().getMaxCallbacksPerComponent() > 0
-								&& callbacks.size() > config.getCallbackConfig().getMaxCallbacksPerComponent()) {
-							callbackMethods.remove(componentClass);
-							entryPointClasses.remove(componentClass);
-							continue;
+							// Check whether we're already beyond the maximum number
+							// of callbacks for the current component
+							if (config.getCallbackConfig().getMaxCallbacksPerComponent() > 0
+									&& callbacks.size() > config.getCallbackConfig().getMaxCallbacksPerComponent()) {
+								callbackMethods.remove(componentClass);
+								entryPointClasses.remove(componentClass);
+								continue;
+							}
+
+							// Check for method overrides. The whole class might be new.
+							analyzeMethodOverrideCallbacks(componentClass);
+							for (SootClass activityComponent : activityComponents) {
+								if (activityComponent == null)
+									activityComponent = componentClass;
+								analyzeClassInterfaceCallbacks(componentClass, componentClass, activityComponent);
+							}
+
+							// Collect all methods that we need to analyze
+							List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
+							for (SootMethod sm : callbacks) {
+								if (sm != null)
+									entryClasses.add(sm);
+							}
+
+							// Check for further callback declarations
+							analyzeReachableMethods(executionService, componentClass, entryClasses);
 						}
-
-						// Check for method overrides. The whole class might be new.
-						analyzeMethodOverrideCallbacks(componentClass);
-						for (SootClass activityComponent : activityComponents) {
-							if (activityComponent == null)
-								activityComponent = componentClass;
-							analyzeClassInterfaceCallbacks(componentClass, componentClass, activityComponent);
+					} finally {
+						executionService.shutdown();
+						try {
+							executionService.awaitTermination(1, TimeUnit.DAYS);
+						} catch (InterruptedException e) {
+							logger.error("Interrupted searching for callbacks");
 						}
-
-						// Collect all methods that we need to analyze
-						List<MethodOrMethodContext> entryClasses = new ArrayList<>(callbacks.size());
-						for (SootMethod sm : callbacks) {
-							if (sm != null)
-								entryClasses.add(sm);
-						}
-
-						// Check for further callback declarations
-						analyzeReachableMethods(componentClass, entryClasses);
 					}
 					logger.info("Incremental callback analysis done.");
 				}
@@ -186,7 +211,18 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		PackManager.v().getPack("wjtp").add(transform);
 	}
 
-	private void analyzeReachableMethods(SootClass lifecycleElement, List<MethodOrMethodContext> methods) {
+	@Override
+	protected boolean filterAccepts(SootClass lifecycleElement, SootClass targetClass) {
+		return super.filterAccepts(lifecycleElement, targetClass);
+	}
+
+	@Override
+	protected boolean filterAccepts(SootClass lifecycleElement, SootMethod targetMethod) {
+		return super.filterAccepts(lifecycleElement, targetMethod);
+	}
+
+	protected void analyzeReachableMethods(ReusableExecutor executionService, SootClass lifecycleElement,
+			List<MethodOrMethodContext> methods) {
 		// Make sure to exclude all other edges in the callgraph except for the
 		// edges start in the lifecycle methods we explicitly pass in
 		ComponentReachableMethods rm = new ComponentReachableMethods(config, lifecycleElement, methods);
@@ -194,23 +230,37 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 		// Scan for listeners in the class hierarchy
 		QueueReader<MethodOrMethodContext> reachableMethods = rm.listener();
+		for (ICallbackFilter filter : callbackFilters)
+			filter.setReachableMethods(rm);
+
 		while (reachableMethods.hasNext()) {
 			// Check whether we're still running
 			if (isKilled != null)
 				break;
 
-			for (ICallbackFilter filter : callbackFilters)
-				filter.setReachableMethods(rm);
-
 			SootMethod method = reachableMethods.next().method();
 			if (method.isConcrete()) {
-				analyzeMethodForCallbackRegistrations(lifecycleElement, method);
-				analyzeMethodForDynamicBroadcastReceiver(method);
-				analyzeMethodForServiceConnection(method);
-				analyzeMethodForFragmentTransaction(lifecycleElement, method);
-				analyzeMethodForViewPagers(lifecycleElement, method);
-				analyzeMethodForJavascriptInterfaces(method);
+				executionService.execute(new Runnable() {
+
+					@Override
+					public void run() {
+						analyzeMethodForCallbackRegistrations(lifecycleElement, method);
+						analyzeMethodForDynamicBroadcastReceiver(method);
+						analyzeMethodForServiceConnection(method);
+						analyzeMethodForFragmentTransaction(lifecycleElement, method);
+						analyzeMethodForViewPagers(lifecycleElement, method);
+						analyzeMethodForJavascriptInterfaces(method);
+					}
+
+				});
 			}
+		}
+		try {
+			//We need to wait here since the callback filters have the reachable methods, that
+			//depend on the current component
+			executionService.waitUntilFinished();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
