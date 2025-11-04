@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.cfg;
 
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -32,8 +31,4 @@ public class FlowDroidSystemClassChecked implements Tag {
 		return TAG_NAME;
 	}
 
-	@Override
-	public byte[] getValue() throws AttributeValueException {
-		return null;
-	}
 }

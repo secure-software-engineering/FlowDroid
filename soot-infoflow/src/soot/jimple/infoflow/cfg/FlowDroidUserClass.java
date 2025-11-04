@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.cfg;
 
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -9,21 +8,17 @@ import soot.tagkit.Tag;
  * @author Tim Lange
  */
 public class FlowDroidUserClass implements Tag {
-    public static final String TAG_NAME = "fd_userclass";
+	public static final String TAG_NAME = "fd_userclass";
 
-    private static final FlowDroidUserClass INSTANCE = new FlowDroidUserClass();
+	private static final FlowDroidUserClass INSTANCE = new FlowDroidUserClass();
 
-    public static FlowDroidUserClass v() {
-        return INSTANCE;
-    }
+	public static FlowDroidUserClass v() {
+		return INSTANCE;
+	}
 
-    @Override
-    public String getName() {
-        return TAG_NAME;
-    }
+	@Override
+	public String getName() {
+		return TAG_NAME;
+	}
 
-    @Override
-    public byte[] getValue() throws AttributeValueException {
-        return null;
-    }
 }

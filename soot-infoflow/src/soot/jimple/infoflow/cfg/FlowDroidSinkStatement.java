@@ -1,7 +1,5 @@
 package soot.jimple.infoflow.cfg;
 
-import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -12,19 +10,16 @@ import soot.tagkit.Tag;
  * @author Tim Lange
  */
 public class FlowDroidSinkStatement implements Tag {
-    public static final String TAG_NAME = "fd_sink";
+	public static final String TAG_NAME = "fd_sink";
 
-    public static final FlowDroidSinkStatement INSTANCE = new FlowDroidSinkStatement();
+	public static final FlowDroidSinkStatement INSTANCE = new FlowDroidSinkStatement();
 
-    private FlowDroidSinkStatement() { }
+	private FlowDroidSinkStatement() {
+	}
 
-    @Override
-    public String getName() {
-        return TAG_NAME;
-    }
+	@Override
+	public String getName() {
+		return TAG_NAME;
+	}
 
-    @Override
-    public byte[] getValue() throws AttributeValueException {
-        return null;
-    }
 }
