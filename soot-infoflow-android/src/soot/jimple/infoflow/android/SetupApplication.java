@@ -801,8 +801,9 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 				// Creating all callgraph takes time and memory. Check whether
 				// the solver has been aborted in the meantime
 				if (jimpleClass instanceof IMemoryBoundedSolver) {
-					if (((IMemoryBoundedSolver) jimpleClass).isKilled()) {
-						logger.warn("Aborted callback collection because of low memory");
+					IMemoryBoundedSolver imb = ((IMemoryBoundedSolver) jimpleClass);
+					if (imb.isKilled()) {
+						logger.warn("Aborted callback collection because of " + imb.getTerminationReason().toString());
 						break;
 					}
 				}

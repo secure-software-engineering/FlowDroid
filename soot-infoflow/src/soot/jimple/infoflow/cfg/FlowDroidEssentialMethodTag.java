@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.cfg;
 
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -14,15 +13,10 @@ import soot.tagkit.Tag;
 public class FlowDroidEssentialMethodTag implements Tag {
 
 	public static final String TAG_NAME = "fd_essential_method";
-	
+
 	@Override
 	public String getName() {
 		return TAG_NAME;
-	}
-
-	@Override
-	public byte[] getValue() throws AttributeValueException {
-		return null;
 	}
 
 }

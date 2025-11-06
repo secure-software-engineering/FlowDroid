@@ -73,4 +73,9 @@ public class MultiReason implements ISolverTerminationReason, Cloneable {
 		return multiReason;
 	}
 
+	@Override
+	public String toString() {
+		return "Multiple reasons: " + reasons;
+	}
+
 }

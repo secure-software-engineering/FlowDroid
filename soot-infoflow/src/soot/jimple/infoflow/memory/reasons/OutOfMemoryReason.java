@@ -15,8 +15,7 @@ public class OutOfMemoryReason implements ISolverTerminationReason {
 	/**
 	 * Creates a new instance of the {@link OutOfMemoryReason} class
 	 * 
-	 * @param currentMemory
-	 *            The amount of memory that is currently in use
+	 * @param currentMemory The amount of memory that is currently in use
 	 */
 	public OutOfMemoryReason(long currentMemory) {
 		this.currentMemory = currentMemory;
@@ -53,4 +52,8 @@ public class OutOfMemoryReason implements ISolverTerminationReason {
 		return new MultiReason(this, terminationReason);
 	}
 
+	@Override
+	public String toString() {
+		return "Out of memory: Current memory is " + currentMemory;
+	}
 }

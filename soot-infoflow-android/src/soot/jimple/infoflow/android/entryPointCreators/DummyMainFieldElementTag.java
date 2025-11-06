@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.android.entryPointCreators;
 
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -31,11 +30,6 @@ public class DummyMainFieldElementTag implements Tag {
 	@Override
 	public String getName() {
 		return TAG_NAME;
-	}
-
-	@Override
-	public byte[] getValue() throws AttributeValueException {
-		return null;
 	}
 
 }
