@@ -21,9 +21,8 @@ public class ReusableExecutor implements ExecutorService {
 	}
 
 	public void waitUntilFinished() throws InterruptedException {
-
-		synchronized (obj) {
-			while (counter.get() > 0) {
+		while (counter.get() > 0) {
+			synchronized (obj) {
 				obj.wait();
 			}
 		}
