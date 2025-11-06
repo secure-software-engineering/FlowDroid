@@ -36,9 +36,11 @@ public class ReusableExecutor implements ExecutorService {
 			@Override
 			public void run() {
 				command.run();
-				counter.getAndDecrement();
-				synchronized (obj) {
-					obj.notify();
+				int c = counter.getAndDecrement();
+				if (c == 0) {
+					synchronized (obj) {
+						obj.notify();
+					}
 				}
 			}
 
