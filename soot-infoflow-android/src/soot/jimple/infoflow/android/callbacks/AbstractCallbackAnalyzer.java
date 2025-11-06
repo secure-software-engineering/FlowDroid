@@ -76,6 +76,7 @@ import soot.jimple.toolkits.callgraph.Edge;
 import soot.toolkits.graph.ExceptionalUnitGraph;
 import soot.toolkits.graph.ExceptionalUnitGraphFactory;
 import soot.toolkits.scalar.SimpleLocalDefs;
+import soot.util.ConcurrentHashMultiMap;
 import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
@@ -129,8 +130,8 @@ public abstract class AbstractCallbackAnalyzer {
 	protected final MultiMap<SootClass, AndroidCallbackDefinition> callbackMethods = new HashMultiMap<>();
 	protected final MultiMap<SootClass, Integer> layoutClasses = new HashMultiMap<>();
 	protected final Set<SootClass> dynamicManifestComponents = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	protected final MultiMap<SootClass, SootClass> fragmentClasses = new HashMultiMap<>();
-	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new HashMultiMap<>();
+	protected final MultiMap<SootClass, SootClass> fragmentClasses = new ConcurrentHashMultiMap<>();
+	protected final MultiMap<SootClass, SootClass> fragmentClassesRev = new ConcurrentHashMultiMap<>();
 	protected final Map<SootClass, Integer> fragmentIDs = new ConcurrentHashMap<>();
 
 	protected final List<ICallbackFilter> callbackFilters = new ArrayList<>();
@@ -201,7 +202,7 @@ public abstract class AbstractCallbackAnalyzer {
 
 			});
 
-	private MultiMap<SootMethod, Stmt> javaScriptInterfaces = new HashMultiMap<SootMethod, Stmt>();
+	private MultiMap<SootMethod, Stmt> javaScriptInterfaces = new ConcurrentHashMultiMap<SootMethod, Stmt>();
 
 	public AbstractCallbackAnalyzer(InfoflowAndroidConfiguration config, Set<SootClass> entryPointClasses)
 			throws IOException {
@@ -454,9 +455,7 @@ public abstract class AbstractCallbackAnalyzer {
 				final SootMethodRef methodRef = iexpr.getMethodRef();
 				if (methodRef.getName().equals("addJavascriptInterface") && iexpr.getArgCount() == 2
 						&& fastHierarchy.canStoreType(methodRef.getDeclaringClass().getType(), webViewType)) {
-					synchronized (javaScriptInterfaces) {
-						this.javaScriptInterfaces.put(method, stmt);
-					}
+					this.javaScriptInterfaces.put(method, stmt);
 				}
 			}
 		}
@@ -993,10 +992,8 @@ public abstract class AbstractCallbackAnalyzer {
 		if (!filterAccepts(lifecycleClass, method))
 			return false;
 
-		synchronized (this.callbackMethods) {
-			return this.callbackMethods.put(lifecycleClass,
-					new AndroidCallbackDefinition(method, parentMethod, callbackType));
-		}
+		return this.callbackMethods.put(lifecycleClass,
+				new AndroidCallbackDefinition(method, parentMethod, callbackType));
 	}
 
 	/**
@@ -1006,7 +1003,7 @@ public abstract class AbstractCallbackAnalyzer {
 	 *                       fragment belongs
 	 * @param fragmentClass  The fragment class
 	 */
-	protected synchronized void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
+	protected void checkAndAddFragment(SootClass componentClass, SootClass fragmentClass) {
 		this.fragmentClasses.put(componentClass, fragmentClass);
 		this.fragmentClassesRev.put(fragmentClass, componentClass);
 	}

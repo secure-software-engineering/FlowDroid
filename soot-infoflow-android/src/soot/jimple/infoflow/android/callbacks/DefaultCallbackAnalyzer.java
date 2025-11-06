@@ -90,6 +90,7 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 
 				// Do we have to start from scratch or do we have a worklist to
 				// process?
+
 				if (callbackWorklist == null) {
 					logger.info("Collecting callbacks in DEFAULT mode...");
 					callbackWorklist = new HashMultiMap<>();
@@ -298,12 +299,13 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 	private void findClassLayoutMappings() {
 		if (rmIterator == null)
 			rmIterator = Scene.v().getReachableMethods().listener();
+		final SystemClassHandler handler = SystemClassHandler.v();
 		while (rmIterator.hasNext()) {
 			SootMethod sm = rmIterator.next().method();
 
 			if (!sm.isConcrete())
 				continue;
-			if (SystemClassHandler.v().isClassInSystemPackage(sm.getDeclaringClass()))
+			if (handler.isClassInSystemPackage(sm.getDeclaringClass()))
 				continue;
 			for (Unit u : sm.retrieveActiveBody().getUnits()) {
 				if (u instanceof Stmt) {
