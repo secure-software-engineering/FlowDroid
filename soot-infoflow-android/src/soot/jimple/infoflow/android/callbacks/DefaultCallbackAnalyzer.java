@@ -212,16 +212,6 @@ public class DefaultCallbackAnalyzer extends AbstractCallbackAnalyzer implements
 		PackManager.v().getPack("wjtp").add(transform);
 	}
 
-	@Override
-	protected boolean filterAccepts(SootClass lifecycleElement, SootClass targetClass) {
-		return super.filterAccepts(lifecycleElement, targetClass);
-	}
-
-	@Override
-	protected boolean filterAccepts(SootClass lifecycleElement, SootMethod targetMethod) {
-		return super.filterAccepts(lifecycleElement, targetMethod);
-	}
-
 	protected void analyzeReachableMethods(ReusableExecutor executionService, SootClass lifecycleElement,
 			List<MethodOrMethodContext> methods) {
 		// Make sure to exclude all other edges in the callgraph except for the
