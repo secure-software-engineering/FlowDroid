@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,30 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	/**
+	 * It takes quite a while to create a new XML Input Factory 
+	 */
+	private static class CachedFactory {
+		WeakReference<Thread> thread;
+		XMLInputFactory factory;
+
+		public CachedFactory() {
+
+			XMLInputFactory factory = XMLInputFactory.newInstance();
+			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+			this.factory = factory;
+			this.thread = new WeakReference<Thread>(Thread.currentThread());
+		}
+
+		public boolean isValidForThisThread() {
+			Thread thr = thread.get();
+			return Thread.currentThread() == thr;
+		}
+	}
+
+	private CachedFactory cachedFactory;
+
+	/**
 	 * Reads a summary xml and places the new summaries into the given data object.
 	 * This method closes the reader.
 	 *
@@ -68,10 +93,13 @@ public class SummaryReader extends AbstractXMLReader {
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			XMLInputFactory factory = XMLInputFactory.newInstance();
-			factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-			factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-			xmlreader = factory.createXMLStreamReader(reader);
+			//Sadly, the XML Input Factory is not thread safe :/
+			CachedFactory cachedFact = cachedFactory;
+			if (cachedFact == null || !cachedFact.isValidForThisThread()) {
+				cachedFact = new CachedFactory();
+				this.cachedFactory = cachedFact;
+			}
+			xmlreader = cachedFact.factory.createXMLStreamReader(reader);
 			final MethodSummaries summary = summaries.getMethodSummaries();
 
 			Map<String, String> sourceAttributes = new HashMap<String, String>();
