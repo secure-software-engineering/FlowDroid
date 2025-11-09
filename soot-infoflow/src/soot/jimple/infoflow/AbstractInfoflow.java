@@ -1339,6 +1339,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 */
 	protected void reconstructPaths(IAbstractionPathBuilder builder, InterruptableExecutor executor,
 			Set<AbstractionAtSink> ifdsResults) {
+		if (ifdsResults.isEmpty())
+			return;
+
 		FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
 
 		try {
