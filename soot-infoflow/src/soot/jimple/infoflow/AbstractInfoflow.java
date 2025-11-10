@@ -1257,6 +1257,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				performanceData.updateMaxMemoryConsumption(getUsedMemory());
 				logger.info(String.format("Memory consumption after cleanup: %d MB", getUsedMemory()));
 
+				beforePathReconstruction = System.nanoTime();
 				// Reconstruct the paths from source to sink
 				reconstructPaths(builder, resultExecutor, res);
 			} finally {
@@ -1339,6 +1340,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 */
 	protected void reconstructPaths(IAbstractionPathBuilder builder, InterruptableExecutor executor,
 			Set<AbstractionAtSink> ifdsResults) {
+		if (ifdsResults.isEmpty())
+			return;
+
 		FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
 
 		try {
