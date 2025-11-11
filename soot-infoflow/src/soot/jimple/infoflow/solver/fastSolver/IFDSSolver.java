@@ -40,7 +40,6 @@ import heros.ZeroedFlowFunctions;
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.SootMethod;
-import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.memory.IMemoryBoundedSolver;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
@@ -514,13 +513,13 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// conditionally generated values should only be propagated into callers that
 		// have an incoming edge for this condition
 		if (followReturnsPastSeeds && d1 == zeroValue && (inc == null || inc.isEmpty())) {
+			final Set<D> zeroValueSingleton = Collections.singleton(zeroValue);
 			Collection<N> callers = icfg.getCallersOf(methodThatNeedsSummary);
 			for (N c : callers) {
 				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
 					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
 							retSiteC);
-					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c,
-							Collections.singleton(zeroValue));
+					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, zeroValueSingleton);
 					if (targets != null && !targets.isEmpty()) {
 						for (D d5 : targets) {
 							if (memoryManager != null)
