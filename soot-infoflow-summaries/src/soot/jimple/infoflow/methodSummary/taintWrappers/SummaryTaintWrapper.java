@@ -235,7 +235,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			for (AccessPathPropagator propagator : propagators) {
 				// Propagate these taints up. We leave the current gap
 				AccessPathPropagator parent = safePopParent(propagator);
-				GapDefinition parentGap = propagator.getParent() == null ? null : propagator.getParent().getGap();
+				final AccessPathPropagator pparent = propagator.getParent();
+				GapDefinition parentGap = pparent == null ? null : pparent.getGap();
 
 				// Create taints from the abstractions
 				Set<Taint> returnTaints = createTaintFromAccessPathOnReturn(d2.getAccessPath(), (Stmt) u,
@@ -250,10 +251,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 				// Create the new propagator, one for every taint
 				Set<AccessPathPropagator> workSet = new HashSet<>();
 				for (Taint returnTaint : returnTaints) {
-					AccessPathPropagator newPropagator = new AccessPathPropagator(returnTaint, parentGap, parent,
-							propagator.getParent() == null ? null : propagator.getParent().getStmt(),
-							propagator.getParent() == null ? null : propagator.getParent().getD1(),
-							propagator.getParent() == null ? null : propagator.getParent().getD2());
+					Stmt stmt = null;
+					Abstraction d1 = null;
+					Abstraction nd2 = null;
+					if (pparent != null) {
+						stmt = pparent.getStmt();
+						d1 = pparent.getD1();
+						nd2 = pparent.getD2();
+					}
+					AccessPathPropagator newPropagator = new AccessPathPropagator(returnTaint, parentGap, parent, stmt,
+							d1, nd2);
 					workSet.add(newPropagator);
 				}
 
@@ -335,9 +342,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			// Get the original call site
 			AccessPathPropagator curProp = propagator;
 			while (curProp != null) {
-				if (curProp.getParent() == null)
+				final AccessPathPropagator parent = curProp.getParent();
+				if (parent == null)
 					return curProp;
-				curProp = curProp.getParent();
+				curProp = parent;
 			}
 			return null;
 		}
@@ -1105,7 +1113,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 		// We need to pop the last gap element off the stack
 		AccessPathPropagator parent = safePopParent(propagator);
-		GapDefinition gap = propagator.getParent() == null ? null : propagator.getParent().getGap();
+		AccessPathPropagator pparent = propagator.getParent();
+		GapDefinition gap = pparent == null ? null : pparent.getGap();
 
 		// We might already have a summary for the callee
 		Set<AccessPathPropagator> outgoingTaints = null;
@@ -1122,10 +1131,16 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 							propagator.getGap());
 					if (newTaints != null) {
 						for (Taint newTaint : newTaints) {
-							AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent,
-									propagator.getParent() == null ? null : propagator.getParent().getStmt(),
-									propagator.getParent() == null ? null : propagator.getParent().getD1(),
-									propagator.getParent() == null ? null : propagator.getParent().getD2());
+							Stmt nstmt = null;
+							Abstraction d1 = null;
+							Abstraction d2 = null;
+							if (pparent != null) {
+								nstmt = pparent.getStmt();
+								d1 = pparent.getD1();
+								d2 = pparent.getD2();
+							}
+							AccessPathPropagator newPropagator = new AccessPathPropagator(newTaint, gap, parent, nstmt,
+									d1, d2);
 							outgoingTaints.add(newPropagator);
 						}
 					}
@@ -1147,9 +1162,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	}
 
 	protected AccessPathPropagator safePopParent(AccessPathPropagator curPropagator) {
-		if (curPropagator.getParent() == null)
+		AccessPathPropagator parent = curPropagator.getParent();
+		if (parent == null)
 			return null;
-		return curPropagator.getParent().getParent();
+		return parent.getParent();
 	}
 
 	/**
@@ -1382,10 +1398,18 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			taintGap = null;
 		} else {
 			parent = safePopParent(propagator);
-			gap = propagator.getParent() == null ? null : propagator.getParent().getGap();
-			stmt = propagator.getParent() == null ? propagator.getStmt() : propagator.getParent().getStmt();
-			d1 = propagator.getParent() == null ? propagator.getD1() : propagator.getParent().getD1();
-			d2 = propagator.getParent() == null ? propagator.getD2() : propagator.getParent().getD2();
+			AccessPathPropagator pparent = propagator.getParent();
+			if (pparent == null) {
+				gap = null;
+				stmt = null;
+				d1 = null;
+				d2 = null;
+			} else {
+				gap = pparent.getGap();
+				stmt = pparent.getStmt();
+				d1 = pparent.getD1();
+				d2 = pparent.getD2();
+			}
 			taintGap = propagator.getGap();
 		}
 
