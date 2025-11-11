@@ -3,6 +3,7 @@ package soot.jimple.infoflow.methodSummary.taintWrappers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -25,17 +27,29 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 
+/**
+ * Reports missing summaries by writing the results to a XML file.
+ */
 public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 
 	public ReportMissingSummaryWrapper(IMethodSummaryProvider flows) {
 		super(flows);
 	}
 
-	ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<SootMethod, AtomicInteger> methodSummariesMissing = new ConcurrentHashMap<>();
+	private boolean prettyPrint = false;
+	private boolean showAppClasses = false;
+	private boolean countMethods = false;
 
 	@Override
 	protected void reportMissingMethod(SootMethod method) {
-		count(method.getDeclaringClass(), classSummariesMissing);
+		SootClass decl = method.getDeclaringClass();
+		if (!showAppClasses && decl.isApplicationClass())
+			return;
+		count(decl, classSummariesMissing);
+		if (countMethods)
+			count(method, methodSummariesMissing);
 	}
 
 	private static <T> void count(T item, Map<T, AtomicInteger> map) {
@@ -47,6 +61,58 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		}
 
 		ai.incrementAndGet();
+	}
+
+	/**
+	 * Sets the pretty printing flag. When enabled, pretty printing
+	 * creates new lines for each XML node, and uses indentation for the XML tree
+	 * @param prettyPrint whether pretty printing should be enabled
+	 */
+	public void setPrettyPrinting(boolean prettyPrint) {
+		this.prettyPrint = prettyPrint;
+	}
+
+	/**
+	 * Pretty printing creates new lines for each XML node, and uses indentation for the XML tree
+	 * @return returns true if enabled, otherwise false
+	 */
+	public boolean isPrettyPrinting() {
+		return prettyPrint;
+	}
+
+	/**
+	 * When the given parameter is true, the class also reports application classes,
+	 * i.e. classes that are part of the application being analyzed.
+	 * @param showAppClasses whether app classes should be shown
+	 */
+	public void setShowApplicationClasses(boolean showAppClasses) {
+		this.showAppClasses = showAppClasses;
+	}
+
+	/**
+	 * Returns whether this class also reports application classes,
+	 * i.e. classes that are part of the application being analyzed
+	 * @return returns true if enabled, otherwise false
+	 */
+	public boolean isShowingApplicationClasses() {
+		return showAppClasses;
+	}
+
+	/**
+	 * If the given parameter is true, this class will report counts
+	 * on a per class and per method basis.
+	 * @param countMethods whether to count methods
+	 */
+	public void setCountMethods(boolean countMethods) {
+		this.countMethods = countMethods;
+	}
+
+	/**
+	 * Returns whether counting methods is enabled
+	 * @return returns true if enabled, otherwise false
+	 */
+	public boolean isCountMethods() {
+		return countMethods;
 	}
 
 	public void writeResults(File file) throws IOException, ParserConfigurationException, TransformerException {
@@ -65,12 +131,34 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 			Element clazz = doc.createElement("Class");
 			clazz.setAttribute("Name", i.getKey().getName());
 			clazz.setAttribute("Count", String.valueOf(i.getValue()));
+			if (countMethods) {
+				SootClass c = i.getKey();
+				Map<SootMethod, AtomicInteger> methods = new HashMap<>(c.getMethods().size());
+				for (SootMethod m : c.getMethods()) {
+					AtomicInteger v = methodSummariesMissing.get(m);
+					if (v != null) {
+						methods.put(m, v);
+					}
+				}
+				sortMap(methods);
+				for (Entry<SootMethod, AtomicInteger> m : methods.entrySet()) {
+					Element method = doc.createElement("Method");
+					method.setAttribute("Name", m.getKey().getSubSignature());
+					method.setAttribute("Count", String.valueOf(m.getValue()));
+					clazz.appendChild(method);
+				}
+			}
 			classes.appendChild(clazz);
 		}
 		rootElement.appendChild(classes);
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
+
+		if (prettyPrint) {
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+		}
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(file);
 
