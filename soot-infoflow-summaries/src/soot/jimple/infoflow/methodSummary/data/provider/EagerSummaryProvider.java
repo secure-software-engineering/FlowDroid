@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
 
 /**
@@ -14,6 +15,16 @@ import soot.jimple.infoflow.methodSummary.xml.SummaryReader;
  *
  */
 public class EagerSummaryProvider extends XMLSummaryProvider {
+
+	/**
+	 * Loads a summary from within the StubDroid jar file.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public EagerSummaryProvider() throws URISyntaxException, IOException {
+		this(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);
+	}
 
 	/**
 	 * Loads a summary from a folder within the StubDroid jar file.

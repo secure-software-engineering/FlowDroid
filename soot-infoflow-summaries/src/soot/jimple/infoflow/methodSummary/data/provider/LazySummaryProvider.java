@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import soot.jimple.infoflow.collect.ConcurrentHashSet;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
+import soot.jimple.infoflow.methodSummary.taintWrappers.TaintWrapperFactory;
 
 /**
  * This class loads method summary xml files on demand.
@@ -26,6 +27,16 @@ public class LazySummaryProvider extends XMLSummaryProvider {
 	protected Set<File> files = new HashSet<>();
 	protected Set<Path> pathes = new HashSet<>();
 	protected Set<String> loadableClasses = new ConcurrentHashSet<>();
+
+	/**
+	 * Loads a summary from within the StubDroid jar file.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public LazySummaryProvider() throws URISyntaxException, IOException {
+		this(TaintWrapperFactory.DEFAULT_SUMMARY_DIR);
+	}
 
 	/**
 	 * Loads a summary from a folder within the StubDroid jar file.

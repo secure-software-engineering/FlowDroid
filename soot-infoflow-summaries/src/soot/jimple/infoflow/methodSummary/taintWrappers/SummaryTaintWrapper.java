@@ -1,5 +1,7 @@
 package soot.jimple.infoflow.methodSummary.taintWrappers;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +62,7 @@ import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.ContainerContext;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
+import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
@@ -360,6 +363,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	public SummaryTaintWrapper(IMethodSummaryProvider flows) {
 		this.flows = flows;
 		setContainerStrategyFactory(new DefaultConfigContainerStrategyFactory());
+	}
+
+	/**
+	 * Creates a new instance of the {@link SummaryTaintWrapper} class.
+	 * Uses summaries present within the StubDroid JAR file. 
+	 */
+	public SummaryTaintWrapper() throws URISyntaxException, IOException {
+		this(new EagerSummaryProvider());
 	}
 
 	/**
