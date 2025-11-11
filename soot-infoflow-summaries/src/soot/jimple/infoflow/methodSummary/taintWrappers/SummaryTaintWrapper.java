@@ -1412,9 +1412,9 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			AccessPathPropagator pparent = propagator.getParent();
 			if (pparent == null) {
 				gap = null;
-				stmt = null;
-				d1 = null;
-				d2 = null;
+				stmt = propagator.getStmt();
+				d1 = propagator.getD1();
+				d2 = propagator.getD2();
 			} else {
 				gap = pparent.getGap();
 				stmt = pparent.getStmt();
