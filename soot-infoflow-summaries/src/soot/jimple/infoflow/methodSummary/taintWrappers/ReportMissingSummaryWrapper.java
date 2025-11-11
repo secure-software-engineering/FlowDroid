@@ -27,6 +27,9 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 
+/**
+ * Reports missing summaries by writing the results to a XML file.
+ */
 public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 
 	public ReportMissingSummaryWrapper(IMethodSummaryProvider flows) {
@@ -60,28 +63,56 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		ai.incrementAndGet();
 	}
 
+	/**
+	 * Sets the pretty printing flag. When enabled, pretty printing
+	 * creates new lines for each XML node, and uses indentation for the XML tree
+	 * @param prettyPrint whether pretty printing should be enabled
+	 */
 	public void setPrettyPrinting(boolean prettyPrint) {
 		this.prettyPrint = prettyPrint;
 	}
 
+	/**
+	 * Pretty printing creates new lines for each XML node, and uses indentation for the XML tree
+	 * @return returns true if enabled, otherwise false
+	 */
 	public boolean isPrettyPrinting() {
 		return prettyPrint;
 	}
 
+	/**
+	 * When the given parameter is true, the class also reports application classes,
+	 * i.e. classes that are part of the application being analyzed.
+	 * @param showAppClasses whether app classes should be shown
+	 */
 	public void setShowApplicationClasses(boolean showAppClasses) {
 		this.showAppClasses = showAppClasses;
 	}
 
+	/**
+	 * Returns whether this class also reports application classes,
+	 * i.e. classes that are part of the application being analyzed
+	 * @return returns true if enabled, otherwise false
+	 */
 	public boolean isShowingApplicationClasses() {
 		return showAppClasses;
 	}
 
-	public boolean isCountMethods() {
-		return countMethods;
-	}
-
+	/**
+	 * If the given parameter is true, this class will report counts
+	 * on a per class and per method basis.
+	 * @param countMethods whether to count methods
+	 */
 	public void setCountMethods(boolean countMethods) {
 		this.countMethods = countMethods;
+	}
+
+	/**
+	 * Returns whether counting methods is enabled
+	 * @return returns true if enabled, otherwise false
+	 */
+	public boolean isCountMethods() {
+		return countMethods;
 	}
 
 	public void writeResults(File file) throws IOException, ParserConfigurationException, TransformerException {
