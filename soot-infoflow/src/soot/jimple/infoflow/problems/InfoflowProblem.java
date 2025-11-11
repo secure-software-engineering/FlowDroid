@@ -719,10 +719,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								}
 							}
 						}
-						SootMethod methodsOfCallsite;
 						Iterator<Abstraction> rit = res.iterator();
 						if (rit.hasNext()) {
-							methodsOfCallsite = interproceduralCFG().getMethodOf(callSite);
+							SootMethod methodOfCallsite = interproceduralCFG().getMethodOf(callSite);
 
 							while (rit.hasNext()) {
 								final Abstraction abs = rit.next();
@@ -734,7 +733,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										|| aliasing.getAliasingStrategy().requiresAnalysisOnReturn()) {
 									for (Abstraction d1 : callerD1s) {
 
-										aliasing.computeAliases(d1, iCallStmt, null, res, methodsOfCallsite, abs);
+										aliasing.computeAliases(d1, iCallStmt, null, res, methodOfCallsite, abs);
 									}
 								}
 
