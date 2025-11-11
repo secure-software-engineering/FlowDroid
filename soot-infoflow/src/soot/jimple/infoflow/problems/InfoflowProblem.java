@@ -13,6 +13,7 @@ package soot.jimple.infoflow.problems;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import heros.FlowFunction;
@@ -49,6 +50,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
+import soot.jimple.infoflow.aliasing.IAliasingStrategy;
 import soot.jimple.infoflow.callmappers.CallerCalleeManager;
 import soot.jimple.infoflow.callmappers.ICallerCalleeArgumentMapper;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
@@ -130,8 +132,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 				if (!source.getAccessPath().isEmpty()) {
 					// Special handling for array construction
 					if (leftValue instanceof ArrayRef && targetType != null) {
-						ArrayRef arrayRef = (ArrayRef) leftValue;
-						targetType = TypeUtils.buildArrayOrAddDimension(targetType, arrayRef.getType().getArrayType());
+						targetType = TypeUtils.buildArrayOrAddDimension(targetType, leftValue.getType().getArrayType());
 					}
 
 					// If this is an unrealizable typecast, drop the abstraction
@@ -310,10 +311,11 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						// y = x && x.f tainted --> y.f, x.f tainted
 						// y.g = x && x.f tainted --> y.g.f, x.f tainted
 						else if (rightVal instanceof Local && newSource.getAccessPath().isInstanceFieldRef()) {
-							Local base = newSource.getAccessPath().getPlainValue();
+							AccessPath ap = newSource.getAccessPath();
+							Local base = ap.getPlainValue();
 							if (aliasing.mayAlias(rightVal, base)) {
 								addLeftValue = true;
-								targetType = newSource.getAccessPath().getBaseType();
+								targetType = ap.getBaseType();
 							}
 						}
 						// generic case, is true for Locals, ArrayRefs that are
@@ -432,8 +434,9 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					public Set<Abstraction> computeTargets(Abstraction d1, Abstraction source) {
 						Set<Abstraction> res = computeTargetsInternal(d1, source);
 						if (res != null && !res.isEmpty() && d1 != null) {
+							final IAliasingStrategy strategy = aliasing.getAliasingStrategy();
 							for (Abstraction abs : res)
-								aliasing.getAliasingStrategy().injectCallingContext(abs, solver, dest, src, source, d1);
+								strategy.injectCallingContext(abs, solver, dest, src, source, d1);
 						}
 						return notifyOutFlowHandlers(stmt, d1, source, res, FlowFunctionType.CallFlowFunction);
 					}
@@ -567,13 +570,13 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (callSite == null)
 							return null;
 
+						final AccessPath newSourceAP = newSource.getAccessPath();
 						// Do we need to retain all the taints?
-						if (aliasing.getAliasingStrategy().isLazyAnalysis()
-								&& Aliasing.canHaveAliases(newSource.getAccessPath()))
+						if (aliasing.getAliasingStrategy().isLazyAnalysis() && Aliasing.canHaveAliases(newSourceAP))
 							res.add(newSource);
 
 						// Static fields are handled in a rule
-						if (!newSource.getAccessPath().isStaticFieldRef() && !callee.isStaticInitializer()) {
+						if (!newSourceAP.isStaticFieldRef() && !callee.isStaticInitializer()) {
 							// if we have a returnStmt we have to look at the
 							// returned value:
 							if (returnStmt != null && callSite instanceof DefinitionStmt) {
@@ -581,10 +584,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 								Value leftOp = defnStmt.getLeftOp();
 
-								if (aliasing.mayAlias(retLocal, newSource.getAccessPath().getPlainValue())
+								if (aliasing.mayAlias(retLocal, newSourceAP.getPlainValue())
 										&& !isExceptionHandler(retSite)) {
-									AccessPath ap = manager.getAccessPathFactory()
-											.copyWithNewValue(newSource.getAccessPath(), leftOp);
+									AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(newSourceAP,
+											leftOp);
 									Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 									if (abs != null) {
 										res.add(abs);
@@ -600,7 +603,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 							}
 
 							// Check parameters
-							Value sourceBase = newSource.getAccessPath().getPlainValue();
+							Value sourceBase = newSourceAP.getPlainValue();
 							boolean parameterAliases = false;
 							{
 								Value originalCallArg = null;
@@ -660,17 +663,16 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 										if (interproceduralCFG().methodWritesValue(callee, paramLocals[i]))
 											continue;
 
-										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
-												newSource.getAccessPath(), originalCallArg,
-												isReflectiveCallSite ? null : newSource.getAccessPath().getBaseType(),
-												false);
+										AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(newSourceAP,
+												originalCallArg,
+												isReflectiveCallSite ? null : newSourceAP.getBaseType(), false);
 										Abstraction abs = newSource.deriveNewAbstraction(ap, (Stmt) exitStmt);
 
 										if (abs != null) {
 											res.add(abs);
+											final Aliasing aliasing = manager.getAliasing();
 											for (Abstraction callerD1 : callerD1s)
-												manager.getAliasing().computeAliases(callerD1, iCallStmt,
-														originalCallArg, res,
+												aliasing.computeAliases(callerD1, iCallStmt, originalCallArg, res,
 														interproceduralCFG().getMethodOf(callSite), abs);
 										}
 									}
@@ -717,22 +719,29 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 								}
 							}
 						}
+						SootMethod methodsOfCallsite;
+						Iterator<Abstraction> rit = res.iterator();
+						if (rit.hasNext()) {
+							methodsOfCallsite = interproceduralCFG().getMethodOf(callSite);
 
-						for (Abstraction abs : res) {
-							// Aliases of implicitly tainted variables must be
-							// mapped back into the caller's context on return
-							// when we leave the last implicitly-called method
-							if ((abs.isImplicit() && !callerD1sConditional)
-									|| aliasing.getAliasingStrategy().requiresAnalysisOnReturn()) {
-								for (Abstraction d1 : callerD1s) {
-									aliasing.computeAliases(d1, iCallStmt, null, res,
-											interproceduralCFG().getMethodOf(callSite), abs);
+							while (rit.hasNext()) {
+								final Abstraction abs = rit.next();
+
+								// Aliases of implicitly tainted variables must be
+								// mapped back into the caller's context on return
+								// when we leave the last implicitly-called method
+								if ((abs.isImplicit() && !callerD1sConditional)
+										|| aliasing.getAliasingStrategy().requiresAnalysisOnReturn()) {
+									for (Abstraction d1 : callerD1s) {
+
+										aliasing.computeAliases(d1, iCallStmt, null, res, methodsOfCallsite, abs);
+									}
 								}
-							}
 
-							// Set the corresponding call site
-							if (abs != newSource) {
-								abs.setCorrespondingCallSite(iCallStmt);
+								// Set the corresponding call site
+								if (abs != newSource) {
+									abs.setCorrespondingCallSite(iCallStmt);
+								}
 							}
 						}
 						return res;
