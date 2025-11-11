@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -31,11 +32,16 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		super(flows);
 	}
 
-	ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
+	private boolean prettyPrint = false;
+	private boolean showAppClasses = false;
 
 	@Override
 	protected void reportMissingMethod(SootMethod method) {
-		count(method.getDeclaringClass(), classSummariesMissing);
+		SootClass decl = method.getDeclaringClass();
+		if (!showAppClasses && decl.isApplicationClass())
+			return;
+		count(decl, classSummariesMissing);
 	}
 
 	private static <T> void count(T item, Map<T, AtomicInteger> map) {
@@ -47,6 +53,22 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		}
 
 		ai.incrementAndGet();
+	}
+
+	public void setPrettyPrinting(boolean prettyPrint) {
+		this.prettyPrint = prettyPrint;
+	}
+
+	public boolean isPrettyPrinting() {
+		return prettyPrint;
+	}
+
+	public void setShowApplicationClasses(boolean showAppClasses) {
+		this.showAppClasses = showAppClasses;
+	}
+
+	public boolean isShowingApplicationClasses() {
+		return showAppClasses;
 	}
 
 	public void writeResults(File file) throws IOException, ParserConfigurationException, TransformerException {
@@ -71,6 +93,11 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
+
+		if (prettyPrint) {
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+		}
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(file);
 
