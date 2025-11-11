@@ -3,6 +3,7 @@ package soot.jimple.infoflow.methodSummary.taintWrappers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -33,8 +34,10 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 	}
 
 	private ConcurrentHashMap<SootClass, AtomicInteger> classSummariesMissing = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<SootMethod, AtomicInteger> methodSummariesMissing = new ConcurrentHashMap<>();
 	private boolean prettyPrint = false;
 	private boolean showAppClasses = false;
+	private boolean countMethods = false;
 
 	@Override
 	protected void reportMissingMethod(SootMethod method) {
@@ -42,6 +45,8 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		if (!showAppClasses && decl.isApplicationClass())
 			return;
 		count(decl, classSummariesMissing);
+		if (countMethods)
+			count(method, methodSummariesMissing);
 	}
 
 	private static <T> void count(T item, Map<T, AtomicInteger> map) {
@@ -71,6 +76,14 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 		return showAppClasses;
 	}
 
+	public boolean isCountMethods() {
+		return countMethods;
+	}
+
+	public void setCountMethods(boolean countMethods) {
+		this.countMethods = countMethods;
+	}
+
 	public void writeResults(File file) throws IOException, ParserConfigurationException, TransformerException {
 		Map<SootClass, Integer> sortedClassSummariesMissing = sortMap(classSummariesMissing);
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -87,6 +100,23 @@ public class ReportMissingSummaryWrapper extends SummaryTaintWrapper {
 			Element clazz = doc.createElement("Class");
 			clazz.setAttribute("Name", i.getKey().getName());
 			clazz.setAttribute("Count", String.valueOf(i.getValue()));
+			if (countMethods) {
+				SootClass c = i.getKey();
+				Map<SootMethod, AtomicInteger> methods = new HashMap<>(c.getMethods().size());
+				for (SootMethod m : c.getMethods()) {
+					AtomicInteger v = methodSummariesMissing.get(m);
+					if (v != null) {
+						methods.put(m, v);
+					}
+				}
+				sortMap(methods);
+				for (Entry<SootMethod, AtomicInteger> m : methods.entrySet()) {
+					Element method = doc.createElement("Method");
+					method.setAttribute("Name", m.getKey().getSubSignature());
+					method.setAttribute("Count", String.valueOf(m.getValue()));
+					clazz.appendChild(method);
+				}
+			}
 			classes.appendChild(clazz);
 		}
 		rootElement.appendChild(classes);
