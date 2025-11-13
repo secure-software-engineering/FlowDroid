@@ -96,14 +96,14 @@ public class AndroidEntryPointUtils {
 
 		// Check the type of this class
 		ComponentType ctype = ComponentType.Plain;
-		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		FastHierarchy fh = getFastHierarchy();
 
 		if (fh != null) {
 			// We first look for the specialized types
 
 			// (a1) android.app.Fragment
-			if (osClassFragment != null && Scene.v().getOrMakeFastHierarchy().canStoreType(currentClass.getType(),
-					osClassFragment.getType()))
+			if (osClassFragment != null
+					&& getFastHierarchy().canStoreType(currentClass.getType(), osClassFragment.getType()))
 				ctype = ComponentType.Fragment;
 			else if (osClassSupportFragment != null
 					&& fh.canStoreType(currentClass.getType(), osClassSupportFragment.getType()))
@@ -168,7 +168,7 @@ public class AndroidEntryPointUtils {
 	 */
 	public boolean isApplicationClass(SootClass clazz) {
 		return osClassApplication != null
-				&& Scene.v().getOrMakeFastHierarchy().canStoreType(clazz.getType(), osClassApplication.getType());
+				&& getFastHierarchy().canStoreType(clazz.getType(), osClassApplication.getType());
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class AndroidEntryPointUtils {
 	 */
 	public boolean isComponentFactoryClass(SootClass clazz) {
 		return osClassComponentFactory != null
-				&& Scene.v().getOrMakeFastHierarchy().canStoreType(clazz.getType(), osClassComponentFactory.getType());
+				&& getFastHierarchy().canStoreType(clazz.getType(), osClassComponentFactory.getType());
 	}
 
 	/**
@@ -291,7 +291,7 @@ public class AndroidEntryPointUtils {
 		SootMethodRepresentationParser parser = SootMethodRepresentationParser.v();
 
 		Scene scene = Scene.v();
-		FastHierarchy fh = Scene.v().getOrMakeFastHierarchy();
+		FastHierarchy fh = scene.getOrMakeFastHierarchy();
 		nextMethod: for (String sig : methods) {
 			SootClass currentClass = sc;
 			String name = parser.getMethodNameFromSubSignature(sig);
@@ -326,6 +326,14 @@ public class AndroidEntryPointUtils {
 			}
 		}
 		return lifecycleMethods;
+	}
+
+	/**
+	 * Returns the used fast hierarchy
+	 * @return the used fast hierarchy
+	 */
+	protected FastHierarchy getFastHierarchy() {
+		return Scene.v().getOrMakeFastHierarchy();
 	}
 
 	/**
