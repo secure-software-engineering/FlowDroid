@@ -29,9 +29,13 @@ public abstract class AbstractAndroidEntryPointCreator extends BaseEntryPointCre
 	@Override
 	public SootMethod createDummyMain() {
 		// Initialize the utility class
-		this.entryPointUtils = new AndroidEntryPointUtils();
+		this.entryPointUtils = createEntryPointUtils();
 
 		return super.createDummyMain();
+	}
+
+	protected AndroidEntryPointUtils createEntryPointUtils() {
+		return new AndroidEntryPointUtils();
 	}
 
 	protected Stmt searchAndBuildMethod(String subsignature, Local classLocal) {
