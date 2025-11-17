@@ -6,9 +6,7 @@ import soot.SootMethod;
 import soot.jimple.CastExpr;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -19,10 +17,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  *
  */
 public class TypingPropagationRule extends AbstractTaintPropagationRule {
-
-	public TypingPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -58,8 +52,8 @@ public class TypingPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

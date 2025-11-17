@@ -7,16 +7,11 @@ import java.util.Set;
 import soot.SootMethod;
 import soot.ValueBox;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
-import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
@@ -28,10 +23,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  *
  */
 public class SourcePropagationRule extends AbstractTaintPropagationRule {
-
-	public SourcePropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	private Collection<Abstraction> propagate(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
@@ -49,8 +40,8 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 				Set<Abstraction> res = new HashSet<>();
 				for (AccessPath ap : sourceInfo.getAccessPaths()) {
 					// Create the new taint abstraction
-					Abstraction abs = new Abstraction(sourceInfo.getDefinitionsForAccessPath(ap), ap, stmt, sourceInfo.getUserData(),
-							false, false);
+					Abstraction abs = new Abstraction(sourceInfo.getDefinitionsForAccessPath(ap), ap, stmt,
+							sourceInfo.getUserData(), false, false);
 					res.add(abs);
 
 					// Compute the aliases. This is only relevant for variables that are not
@@ -93,8 +84,8 @@ public class SourcePropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

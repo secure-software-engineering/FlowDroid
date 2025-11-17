@@ -8,10 +8,8 @@ import soot.jimple.CaughtExceptionRef;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -22,10 +20,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  *
  */
 public class ExceptionPropagationRule extends AbstractTaintPropagationRule {
-
-	public ExceptionPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -65,8 +59,8 @@ public class ExceptionPropagationRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		// If we throw an exception with a tainted operand, we need to
 		// handle this specially
 		if (stmt instanceof ThrowStmt && retSite instanceof DefinitionStmt) {

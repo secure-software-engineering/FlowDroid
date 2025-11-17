@@ -15,7 +15,6 @@ import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.typing.TypeUtils;
@@ -28,10 +27,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  *
  */
 public class WrapperPropagationRule extends AbstractTaintPropagationRule {
-
-	public WrapperPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
