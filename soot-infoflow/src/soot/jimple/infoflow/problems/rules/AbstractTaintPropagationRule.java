@@ -13,12 +13,12 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
  */
 public abstract class AbstractTaintPropagationRule implements ITaintPropagationRule {
 
-	protected final InfoflowManager manager;
-	protected final Abstraction zeroValue;
-	protected final TaintPropagationResults results;
+	protected InfoflowManager manager;
+	protected Abstraction zeroValue;
+	protected TaintPropagationResults results;
 
-	public AbstractTaintPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
+	@Override
+	public void init(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
 		this.manager = manager;
 		this.zeroValue = zeroValue;
 		this.results = results;

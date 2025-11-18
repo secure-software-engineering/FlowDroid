@@ -4,17 +4,30 @@ import java.util.Collection;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
- * Common interface for taint propagation rules
+ * Common interface for taint propagation rules.
+ * Note that instances of this class are stateful due to the {@link #init() init} method. 
+ * The implementing class should have a public non-argument constructor.
  * 
  * @author Steven Arzt
  *
  */
 public interface ITaintPropagationRule {
-	
+
+	/**
+	 * Initializes the class. Usual implementations of this class save the
+	 * parameters of the class.
+	 * @param manager the infoflow manager
+	 * @param zeroValue the zero value abstraction
+	 * @param results where results should be saved
+	 */
+	public void init(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results);
+
 	/**
 	 * Propagates a flow along a normal statement this is not a call or return
 	 * site
@@ -29,10 +42,8 @@ public interface ITaintPropagationRule {
 	 * killed and nothing shall be propagated onwards
 	 * @return The new abstractions to be propagated to the next statement
 	 */
-	public Collection<Abstraction> propagateNormalFlow(Abstraction d1,
-			Abstraction source, Stmt stmt, Stmt destStmt,
-			ByReferenceBoolean killSource,
-			ByReferenceBoolean killAll);
+	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
+			ByReferenceBoolean killSource, ByReferenceBoolean killAll);
 
 	/**
 	 * Propagates a flow across a call site
@@ -44,10 +55,9 @@ public interface ITaintPropagationRule {
 	 * all taints shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
-	public Collection<Abstraction> propagateCallFlow(Abstraction d1,
-			Abstraction source, Stmt stmt, SootMethod dest,
+	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
 			ByReferenceBoolean killAll);
-	
+
 	/**
 	 * Propagates a flow along a the call-to-return edge at a call site
 	 * @param d1 The context abstraction
@@ -59,10 +69,9 @@ public interface ITaintPropagationRule {
 	 * all taints shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
-	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1,
-			Abstraction source, Stmt stmt, ByReferenceBoolean killSource,
-			ByReferenceBoolean killAll);
-	
+	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
+			ByReferenceBoolean killSource, ByReferenceBoolean killAll);
+
 	/**
 	 * Propagates a flow along a the return edge
 	 * @param callerD1s The context abstraction at the caller side
@@ -76,9 +85,7 @@ public interface ITaintPropagationRule {
 	 * all taints shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
-	public Collection<Abstraction> propagateReturnFlow(
-			Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source,
-			Stmt stmt, Stmt retSite, Stmt callSite,
-			ByReferenceBoolean killAll);
-	
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll);
+
 }

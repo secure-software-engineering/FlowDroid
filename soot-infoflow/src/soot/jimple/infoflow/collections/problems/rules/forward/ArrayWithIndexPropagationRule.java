@@ -13,7 +13,6 @@ import soot.jimple.AssignStmt;
 import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.collections.ICollectionsSupport;
 import soot.jimple.infoflow.collections.strategies.containers.IContainerStrategy;
@@ -21,16 +20,11 @@ import soot.jimple.infoflow.collections.util.Tristate;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.ContainerContext;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.IArrayContextProvider;
 import soot.jimple.infoflow.problems.rules.forward.ArrayPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 public class ArrayWithIndexPropagationRule extends ArrayPropagationRule implements IArrayContextProvider {
-	public ArrayWithIndexPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,

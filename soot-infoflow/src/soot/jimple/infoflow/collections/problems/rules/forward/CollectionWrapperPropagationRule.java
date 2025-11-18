@@ -9,13 +9,11 @@ import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration.StaticFieldTrackingMode;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.collections.ICollectionsSupport;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.forward.WrapperPropagationRule;
 import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
@@ -26,11 +24,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Tim Lange
  */
 public class CollectionWrapperPropagationRule extends WrapperPropagationRule {
-
-	public CollectionWrapperPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	/**
 	 * Computes the taints produced by a taint wrapper object

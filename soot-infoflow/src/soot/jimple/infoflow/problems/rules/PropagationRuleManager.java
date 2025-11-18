@@ -1,7 +1,9 @@
 package soot.jimple.infoflow.problems.rules;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import soot.SootMethod;
@@ -34,14 +36,75 @@ public class PropagationRuleManager {
 
 		if (rules != null) {
 			for (ITaintPropagationRule rule : rules) {
+				rule.init(manager, zeroValue, results);
 				if (rule instanceof IArrayContextProvider) {
 					arrayRule = (IArrayContextProvider) rule;
-					break;
 				}
 			}
 		}
 		if (arrayRule == null)
 			arrayRule = new DummyArrayContext();
+	}
+
+	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results,
+			Class<? extends ITaintPropagationRule>[] rules) {
+		this(manager, zeroValue, results, instantiate(Arrays.asList(rules)));
+	}
+
+	public PropagationRuleManager(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results,
+			List<Class<? extends ITaintPropagationRule>> rules) {
+		this(manager, zeroValue, results, instantiate(rules));
+	}
+
+	private static ITaintPropagationRule[] instantiate(List<Class<? extends ITaintPropagationRule>> rules) {
+		ITaintPropagationRule[] r = new ITaintPropagationRule[rules.size()];
+		for (int i = 0; i < r.length; i++) {
+			Class<? extends ITaintPropagationRule> ruleC = rules.get(i);
+			r[i] = instantiateSingle(ruleC);
+		}
+		return r;
+	}
+
+	private static ITaintPropagationRule instantiateSingle(Class<? extends ITaintPropagationRule> ruleClass) {
+		try {
+			return ruleClass.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(String.format("Could not instantiate rule %s", ruleClass.getName()), e);
+		}
+	}
+
+	/**
+	 * Swaps out an existing rule.
+	 * @param oldRule the class of the old rule implementation
+	 * @param newRule the class of the new implementation
+	 */
+	public void swapRule(Class<? extends ITaintPropagationRule> oldRule,
+			Class<? extends ITaintPropagationRule> newRule) {
+		swapRule(oldRule, instantiateSingle(newRule));
+	}
+
+	/**
+	 * Swaps out an existing rule.
+	 * @param oldRule the class of the old rule implementation
+	 * @param newRule the new implementation
+	 */
+	public void swapRule(Class<? extends ITaintPropagationRule> oldRule, ITaintPropagationRule newRule) {
+		if (rules == null)
+			throw new IllegalStateException("No rules configured");
+
+		for (int i = 0; i < rules.length; i++) {
+			ITaintPropagationRule r = rules[i];
+			if (r.getClass() == oldRule) {
+				r.init(manager, zeroValue, results);
+				if (r instanceof IArrayContextProvider) {
+					arrayRule = (IArrayContextProvider) r;
+				}
+				rules[i] = newRule;
+				return;
+			}
+		}
+		throw new IllegalArgumentException(
+				String.format("Could not find %s in the rules: %s", oldRule.getName(), Arrays.toString(rules)));
 	}
 
 	/**
