@@ -6,8 +6,7 @@
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
-						AccessPath="[com.google.api.client.http.HttpResponse: 
-						com.google.api.client.http.LowLevelHttpResponse response]"
+						AccessPath="[com.google.api.client.http.HttpResponse: com.google.api.client.http.LowLevelHttpResponse response]"
 						AccessPathTypes="[com.google.api.client.http.LowLevelHttpResponse" />
 				</flow>
 			</flows>
