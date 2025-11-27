@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isExclusive="false">
 	<hierarchy superClass="org.apache.http.entity.mime.content.AbstractContentBody">
 		<interface name="org.apache.http.entity.mime.content.ContentBody" />
 		<interface name="org.apache.http.entity.mime.content.ContentDescriptor" />
