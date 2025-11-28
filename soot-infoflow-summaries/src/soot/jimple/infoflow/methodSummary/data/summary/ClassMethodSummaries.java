@@ -19,6 +19,19 @@ public class ClassMethodSummaries {
 
 	private boolean isExclusiveForClass = true;
 
+	/**
+	 * Creates a shallow copy from an existing class method summary instance.
+	 * @param from the source from which to copy
+	 */
+	public ClassMethodSummaries(ClassMethodSummaries from) {
+		this.className = from.className;
+		//shallow copy
+		this.methodSummaries = from.methodSummaries;
+		this.isInterface = from.isInterface;
+		this.interfaces.addAll(from.interfaces);
+		this.superClass = from.superClass;
+	}
+
 	public ClassMethodSummaries(String className) {
 		this.className = className;
 		this.methodSummaries = new MethodSummaries();
@@ -125,6 +138,9 @@ public class ClassMethodSummaries {
 
 		if (isInterface == null && methodFlows.isInterface != null)
 			this.isInterface = methodFlows.isInterface;
+
+		if (methodFlows.isExclusiveForClass())
+			setExclusiveForClass(true);
 
 		return hasNewData;
 	}

@@ -52,8 +52,9 @@ public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
 		for (IMethodSummaryProvider provider : innerProviders) {
 			ClassMethodSummaries providerSummaries = provider.getMethodFlows(className, methodSignature);
 			if (providerSummaries != null) {
-				if (summaries == null)
-					summaries = new ClassMethodSummaries(className);
+				if (summaries == null) {
+					summaries = new ClassMethodSummaries(providerSummaries);
+				}
 				summaries.merge(providerSummaries);
 			}
 		}
@@ -80,8 +81,9 @@ public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
 		for (IMethodSummaryProvider provider : innerProviders) {
 			ClassMethodSummaries providerSummaries = provider.getClassFlows(clazz);
 			if (providerSummaries != null) {
-				if (summaries == null)
-					summaries = new ClassMethodSummaries(clazz);
+				if (summaries == null) {
+					summaries = new ClassMethodSummaries(providerSummaries);
+				}
 				summaries.merge(providerSummaries);
 			}
 		}
