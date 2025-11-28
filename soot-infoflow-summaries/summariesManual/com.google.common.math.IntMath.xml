@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101" isExclusive="false">
+<summary fileFormatVersion="101" isExclusive="true">
 	<methods>
 		<method id="int binomial(int,int)">
 			<flows>
