@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isExclusive="true">
 	<methods>
 		<method id="void &lt;init&gt;(com.google.api.client.http.HttpRequest,com.google.api.client.http.LowLevelHttpResponse)">
 			<flows>

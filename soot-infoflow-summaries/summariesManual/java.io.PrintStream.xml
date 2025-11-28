@@ -105,7 +105,7 @@
 		</method>
 		<method id="java.io.PrintStream format(java.lang.String,java.lang.Object[])">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
@@ -119,7 +119,7 @@
 		</method>
 		<method id="java.io.PrintStream format(java.util.Locale,java.lang.String,java.lang.Object[])">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
@@ -203,7 +203,7 @@
 		</method>
 		<method id="void print(java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
@@ -223,7 +223,7 @@
 		</method>
 		<method id="java.io.PrintStream printf(java.util.Locale,java.lang.String,java.lang.Object[])">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="2" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
@@ -237,7 +237,7 @@
 		</method>
 		<method id="java.io.PrintStream printf(java.lang.String,java.lang.Object[])">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"
@@ -321,7 +321,7 @@
 		</method>
 		<method id="void println(java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.PrintStream: java.io.OutputStream innerStream]"

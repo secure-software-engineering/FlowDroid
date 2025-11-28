@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isExclusive="true">
 	<methods>
 		<method id="okhttp3.Request$Builder addHeader(java.lang.String,java.lang.String)">
 			<flows>
