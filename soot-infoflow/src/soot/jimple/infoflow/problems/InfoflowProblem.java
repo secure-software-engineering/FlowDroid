@@ -618,7 +618,7 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 									// cannot propagate the "old" taint over.
 									// Return value propagation must always
 									// happen explicitly.
-									originalCallArg = iCallStmt.getInvokeExpr().getArg(i);
+									originalCallArg = iCallStmt.getInvokeExpr().getArg(m);
 									if (callSite instanceof DefinitionStmt && !isExceptionHandler(retSite)) {
 										DefinitionStmt defnStmt = (DefinitionStmt) callSite;
 										Value leftOp = defnStmt.getLeftOp();
