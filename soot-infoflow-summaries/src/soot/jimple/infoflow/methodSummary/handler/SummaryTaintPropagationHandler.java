@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.methodSummary.handler;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -201,16 +200,18 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit u, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit u, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		// Do not propagate through excluded methods
 		SootMethod sm = manager.getICFG().getMethodOf(u);
-		if (excludedMethods.contains(sm))
-			return Collections.emptySet();
-		if (type == FlowFunctionType.ReturnFlowFunction && !followReturnsPastSeeds && sm == method)
-			return Collections.emptySet();
-
-		return outgoing;
+		if (excludedMethods.contains(sm)) {
+			return true;
+		}
+		if (type == FlowFunctionType.ReturnFlowFunction && !followReturnsPastSeeds && sm == method) {
+			outgoing.clear();
+			return true;
+		}
+		return false;
 	}
 
 	public MultiMap<Abstraction, Stmt> getResult() {

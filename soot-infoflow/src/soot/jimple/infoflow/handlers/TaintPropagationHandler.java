@@ -53,11 +53,9 @@ public interface TaintPropagationHandler {
 	 *            The manager object that gives access to the data flow engine
 	 * @param type
 	 *            The type of data flow edge being processed
-	 * @return The new abstractions to be propagated on. If you do not want to
-	 *         change the normal propagation behavior, just return the value of the
-	 *         "taints" parameter as-is.
+	 * @return Whether to kill the outgoing set
 	 */
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type);
 
 }

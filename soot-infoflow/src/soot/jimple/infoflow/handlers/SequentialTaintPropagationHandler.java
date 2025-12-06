@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.handlers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -63,18 +62,17 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		if (innerHandlers.isEmpty())
-			return outgoing;
+			return false;
 
-		Set<Abstraction> resultSet = new HashSet<>();
+		boolean killed = false;
 		for (TaintPropagationHandler handler : innerHandlers) {
-			Set<Abstraction> handlerResults = handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type);
-			if (handlerResults != null && !handlerResults.isEmpty())
-				resultSet.addAll(handlerResults);
+			if (!handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type))
+				killed = true;
 		}
-		return resultSet;
+		return killed;
 	}
 
 	/**
