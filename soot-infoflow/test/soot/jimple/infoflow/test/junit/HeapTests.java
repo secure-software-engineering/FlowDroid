@@ -1309,8 +1309,8 @@ public abstract class HeapTests extends JUnitTests {
 			}
 
 			@Override
-			public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
-				return outgoing;
+			public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+				return false;
 			}
 		});
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void identityStmtIsNotAGoodHandoverPoint()>");

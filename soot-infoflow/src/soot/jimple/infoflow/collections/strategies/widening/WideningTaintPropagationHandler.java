@@ -51,7 +51,7 @@ public class WideningTaintPropagationHandler implements TaintPropagationHandler 
 			Abstraction abs = it.next();
 			Abstraction widened = wideningStrategy.widen(incoming, abs, stmt);
 			if (widened != abs) {
-				outgoing.add(widened);
+				toAdd.add(widened);
 				it.remove();
 			}
 		}
