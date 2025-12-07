@@ -69,7 +69,7 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 
 		boolean killed = false;
 		for (TaintPropagationHandler handler : innerHandlers) {
-			if (!handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type))
+			if (handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type))
 				killed = true;
 		}
 		return killed;
