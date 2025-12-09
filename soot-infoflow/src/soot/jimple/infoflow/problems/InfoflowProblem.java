@@ -822,15 +822,10 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 						if (newSource.getAccessPath().isStaticFieldRef())
 							passOn = false;
 
-						boolean isPrimitiveOrString = false;
 						// Primitive types and strings cannot
 						// have aliases and thus never need to
 						// be propagated back
-						if (source.getAccessPath().getBaseType() instanceof PrimType)
-							isPrimitiveOrString = true;
-						if (TypeUtils.isStringType(source.getAccessPath().getBaseType())
-								&& !source.getAccessPath().getCanHaveImmutableAliases())
-							isPrimitiveOrString = true;
+						boolean isPrimitiveOrString = source.isPrimitiveOrImmutable();
 
 						// we only can remove the taint if we step into the
 						// call/return edges
