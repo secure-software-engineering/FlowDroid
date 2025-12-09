@@ -741,13 +741,14 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			if (icfg.isCallStmt(target)) {
 				processCall(edge);
 			} else {
-				// note that some statements, such as "throw" may be
-				// both an exit statement and a "normal" statement
-				if (icfg.isExitStmt(target))
-					processExit(edge);
 				if (!icfg.getSuccsOf(target).isEmpty())
 					processNormalFlow(edge);
 			}
+			// note that some statements, such as "throw" may be
+			// both an exit statement and a "normal" statement
+			// A call statement can be an exit statement when going backwards!
+			if (icfg.isExitStmt(target))
+				processExit(edge);
 		}
 
 		@Override
