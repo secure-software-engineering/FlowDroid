@@ -955,7 +955,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			// Create the executor that takes care of the workers
 			int numThreads = Runtime.getRuntime().availableProcessors();
-			InterruptableExecutor executor = executorFactory.createExecutor(numThreads, true, config);
+			InterruptableExecutor executor = executorFactory.createExecutor(numThreads, false, config);
 			executor.setThreadFactory(new ThreadFactory() {
 
 				@Override

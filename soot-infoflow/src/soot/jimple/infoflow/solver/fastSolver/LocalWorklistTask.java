@@ -2,14 +2,18 @@ package soot.jimple.infoflow.solver.fastSolver;
 
 import java.util.ArrayDeque;
 
+import soot.jimple.infoflow.solver.executors.IExecutorItem;
+import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
+
 /**
  * This special task may run multiple tasks on the same thread if they are
  * scheduled using {@link #scheduleLocal(Runnable)}
  * 
  * @author Marc Miltenberger
  */
-public abstract class LocalWorklistTask implements Runnable {
+public abstract class LocalWorklistTask implements Runnable, IExecutorItem {
 	private ArrayDeque<Runnable> localTaskList = new ArrayDeque<>();
+	private InterruptableExecutor executor;
 	private static final ThreadLocal<LocalWorklistTask> TASKS = new ThreadLocal<>();
 
 	@Override
@@ -37,10 +41,21 @@ public abstract class LocalWorklistTask implements Runnable {
 
 	public abstract void runInternal();
 
+	@Override
+	public void setExecutor(InterruptableExecutor executor) {
+		this.executor = executor;
+	}
+
 	public static void scheduleLocal(Runnable task) {
 		LocalWorklistTask t = TASKS.get();
-		if (t != null)
-			t.localTaskList.add(task);
+		if (t != null) {
+			ArrayDeque<Runnable> list = t.localTaskList;
+			InterruptableExecutor executor = t.executor;
+			if (!list.isEmpty() && executor.hasFreeWorkers())
+				executor.execute(task);
+			else
+				list.add(task);
+		}
 	}
 
 }

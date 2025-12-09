@@ -3,6 +3,8 @@ package soot.jimple.infoflow.methodSummary.data.provider;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import soot.jimple.infoflow.methodSummary.data.summary.ClassMethodSummaries;
 import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
@@ -14,7 +16,25 @@ import soot.jimple.infoflow.methodSummary.data.summary.ClassSummaries;
  *
  */
 public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
+	protected final Function<? super String, ? extends ClassMethodSummaries> COMPUTE_CLASS_FLOWS = new Function<String, ClassMethodSummaries>() {
 
+		@Override
+		public ClassMethodSummaries apply(String clazz) {
+			ClassMethodSummaries summaries = null;
+			for (IMethodSummaryProvider provider : innerProviders) {
+				ClassMethodSummaries providerSummaries = provider.getClassFlows(clazz);
+				if (providerSummaries != null) {
+					if (summaries == null) {
+						summaries = new ClassMethodSummaries(providerSummaries);
+					}
+					summaries.merge(providerSummaries);
+				}
+			}
+			return summaries;
+		}
+
+	};
+	protected final ConcurrentHashMap<String, ClassMethodSummaries> cachedClassSummaries = new ConcurrentHashMap<>();
 	protected final Collection<IMethodSummaryProvider> innerProviders;
 	protected ClassSummaries cachedSummaries;
 
@@ -77,17 +97,7 @@ public class MergingSummaryProvider extends AbstractMethodSummaryProvider {
 
 	@Override
 	public ClassMethodSummaries getClassFlows(String clazz) {
-		ClassMethodSummaries summaries = null;
-		for (IMethodSummaryProvider provider : innerProviders) {
-			ClassMethodSummaries providerSummaries = provider.getClassFlows(clazz);
-			if (providerSummaries != null) {
-				if (summaries == null) {
-					summaries = new ClassMethodSummaries(providerSummaries);
-				}
-				summaries.merge(providerSummaries);
-			}
-		}
-		return summaries;
+		return cachedClassSummaries.computeIfAbsent(clazz, COMPUTE_CLASS_FLOWS);
 	}
 
 	@Override
