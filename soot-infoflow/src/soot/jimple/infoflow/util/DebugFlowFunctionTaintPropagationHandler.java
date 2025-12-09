@@ -55,10 +55,10 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		if (this.filter != null && !this.filter.evaluate(manager.getICFG().getMethodOf(stmt).toString()))
-			return outgoing;
+			return false;
 
 		String typeString = "";
 		switch (type) {
@@ -88,7 +88,7 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
 		} else
 			System.out.println(this.prefix + " " + typeString + " @ " + stmt + ":\n\tIn: " + incoming + "\n\tOut: "
 					+ outgoing + "\n");
+		return false;
 
-		return outgoing;
 	}
 }

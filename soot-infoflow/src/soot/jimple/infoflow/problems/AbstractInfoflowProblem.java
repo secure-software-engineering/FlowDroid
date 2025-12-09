@@ -42,7 +42,6 @@ import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
 import soot.jimple.infoflow.util.SystemClassHandler;
 import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
-import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
 
 /**
  * abstract super class which - concentrates functionality used by
@@ -50,8 +49,7 @@ import soot.jimple.toolkits.ide.icfg.BiDiInterproceduralCFG;
  * pollute the naturally large InfofflowProblems
  *
  */
-public abstract class AbstractInfoflowProblem
-		extends DefaultJimpleIFDSTabulationProblem<Abstraction, IInfoflowCFG> {
+public abstract class AbstractInfoflowProblem extends DefaultJimpleIFDSTabulationProblem<Abstraction, IInfoflowCFG> {
 
 	protected final InfoflowManager manager;
 
@@ -321,8 +319,11 @@ public abstract class AbstractInfoflowProblem
 	 */
 	protected Set<Abstraction> notifyOutFlowHandlers(Unit stmt, Abstraction d1, Abstraction incoming,
 			Set<Abstraction> outgoing, FlowFunctionType functionType) {
-		if (taintPropagationHandler != null && outgoing != null && !outgoing.isEmpty())
-			outgoing = taintPropagationHandler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, functionType);
+		if (taintPropagationHandler != null && outgoing != null && !outgoing.isEmpty()) {
+			boolean res = taintPropagationHandler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, functionType);
+			if (res)
+				return null;
+		}
 		return outgoing;
 	}
 

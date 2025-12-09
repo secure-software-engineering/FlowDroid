@@ -171,8 +171,7 @@ public class InfoflowResults {
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
 			apPath = new ArrayList<>(propagationPath.size());
-			if (!manager.getConfig().getPathAgnosticResults())
-				csPath = new ArrayList<>(propagationPath.size());
+			csPath = new ArrayList<>(propagationPath.size());
 			for (Abstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
 					stmtPath.add(pathAbs.getCurrentStmt());
