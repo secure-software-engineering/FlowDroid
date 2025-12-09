@@ -55,20 +55,20 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 
 		// Do not check taints that are not mentioned anywhere in the call
 		final Aliasing aliasing = getAliasing();
-		if (aliasing != null && !source.getAccessPath().isStaticFieldRef() && !source.getAccessPath().isEmpty()) {
+		AccessPath sourceAP = source.getAccessPath();
+		if (aliasing != null && !sourceAP.isStaticFieldRef() && !sourceAP.isEmpty()) {
 			boolean found = false;
 
 			// The base object must be tainted
 			if (iStmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr iiExpr = (InstanceInvokeExpr) iStmt.getInvokeExpr();
-				found = aliasing.mayAlias(iiExpr.getBase(), source.getAccessPath().getPlainValue());
+				found = aliasing.mayAlias(iiExpr.getBase(), sourceAP.getPlainValue());
 			}
 
 			// or one of the parameters must be tainted
 			if (!found)
 				for (int paramIdx = 0; paramIdx < iStmt.getInvokeExpr().getArgCount(); paramIdx++)
-					if (aliasing.mayAlias(source.getAccessPath().getPlainValue(),
-							iStmt.getInvokeExpr().getArg(paramIdx))) {
+					if (aliasing.mayAlias(sourceAP.getPlainValue(), iStmt.getInvokeExpr().getArg(paramIdx))) {
 						found = true;
 						break;
 					}
@@ -78,14 +78,16 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 				return null;
 		}
 
+		final InfoflowManager manager = getManager();
 		// Do not apply the taint wrapper to statements that are sources on their own
-		if (!getManager().getConfig().getInspectSources()) {
+		if (!manager.getConfig().getInspectSources()) {
 			// Check whether this can be a source at all
 			if (iStmt.hasTag(FlowDroidSourceStatement.TAG_NAME))
 				return null;
 		}
 
-		Set<Abstraction> res = getManager().getTaintWrapper().getTaintsForMethod(iStmt, d1, source);
+		final ITaintPropagationWrapper taintwrapper = manager.getTaintWrapper();
+		Set<Abstraction> res = taintwrapper.getTaintsForMethod(iStmt, d1, source);
 		if (res != null) {
 			Set<Abstraction> resWithAliases = new HashSet<>(res);
 			for (Abstraction abs : res) {
@@ -100,7 +102,7 @@ public class WrapperPropagationRule extends AbstractTaintPropagationRule {
 		// exclusive methods. Thus, if the
 		// incoming taint should be kept alive, the taint wrapper needs to add it to the
 		// outgoing set.
-		killSource.value = manager.getTaintWrapper() != null && manager.getTaintWrapper().isExclusive(iStmt, source);
+		killSource.value = taintwrapper.isExclusive(iStmt, source) && !source.isPrimitiveOrImmutable();
 
 		return res;
 	}
