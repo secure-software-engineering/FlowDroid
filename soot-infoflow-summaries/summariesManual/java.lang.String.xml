@@ -301,6 +301,30 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="java.lang.String join(java.lang.CharSequence,java.lang.Iterable)">
+			<flows>
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.String join(java.lang.CharSequence,java.lang.CharSequence[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 		<method id="java.lang.CharSequence subSequence(int,int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
