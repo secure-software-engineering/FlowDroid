@@ -788,6 +788,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 					reportMissingSummary(callee, stmt, taintedAbs);
 					if (fallbackWrapper != null)
 						return fallbackWrapper.getTaintsForMethod(stmt, d1, taintedAbs);
+					// when we have code, we should kill the incoming taint.
+					killIncomingTaint.value = callee.hasActiveBody();
 				}
 			}
 		}
