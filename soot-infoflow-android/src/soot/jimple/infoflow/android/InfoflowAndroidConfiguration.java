@@ -513,7 +513,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		}
 
 		/**
-		 * Returns whether FlowDroid should exclude stub methods when computing the call graph
+		 * Returns whether FlowDroid should exclude stub methods when computing the call
+		 * graph
+		 * 
 		 * @return true if stubs should be excluded
 		 */
 		public boolean getExcludeStubsFromCallGraph() {
@@ -521,7 +523,9 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		}
 
 		/**
-		 * Sets whether FlowDroid should exclude stub methods when computing the call graph
+		 * Sets whether FlowDroid should exclude stub methods when computing the call
+		 * graph
+		 * 
 		 * @param value true if stubs should be excluded
 		 */
 		public void setExcludeStubsFromCallGraph(boolean value) {
@@ -747,7 +751,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.analysisFileConfig.merge(androidConfig.analysisFileConfig);
 
 			this.mergeDexFiles = androidConfig.mergeDexFiles;
-			this.createActivityEntryMethods = androidConfig.createActivityEntryMethods;
 		}
 	}
 

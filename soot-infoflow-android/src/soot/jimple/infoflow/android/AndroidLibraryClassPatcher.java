@@ -40,8 +40,11 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 	}
 
 	/**
-	 * The generated implementation of this method are semantically equivalent to the AppComponentFactory in Android.
-	 * @see https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/app/AppComponentFactory.java
+	 * The generated implementation of this method are semantically equivalent to
+	 * the AppComponentFactory in Android.
+	 * 
+	 * @see <a href=
+	 *      "https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/android/app/AppComponentFactory.java">AppComponentFactory</a>
 	 */
 	protected void patchComponentFactory() {
 		SootClass sc = Scene.v().forceResolve(AndroidEntryPointConstants.APPCOMPONENTFACTORYCLASS,
@@ -61,8 +64,9 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 	}
 
 	/**
-	 * Patches the instantiate classloader class.
-	 * It returns the default class loader unmodified.
+	 * Patches the instantiate classloader class. It returns the default class
+	 * loader unmodified.
+	 * 
 	 * @param sc the class of the app component factory
 	 */
 	private void patchInstantiateClassLoader(SootClass sc) {
@@ -76,8 +80,9 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 	}
 
 	/**
-	 * Returns all class names that could be instantiated when
-	 * instantiating a class with the given class name, i.e. all subclasses/implementers.
+	 * Returns all class names that could be instantiated when instantiating a class
+	 * with the given class name, i.e. all subclasses/implementers.
+	 * 
 	 * @param className the class name (could also represent an interface)
 	 * @return a string array of all possible names.
 	 */
@@ -115,13 +120,16 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 	 *  return cl.loadClass(className).newInstance(); //(3)
 	 *  
 	 * }
-	 * </code>
-	 * The instantiation statements (1) and (2) are used to help SPARK and other static algorithms to find
-	 * allocation sites. (3) is the fallback that would normally be the implementation when using Android's default 
-	 * app component factory.
-	 * @param sc the class of the app component factory
-	 * @param subsig the sub signature of the method, in our example case instantiateActivity
-	 * @param names the names for each possible class instantiation, in our example case "foo.bar.MainActivity", "foo.bar.FooActivity"
+	 * </code> The instantiation statements (1) and (2) are used to help SPARK and
+	 * other static algorithms to find allocation sites. (3) is the fallback that
+	 * would normally be the implementation when using Android's default app
+	 * component factory.
+	 * 
+	 * @param sc     the class of the app component factory
+	 * @param subsig the sub signature of the method, in our example case
+	 *               instantiateActivity
+	 * @param names  the names for each possible class instantiation, in our example
+	 *               case "foo.bar.MainActivity", "foo.bar.FooActivity"
 	 */
 	protected void patchInstantiate(SootClass sc, String subsig, String... names) {
 
@@ -194,8 +202,10 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 	}
 
 	/**
-	 * Creates a method if it doesn't exist. Otherwise, it returns the existing method
-	 * @param sc the class where the method is being looked for
+	 * Creates a method if it doesn't exist. Otherwise, it returns the existing
+	 * method
+	 * 
+	 * @param sc     the class where the method is being looked for
 	 * @param subsig the sub signature of the method
 	 * @return the method
 	 */
