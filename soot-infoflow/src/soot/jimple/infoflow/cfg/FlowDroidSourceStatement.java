@@ -1,5 +1,8 @@
 package soot.jimple.infoflow.cfg;
 
+import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.tagkit.Tag;
 
 /**

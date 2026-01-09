@@ -1,11 +1,12 @@
 package soot.jimple.infoflow.cfg;
 
+import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.tagkit.Tag;
 
 /**
- * Tags statements which were identified as sinks in the initial seed collection phase.
- * This tag can be used later to efficiently query whether a statement is a sink without
- * querying a {@link ISourceSinkManager}.
+ * Tags statements which were identified as sinks in the initial seed collection
+ * phase. This tag can be used later to efficiently query whether a statement is
+ * a sink without querying a {@link ISourceSinkManager}.
  *
  * @author Tim Lange
  */
