@@ -10,8 +10,9 @@ import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 /**
- * Common interface for taint propagation rules.
- * Note that instances of this class are stateful due to the {@link #init() init} method. 
+ * Common interface for taint propagation rules. Note that instances of this
+ * class are stateful due to the
+ * {@link #init(InfoflowManager, Abstraction, TaintPropagationResults)} method.
  * The implementing class should have a public non-argument constructor.
  * 
  * @author Steven Arzt
@@ -22,24 +23,25 @@ public interface ITaintPropagationRule {
 	/**
 	 * Initializes the class. Usual implementations of this class save the
 	 * parameters of the class.
-	 * @param manager the infoflow manager
+	 * 
+	 * @param manager   the infoflow manager
 	 * @param zeroValue the zero value abstraction
-	 * @param results where results should be saved
+	 * @param results   where results should be saved
 	 */
 	public void init(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results);
 
 	/**
-	 * Propagates a flow along a normal statement this is not a call or return
-	 * site
-	 * @param d1 The context abstraction
-	 * @param source The abstraction to propagate over the statement
-	 * @param stmt The statement at which to propagate the abstraction
-	 * @param destStmt The next statement to which control flow will continue after
-	 * processing stmt
-	 * @param killSource Outgoing value for the rule to specify whether
-	 * the incoming taint shall be killed
-	 * @param killAll Outgoing value that receives whether all taints shall be
-	 * killed and nothing shall be propagated onwards
+	 * Propagates a flow along a normal statement this is not a call or return site
+	 * 
+	 * @param d1         The context abstraction
+	 * @param source     The abstraction to propagate over the statement
+	 * @param stmt       The statement at which to propagate the abstraction
+	 * @param destStmt   The next statement to which control flow will continue
+	 *                   after processing stmt
+	 * @param killSource Outgoing value for the rule to specify whether the incoming
+	 *                   taint shall be killed
+	 * @param killAll    Outgoing value that receives whether all taints shall be
+	 *                   killed and nothing shall be propagated onwards
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -47,12 +49,13 @@ public interface ITaintPropagationRule {
 
 	/**
 	 * Propagates a flow across a call site
-	 * @param d1 The context abstraction
-	 * @param source The abstraction to propagate over the statement
-	 * @param stmt The statement at which to propagate the abstraction
-	 * @param dest The destination method into which to propagate the abstraction
-	 * @param killAll Outgoing value for the rule to specify whether
-	 * all taints shall be killed, i.e., nothing shall be propagated
+	 * 
+	 * @param d1      The context abstraction
+	 * @param source  The abstraction to propagate over the statement
+	 * @param stmt    The statement at which to propagate the abstraction
+	 * @param dest    The destination method into which to propagate the abstraction
+	 * @param killAll Outgoing value for the rule to specify whether all taints
+	 *                shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Collection<Abstraction> propagateCallFlow(Abstraction d1, Abstraction source, Stmt stmt, SootMethod dest,
@@ -60,13 +63,14 @@ public interface ITaintPropagationRule {
 
 	/**
 	 * Propagates a flow along a the call-to-return edge at a call site
-	 * @param d1 The context abstraction
-	 * @param source The abstraction to propagate over the statement
-	 * @param stmt The statement at which to propagate the abstraction
-	 * @param killSource Outgoing value for the rule to specify whether
-	 * the incoming taint shall be killed
-	 * @param killAll Outgoing value for the rule to specify whether
-	 * all taints shall be killed, i.e., nothing shall be propagated
+	 * 
+	 * @param d1         The context abstraction
+	 * @param source     The abstraction to propagate over the statement
+	 * @param stmt       The statement at which to propagate the abstraction
+	 * @param killSource Outgoing value for the rule to specify whether the incoming
+	 *                   taint shall be killed
+	 * @param killAll    Outgoing value for the rule to specify whether all taints
+	 *                   shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
@@ -74,15 +78,16 @@ public interface ITaintPropagationRule {
 
 	/**
 	 * Propagates a flow along a the return edge
+	 * 
 	 * @param callerD1s The context abstraction at the caller side
-	 * @param calleeD1 The context abstraction at the callee side
-	 * @param source The abstraction to propagate over the statement
-	 * @param stmt The statement at which to propagate the abstraction
-	 * @param retSite The return site to which the execution returns after
-	 * leaving the current method
-	 * @param callSite The call site of the call from which we return
-	 * @param killAll Outgoing value for the rule to specify whether
-	 * all taints shall be killed, i.e., nothing shall be propagated
+	 * @param calleeD1  The context abstraction at the callee side
+	 * @param source    The abstraction to propagate over the statement
+	 * @param stmt      The statement at which to propagate the abstraction
+	 * @param retSite   The return site to which the execution returns after leaving
+	 *                  the current method
+	 * @param callSite  The call site of the call from which we return
+	 * @param killAll   Outgoing value for the rule to specify whether all taints
+	 *                  shall be killed, i.e., nothing shall be propagated
 	 * @return The new abstractions to be propagated to the next statement
 	 */
 	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
