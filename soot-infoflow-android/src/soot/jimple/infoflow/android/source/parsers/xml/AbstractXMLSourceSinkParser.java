@@ -24,11 +24,13 @@ import org.xml.sax.helpers.DefaultHandler;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
-import soot.jimple.infoflow.river.AdditionalFlowCondition;
+import soot.jimple.infoflow.river.conditions.SignatureFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
+import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.IAccessPathBasedSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition.CallType;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkType;
@@ -393,7 +395,7 @@ public abstract class AbstractXMLSourceSinkParser {
 
 			case XMLConstants.ADDITIONAL_FLOW_CONDITION_TAG:
 				if (!classNamesOnPath.isEmpty() || !signaturesOnPath.isEmpty()) {
-					AdditionalFlowCondition additionalFlowCondition = new AdditionalFlowCondition(classNamesOnPath,
+					SignatureFlowCondition additionalFlowCondition = new SignatureFlowCondition(classNamesOnPath,
 							signaturesOnPath, excludedClassNames);
 					// Reset both for a new condition
 					classNamesOnPath = new HashSet<>();
@@ -532,8 +534,8 @@ public abstract class AbstractXMLSourceSinkParser {
 	 * category is requested, the respective definition is created. Otherwise, the
 	 * existing one is returned.
 	 * 
-	 * @param categoryID    The user-defined category name
-	 * @param desc The human-readable description
+	 * @param categoryID The user-defined category name
+	 * @param desc       The human-readable description
 	 * @return The category definition object for the given category names
 	 */
 	private ISourceSinkCategory getOrMakeCategory(String categoryID, String desc) {

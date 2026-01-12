@@ -554,4 +554,17 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return def;
 	}
 
+	/**
+	 * Creates an instance of the {@link MethodSourceSinkDefinition} class for a
+	 * source definition that considers the return value of the given methods as
+	 * tainted.
+	 * 
+	 * @param smac The method whose return value shall be considered as the source
+	 * @return The new {@link MethodSourceSinkDefinition} instance
+	 */
+	public static MethodSourceSinkDefinition createReturnSource(SootMethodAndClass smac) {
+		AccessPathTuple returnSpec = AccessPathTuple.getBlankSourceTuple();
+		return new MethodSourceSinkDefinition(smac, null, null, Collections.singleton(returnSpec), CallType.MethodCall);
+	}
+
 }

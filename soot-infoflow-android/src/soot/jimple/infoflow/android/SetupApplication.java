@@ -107,6 +107,7 @@ import soot.jimple.infoflow.solver.memory.IMemoryManager;
 import soot.jimple.infoflow.solver.memory.IMemoryManagerFactory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinitionProvider;
+import soot.jimple.infoflow.sourcesSinks.definitions.InMemorySourceSinkDefinitionProvider;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.taintWrappers.ITaintPropagationWrapper;
@@ -1477,29 +1478,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		for (AndroidMethod am : sinks)
 			sinkDefs.add(new MethodSourceSinkDefinition(am));
 
-		ISourceSinkDefinitionProvider parser = new ISourceSinkDefinitionProvider() {
-
-			@Override
-			public Set<ISourceSinkDefinition> getSources() {
-				return sourceDefs;
-			}
-
-			@Override
-			public Set<ISourceSinkDefinition> getSinks() {
-				return sinkDefs;
-			}
-
-			@Override
-			public Set<ISourceSinkDefinition> getAllMethods() {
-				Set<ISourceSinkDefinition> sourcesSinks = new HashSet<>(sourceDefs.size() + sinkDefs.size());
-				sourcesSinks.addAll(sourceDefs);
-				sourcesSinks.addAll(sinkDefs);
-				return sourcesSinks;
-			}
-
-		};
-
-		return runInfoflow(parser);
+		return runInfoflow(new InMemorySourceSinkDefinitionProvider(sourceDefs, sinkDefs));
 	}
 
 	/**
@@ -1527,6 +1506,21 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		File sourceSinkFile = config.getAnalysisFileConfig().getSourceSinkFile();
 		if (sourceSinkFile == null || !sourceSinkFile.exists())
 			throw new RuntimeException("No source/sink file specified for the data flow analysis");
+
+		ISourceSinkDefinitionProvider parser = parseSourceSinkDefinitions(sourceSinkFile);
+		return runInfoflow(parser);
+	}
+
+	/**
+	 * Parses the given source/sink definition file to make it accessible to the
+	 * data flow analysis
+	 * 
+	 * @param sourceSinkFile The source/sink definition file to parse
+	 * @return The {@link ISourceSinkDefinitionProvider} that provides access to the
+	 *         source/sink definitions
+	 * @throws IOException Thrown if the given source/sink file could not be read.
+	 */
+	protected ISourceSinkDefinitionProvider parseSourceSinkDefinitions(File sourceSinkFile) throws IOException {
 		String fileExtension = FilenameUtils.getExtension(sourceSinkFile.getName());
 		fileExtension = fileExtension.toLowerCase();
 
@@ -1544,8 +1538,7 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 		} catch (SAXException ex) {
 			throw new IOException("Could not read XML file", ex);
 		}
-
-		return runInfoflow(parser);
+		return parser;
 	}
 
 	/**

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -627,6 +628,29 @@ public class InfoflowResults {
 	public void removeAll(Collection<ResultSinkInfo> sinks) {
 		for (ResultSinkInfo sink : sinks)
 			remove(sink);
+	}
+
+	/**
+	 * Gets all sink statements to which there is at least one data flow
+	 * 
+	 * @return The set of sink statements to which there is at least one data flow
+	 */
+	public Set<Stmt> getAllSinkStmts() {
+		if (this.results == null)
+			return Collections.emptySet();
+		return this.results.keySet().stream().map(s -> s.getStmt()).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Gets all source statements from which there is at least one data flow
+	 * 
+	 * @return The set of source statements from which there is at least one data
+	 *         flow
+	 */
+	public Set<Stmt> getAllSourceStmts() {
+		if (this.results == null)
+			return Collections.emptySet();
+		return this.results.values().stream().map(s -> s.getStmt()).collect(Collectors.toSet());
 	}
 
 	@Override

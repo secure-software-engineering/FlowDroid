@@ -14,7 +14,7 @@ import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.parsers.PermissionMethodParser;
 import soot.jimple.infoflow.android.source.parsers.xml.XMLSourceSinkParser;
 import soot.jimple.infoflow.android.test.BaseJUnitTests;
-import soot.jimple.infoflow.river.AdditionalFlowCondition;
+import soot.jimple.infoflow.river.conditions.SignatureFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
@@ -218,7 +218,7 @@ public class XmlParserTest extends BaseJUnitTests {
 			switch (methodSig) {
 			case stringWriteSig: {
 				Assert.assertEquals(1, conds.size());
-				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				SignatureFlowCondition cond = (SignatureFlowCondition) conds.stream().findAny().get();
 				Set<String> mRefs = cond.getSignaturesOnPath();
 				Assert.assertEquals(1, mRefs.size());
 				Assert.assertTrue(mRefs.contains(openConSig));
@@ -229,7 +229,7 @@ public class XmlParserTest extends BaseJUnitTests {
 			}
 			case stringOffsetWriteSig: {
 				Assert.assertEquals(1, conds.size());
-				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				SignatureFlowCondition cond = (SignatureFlowCondition) conds.stream().findAny().get();
 				Assert.assertEquals(0, cond.getSignaturesOnPath().size());
 				Set<String> cRefs = cond.getClassNamesOnPath();
 				Assert.assertEquals(1, cRefs.size());
@@ -240,7 +240,7 @@ public class XmlParserTest extends BaseJUnitTests {
 			}
 			case intWriteSig: {
 				Assert.assertEquals(1, conds.size());
-				AdditionalFlowCondition cond = (AdditionalFlowCondition) conds.stream().findAny().get();
+				SignatureFlowCondition cond = (SignatureFlowCondition) conds.stream().findAny().get();
 				Set<String> mRefs = cond.getSignaturesOnPath();
 				Assert.assertEquals(2, mRefs.size());
 				Assert.assertTrue(mRefs.contains(servletSig));
@@ -254,19 +254,19 @@ public class XmlParserTest extends BaseJUnitTests {
 				Assert.assertEquals(2, conds.size());
 				boolean foundServlet = false, foundHttpServlet = false;
 				for (SourceSinkCondition cond : conds) {
-					Set<String> mRefs = ((AdditionalFlowCondition) cond).getSignaturesOnPath();
+					Set<String> mRefs = ((SignatureFlowCondition) cond).getSignaturesOnPath();
 					Assert.assertEquals(1, mRefs.size());
-					Assert.assertEquals(0, ((AdditionalFlowCondition) cond).getClassNamesOnPath().size());
+					Assert.assertEquals(0, ((SignatureFlowCondition) cond).getClassNamesOnPath().size());
 
 					if (mRefs.contains(servletSig)) {
 						foundServlet = true;
-						Assert.assertEquals(2, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
-						Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames().stream()
+						Assert.assertEquals(2, ((SignatureFlowCondition) cond).getExcludedClassNames().size());
+						Assert.assertTrue(((SignatureFlowCondition) cond).getExcludedClassNames().stream()
 								.allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.Object")));
 					} else if (mRefs.contains(httpSrvSig)) {
 						foundHttpServlet = true;
-						Assert.assertEquals(1, ((AdditionalFlowCondition) cond).getExcludedClassNames().size());
-						Assert.assertTrue(((AdditionalFlowCondition) cond).getExcludedClassNames().stream()
+						Assert.assertEquals(1, ((SignatureFlowCondition) cond).getExcludedClassNames().size());
+						Assert.assertTrue(((SignatureFlowCondition) cond).getExcludedClassNames().stream()
 								.allMatch(cn -> cn.equals(byteArrayClass) || cn.equals("java.lang.String")));
 					} else {
 						Assert.fail();
