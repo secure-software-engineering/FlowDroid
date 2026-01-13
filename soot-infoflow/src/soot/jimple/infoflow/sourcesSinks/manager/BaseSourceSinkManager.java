@@ -434,7 +434,14 @@ public abstract class BaseSourceSinkManager
 		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
+		// Look up the source definition
 		Collection<ISourceSinkDefinition> defs = getSource(sCallSite, manager.getICFG());
+		if (defs == null || defs.isEmpty())
+			return null;
+
+		// We seem to have a source for this statement. Create the detailed
+		// specification object. Note that subsequent filtering may still invalidate the
+		// source.
 		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createSourceInfoPairs(sCallSite, manager, defs);
 		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}

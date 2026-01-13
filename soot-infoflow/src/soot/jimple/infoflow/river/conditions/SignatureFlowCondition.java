@@ -3,6 +3,7 @@ package soot.jimple.infoflow.river.conditions;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import heros.solver.Pair;
 import soot.Scene;
@@ -10,12 +11,14 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.river.ConditionalSecondarySourceDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
+import soot.jimple.infoflow.util.SootMethodRepresentationParser;
 import soot.util.MultiMap;
 
 /**
@@ -313,5 +316,11 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	public String toString() {
 		return "AdditionalFlowCondition: " + "classNamesOnPath=" + classNamesOnPath + ", signaturesOnPath="
 				+ signaturesOnPath + ", excludedClasses=" + excludedClassNames;
+	}
+
+	@Override
+	public Set<SootMethodAndClass> getReferencedMethodDefs() {
+		final SootMethodRepresentationParser rep = SootMethodRepresentationParser.v();
+		return signaturesOnPath.stream().map(s -> rep.parseSootMethodString(s)).collect(Collectors.toSet());
 	}
 }

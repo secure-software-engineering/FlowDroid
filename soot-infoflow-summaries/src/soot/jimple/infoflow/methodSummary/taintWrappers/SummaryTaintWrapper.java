@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import heros.solver.Pair;
 import heros.solver.PathEdge;
 import soot.ArrayType;
@@ -100,6 +103,8 @@ import soot.util.MultiMap;
  *
  */
 public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollectionsSupport {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected InfoflowManager manager;
 	private AtomicInteger wrapperHits = new AtomicInteger();
@@ -362,12 +367,14 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	 */
 	public SummaryTaintWrapper(IMethodSummaryProvider flows) {
 		this.flows = flows;
+		logger.info("Initializing summary taint wrapper with summaries for {} classes...",
+				flows.getAllClassesWithSummaries().size());
 		setContainerStrategyFactory(new DefaultConfigContainerStrategyFactory());
 	}
 
 	/**
-	 * Creates a new instance of the {@link SummaryTaintWrapper} class.
-	 * Uses summaries present within the StubDroid JAR file. 
+	 * Creates a new instance of the {@link SummaryTaintWrapper} class. Uses
+	 * summaries present within the StubDroid JAR file.
 	 */
 	public SummaryTaintWrapper() throws URISyntaxException, IOException {
 		this(new EagerSummaryProvider());

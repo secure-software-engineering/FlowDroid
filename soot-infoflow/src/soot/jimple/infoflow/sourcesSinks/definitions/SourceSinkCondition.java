@@ -2,9 +2,12 @@ package soot.jimple.infoflow.sourcesSinks.definitions;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 
@@ -17,40 +20,49 @@ import soot.jimple.infoflow.results.InfoflowResults;
  */
 public abstract class SourceSinkCondition {
 
-    /**
-     * Evaluates the condition on the given data flow result
-     *
-     * @param result  The data flow result
-     * @param results All results of this data flow analysis
-     * @return True if the given data flow result matches the condition, otherwise
-     * false
-     */
-    public abstract boolean evaluate(DataFlowResult result, InfoflowResults results);
+	/**
+	 * Evaluates the condition on the given data flow result
+	 *
+	 * @param result  The data flow result
+	 * @param results All results of this data flow analysis
+	 * @return True if the given data flow result matches the condition, otherwise
+	 *         false
+	 */
+	public abstract boolean evaluate(DataFlowResult result, InfoflowResults results);
 
-    /**
-     * Gets all methods referenced by this condition
-     *
-     * @return The methods referenced by this condition
-     */
-    public Set<SootMethod> getReferencedMethods() {
-        return Collections.emptySet();
-    }
+	/**
+	 * Gets all methods referenced by this condition
+	 *
+	 * @return The methods referenced by this condition
+	 */
+	public Set<SootMethod> getReferencedMethods() {
+		Set<SootMethodAndClass> refs = getReferencedMethodDefs();
+		return refs == null || refs.isEmpty() ? Collections.emptySet()
+				: refs.stream().map(d -> Scene.v().grabMethod(d.getSignature())).collect(Collectors.toSet());
+	}
 
-    /**
-     * Gets all classes referenced by this condition
-     *
-     * @return The classes referenced by this condition
-     */
-    public Set<SootClass> getReferencedClasses() {
-        return Collections.emptySet();
-    }
+	/**
+	 * Gets all definitions of methods referenced by this condition
+	 * 
+	 * @return All definitions of methods referenced by this condition
+	 */
+	public abstract Set<SootMethodAndClass> getReferencedMethodDefs();
 
-    /**
-     * Gets all classes excluded by this condition
-     *
-     * @return The classes excluded by this condition
-     */
-    public Set<SootClass> getExcludedClasses() {
-        return Collections.emptySet();
-    }
+	/**
+	 * Gets all classes referenced by this condition
+	 *
+	 * @return The classes referenced by this condition
+	 */
+	public Set<SootClass> getReferencedClasses() {
+		return Collections.emptySet();
+	}
+
+	/**
+	 * Gets all classes excluded by this condition
+	 *
+	 * @return The classes excluded by this condition
+	 */
+	public Set<SootClass> getExcludedClasses() {
+		return Collections.emptySet();
+	}
 }
