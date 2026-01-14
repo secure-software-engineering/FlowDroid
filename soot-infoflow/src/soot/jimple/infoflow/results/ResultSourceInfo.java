@@ -48,6 +48,16 @@ public class ResultSourceInfo extends AbstractResultSourceSinkInfo {
 		this.pathAgnosticResults = pathAgnosticResults;
 	}
 
+	public ResultSourceInfo(ISourceSinkDefinition definition, AccessPath source, Stmt context, Object userData,
+			Stmt[] path, AccessPath[] pathAPs, Stmt[] pathCallSites, boolean pathAgnosticResults) {
+		super(definition, source, context, userData);
+
+		this.path = path;
+		this.pathAPs = pathAPs;
+		this.pathCallSites = pathCallSites;
+		this.pathAgnosticResults = pathAgnosticResults;
+	}
+
 	public Stmt[] getPath() {
 		return this.path;
 	}

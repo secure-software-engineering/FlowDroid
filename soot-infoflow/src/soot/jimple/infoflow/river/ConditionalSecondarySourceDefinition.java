@@ -4,26 +4,31 @@ import soot.jimple.infoflow.sourcesSinks.definitions.AbstractSourceSinkDefinitio
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
- * Special source definition for sources of secondary flows that are also conditional sinks.
+ * Special source definition for sources of secondary flows that are also
+ * conditional sinks.
  *
  * @author Tim Lange
  */
 public class ConditionalSecondarySourceDefinition extends AbstractSourceSinkDefinition {
-    public static ConditionalSecondarySourceDefinition INSTANCE = new ConditionalSecondarySourceDefinition();
+	public static ConditionalSecondarySourceDefinition INSTANCE = new ConditionalSecondarySourceDefinition();
 
-    @Override
-    public ISourceSinkDefinition getSourceOnlyDefinition() {
-        return null;
-    }
+	private ConditionalSecondarySourceDefinition() {
+		//
+	}
 
-    @Override
-    public ISourceSinkDefinition getSinkOnlyDefinition() {
-        return null;
-    }
+	@Override
+	public ISourceSinkDefinition getSourceOnlyDefinition() {
+		return null;
+	}
 
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
+	@Override
+	public ISourceSinkDefinition getSinkOnlyDefinition() {
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return false;
+	}
 
 }

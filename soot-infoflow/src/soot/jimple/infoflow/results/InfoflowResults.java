@@ -116,6 +116,21 @@ public class InfoflowResults {
 	}
 
 	/**
+	 * Gets the total number of additional data flows that can be used for filtering
+	 * context-sensitive sinks. The technique for counting flows is equivalent to
+	 * numConnections().
+	 * 
+	 * @return The number of source-to-sink connections in the additional data flows
+	 */
+	public int numAdditionalFlows() {
+		int num = 0;
+		if (this.additionalResults != null)
+			for (ResultSinkInfo sink : this.additionalResults.keySet())
+				num += this.additionalResults.get(sink).size();
+		return num;
+	}
+
+	/**
 	 * Gets whether this result object is empty, i.e. contains no information flows
 	 *
 	 * @return True if this result object is empty, otherwise false.

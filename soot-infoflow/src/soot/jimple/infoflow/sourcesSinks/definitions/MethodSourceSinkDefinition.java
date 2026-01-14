@@ -567,4 +567,17 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		return new MethodSourceSinkDefinition(smac, null, null, Collections.singleton(returnSpec), CallType.MethodCall);
 	}
 
+	/**
+	 * Creates an instance of the {@link MethodSourceSinkDefinition} class for a
+	 * sink definition that is triggered when any method is called on the given
+	 * method and the base object is tainted.
+	 * 
+	 * @param smac The method for which to identify calls on tainted base objects
+	 * @return The new {@link MethodSourceSinkDefinition} instance
+	 */
+	public static MethodSourceSinkDefinition createBaseObjectSink(SootMethodAndClass smac) {
+		AccessPathTuple baseSpec = AccessPathTuple.getBlankSinkTuple();
+		return new MethodSourceSinkDefinition(smac, Collections.singleton(baseSpec), null, null, CallType.MethodCall);
+	}
+
 }
