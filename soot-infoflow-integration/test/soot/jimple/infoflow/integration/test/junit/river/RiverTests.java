@@ -328,7 +328,7 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
 		// We don't have a problem with this pseudo-influence because we have no summary
 		// for FileInputStream.<init>(). If there was a connection between file name and
 		// stream taint state, we'd get a false positive here.
-		this.checkInfoflow(infoflow, 1);
+		this.negativeCheckInfoflow(infoflow);
 	}
 
 }
