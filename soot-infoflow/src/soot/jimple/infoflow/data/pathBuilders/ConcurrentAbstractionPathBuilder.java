@@ -59,10 +59,10 @@ public abstract class ConcurrentAbstractionPathBuilder extends AbstractAbstracti
 		long startTime = System.nanoTime();
 		long totalTime = manager.getConfig().getPathConfiguration().getPathReconstructionTotalTime();
 
-		for (final AbstractionAtSink abs : res) {
-			// We need to reset the executor before we can submit new jobs
-			executor.reset();
+		// We need to reset the executor before we can submit new jobs
+		executor.reset();
 
+		for (final AbstractionAtSink abs : res) {
 			// The solver may already have been killed
 			if (killFlag != null) {
 				// Reduce the memory pressure
