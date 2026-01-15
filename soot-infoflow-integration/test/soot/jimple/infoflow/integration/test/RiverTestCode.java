@@ -1,172 +1,198 @@
 package soot.jimple.infoflow.integration.test;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 
 public class RiverTestCode {
-    public static String source() {
-        return "secret";
-    }
-    public static int intSource() {
-        return 1337;
-    }
+	public static String source() {
+		return "secret";
+	}
 
-    public void riverTest1() {
-        try {
-            String src = source();
+	public static int intSource() {
+		return 1337;
+	}
 
-            URL url = new URL("http://some.url");
-            URLConnection con = url.openConnection();
+	public void riverTest1() {
+		try {
+			String src = source();
 
-            OutputStream os = con.getOutputStream();
+			URL url = new URL("http://some.url");
+			URLConnection con = url.openConnection();
 
-            OutputStream osb = new BufferedOutputStream(os);
-            osb.write(src.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			OutputStream os = con.getOutputStream();
 
-    public void riverTest2() {
-        try {
-            String src = source();
+			OutputStream osb = new BufferedOutputStream(os);
+			osb.write(src.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            OutputStream os = new ByteArrayOutputStream();
+	public void riverTest2() {
+		try {
+			String src = source();
 
-            OutputStream osb = new BufferedOutputStream(os);
-            osb.write(src.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			OutputStream os = new ByteArrayOutputStream();
 
-    public void riverTest3() {
-        try {
-            String src = source();
+			OutputStream osb = new BufferedOutputStream(os);
+			osb.write(src.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            URL url = new URL("http://some.url");
-            URLConnection con = url.openConnection();
+	public void riverTest3() {
+		try {
+			String src = source();
 
-            OutputStream os = con.getOutputStream();
+			URL url = new URL("http://some.url");
+			URLConnection con = url.openConnection();
 
-            BufferedOutputStream osb = new BufferedOutputStream(os);
-            osb.write(src.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			OutputStream os = con.getOutputStream();
 
-    public void riverTest4() {
-        try {
-            String src = source();
+			BufferedOutputStream osb = new BufferedOutputStream(os);
+			osb.write(src.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
+	public void riverTest4() {
+		try {
+			String src = source();
 
-            BufferedOutputStream osb = new BufferedOutputStream(os);
-            osb.write(src.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-    public void riverTest5() {
-        try {
-            String src = source();
+			BufferedOutputStream osb = new BufferedOutputStream(os);
+			osb.write(src.getBytes());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            URL url = new URL("http://some.url");
-            URLConnection con = url.openConnection();
+	public void riverTest5() {
+		try {
+			String src = source();
 
-            OutputStream os = con.getOutputStream();
+			URL url = new URL("http://some.url");
+			URLConnection con = url.openConnection();
 
-            new BufferedWriter(new OutputStreamWriter(os)).write(src);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			OutputStream os = con.getOutputStream();
 
-    public void riverTest6() {
-        try {
-            String src = source();
+			new BufferedWriter(new OutputStreamWriter(os)).write(src);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            OutputStream os = new ByteArrayOutputStream();
+	public void riverTest6() {
+		try {
+			String src = source();
 
-            new BufferedWriter(new OutputStreamWriter(os)).write(src);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			OutputStream os = new ByteArrayOutputStream();
 
-    public void riverTest7() {
-        try {
-            String src1 = source();
-            String src2 = source();
+			new BufferedWriter(new OutputStreamWriter(os)).write(src);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-            URL url = new URL("http://some.url");
-            URLConnection con = url.openConnection();
+	public void riverTest7() {
+		try {
+			String src1 = source();
+			String src2 = source();
 
-            OutputStream os1 = con.getOutputStream();
-            OutputStream os2 = new ByteArrayOutputStream();
+			URL url = new URL("http://some.url");
+			URLConnection con = url.openConnection();
 
-            OutputStream os1b = new BufferedOutputStream(os1);
-            OutputStream os2b = new BufferedOutputStream(os2);
+			OutputStream os1 = con.getOutputStream();
+			OutputStream os2 = new ByteArrayOutputStream();
 
-            os1b.write(src1.getBytes());
-            os2.write(src2.getBytes());
+			OutputStream os1b = new BufferedOutputStream(os1);
+			OutputStream os2b = new BufferedOutputStream(os2);
 
-            new BufferedWriter(new OutputStreamWriter(os1b)).write(src1);
-            new BufferedWriter(new OutputStreamWriter(os2b)).write(src2);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			os1b.write(src1.getBytes());
+			os2.write(src2.getBytes());
 
-    void sendToUrl(URL url, String data) {
-        System.out.println("leak");
-    }
+			new BufferedWriter(new OutputStreamWriter(os1b)).write(src1);
+			new BufferedWriter(new OutputStreamWriter(os2b)).write(src2);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public void riverTest8() {
-        try {
-            URL url = new URL("http://some.url");
+	void sendToUrl(URL url, String data) {
+		System.out.println("leak");
+	}
 
-            String source = source();
-            sendToUrl(url, source);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public void riverTest8() {
+		try {
+			URL url = new URL("http://some.url");
 
-    void unconditionalSink(String str) {
-        System.out.println("leak");
-    }
+			String source = source();
+			sendToUrl(url, source);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public void riverTest9() {
-        unconditionalSink(source());
-    }
+	void unconditionalSink(String str) {
+		System.out.println("leak");
+	}
 
+	public void riverTest9() {
+		unconditionalSink(source());
+	}
 
-    void classConditionalSink(String data) {
-        System.out.println("leak");
-    }
+	void classConditionalSink(String data) {
+		System.out.println("leak");
+	}
 
-    static class T {
-        void injectSensitiveData(OutputStream os) {
-            //
-        }
-    }
+	static class T {
+		void injectSensitiveData(OutputStream os) {
+			//
+		}
+	}
 
-    public void riverTest10() throws IOException {
-        int secret = intSource();
-        OutputStream os = new ByteArrayOutputStream();
-        os.write(secret);
-    }
+	public void riverTest10() throws IOException {
+		int secret = intSource();
+		OutputStream os = new ByteArrayOutputStream();
+		os.write(secret);
+	}
 
-    public void riverTest11() throws IOException {
-        int secret = intSource();
-        OutputStream os = new ByteArrayOutputStream();
-        T t = new T();
-        t.injectSensitiveData(os);
-        os.write(secret);
-    }
+	public void riverTest11() throws IOException {
+		int secret = intSource();
+		OutputStream os = new ByteArrayOutputStream();
+		T t = new T();
+		t.injectSensitiveData(os);
+		os.write(secret);
+	}
+
+	public String getExternalCacheDir() {
+		return String.valueOf(Math.random());
+	}
+
+	public void riverTest12() throws IOException {
+		String path = getExternalCacheDir();
+		OutputStream os = new FileOutputStream(path);
+		os.write(source().getBytes());
+	}
+
+	public void pseudoInfluenceTest1() throws IOException {
+		byte[] data = new byte[512];
+		String path = getExternalCacheDir();
+		new FileInputStream(path).read(data);
+		var os = new ByteArrayOutputStream();
+		os.write(data);
+		os.write(source().getBytes());
+	}
 
 }

@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20240303</version>
+            <version>20251224</version>
             <scope>test</scope>
         </dependency>
 		<dependency>
@@ -144,7 +144,7 @@
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-web</artifactId>
-		    <version>6.2.8</version>
+		    <version>7.0.2</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>

@@ -41,6 +41,17 @@ public class MultiReason implements ISolverTerminationReason, Cloneable {
 		return reasons;
 	}
 
+	/**
+	 * Checks whether this object contains a reason of the given type
+	 * 
+	 * @param reason The type of termination reason to check
+	 * @return True if this object contains a reason of the given type, false
+	 *         otherwise
+	 */
+	public boolean hasReason(Class<? extends ISolverTerminationReason> reason) {
+		return reasons.stream().anyMatch(r -> reason.isInstance(r));
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

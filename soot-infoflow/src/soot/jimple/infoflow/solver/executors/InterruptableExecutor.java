@@ -44,6 +44,10 @@ public class InterruptableExecutor extends CountingThreadPoolExecutor {
 	 * completed or after the executor has been interrupted.
 	 */
 	public void reset() {
+		// Make sure that all threads that are still running are interrupted
+		this.numRunningTasks.resetAndInterrupt();
+
+		// Reset the state of the executor
 		this.terminated = false;
 		this.interrupted = false;
 	}

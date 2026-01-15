@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.memory.ISolverTerminationReason;
+import soot.jimple.infoflow.memory.reasons.SolverTerminationReasons;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 
@@ -62,12 +63,6 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 			innerBuilder.reset();
 			innerBuilder.computeTaintPaths(batch);
 
-			// Save the termination reason
-			if (this.terminationReason == null)
-				this.terminationReason = innerBuilder.getTerminationReason();
-			else
-				this.terminationReason = this.terminationReason.combine(innerBuilder.getTerminationReason());
-
 			// Wait for the batch to complete
 			if (innerBuilder instanceof ConcurrentAbstractionPathBuilder) {
 				ConcurrentAbstractionPathBuilder concurrentBuilder = (ConcurrentAbstractionPathBuilder) innerBuilder;
@@ -82,10 +77,22 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 						resultExecutor.awaitCompletion();
 				} catch (InterruptedException e) {
 					logger.error("Could not wait for executor termination", e);
+
+					if (SolverTerminationReasons.isMemoryRelatedTermination(innerBuilder.getTerminationReason())) {
+						logger.warn("Runnuing out of memory, not computing any further path batches");
+						break;
+					}
 				}
 				resultExecutor.reset();
 			}
 			logger.info("Single batch has used " + (System.nanoTime() - beforeBatch) / 1E9 + " seconds");
+
+			// Save the termination reason
+			ISolverTerminationReason currentReason = innerBuilder.getTerminationReason();
+			if (this.terminationReason == null)
+				this.terminationReason = currentReason;
+			else
+				this.terminationReason = this.terminationReason.combine(currentReason);
 
 			// Prepare for the next batch
 			batch.clear();
