@@ -79,7 +79,7 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 					logger.error("Could not wait for executor termination", e);
 
 					if (SolverTerminationReasons.isMemoryRelatedTermination(innerBuilder.getTerminationReason())) {
-						logger.warn("Runnuing out of memory, not computing any further path batches");
+						logger.warn("Running out of memory, not computing any further path batches");
 						break;
 					}
 				}
@@ -87,8 +87,15 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 			}
 			logger.info("Single batch has used " + (System.nanoTime() - beforeBatch) / 1E9 + " seconds");
 
-			// Save the termination reason
+			// If the analysis failed due to an OOM, it doesn't make sense to proceed with
+			// the next batch and get into yet another OOM
 			ISolverTerminationReason currentReason = innerBuilder.getTerminationReason();
+			if (SolverTerminationReasons.isMemoryRelatedTermination(currentReason)) {
+				logger.warn("Running out of memory, not computing any further path batches");
+				break;
+			}
+
+			// Save the termination reason
 			if (this.terminationReason == null)
 				this.terminationReason = currentReason;
 			else
