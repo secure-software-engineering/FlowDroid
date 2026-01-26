@@ -16,9 +16,13 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Streams;
 
 import heros.solver.Pair;
 import soot.ArrayType;
@@ -527,7 +531,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand && !Scene.v().hasCallGraph()) {
 				if (config.getAliasingAlgorithm() == AliasingAlgorithm.PtsBased) {
 					//we need to split here already for the PTS to work correctly
-					splitAllBodies();
+					Iterator<SootMethod> allMethods = Iterators
+							.concat(Streams.stream(Scene.v().getApplicationClasses().snapshotIterator()).map(a -> {
+								return a.getMethods().iterator();
+							}).collect(Collectors.toList()).iterator());
+					splitAllBodies(allMethods);
 				}
 
 				PackManager.v().getPack("wjpp").apply();
@@ -920,7 +928,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 					config.getEnableExceptionTracking());
 
 			if (config.isTaintAnalysisEnabled()) {
-				splitAllBodies();
+				splitAllBodies(Scene.v().getReachableMethods().listener());
 				try {
 					runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
 				} finally {
@@ -983,13 +991,13 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	//With newer soot versions, locals are reused more often, which 
 	//can be a problem for FlowDroid. So, we split the locals prior to 
 	//running FlowDroid.
-	protected void splitAllBodies() {
+	protected void splitAllBodies(Iterator<? extends MethodOrMethodContext> it) {
 		FlowDroidLocalSplitter splitter = FlowDroidLocalSplitter.v();
-		for (SootClass sc : new ArrayList<>(Scene.v().getApplicationClasses())) {
-			for (SootMethod m : new ArrayList<>(sc.getMethods())) {
-				if (m.isConcrete()) {
-					splitter.transform(m.retrieveActiveBody());
-				}
+		while (it.hasNext()) {
+			MethodOrMethodContext mc = it.next();
+			SootMethod m = mc.method();
+			if (m.isConcrete()) {
+				splitter.transform(m.retrieveActiveBody());
 			}
 		}
 	}
