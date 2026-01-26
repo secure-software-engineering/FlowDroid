@@ -16,13 +16,9 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Streams;
 
 import heros.solver.Pair;
 import soot.ArrayType;
@@ -501,10 +497,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Allow the ICC manager to change the Soot Scene before we continue
 			if (ipcManager != null)
 				ipcManager.updateJimpleForICC();
+			if (config.getAliasingAlgorithm() == AliasingAlgorithm.PtsBased) {
 
-			// We might need to patch invokedynamic instructions
-			if (config.isPatchInvokeDynamicInstructions())
-				patchDynamicInvokeInstructions();
+			}
+
+			patchCode();
 
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
@@ -529,15 +526,6 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// reasons. Do not re-run the callgraph algorithm if the host
 			// application already provides us with a CG.
 			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand && !Scene.v().hasCallGraph()) {
-				if (config.getAliasingAlgorithm() == AliasingAlgorithm.PtsBased) {
-					//we need to split here already for the PTS to work correctly
-					Iterator<SootMethod> allMethods = Iterators
-							.concat(Streams.stream(Scene.v().getApplicationClasses().snapshotIterator()).map(a -> {
-								return a.getMethods().iterator();
-							}).collect(Collectors.toList()).iterator());
-					splitAllBodies(allMethods);
-				}
-
 				PackManager.v().getPack("wjpp").apply();
 				PackManager.v().getPack("cg").apply();
 			}
@@ -555,26 +543,33 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	/**
-	 * Re-writes dynamic invocation instructions into traditional invcations
+	 * Inserts patch-code logic
 	 */
-	private void patchDynamicInvokeInstructions() {
+	private void patchCode() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
 					Body body = sm.getActiveBody();
-					patchDynamicInvokeInstructions(body);
+					patchCode(body);
 				} else if (!(sm.getSource() instanceof MethodSourceInjector) && sm.getSource() != null) {
 					sm.setSource(new MethodSourceInjector(sm.getSource()) {
 
 						@Override
 						protected void onMethodSourceLoaded(SootMethod m, Body b) {
-							patchDynamicInvokeInstructions(b);
+							patchCode(b);
 						}
 
 					});
 				}
 			}
 		}
+	}
+
+	private void patchCode(Body body) {
+		if (config.isPatchInvokeDynamicInstructions()) {
+			patchDynamicInvokeInstructions(body);
+		}
+		FlowDroidLocalSplitter.v().transform(body);
 	}
 
 	/**
