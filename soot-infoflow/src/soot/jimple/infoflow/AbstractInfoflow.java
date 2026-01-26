@@ -49,6 +49,7 @@ import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
+import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -643,6 +644,31 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				|| calleeSubSig.equals(scene.getSubSigNumberer().findOrAdd(SIG_CONCAT))) {
 			// We initialize a StringBuilder
 			Local sb = lg.generateLocal(rtStringBuilder);
+			Local replace = null, replaceWith = null;
+
+			if (callSite instanceof AssignStmt) {
+				AssignStmt assign = (AssignStmt) callSite;
+				Iterator<ValueBox> uses = callSite.getUseBoxesIterator();
+				while (uses.hasNext()) {
+					Value lop = assign.getLeftOp();
+					if (uses.next().getValue() == lop) {
+						//Since FlowDroid doesn't support tracking the taint over this statement, we have a problem:
+						//e.g.
+						//tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String (java.lang.String,java.lang.String)>(tainted, tainted2) ...
+						//this would erroneously clear the taint on tainted 
+						//to avoid that, we introduce an alias before that statement and use that instead for our concatenation.
+						Local alias = lg.generateLocal(lop.getType());
+						Body body = callSite.getContainingBody();
+						AssignStmt assignAlias = Jimple.v().newAssignStmt(alias, lop);
+						assignAlias.addTag(SimulatedCodeElementTag.TAG);
+						assignAlias.addTag(SimulatedDynamicInvokeTag.TAG);
+						body.getUnits().insertBefore(assignAlias, callSite);
+						replace = (Local) lop;
+						replaceWith = alias;
+						break;
+					}
+				}
+			}
 
 			Stmt stmt = jimple.newAssignStmt(sb, jimple.newNewExpr(rtStringBuilder));
 			stmt.addTag(SimulatedCodeElementTag.TAG);
@@ -659,6 +685,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			for (int i = 0; i < diexpr.getArgCount(); i++) {
 				// Call toString() on the argument
 				Value arg = diexpr.getArg(i);
+				if (arg == replace) {
+					arg = replaceWith;
+				}
 				Type argType = arg.getType();
 				SootMethodRef appendRef;
 				if (argType instanceof RefType)
