@@ -55,7 +55,9 @@ import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.FlowDroidLocalSplitter.SplittedLocal;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
@@ -512,16 +514,22 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			// To cope with broken APK files, we convert all classes that are still
 			// dangling after resolution into phantoms
-			for (SootClass sc : Scene.v().getClasses())
+			for (SootClass sc : Scene.v().getClasses()) {
 				if (sc.resolvingLevel() == SootClass.DANGLING) {
 					sc.setResolvingLevel(SootClass.BODIES);
 					sc.setPhantomClass();
 				}
+			}
 
 			// We explicitly select the packs we want to run for performance
 			// reasons. Do not re-run the callgraph algorithm if the host
 			// application already provides us with a CG.
 			if (config.getCallgraphAlgorithm() != CallgraphAlgorithm.OnDemand && !Scene.v().hasCallGraph()) {
+				if (config.getAliasingAlgorithm() == AliasingAlgorithm.PtsBased) {
+					//we need to split here already for the PTS to work correctly
+					splitAllBodies();
+				}
+
 				PackManager.v().getPack("wjpp").apply();
 				PackManager.v().getPack("cg").apply();
 			}
@@ -911,8 +919,14 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			IInfoflowCFG iCfg = icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(),
 					config.getEnableExceptionTracking());
 
-			if (config.isTaintAnalysisEnabled())
-				runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+			if (config.isTaintAnalysisEnabled()) {
+				splitAllBodies();
+				try {
+					runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+				} finally {
+					unsplitAllBodies();
+				}
+			}
 
 			// Gather performance data
 			performanceData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeCallgraph) / 1E9));
@@ -936,6 +950,47 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			logger.error("Exception during data flow analysis", ex);
 			if (throwExceptions)
 				throw ex;
+		}
+	}
+
+	private void unsplitAllBodies() {
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod m : sc.getMethods()) {
+				if (m.hasActiveBody()) {
+					//We could use the local packer here, but we know exactly what was being split
+					//so we can be faster here
+					Body body = m.getActiveBody();
+					Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
+					while (it.hasNext()) {
+						ValueBox box = it.next();
+						Value val = box.getValue();
+						if (val instanceof SplittedLocal) {
+							SplittedLocal l = (SplittedLocal) val;
+							box.setValue(l.getOriginalLocal());
+						}
+					}
+					Iterator<Local> lit = body.getLocals().iterator();
+					while (lit.hasNext()) {
+						if (lit.next() instanceof SplittedLocal) {
+							lit.remove();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//With newer soot versions, locals are reused more often, which 
+	//can be a problem for FlowDroid. So, we split the locals prior to 
+	//running FlowDroid.
+	protected void splitAllBodies() {
+		FlowDroidLocalSplitter splitter = FlowDroidLocalSplitter.v();
+		for (SootClass sc : new ArrayList<>(Scene.v().getApplicationClasses())) {
+			for (SootMethod m : new ArrayList<>(sc.getMethods())) {
+				if (m.isConcrete()) {
+					splitter.transform(m.retrieveActiveBody());
+				}
+			}
 		}
 	}
 
