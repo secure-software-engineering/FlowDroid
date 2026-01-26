@@ -569,7 +569,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		if (config.isPatchInvokeDynamicInstructions()) {
 			patchDynamicInvokeInstructions(body);
 		}
-		FlowDroidLocalSplitter.v().transform(body);
+		getLocalSplitter().transform(body);
+	}
+
+	protected FlowDroidLocalSplitter getLocalSplitter() {
+		return FlowDroidLocalSplitter.v();
 	}
 
 	/**
@@ -956,7 +960,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		}
 	}
 
-	private void unsplitAllBodies() {
+	protected void unsplitAllBodies() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod m : sc.getMethods()) {
 				if (m.hasActiveBody()) {
@@ -987,11 +991,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	//can be a problem for FlowDroid. So, we split the locals prior to 
 	//running FlowDroid.
 	protected void splitAllBodies(Iterator<? extends MethodOrMethodContext> it) {
-		FlowDroidLocalSplitter splitter = FlowDroidLocalSplitter.v();
+		FlowDroidLocalSplitter splitter = getLocalSplitter();
 		while (it.hasNext()) {
 			MethodOrMethodContext mc = it.next();
 			SootMethod m = mc.method();
-			if (m.isConcrete()) {
+			if (m.isConcrete() && m.getTag(SplittedTag.NAME) == null) {
+				m.addTag(SplittedTag.v());
 				splitter.transform(m.retrieveActiveBody());
 			}
 		}
