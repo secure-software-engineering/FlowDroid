@@ -1,14 +1,19 @@
 package soot.jimple.infoflow;
 
+import java.util.Map;
+
+import soot.Body;
 import soot.Local;
 import soot.Singletons.Global;
 import soot.jimple.internal.JimpleLocal;
 import soot.toolkits.scalar.LocalSplitter;
+import soot.toolkits.scalar.UnusedLocalEliminator;
 
 /**
- * With more recent soot versions, locals are reused more often.
- * This can cause problems in FlowDroid (e.g. the overwriteParameter test case).
- * The simple solution: We split these locals beforehand
+ * With more recent soot versions, locals are reused more often. This can cause
+ * problems in FlowDroid (e.g. the overwriteParameter test case). The simple
+ * solution: We split these locals beforehand
+ * 
  * @author Marc Miltenberger
  */
 public class FlowDroidLocalSplitter extends LocalSplitter {
@@ -19,7 +24,7 @@ public class FlowDroidLocalSplitter extends LocalSplitter {
 
 		public SplittedLocal(JimpleLocal oldLocal) {
 			super(null, oldLocal.getType());
-			//do not intern the name again
+			// do not intern the name again
 			setName(oldLocal.getName());
 			if (oldLocal.isUserDefinedLocal()) {
 				setUserDefinedLocal();
@@ -43,7 +48,7 @@ public class FlowDroidLocalSplitter extends LocalSplitter {
 
 	@Override
 	protected String getNewName(String name, int count) {
-		//Reuse the old name
+		// Reuse the old name
 		return name;
 	}
 
@@ -54,6 +59,12 @@ public class FlowDroidLocalSplitter extends LocalSplitter {
 
 	public static FlowDroidLocalSplitter v() {
 		return new FlowDroidLocalSplitter();
+	}
+
+	@Override
+	protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+		super.internalTransform(body, phaseName, options);
+		UnusedLocalEliminator.v().transform(body);
 	}
 
 }
