@@ -18,6 +18,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Assume;
@@ -26,14 +27,27 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import heros.solver.Pair;
+import soot.Body;
+import soot.Local;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Value;
+import soot.ValueBox;
 import soot.jimple.infoflow.AbstractInfoflow;
 import soot.jimple.infoflow.BackwardsInfoflow;
+import soot.jimple.infoflow.FlowDroidLocalSplitter.SplittedLocal;
 import soot.jimple.infoflow.IInfoflow;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.config.ConfigForTest;
+import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.results.InfoflowResults;
+import soot.jimple.infoflow.results.ResultSinkInfo;
+import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.taintWrappers.EasyTaintWrapper;
 import soot.jimple.infoflow.test.base.AbstractJUnitTests;
+import soot.util.MultiMap;
 
 /**
  * abstract super class of all test cases which handles initialization, keeps
@@ -115,8 +129,12 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 	}
 
 	protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
+		checkCodeForNoSplitLocals();
+		//check that there are no splitted locals left
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
+			checkInfoflowResultsForNoSplitLocals(map);
+
 			assertEquals(resultCount, map.size());
 			assertTrue(map.containsSinkMethod(sink) || map.containsSinkMethod(sinkInt)
 					|| map.containsSinkMethod(sinkBoolean) || map.containsSinkMethod(sinkDouble));
@@ -132,6 +150,55 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 					|| map.isPathBetweenMethods(sinkDouble, sourceLocation));
 		} else {
 			fail("result is not available");
+		}
+	}
+
+	private void checkCodeForNoSplitLocals() {
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod m : sc.getMethods()) {
+				if (m.hasActiveBody()) {
+					Body b = m.getActiveBody();
+					for (Local l : b.getLocals()) {
+						if (l instanceof SplittedLocal) {
+							fail(String.format("Found split local in %s: %s", m.getSignature(), l.getName()));
+						}
+					}
+
+					Iterator<ValueBox> it = b.getUseAndDefBoxesIterator();
+					while (it.hasNext()) {
+						ValueBox vb = it.next();
+						Value v = vb.getValue();
+						if (v instanceof SplittedLocal) {
+							fail(String.format("Found split local in %s: %s", m.getSignature(), v));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkInfoflowResultsForNoSplitLocals(InfoflowResults map) {
+		MultiMap<ResultSinkInfo, ResultSourceInfo> res = map.getResults();
+		if (res != null) {
+			for (Pair<ResultSinkInfo, ResultSourceInfo> pair : res) {
+				ResultSinkInfo sink = pair.getO1();
+				ResultSourceInfo source = pair.getO2();
+				checkAccessPathForSplitLocals(sink.getAccessPath());
+				checkAccessPathForSplitLocals(source.getAccessPath());
+				AccessPath[] app = source.getPathAccessPaths();
+				if (app != null) {
+					for (AccessPath i : app) {
+						checkAccessPathForSplitLocals(i);
+					}
+				}
+			}
+		}
+	}
+
+	private void checkAccessPathForSplitLocals(AccessPath ap) {
+		Local l = ap.getPlainValue();
+		if (l instanceof SplittedLocal) {
+			fail("Split local found in " + ap);
 		}
 	}
 
@@ -166,7 +233,7 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 			}
 
 		}
-//		result.getConfig().setLogSourcesAndSinks(true);
+		//		result.getConfig().setLogSourcesAndSinks(true);
 
 		return result;
 	}
