@@ -2,7 +2,7 @@
 name: False positive
 about: Report a false positive, a flow reported by FlowDroid that is wrong
 title: ''
-labels: ''
+labels: 'false positive'
 assignees: ''
 
 ---

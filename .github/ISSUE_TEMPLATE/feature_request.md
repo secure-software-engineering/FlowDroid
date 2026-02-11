@@ -1,8 +1,8 @@
 ---
 name: Feature request
 about: Suggest an idea for FlowDroid.
-title: 'Feature quest: '
-labels: ''
+title: 'Feature request: '
+labels: 'enhancement '
 assignees: ''
 
 ---
