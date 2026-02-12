@@ -586,4 +586,14 @@ public class AccessPath implements Cloneable {
 		return zeroAccessPath;
 	}
 
+	/**
+	 * Creates a new access path that is effectively the same, but based on another local as plain value
+	 * @param newValue the new value
+	 * @return the rebased access path
+	 */
+	public AccessPath rebaseTo(Local newValue) {
+		return new AccessPath(newValue, baseType, fragments, taintSubFields, cutOffApproximation, arrayTaintType,
+				canHaveImmutableAliases);
+	}
+
 }

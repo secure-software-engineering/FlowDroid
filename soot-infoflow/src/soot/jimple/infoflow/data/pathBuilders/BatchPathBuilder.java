@@ -38,6 +38,7 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 		int batchId = 1;
 		long startTime = System.nanoTime();
 		long totalTime = manager.getConfig().getPathConfiguration().getPathReconstructionTotalTime();
+		int completed = 0;
 
 		while (resIt.hasNext()) {
 			// checking if the execution time exceeds the configured totalTime and logging
@@ -86,7 +87,8 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 				resultExecutor.reset();
 			}
 			logger.info("Single batch has used " + (System.nanoTime() - beforeBatch) / 1E9 + " seconds");
-
+			completed += batch.size();
+			reportCompletion(completed, res.size());
 			// If the analysis failed due to an OOM, it doesn't make sense to proceed with
 			// the next batch and get into yet another OOM
 			ISolverTerminationReason currentReason = innerBuilder.getTerminationReason();
@@ -104,6 +106,10 @@ public class BatchPathBuilder extends AbstractAbstractionPathBuilder {
 			// Prepare for the next batch
 			batch.clear();
 		}
+	}
+
+	protected void reportCompletion(int completed, int totalTasks) {
+
 	}
 
 	@Override
