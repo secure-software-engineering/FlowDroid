@@ -155,7 +155,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>de.upb.cs.swt</groupId>
+			<groupId>org.soot-oss</groupId>
 			<artifactId>axml</artifactId>
 			<version>2.1.4</version>
 		</dependency>
