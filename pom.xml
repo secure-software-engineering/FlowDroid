@@ -19,13 +19,13 @@
 
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-		<maven-nexus-staging-plugin.version>1.7.0</maven-nexus-staging-plugin.version>
 		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
 		<maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
 		<maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
 		<maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
 		<maven-assembly-plugin.version>3.8.0</maven-assembly-plugin.version>
 		<maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+		<maven-central-plugin.version>0.10.0</maven-central-plugin.version>
 		
 		<slf4j.version>2.0.17</slf4j.version>
 		<log4j.version>2.24.0</log4j.version>
@@ -133,17 +133,6 @@
             </activation>
 			<build>
 				<plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${maven-nexus-staging-plugin.version}</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -157,6 +146,16 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>${maven-central-plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>central</serverId>
+							<autoPublish>true</autoPublish>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>
