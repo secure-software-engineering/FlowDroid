@@ -167,7 +167,6 @@ public abstract class FlowDroidTests {
 
 		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 		setupApplication.getConfig().setPerformConstantPropagation(true);
-		setupApplication.getConfig().setMergeDexFiles(true);
 		setupApplication.setTaintWrapper(getTaintWrapper());
 		setConfiguration(setupApplication.getConfig());
 

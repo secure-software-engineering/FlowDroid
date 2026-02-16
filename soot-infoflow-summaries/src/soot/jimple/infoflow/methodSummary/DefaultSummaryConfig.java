@@ -49,7 +49,6 @@ public class DefaultSummaryConfig implements IInfoflowConfig {
 		options.set_ignore_classpath_errors(true);
 
 		// We can also create summaries for classes from APK files
-		options.set_process_multiple_dex(true);
 		if (summaryConfig.getAndroidPlatformDir() != null)
 			options.set_android_jars(summaryConfig.getAndroidPlatformDir());
 	}

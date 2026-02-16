@@ -173,8 +173,6 @@ public class XMLConfigurationParser {
 						callbackConfig.setMaxAnalysisCallbackDepth(Integer.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_LAYOUT_MATCHING_MODE))
 						sourceSinkConfig.setLayoutMatchingMode(LayoutMatchingMode.valueOf(data));
-					else if (currentElement.equals(XMLConstants.TAG_MERGE_DEX_FILES))
-						config.setMergeDexFiles(Boolean.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_CALLBACK_SOURCE_MODE))
 						sourceSinkConfig.setCallbackSourceMode(CallbackSourceMode.valueOf(data));
 					else if (currentElement.equals(XMLConstants.TAG_CALLBACK_ANALYSIS_TIMEOUT))

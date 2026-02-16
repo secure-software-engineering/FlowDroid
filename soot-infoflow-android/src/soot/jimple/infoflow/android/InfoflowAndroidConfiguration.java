@@ -723,8 +723,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	private final IccConfiguration iccConfig = new IccConfiguration();
 	private final AnalysisFileConfiguration analysisFileConfig = new AnalysisFileConfiguration();
 
-	private boolean mergeDexFiles = true;
-
 	private boolean performConstantPropagation;
 	private static boolean createActivityEntryMethods = true;
 
@@ -749,8 +747,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			this.sourceSinkConfig.merge(androidConfig.sourceSinkConfig);
 			this.iccConfig.merge(androidConfig.iccConfig);
 			this.analysisFileConfig.merge(androidConfig.analysisFileConfig);
-
-			this.mergeDexFiles = androidConfig.mergeDexFiles;
 		}
 	}
 
@@ -814,28 +810,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 	}
 
 	/**
-	 * Gets whether FlowDroid shall merge all dex files in the APK to get a full
-	 * picture of the app
-	 * 
-	 * @return True if FlowDroid shall merge all dex files in the APK, otherwise
-	 *         false
-	 */
-	public boolean getMergeDexFiles() {
-		return this.mergeDexFiles;
-	}
-
-	/**
-	 * Sets whether FlowDroid shall merge all dex files in the APK to get a full
-	 * picture of the app
-	 * 
-	 * @param mergeDexFiles True if FlowDroid shall merge all dex files in the APK,
-	 *                      otherwise false
-	 */
-	public void setMergeDexFiles(boolean mergeDexFiles) {
-		this.mergeDexFiles = mergeDexFiles;
-	}
-
-	/**
 	 * Gets if Flowdroid should create new Methods when creating the Activity Entry
 	 * point
 	 * 
@@ -863,7 +837,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 		result = prime * result + ((analysisFileConfig == null) ? 0 : analysisFileConfig.hashCode());
 		result = prime * result + ((callbackConfig == null) ? 0 : callbackConfig.hashCode());
 		result = prime * result + ((iccConfig == null) ? 0 : iccConfig.hashCode());
-		result = prime * result + (mergeDexFiles ? 1231 : 1237);
 		result = prime * result + (oneComponentAtATime ? 1231 : 1237);
 		result = prime * result + ((sourceSinkConfig == null) ? 0 : sourceSinkConfig.hashCode());
 		return result;
@@ -892,8 +865,6 @@ public class InfoflowAndroidConfiguration extends InfoflowConfiguration {
 			if (other.iccConfig != null)
 				return false;
 		} else if (!iccConfig.equals(other.iccConfig))
-			return false;
-		if (mergeDexFiles != other.mergeDexFiles)
 			return false;
 		if (oneComponentAtATime != other.oneComponentAtATime)
 			return false;
