@@ -10,6 +10,8 @@
     </parent>
 
     <artifactId>soot-infoflow-integration</artifactId>
+    <name>FlowDroid Integration Test Cases</name>
+    <description>Test cases for end-to-end evaluation of FlowDroid functionality across all modules</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -144,7 +146,7 @@
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-web</artifactId>
-		    <version>7.0.3</version>
+		    <version>7.0.4</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
