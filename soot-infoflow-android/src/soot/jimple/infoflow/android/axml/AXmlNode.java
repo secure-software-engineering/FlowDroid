@@ -157,8 +157,9 @@ public class AXmlNode extends AXmlElement {
 	 * 
 	 * @param child a new child for this node
 	 * @return this node itself for method chaining
-	 * @throws IndexOutOfBoundsException if the index is out of range (index < 0 ||
-	 *                                   index > children.size())
+	 * @throws IndexOutOfBoundsException if the index is out of range:
+	 *                                   <code>{@literal index < 0 ||
+	 *                                   index > children.size()}</code>)
 	 */
 	public AXmlNode addChild(AXmlNode child, int index) {
 		if (this.children == null)

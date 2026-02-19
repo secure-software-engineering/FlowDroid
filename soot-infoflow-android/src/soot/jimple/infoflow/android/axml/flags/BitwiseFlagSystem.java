@@ -14,8 +14,9 @@ import java.util.List;
  * 01 Option B (cannot be used with option A): 10 Option C (only valid when used
  * with Option A): 11
  * 
- * In this case, we could do checking of B via ((v & 10) == 1) && ((v & 1) != 1)
- * but sometimes there are a lot of options (e.g. inputType)
+ * In this case, we could do checking of B via
+ * <code>{@literal ((v & 10) == 1) && ((v & 1) != 1)}</code> but sometimes there
+ * are a lot of options (e.g. inputType)
  * 
  * @param <T> the keys used to distinguish flags
  */

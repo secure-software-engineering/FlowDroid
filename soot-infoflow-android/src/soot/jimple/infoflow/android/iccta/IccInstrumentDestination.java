@@ -55,7 +55,8 @@ public class IccInstrumentDestination {
 	 * take one Intent as their parameter.
 	 * 
 	 * the best way is to use a place holder parameter to avoid exist construct
-	 * method and use exist construct to build the new <init> method.
+	 * method and use exist construct to build the new
+	 * <code>{@literal <init>}</code> method.
 	 * 
 	 * @param compSootClass
 	 * @param intentSootField

@@ -337,9 +337,10 @@ public class Aliasing {
 	/**
 	 * Checks whether the given newly created taint can have an alias at the given
 	 * statement. Assume a statement a.x = source(). This will check whether
-	 * tainting a.<?> can induce new aliases or not.
+	 * tainting <code>{@literal a.<?>}</code> can induce new aliases or not.
 	 * 
 	 * @param val    The value which gets tainted
+	 * 
 	 * @param source The source from which the taints comes from
 	 * @return True if the analysis must look for aliases for the newly constructed
 	 *         taint, otherwise false

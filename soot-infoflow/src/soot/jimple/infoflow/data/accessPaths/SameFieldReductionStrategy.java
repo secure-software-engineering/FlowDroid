@@ -16,12 +16,12 @@ import soot.jimple.infoflow.data.AccessPathFragment;
  * fragments.
  * </p>
  * 
- * <pre>
+ * <code>{@literal
  * <java.lang.Thread: java.lang.ThreadGroup group>
  * <java.lang.ThreadGroup: java.lang.Thread[] threads>
  * <java.lang.Thread: java.lang.ThreadGroup group>
  * <java.lang.ThreadGroup: java.lang.Thread[] threads> *
- * </pre>
+ * }</code>
  * 
  * @author Steven Arzt
  *

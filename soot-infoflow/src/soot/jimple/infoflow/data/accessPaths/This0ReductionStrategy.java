@@ -11,9 +11,9 @@ import soot.jimple.infoflow.data.AccessPathFragment;
  * its enclosing class to direct accesses.
  * </p>
  * 
- * <pre>
+ * <code>
  * a.inner.this$0.c -> a.c
- * </pre>
+ * </code>
  * 
  * @author Steven Arzt
  *

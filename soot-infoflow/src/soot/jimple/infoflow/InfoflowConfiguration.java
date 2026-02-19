@@ -961,7 +961,7 @@ public class InfoflowConfiguration {
 		 * Gets the timeout for the result serialization process in seconds. Writing out
 		 * the results is aborted if it takes longer than the given amount of time.
 		 *
-		 * @result The maximum time for writing out the results in seconds
+		 * @return The maximum time for writing out the results in seconds
 		 */
 		public long getResultSerializationTimeout() {
 			return this.resultSerializationTimeout;
