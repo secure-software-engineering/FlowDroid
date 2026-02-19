@@ -296,8 +296,7 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	 * Dispatch the processing of a given edge. It may be executed in a different
 	 * thread.
 	 * 
-	 * @param newSelfLoop indicate that this path edge is a self-loop edge like <s,
-	 *                    d>--><s, d>.
+	 * @param newSelfLoop indicate that this path edge is a self-loop edge like <pre>{@literal<s,d>--><s, d>}</pre>.
 	 * @param edge        the edge to process
 	 * @param orgSrc      used for building abstraction dependency graph.
 	 */

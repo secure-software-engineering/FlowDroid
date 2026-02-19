@@ -27,7 +27,8 @@ abstract class AbstractXMLReader {
 	 * Checks whether the given XML is valid against the XSD for the new data
 	 * format.
 	 * 
-	 * @param is The stream from which to read the XML data
+	 * @param reader      The reader from which to read the XML data
+	 * @param xsdFilePath the path to the XSD schema file
 	 * @return true = valid XML false = invalid XML
 	 * @throws IOException
 	 */

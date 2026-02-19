@@ -44,8 +44,7 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D, A> extends
 	protected int edgeThreshold = 0;
 
 	public AbstractReferenceCountingGarbageCollector(BiDiInterproceduralCFG<N, SootMethod> icfg,
-			ConcurrentHashMultiMap<A, PathEdge<N, D>> jumpFunctions,
-			IGCReferenceProvider<A> referenceProvider) {
+			ConcurrentHashMultiMap<A, PathEdge<N, D>> jumpFunctions, IGCReferenceProvider<A> referenceProvider) {
 		super(icfg, jumpFunctions, referenceProvider);
 	}
 
@@ -131,8 +130,6 @@ public abstract class AbstractReferenceCountingGarbageCollector<N, D, A> extends
 	/**
 	 * Method that is called after the last edge has been removed from the jump
 	 * functions
-	 * 
-	 * @param gcedMethods The number of methods for which edges have been removed
 	 */
 	protected void onAfterRemoveEdges() {
 	}

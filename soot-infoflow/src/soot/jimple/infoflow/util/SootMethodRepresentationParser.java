@@ -45,10 +45,12 @@ public class SootMethodRepresentationParser {
 
 	/**
 	 * parses a string in soot representation, for example:
+	 * 
+	 * <pre>{@literal
 	 * <soot.jimple.infoflow.test.TestNoMain: java.lang.String function1()>
 	 * <soot.jimple.infoflow.test.TestNoMain: void functionCallOnObject()>
-	 * <soot.jimple.infoflow.test.TestNoMain: java.lang.String
-	 * function2(java.lang.String,java.lang.String)>
+	 * <soot.jimple.infoflow.test.TestNoMain: java.lang.String function2(java.lang.String,java.lang.String)>
+	 * }</pre>
 	 * 
 	 * @param parseString The method signature to parse
 	 */
@@ -173,6 +175,7 @@ public class SootMethodRepresentationParser {
 
 	/**
 	 * Returns the return type of the sub signature
+	 * 
 	 * @param subsig the sub signature
 	 * @return the return type
 	 */

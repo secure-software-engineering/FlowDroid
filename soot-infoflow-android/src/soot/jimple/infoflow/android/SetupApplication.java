@@ -928,14 +928,13 @@ public class SetupApplication implements ITaintWrapperDataFlowAnalysis {
 	 * out of memory. This method also starts the watchdog thread. Derived classes
 	 * can implement their own timeout handling if necessary.
 	 * 
-	 * @param callbackConfig The configuration for the callback analysis
-	 * @param analyzer       The callback analyzer
+	 * @param analyzer The callback analyzer
 	 * @return The memory watcher that keeps track of the amount of memory spent in
 	 *         the callback analysis
 	 */
-	protected FlowDroidMemoryWatcher createCallbackMemoryWatcher(AbstractCallbackAnalyzer jimpleClass) {
+	protected FlowDroidMemoryWatcher createCallbackMemoryWatcher(AbstractCallbackAnalyzer analyzer) {
 		FlowDroidMemoryWatcher memoryWatcher = new FlowDroidMemoryWatcher(config.getMemoryThreshold());
-		memoryWatcher.addSolver((IMemoryBoundedSolver) jimpleClass);
+		memoryWatcher.addSolver((IMemoryBoundedSolver) analyzer);
 		return memoryWatcher;
 	}
 
