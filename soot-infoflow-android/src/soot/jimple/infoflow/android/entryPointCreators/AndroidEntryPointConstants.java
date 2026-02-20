@@ -41,18 +41,77 @@ public class AndroidEntryPointConstants {
 	public static final String APPCOMPATACTIVITYCLASS_X = "androidx.appcompat.app.AppCompatActivity";
 
 	public static final String ACTIVITY_ONCREATE = "void onCreate(android.os.Bundle)";
+	public static final String ACTIVITY_ONCREATE2 = "void onCreate(android.os.Bundle,android.os.PersistableBundle)";
 	public static final String ACTIVITY_ONSTART = "void onStart()";
 	public static final String ACTIVITY_ONRESTOREINSTANCESTATE = "void onRestoreInstanceState(android.os.Bundle)";
 	public static final String ACTIVITY_ONPOSTCREATE = "void onPostCreate(android.os.Bundle)";
+	public static final String ACTIVITY_ONPOSTCREATE2 = "void onPostCreate(android.os.Bundle,android.os.PersistableBundle)";
 	public static final String ACTIVITY_ONRESUME = "void onResume()";
 	public static final String ACTIVITY_ONPOSTRESUME = "void onPostResume()";
 	public static final String ACTIVITY_ONCREATEDESCRIPTION = "java.lang.CharSequence onCreateDescription()";
 	public static final String ACTIVITY_ONSAVEINSTANCESTATE = "void onSaveInstanceState(android.os.Bundle)";
+	public static final String ACTIVITY_ONSAVEINSTANCESTATE2 = "void onSaveInstanceState(android.os.Bundle,android.os.PersistableBundle)";
+
 	public static final String ACTIVITY_ONPAUSE = "void onPause()";
 	public static final String ACTIVITY_ONSTOP = "void onStop()";
 	public static final String ACTIVITY_ONRESTART = "void onRestart()";
 	public static final String ACTIVITY_ONDESTROY = "void onDestroy()";
 	public static final String ACTIVITY_ONATTACHFRAGMENT = "void onAttachFragment(android.app.Fragment)";
+
+	public static final String ACTIVITY_ONGENERICMOTIONEVENT = "boolean onGenericMotionEvent(android.view.MotionEvent)";
+	public static final String ACTIVITY_ONENTERANIMATIONCOMPLETE = "void onEnterAnimationComplete()";
+	public static final String ACTIVITY_ONGETDIRECTACTIONS = "void onGetDirectActions(android.os.CancellationSignal,java.util.function.Consumer)";
+	public static final String ACTIVITY_ONCONTEXTITEMSELECTED = "boolean onContextItemSelected(android.view.MenuItem)";
+	public static final String ACTIVITY_ONSEARCHREQUESTED = "boolean onSearchRequested()";
+	public static final String ACTIVITY_ONSEARCHREQUESTED2 = "boolean onSearchRequested(android.view.SearchEvent)";
+	public static final String ACTIVITY_ONKEYSHORTCUT = "boolean onKeyShortcut(int,android.view.KeyEvent)";
+	public static final String ACTIVITY_ONKEYDOWN = "boolean onKeyDown(int,android.view.KeyEvent)";
+	public static final String ACTIVITY_ONKEYMULTIPLE = "boolean onKeyMultiple(int,int,android.view.KeyEvent)";
+	public static final String ACTIVITY_ONCHILDTITLECHANGED = "void onChildTitleChanged(android.app.Activity,java.lang.CharSequence)";
+	public static final String ACTIVITY_ONWINDOWSTARTINGACTIONMODE = "android.view.ActionMode onWindowStartingActionMode(android.view.ActionMode$Callback)";
+	public static final String ACTIVITY_ONWINDOWSTARTINGACTIONMODE2 = "android.view.ActionMode onWindowStartingActionMode(android.view.ActionMode$Callback,int)";
+	public static final String ACTIVITY_OVERRIDEPENDINGTRANSITION = "void overridePendingTransition(int,int)";
+	public static final String ACTIVITY_OVERRIDEPENDINGTRANSITION2 = "void overridePendingTransition(int,int,int)";
+	public static final String ACTIVITY_ONPICTUREINPICTUREMODECHANGED = "void onPictureInPictureModeChanged(boolean,android.content.res.Configuration)";
+	public static final String ACTIVITY_ONPICTUREINPICTUREMODECHANGED2 = "void onPictureInPictureModeChanged(boolean)";
+	public static final String ACTIVITY_ONTOUCHEVENT = "boolean onTouchEvent(android.view.MotionEvent)";
+	public static final String ACTIVITY_ONACTIONMODESTARTED = "void onActionModeStarted(android.view.ActionMode)";
+	public static final String ACTIVITY_ONNAVIGATEUP = "boolean onNavigateUp()";
+	public static final String ACTIVITY_ONMULTIWINDOWMODECHANGED = "void onMultiWindowModeChanged(boolean)";
+	public static final String ACTIVITY_ONMULTIWINDOWMODECHANGED2 = "void onMultiWindowModeChanged(boolean,android.content.res.Configuration)";
+	public static final String ACTIVITY_ONPICTUREINPICTUREREQUESTED = "boolean onPictureInPictureRequested()";
+	public static final String ACTIVITY_ONPREPAREOPTIONSMENU = "boolean onPrepareOptionsMenu(android.view.Menu)";
+	public static final String ACTIVITY_ONPREPAREDIALOG = "void onPrepareDialog(int,android.app.Dialog)";
+	public static final String ACTIVITY_ONPREPAREDIALOG2 = "void onPrepareDialog(int,android.app.Dialog,android.os.Bundle)";
+	public static final String ACTIVITY_ONPROVIDEASSISTDATA = "void onProvideAssistData(android.os.Bundle)";
+	public static final String ACTIVITY_ONPREPARENAVIGATEUPTASKSTACK = "void onPrepareNavigateUpTaskStack(android.app.TaskStackBuilder)";
+	public static final String ACTIVITY_ONOPTIONSMENUCLOSED = "void onOptionsMenuClosed(android.view.Menu)";
+	public static final String ACTIVITY_ONCONTEXTMENUCLOSED = "void onContextMenuClosed(android.view.Menu)";
+	public static final String ACTIVITY_ONOPTIONSITEMSELECTED = "boolean onOptionsItemSelected(android.view.MenuItem)";
+	public static final String ACTIVITY_ONTITLECHANGED = "void onTitleChanged(java.lang.CharSequence,int)";
+	public static final String ACTIVITY_ONUSERLEAVEHINT = "void onUserLeaveHint()";
+	public static final String ACTIVITY_ONPROVIDEKEYBOARDSHORTCUTS = "void onProvideKeyboardShortcuts(java.util.List,android.view.Menu,int)";
+	public static final String ACTIVITY_ONPROVIDEASSISTCONTENT = "void onProvideAssistContent(android.app.assist.AssistContent)";
+	public static final String ACTIVITY_ONAPPLYTHEMERESOURCE = "void onApplyThemeResource(android.content.res.Resources$Theme,int,boolean)";
+	public static final String ACTIVITY_ONKEYLONGPRESS = "boolean onKeyLongPress(int,android.view.KeyEvent)";
+	public static final String ACTIVITY_ONKEYUP = "boolean onKeyUp(int,android.view.KeyEvent)";
+	public static final String ACTIVITY_ONCREATEVIEW = "android.view.View onCreateView(java.lang.String,android.content.Context,android.util.AttributeSet)";
+	public static final String ACTIVITY_ONCREATENAVIGATEUPTASKSTACK = "void onCreateNavigateUpTaskStack(android.app.TaskStackBuilder)";
+	public static final String ACTIVITY_ONPICTUREINPICTUREUISTATECHANGED = "void onPictureInPictureUiStateChanged(android.app.PictureInPictureUiState)";
+	public static final String ACTIVITY_ONMENUOPENED = "boolean onMenuOpened(int,android.view.Menu)";
+	public static final String ACTIVITY_ONLOCALVOICEINTERACTIONSTARTED = "void onLocalVoiceInteractionStarted()";
+	public static final String ACTIVITY_ONLOCALVOICEINTERACTIONSTOPPED = "void onLocalVoiceInteractionStopped()";
+	public static final String ACTIVITY_ONTOPRESUMEDACTIVITYCHANGED = "void onTopResumedActivityChanged(boolean)";
+	public static final String ACTIVITY_ONATTACHEDTOWINDOW = "void onAttachedToWindow()";
+	public static final String ACTIVITY_ONWINDOWFOCUSCHANGED = "void onWindowFocusChanged(boolean)";
+	public static final String ACTIVITY_ONWINDOWATTRIBUTESCHANGED = "void onWindowAttributesChanged(android.view.WindowManager$LayoutParams)";
+	public static final String ACTIVITY_ONBACKPRESSED = "void onBackPressed()";
+	public static final String ACTIVITY_ONSTATENOTSAVED = "void onStateNotSaved()";
+	public static final String ACTIVITY_ONPANELCLOSED = "void onPanelClosed(int,android.view.Menu)";
+	public static final String ACTIVITY_ONTRACKBALLEVENT = "boolean onTrackballEvent(android.view.MotionEvent)";
+	public static final String ACTIVITY_ONCREATETHUMBNAIL = "boolean onCreateThumbnail(android.graphics.Bitmap,android.graphics.Canvas)";
+	public static final String ACTIVITY_ONMENUITEMSELECTED = "boolean onMenuItemSelected(int,android.view.MenuItem)";
+	public static final String ACTIVITY_ONCREATECONTEXTMENU = "void onCreateContextMenu(android.view.ContextMenu,android.view.View,android.view.ContextMenu$ContextMenuInfo)";
 
 	public static final String SERVICE_ONCREATE = "void onCreate()";
 	public static final String SERVICE_ONSTART1 = "void onStart(android.content.Intent,int)";
@@ -60,6 +119,7 @@ public class AndroidEntryPointConstants {
 	public static final String SERVICE_ONBIND = "android.os.IBinder onBind(android.content.Intent)";
 	public static final String SERVICE_ONREBIND = "void onRebind(android.content.Intent)";
 	public static final String SERVICE_ONUNBIND = "boolean onUnbind(android.content.Intent)";
+	public static final String SERVICE_ONTIMEOUT = "void onTimeout(int)";
 	public static final String SERVICE_ONDESTROY = "void onDestroy()";
 
 	public static final String GCMINTENTSERVICE_ONDELETEDMESSAGES = "void onDeletedMessages(android.content.Context,int)";
@@ -100,6 +160,32 @@ public class AndroidEntryPointConstants {
 	public static final String CONTENTPROVIDER_UPDATE = "int update(android.net.Uri,android.content.ContentValues,java.lang.String,java.lang.String[])";
 	public static final String CONTENTPROVIDER_DELETE = "int delete(android.net.Uri,java.lang.String,java.lang.String[])";
 	public static final String CONTENTPROVIDER_GETTYPE = "java.lang.String getType(android.net.Uri)";
+	public static final String CONTENTPROVIDER_INSERT2 = "android.net.Uri insert(android.net.Uri,android.content.ContentValues,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_UPDATE2 = "int update(android.net.Uri,android.content.ContentValues,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_APPLYBATCH = "android.content.ContentProviderResult[] applyBatch(java.lang.String,java.util.ArrayList)";
+	public static final String CONTENTPROVIDER_APPLYBATCH2 = "android.content.ContentProviderResult[] applyBatch(java.util.ArrayList)";
+	public static final String CONTENTPROVIDER_OPENTYPEDASSETFILE = "android.content.res.AssetFileDescriptor openTypedAssetFile(android.net.Uri,java.lang.String,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_BULKINSERT = "int bulkInsert(android.net.Uri,android.content.ContentValues[])";
+	public static final String CONTENTPROVIDER_QUERY2 = "android.database.Cursor query(android.net.Uri,java.lang.String[],android.os.Bundle,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_QUERY3 = "android.database.Cursor query(android.net.Uri,java.lang.String[],java.lang.String,java.lang.String[],java.lang.String,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_OPENTYPEDASSETFILE2 = "android.content.res.AssetFileDescriptor openTypedAssetFile(android.net.Uri,java.lang.String,android.os.Bundle,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_CALL = "android.os.Bundle call(java.lang.String,java.lang.String,java.lang.String,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_CALL2 = "android.os.Bundle call(java.lang.String,java.lang.String,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_GETTYPEANONYMOUS = "java.lang.String getTypeAnonymous(android.net.Uri)";
+	public static final String CONTENTPROVIDER_OPENPIPEHELPER = "android.os.ParcelFileDescriptor openPipeHelper(android.net.Uri,java.lang.String,android.os.Bundle,java.lang.Object,android.content.ContentProvider$PipeDataWriter)";
+	public static final String CONTENTPROVIDER_CANONICALIZE = "android.net.Uri canonicalize(android.net.Uri)";
+	public static final String CONTENTPROVIDER_UNCANONICALIZE = "android.net.Uri uncanonicalize(android.net.Uri)";
+	public static final String CONTENTPROVIDER_OPENFILE = "android.os.ParcelFileDescriptor openFile(android.net.Uri,java.lang.String,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_OPENFILE2 = "android.os.ParcelFileDescriptor openFile(android.net.Uri,java.lang.String)";
+	public static final String CONTENTPROVIDER_GETSTREAMTYPES = "java.lang.String[] getStreamTypes(android.net.Uri,java.lang.String)";
+	public static final String CONTENTPROVIDER_ISTEMPORARY = "boolean isTemporary()";
+	public static final String CONTENTPROVIDER_ATTACHINFO = "void attachInfo(android.content.Context,android.content.pm.ProviderInfo)";
+	public static final String CONTENTPROVIDER_ONCALLINGPACKAGECHANGED = "void onCallingPackageChanged()";
+	public static final String CONTENTPROVIDER_OPENASSETFILE = "android.content.res.AssetFileDescriptor openAssetFile(android.net.Uri,java.lang.String)";
+	public static final String CONTENTPROVIDER_OPENASSETFILE2 = "android.content.res.AssetFileDescriptor openAssetFile(android.net.Uri,java.lang.String,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_REFRESH = "boolean refresh(android.net.Uri,android.os.Bundle,android.os.CancellationSignal)";
+	public static final String CONTENTPROVIDER_DELETE2 = "int delete(android.net.Uri,android.os.Bundle)";
+	public static final String CONTENTPROVIDER_DUMP = "void dump(java.io.FileDescriptor,java.io.PrintWriter,java.lang.String[])";
 
 	public static final String APPLICATION_ONCREATE = "void onCreate()";
 	public static final String APPLICATION_ONTERMINATE = "void onTerminate()";
@@ -134,14 +220,35 @@ public class AndroidEntryPointConstants {
 	 * ========================================================================
 	 */
 
-	private static final String[] activityMethods = { ACTIVITY_ONCREATE, ACTIVITY_ONDESTROY, ACTIVITY_ONPAUSE,
-			ACTIVITY_ONRESTART, ACTIVITY_ONRESUME, ACTIVITY_ONSTART, ACTIVITY_ONSTOP, ACTIVITY_ONSAVEINSTANCESTATE,
-			ACTIVITY_ONRESTOREINSTANCESTATE, ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE, ACTIVITY_ONPOSTRESUME,
-			ACTIVITY_ONATTACHFRAGMENT };
+	private static final String[] activityMethods = { ACTIVITY_ONCREATE, ACTIVITY_ONCREATE2, ACTIVITY_ONDESTROY,
+			ACTIVITY_ONPAUSE, ACTIVITY_ONRESTART, ACTIVITY_ONRESUME, ACTIVITY_ONSTART, ACTIVITY_ONSTOP,
+			ACTIVITY_ONSAVEINSTANCESTATE2, ACTIVITY_ONSAVEINSTANCESTATE, ACTIVITY_ONRESTOREINSTANCESTATE,
+			ACTIVITY_ONCREATEDESCRIPTION, ACTIVITY_ONPOSTCREATE2, ACTIVITY_ONPOSTCREATE, ACTIVITY_ONPOSTRESUME,
+			ACTIVITY_ONATTACHFRAGMENT, ACTIVITY_ONGENERICMOTIONEVENT, ACTIVITY_ONENTERANIMATIONCOMPLETE,
+			ACTIVITY_ONGETDIRECTACTIONS, ACTIVITY_ONCONTEXTITEMSELECTED, ACTIVITY_ONSEARCHREQUESTED,
+			ACTIVITY_ONSEARCHREQUESTED2, ACTIVITY_ONKEYSHORTCUT, ACTIVITY_ONKEYDOWN, ACTIVITY_ONKEYMULTIPLE,
+			ACTIVITY_ONCHILDTITLECHANGED, ACTIVITY_ONWINDOWSTARTINGACTIONMODE, ACTIVITY_ONWINDOWSTARTINGACTIONMODE2,
+			ACTIVITY_OVERRIDEPENDINGTRANSITION, ACTIVITY_OVERRIDEPENDINGTRANSITION2,
+			ACTIVITY_ONPICTUREINPICTUREMODECHANGED, ACTIVITY_ONPICTUREINPICTUREMODECHANGED2, ACTIVITY_ONTOUCHEVENT,
+			ACTIVITY_ONACTIONMODESTARTED, ACTIVITY_ONNAVIGATEUP, ACTIVITY_ONMULTIWINDOWMODECHANGED,
+			ACTIVITY_ONMULTIWINDOWMODECHANGED2, ACTIVITY_ONPICTUREINPICTUREREQUESTED, ACTIVITY_ONPREPAREOPTIONSMENU,
+			ACTIVITY_ONPREPAREDIALOG, ACTIVITY_ONPREPAREDIALOG2, ACTIVITY_ONPROVIDEASSISTDATA,
+			ACTIVITY_ONPREPARENAVIGATEUPTASKSTACK, ACTIVITY_ONOPTIONSMENUCLOSED, ACTIVITY_ONCONTEXTMENUCLOSED,
+			ACTIVITY_ONOPTIONSITEMSELECTED, ACTIVITY_ONTITLECHANGED, ACTIVITY_ONUSERLEAVEHINT,
+			ACTIVITY_ONPROVIDEKEYBOARDSHORTCUTS, ACTIVITY_ONPROVIDEASSISTCONTENT, ACTIVITY_ONAPPLYTHEMERESOURCE,
+			ACTIVITY_ONKEYLONGPRESS, ACTIVITY_ONKEYUP, ACTIVITY_ONCREATEVIEW, ACTIVITY_ONCREATENAVIGATEUPTASKSTACK,
+			ACTIVITY_ONPICTUREINPICTUREUISTATECHANGED, ACTIVITY_ONMENUOPENED, ACTIVITY_ONLOCALVOICEINTERACTIONSTARTED,
+			ACTIVITY_ONLOCALVOICEINTERACTIONSTOPPED, ACTIVITY_ONTOPRESUMEDACTIVITYCHANGED, ACTIVITY_ONATTACHEDTOWINDOW,
+			ACTIVITY_ONWINDOWFOCUSCHANGED, ACTIVITY_ONWINDOWATTRIBUTESCHANGED, ACTIVITY_ONBACKPRESSED,
+			ACTIVITY_ONSTATENOTSAVED, ACTIVITY_ONPANELCLOSED, ACTIVITY_ONTRACKBALLEVENT, ACTIVITY_ONCREATETHUMBNAIL,
+			ACTIVITY_ONMENUITEMSELECTED, ACTIVITY_ONCREATECONTEXTMENU, COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED,
+			COMPONENTCALLBACKS_ONLOWMEMORY, COMPONENTCALLBACKS2_ONTRIMMEMORY };
 	private static final List<String> activityMethodList = Arrays.asList(activityMethods);
 
 	private static final String[] serviceMethods = { SERVICE_ONCREATE, SERVICE_ONDESTROY, SERVICE_ONSTART1,
-			SERVICE_ONSTART2, SERVICE_ONBIND, SERVICE_ONREBIND, SERVICE_ONUNBIND };
+			SERVICE_ONSTART2, SERVICE_ONBIND, SERVICE_ONREBIND, SERVICE_ONTIMEOUT, SERVICE_ONUNBIND,
+			COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED, COMPONENTCALLBACKS_ONLOWMEMORY,
+			COMPONENTCALLBACKS2_ONTRIMMEMORY };
 	private static final List<String> serviceMethodList = Arrays.asList(serviceMethods);
 
 	private static final String[] fragmentMethods = { FRAGMENT_ONCREATE, FRAGMENT_ONDESTROY, FRAGMENT_ONPAUSE,
@@ -167,7 +274,17 @@ public class AndroidEntryPointConstants {
 	private static final List<String> broadcastMethodList = Arrays.asList(broadcastMethods);
 
 	private static final String[] contentproviderMethods = { CONTENTPROVIDER_ONCREATE, CONTENTPROVIDER_DELETE,
-			CONTENTPROVIDER_GETTYPE, CONTENTPROVIDER_INSERT, CONTENTPROVIDER_QUERY, CONTENTPROVIDER_UPDATE };
+			CONTENTPROVIDER_GETTYPE, CONTENTPROVIDER_INSERT, CONTENTPROVIDER_QUERY, CONTENTPROVIDER_UPDATE,
+			CONTENTPROVIDER_INSERT2, CONTENTPROVIDER_UPDATE2, CONTENTPROVIDER_APPLYBATCH, CONTENTPROVIDER_APPLYBATCH2,
+			CONTENTPROVIDER_OPENTYPEDASSETFILE, CONTENTPROVIDER_BULKINSERT, CONTENTPROVIDER_QUERY2,
+			CONTENTPROVIDER_QUERY3, CONTENTPROVIDER_OPENTYPEDASSETFILE2, CONTENTPROVIDER_CALL, CONTENTPROVIDER_CALL2,
+			CONTENTPROVIDER_GETTYPEANONYMOUS, CONTENTPROVIDER_OPENPIPEHELPER, CONTENTPROVIDER_CANONICALIZE,
+			CONTENTPROVIDER_UNCANONICALIZE, CONTENTPROVIDER_OPENFILE, CONTENTPROVIDER_OPENFILE2,
+			CONTENTPROVIDER_GETSTREAMTYPES, CONTENTPROVIDER_ISTEMPORARY, CONTENTPROVIDER_ATTACHINFO,
+			CONTENTPROVIDER_ONCALLINGPACKAGECHANGED, CONTENTPROVIDER_OPENASSETFILE, CONTENTPROVIDER_OPENASSETFILE2,
+			CONTENTPROVIDER_REFRESH, CONTENTPROVIDER_DELETE2, CONTENTPROVIDER_DUMP,
+			COMPONENTCALLBACKS_ONCONFIGURATIONCHANGED, COMPONENTCALLBACKS2_ONTRIMMEMORY,
+			COMPONENTCALLBACKS_ONLOWMEMORY };
 	private static final List<String> contentProviderMethodList = Arrays.asList(contentproviderMethods);
 
 	private static final String[] applicationMethods = { APPLICATION_ONCREATE, APPLICATION_ONTERMINATE };
