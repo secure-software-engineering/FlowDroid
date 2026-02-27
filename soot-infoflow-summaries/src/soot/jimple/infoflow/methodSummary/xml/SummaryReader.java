@@ -595,8 +595,6 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isParameter(Map<String, String> attributes) {
-		if (attributes.get(ATTRIBUTE_FLOWTYPE) == null)
-			System.out.print("");
 		return attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Parameter.toString());
 	}
 
