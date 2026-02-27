@@ -305,4 +305,30 @@ public abstract class RiverTests extends RiverBaseJUnitTests {
 		this.checkInfoflow(infoflow, 1);
 	}
 
+	// Test className on path
+	@Test(timeout = 300000)
+	public void riverTest12() {
+		IInfoflow infoflow = this.initInfoflow();
+		List<String> epoints = new ArrayList<>();
+		epoints.add("<soot.jimple.infoflow.integration.test.RiverTestCode: void riverTest12()>");
+		infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints),
+				getSourceSinkManager(infoflow));
+		this.checkInfoflow(infoflow, 1);
+	}
+
+	// Test className on path
+	@Test(timeout = 300000)
+	public void pseudoInfluenceTest1() {
+		IInfoflow infoflow = this.initInfoflow();
+		List<String> epoints = new ArrayList<>();
+		epoints.add("<soot.jimple.infoflow.integration.test.RiverTestCode: void pseudoInfluenceTest1()>");
+		infoflow.computeInfoflow(appPath, libPath, new DefaultEntryPointCreator(epoints),
+				getSourceSinkManager(infoflow));
+
+		// We don't have a problem with this pseudo-influence because we have no summary
+		// for FileInputStream.<init>(). If there was a connection between file name and
+		// stream taint state, we'd get a false positive here.
+		this.negativeCheckInfoflow(infoflow);
+	}
+
 }

@@ -89,7 +89,6 @@
 			<xs:element name="maxCallbacksPerComponent" type="xs:int" minOccurs="0" />
 			<xs:element name="maxCallbackDepth" type="xs:int" minOccurs="0" />
 			<xs:element name="layoutMatchingMode" type="layoutMatchingModeType" minOccurs="0" />
-			<xs:element name="mergeDexFiles" type="xs:boolean" minOccurs="0" />
 			<xs:element name="callbackSourceMode" type="callbackSourceModeType" minOccurs="0" />
 			<xs:element name="callbackAnalysisTimeout" type="xs:int" minOccurs="0" />
 		</xs:all>

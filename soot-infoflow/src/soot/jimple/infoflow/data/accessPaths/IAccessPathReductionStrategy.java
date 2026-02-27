@@ -14,9 +14,9 @@ import soot.jimple.infoflow.data.AccessPathFragment;
  * Examples for reduction:
  * </p>
  * 
- * <pre>
+ * <code>
  * list.next.prev -> list
- * </pre>
+ * </code>
  * 
  * @author Steven Arzt
  *

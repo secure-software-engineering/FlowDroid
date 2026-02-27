@@ -29,7 +29,6 @@ class XMLConstants {
 	public static final String TAG_MAX_CALLBACKS_PER_COMPONENT = "maxCallbacksPerComponent";
 	public static final String TAG_MAX_CALLBACK_DEPTH = "maxCallbackDepth";
 
-	public static final String TAG_MERGE_DEX_FILES = "mergeDexFiles";
 	public static final String TAG_CALLBACK_SOURCE_MODE = "callbackSourceMode";
 	public static final String TAG_CALLBACK_ANALYSIS_TIMEOUT = "callbackAnalysisTimeout";
 
@@ -65,5 +64,5 @@ class XMLConstants {
 	public static final String ATTR_ID = "id";
 	public static final String ATTR_MODE = "mode";
 
-    public static final String TAG_PATH_RECONSTRUCTION_TOTAL_TIME = "pathReconstructionTotalTime";
+	public static final String TAG_PATH_RECONSTRUCTION_TOTAL_TIME = "pathReconstructionTotalTime";
 }

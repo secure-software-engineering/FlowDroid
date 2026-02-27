@@ -44,6 +44,10 @@ public class InterruptableExecutor extends CountingThreadPoolExecutor {
 	 * completed or after the executor has been interrupted.
 	 */
 	public void reset() {
+		// Make sure that all threads that are still running are interrupted
+		this.numRunningTasks.resetAndInterrupt();
+
+		// Reset the state of the executor
 		this.terminated = false;
 		this.interrupted = false;
 	}
@@ -58,8 +62,13 @@ public class InterruptableExecutor extends CountingThreadPoolExecutor {
 
 		// Discard all submitted tasks if the executor has been interrupted
 		try {
-			if (!this.interrupted)
+			if (!this.interrupted) {
+				if (command instanceof IExecutorItem) {
+					IExecutorItem e = (IExecutorItem) command;
+					e.setExecutor(this);
+				}
 				super.execute(command);
+			}
 		} catch (RejectedExecutionException ex) {
 			// We expect the solver to be aborted, just terminate silently
 			// now
@@ -102,6 +111,10 @@ public class InterruptableExecutor extends CountingThreadPoolExecutor {
 	@Override
 	public boolean isTerminated() {
 		return terminated || super.isTerminated();
+	}
+
+	public boolean hasFreeWorkers() {
+		return !terminated && numRunningTasks.getCount() < getPoolSize();
 	}
 
 }

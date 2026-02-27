@@ -14,7 +14,12 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
  *
  */
 public class SecondarySinkDefinition extends AbstractSourceSinkDefinition {
-	public static SecondarySinkDefinition INSTANCE = new SecondarySinkDefinition();
+
+	public static final SecondarySinkDefinition INSTANCE = new SecondarySinkDefinition();
+
+	private SecondarySinkDefinition() {
+		//
+	}
 
 	@Override
 	public ISourceSinkDefinition getSourceOnlyDefinition() {

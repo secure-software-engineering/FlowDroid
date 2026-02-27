@@ -1,6 +1,5 @@
 package soot.jimple.infoflow.entryPointCreators;
 
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -19,11 +18,6 @@ public class SimulatedDynamicInvokeTag implements Tag {
 	@Override
 	public String getName() {
 		return TAG_NAME;
-	}
-
-	@Override
-	public byte[] getValue() throws AttributeValueException {
-		return null;
 	}
 
 }

@@ -440,6 +440,12 @@ public class AndroidSourceSinkManager extends BaseSourceSinkManager
 			final String subSig = callee.getSubSignature();
 			final SootClass sc = callee.getDeclaringClass();
 
+			if (sc == null) {
+				logger.warn(
+						String.format("%s was not declared; was called at %s", callee.getSubSignature(), sCallSite));
+				return sinkDefs;
+			}
+
 			// Do not consider ICC methods as sinks if only the base object is
 			// tainted
 			boolean isParamTainted = false;

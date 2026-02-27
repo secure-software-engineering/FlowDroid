@@ -12,12 +12,10 @@ import soot.jimple.LookupSwitchStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
@@ -32,10 +30,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
 public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 	private boolean killState = false;
-
-	public SinkPropagationRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,
@@ -81,8 +75,7 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 				if (aliasing.mayAlias(val, ap.getPlainValue())) {
 					SinkInfo sinkInfo = sourceSinkManager.getSinkInfo(stmt, getManager(), source.getAccessPath());
 					if (sinkInfo != null) {
-						if (!getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt)))
-							killState = true;
+						registerTaintResult(sinkInfo, new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt));
 					}
 				}
 			}
@@ -151,10 +144,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 					// If we have already seen the same taint at the same sink, there is no need to
 					// propagate this taint any further.
-					if (sinkInfo != null
-							&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt))) {
-						killState = true;
-					}
+					if (sinkInfo != null)
+						registerTaintResult(sinkInfo, new AbstractionAtSink(sinkInfo.getDefinitions(), source, stmt));
 				}
 			}
 		}
@@ -180,9 +171,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 			if (matches && source.isAbstractionActive() && ssm != null && aliasing != null
 					&& aliasing.mayAlias(source.getAccessPath().getPlainValue(), returnStmt.getOp())) {
 				SinkInfo sinkInfo = ssm.getSinkInfo(returnStmt, getManager(), source.getAccessPath());
-				if (sinkInfo != null
-						&& !getResults().addResult(new AbstractionAtSink(sinkInfo.getDefinitions(), source, returnStmt)))
-					killState = true;
+				if (sinkInfo != null)
+					registerTaintResult(sinkInfo, new AbstractionAtSink(sinkInfo.getDefinitions(), source, returnStmt));
 			}
 		}
 
@@ -191,6 +181,21 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 			killAll.value |= killState;
 
 		return null;
+	}
+
+	/**
+	 * Registers a taint result
+	 * @param sinkInfo information about the sink (must not be null)
+	 * @param abstractionAtSink the abstraction at sink (must not be null)
+	 */
+	protected void registerTaintResult(SinkInfo sinkInfo, AbstractionAtSink abstractionAtSink) {
+		boolean continueDataFlow = getResults().addResult(abstractionAtSink);
+		if (!continueDataFlow)
+			setKillState();
+	}
+
+	protected void setKillState() {
+		killState = true;
 	}
 
 }

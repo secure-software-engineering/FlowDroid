@@ -26,6 +26,7 @@ import soot.Body;
 import soot.BooleanType;
 import soot.ByteType;
 import soot.CharType;
+import soot.DefaultLocalGenerator;
 import soot.DoubleType;
 import soot.FastHierarchy;
 import soot.FloatType;
@@ -48,13 +49,15 @@ import soot.SootMethodRef;
 import soot.Type;
 import soot.Unit;
 import soot.Value;
-import soot.javaToJimple.DefaultLocalGenerator;
+import soot.ValueBox;
 import soot.jimple.AssignStmt;
 import soot.jimple.DynamicInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.FlowDroidLocalSplitter.SplittedLocal;
 import soot.jimple.infoflow.InfoflowConfiguration.AccessPathConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.AliasingAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CallgraphAlgorithm;
 import soot.jimple.infoflow.InfoflowConfiguration.CodeEliminationMode;
 import soot.jimple.infoflow.InfoflowConfiguration.DataFlowDirection;
@@ -451,7 +454,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			else
 				soot.options.Options.v().set_android_jars(this.androidPath.getAbsolutePath());
 		} else
-			Options.v().set_src_prec(Options.src_prec_java);
+			Options.v().set_src_prec(Options.src_prec_class);
 	}
 
 	private void setChaOptions() {
@@ -494,10 +497,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			// Allow the ICC manager to change the Soot Scene before we continue
 			if (ipcManager != null)
 				ipcManager.updateJimpleForICC();
+			if (config.getAliasingAlgorithm() == AliasingAlgorithm.PtsBased) {
 
-			// We might need to patch invokedynamic instructions
-			if (config.isPatchInvokeDynamicInstructions())
-				patchDynamicInvokeInstructions();
+			}
+
+			patchCode();
 
 			// Run the preprocessors
 			for (PreAnalysisHandler tr : preProcessors)
@@ -511,11 +515,12 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			// To cope with broken APK files, we convert all classes that are still
 			// dangling after resolution into phantoms
-			for (SootClass sc : Scene.v().getClasses())
+			for (SootClass sc : Scene.v().getClasses()) {
 				if (sc.resolvingLevel() == SootClass.DANGLING) {
 					sc.setResolvingLevel(SootClass.BODIES);
 					sc.setPhantomClass();
 				}
+			}
 
 			// We explicitly select the packs we want to run for performance
 			// reasons. Do not re-run the callgraph algorithm if the host
@@ -538,26 +543,37 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	}
 
 	/**
-	 * Re-writes dynamic invocation instructions into traditional invcations
+	 * Inserts patch-code logic
 	 */
-	private void patchDynamicInvokeInstructions() {
+	private void patchCode() {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod sm : sc.getMethods()) {
 				if (sm.hasActiveBody()) {
 					Body body = sm.getActiveBody();
-					patchDynamicInvokeInstructions(body);
+					patchCode(body);
 				} else if (!(sm.getSource() instanceof MethodSourceInjector) && sm.getSource() != null) {
 					sm.setSource(new MethodSourceInjector(sm.getSource()) {
 
 						@Override
 						protected void onMethodSourceLoaded(SootMethod m, Body b) {
-							patchDynamicInvokeInstructions(b);
+							patchCode(b);
 						}
 
 					});
 				}
 			}
 		}
+	}
+
+	private void patchCode(Body body) {
+		if (config.isPatchInvokeDynamicInstructions()) {
+			patchDynamicInvokeInstructions(body);
+		}
+		getLocalSplitter().transform(body);
+	}
+
+	protected FlowDroidLocalSplitter getLocalSplitter() {
+		return FlowDroidLocalSplitter.v();
 	}
 
 	/**
@@ -643,6 +659,31 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				|| calleeSubSig.equals(scene.getSubSigNumberer().findOrAdd(SIG_CONCAT))) {
 			// We initialize a StringBuilder
 			Local sb = lg.generateLocal(rtStringBuilder);
+			Local replace = null, replaceWith = null;
+
+			if (callSite instanceof AssignStmt) {
+				AssignStmt assign = (AssignStmt) callSite;
+				Iterator<ValueBox> uses = callSite.getUseBoxesIterator();
+				while (uses.hasNext()) {
+					Value lop = assign.getLeftOp();
+					if (uses.next().getValue() == lop) {
+						//Since FlowDroid doesn't support tracking the taint over this statement, we have a problem:
+						//e.g.
+						//tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String (java.lang.String,java.lang.String)>(tainted, tainted2) ...
+						//this would erroneously clear the taint on tainted 
+						//to avoid that, we introduce an alias before that statement and use that instead for our concatenation.
+						Local alias = lg.generateLocal(lop.getType());
+						Body body = callSite.getContainingBody();
+						AssignStmt assignAlias = Jimple.v().newAssignStmt(alias, lop);
+						assignAlias.addTag(SimulatedCodeElementTag.TAG);
+						assignAlias.addTag(SimulatedDynamicInvokeTag.TAG);
+						body.getUnits().insertBefore(assignAlias, callSite);
+						replace = (Local) lop;
+						replaceWith = alias;
+						break;
+					}
+				}
+			}
 
 			Stmt stmt = jimple.newAssignStmt(sb, jimple.newNewExpr(rtStringBuilder));
 			stmt.addTag(SimulatedCodeElementTag.TAG);
@@ -659,6 +700,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			for (int i = 0; i < diexpr.getArgCount(); i++) {
 				// Call toString() on the argument
 				Value arg = diexpr.getArg(i);
+				if (arg == replace) {
+					arg = replaceWith;
+				}
 				Type argType = arg.getType();
 				SootMethodRef appendRef;
 				if (argType instanceof RefType)
@@ -882,8 +926,14 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			IInfoflowCFG iCfg = icfgFactory.buildBiDirICFG(config.getCallgraphAlgorithm(),
 					config.getEnableExceptionTracking());
 
-			if (config.isTaintAnalysisEnabled())
-				runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+			if (config.isTaintAnalysisEnabled()) {
+				splitAllBodies(Scene.v().getReachableMethods().listener());
+				try {
+					runTaintAnalysis(sourcesSinks, additionalSeeds, iCfg, performanceData);
+				} finally {
+					unsplitAllBodies();
+				}
+			}
 
 			// Gather performance data
 			performanceData.setTotalRuntimeSeconds((int) Math.round((System.nanoTime() - beforeCallgraph) / 1E9));
@@ -907,6 +957,48 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			logger.error("Exception during data flow analysis", ex);
 			if (throwExceptions)
 				throw ex;
+		}
+	}
+
+	protected void unsplitAllBodies() {
+		for (SootClass sc : Scene.v().getClasses()) {
+			for (SootMethod m : sc.getMethods()) {
+				if (m.hasActiveBody()) {
+					//We could use the local packer here, but we know exactly what was being split
+					//so we can be faster here
+					Body body = m.getActiveBody();
+					Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
+					while (it.hasNext()) {
+						ValueBox box = it.next();
+						Value val = box.getValue();
+						if (val instanceof SplittedLocal) {
+							SplittedLocal l = (SplittedLocal) val;
+							box.setValue(l.getOriginalLocal());
+						}
+					}
+					Iterator<Local> lit = body.getLocals().iterator();
+					while (lit.hasNext()) {
+						if (lit.next() instanceof SplittedLocal) {
+							lit.remove();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//With newer soot versions, locals are reused more often, which 
+	//can be a problem for FlowDroid. So, we split the locals prior to 
+	//running FlowDroid.
+	protected void splitAllBodies(Iterator<? extends MethodOrMethodContext> it) {
+		FlowDroidLocalSplitter splitter = getLocalSplitter();
+		while (it.hasNext()) {
+			MethodOrMethodContext mc = it.next();
+			SootMethod m = mc.method();
+			if (m.isConcrete() && m.getTag(SplittedTag.NAME) == null) {
+				m.addTag(SplittedTag.v());
+				splitter.transform(m.retrieveActiveBody());
+			}
 		}
 	}
 
@@ -955,7 +1047,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 			// Create the executor that takes care of the workers
 			int numThreads = Runtime.getRuntime().availableProcessors();
-			InterruptableExecutor executor = executorFactory.createExecutor(numThreads, true, config);
+			InterruptableExecutor executor = executorFactory.createExecutor(numThreads, false, config);
 			executor.setThreadFactory(new ThreadFactory() {
 
 				@Override
@@ -1257,6 +1349,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				performanceData.updateMaxMemoryConsumption(getUsedMemory());
 				logger.info(String.format("Memory consumption after cleanup: %d MB", getUsedMemory()));
 
+				beforePathReconstruction = System.nanoTime();
 				// Reconstruct the paths from source to sink
 				reconstructPaths(builder, resultExecutor, res);
 			} finally {
@@ -1339,6 +1432,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 */
 	protected void reconstructPaths(IAbstractionPathBuilder builder, InterruptableExecutor executor,
 			Set<AbstractionAtSink> ifdsResults) {
+		if (ifdsResults.isEmpty())
+			return;
+
 		FlowDroidTimeoutWatcher pathTimeoutWatcher = null;
 
 		try {

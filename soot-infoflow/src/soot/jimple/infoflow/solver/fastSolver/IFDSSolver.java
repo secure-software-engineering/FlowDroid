@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -306,45 +305,43 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		Collection<SootMethod> callees = icfg.getCalleesOfCallAt(n);
 		if (callees != null && !callees.isEmpty()) {
 			if (maxCalleesPerCallSite < 0 || callees.size() <= maxCalleesPerCallSite) {
-				callees.forEach(new Consumer<SootMethod>() {
+				for (SootMethod sCalledProcN : callees) {
+					// Concrete and early termination check
+					if (killFlag != null)
+						break;
+					if (!sCalledProcN.isConcrete())
+						continue;
 
-					@Override
-					public void accept(SootMethod sCalledProcN) {
-						// Concrete and early termination check
-						if (!sCalledProcN.isConcrete() || killFlag != null)
-							return;
+					// compute the call-flow function
+					FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
+					Set<D> res = computeCallFlowFunction(function, d1, d2);
 
-						// compute the call-flow function
-						FlowFunction<D> function = flowFunctions.getCallFlowFunction(n, sCalledProcN);
-						Set<D> res = computeCallFlowFunction(function, d1, d2);
+					if (res != null && !res.isEmpty()) {
+						Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
+						// for each result node of the call-flow function
+						for (D d3 : res) {
+							if (memoryManager != null)
+								d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
+							if (d3 == null)
+								continue;
 
-						if (res != null && !res.isEmpty()) {
-							Collection<N> startPointsOf = icfg.getStartPointsOf(sCalledProcN);
-							// for each result node of the call-flow function
-							for (D d3 : res) {
-								if (memoryManager != null)
-									d3 = memoryManager.handleGeneratedMemoryObject(d2, d3);
-								if (d3 == null)
-									continue;
-
-								// for each callee's start point(s)
-								for (N sP : startPointsOf) {
-									// create initial self-loop
-									schedulingStrategy.propagateCallFlow(d3, sP, d3, n, false); // line 15
-								}
-
-								// register the fact that <sp,d3> has an incoming edge from
-								// <n,d2>
-								// line 15.1 of Naeem/Lhotak/Rodriguez
-								if (!addIncoming(sCalledProcN, d3, n, d1, d2))
-									continue;
-
-								applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
+							// for each callee's start point(s)
+							for (N sP : startPointsOf) {
+								// create initial self-loop
+								schedulingStrategy.propagateCallFlow(d3, sP, d3, n, false); // line 15
 							}
+
+							// register the fact that <sp,d3> has an incoming edge from
+							// <n,d2>
+							// line 15.1 of Naeem/Lhotak/Rodriguez
+							if (!addIncoming(sCalledProcN, d3, n, d1, d2))
+								continue;
+
+							applyEndSummaryOnCall(d1, n, d2, returnSiteNs, sCalledProcN, d3);
 						}
 					}
+				}
 
-				});
 			}
 		}
 
@@ -514,13 +511,13 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 		// conditionally generated values should only be propagated into callers that
 		// have an incoming edge for this condition
 		if (followReturnsPastSeeds && d1 == zeroValue && (inc == null || inc.isEmpty())) {
+			final Set<D> zeroValueSingleton = Collections.singleton(zeroValue);
 			Collection<N> callers = icfg.getCallersOf(methodThatNeedsSummary);
 			for (N c : callers) {
 				for (N retSiteC : icfg.getReturnSitesOfCallAt(c)) {
 					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
 							retSiteC);
-					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c,
-							Collections.singleton(zeroValue));
+					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, zeroValueSingleton);
 					if (targets != null && !targets.isEmpty()) {
 						for (D d5 : targets) {
 							if (memoryManager != null)
@@ -745,13 +742,14 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 			if (icfg.isCallStmt(target)) {
 				processCall(edge);
 			} else {
-				// note that some statements, such as "throw" may be
-				// both an exit statement and a "normal" statement
-				if (icfg.isExitStmt(target))
-					processExit(edge);
 				if (!icfg.getSuccsOf(target).isEmpty())
 					processNormalFlow(edge);
 			}
+			// note that some statements, such as "throw" may be
+			// both an exit statement and a "normal" statement
+			// A call statement can be an exit statement when going backwards!
+			if (icfg.isExitStmt(target))
+				processExit(edge);
 		}
 
 		@Override

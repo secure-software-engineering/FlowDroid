@@ -834,7 +834,8 @@ public class InterproceduralConstantValuePropagator extends SceneTransformer {
 			if (excludedMethods != null && icfg.isReachable(callSite)) {
 				SootMethod caller = icfg.getMethodOf(callSite);
 				// synthetic methods e.g. created by FlowDroid are excluded by default
-				if (excludedMethods.contains(caller) || caller.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
+				if (caller == null || excludedMethods.contains(caller)
+						|| caller.hasTag(SimulatedCodeElementTag.TAG_NAME)) {
 					logger.trace("Ignoring calls from {}", caller);
 					continue;
 				}

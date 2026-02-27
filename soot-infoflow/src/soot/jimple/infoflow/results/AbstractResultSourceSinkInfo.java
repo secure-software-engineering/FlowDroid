@@ -1,9 +1,12 @@
 package soot.jimple.infoflow.results;
 
+import soot.Local;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.FlowDroidLocalSplitter.SplittedLocal;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.internal.JimpleLocal;
 
 /**
  * Abstract base class for information on data flow results
@@ -35,7 +38,7 @@ public abstract class AbstractResultSourceSinkInfo {
 		assert accessPath != null;
 
 		this.definition = definition;
-		this.accessPath = accessPath;
+		this.accessPath = replaceAccessPath(accessPath);
 		this.stmt = stmt;
 		this.userData = userData;
 	}
@@ -97,4 +100,15 @@ public abstract class AbstractResultSourceSinkInfo {
 		return true;
 	}
 
+	protected AccessPath replaceAccessPath(AccessPath accessPath) {
+		Local pv = accessPath.getPlainValue();
+		if (pv instanceof SplittedLocal) {
+			SplittedLocal s = (SplittedLocal) pv;
+			JimpleLocal orig = s.getOriginalLocal();
+
+			AccessPath a = accessPath.rebaseTo(orig);
+			return a;
+		}
+		return accessPath;
+	}
 }

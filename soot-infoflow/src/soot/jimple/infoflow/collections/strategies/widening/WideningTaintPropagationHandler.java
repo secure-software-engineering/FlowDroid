@@ -1,6 +1,8 @@
 package soot.jimple.infoflow.collections.strategies.widening;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -37,22 +39,23 @@ public class WideningTaintPropagationHandler implements TaintPropagationHandler 
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		if (type != FlowFunctionType.CallToReturnFlowFunction)
-			return outgoing;
+			return false;
 
-		Set<Abstraction> newOutgoing = outgoing;
 		WideningStrategy<Unit, Abstraction> wideningStrategy = getWideningStrategy(manager);
-		for (Abstraction abs : outgoing) {
+		List<Abstraction> toAdd = new ArrayList<>();
+		Iterator<Abstraction> it = outgoing.iterator();
+		while (it.hasNext()) {
+			Abstraction abs = it.next();
 			Abstraction widened = wideningStrategy.widen(incoming, abs, stmt);
 			if (widened != abs) {
-				if (newOutgoing == outgoing)
-					newOutgoing = new HashSet<>(outgoing);
-				newOutgoing.add(widened);
-				newOutgoing.remove(abs);
+				toAdd.add(widened);
+				it.remove();
 			}
 		}
-		return newOutgoing;
+		outgoing.addAll(toAdd);
+		return false;
 	}
 }

@@ -555,7 +555,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 
 	/**
 	 * Generates code which creates a new instance of the given class. Note that if
-	 * {@link #allowNonPublicConstructors} is <code>true<code>, private or protected
+	 * {@link #allowNonPublicConstructors} is <code>true</code>, private or protected
 	 * constructors may be used.
 	 * 
 	 * @param createdClass      The class of which to create an instance
@@ -804,7 +804,7 @@ public abstract class BaseEntryPointCreator implements IEntryPointCreator {
 	}
 
 	/**
-	 * Eliminates all loops of length 0 (if a goto <if a>)
+	 * Eliminates all loops of length 0 like <code>{@literal if a goto <if a>}</code>
 	 */
 	protected void eliminateSelfLoops() {
 		// Get rid of self-loops

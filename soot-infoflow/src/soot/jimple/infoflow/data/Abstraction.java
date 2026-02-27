@@ -18,7 +18,9 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+import soot.PrimType;
 import soot.SootMethod;
+import soot.Type;
 import soot.Unit;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
@@ -26,6 +28,7 @@ import soot.jimple.infoflow.collect.AtomicBitSet;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG.UnitContainer;
 import soot.jimple.infoflow.solver.fastSolver.FastSolverLinkedNode;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.typing.TypeUtils;
 
 /**
  * The abstraction class contains all information that is necessary to track the
@@ -705,6 +708,19 @@ public class Abstraction implements Cloneable, FastSolverLinkedNode<Abstraction,
 	@Override
 	public int getPathLength() {
 		return propagationPathLength;
+	}
+
+	/**
+	 * Returns true when the abstraction represents primitive (e.g. int, long, etc) or immutable (e.g. String) data
+	 */
+	public boolean isPrimitiveOrImmutable() {
+		AccessPath ap = getAccessPath();
+		Type bt = ap.getBaseType();
+		if (bt instanceof PrimType)
+			return true;
+		if (TypeUtils.isStringType(bt) && !ap.getCanHaveImmutableAliases())
+			return true;
+		return false;
 	}
 
 }

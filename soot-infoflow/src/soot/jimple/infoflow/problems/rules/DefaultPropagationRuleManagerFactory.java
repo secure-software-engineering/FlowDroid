@@ -32,38 +32,38 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 	@Override
 	public PropagationRuleManager createRuleManager(InfoflowManager manager, Abstraction zeroValue,
 			TaintPropagationResults results) {
-		List<ITaintPropagationRule> ruleList = new ArrayList<>();
+		List<Class<? extends ITaintPropagationRule>> ruleList = new ArrayList<>();
 
-		ruleList.add(new SourcePropagationRule(manager, zeroValue, results));
-		ruleList.add(new SinkPropagationRule(manager, zeroValue, results));
-		ruleList.add(new StaticPropagationRule(manager, zeroValue, results));
+		ruleList.add(SourcePropagationRule.class);
+		ruleList.add(SinkPropagationRule.class);
+		ruleList.add(StaticPropagationRule.class);
 
 		boolean preciseCollectionTrackingEnabled = manager.getConfig()
 				.getPreciseCollectionStrategy() != PreciseCollectionStrategy.NONE;
 		if (manager.getConfig().getEnableArrayTracking()) {
 			if (preciseCollectionTrackingEnabled)
-				ruleList.add(new ArrayWithIndexPropagationRule(manager, zeroValue, results));
+				ruleList.add(ArrayWithIndexPropagationRule.class);
 			else
-				ruleList.add(new ArrayPropagationRule(manager, zeroValue, results));
+				ruleList.add(ArrayPropagationRule.class);
 		}
 		if (manager.getConfig().getEnableExceptionTracking())
-			ruleList.add(new ExceptionPropagationRule(manager, zeroValue, results));
+			ruleList.add(ExceptionPropagationRule.class);
 		if (manager.getTaintWrapper() != null) {
 			if (preciseCollectionTrackingEnabled)
-				ruleList.add(new CollectionWrapperPropagationRule(manager, zeroValue, results));
+				ruleList.add(CollectionWrapperPropagationRule.class);
 			else
-				ruleList.add(new WrapperPropagationRule(manager, zeroValue, results));
+				ruleList.add(WrapperPropagationRule.class);
 		}
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
-			ruleList.add(new ImplicitPropagtionRule(manager, zeroValue, results));
-		ruleList.add(new StrongUpdatePropagationRule(manager, zeroValue, results));
+			ruleList.add(ImplicitPropagtionRule.class);
+		ruleList.add(StrongUpdatePropagationRule.class);
 		if (manager.getConfig().getEnableTypeChecking())
-			ruleList.add(new TypingPropagationRule(manager, zeroValue, results));
-		ruleList.add(new SkipSystemClassRule(manager, zeroValue, results));
+			ruleList.add(TypingPropagationRule.class);
+		ruleList.add(SkipSystemClassRule.class);
 		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
-			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, zeroValue, results));
+			ruleList.add(StopAfterFirstKFlowsPropagationRule.class);
 
-		return new PropagationRuleManager(manager, zeroValue, results, ruleList.toArray(new ITaintPropagationRule[0]));
+		return new PropagationRuleManager(manager, zeroValue, results, ruleList);
 	}
 
 	public PropagationRuleManager createAliasRuleManager(InfoflowManager manager, Abstraction zeroValue) {

@@ -263,8 +263,12 @@ public class AccessPathFactory {
 		}
 
 		// Check the validity of our fragments
-		if (fragments != null && Arrays.stream(fragments).anyMatch(f -> !f.isValid()))
-			return null;
+		if (fragments != null) {
+			for (AccessPathFragment f : fragments) {
+				if (!f.isValid())
+					return null;
+			}
+		}
 
 		// Make sure that only heap objects may have fields. Primitive arrays
 		// with fields may occur on impossible type casts in the target program.

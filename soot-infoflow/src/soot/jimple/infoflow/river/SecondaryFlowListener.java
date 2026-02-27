@@ -7,8 +7,8 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
-import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
+import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 
 /**
  * TaintPropagationHandler to record which statements secondary flows reach.
@@ -37,7 +37,8 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 			}
 		}
 
-		throw new IllegalStateException("Enabled additional flows but no IConditionalFlowSinkPropagationRule in place!");
+		throw new IllegalStateException(
+				"Enabled additional flows but no IConditionalFlowSinkPropagationRule in place!");
 	}
 
 	@Override
@@ -59,10 +60,10 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		// NO-OP
-		return outgoing;
+		return false;
 	}
 
 }

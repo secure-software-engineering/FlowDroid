@@ -308,7 +308,9 @@ public class AndroidEntryPointCreator extends AbstractAndroidEntryPointCreator i
 							componentToInfo.getComponentExchangeInfo());
 					SootMethod m = cpc.createInit();
 					Local cpLocal = generator.generateLocal(RefType.v(AndroidEntryPointConstants.CONTENTPROVIDERCLASS));
-					body.getUnits().add(Jimple.v().newAssignStmt(cpLocal, Jimple.v().newStaticInvokeExpr(m.makeRef())));
+					AssignStmt cp = Jimple.v().newAssignStmt(cpLocal, Jimple.v().newStaticInvokeExpr(m.makeRef()));
+					cp.addTag(new ExpectedTypeTag(currentClass.getType()));
+					body.getUnits().add(cp);
 					localVarsForClasses.put(currentClass, cpLocal);
 					cpComponents.put(currentClass, cpc);
 

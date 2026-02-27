@@ -6,9 +6,7 @@ import java.util.Collections;
 import soot.Scene;
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
@@ -26,9 +24,7 @@ public class SkipSystemClassRule extends AbstractTaintPropagationRule {
 	private final SootMethod objectGetClass;
 	private final SootMethod threadCons;
 
-	public SkipSystemClassRule(InfoflowManager manager, Abstraction zeroValue, TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-
+	public SkipSystemClassRule() {
 		// Get the system methods
 		this.objectCons = Scene.v().getObjectType().getSootClass().getMethodUnsafe("void <init>()");
 		this.objectClinit = Scene.v().getObjectType().getSootClass().getMethodUnsafe("void <clinit>()");
@@ -83,8 +79,8 @@ public class SkipSystemClassRule extends AbstractTaintPropagationRule {
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		return null;
 	}
 

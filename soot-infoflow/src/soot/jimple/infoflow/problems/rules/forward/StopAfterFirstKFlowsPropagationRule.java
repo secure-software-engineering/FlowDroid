@@ -4,18 +4,11 @@ import java.util.Collection;
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
 public class StopAfterFirstKFlowsPropagationRule extends AbstractTaintPropagationRule {
-
-	public StopAfterFirstKFlowsPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	/**
 	 * Checks whether the data flow analysis must be stopped and sets the kill-flag
@@ -52,8 +45,8 @@ public class StopAfterFirstKFlowsPropagationRule extends AbstractTaintPropagatio
 	}
 
 	@Override
-	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1, Abstraction source, Stmt stmt,
-                                                       Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
+	public Collection<Abstraction> propagateReturnFlow(Collection<Abstraction> callerD1s, Abstraction calleeD1,
+			Abstraction source, Stmt stmt, Stmt retSite, Stmt callSite, ByReferenceBoolean killAll) {
 		checkStop(killAll);
 		return null;
 	}

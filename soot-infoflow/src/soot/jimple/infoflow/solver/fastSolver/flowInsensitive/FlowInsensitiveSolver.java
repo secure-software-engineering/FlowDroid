@@ -410,7 +410,9 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 * Stores callee-side summaries. Also, at the side of the caller, propagates
 	 * intra-procedural flows to return sites using those newly computed summaries.
 	 * 
-	 * @param edge an edge whose target node resembles a method exits
+	 * @param d1 fact at source
+	 * @param n  the exit statement
+	 * @param d2 fact at target
 	 */
 	protected void processExit(D d1, Unit n, D d2) {
 		SootMethod methodThatNeedsSummary = icfg.getMethodOf(n);
@@ -608,9 +610,7 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	 *                           unbalanced return (this value is not used within
 	 *                           this implementation but may be useful for
 	 *                           subclasses of {@link FlowInsensitiveSolver})
-	 * @param forceRegister      True if the jump function must always be registered
-	 *                           with jumpFn . This can happen when externally
-	 *                           injecting edges that don't come out of this solver.
+	 * @param schedule           True if a new edge should be scheduled.
 	 */
 	@SuppressWarnings("unchecked")
 	protected void propagate(D sourceVal, SootMethod target, D targetVal,

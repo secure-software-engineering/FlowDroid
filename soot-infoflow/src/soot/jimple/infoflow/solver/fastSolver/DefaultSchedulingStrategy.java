@@ -29,8 +29,7 @@ public class DefaultSchedulingStrategy<N, D extends FastSolverLinkedNode<D, N>, 
 		@Override
 		public void propagateNormalFlow(D sourceVal, N target, D targetVal, N relatedCallSite,
 				boolean isUnbalancedReturn) {
-			solver.propagate(sourceVal, target, targetVal, relatedCallSite, isUnbalancedReturn,
-					ScheduleTarget.EXECUTOR);
+			solver.propagate(sourceVal, target, targetVal, relatedCallSite, isUnbalancedReturn, ScheduleTarget.LOCAL);
 		}
 
 		@Override
@@ -43,8 +42,7 @@ public class DefaultSchedulingStrategy<N, D extends FastSolverLinkedNode<D, N>, 
 		@Override
 		public void propagateCallToReturnFlow(D sourceVal, N target, D targetVal, N relatedCallSite,
 				boolean isUnbalancedReturn) {
-			solver.propagate(sourceVal, target, targetVal, relatedCallSite, isUnbalancedReturn,
-					ScheduleTarget.EXECUTOR);
+			solver.propagate(sourceVal, target, targetVal, relatedCallSite, isUnbalancedReturn, ScheduleTarget.LOCAL);
 		}
 
 		@Override

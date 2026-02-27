@@ -2,18 +2,15 @@ package soot.jimple.infoflow.problems.rules.backward;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.cfg.FlowDroidSinkStatement;
 import soot.jimple.infoflow.cfg.FlowDroidSourceStatement;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
@@ -27,11 +24,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Tim Lange
  */
 public class BackwardsSinkPropagationRule extends AbstractTaintPropagationRule {
-
-	public BackwardsSinkPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	private Collection<Abstraction> propagate(Abstraction source, Stmt stmt, ByReferenceBoolean killSource,
 			ByReferenceBoolean killAll) {
@@ -48,11 +40,9 @@ public class BackwardsSinkPropagationRule extends AbstractTaintPropagationRule {
 			if (sinkInfo != null && !sinkInfo.getAccessPaths().isEmpty()) {
 				// Do not introduce taints inside exclusive methods
 				Collection<Unit> callers = manager.getICFG().getCallersOf(manager.getICFG().getMethodOf(stmt));
-				boolean isExclusive = !callers.isEmpty()
-						&& callers.stream().map(u -> (Stmt) u)
-							.allMatch(callerStmt -> callerStmt.containsInvokeExpr()
-													&& manager.getTaintWrapper() != null
-													&& manager.getTaintWrapper().isExclusive(callerStmt, zeroValue));
+				boolean isExclusive = !callers.isEmpty() && callers.stream().map(u -> (Stmt) u)
+						.allMatch(callerStmt -> callerStmt.containsInvokeExpr() && manager.getTaintWrapper() != null
+								&& manager.getTaintWrapper().isExclusive(callerStmt, zeroValue));
 				if (isExclusive)
 					return null;
 

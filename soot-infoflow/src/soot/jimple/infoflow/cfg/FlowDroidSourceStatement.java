@@ -3,7 +3,6 @@ package soot.jimple.infoflow.cfg;
 import soot.jimple.infoflow.InfoflowConfiguration;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
-import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
 /**
@@ -30,8 +29,4 @@ public class FlowDroidSourceStatement implements Tag {
 		return TAG_NAME;
 	}
 
-	@Override
-	public byte[] getValue() throws AttributeValueException {
-		return null;
-	}
 }

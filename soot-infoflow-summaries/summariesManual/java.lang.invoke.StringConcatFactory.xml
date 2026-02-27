@@ -16,7 +16,7 @@
 
         <method id="java.lang.invoke.CallSite makeConcatWithConstants(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.String,java.lang.Object[])">
             <flows>
-                <flow isAlias="false">
+                <flow isAlias="false" cutSubfields="true">
                     <from sourceSinkType="Parameter" ParameterIndex="*" />
                     <to sourceSinkType="Return" />
                 </flow>

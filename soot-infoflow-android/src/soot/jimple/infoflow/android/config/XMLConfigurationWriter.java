@@ -184,8 +184,6 @@ public class XMLConfigurationWriter {
 				Integer.toString(callbackConfig.getMaxAnalysisCallbackDepth()));
 		appendSimpleTag(document, androidConfigTag, XMLConstants.TAG_LAYOUT_MATCHING_MODE,
 				sourceSinkConfig.getLayoutMatchingMode().toString());
-		appendSimpleTag(document, androidConfigTag, XMLConstants.TAG_MERGE_DEX_FILES,
-				Boolean.toString(config.getMergeDexFiles()));
 		appendSimpleTag(document, androidConfigTag, XMLConstants.TAG_CALLBACK_SOURCE_MODE,
 				sourceSinkConfig.getCallbackSourceMode().toString());
 		appendSimpleTag(document, androidConfigTag, XMLConstants.TAG_CALLBACK_ANALYSIS_TIMEOUT,

@@ -294,13 +294,15 @@ public abstract class BaseSourceSinkManager
 
 			final String subSig = callee.getSubSignature();
 
-			// Check whether we have any of the interfaces on the list
-			for (SootClass i : parentClassesAndInterfaces
-					.getUnchecked(sCallSite.getInvokeExpr().getMethod().getDeclaringClass())) {
-				if (i.declaresMethod(subSig)) {
-					Collection<ISourceSinkDefinition> def = this.sinkMethods.get(i.getMethod(subSig));
-					if (def.size() > 0)
-						return def;
+			SootClass decl = sCallSite.getInvokeExpr().getMethod().getDeclaringClass();
+			if (decl != null) {
+				// Check whether we have any of the interfaces on the list
+				for (SootClass i : parentClassesAndInterfaces.getUnchecked(decl)) {
+					if (i.declaresMethod(subSig)) {
+						Collection<ISourceSinkDefinition> def = this.sinkMethods.get(i.getMethod(subSig));
+						if (def.size() > 0)
+							return def;
+					}
 				}
 			}
 
@@ -434,7 +436,14 @@ public abstract class BaseSourceSinkManager
 		if (sCallSite.hasTag(SimulatedCodeElementTag.TAG_NAME))
 			return null;
 
+		// Look up the source definition
 		Collection<ISourceSinkDefinition> defs = getSource(sCallSite, manager.getICFG());
+		if (defs == null || defs.isEmpty())
+			return null;
+
+		// We seem to have a source for this statement. Create the detailed
+		// specification object. Note that subsequent filtering may still invalidate the
+		// source.
 		Collection<Pair<AccessPath, ISourceSinkDefinition>> pairs = createSourceInfoPairs(sCallSite, manager, defs);
 		return pairs.size() > 0 ? new SourceInfo(pairs) : null;
 	}

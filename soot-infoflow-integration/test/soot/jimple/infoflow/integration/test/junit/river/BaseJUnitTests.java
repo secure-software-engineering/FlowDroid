@@ -100,7 +100,6 @@ public abstract class BaseJUnitTests extends JUnitTests {
 
 		SetupApplication setupApplication = new SetupApplication(new File(androidJars), apkFile);
 
-		setupApplication.getConfig().setMergeDexFiles(true);
 		setupApplication.setTaintWrapper(getTaintWrapper());
 		setConfiguration(setupApplication.getConfig());
 

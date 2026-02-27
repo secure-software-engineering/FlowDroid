@@ -106,7 +106,8 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 	/**
 	 * Creates a new instance of the {@link XMLSourceSinkParser} class
 	 * 
-	 * @param filter A filter for excluding certain categories of sources and sinks
+	 * @param categoryFilter A filter for excluding certain categories of sources
+	 *                       and sinks
 	 */
 	protected XMLSourceSinkParser(ICategoryFilter categoryFilter) {
 		this.sourcesAndSinks = new HashMultiMap<>();
@@ -125,8 +126,10 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 					MethodSourceSinkDefinition methodSrc = (MethodSourceSinkDefinition) sourceDef;
 					if (methodSrc.getCallType() == CallType.Return) {
 						String mname = methodSrc.getMethod().getMethodName();
-						logger.error(String.format("Error while building sources for %s: CallType Return is not " +
-								"supported for Source Definitions. The invalid definition is ignored.", mname));
+						logger.error(String.format(
+								"Error while building sources for %s: CallType Return is not "
+										+ "supported for Source Definitions. The invalid definition is ignored.",
+								mname));
 						sourceDef = null;
 					} else if (methodSrc.getMethod() instanceof AndroidMethod) {
 						AndroidMethod am = (AndroidMethod) methodSrc.getMethod();

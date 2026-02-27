@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import soot.Value;
-import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.Abstraction;

@@ -20,7 +20,7 @@ public class IdentityPropagationRuleManager extends PropagationRuleManager {
 	public static IdentityPropagationRuleManager INSTANCE = new IdentityPropagationRuleManager();
 
 	private IdentityPropagationRuleManager() {
-		super(null, null, null, null);
+		super(null, null, null, (ITaintPropagationRule[]) null);
 	}
 
 	@Override

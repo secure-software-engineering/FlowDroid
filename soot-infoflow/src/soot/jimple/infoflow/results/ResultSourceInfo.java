@@ -46,6 +46,18 @@ public class ResultSourceInfo extends AbstractResultSourceSinkInfo {
 		this.pathCallSites = pathCallSites == null || pathCallSites.isEmpty() ? null
 				: pathCallSites.toArray(new Stmt[pathCallSites.size()]);
 		this.pathAgnosticResults = pathAgnosticResults;
+		this.replaceSplitLocalsWithOriginals();
+	}
+
+	public ResultSourceInfo(ISourceSinkDefinition definition, AccessPath source, Stmt context, Object userData,
+			Stmt[] path, AccessPath[] pathAPs, Stmt[] pathCallSites, boolean pathAgnosticResults) {
+		super(definition, source, context, userData);
+
+		this.path = path;
+		this.pathAPs = pathAPs;
+		this.pathCallSites = pathCallSites;
+		this.pathAgnosticResults = pathAgnosticResults;
+		this.replaceSplitLocalsWithOriginals();
 	}
 
 	public Stmt[] getPath() {
@@ -85,6 +97,14 @@ public class ResultSourceInfo extends AbstractResultSourceSinkInfo {
 		}
 
 		return result;
+	}
+
+	private void replaceSplitLocalsWithOriginals() {
+		if (pathAPs != null) {
+			for (int i = 0; i < pathAPs.length; i++) {
+				pathAPs[i] = replaceAccessPath(pathAPs[i]);
+			}
+		}
 	}
 
 	@Override

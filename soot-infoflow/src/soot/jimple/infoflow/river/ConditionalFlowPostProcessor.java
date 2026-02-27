@@ -34,7 +34,8 @@ public class ConditionalFlowPostProcessor implements PostAnalysisHandler {
 		if (results.size() == 0)
 			return results;
 
-		logger.info("Filtering conditional flows, starting with {} flows...", results.numConnections());
+		logger.info("Filtering conditional flows, starting with {} normal flows and {} additional flows...",
+				results.numConnections(), results.numAdditionalFlows());
 		HashSet<ResultSinkInfo> tbr = new HashSet<>();
 
 		for (DataFlowResult dfRes : results.getResultSet()) {

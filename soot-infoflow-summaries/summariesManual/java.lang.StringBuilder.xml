@@ -3,7 +3,7 @@
 	<methods>
 		<method id="void &lt;init&gt;(java.lang.CharSequence)">
 			<flows>
-				<flow isAlias="false" typeChecking="false" ignoreTypes="true">
+				<flow isAlias="false" typeChecking="false" ignoreTypes="true" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -103,7 +103,7 @@
 		</method>
 		<method id="java.lang.StringBuilder append(java.lang.CharSequence)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -115,7 +115,7 @@
 		</method>
 		<method id="java.lang.StringBuilder append(java.lang.CharSequence,int,int)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -127,7 +127,7 @@
 		</method>
 		<method id="java.lang.StringBuilder append(java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -151,7 +151,7 @@
 		</method>
 		<method id="java.lang.StringBuilder append(java.lang.StringBuffer)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>
@@ -277,7 +277,7 @@
 		</method>
 		<method id="java.lang.StringBuilder insert(int,java.lang.CharSequence)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						/>
@@ -290,7 +290,7 @@
 		</method>
 		<method id="java.lang.StringBuilder insert(int,java.lang.CharSequence,int,int)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						/>
@@ -303,7 +303,7 @@
 		</method>
 		<method id="java.lang.StringBuilder insert(int,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
 						/>

@@ -1,10 +1,12 @@
 package soot.jimple.infoflow.android.callbacks;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import soot.FastHierarchy;
 import soot.Kind;
 import soot.MethodOrMethodContext;
 import soot.RefType;
@@ -12,11 +14,14 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.util.SystemClassHandler;
+import soot.jimple.toolkits.callgraph.CallGraph;
 import soot.jimple.toolkits.callgraph.Edge;
 import soot.jimple.toolkits.callgraph.EdgePredicate;
 import soot.jimple.toolkits.callgraph.Filter;
+import soot.jimple.toolkits.callgraph.ReachableMethods;
 import soot.jimple.toolkits.callgraph.Targets;
 import soot.util.queue.ChunkedQueue;
 import soot.util.queue.QueueReader;
@@ -37,10 +42,11 @@ public class ComponentReachableMethods {
 
 	private final InfoflowAndroidConfiguration config;
 	private final SootClass originalComponent;
-	private final Set<MethodOrMethodContext> set = new HashSet<MethodOrMethodContext>();
+	protected final Set<MethodOrMethodContext> set = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final ChunkedQueue<MethodOrMethodContext> reachables = new ChunkedQueue<MethodOrMethodContext>();
 	private final QueueReader<MethodOrMethodContext> allReachables = reachables.reader();
 	private QueueReader<MethodOrMethodContext> unprocessedMethods;
+	private final SystemClassHandler systemClassHandler = SystemClassHandler.v();
 
 	/**
 	 * Creates a new instance of the {@link ComponentReachableMethods} class
@@ -67,7 +73,7 @@ public class ComponentReachableMethods {
 
 	private void addMethod(MethodOrMethodContext m) {
 		// Filter out methods in system classes
-		if (!SystemClassHandler.v().isClassInSystemPackage(m.method().getDeclaringClass())) {
+		if (!systemClassHandler.isClassInSystemPackage(m.method().getDeclaringClass())) {
 			if (set.add(m)) {
 				reachables.add(m);
 			}
@@ -75,59 +81,71 @@ public class ComponentReachableMethods {
 	}
 
 	public void update() {
+		final Scene sc = Scene.v();
+		final FastHierarchy fh = Scene.v().getFastHierarchy();
+		final RefType runnable = RefType.v("java.lang.Runnable");
+		final EdgePredicate predicate = new EdgePredicate() {
+
+			@Override
+			public boolean want(Edge e) {
+				if (e.kind() == Kind.CLINIT)
+					return false;
+				else if (e.kind() == Kind.VIRTUAL) {
+					// We only filter calls to this.*
+					InvokeExpr inv = e.srcStmt().getInvokeExprUnsafe();
+					if (!e.src().isStatic() && inv instanceof InstanceInvokeExpr) {
+						SootMethod refMethod = inv.getMethod();
+						InstanceInvokeExpr iinv = (InstanceInvokeExpr) inv;
+						if (iinv.getBase() == e.src().getActiveBody().getThisLocal()) {
+
+							// If our parent class P has an abstract
+							// method foo() and the lifecycle
+							// class L overrides foo(), make sure that
+							// all calls to P.foo() in the
+							// context of L only go to L.foo().
+							SootClass calleeClass = refMethod.getDeclaringClass();
+							if (fh.isSubclass(originalComponent, calleeClass)) {
+								SootClass targetClass = e.getTgt().method().getDeclaringClass();
+								return targetClass == originalComponent
+										|| fh.isSubclass(targetClass, originalComponent);
+							}
+						}
+
+						// We do not expect callback registrations in
+						// any
+						// calls to system classes
+						if (systemClassHandler.isClassInSystemPackage(refMethod.getDeclaringClass()))
+							return false;
+					}
+				} else if (config.getCallbackConfig().getFilterThreadCallbacks()) {
+					// Check for thread call edges
+					if (e.kind() == Kind.THREAD || e.kind() == Kind.EXECUTOR)
+						return false;
+
+					// Some apps have a custom layer for managing
+					// threads,
+					// so we need a more generic model
+					if (e.tgt().getName().equals("run"))
+						if (sc.getFastHierarchy().canStoreType(e.tgt().getDeclaringClass().getType(), runnable))
+							return false;
+				}
+				return true;
+			}
+
+		};
+		final CallGraph cg = sc.getCallGraph();
+
 		while (unprocessedMethods.hasNext()) {
 			MethodOrMethodContext m = unprocessedMethods.next();
-			Filter filter = new Filter(new EdgePredicate() {
-
-				@Override
-				public boolean want(Edge e) {
-					if (e.kind() == Kind.CLINIT)
-						return false;
-					else if (e.kind() == Kind.VIRTUAL) {
-						// We only filter calls to this.*
-						if (!e.src().isStatic() && e.srcStmt().getInvokeExpr() instanceof InstanceInvokeExpr) {
-							SootMethod refMethod = e.srcStmt().getInvokeExpr().getMethod();
-							InstanceInvokeExpr iinv = (InstanceInvokeExpr) e.srcStmt().getInvokeExpr();
-							if (iinv.getBase() == e.src().getActiveBody().getThisLocal()) {
-
-								// If our parent class P has an abstract
-								// method foo() and the lifecycle
-								// class L overrides foo(), make sure that
-								// all calls to P.foo() in the
-								// context of L only go to L.foo().
-								SootClass calleeClass = refMethod.getDeclaringClass();
-								if (Scene.v().getFastHierarchy().isSubclass(originalComponent, calleeClass)) {
-									SootClass targetClass = e.getTgt().method().getDeclaringClass();
-									return targetClass == originalComponent
-											|| Scene.v().getFastHierarchy().isSubclass(targetClass, originalComponent);
-								}
-							}
-
-							// We do not expect callback registrations in
-							// any
-							// calls to system classes
-							if (SystemClassHandler.v().isClassInSystemPackage(refMethod.getDeclaringClass()))
-								return false;
-						}
-					} else if (config.getCallbackConfig().getFilterThreadCallbacks()) {
-						// Check for thread call edges
-						if (e.kind() == Kind.THREAD || e.kind() == Kind.EXECUTOR)
-							return false;
-
-						// Some apps have a custom layer for managing
-						// threads,
-						// so we need a more generic model
-						if (e.tgt().getName().equals("run"))
-							if (Scene.v().getFastHierarchy().canStoreType(e.tgt().getDeclaringClass().getType(),
-									RefType.v("java.lang.Runnable")))
-								return false;
-					}
-					return true;
+			Iterator<Edge> of = cg.edgesOutOf(m);
+			if (of != null && of.hasNext()) {
+				Filter filter = new Filter(predicate);
+				Iterator<Edge> targets = filter.wrap(of);
+				if (targets.hasNext()) {
+					addMethods(new Targets(targets));
 				}
+			}
 
-			});
-			Iterator<Edge> targets = filter.wrap(Scene.v().getCallGraph().edgesOutOf(m));
-			addMethods(new Targets(targets));
 		}
 	}
 

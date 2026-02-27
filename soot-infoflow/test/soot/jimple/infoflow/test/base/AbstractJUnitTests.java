@@ -83,7 +83,7 @@ public abstract class AbstractJUnitTests {
 
 		appendWithSeparator(libPathBuilder, new File(javaBaseDir + "rt.jar"));
 		appendWithSeparator(libPathBuilder, new File("/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar"));
-		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\java-se-8u41-ri\\jre\\lib\\rt.jar"));
+		appendWithSeparator(libPathBuilder, new File("C:\\Program Files\\Java\\jre-1.8\\lib\\rt.jar"));
 
 		String jakartaJAR = HttpServlet.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		appendWithSeparator(libPathBuilder, new File(jakartaJAR));

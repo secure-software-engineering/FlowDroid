@@ -7,6 +7,7 @@ import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.IPropagationRuleManagerFactory;
+import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsArrayPropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsClinitRule;
@@ -15,7 +16,6 @@ import soot.jimple.infoflow.problems.rules.backward.BackwardsImplicitFlowRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsSourcePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsStrongUpdatePropagationRule;
 import soot.jimple.infoflow.problems.rules.backward.BackwardsWrapperRule;
-import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
 
@@ -33,23 +33,23 @@ public class BackwardNoSinkRuleManagerFactory implements IPropagationRuleManager
 		List<ITaintPropagationRule> ruleList = new ArrayList<>();
 
 		// backwards only
-		ruleList.add(new BackwardsSourcePropagationRule(manager, zeroValue, results));
-		ruleList.add(new BackwardsClinitRule(manager, zeroValue, results));
-		ruleList.add(new BackwardsStrongUpdatePropagationRule(manager, zeroValue, results));
+		ruleList.add(new BackwardsSourcePropagationRule());
+		ruleList.add(new BackwardsClinitRule());
+		ruleList.add(new BackwardsStrongUpdatePropagationRule());
 		if (manager.getConfig().getEnableExceptionTracking())
-			ruleList.add(new BackwardsExceptionPropagationRule(manager, zeroValue, results));
+			ruleList.add(new BackwardsExceptionPropagationRule());
 		if (manager.getConfig().getEnableArrayTracking())
-			ruleList.add(new BackwardsArrayPropagationRule(manager, zeroValue, results));
+			ruleList.add(new BackwardsArrayPropagationRule());
 		if (manager.getTaintWrapper() != null)
-			ruleList.add(new BackwardsWrapperRule(manager, zeroValue, results));
+			ruleList.add(new BackwardsWrapperRule());
 
 		// shared
-		ruleList.add(new SkipSystemClassRule(manager, zeroValue, results));
+		ruleList.add(new SkipSystemClassRule());
 		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
-			ruleList.add(new StopAfterFirstKFlowsPropagationRule(manager, zeroValue, results));
+			ruleList.add(new StopAfterFirstKFlowsPropagationRule());
 
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
-			ruleList.add(new BackwardsImplicitFlowRule(manager, zeroValue, results));
+			ruleList.add(new BackwardsImplicitFlowRule());
 
 		return new PropagationRuleManager(manager, zeroValue, results, ruleList.toArray(new ITaintPropagationRule[0]));
 	}

@@ -284,7 +284,6 @@ public class SummaryGenerator {
 		}
 		if (classpath.toLowerCase().endsWith(".apk")) {
 			Options.v().set_src_prec(Options.src_prec_apk);
-			Options.v().set_process_multiple_dex(true);
 			if (config.getAndroidPlatformDir() != null)
 				Options.v().set_android_jars(config.getAndroidPlatformDir());
 		} else

@@ -98,7 +98,6 @@ public class MainClass {
 	private static final String OPTION_ONE_COMPONENT = "ot";
 	private static final String OPTION_SEQUENTIAL_PATHS = "sp";
 	private static final String OPTION_LOG_SOURCES_SINKS = "ls";
-	private static final String OPTION_MERGE_DEX_FILES = "d";
 	private static final String OPTION_SINGLE_JOIN_POINT = "sa";
 	private static final String OPTION_MAX_CALLBACKS_COMPONENT = "mc";
 	private static final String OPTION_MAX_CALLBACKS_DEPTH = "md";
@@ -204,8 +203,6 @@ public class MainClass {
 				"Eliminate Android components that have more than the given number of callbacks");
 		options.addOption(OPTION_MAX_CALLBACKS_DEPTH, "maxcallbacksdepth", true,
 				"Only analyze callback chains up to the given depth");
-		options.addOption(OPTION_MERGE_DEX_FILES, "mergedexfiles", false,
-				"Merge all dex files in the given APK file into one analysis target");
 		options.addOption(OPTION_PATH_SPECIFIC_RESULTS, "pathspecificresults", false,
 				"Report different results for same source/sink pairs if they differ in their propagation paths");
 
@@ -779,8 +776,6 @@ public class MainClass {
 			config.getPathConfiguration().setSequentialPathProcessing(true);
 		if (cmd.hasOption(OPTION_LOG_SOURCES_SINKS))
 			config.setLogSourcesAndSinks(true);
-		if (cmd.hasOption(OPTION_MERGE_DEX_FILES))
-			config.setMergeDexFiles(true);
 		if (cmd.hasOption(OPTION_PATH_SPECIFIC_RESULTS))
 			config.setPathAgnosticResults(false);
 		if (cmd.hasOption(OPTION_SINGLE_JOIN_POINT))

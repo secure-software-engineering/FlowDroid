@@ -195,7 +195,7 @@
 		</method>
 		<method id="System.Text.StringBuilder Append(System.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="false" typeChecking="false" cutSubfields="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field" />
 				</flow>

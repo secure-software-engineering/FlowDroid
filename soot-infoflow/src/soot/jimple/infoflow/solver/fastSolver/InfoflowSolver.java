@@ -20,7 +20,11 @@ import soot.Unit;
 import soot.jimple.infoflow.collect.MyConcurrentHashMap;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.problems.AbstractInfoflowProblem;
-import soot.jimple.infoflow.solver.*;
+import soot.jimple.infoflow.solver.EndSummary;
+import soot.jimple.infoflow.solver.IFollowReturnsPastSeedsHandler;
+import soot.jimple.infoflow.solver.IInfoflowSolver;
+import soot.jimple.infoflow.solver.ISolverPeerGroup;
+import soot.jimple.infoflow.solver.IncomingRecord;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.jimple.infoflow.solver.executors.InterruptableExecutor;
 import soot.jimple.infoflow.solver.functions.SolverCallFlowFunction;
@@ -34,8 +38,7 @@ import soot.jimple.infoflow.solver.functions.SolverReturnFlowFunction;
  * edges containing new taint information
  * 
  */
-public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, IInfoflowCFG>
-		implements IInfoflowSolver {
+public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, IInfoflowCFG> implements IInfoflowSolver {
 
 	protected IFollowReturnsPastSeedsHandler followReturnsPastSeedsHandler = null;
 	protected final AbstractInfoflowProblem problem;
@@ -62,7 +65,7 @@ public class InfoflowSolver extends IFDSSolver<Unit, Abstraction, IInfoflowCFG>
 
 	@Override
 	public void injectContext(IInfoflowSolver otherSolver, SootMethod callee, Abstraction d3, Unit callSite,
-							  Abstraction d2, Abstraction d1) {
+			Abstraction d2, Abstraction d1) {
 		// The incoming data structure is shared in the peer group. No need to inject.
 	}
 

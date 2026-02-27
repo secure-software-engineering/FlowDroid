@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +116,21 @@ public class InfoflowResults {
 	}
 
 	/**
+	 * Gets the total number of additional data flows that can be used for filtering
+	 * context-sensitive sinks. The technique for counting flows is equivalent to
+	 * numConnections().
+	 * 
+	 * @return The number of source-to-sink connections in the additional data flows
+	 */
+	public int numAdditionalFlows() {
+		int num = 0;
+		if (this.additionalResults != null)
+			for (ResultSinkInfo sink : this.additionalResults.keySet())
+				num += this.additionalResults.get(sink).size();
+		return num;
+	}
+
+	/**
 	 * Gets whether this result object is empty, i.e. contains no information flows
 	 *
 	 * @return True if this result object is empty, otherwise false.
@@ -171,8 +187,7 @@ public class InfoflowResults {
 		if (propagationPath != null) {
 			stmtPath = new ArrayList<>(propagationPath.size());
 			apPath = new ArrayList<>(propagationPath.size());
-			if (!manager.getConfig().getPathAgnosticResults())
-				csPath = new ArrayList<>(propagationPath.size());
+			csPath = new ArrayList<>(propagationPath.size());
 			for (Abstraction pathAbs : propagationPath) {
 				if (pathAbs.getCurrentStmt() != null) {
 					stmtPath.add(pathAbs.getCurrentStmt());
@@ -628,6 +643,29 @@ public class InfoflowResults {
 	public void removeAll(Collection<ResultSinkInfo> sinks) {
 		for (ResultSinkInfo sink : sinks)
 			remove(sink);
+	}
+
+	/**
+	 * Gets all sink statements to which there is at least one data flow
+	 * 
+	 * @return The set of sink statements to which there is at least one data flow
+	 */
+	public Set<Stmt> getAllSinkStmts() {
+		if (this.results == null)
+			return Collections.emptySet();
+		return this.results.keySet().stream().map(s -> s.getStmt()).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Gets all source statements from which there is at least one data flow
+	 * 
+	 * @return The set of source statements from which there is at least one data
+	 *         flow
+	 */
+	public Set<Stmt> getAllSourceStmts() {
+		if (this.results == null)
+			return Collections.emptySet();
+		return this.results.values().stream().map(s -> s.getStmt()).collect(Collectors.toSet());
 	}
 
 	@Override

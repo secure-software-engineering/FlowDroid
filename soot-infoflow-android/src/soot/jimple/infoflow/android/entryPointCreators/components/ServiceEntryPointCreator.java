@@ -193,6 +193,11 @@ public class ServiceEntryPointCreator extends AbstractComponentEntryPointCreator
 				sm.addTag(SimulatedCodeElementTag.TAG);
 			}
 
+			// The class must not be phantom to have a body
+			SootClass declClass = sm.getDeclaringClass();
+			if (declClass != null && declClass.isPhantomClass())
+				declClass.setLibraryClass();
+
 			// Create the body
 			final JimpleBody b = Jimple.v().newBody(sm);
 			sm.setModifiers(sm.getModifiers() & ~Modifier.NATIVE);

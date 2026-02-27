@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<summary fileFormatVersion="101">
+<summary fileFormatVersion="101" isExclusive="true">
 	<methods>
 		<method id="java.lang.String crypt(byte[])">
 			<flows>

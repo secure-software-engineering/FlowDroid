@@ -16,10 +16,8 @@ public class TimeoutReason implements ISolverTerminationReason {
 	/**
 	 * Creates a new instance of the {@link TimeoutReason} class
 	 * 
-	 * @param timeElapsed
-	 *            The time that has elapsed so far
-	 * @param timeout
-	 *            The maximum time that the solver was allowed to spend
+	 * @param timeElapsed The time that has elapsed so far
+	 * @param timeout     The maximum time that the solver was allowed to spend
 	 */
 	public TimeoutReason(long timeElapsed, long timeout) {
 		this.timeElapsed = timeElapsed;
@@ -76,4 +74,8 @@ public class TimeoutReason implements ISolverTerminationReason {
 		return new MultiReason(this, terminationReason);
 	}
 
+	@Override
+	public String toString() {
+		return "Timeout: Elapsed " + timeElapsed + ", but configured timeout is " + timeout;
+	}
 }

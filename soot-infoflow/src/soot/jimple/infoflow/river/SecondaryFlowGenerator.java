@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import heros.solver.PathEdge;
-import soot.*;
+import soot.RefType;
+import soot.Unit;
+import soot.Value;
+import soot.ValueBox;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
@@ -52,15 +55,15 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	}
 
 	@Override
-	public Set<Abstraction> notifyFlowOut(Unit unit, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+	public boolean notifyFlowOut(Unit unit, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
 			InfoflowManager manager, FlowFunctionType type) {
 		// We only need to handle CallToReturn edges
 		if (type != FlowFunctionType.CallToReturnFlowFunction)
-			return outgoing;
+			return false;
 
 		// Check whether any use matches the incoming taint
 		if (!isReadAt(unit, incoming.getAccessPath()))
-			return outgoing;
+			return false;
 
 		ensureCondFlowManager(manager);
 
@@ -82,15 +85,15 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		}
 
 		// Check for usage contexts
-		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt, outgoing))
+		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt,
+				outgoing))
 			additionalAbsSet.add(createAdditionalFlowAbstraction(spec, stmt, manager));
 
 		// Query the backward analysis
 		for (Abstraction addAbs : additionalAbsSet)
 			for (Unit pred : manager.getICFG().getPredsOf(unit))
 				manager.additionalManager.getMainSolver().processEdge(new PathEdge<>(d1, pred, addAbs));
-
-		return outgoing;
+		return false;
 	}
 
 	/**
@@ -117,7 +120,8 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 	 * @param manager Infoflow Manager
 	 * @return New abstraction
 	 */
-	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt, InfoflowManager manager) {
+	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt,
+			InfoflowManager manager) {
 		AccessPath ap = spec.toAccessPath(manager);
 		ISourceSinkDefinition def = spec.getDefinition();
 		Abstraction newAbs = new Abstraction(Collections.singleton(def), ap, stmt, null, false, false);

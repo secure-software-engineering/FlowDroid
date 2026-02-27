@@ -2,6 +2,8 @@ package soot.jimple.infoflow.methodSummary.generator;
 
 import java.util.Collection;
 
+import soot.Local;
+import soot.jimple.infoflow.FlowDroidLocalSplitter;
 import soot.jimple.infoflow.Infoflow;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -35,8 +37,26 @@ public class SummaryInfoflow extends Infoflow implements ISummaryInfoflow {
 
 	@Override
 	protected void onTaintPropagationCompleted(IInfoflowSolver forwardSolver, IInfoflowSolver aliasSolver,
-											   IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
+			IInfoflowSolver backwardSolver, IInfoflowSolver backwardAliasSolver) {
 		cachedManager = this.manager;
+	}
+
+	@Override
+	protected void unsplitAllBodies() {
+		//Since we are interested in abstractions, we must not unsplit.
+		//This is fine for our use case
+	}
+
+	@Override
+	protected FlowDroidLocalSplitter getLocalSplitter() {
+		return new FlowDroidLocalSplitter() {
+
+			@Override
+			protected Local createClonedLocal(Local oldLocal) {
+				//We want "normal" locals since we take deep looks into abstractions
+				return (Local) oldLocal.clone();
+			}
+		};
 	}
 
 	@Override

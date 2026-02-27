@@ -20,6 +20,7 @@ import soot.jimple.IntConstant;
 import soot.jimple.LongConstant;
 import soot.jimple.Stmt;
 import soot.jimple.StringConstant;
+import soot.tagkit.ConstantValueTag;
 import soot.tagkit.DoubleConstantValueTag;
 import soot.tagkit.FloatConstantValueTag;
 import soot.tagkit.IntegerConstantValueTag;
@@ -38,7 +39,6 @@ import soot.toolkits.scalar.SimpleLocalDefs;
  */
 public class SimpleConstantValueProvider implements IValueProvider {
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Object> getValue(SootMethod sm, Stmt stmt, Value value, Class type) {
 		if (value instanceof Constant) {

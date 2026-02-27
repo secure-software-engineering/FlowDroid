@@ -220,10 +220,10 @@ public class ContextSensitivePathBuilder extends ConcurrentAbstractionPathBuilde
 
 		// A source should normally never have neighbors, but it can happen
 		// with ICCTA
-		if (abs.getNeighbors() != null) {
-			// we ignore this issue for now, because the neighbor's source
-			// contexts seem to be equal to our own one
-		}
+		//if (abs.getNeighbors() != null) {
+		// we ignore this issue for now, because the neighbor's source
+		// contexts seem to be equal to our own one
+		//}
 
 		// Register the source that we have found
 		SourceContext sourceContext = abs.getSourceContext();

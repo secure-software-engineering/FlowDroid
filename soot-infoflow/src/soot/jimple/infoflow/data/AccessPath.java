@@ -344,20 +344,55 @@ public class AccessPath implements Cloneable {
 		return true;
 	}
 
+	/**
+	 * Checks whether this access path references a static field
+	 * 
+	 * @return True if this access path references a static field, false otherwise
+	 */
 	public boolean isStaticFieldRef() {
 		return value == null && fragments != null && fragments.length > 0;
 	}
 
+	/**
+	 * Checks whether this access path references an instance field
+	 * 
+	 * @return True if this access path references an instance field, false
+	 *         otherwise
+	 */
 	public boolean isInstanceFieldRef() {
 		return value != null && fragments != null && fragments.length > 0;
 	}
 
+	/**
+	 * Checks whether this access path references a field, regardless of whether it
+	 * is a static or instance field
+	 * 
+	 * @return True if this access path references a field, false otherwise
+	 */
 	public boolean isFieldRef() {
 		return fragments != null && fragments.length > 0;
 	}
 
+	/**
+	 * Checks whether this access path only references the base local and no fields
+	 * 
+	 * @return True if this access path only references the base local and no
+	 *         fields, false otherwise
+	 */
 	public boolean isLocal() {
 		return value != null && value instanceof Local && (fragments == null || fragments.length == 0);
+	}
+
+	/**
+	 * Checks whether this access path references an instance of an object,
+	 * regardless of whether the object as such or an instance field on the object
+	 * is referenced
+	 * 
+	 * @return True if this access path references an instance of an object, false
+	 *         otherwise
+	 */
+	public boolean isInstanceRef() {
+		return value != null && value instanceof Local;
 	}
 
 	@Override
@@ -433,7 +468,8 @@ public class AccessPath implements Cloneable {
 		if (this.value != null && !this.value.equals(a2.value))
 			return false;
 
-		// If other taints all subfields but this one does not, this does not entail other
+		// If other taints all subfields but this one does not, this does not entail
+		// other
 		if (!this.taintSubFields && a2.taintSubFields)
 			return false;
 
@@ -584,6 +620,18 @@ public class AccessPath implements Cloneable {
 			zeroAccessPath = new AccessPath(Jimple.v().newLocal("zero", NullType.v()), null, NullType.v(), null, false,
 					false, ArrayTaintType.ContentsAndLength, false);
 		return zeroAccessPath;
+	}
+
+	/**
+	 * Creates a new access path that is effectively the same, but based on another
+	 * local as plain value
+	 * 
+	 * @param newValue the new value
+	 * @return the rebased access path
+	 */
+	public AccessPath rebaseTo(Local newValue) {
+		return new AccessPath(newValue, baseType, fragments, taintSubFields, cutOffApproximation, arrayTaintType,
+				canHaveImmutableAliases);
 	}
 
 }

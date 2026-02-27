@@ -13,13 +13,11 @@ import soot.jimple.Constant;
 import soot.jimple.LengthExpr;
 import soot.jimple.NewArrayExpr;
 import soot.jimple.Stmt;
-import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.aliasing.Aliasing;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
 import soot.jimple.infoflow.data.ContainerContext;
-import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.IArrayContextProvider;
 import soot.jimple.infoflow.typing.TypeUtils;
@@ -32,11 +30,6 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  *
  */
 public class BackwardsArrayPropagationRule extends AbstractTaintPropagationRule implements IArrayContextProvider {
-
-	public BackwardsArrayPropagationRule(InfoflowManager manager, Abstraction zeroValue,
-			TaintPropagationResults results) {
-		super(manager, zeroValue, results);
-	}
 
 	@Override
 	public Collection<Abstraction> propagateNormalFlow(Abstraction d1, Abstraction source, Stmt stmt, Stmt destStmt,

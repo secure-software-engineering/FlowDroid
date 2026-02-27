@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import soot.Body;
+import soot.DefaultLocalGenerator;
 import soot.Local;
 import soot.RefType;
 import soot.Scene;
@@ -15,14 +16,18 @@ import soot.SootClass;
 import soot.SootField;
 import soot.SootMethod;
 import soot.Type;
+import soot.Unit;
 import soot.UnitPatchingChain;
-import soot.javaToJimple.DefaultLocalGenerator;
+import soot.jimple.IdentityStmt;
 import soot.jimple.Jimple;
+import soot.jimple.JimpleBody;
 import soot.jimple.NopStmt;
+import soot.jimple.ParameterRef;
 import soot.jimple.infoflow.android.entryPointCreators.AndroidEntryPointConstants;
 import soot.jimple.infoflow.android.entryPointCreators.ComponentExchangeInfo;
 import soot.jimple.infoflow.android.manifest.IManifestHandler;
 import soot.jimple.infoflow.util.SootUtils;
+import soot.tagkit.ExpectedTypeTag;
 
 /**
  * Entry point creator for content providers
@@ -101,7 +106,16 @@ public class ContentProviderEntryPointCreator extends AbstractComponentEntryPoin
 	protected void createEmptyMainMethod() {
 		super.createEmptyMainMethod();
 		//the parameter with the content provider local
-		thisLocal = mainMethod.getActiveBody().getParameterLocal(1);
+		JimpleBody jb = (JimpleBody) mainMethod.getActiveBody();
+		thisLocal = jb.getParameterLocal(1);
+		for (Unit i : jb.getUnits()) {
+			if (i instanceof IdentityStmt && ((IdentityStmt) i).getRightOp() instanceof ParameterRef) {
+				ParameterRef paramRef = (ParameterRef) ((IdentityStmt) i).getRightOp();
+				if (paramRef.getIndex() == 1) {
+					i.addTag(new ExpectedTypeTag(component.getType()));
+				}
+			}
+		}
 	}
 
 	@Override

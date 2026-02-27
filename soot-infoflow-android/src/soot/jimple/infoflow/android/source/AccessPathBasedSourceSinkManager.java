@@ -10,7 +10,16 @@ import heros.solver.Pair;
 import soot.SootMethod;
 import soot.Unit;
 import soot.Value;
-import soot.jimple.*;
+import soot.jimple.AssignStmt;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.ParameterRef;
+import soot.jimple.ReturnStmt;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.android.InfoflowAndroidConfiguration;
 import soot.jimple.infoflow.android.callbacks.AndroidCallbackDefinition;
@@ -70,7 +79,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 	}
 
 	@Override
-	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createSourceInfoPairs(Stmt sCallSite, InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
+	protected Collection<Pair<AccessPath, ISourceSinkDefinition>> createSourceInfoPairs(Stmt sCallSite,
+			InfoflowManager manager, Collection<ISourceSinkDefinition> defs) {
 		HashSet<ISourceSinkDefinition> delegateToSuper = new HashSet<>();
 		HashSet<Pair<AccessPath, ISourceSinkDefinition>> matchingDefs = new HashSet<>();
 		for (ISourceSinkDefinition def : defs) {
@@ -97,61 +107,61 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 				// For parameters in callback methods, we need special handling
 				switch (methodDef.getCallType()) {
-					case Callback:
-						if (sCallSite instanceof IdentityStmt) {
-							IdentityStmt is = (IdentityStmt) sCallSite;
-							if (is.getRightOp() instanceof ParameterRef) {
-								ParameterRef paramRef = (ParameterRef) is.getRightOp();
-								if (methodDef.getParameters() != null
-										&& methodDef.getParameters().length > paramRef.getIndex()) {
-									for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()]) {
-										aps.add(apt.toAccessPath(is.getLeftOp(), manager, false));
+				case Callback:
+					if (sCallSite instanceof IdentityStmt) {
+						IdentityStmt is = (IdentityStmt) sCallSite;
+						if (is.getRightOp() instanceof ParameterRef) {
+							ParameterRef paramRef = (ParameterRef) is.getRightOp();
+							if (methodDef.getParameters() != null
+									&& methodDef.getParameters().length > paramRef.getIndex()) {
+								for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()]) {
+									aps.add(apt.toAccessPath(is.getLeftOp(), manager, false));
+									apTuples.add(apt);
+								}
+							}
+						}
+					}
+					break;
+				case MethodCall:
+					// Check whether we need to taint the base object
+					if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
+							&& methodDef.getBaseObjects() != null) {
+						Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
+						for (AccessPathTuple apt : methodDef.getBaseObjects()) {
+							if (apt.getSourceSinkType().isSource()) {
+								aps.add(apt.toAccessPath(baseVal, manager, true));
+								apTuples.add(apt);
+							}
+						}
+					}
+
+					// Check whether we need to taint the return object
+					if (sCallSite instanceof DefinitionStmt && methodDef.getReturnValues() != null) {
+						Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
+						for (AccessPathTuple apt : methodDef.getReturnValues()) {
+							if (apt.getSourceSinkType().isSource()) {
+								aps.add(apt.toAccessPath(returnVal, manager, false));
+								apTuples.add(apt);
+							}
+						}
+					}
+
+					// Check whether we need to taint parameters
+					if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
+							&& methodDef.getParameters().length > 0)
+						for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++) {
+							if (methodDef.getParameters().length > i) {
+								for (AccessPathTuple apt : methodDef.getParameters()[i]) {
+									if (apt.getSourceSinkType().isSource()) {
+										aps.add(apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true));
 										apTuples.add(apt);
 									}
 								}
 							}
 						}
-						break;
-					case MethodCall:
-						// Check whether we need to taint the base object
-						if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
-								&& methodDef.getBaseObjects() != null) {
-							Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
-							for (AccessPathTuple apt : methodDef.getBaseObjects()) {
-								if (apt.getSourceSinkType().isSource()) {
-									aps.add(apt.toAccessPath(baseVal, manager, true));
-									apTuples.add(apt);
-								}
-							}
-						}
-
-						// Check whether we need to taint the return object
-						if (sCallSite instanceof DefinitionStmt && methodDef.getReturnValues() != null) {
-							Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
-							for (AccessPathTuple apt : methodDef.getReturnValues()) {
-								if (apt.getSourceSinkType().isSource()) {
-									aps.add(apt.toAccessPath(returnVal, manager, false));
-									apTuples.add(apt);
-								}
-							}
-						}
-
-						// Check whether we need to taint parameters
-						if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
-								&& methodDef.getParameters().length > 0)
-							for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++) {
-								if (methodDef.getParameters().length > i) {
-									for (AccessPathTuple apt : methodDef.getParameters()[i]) {
-										if (apt.getSourceSinkType().isSource()) {
-											aps.add(apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true));
-											apTuples.add(apt);
-										}
-									}
-								}
-							}
-						break;
-					default:
-						return null;
+					break;
+				default:
+					return null;
 				}
 			} else if (def instanceof FieldSourceSinkDefinition) {
 				// Check whether we need to taint the left side of the assignment
@@ -368,10 +378,12 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 						matchingDefs.add(new Pair<>(ap, methodDef));
 				}
 				// Check whether the base object matches our definition
-				else if (sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr && methodDef.getBaseObjects() != null) {
+				else if (sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
+						&& methodDef.getBaseObjects() != null) {
 					for (AccessPathTuple apt : methodDef.getBaseObjects()) {
 						if (apt.getSourceSinkType().isSink()) {
-							AccessPath ap = apt.toAccessPath(((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase(), manager, true);
+							AccessPath ap = apt.toAccessPath(((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase(),
+									manager, true);
 							matchingDefs.add(new Pair<>(ap, def));
 							break;
 						}
@@ -389,7 +401,8 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 						if (methodDef.getParameters().length > i) {
 							for (AccessPathTuple apt : methodDef.getParameters()[i]) {
 								if (apt.getSourceSinkType().isSink()) {
-									AccessPath ap = apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true);
+									AccessPath ap = apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager,
+											true);
 									aps.add(ap);
 									apts.add(apt);
 								}
@@ -478,15 +491,63 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 
 				// For parameters in callback methods, we need special handling
 				switch (methodDef.getCallType()) {
-					case Callback:
-						if (sCallSite instanceof IdentityStmt) {
-							IdentityStmt is = (IdentityStmt) sCallSite;
-							if (is.getRightOp() instanceof ParameterRef) {
-								ParameterRef paramRef = (ParameterRef) is.getRightOp();
-								if (methodDef.getParameters() != null
-										&& methodDef.getParameters().length > paramRef.getIndex()) {
-									for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()]) {
-										AccessPath ap = apt.toAccessPath(is.getLeftOp(), manager, false);
+				case Callback:
+					if (sCallSite instanceof IdentityStmt) {
+						IdentityStmt is = (IdentityStmt) sCallSite;
+						if (is.getRightOp() instanceof ParameterRef) {
+							ParameterRef paramRef = (ParameterRef) is.getRightOp();
+							if (methodDef.getParameters() != null
+									&& methodDef.getParameters().length > paramRef.getIndex()) {
+								for (AccessPathTuple apt : methodDef.getParameters()[paramRef.getIndex()]) {
+									AccessPath ap = apt.toAccessPath(is.getLeftOp(), manager, false);
+									if (accessPathMatches(sourceAccessPath, apt)) {
+										aps.add(ap);
+										apTuples.add(apt);
+									}
+								}
+							}
+						}
+					}
+					break;
+				case MethodCall:
+					// Check whether we need to taint the base object
+					if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
+							&& methodDef.getBaseObjects() != null) {
+						Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
+						for (AccessPathTuple apt : methodDef.getBaseObjects()) {
+							if (apt.getSourceSinkType().isSource()) {
+								AccessPath ap = apt.toAccessPath(baseVal, manager, true);
+								if (accessPathMatches(sourceAccessPath, apt)) {
+									aps.add(ap);
+									apTuples.add(apt);
+								}
+							}
+						}
+					}
+
+					// Check whether we need to taint the return object
+					if (sCallSite instanceof DefinitionStmt && methodDef.getReturnValues() != null) {
+						Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
+						for (AccessPathTuple apt : methodDef.getReturnValues()) {
+							if (apt.getSourceSinkType().isSource()) {
+								AccessPath ap = apt.toAccessPath(returnVal, manager, false);
+								if (accessPathMatches(sourceAccessPath, apt)) {
+									aps.add(ap);
+									apTuples.add(apt);
+								}
+							}
+						}
+					}
+
+					// Check whether we need to taint parameters
+					if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
+							&& methodDef.getParameters().length > 0)
+						for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++) {
+							if (methodDef.getParameters().length > i) {
+								for (AccessPathTuple apt : methodDef.getParameters()[i]) {
+									if (apt.getSourceSinkType().isSource()) {
+										AccessPath ap = apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager,
+												true);
 										if (accessPathMatches(sourceAccessPath, apt)) {
 											aps.add(ap);
 											apTuples.add(apt);
@@ -495,56 +556,9 @@ public class AccessPathBasedSourceSinkManager extends AndroidSourceSinkManager {
 								}
 							}
 						}
-						break;
-					case MethodCall:
-						// Check whether we need to taint the base object
-						if (sCallSite instanceof InvokeStmt && sCallSite.getInvokeExpr() instanceof InstanceInvokeExpr
-								&& methodDef.getBaseObjects() != null) {
-							Value baseVal = ((InstanceInvokeExpr) sCallSite.getInvokeExpr()).getBase();
-							for (AccessPathTuple apt : methodDef.getBaseObjects()) {
-								if (apt.getSourceSinkType().isSource()) {
-									AccessPath ap = apt.toAccessPath(baseVal, manager, true);
-									if (accessPathMatches(sourceAccessPath, apt)) {
-										aps.add(ap);
-										apTuples.add(apt);
-									}
-								}
-							}
-						}
-
-						// Check whether we need to taint the return object
-						if (sCallSite instanceof DefinitionStmt && methodDef.getReturnValues() != null) {
-							Value returnVal = ((DefinitionStmt) sCallSite).getLeftOp();
-							for (AccessPathTuple apt : methodDef.getReturnValues()) {
-								if (apt.getSourceSinkType().isSource()) {
-									AccessPath ap = apt.toAccessPath(returnVal, manager, false);
-									if (accessPathMatches(sourceAccessPath, apt)) {
-										aps.add(ap);
-										apTuples.add(apt);
-									}
-								}
-							}
-						}
-
-						// Check whether we need to taint parameters
-						if (sCallSite.containsInvokeExpr() && methodDef.getParameters() != null
-								&& methodDef.getParameters().length > 0)
-							for (int i = 0; i < sCallSite.getInvokeExpr().getArgCount(); i++) {
-								if (methodDef.getParameters().length > i) {
-									for (AccessPathTuple apt : methodDef.getParameters()[i]) {
-										if (apt.getSourceSinkType().isSource()) {
-											AccessPath ap = apt.toAccessPath(sCallSite.getInvokeExpr().getArg(i), manager, true);
-											if (accessPathMatches(sourceAccessPath, apt)) {
-												aps.add(ap);
-												apTuples.add(apt);
-											}
-										}
-									}
-								}
-							}
-						break;
-					default:
-						return null;
+					break;
+				default:
+					return null;
 				}
 			} else if (def instanceof FieldSourceSinkDefinition) {
 				// Check whether we need to taint the left side of the assignment

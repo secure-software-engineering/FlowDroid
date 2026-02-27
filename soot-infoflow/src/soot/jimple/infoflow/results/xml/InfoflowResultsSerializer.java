@@ -17,6 +17,7 @@ import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
+import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkCategory;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 
@@ -201,12 +202,17 @@ public class InfoflowResultsSerializer {
 		if (config.getEnableLineNumbers())
 			writer.writeAttribute(XmlConstants.Attributes.linenumber,
 					String.valueOf(source.getStmt().getJavaSourceStartLineNumber()));
-		if (source.getDefinition().getCategory() != null)
-			writer.writeAttribute(XmlConstants.Attributes.category,
-					source.getDefinition().getCategory().getHumanReadableDescription());
+
+		ISourceSinkDefinition def = source.getDefinition();
+		ISourceSinkCategory category = def.getCategory();
+		if (category != null) {
+			String desc = category.getHumanReadableDescription();
+			if (desc != null && !desc.isBlank())
+				writer.writeAttribute(XmlConstants.Attributes.category, desc);
+		}
+
 		if (icfg != null)
 			writer.writeAttribute(XmlConstants.Attributes.method, icfg.getMethodOf(source.getStmt()).getSignature());
-		ISourceSinkDefinition def = source.getDefinition();
 		if (def instanceof MethodSourceSinkDefinition) {
 			MethodSourceSinkDefinition ms = (MethodSourceSinkDefinition) def;
 			if (ms.getMethod() != null)
