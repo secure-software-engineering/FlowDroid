@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="System.Object" />
+    <methods>
+		<method id="void AddHeader(System.String,System.String)">
+        	<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection Header]"
+						AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection Header]"
+					   AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />
+			</clears>
+		</method>
+		<method id="void AppendHeader(System.String,System.String)">
+        	<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection Header]"
+						AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void AppendCookie(System.Net.Cookie)">
+         	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.CookieCollection _cookies]"
+						AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />    
+                </flow>
+			</flows>
+		</method>
+		<method id="void SetCookie(System.Net.Cookie)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.CookieCollection _cookies]"
+						AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />    
+                </flow>
+			</flows>
+		</method>
+       	<method id="void CopyFrom(System.Net.HttpListenerResponse)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.CookieCollection _cookies]"
+						AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />	         
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.HttpListenerContext _httpContext]"
+						AccessPathTypes="[System.Net.HttpListenerContext]" constrained="true" />	         
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net. _cookies]"
+						AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />	         
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection _webHeaders]"
+						AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />	         
+                </flow>
+			</flows>
+		</method>
+		<method id="System.Net.WebHeaderCollection get_Headers()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Field"
+						  AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection _webHeaders]"
+						  AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />
+					<to sourceSinkType="Return" />
+                </flow>
+			</flows>
+		</method>
+		<method id="void set_Headers(System.Net.WebHeaderCollection)">
+        	<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.WebHeaderCollection Header]"
+						AccessPathTypes="[System.Net.WebHeaderCollection]" constrained="true" />
+				</flow>
+			</flows>
+		</method>
+		<method id="System.Net.CookieCollection get_Cookies()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+                 	<from sourceSinkType="Field"
+						  AccessPath="[System.Net.HttpListenerResponse: System.Net.CookieCollection _cookies]"
+						  AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />
+					<to sourceSinkType="Return" />
+                 </flow>
+			</flows>
+		</method>
+		<method id="void set_Cookies(System.Net.CookieCollection)">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+        			<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[System.Net.HttpListenerResponse: System.Net.CookieCollection _cookies]"
+						AccessPathTypes="[System.Net.CookieCollection]" constrained="true" />    
+                </flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
