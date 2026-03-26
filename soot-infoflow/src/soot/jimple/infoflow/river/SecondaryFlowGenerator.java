@@ -7,8 +7,6 @@ import java.util.Set;
 import heros.solver.PathEdge;
 import soot.RefType;
 import soot.Unit;
-import soot.Value;
-import soot.ValueBox;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
@@ -63,7 +61,7 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 			return false;
 
 		// Check whether any use matches the incoming taint
-		if (!isReadAt(unit, incoming.getAccessPath()))
+		if (!Utils.isReadAt(unit, incoming.getAccessPath()))
 			return false;
 
 		ensureCondFlowManager(manager);
@@ -73,7 +71,8 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 
 		// Check for sink contexts
 		if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			Abstraction baseTaint = getTaintFromLocal(outgoing, ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
+			Abstraction baseTaint = Utils.getTaintFromLocal(outgoing,
+					((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
 
 			// Is the base tainted in the outgoing set?
 			if (baseTaint != null && baseTaint.getAccessPath().getBaseType() instanceof RefType) {
@@ -132,34 +131,4 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		return newAbs.deriveNewAbstractionWithTurnUnit(stmt);
 	}
 
-	/**
-	 * Check whether baseLocal is tainted in the outgoing set. Assumes baseLocal is
-	 * an object and the check happens at a call site.
-	 *
-	 * @param outgoing  outgoing taint set
-	 * @param baseLocal base local
-	 * @return corresponding abstraction if baseLocal is tainted else null
-	 */
-	protected Abstraction getTaintFromLocal(Set<Abstraction> outgoing, Value baseLocal) {
-		for (Abstraction abs : outgoing)
-			if (abs.getAccessPath().getPlainValue() == baseLocal)
-				return abs;
-
-		return null;
-	}
-
-	/**
-	 * Check whether the access path is read at unit.
-	 *
-	 * @param unit unit
-	 * @param ap   access path
-	 * @return true if ap is read at unit
-	 */
-	protected boolean isReadAt(Unit unit, AccessPath ap) {
-		for (ValueBox box : unit.getUseBoxes())
-			if (box.getValue() == ap.getPlainValue())
-				return true;
-
-		return false;
-	}
 }
