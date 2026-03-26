@@ -28,6 +28,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import soot.Scene;
 import soot.jimple.infoflow.collections.data.IndexConstraint;
 import soot.jimple.infoflow.collections.data.KeyConstraint;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
@@ -555,7 +556,10 @@ public class SummaryReader extends AbstractXMLReader {
 		String ap = attributes.get(XMLConstants.ATTRIBUTE_ACCESSPATH);
 		if (ap != null) {
 			if (ap.length() > 3) {
-				String[] res = ap.substring(1, ap.length() - 1).split(",");
+				String apR = ap;
+				if (ap.startsWith("[") && ap.endsWith("]"))
+					apR = ap.substring(1, ap.length() - 1);
+				String[] res = apR.split(",");
 				for (int i = 0; i < res.length; i++) {
 					String curElement = res[i].trim();
 
@@ -578,13 +582,28 @@ public class SummaryReader extends AbstractXMLReader {
 		String ap = attributes.get(XMLConstants.ATTRIBUTE_ACCESSPATHTYPES);
 		if (ap != null) {
 			if (ap.length() > 3) {
-				String[] res = ap.substring(1, ap.length() - 1).split(",");
+				String apR = ap;
+				if (ap.startsWith("[") && ap.endsWith("]"))
+					apR = ap.substring(1, ap.length() - 1);
+				String[] res = apR.split(",");
 				for (int i = 0; i < res.length; i++)
 					res[i] = res[i].trim();
 				return res;
 			}
+			return null;
+		} else {
+			// infer the access path types as default behavior
+			String[] a = getAccessPath(attributes);
+			if (a == null)
+				return null;
+			String[] res = new String[a.length];
+			for (int i = 0; i < res.length; i++) {
+				String subsig = Scene.signatureToSubsignature(a[i]);
+				String fieldType = subsig.substring(0, subsig.indexOf(" "));
+				res[i] = fieldType;
+			}
+			return res;
 		}
-		return null;
 	}
 
 	private boolean isMatchStrict(Map<String, String> attributes) {
