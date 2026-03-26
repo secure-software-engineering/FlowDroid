@@ -18,13 +18,16 @@ public class XMLConstants {
 	public static final String ACCESSPATH_TAG = "accesspath";
 	public static final String PATHELEMENT_TAG = "pathelement";
 	public static final String ADDITIONAL_FLOW_CONDITION_TAG = "additionalflowcondition";
+	public static final String TURN_AROUND_TAG = "turnaround";
 	public static final String SIGNATURE_ON_PATH_TAG = "signatureonpath";
+	public static final String VALUE_ON_PATH_TAG = "valueonpath";
 	public static final String CLASS_NAME_ON_PATH_TAG = "classnameonpath";
 	public static final String CLASS_NAME_ATTRIBUTE = "className";
 	public static final String EXCLUDE_CLASS_NAME_TAG = "excludeclassname";
 
 	public static final String ID_ATTRIBUTE = "id";
 	public static final String SIGNATURE_ATTRIBUTE = "signature";
+	public static final String INVOCATION_ATTRIBUTE = "invocation";
 	public static final String CALL_TYPE = "callType";
 	public static final String TYPE_ATTRIBUTE = "type";
 	public static final String INDEX_ATTRIBUTE = "index";
@@ -33,6 +36,8 @@ public class XMLConstants {
 	public static final String LENGTH_ATTRIBUTE = "length";
 	public static final String FIELD_ATTRIBUTE = "field";
 	public static final String DESCRIPTION_ATTRIBUTE = "description";
+	public static final String REGEX_ATTRIBUTE = "regex";
+	public static final String CASE_SENSITIVE_ATTRIBUTE = "caseSensitive";
 
 	public static final String TRUE = "true";
 

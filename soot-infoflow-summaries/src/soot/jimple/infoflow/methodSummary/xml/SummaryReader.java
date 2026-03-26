@@ -57,7 +57,7 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	/**
-	 * It takes quite a while to create a new XML Input Factory 
+	 * It takes quite a while to create a new XML Input Factory
 	 */
 	private static class CachedFactory {
 		WeakReference<Thread> thread;
@@ -93,7 +93,7 @@ public class SummaryReader extends AbstractXMLReader {
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			//Sadly, the XML Input Factory is not thread safe :/
+			// Sadly, the XML Input Factory is not thread safe :/
 			CachedFactory cachedFact = cachedFactory;
 			if (cachedFact == null || !cachedFact.isValidForThisThread()) {
 				cachedFact = new CachedFactory();

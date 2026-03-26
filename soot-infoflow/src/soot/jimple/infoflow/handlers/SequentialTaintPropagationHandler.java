@@ -7,6 +7,7 @@ import java.util.Set;
 import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 
 /**
  * Taint propagation handler that processes a sequence of inner handlers. For
@@ -63,13 +64,13 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 
 	@Override
 	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
+			InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 		if (innerHandlers.isEmpty())
 			return false;
 
 		boolean killed = false;
 		for (TaintPropagationHandler handler : innerHandlers) {
-			if (handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, type))
+			if (handler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, results, type))
 				killed = true;
 		}
 		return killed;

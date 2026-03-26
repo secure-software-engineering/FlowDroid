@@ -24,6 +24,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import soot.jimple.infoflow.android.data.AndroidMethod;
 import soot.jimple.infoflow.android.data.CategoryDefinition;
 import soot.jimple.infoflow.data.AbstractMethodAndClass;
+import soot.jimple.infoflow.data.ValueOnPath;
+import soot.jimple.infoflow.data.ValueOnPath.Parameter;
 import soot.jimple.infoflow.river.conditions.SignatureFlowCondition;
 import soot.jimple.infoflow.sourcesSinks.definitions.AccessPathTuple;
 import soot.jimple.infoflow.sourcesSinks.definitions.FieldSourceSinkDefinition;
@@ -112,11 +114,15 @@ public abstract class AbstractXMLSourceSinkParser {
 
 		protected ICategoryFilter categoryFilter = null;
 
+		private Set<String> turnAroundPaths;
 		private Set<String> signaturesOnPath = new HashSet<>();
 		private Set<String> classNamesOnPath = new HashSet<>();
+		private Set<ValueOnPath> valuesOnPath = new HashSet<>();
 
 		private Set<String> excludedClassNames = new HashSet<>();
 		private Set<SourceSinkCondition> conditions = new HashSet<>();
+		private ValueOnPath vop;
+		private Parameter param;
 
 		public SAXHandler() {
 		}
@@ -177,8 +183,16 @@ public abstract class AbstractXMLSourceSinkParser {
 				handleStarttagSignatureOnPath(attributes);
 				break;
 
+			case XMLConstants.VALUE_ON_PATH_TAG:
+				handleStarttagValueOnPath(attributes);
+				break;
+
 			case XMLConstants.CLASS_NAME_ON_PATH_TAG:
 				handleStarttagClassNameOnPath(attributes);
+				break;
+
+			case XMLConstants.TURN_AROUND_TAG:
+				handleStarttagTurnAround(attributes);
 				break;
 
 			case XMLConstants.EXCLUDE_CLASS_NAME_TAG:
@@ -254,6 +268,22 @@ public abstract class AbstractXMLSourceSinkParser {
 		}
 
 		protected void handleStarttagParam(Attributes attributes, String qNameLower) {
+			if (vop != null) {
+				String tempStr = attributes.getValue(XMLConstants.INDEX_ATTRIBUTE);
+				if (tempStr != null && !tempStr.isEmpty())
+					paramIndex = Integer.parseInt(tempStr);
+				tempStr = attributes.getValue(XMLConstants.REGEX_ATTRIBUTE);
+				boolean regex = false;
+				if (tempStr != null && !tempStr.isEmpty())
+					regex = Boolean.parseBoolean(tempStr);
+				tempStr = attributes.getValue(XMLConstants.CASE_SENSITIVE_ATTRIBUTE);
+				boolean casesensitive = false;
+				if (tempStr != null && !tempStr.isEmpty())
+					casesensitive = Boolean.parseBoolean(tempStr);
+				param = new ValueOnPath.Parameter(paramIndex, regex, casesensitive);
+				vop.add(param);
+				return;
+			}
 			if ((methodSignature != null || fieldSignature != null) && attributes != null) {
 				String tempStr = attributes.getValue(XMLConstants.INDEX_ATTRIBUTE);
 				if (tempStr != null && !tempStr.isEmpty())
@@ -287,6 +317,25 @@ public abstract class AbstractXMLSourceSinkParser {
 				if (signaturesOnPath == null)
 					signaturesOnPath = new HashSet<>();
 				signaturesOnPath.add("<" + signature + ">");
+			}
+		}
+
+		protected void handleStarttagValueOnPath(Attributes attributes) {
+			String invocation = getStringAttribute(attributes, XMLConstants.INVOCATION_ATTRIBUTE);
+			if (invocation != null) {
+				if (valuesOnPath == null)
+					valuesOnPath = new HashSet<>();
+				vop = new ValueOnPath("<" + invocation + ">");
+				valuesOnPath.add(vop);
+			}
+		}
+
+		protected void handleStarttagTurnAround(Attributes attributes) {
+			String invocationName = getStringAttribute(attributes, XMLConstants.INVOCATION_ATTRIBUTE);
+			if (invocationName != null) {
+				if (turnAroundPaths == null)
+					turnAroundPaths = new HashSet<>();
+				turnAroundPaths.add(invocationName);
 			}
 		}
 
@@ -331,6 +380,10 @@ public abstract class AbstractXMLSourceSinkParser {
 		 **/
 		@Override
 		public void characters(char[] ch, int start, int length) throws SAXException {
+			if (param != null) {
+				param.setContentToMatch(new String(ch, start, length));
+				param = null;
+			}
 		}
 
 		/**
@@ -391,15 +444,18 @@ public abstract class AbstractXMLSourceSinkParser {
 				accessPathParentElement = "";
 				paramIndex = -1;
 				paramTypes.clear();
+				vop = null;
+				param = null;
 				break;
 
 			case XMLConstants.ADDITIONAL_FLOW_CONDITION_TAG:
-				if (!classNamesOnPath.isEmpty() || !signaturesOnPath.isEmpty()) {
+				if (!classNamesOnPath.isEmpty() || !signaturesOnPath.isEmpty() || !valuesOnPath.isEmpty()) {
 					SignatureFlowCondition additionalFlowCondition = new SignatureFlowCondition(classNamesOnPath,
-							signaturesOnPath, excludedClassNames);
+							signaturesOnPath, valuesOnPath, excludedClassNames);
 					// Reset both for a new condition
 					classNamesOnPath = new HashSet<>();
 					signaturesOnPath = new HashSet<>();
+					valuesOnPath = new HashSet<>();
 
 					excludedClassNames = new HashSet<>();
 
@@ -422,7 +478,8 @@ public abstract class AbstractXMLSourceSinkParser {
 					if (tempMeth != null) {
 						@SuppressWarnings("unchecked")
 						ISourceSinkDefinition ssd = createMethodSourceSinkDefinition(tempMeth, baseAPs,
-								paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions);
+								paramAPs.toArray(new Set[paramAPs.size()]), returnAPs, callType, category, conditions,
+								turnAroundPaths);
 						addSourceSinkDefinition(methodSignature, ssd);
 					} else {
 						logger.error("Invalid method signature: " + methodSignature);
@@ -431,6 +488,7 @@ public abstract class AbstractXMLSourceSinkParser {
 			}
 
 			// Start a new method and discard our old data
+			turnAroundPaths = null;
 			methodSignature = null;
 			fieldSignature = null;
 			baseAPs = new HashSet<>();
@@ -666,23 +724,25 @@ public abstract class AbstractXMLSourceSinkParser {
 	/**
 	 * Factory method for {@link MethodSourceSinkDefinition} instances
 	 *
-	 * @param method     The method that is to be defined as a source or sink
-	 * @param baseAPs    The access paths rooted in the base object that shall be
-	 *                   considered as sources or sinks
-	 * @param paramAPs   The access paths rooted in parameters that shall be
-	 *                   considered as sources or sinks. The index in the set
-	 *                   corresponds to the index of the formal parameter to which
-	 *                   the respective set of access paths belongs.
-	 * @param returnAPs  The access paths rooted in the return object that shall be
-	 *                   considered as sources or sinks
-	 * @param callType   The type of call (normal call, callback, etc.)
-	 * @param conditions Conditions which has to be true for the definition to be
-	 *                   valid
+	 * @param method          The method that is to be defined as a source or sink
+	 * @param baseAPs         The access paths rooted in the base object that shall
+	 *                        be considered as sources or sinks
+	 * @param paramAPs        The access paths rooted in parameters that shall be
+	 *                        considered as sources or sinks. The index in the set
+	 *                        corresponds to the index of the formal parameter to
+	 *                        which the respective set of access paths belongs.
+	 * @param returnAPs       The access paths rooted in the return object that
+	 *                        shall be considered as sources or sinks
+	 * @param callType        The type of call (normal call, callback, etc.)
+	 * @param conditions      Conditions which has to be true for the definition to
+	 *                        be valid
+	 * @param turnAroundPaths a set of turn around path method invocations
 	 * @return The newly created {@link MethodSourceSinkDefinition} instance
 	 */
 	protected abstract ISourceSinkDefinition createMethodSourceSinkDefinition(AbstractMethodAndClass method,
 			Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
-			CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions);
+			CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions,
+			Set<String> turnAroundPaths);
 
 	/**
 	 * Reads the method or field signature from the given attribute map

@@ -126,6 +126,7 @@ import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.river.SecondaryFlowGenerator;
 import soot.jimple.infoflow.river.SecondaryFlowListener;
+import soot.jimple.infoflow.river.TurnAroundFlowGenerator;
 import soot.jimple.infoflow.solver.DefaultSolverPeerGroup;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.ISolverPeerGroup;
@@ -667,11 +668,14 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				while (uses.hasNext()) {
 					Value lop = assign.getLeftOp();
 					if (uses.next().getValue() == lop) {
-						//Since FlowDroid doesn't support tracking the taint over this statement, we have a problem:
-						//e.g.
-						//tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String (java.lang.String,java.lang.String)>(tainted, tainted2) ...
-						//this would erroneously clear the taint on tainted 
-						//to avoid that, we introduce an alias before that statement and use that instead for our concatenation.
+						// Since FlowDroid doesn't support tracking the taint over this statement, we
+						// have a problem:
+						// e.g.
+						// tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String
+						// (java.lang.String,java.lang.String)>(tainted, tainted2) ...
+						// this would erroneously clear the taint on tainted
+						// to avoid that, we introduce an alias before that statement and use that
+						// instead for our concatenation.
 						Local alias = lg.generateLocal(lop.getType());
 						Body body = callSite.getContainingBody();
 						AssignStmt assignAlias = Jimple.v().newAssignStmt(alias, lop);
@@ -964,8 +968,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod m : sc.getMethods()) {
 				if (m.hasActiveBody()) {
-					//We could use the local packer here, but we know exactly what was being split
-					//so we can be faster here
+					// We could use the local packer here, but we know exactly what was being split
+					// so we can be faster here
 					Body body = m.getActiveBody();
 					Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
 					while (it.hasNext()) {
@@ -987,9 +991,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		}
 	}
 
-	//With newer soot versions, locals are reused more often, which 
-	//can be a problem for FlowDroid. So, we split the locals prior to 
-	//running FlowDroid.
+	// With newer soot versions, locals are reused more often, which
+	// can be a problem for FlowDroid. So, we split the locals prior to
+	// running FlowDroid.
 	protected void splitAllBodies(Iterator<? extends MethodOrMethodContext> it) {
 		FlowDroidLocalSplitter splitter = getLocalSplitter();
 		while (it.hasNext()) {
@@ -1132,6 +1136,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (config.getAdditionalFlowsEnabled()) {
 				// Add the SecondaryFlowGenerator to the main forward taint analysis
 				TaintPropagationHandler forwardHandler = forwardProblem.getTaintPropagationHandler();
+				// TODO:
+				forwardHandler = new SecondaryFlowListener();
 				if (forwardHandler != null) {
 					if (forwardHandler instanceof SequentialTaintPropagationHandler) {
 						((SequentialTaintPropagationHandler) forwardHandler).addHandler(new SecondaryFlowGenerator());
@@ -1165,7 +1171,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				memoryWatcher.addSolver((IMemoryBoundedSolver) additionalSolver);
 
 				// Set all handlers to the additional problem
-				additionalProblem.setTaintPropagationHandler(new SecondaryFlowListener());
+				SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
+				seqTpg.addHandler(new SecondaryFlowListener());
+				seqTpg.addHandler(new TurnAroundFlowGenerator(forwardSolver));
+				additionalProblem.setTaintPropagationHandler(seqTpg);
 				additionalProblem.setTaintWrapper(taintWrapper);
 				additionalNativeCallHandler = new BackwardNativeCallHandler();
 				additionalProblem.setNativeCallHandler(additionalNativeCallHandler);
@@ -1891,6 +1900,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 						s.addTag(FlowDroidSinkStatement.INSTANCE);
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSinks.add(s);
+					for (ISourceSinkDefinition def : sos.sinkInfo.getDefinitions()) {
+						if (def.getTurnArounds() != null) {
+							sourcesSinks.addTurnArounds(def.getTurnArounds());
+						}
+					}
 					sinkCount++;
 					break;
 				case BOTH:

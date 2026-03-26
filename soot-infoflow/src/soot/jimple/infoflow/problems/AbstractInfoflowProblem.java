@@ -320,7 +320,8 @@ public abstract class AbstractInfoflowProblem extends DefaultJimpleIFDSTabulatio
 	protected Set<Abstraction> notifyOutFlowHandlers(Unit stmt, Abstraction d1, Abstraction incoming,
 			Set<Abstraction> outgoing, FlowFunctionType functionType) {
 		if (taintPropagationHandler != null && outgoing != null && !outgoing.isEmpty()) {
-			boolean res = taintPropagationHandler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, functionType);
+			boolean res = taintPropagationHandler.notifyFlowOut(stmt, d1, incoming, outgoing, manager, results,
+					functionType);
 			if (res)
 				return null;
 		}
@@ -387,10 +388,11 @@ public abstract class AbstractInfoflowProblem extends DefaultJimpleIFDSTabulatio
 	}
 
 	/**
-	 * Checks whether the arguments of a given invoke expression
-	 * has a reference to a given base object while ignoring the given index
-	 * @param e the invoke expr
-	 * @param actualBase the base to look for
+	 * Checks whether the arguments of a given invoke expression has a reference to
+	 * a given base object while ignoring the given index
+	 * 
+	 * @param e           the invoke expr
+	 * @param actualBase  the base to look for
 	 * @param ignoreIndex the index to ignore
 	 * @return true if there is another reference
 	 */

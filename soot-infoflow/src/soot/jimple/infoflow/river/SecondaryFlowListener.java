@@ -7,6 +7,7 @@ import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.problems.rules.ITaintPropagationRule;
 import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
 
@@ -61,7 +62,7 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 
 	@Override
 	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
+			InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 		// NO-OP
 		return false;
 	}

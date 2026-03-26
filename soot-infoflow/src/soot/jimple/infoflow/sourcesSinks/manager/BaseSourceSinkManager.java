@@ -161,6 +161,8 @@ public abstract class BaseSourceSinkManager
 
 			});
 
+	private Set<SootMethod> turnArounds;
+
 	/**
 	 * Creates a new instance of the {@link BaseSourceSinkManager} class with either
 	 * strong or weak matching.
@@ -1154,4 +1156,26 @@ public abstract class BaseSourceSinkManager
 
 		return false;
 	}
+
+	@Override
+	public boolean isTurnAroundPoint(SootMethod method) {
+		Set<SootMethod> ta = this.turnArounds;
+		if (ta == null)
+			return false;
+		return ta.contains(method);
+	}
+
+	@Override
+	public void addTurnArounds(Set<String> turnArounds) {
+		if (this.turnArounds == null) {
+			this.turnArounds = new HashSet<>(turnArounds.size());
+		}
+		for (String ta : turnArounds) {
+			SootMethod m = Scene.v().grabMethod("<" + ta + ">");
+			if (m != null) {
+				this.turnArounds.add(m);
+			}
+		}
+	}
+
 }

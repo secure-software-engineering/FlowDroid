@@ -16,6 +16,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.methodSummary.generator.gaps.GapManager;
 import soot.jimple.infoflow.methodSummary.generator.gaps.IGapManager;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.solver.cfg.IInfoflowCFG;
 import soot.util.ConcurrentHashMultiMap;
 import soot.util.MultiMap;
@@ -201,7 +202,7 @@ public class SummaryTaintPropagationHandler implements TaintPropagationHandler {
 
 	@Override
 	public boolean notifyFlowOut(Unit u, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
+			InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 		// Do not propagate through excluded methods
 		SootMethod sm = manager.getICFG().getMethodOf(u);
 		if (excludedMethods.contains(sm)) {

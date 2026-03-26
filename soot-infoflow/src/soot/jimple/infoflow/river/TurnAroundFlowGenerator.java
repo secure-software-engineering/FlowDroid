@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.river;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import heros.solver.PathEdge;
@@ -13,21 +12,27 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
+import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
-import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
- * TaintPropagationHandler querying the backward analysis when reaching an
- * additional sink. Attach to the forward analysis.
+ * TaintPropagationHandler querying the forward analysis when reaching a
+ * turnaround point. Attach to the backward analysis.
  * 
- * @author Tim Lange
  */
-public class SecondaryFlowGenerator implements TaintPropagationHandler {
+
+public class TurnAroundFlowGenerator implements TaintPropagationHandler {
 	// SourceSinkManager that also keeps track of conditions
 	private IConditionalFlowManager condFlowManager = null;
+	private IInfoflowSolver forwardSolver;
+
+	public TurnAroundFlowGenerator(IInfoflowSolver forwardSolver) {
+		this.forwardSolver = forwardSolver;
+	}
 
 	/**
 	 * Ensures the condFlowManager field is always set.
@@ -69,7 +74,6 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 		ensureCondFlowManager(manager);
 
 		Stmt stmt = (Stmt) unit;
-		HashSet<Abstraction> additionalAbsSet = new HashSet<>();
 
 		// Check for sink contexts
 		if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
@@ -77,58 +81,33 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 
 			// Is the base tainted in the outgoing set?
 			if (baseTaint != null && baseTaint.getAccessPath().getBaseType() instanceof RefType) {
-				RefType ref = (RefType) baseTaint.getAccessPath().getBaseType();
-				if (condFlowManager.isConditionalSink(stmt, ref.getSootClass())) {
+				if (manager.getSourceSinkManager().isTurnAroundPoint(stmt.getInvokeExpr().getMethod())) {
 					Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
-					additionalAbsSet.add(newAbs);
+					// Query the forward analysis
+					forwardSolver.processEdge(new PathEdge<>(d1, unit, newAbs));
+
+					results.addResult(new AbstractionAtSink(
+							Collections.singleton(TurnAroundSecondarySinkDefinition.INSTANCE), incoming, stmt));
 				}
 			}
 		}
 
-		// Check for usage contexts
-		for (AdditionalFlowInfoSpecification spec : manager.getUsageContextProvider().needsAdditionalInformation(stmt,
-				outgoing))
-			additionalAbsSet.add(createAdditionalFlowAbstraction(spec, stmt, manager));
-
-		// Query the backward analysis
-		for (Abstraction addAbs : additionalAbsSet)
-			for (Unit pred : manager.getICFG().getPredsOf(unit))
-				// from forwards to backwards analysis
-				manager.additionalManager.getMainSolver().processEdge(new PathEdge<>(d1, pred, addAbs));
 		return false;
 	}
 
 	/**
-	 * Creates a new abstraction that is injected into the backward direction.
+	 * Creates a new abstraction that is injected into the forward direction.
 	 *
 	 * @param baseTaint Taint of the base local
 	 * @param stmt      Current statement
 	 * @return New abstraction
 	 */
 	protected Abstraction createAdditionalFlowAbstraction(Abstraction baseTaint, Stmt stmt) {
-		Abstraction newAbs = new Abstraction(Collections.singleton(ConditionalSecondarySourceDefinition.INSTANCE),
+		Abstraction newAbs = new Abstraction(Collections.singleton(TurnAroundSecondarySinkDefinition.INSTANCE),
 				baseTaint.getAccessPath(), stmt, null, false, false);
 		newAbs.setCorrespondingCallSite(stmt);
-		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(ConditionalSecondarySourceDefinition.INSTANCE,
+		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(TurnAroundSecondarySinkDefinition.INSTANCE,
 				baseTaint.getAccessPath(), stmt));
-		return newAbs.deriveNewAbstractionWithTurnUnit(stmt);
-	}
-
-	/**
-	 * Creates a new abstraction that is injected into the backward direction.
-	 *
-	 * @param spec    Flow Specification
-	 * @param stmt    Current statement
-	 * @param manager Infoflow Manager
-	 * @return New abstraction
-	 */
-	protected Abstraction createAdditionalFlowAbstraction(AdditionalFlowInfoSpecification spec, Stmt stmt,
-			InfoflowManager manager) {
-		AccessPath ap = spec.toAccessPath(manager);
-		ISourceSinkDefinition def = spec.getDefinition();
-		Abstraction newAbs = new Abstraction(Collections.singleton(def), ap, stmt, null, false, false);
-		newAbs.setCorrespondingCallSite(stmt);
-		newAbs.setSourceContext(new AdditionalFlowInfoSourceContext(def, ap, stmt));
 		return newAbs.deriveNewAbstractionWithTurnUnit(stmt);
 	}
 

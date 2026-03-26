@@ -17,10 +17,6 @@ public class SecondarySinkDefinition extends AbstractSourceSinkDefinition {
 
 	public static final SecondarySinkDefinition INSTANCE = new SecondarySinkDefinition();
 
-	private SecondarySinkDefinition() {
-		//
-	}
-
 	@Override
 	public ISourceSinkDefinition getSourceOnlyDefinition() {
 		return null;

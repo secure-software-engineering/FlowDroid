@@ -96,6 +96,29 @@
     </xs:simpleContent>
 </xs:complexType>
 
+<xs:complexType name="valueParam">
+  <xs:simpleContent>
+     <xs:extension base="xs:string">
+      <xs:attribute name="index" type="xs:int" use="required"/>
+	  <xs:attribute name="regex" type="xs:boolean" use="optional" default="false"/>
+	  <xs:attribute name="caseSensitive" type="xs:boolean" use="optional" default="false"/>
+    </xs:extension>
+ </xs:simpleContent>
+
+</xs:complexType>
+
+<xs:complexType name="valueOnPath">
+	<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="param" type="valueParam" minOccurs="0" maxOccurs="unbounded" />
+		</xs:choice>
+	</xs:sequence>
+	<xs:attribute name="invocation" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="turnAround">
+	<xs:attribute name="invocation" type="xs:string" use="required"/>
+</xs:complexType>
 <xs:complexType name="additionalFlowConditionType">
 	<xs:sequence>
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
@@ -109,6 +132,8 @@
 					<xs:attribute name="className" type="xs:string" />
 				</xs:complexType>
 			</xs:element>
+	        <xs:element name="valueOnPath" type="valueOnPath" />
+	        <xs:element name="turnAround" type="turnAround" />
 		</xs:choice>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
 			<xs:element name="excludeClassName">

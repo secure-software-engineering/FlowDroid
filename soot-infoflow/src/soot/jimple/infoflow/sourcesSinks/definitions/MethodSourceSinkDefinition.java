@@ -324,6 +324,7 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 		MethodSourceSinkDefinition def = buildNewDefinition(method, baseAPTs, paramAPTs, returnAPTs, callType);
 		def.category = category;
 		def.conditions = conditions;
+		def.turnArounds = turnArounds;
 		return def;
 	}
 
