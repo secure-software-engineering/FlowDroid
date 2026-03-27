@@ -76,12 +76,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 		super(manager, zeroValue, ruleManagerFactory);
 	}
 
-	private void report(Abstraction source, Unit src) {
-		Stmt s = (Stmt) src;
-		if (s.getContainingBody().getMethod().getName().toString().contains("testFP2"))
-			System.out.println(source.toString() + ": " + src + " in " + ((Stmt) src).getContainingBody().getMethod());
-	}
-
 	@Override
 	public FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
 		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
@@ -372,7 +366,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 					@Override
 					public Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, src);
 						// Check whether we must activate a taint
 						final Abstraction newSource;
 						if (!source.isAbstractionActive() && src == source.getActivationUnit())
@@ -449,7 +442,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, src);
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 						if (source == getZeroValue())
@@ -533,7 +525,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
-						report(source, iCallStmt);
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 						if (source == getZeroValue())
@@ -791,7 +782,6 @@ public class InfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, iCallStmt);
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 
