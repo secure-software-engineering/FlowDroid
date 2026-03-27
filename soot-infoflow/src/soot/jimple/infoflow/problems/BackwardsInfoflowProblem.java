@@ -69,13 +69,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 		super(manager, zeroValue, ruleManagerFactory);
 	}
 
-	private void report(Abstraction source, Unit src) {
-		Stmt s = (Stmt) src;
-		if (s.getContainingBody().getMethod().getName().toString().contains("testFP2"))
-			System.out.println("Backwards. " + source.toString() + ": " + src + " in "
-					+ ((Stmt) src).getContainingBody().getMethod());
-	}
-
 	@Override
 	protected FlowFunctions<Unit, Abstraction, SootMethod> createFlowFunctionsFactory() {
 		return new FlowFunctions<Unit, Abstraction, SootMethod>() {
@@ -101,7 +94,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, srcUnit);
 						Set<Abstraction> res = null;
 						ByReferenceBoolean killSource = new ByReferenceBoolean();
 						ByReferenceBoolean killAll = new ByReferenceBoolean();
@@ -515,7 +507,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, callStmt);
 						// Respect user settings
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
@@ -736,7 +727,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction source, Abstraction calleeD1,
 							Collection<Abstraction> callerD1s) {
-						report(source, callStmt);
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 
@@ -915,7 +905,6 @@ public class BackwardsInfoflowProblem extends AbstractInfoflowProblem {
 					}
 
 					private Set<Abstraction> computeTargetsInternal(Abstraction d1, Abstraction source) {
-						report(source, callStmt);
 						if (manager.getConfig().getStopAfterFirstFlow() && !results.isEmpty())
 							return null;
 
