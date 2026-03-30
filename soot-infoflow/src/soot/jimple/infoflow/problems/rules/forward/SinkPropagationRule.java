@@ -1,7 +1,6 @@
 package soot.jimple.infoflow.problems.rules.forward;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import soot.SootMethod;
 import soot.Value;
@@ -18,8 +17,6 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
-import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
-import soot.jimple.infoflow.river.SecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -30,7 +27,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * 
  * @author Steven Arzt
  */
-public class SinkPropagationRule extends AbstractTaintPropagationRule implements IAdditionalFlowSinkPropagationRule {
+public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 	private boolean killState = false;
 
@@ -200,21 +197,6 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule implements
 
 	protected void setKillState() {
 		killState = true;
-	}
-
-	@Override
-	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt) {
-		// Static fields are not part of the conditional flow model.
-		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
-			return;
-
-		// Only proceed if stmt could influence the taint
-		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
-			return;
-
-		getResults().addResult(
-				new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
-
 	}
 
 }

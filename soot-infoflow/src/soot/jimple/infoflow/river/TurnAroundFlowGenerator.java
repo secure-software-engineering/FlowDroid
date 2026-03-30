@@ -10,7 +10,6 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
-import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
@@ -74,7 +73,8 @@ public class TurnAroundFlowGenerator implements TaintPropagationHandler {
 
 		// Check for sink contexts
 		if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			Abstraction baseTaint = Utils.getTaintFromLocal(outgoing, ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
+			Abstraction baseTaint = Utils.getTaintFromLocal(outgoing,
+					((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
 
 			// Is the base tainted in the outgoing set?
 			if (baseTaint != null && baseTaint.getAccessPath().getBaseType() instanceof RefType) {
@@ -83,8 +83,6 @@ public class TurnAroundFlowGenerator implements TaintPropagationHandler {
 					// Query the forward analysis
 					forwardSolver.processEdge(new PathEdge<>(d1, unit, newAbs));
 
-					results.addResult(new AbstractionAtSink(
-							Collections.singleton(TurnAroundSecondarySinkDefinition.INSTANCE), incoming, stmt));
 				}
 			}
 		}

@@ -21,6 +21,7 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
 import soot.jimple.infoflow.river.SecondarySinkDefinition;
+import soot.jimple.infoflow.river.TurnAroundSecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -146,10 +147,6 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
 
-		if (stmt.toString().equals(
-				"r1 = virtualinvoke r0.<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource()>()"))
-			System.out.println("x");
-
 		if (!(manager.getSourceSinkManager() instanceof IReversibleSourceSinkManager))
 			return null;
 		final IReversibleSourceSinkManager ssm = (IReversibleSourceSinkManager) manager.getSourceSinkManager();
@@ -211,5 +208,16 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 
 		getResults().addResult(
 				new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
+	}
+
+	@Override
+	public void processTurnAroundSink(Abstraction d1, Abstraction source, Stmt stmt) {
+
+		// Static fields are not part of the conditional flow model.
+		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
+			return;
+
+		getResults().addResult(
+				new AbstractionAtSink(Collections.singleton(TurnAroundSecondarySinkDefinition.INSTANCE), source, stmt));
 	}
 }

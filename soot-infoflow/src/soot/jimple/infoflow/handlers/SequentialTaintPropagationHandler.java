@@ -88,4 +88,17 @@ public class SequentialTaintPropagationHandler implements TaintPropagationHandle
 		}
 	}
 
+	public static TaintPropagationHandler concat(TaintPropagationHandler first, TaintPropagationHandler second) {
+		if (first instanceof SequentialTaintPropagationHandler) {
+			SequentialTaintPropagationHandler f = (SequentialTaintPropagationHandler) first;
+			f.addHandler(second);
+			return f;
+		} else {
+			SequentialTaintPropagationHandler seq = new SequentialTaintPropagationHandler();
+			seq.addHandler(first);
+			seq.addHandler(second);
+			return seq;
+		}
+	}
+
 }

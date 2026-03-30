@@ -51,6 +51,9 @@ public class TurnAroundFlowListener implements TaintPropagationHandler {
 		ensureSourcePropagationRule(manager);
 		if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
 			return;
+		if (!Utils.isReadAt(unit, incoming.getAccessPath()))
+			return;
+
 		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
 
 		Stmt stmt = (Stmt) unit;
