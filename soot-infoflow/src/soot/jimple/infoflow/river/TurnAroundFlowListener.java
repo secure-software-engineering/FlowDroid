@@ -17,7 +17,7 @@ import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
  * Attach to the backward analysis.
  */
 public class TurnAroundFlowListener implements TaintPropagationHandler {
-	private IAdditionalFlowSinkPropagationRule sinkRule = null;
+	private RiverPropagationRule sinkRule = null;
 
 	/**
 	 * Ensures that the field sourceRule is always set.
@@ -33,8 +33,8 @@ public class TurnAroundFlowListener implements TaintPropagationHandler {
 
 		PropagationRuleManager ruleManager = manager.getMainSolver().getTabulationProblem().getPropagationRules();
 		for (ITaintPropagationRule rule : ruleManager.getRules()) {
-			if (rule instanceof IAdditionalFlowSinkPropagationRule) {
-				sinkRule = (IAdditionalFlowSinkPropagationRule) rule;
+			if (rule instanceof RiverPropagationRule) {
+				sinkRule = (RiverPropagationRule) rule;
 				return;
 			}
 		}

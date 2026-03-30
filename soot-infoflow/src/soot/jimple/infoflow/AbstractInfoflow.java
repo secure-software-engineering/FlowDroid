@@ -1138,6 +1138,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				// Add the SecondaryFlowGenerator to the main forward taint analysis
 				TaintPropagationHandler forwardHandler = forwardProblem.getTaintPropagationHandler();
 				forwardHandler = SequentialTaintPropagationHandler.concat(forwardHandler, new SecondaryFlowGenerator());
+				forwardHandler = SequentialTaintPropagationHandler.concat(forwardHandler, new SecondaryFlowListener());
 
 				forwardProblem.setTaintPropagationHandler(forwardHandler);
 
