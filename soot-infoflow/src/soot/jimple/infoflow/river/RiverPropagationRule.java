@@ -10,6 +10,10 @@ import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
 import soot.jimple.infoflow.util.ByReferenceBoolean;
 
+/**
+ * Contains river-specific code that i.e. adds dataflow results when secondary
+ * sinks are reached.
+ */
 public class RiverPropagationRule extends AbstractTaintPropagationRule {
 
 	@Override
