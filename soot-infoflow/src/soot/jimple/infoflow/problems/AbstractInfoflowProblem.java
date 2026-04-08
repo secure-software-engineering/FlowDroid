@@ -46,7 +46,7 @@ import soot.jimple.toolkits.ide.DefaultJimpleIFDSTabulationProblem;
 /**
  * abstract super class which - concentrates functionality used by
  * InfoflowProblem and AliasProblem - contains helper functions which should not
- * pollute the naturally large InfofflowProblems
+ * pollute the naturally large InfoflowProblems
  *
  */
 public abstract class AbstractInfoflowProblem extends DefaultJimpleIFDSTabulationProblem<Abstraction, IInfoflowCFG> {
