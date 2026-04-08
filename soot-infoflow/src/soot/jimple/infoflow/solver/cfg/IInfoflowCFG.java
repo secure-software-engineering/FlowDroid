@@ -215,7 +215,7 @@ public interface IInfoflowCFG extends BiDiInterproceduralCFG<Unit, SootMethod> {
 
 	/**
 	 * Gets all ordinary callees of the call at call site u, i.e., those that are
-	 * not \<clinit\> or a fake edge.
+	 * not <code>{@literal <clinit>}</code> or a fake edge.
 	 * 
 	 * @param u
 	 *            The call site

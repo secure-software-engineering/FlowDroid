@@ -37,6 +37,7 @@ public class AccessPathFactory {
 
 	private final InfoflowConfiguration config;
 	private final TypeUtils typeUtils;
+	private final RefType objectType = Scene.v().getObjectType();
 
 	private final static SameFieldReductionStrategy SAME_FIELD_REDUCTION = new SameFieldReductionStrategy();
 	private final static This0ReductionStrategy THIS0_REDUCTION = new This0ReductionStrategy();
@@ -290,7 +291,6 @@ public class AccessPathFactory {
 		if (accessPathConfig.getUseRecursiveAccessPaths() && reduceBases && fragments != null) {
 			// f0...fi references an object of type T, look for an extension f0...fi...fj
 			// that also references an object of type T
-			RefType objectType = Scene.v().getObjectType();
 			int ei = val instanceof StaticFieldRef ? 1 : 0;
 			while (ei < fragments.length) {
 				final Type eiType = ei == 0 ? baseType : fragments[ei - 1].getFieldType();

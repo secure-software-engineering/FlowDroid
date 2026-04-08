@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="System.Object" />
+    <methods>
+    	<method id="System.Net.HttpListenerRequest get_Request()">
+			<flows>
+            	<flow isAlias="false" typeChecking="false">
+                 	<from sourceSinkType="Field"
+                          AccessPath="[System.Net.HttpListenerContext: System.Net.HttpListenerRequest Request]"
+                          AccessPathTypes="System.Net.HttpListenerReques" />
+                    <to sourceSinkType="Return" />
+                </flow>
+			</flows>
+		</method>
+		<method id="System.Security.Principal.IPrincipal get_User()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+                	<from sourceSinkType="Field"
+                          AccessPath="[System.Net.HttpListenerContext: System.Security.Principal.IPrincipal _user]"
+                          AccessPathTypes="System.Security.Principal.IPrincipal" />
+                    <to sourceSinkType="Return" />
+                </flow>
+            </flows>
+		</method>
+		<method id="System.Net.HttpListenerResponse get_Response()">
+        	<flows>
+            	<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+                          AccessPath="[System.Net.HttpListenerContext: System.Net.HttpListenerResponse _response]"
+                          AccessPathTypes="System.Net.HttpListenerResponse" />
+                    <to sourceSinkType="Return" />    				             
+                </flow>
+            </flows>
+		</method>
+	</methods>
+</summary>

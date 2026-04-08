@@ -163,8 +163,7 @@ public abstract class BaseProcessManifest<A extends IActivity, S extends IServic
 	 * by the given {@link InputStream}.
 	 *
 	 * @param manifestIS InputStream for an AppManifest.
-	 * @throws IOException            if an I/O error occurs.
-	 * @throws XmlPullParserException can occur due to a malformed manifest.
+	 * @throws IOException if an I/O error occurs.
 	 */
 	protected void handle(InputStream manifestIS) throws IOException {
 		this.axml = new AXmlHandler(manifestIS);
