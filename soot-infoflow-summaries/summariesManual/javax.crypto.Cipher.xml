@@ -7,6 +7,10 @@
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="javax.crypto.Cipher getInstance(java.lang.String,java.lang.String)">
@@ -15,6 +19,10 @@
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="javax.crypto.Cipher getInstance(java.lang.String,java.security.Provider)">
@@ -22,6 +30,10 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
 				</flow>
 			</flows>
 		</method>
@@ -46,12 +58,26 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int doFinal(byte[],int)">
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
 					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 				</flow>
@@ -69,6 +95,15 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int doFinal(byte[],int,int,byte[])">
@@ -82,6 +117,11 @@
 					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -97,6 +137,11 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="3" />
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int doFinal(java.nio.ByteBuffer,java.nio.ByteBuffer)">
@@ -110,6 +155,11 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
 						AccessPathTypes="[byte[]]"/>
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
 					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 				</flow>
@@ -128,6 +178,15 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="byte[] update(byte[],int,int)">
@@ -141,6 +200,15 @@
 					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -156,6 +224,11 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="3" />
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int update(byte[],int,int,byte[],int)">
@@ -169,6 +242,11 @@
 					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Parameter" ParameterIndex="3" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
 				</flow>
 			</flows>
 		</method>
@@ -186,6 +264,15 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="byte[] updateAAD(byte[],int,int)">
@@ -200,6 +287,15 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int update(java.nio.ByteBuffer,java.nio.ByteBuffer)">
@@ -213,6 +309,11 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
 						AccessPathTypes="[byte[]]"/>
+					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
 					<to sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 				</flow>
