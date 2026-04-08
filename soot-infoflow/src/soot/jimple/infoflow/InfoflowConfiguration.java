@@ -1380,6 +1380,19 @@ public class InfoflowConfiguration {
 
 	}
 
+	public static class AIConfiguration {
+
+		/**
+		 * Merges the given configuration options into this configuration object
+		 *
+		 * @param config The configuration data to merge in
+		 */
+		public void merge(AIConfiguration config) {
+			//
+		}
+
+	}
+
 	private boolean pathAgnosticResults = true;
 	private static boolean oneResultPerAccessPath = false;
 	private int stopAfterFirstKFlows = 0;
@@ -1406,6 +1419,7 @@ public class InfoflowConfiguration {
 	private OutputConfiguration outputConfiguration = new OutputConfiguration();
 	private SolverConfiguration solverConfiguration = new SolverConfiguration();
 	private AccessPathConfiguration accessPathConfiguration = new AccessPathConfiguration();
+	private AIConfiguration aiConfiguration = new AIConfiguration();
 
 	private CallgraphAlgorithm callgraphAlgorithm = CallgraphAlgorithm.AutomaticSelection;
 	private AliasingAlgorithm aliasingAlgorithm = AliasingAlgorithm.FlowSensitive;
@@ -1454,6 +1468,7 @@ public class InfoflowConfiguration {
 		this.outputConfiguration.merge(config.outputConfiguration);
 		this.solverConfiguration.merge(config.solverConfiguration);
 		this.accessPathConfiguration.merge(config.accessPathConfiguration);
+		this.aiConfiguration.merge(config.aiConfiguration);
 
 		this.callgraphAlgorithm = config.callgraphAlgorithm;
 		this.aliasingAlgorithm = config.aliasingAlgorithm;
@@ -2244,6 +2259,15 @@ public class InfoflowConfiguration {
 	}
 
 	/**
+	 * Gets the configuration for FlowDroid's AI integration
+	 * 
+	 * @return The configuration for FlowDroid's AI integration
+	 */
+	public AIConfiguration getAiConfiguration() {
+		return aiConfiguration;
+	}
+
+	/**
 	 * Gets the base directory used e.g. for SourcesSinks.xsd
 	 *
 	 * @return the base directory
@@ -2303,15 +2327,16 @@ public class InfoflowConfiguration {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(accessPathConfiguration, additionalFlowsEnabled, aliasingAlgorithm, callgraphAlgorithm,
-				codeEliminationMode, dataFlowDirection, dataFlowTimeout, enableArraySizeTainting, enableArrays,
-				enableExceptions, enableInstanceOfTainting, enableLineNumbers, enableOriginalNames, enableReflection,
-				enableTypeChecking, excludeSootLibraryClasses, filterConditionalSinks, flowSensitiveAliasing,
-				ignoreFlowsInSystemPackages, implicitFlowMode, incrementalResultReporting, inspectSinks, inspectSources,
-				logSourcesAndSinks, maxAliasingBases, maxThreadNum, memoryThreshold, oneSourceAtATime,
-				outputConfiguration, patchInvokeDynamicInstructions, pathAgnosticResults, pathConfiguration,
-				preciseCollectionTracking, solverConfiguration, sootIntegrationMode, sourceSinkConfig,
-				staticFieldTrackingMode, stopAfterFirstKFlows, taintAnalysisEnabled, writeOutputFiles);
+		return Objects.hash(aiConfiguration, accessPathConfiguration, additionalFlowsEnabled, aliasingAlgorithm,
+				callgraphAlgorithm, codeEliminationMode, dataFlowDirection, dataFlowTimeout, enableArraySizeTainting,
+				enableArrays, enableExceptions, enableInstanceOfTainting, enableLineNumbers, enableOriginalNames,
+				enableReflection, enableTypeChecking, excludeSootLibraryClasses, filterConditionalSinks,
+				flowSensitiveAliasing, ignoreFlowsInSystemPackages, implicitFlowMode, incrementalResultReporting,
+				inspectSinks, inspectSources, logSourcesAndSinks, maxAliasingBases, maxThreadNum, memoryThreshold,
+				oneSourceAtATime, outputConfiguration, patchInvokeDynamicInstructions, pathAgnosticResults,
+				pathConfiguration, preciseCollectionTracking, solverConfiguration, sootIntegrationMode,
+				sourceSinkConfig, staticFieldTrackingMode, stopAfterFirstKFlows, taintAnalysisEnabled,
+				writeOutputFiles);
 	}
 
 	@Override
@@ -2324,6 +2349,7 @@ public class InfoflowConfiguration {
 			return false;
 		InfoflowConfiguration other = (InfoflowConfiguration) obj;
 		return Objects.equals(accessPathConfiguration, other.accessPathConfiguration)
+				&& Objects.equals(aiConfiguration, other.aiConfiguration)
 				&& additionalFlowsEnabled == other.additionalFlowsEnabled
 				&& aliasingAlgorithm == other.aliasingAlgorithm && callgraphAlgorithm == other.callgraphAlgorithm
 				&& codeEliminationMode == other.codeEliminationMode && dataFlowDirection == other.dataFlowDirection
