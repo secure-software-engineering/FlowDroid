@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import heros.solver.Pair;
 import soot.Scene;
 import soot.SootClass;
@@ -42,6 +45,7 @@ import soot.util.MultiMap;
  *
  */
 public class SignatureFlowCondition extends SourceSinkCondition {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Set<String> classNamesOnPath;
 	private final Set<String> signaturesOnPath;
@@ -360,9 +364,10 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 						cmp = String.valueOf(((NumericConstant) v).getNumericValue());
 					else if (v instanceof ClassConstant)
 						cmp = ((ClassConstant) v).getValue();
-					else
+					else {
+						logger.warn(String.format("Unsupported constant type %s: %s", v.getType(), v));
 						continue nextStmt;
-
+					}
 					String vopContent = p.getContentToMatch();
 
 					boolean matched = false;
@@ -377,6 +382,11 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 					}
 					if (!matched)
 						continue nextStmt;
+				} else {
+					logger.warn(String.format(
+							"Non-constant used at parameter %d at statement %s in %s, cannot be evaluated", idx,
+							s.toString(), s.getContainingBody().getMethod().getSignature()));
+					continue nextStmt;
 				}
 			}
 			// all matched
