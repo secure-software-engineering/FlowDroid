@@ -1085,10 +1085,11 @@ public abstract class BaseSourceSinkManager
 
 	@Override
 	public boolean isSecondarySink(Stmt stmt) {
-		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
+		InvokeExpr inv = stmt.getInvokeExprUnsafe();
+		if (inv == null)
 			return false;
 
-		SootMethod callee = stmt.getInvokeExpr().getMethod();
+		SootMethod callee = inv.getMethod();
 		SootClass dc = callee.getDeclaringClass();
 		if (secondarySinkMethods.contains(callee) || secondarySinkClasses.contains(dc))
 			return true;
