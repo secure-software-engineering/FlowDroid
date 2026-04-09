@@ -6,6 +6,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import soot.Local;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 
 /**
@@ -16,7 +22,7 @@ import soot.jimple.infoflow.data.SootMethodAndClass;
  *
  */
 public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
-		implements IAccessPathBasedSourceSinkDefinition {
+		implements IAccessPathBasedSourceSinkDefinition, IAdditionalFlowTriggerInformation {
 
 	private static MethodSourceSinkDefinition BASE_OBJ_SOURCE;
 	private static MethodSourceSinkDefinition BASE_OBJ_SINK;
@@ -511,6 +517,59 @@ public class MethodSourceSinkDefinition extends AbstractSourceSinkDefinition
 			}
 		}
 		return aps;
+	}
+
+	@Override
+	public Set<Local> getTriggeredAdditionalFlows(Stmt stmt) {
+		Set<Local> triggered = null;
+		InvokeExpr inv = stmt.getInvokeExpr();
+		if (inv instanceof InstanceInvokeExpr) {
+			boolean triggeredBase = true; // true by default
+			if (baseObjects != null) {
+				triggeredBase = false;
+				for (AccessPathTuple a : baseObjects) {
+					if (a.isTriggerAdditionalFlow()) {
+						triggeredBase = true;
+						break;
+					}
+				}
+			}
+
+			if (triggeredBase) {
+				triggered = new HashSet<>();
+				Value base = ((InstanceInvokeExpr) inv).getBase();
+				triggered.add((Local) base);
+			}
+		}
+		if (parameters != null) {
+			for (int i = 0; i < parameters.length; i++) {
+				Value param = inv.getArg(i);
+				if (parameters[i] != null && param instanceof Local) {
+					for (AccessPathTuple a : parameters[i]) {
+						if (a.isTriggerAdditionalFlow()) {
+							if (triggered == null)
+								triggered = new HashSet<>();
+							triggered.add((Local) param);
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (returnValues != null && stmt instanceof AssignStmt) {
+			AssignStmt assign = (AssignStmt) stmt;
+
+			for (AccessPathTuple a : returnValues) {
+				if (a.isTriggerAdditionalFlow()) {
+					if (triggered == null)
+						triggered = new HashSet<>();
+					Value ret = assign.getLeftOp();
+					triggered.add((Local) ret);
+					break;
+				}
+			}
+		}
+		return triggered;
 	}
 
 	@SuppressWarnings("unchecked")

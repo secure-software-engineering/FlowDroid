@@ -107,6 +107,7 @@ public abstract class AbstractXMLSourceSinkParser {
 
 		protected String accessPathParentElement = "";
 		protected String description = "";
+		protected boolean triggerAdditionalFlow;
 
 		protected Set<AccessPathTuple> baseAPs = new HashSet<>();
 		protected List<Set<AccessPathTuple>> paramAPs = new ArrayList<>();
@@ -164,11 +165,16 @@ public abstract class AbstractXMLSourceSinkParser {
 			case XMLConstants.BASE_TAG:
 				accessPathParentElement = qNameLower;
 				description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+				String t = attributes.getValue(XMLConstants.TRIGGERADDITIONALFLOW_ATTRIBUTE);
+				// true by default for the base tag
+				triggerAdditionalFlow = t == null || t.equalsIgnoreCase("true");
 				break;
 
 			case XMLConstants.RETURN_TAG:
 				accessPathParentElement = qNameLower;
 				description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+				t = attributes.getValue(XMLConstants.TRIGGERADDITIONALFLOW_ATTRIBUTE);
+				triggerAdditionalFlow = t != null && t.equalsIgnoreCase("true");
 				break;
 
 			case XMLConstants.PARAM_TAG:
@@ -295,6 +301,8 @@ public abstract class AbstractXMLSourceSinkParser {
 			}
 			accessPathParentElement = qNameLower;
 			description = attributes.getValue(XMLConstants.DESCRIPTION_ATTRIBUTE);
+			String t = attributes.getValue(XMLConstants.TRIGGERADDITIONALFLOW_ATTRIBUTE);
+			triggerAdditionalFlow = t != null && t.equalsIgnoreCase("true");
 		}
 
 		protected void handleStarttagPathelement(Attributes attributes) {
@@ -547,6 +555,8 @@ public abstract class AbstractXMLSourceSinkParser {
 					if (description != null && !description.isEmpty())
 						apt.setDescription(description);
 
+					apt.setTriggerAdditionalFlow(triggerAdditionalFlow);
+
 					// Simplify the AP after setting the description for not breaking the generic
 					// source definition
 					apt = apt.simplify();
@@ -573,6 +583,7 @@ public abstract class AbstractXMLSourceSinkParser {
 			isSink = false;
 			pathElements = null;
 			pathElementTypes = null;
+			triggerAdditionalFlow = false;
 
 			description = null;
 		}

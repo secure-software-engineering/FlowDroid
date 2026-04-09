@@ -3,6 +3,7 @@ package soot.jimple.infoflow.river;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.Stmt;
+import soot.jimple.infoflow.sourcesSinks.manager.ConditionalSinkInfo;
 
 /**
  * A source sink manager that is able to manage sinks with conditions, i.e. the
@@ -25,9 +26,9 @@ public interface IConditionalFlowManager {
 	 *
 	 * @param stmt      Sink Statement
 	 * @param baseClass Class of the tainted base
-	 * @return true if stmt is a conditional sink
+	 * @return information about the conditional sink
 	 */
-	boolean isConditionalSink(Stmt stmt, SootClass baseClass);
+	ConditionalSinkInfo getConditionalSinkInfo(Stmt stmt, SootClass baseClass);
 
 	/**
 	 * Register a secondary sink at runtime.

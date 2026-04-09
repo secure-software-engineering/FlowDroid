@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import heros.solver.PathEdge;
+import soot.Local;
 import soot.RefType;
 import soot.Unit;
+import soot.Value;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
@@ -15,6 +17,7 @@ import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
 import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
+import soot.jimple.infoflow.sourcesSinks.manager.ConditionalSinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
 
 /**
@@ -71,15 +74,27 @@ public class SecondaryFlowGenerator implements TaintPropagationHandler {
 
 		// Check for sink contexts
 		if (stmt.containsInvokeExpr() && stmt.getInvokeExpr() instanceof InstanceInvokeExpr) {
-			Abstraction baseTaint = Utils.getTaintFromLocal(outgoing,
-					((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase());
+			Value baseLocal = ((InstanceInvokeExpr) stmt.getInvokeExpr()).getBase();
+			Abstraction baseTaint = Utils.getTaintFromLocal(outgoing, baseLocal);
 
 			// Is the base tainted in the outgoing set?
 			if (baseTaint != null && baseTaint.getAccessPath().getBaseType() instanceof RefType) {
 				RefType ref = (RefType) baseTaint.getAccessPath().getBaseType();
-				if (condFlowManager.isConditionalSink(stmt, ref.getSootClass())) {
-					Abstraction newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
-					additionalAbsSet.add(newAbs);
+				ConditionalSinkInfo info = condFlowManager.getConditionalSinkInfo(stmt, ref.getSootClass());
+				if (info != null) {
+					Set<Local> locals = info.getTriggeredAdditionalFlows(stmt);
+					if (locals != null) {
+						for (Local l : locals) {
+							Abstraction newAbs;
+							if (l == baseLocal) {
+								newAbs = createAdditionalFlowAbstraction(baseTaint, stmt);
+							} else {
+								newAbs = createAdditionalFlowAbstraction(baseTaint.deriveNewAbstraction(
+										manager.getAccessPathFactory().createAccessPath(l, true), stmt), stmt);
+							}
+							additionalAbsSet.add(newAbs);
+						}
+					}
 				}
 			}
 		}

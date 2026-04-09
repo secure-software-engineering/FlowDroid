@@ -38,6 +38,7 @@ public class XMLConstants {
 	public static final String DESCRIPTION_ATTRIBUTE = "description";
 	public static final String REGEX_ATTRIBUTE = "regex";
 	public static final String CASE_SENSITIVE_ATTRIBUTE = "caseSensitive";
+	public static final String TRIGGERADDITIONALFLOW_ATTRIBUTE = "triggerAdditionalFlow";
 
 	public static final String TRUE = "true";
 

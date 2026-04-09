@@ -5,6 +5,7 @@ import soot.SootMethod;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
+import soot.jimple.infoflow.sourcesSinks.manager.ConditionalSinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.sourcesSinks.manager.SourceInfo;
@@ -39,8 +40,8 @@ public class ConditionalFlowSourceSinkManagerWrapper implements IReversibleSourc
 	}
 
 	@Override
-	public boolean isConditionalSink(Stmt stmt, SootClass baseClass) {
-		return inner.isConditionalSink(stmt, baseClass);
+	public ConditionalSinkInfo getConditionalSinkInfo(Stmt stmt, SootClass baseClass) {
+		return inner.getConditionalSinkInfo(stmt, baseClass);
 	}
 
 	@Override

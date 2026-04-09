@@ -44,6 +44,10 @@
 						AccessPathTypes="[byte[]]" />
 					<to sourceSinkType="Return"/>
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[javax.crypto.Cipher: java.lang.String instance]" />
+					<to sourceSinkType="Return"/>
+				</flow>
 			</flows>
 		</method>
 		<method id="byte[] doFinal(byte[])">
