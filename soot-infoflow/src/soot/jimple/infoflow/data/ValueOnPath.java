@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Can be used to express conditions on values that are used in statements on
- * the path. This class can be used to enforce that there is a specific method
- * invocation call where a specific constant value is used as a parameter.
+ * Can be used to express conditions on values that are used in statements on the path.
+ * This class can be used to enforce that there is a specific method invocation call
+ * where a specific constant value is used as a parameter.
  */
 public class ValueOnPath {
 
@@ -132,8 +132,7 @@ public class ValueOnPath {
 
 	/**
 	 * Adds a parameter condition. Note that the parameters are combined using
-	 * <i>AND</i>, i.e. all of them have to be true in order to fulfill this
-	 * condition.
+	 * <i>AND</i>, i.e. all of them have to be true in order to fulfill this condition.
 	 * 
 	 * @param parameter the new parameters condition
 	 * @return true if the parameter condition has been added successfully
@@ -183,7 +182,7 @@ public class ValueOnPath {
 				sb.append(", ");
 			sb.append(p.toString());
 		}
-		return super.toString();
+		return sb.toString();
 	}
 
 }

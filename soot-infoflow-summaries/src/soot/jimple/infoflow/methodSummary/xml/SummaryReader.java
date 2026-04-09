@@ -82,8 +82,8 @@ public class SummaryReader extends AbstractXMLReader {
 	private CachedFactory cachedFactory;
 
 	/**
-	 * Reads a summary xml and places the new summaries into the given data object.
-	 * This method closes the reader.
+	 * Reads a summary xml and places the new summaries into the given data object. This
+	 * method closes the reader.
 	 *
 	 * @param reader    The reader from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
@@ -614,6 +614,8 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isParameter(Map<String, String> attributes) {
+		if (attributes.get(ATTRIBUTE_FLOWTYPE) == null)
+			System.out.println();
 		return attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Parameter.toString());
 	}
 
@@ -661,8 +663,8 @@ public class SummaryReader extends AbstractXMLReader {
 	/**
 	 * Sets whether summaries shall be validated after they are read from disk
 	 *
-	 * @param validateSummariesOnRead True if summaries shall be validated after
-	 *                                they are read from disk, otherwise false
+	 * @param validateSummariesOnRead True if summaries shall be validated after they
+	 *                                are read from disk, otherwise false
 	 */
 	public void setValidateSummariesOnRead(boolean validateSummariesOnRead) {
 		this.validateSummariesOnRead = validateSummariesOnRead;

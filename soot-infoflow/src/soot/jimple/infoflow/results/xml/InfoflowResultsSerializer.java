@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.results.xml;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -68,7 +69,9 @@ public class InfoflowResultsSerializer {
 	 */
 	public void serialize(InfoflowResults results, String fileName) throws XMLStreamException, IOException {
 		this.startTime = System.currentTimeMillis();
-		try (OutputStream out = new FileOutputStream(fileName)) {
+		File f = new File(fileName);
+		f.getParentFile().mkdirs(); // create parent directories
+		try (OutputStream out = new FileOutputStream(f)) {
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = factory.createXMLStreamWriter(out, "UTF-8");
 

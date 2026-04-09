@@ -38,8 +38,8 @@ import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
 /**
- * A condition that checks additional data flow to see whether a source or sink
- * is valid or not based on classes and methods on the secondary data flow
+ * A condition that checks additional data flow to see whether a source or sink is valid
+ * or not based on classes and methods on the secondary data flow
  *
  * @author Steven Arzt
  *
@@ -62,9 +62,9 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	 * @param classNamesOnPath   class names that have to be on the path
 	 * @param signaturesOnPath   signatures that have to be on the path
 	 * @param valuesOnPath       values that have to be on path
-	 * @param excludedClassNames class names of primary sinks that should be
-	 *                           filtered without context, e.g.
-	 *                           ByteArrayOutputStream for OutputStream
+	 * @param excludedClassNames class names of primary sinks that should be filtered
+	 *                           without context, e.g. ByteArrayOutputStream for
+	 *                           OutputStream
 	 */
 	public SignatureFlowCondition(Set<String> classNamesOnPath, Set<String> signaturesOnPath,
 			Set<ValueOnPath> valuesOnPath, Set<String> excludedClassNames) {
@@ -199,8 +199,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	}
 
 	/**
-	 * Ensures that the set of Soot methods on the data flow path has been
-	 * initialized
+	 * Ensures that the set of Soot methods on the data flow path has been initialized
 	 */
 	private void ensureSootMethodsOnPath() {
 		if (methodsOnPath == null) {
@@ -216,8 +215,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	}
 
 	/**
-	 * Ensures that the set of Soot classeson the data flow path has been
-	 * initialized
+	 * Ensures that the set of Soot classeson the data flow path has been initialized
 	 */
 	private void ensureSootClassesOnPath() {
 		if (classesOnPath == null)
@@ -445,7 +443,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	@Override
 	public String toString() {
 		return "AdditionalFlowCondition: " + "classNamesOnPath=" + classNamesOnPath + ", signaturesOnPath="
-				+ signaturesOnPath + ", excludedClasses=" + excludedClassNames;
+				+ signaturesOnPath + ", excludedClasses=" + excludedClassNames + ", valuesOnPath=" + valuesOnPath;
 	}
 
 	@Override
