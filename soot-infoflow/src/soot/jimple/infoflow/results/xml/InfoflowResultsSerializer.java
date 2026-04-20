@@ -88,14 +88,14 @@ public class InfoflowResultsSerializer {
 					writeDataFlows(results, writer);
 					writer.writeEndElement();
 				}
-			}
 
-			// Write out performance data
-			InfoflowPerformanceData performanceData = results.getPerformanceData();
-			if (performanceData != null && !performanceData.isEmpty()) {
-				writer.writeStartElement(XmlConstants.Tags.performanceData);
-				writePerformanceData(performanceData, writer);
-				writer.writeEndElement();
+				// Write out performance data
+				InfoflowPerformanceData performanceData = results.getPerformanceData();
+				if (performanceData != null && !performanceData.isEmpty()) {
+					writer.writeStartElement(XmlConstants.Tags.performanceData);
+					writePerformanceData(performanceData, writer);
+					writer.writeEndElement();
+				}
 			}
 
 			writer.writeEndDocument();
