@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy>
+		<interface name="java.lang.Iterable" />
+	</hierarchy>
+	<methods>
+		<method id="void forEach(java.util.function.Consumer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="0" />
+                    <to sourceSinkType="GapBaseObject"
+                        gap="11" />
+                </flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void forEach(org.eclipse.collections.api.block.procedure.Procedure)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="0" />
+                    <to sourceSinkType="GapBaseObject"
+                        gap="11" />
+                </flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void forEachWith(org.eclipse.collections.api.block.procedure.Procedure2,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="0" />
+                    <to sourceSinkType="GapBaseObject"
+                        gap="11" />
+                </flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="1" />
+                    <to sourceSinkType="Parameter"
+						ParameterIndex="1"
+						gap="11" />
+                </flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+		<method id="void forEachWithIndex(org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+                <flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Parameter"
+                          ParameterIndex="0" />
+                    <to sourceSinkType="GapBaseObject"
+                        gap="11" />
+                </flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+	</methods>
+</summary>

@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy>
+        <interface name="java.util.Collection" />
+		<interface name="org.eclipse.collections.api.RichIterable" />
+	</hierarchy>
+	<methods>
+		<method id="org.eclipse.collections.api.collection.MutableCollection asSynchronized()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="org.eclipse.collections.api.collection.MutableCollection asUnmodifiable()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="org.eclipse.collections.api.collection.ImmutableCollection toImmutable()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

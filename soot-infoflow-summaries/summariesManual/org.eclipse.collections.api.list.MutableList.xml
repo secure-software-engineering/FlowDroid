@@ -1,0 +1,386 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy>
+		<interface name="org.eclipse.collections.collection.MutableCollection" />
+        <interface name="java.util.List" />
+		<interface name="org.eclipse.collections.api.ListIterable" />
+        <interface name="java.lang.Cloneable" />
+	</hierarchy>
+	<methods>
+		<method id="org.eclipse.collections.api.list.MutableList sortThis()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisBy(org.eclipse.collections.api.block.function.Function)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.Function"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByInt(org.eclipse.collections.api.block.function.primitive.IntFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.IntFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByBoolean(org.eclipse.collections.api.block.function.primitive.BooleanFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.BooleanFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByChar(org.eclipse.collections.api.block.function.primitive.CharFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.CharFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByByte(org.eclipse.collections.api.block.function.primitive.ByteFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.ByteFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByShort(org.eclipse.collections.api.block.function.primitive.ShortFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.ShortFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByFloat(org.eclipse.collections.api.block.function.primitive.FloatFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.FloatFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByLong(org.eclipse.collections.api.block.function.primitive.LongFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.LongFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+		<method id="org.eclipse.collections.api.list.MutableList sortThisByDouble(org.eclipse.collections.api.block.function.primitive.DoubleFunction)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="0" />
+					<to sourceSinkType="GapBaseObject"
+						BaseType="org.eclipse.collections.api.block.function.primitive.DoubleFunction"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object innerCollection]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="11" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+                    <from sourceSinkType="Field"
+                           AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                           AccessPathTypes="[java.lang.Object[]]" />
+                    <to sourceSinkType="Field"
+                        AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                        AccessPathTypes="[java.lang.Object[]]" />
+                </flow>
+			</flows>
+            <clears>
+                <clear sourceSinkType="Field"
+                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+                       AccessPathTypes="[java.lang.Object[]]"
+                       preventPropagation="false" />
+            </clears>
+		</method>
+	</methods>
+</summary>
