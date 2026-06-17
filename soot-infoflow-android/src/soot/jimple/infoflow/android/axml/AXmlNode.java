@@ -313,6 +313,16 @@ public class AXmlNode extends AXmlElement {
 	}
 
 	/**
+	 * Sets the children at the specific index
+	 * @param index the index
+	 * @param newChild the new children
+	 * @return the previous child at that position
+	 */
+	public AXmlNode setChild(int index, AXmlNode newChild) {
+		return children.set(index, newChild);
+	}
+
+	/**
 	 * Gets the textual contents of this node
 	 * 
 	 * @return The textual contents of this node
