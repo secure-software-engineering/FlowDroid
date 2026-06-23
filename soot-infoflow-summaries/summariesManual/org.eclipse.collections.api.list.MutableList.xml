@@ -33,7 +33,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisBy(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
@@ -72,7 +72,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByInt(org.eclipse.collections.api.block.function.primitive.IntFunction)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
@@ -111,7 +111,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByBoolean(org.eclipse.collections.api.block.function.primitive.BooleanFunction)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
@@ -150,7 +150,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByChar(org.eclipse.collections.api.block.function.primitive.CharFunction)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"

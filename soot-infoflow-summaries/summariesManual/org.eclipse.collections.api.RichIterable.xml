@@ -1032,7 +1032,7 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
@@ -1071,7 +1071,7 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to  sourceSinkType="Parameter" ParameterIndex="2" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
@@ -1320,14 +1320,14 @@
 		</method>
 		<method id="java.lang.Object detect(org.eclipse.collections.api.block.predicate.Predicate)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1335,7 +1335,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1347,14 +1347,14 @@
 		</method>
 		<method id="java.lang.Object detectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1362,14 +1362,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1381,14 +1381,14 @@
 		</method>
 		<method id="java.util.Optional detectOptional(org.eclipse.collections.api.block.predicate.Predicate)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1396,7 +1396,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1408,14 +1408,14 @@
 		</method>
 		<method id="java.util.Optional detectWithOptional(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1423,14 +1423,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1442,14 +1442,14 @@
 		</method>
 		<method id="java.lang.Object detectIfNone(org.eclipse.collections.api.block.predicate.Predicate,org.eclipse.collections.api.block.function.Function0)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1457,7 +1457,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1465,7 +1465,7 @@
 						AccessPath="[java.lang.Object: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1474,14 +1474,14 @@
 		</method>
 		<method id="java.lang.Object detectWithIfNone(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object,org.eclipse.collections.api.block.function.Function0)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1489,14 +1489,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1504,7 +1504,7 @@
 						AccessPath="[java.lang.Object: java.lang.Object value]"
 						AccessPathTypes="[java.lang.Object]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="Return" />
@@ -1513,14 +1513,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable flatCollect(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1528,7 +1528,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return"
@@ -1539,14 +1539,14 @@
 		</method>
 		<method id="java.util.Collection flatCollect(org.eclipse.collections.api.block.function.Function,java.util.Collection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1554,13 +1554,13 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1569,14 +1569,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableByteCollection flatCollectByte(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableByteCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1584,7 +1584,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
@@ -1598,14 +1598,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableCharCollection flatCollectChar(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableCharCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1613,12 +1613,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1627,14 +1627,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableIntCollection flatCollectInt(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableIntCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1642,12 +1642,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1656,14 +1656,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableShortCollection flatCollectShort(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableShortCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1671,12 +1671,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1685,14 +1685,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableDoubleCollection flatCollectDouble(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableDoubleCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1700,12 +1700,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1714,14 +1714,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableFloatCollection flatCollectFloat(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableFloatCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1729,12 +1729,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1743,14 +1743,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableLongCollection flatCollectLong(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableLongCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1758,12 +1758,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1772,14 +1772,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.primitive.MutableBooleanCollection flatCollectBoolean(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.collection.primitive.MutableBooleanCollection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1787,12 +1787,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -1801,21 +1801,21 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable flatCollectWith(org.eclipse.collections.api.block.function.Function2,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1823,7 +1823,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to sourceSinkType="Return" />
@@ -1832,21 +1832,21 @@
 		</method>
 		<method id="java.util.Collection flatCollectWith(org.eclipse.collections.api.block.function.Function2,java.lang.Object,java.util.Collection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1854,12 +1854,12 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 					gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="2" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="Return" />
@@ -1868,14 +1868,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable tap(org.eclipse.collections.api.block.procedure.Procedure)">
 			<flows>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.procedure.Procedure"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1883,7 +1883,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1939,7 +1939,7 @@
 		</method>
 		<method id="java.lang.Object getAny()">
 			<flows>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1949,7 +1949,7 @@
 		</method>
 		<method id="java.lang.Object getFirst()">
 			<flows>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1959,7 +1959,7 @@
 		</method>
 		<method id="java.lang.Object getLast()">
 			<flows>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1969,7 +1969,7 @@
 		</method>
 		<method id="java.lang.Object getOnly()">
 			<flows>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1979,14 +1979,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.Multimap groupBy(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -1994,14 +1994,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.multimap.Multimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2013,14 +2013,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.MutableMultimap groupBy(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.multimap.MutableMultimap)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2028,7 +2028,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Parameter"
@@ -2036,7 +2036,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.MutableMultimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2045,7 +2045,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.MutableMultimap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -2109,14 +2109,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.Multimap groupByEach(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2124,14 +2124,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.multimap.Multimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						  AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
@@ -2143,14 +2143,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.Multimap groupByEach(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.multimap.Multimap)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2158,7 +2158,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Parameter"
@@ -2166,7 +2166,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.Multimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 					  	AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 					  	AccessPathTypes="[java.lang.Object[]]" />
@@ -2175,7 +2175,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.Multimap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]"/>
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -2184,14 +2184,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.Multimap groupByUniqueKey(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2199,14 +2199,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.multimap.Multimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2218,14 +2218,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.multimap.MutableMultimap groupByUniqueKey(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.multimap.MutableMultimap)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2233,7 +2233,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Parameter"
@@ -2241,7 +2241,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.MutableMultimap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2250,7 +2250,7 @@
 						AccessPath="[org.eclipse.collections.api.multimap.MutableMultimap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Return" />
@@ -2349,7 +2349,7 @@
 		</method>
 		<method id="java.lang.Object max()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2359,14 +2359,14 @@
 		</method>
 		<method id="java.lang.Object max(java.util.Comparator)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="java.util.Comparator"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2374,7 +2374,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2382,7 +2382,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2394,14 +2394,14 @@
 		</method>
 		<method id="java.lang.Object maxBy(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2409,7 +2409,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2417,7 +2417,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2429,14 +2429,14 @@
 		</method>
 		<method id="java.util.Optional maxByOptional(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2444,7 +2444,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2452,7 +2452,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2462,7 +2462,7 @@
 		</method>
 		<method id="java.util.Optional maxOptional()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2472,14 +2472,14 @@
 		</method>
 		<method id="java.util.Optional maxOptional(java.util.Comparator)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="java.util.Comparator"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2487,7 +2487,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2495,7 +2495,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2505,7 +2505,7 @@
 		</method>
 		<method id="java.lang.Object min()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2517,14 +2517,14 @@
 		</method>
 		<method id="java.lang.Object min(java.util.Comparator)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="java.util.Comparator"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2532,7 +2532,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2540,7 +2540,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2552,14 +2552,14 @@
 		</method>
 		<method id="java.lang.Object minBy(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2567,7 +2567,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2575,7 +2575,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2587,7 +2587,7 @@
 		</method>
 		<method id="java.util.Optional minOptional()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2599,14 +2599,14 @@
 		</method>
 		<method id="java.util.Optional minOptional(java.util.Comparator)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="java.util.Comparator"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2614,7 +2614,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2622,7 +2622,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2632,14 +2632,14 @@
 		</method>
 		<method id="java.util.Optional minByOptional(org.eclipse.collections.api.block.function.Function)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2647,7 +2647,7 @@
 						ParameterIndex="0"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2655,7 +2655,7 @@
 						ParameterIndex="1"
 						gap="10" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2726,7 +2726,7 @@
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
-						BaseType="java.util.Comparator"
+						BaseType="java.util.function.BinaryOperator"
 						gap="11" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
@@ -2845,21 +2845,21 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable rejectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						  ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2867,7 +2867,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2901,29 +2901,16 @@
 						gap="11" />
 				</flow>
 				<flow isAlias="true" typeChecking="false">
-					<from sourceSinkType="Parameter"
-						ParameterIndex="1" />
-					<to sourceSinkType="GapBaseObject"
-						BaseType="java.util.Collection"
-						gap="12" />
-				</flow>
-				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
-						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]"
-						ParameterIndex="1"
-						gap="12" />
+						ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Return"
-						gap="11" />
-					<to sourceSinkType="Return"
-						AccessPath="[java.util.Collection: java.util.Collection innerCollection]"
-						AccessPathTypes="[java.util.Collection]"
-						gap="12" />
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="1" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
             <clears>
@@ -2935,21 +2922,21 @@
 		</method>
 		<method id="java.util.Collection rejectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object,java.util.Collection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						  ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -2958,29 +2945,16 @@
 						gap="11" />
 				</flow>
 				<flow isAlias="true" typeChecking="false">
-					<from sourceSinkType="Parameter"
-						ParameterIndex="2" />
-					<to sourceSinkType="GapBaseObject"
-						BaseType="java.util.Collection"
-						gap="12" />
-				</flow>
-				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
-						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-						AccessPathTypes="[java.lang.Object[]]"
-						ParameterIndex="2"
-						gap="12" />
+						ParameterIndex="2" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Return"
-						gap="11" />
-					<to sourceSinkType="Return"
-						AccessPath="[java.util.Collection: java.util.Collection innerCollection]"
-						AccessPathTypes="[java.util.Collection]"
-						gap="12" />
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						ParameterIndex="2" />
+					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
             <clears>
@@ -2992,14 +2966,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable select(org.eclipse.collections.api.block.predicate.Predicate)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3007,7 +2981,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3018,14 +2992,14 @@
 		</method>
 		<method id="java.util.Collection select(org.eclipse.collections.api.block.predicate.Predicate,java.util.Collection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3033,7 +3007,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
@@ -3047,30 +3021,31 @@
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter"
-						ParameterIndex="1" />
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
+						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable selectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						  ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3078,7 +3053,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3089,14 +3064,14 @@
 		</method>		
 		<method id="java.util.Collection select(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object,java.util.Collection)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.predicate.Predicate2"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3104,7 +3079,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to  sourceSinkType="Parameter"
@@ -3118,7 +3093,7 @@
 					<to sourceSinkType="Parameter"
 						ParameterIndex="2" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3129,7 +3104,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable selectInstancesOf(java.lang.Class)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3172,14 +3147,14 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectDoubleMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectDoubleMap: double[] values]"
 						AccessPathTypes="[double[]]" />
@@ -3220,14 +3195,14 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectLongMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectLongMap: long[] values]"
 						AccessPathTypes="[long[]]" />
@@ -3268,14 +3243,14 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectLongMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectLongMap: long[] values]"
 						AccessPathTypes="[long[]]" />
@@ -3316,14 +3291,14 @@
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectDoubleMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.primitive.ObjectDoubleMap: double[] values]"
 						AccessPathTypes="[double[]]" 	/>
@@ -3576,7 +3551,7 @@
 						BaseType="java.util.Comparator"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3584,7 +3559,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3653,7 +3628,7 @@
 						BaseType="java.util.Comparator"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3661,7 +3636,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3679,14 +3654,14 @@
         </method>
         <method id="org.eclipse.collections.api.set.sorted.MutableSortedSet toSortedSetBy(org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3694,7 +3669,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" />
@@ -3730,7 +3705,7 @@
 						BaseType="java.util.Comparator"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3738,7 +3713,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3756,14 +3731,14 @@
         </method>
         <method id="org.eclipse.collections.api.bag.sorted.MutableSortedBag toSortedBagBy(org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3771,7 +3746,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" />
@@ -3780,21 +3755,21 @@
         </method>
         <method id="org.eclipse.collections.api.map.MutableMap toMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3802,14 +3777,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3817,16 +3792,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.MutableMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.MutableMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -3835,21 +3810,21 @@
         </method>
         <method id="java.util.Map toMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function,java.util.Map)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3857,14 +3832,14 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3872,7 +3847,7 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Parameter"
@@ -3880,7 +3855,7 @@
 						AccessPath="[java.util.Map: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="12" />
 					<to sourceSinkType="Parameter"
@@ -3888,7 +3863,7 @@
 						AccessPath="[java.util.Map: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
 				</flow>>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="Return" 
@@ -3899,21 +3874,21 @@
         </method>
         <method id="org.eclipse.collections.api.map.sorted.MutableSortedMap toSortedMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3921,7 +3896,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3929,16 +3904,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -3954,7 +3929,7 @@
 						BaseType="java.util.Comparator"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3962,7 +3937,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3970,21 +3945,21 @@
 						ParameterIndex="1"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -3992,7 +3967,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4000,16 +3975,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4025,7 +4000,7 @@
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
                        AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4033,21 +4008,21 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="13" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4055,7 +4030,7 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4063,16 +4038,16 @@
 						ParameterIndex="0"
 						gap="13" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="13" />
+						gap="13" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.sorted.MutableSortedMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4081,21 +4056,21 @@
         </method>
         <method id="org.eclipse.collections.api.bimap.MutableBiMap toBiMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4103,7 +4078,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4111,16 +4086,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.bimap.MutableBiMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.bimap.MutableBiMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4363,21 +4338,21 @@
         </method>
         <method id="org.eclipse.collections.api.map.ImmutableMap toImmutableMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4385,7 +4360,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4393,16 +4368,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.ImmutableMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.ImmutableMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4411,21 +4386,21 @@
         </method>
         <method id="org.eclipse.collections.api.bimap.ImmutableBiMap toImmutableBiMap(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function)">
             <flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4433,7 +4408,7 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4441,16 +4416,16 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.bimap.ImmutableBiMap: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.bimap.ImmutableBiMap: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4468,14 +4443,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.map.MapIterable aggregateInPlaceBy(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function0,org.eclipse.collections.api.block.procedure.Procedure2)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4483,21 +4458,21 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="1"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.procedure.Procedure2"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4505,7 +4480,7 @@
 						ParameterIndex="1"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
 						gap="12" />
 					<to sourceSinkType="Return" />
@@ -4514,14 +4489,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.map.MapIterable aggregateBy(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function0,org.eclipse.collections.api.block.function.Function2)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4529,21 +4504,21 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function2"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4551,7 +4526,7 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4559,16 +4534,16 @@
 						ParameterIndex="1"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.MapIterable: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to sourceSinkType="Return" 
 						AccessPath="[org.eclipse.collections.api.map.MapIterable: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" 	/>
@@ -4577,14 +4552,14 @@
 		</method>
 		<method id="org.eclipse.collections.api.map.MapIterable aggregateBy(org.eclipse.collections.api.block.function.Function,org.eclipse.collections.api.block.function.Function0,org.eclipse.collections.api.block.function.Function2,org.eclipse.collections.api.map.MapIterable)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="0" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4592,21 +4567,21 @@
 						ParameterIndex="0"
 						gap="11" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="1" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="2" />
 					<to sourceSinkType="GapBaseObject"
 						BaseType="org.eclipse.collections.api.block.function.Function2"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4614,7 +4589,7 @@
 						ParameterIndex="0"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field"
 						AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
 						AccessPathTypes="[java.lang.Object[]]" />
@@ -4622,21 +4597,21 @@
 						ParameterIndex="1"
 						gap="12" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="11" />
+						gap="11" />
 					<to  sourceSinkType="Parameter" ParameterIndex="3"
 						AccessPath="[org.eclipse.collections.api.map.MapIterable: java.lang.Object[] keys]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Return"
-					gap="12" />
+						gap="12" />
 					<to  sourceSinkType="Parameter" ParameterIndex="3"
 						AccessPath="[org.eclipse.collections.api.map.MapIterable: java.lang.Object[] values]"
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Parameter"
 						ParameterIndex="3" />
 					<to sourceSinkType="Return" />

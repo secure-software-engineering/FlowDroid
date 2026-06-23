@@ -27,7 +27,7 @@
 		</method>
 		<method id="org.eclipse.collections.api.collection.ImmutableCollection toImmutable()">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" 
 						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
