@@ -21,12 +21,6 @@
                         gap="11" />
                 </flow>
 			</flows>
-			<clears>
-				<clear sourceSinkType="Field"
-					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
-					   AccessPathTypes="[java.lang.Object[]]"
-					   preventPropagation="false" />
-			</clears>
 		</method>
 		<method id="void forEach(org.eclipse.collections.api.block.procedure.Procedure)">
 			<flows>
@@ -45,12 +39,6 @@
                         gap="11" />
                 </flow>
 			</flows>
-			<clears>
-				<clear sourceSinkType="Field"
-					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
-					   AccessPathTypes="[java.lang.Object[]]"
-					   preventPropagation="false" />
-			</clears>
 		</method>
 		<method id="void forEachWith(org.eclipse.collections.api.block.procedure.Procedure2,java.lang.Object)">
 			<flows>
@@ -76,12 +64,6 @@
 						gap="11" />
                 </flow>
 			</flows>
-			<clears>
-				<clear sourceSinkType="Field"
-					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
-					   AccessPathTypes="[java.lang.Object[]]"
-					   preventPropagation="false" />
-			</clears>
 		</method>
 		<method id="void forEachWithIndex(org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure)">
 			<flows>
@@ -100,12 +82,6 @@
                         gap="11" />
                 </flow>
 			</flows>
-			<clears>
-				<clear sourceSinkType="Field"
-					   AccessPath="[org.eclipse.collections.api.Iterable: java.lang.Object[] innerArray]"
-					   AccessPathTypes="[java.lang.Object[]]"
-					   preventPropagation="false" />
-			</clears>
 		</method>
 	</methods>
 </summary>

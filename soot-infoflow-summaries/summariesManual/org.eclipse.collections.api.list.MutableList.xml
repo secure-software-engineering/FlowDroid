@@ -24,12 +24,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[java.util.Collection: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisBy(org.eclipse.collections.api.block.function.Function)">
 			<flows>
@@ -63,12 +57,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByInt(org.eclipse.collections.api.block.function.primitive.IntFunction)">
 			<flows>
@@ -102,12 +90,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByBoolean(org.eclipse.collections.api.block.function.primitive.BooleanFunction)">
 			<flows>
@@ -141,12 +123,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByChar(org.eclipse.collections.api.block.function.primitive.CharFunction)">
 			<flows>
@@ -180,12 +156,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByByte(org.eclipse.collections.api.block.function.primitive.ByteFunction)">
 			<flows>
@@ -219,12 +189,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByShort(org.eclipse.collections.api.block.function.primitive.ShortFunction)">
 			<flows>
@@ -258,12 +222,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByFloat(org.eclipse.collections.api.block.function.primitive.FloatFunction)">
 			<flows>
@@ -297,12 +255,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByLong(org.eclipse.collections.api.block.function.primitive.LongFunction)">
 			<flows>
@@ -336,12 +288,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.list.MutableList sortThisByDouble(org.eclipse.collections.api.block.function.primitive.DoubleFunction)">
 			<flows>
@@ -375,12 +321,6 @@
                         AccessPathTypes="[java.lang.Object[]]" />
                 </flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 	</methods>
 </summary>

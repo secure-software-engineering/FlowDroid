@@ -1892,12 +1892,6 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="void forEach(org.eclipse.collections.api.block.procedure.Procedure)">
 			<flows>>
@@ -2836,12 +2830,6 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable rejectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object)">
 			<flows>
@@ -2876,12 +2864,6 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 				</flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="java.util.Collection reject(org.eclipse.collections.api.block.predicate.Predicate,java.util.Collection)">
 			<flows>
@@ -2913,12 +2895,6 @@
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="java.util.Collection rejectWith(org.eclipse.collections.api.block.predicate.Predicate2,java.lang.Object,java.util.Collection)">
 			<flows>
@@ -2957,12 +2933,6 @@
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
-            <clears>
-                <clear sourceSinkType="Field"
-                       AccessPath="[org.eclipse.collections.api.RichIterable: java.lang.Object[] innerArray]"
-                       AccessPathTypes="[java.lang.Object[]]"
-                       preventPropagation="false" />
-            </clears>
 		</method>
 		<method id="org.eclipse.collections.api.RichIterable select(org.eclipse.collections.api.block.predicate.Predicate)">
 			<flows>
