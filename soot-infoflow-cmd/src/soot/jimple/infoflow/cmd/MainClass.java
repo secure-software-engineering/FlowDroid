@@ -128,7 +128,7 @@ public class MainClass {
 	private static final String OPTION_ANALYZE_FRAMEWORKS = "ff";
 
 	// Callgraph analysis
-	private static final String OPTION_CALLGRAPH_FILE = "cf";
+	private static final String OPTION_CALLBACK_FILE = "cf";
 	private static final String OPTION_CALLGRAPH_ONLY = "x";
 
 	protected MainClass() {
@@ -245,8 +245,8 @@ public class MainClass {
 				"Analyze the full frameworks together with the app without any optimizations");
 
 		// Callgraph-specific options
-		options.addOption(OPTION_CALLGRAPH_FILE, "callgraphdir", true,
-				"The file in which to store and from which to read serialized callgraphs");
+		options.addOption(OPTION_CALLBACK_FILE, "callbackdir", true,
+				"The file in which to store and from which to read serialized callbacks");
 		options.addOption(OPTION_CALLGRAPH_ONLY, "callgraphonly", false, "Only compute the callgraph and terminate");
 		options.addOption(OPTION_LENIENT_PARSING_MODE, "lenientparsing", false,
 				"Enables non-strict parsing, i.e. tries to continue rather than fail in case of a parsing error");
@@ -890,10 +890,10 @@ public class MainClass {
 		if (cmd.hasOption(OPTION_CALLGRAPH_ONLY))
 			config.setTaintAnalysisEnabled(false);
 		{
-			String callgraphFile = cmd.getOptionValue(OPTION_CALLGRAPH_FILE);
-			if (callgraphFile != null && !callgraphFile.isEmpty()) {
+			String callbackFile = cmd.getOptionValue(OPTION_CALLBACK_FILE);
+			if (callbackFile != null && !callbackFile.isEmpty()) {
 				config.getCallbackConfig().setSerializeCallbacks(true);
-				config.getCallbackConfig().setCallbacksFile(callgraphFile);
+				config.getCallbackConfig().setCallbacksFile(callbackFile);
 			}
 		}
 
