@@ -439,7 +439,12 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 					FlowFunction<D> retFunction = flowFunctions.getReturnFlowFunction(c, methodThatNeedsSummary, n,
 							retSiteC);
 					Set<D> targets = computeReturnFlowFunction(retFunction, d1, d2, c, callerSideDs);
-					// for each incoming-call value
+					// Guard against null targets — computeReturnFlowFunction
+					// can return null when the SolverReturnFlowFunction
+					// encounters an edge case (e.g., dead code after pruning).
+					// Without this guard, the for-each loop below throws NPE.
+					if (targets == null || targets.isEmpty())
+						continue;
 					for (Entry<D, D> d1d2entry : entry.getValue().entrySet()) {
 						final D d4 = d1d2entry.getKey();
 						final D predVal = d1d2entry.getValue();
@@ -616,6 +621,12 @@ public class FlowInsensitiveSolver<N extends Unit, D extends FastSolverLinkedNod
 	protected void propagate(D sourceVal, SootMethod target, D targetVal,
 			/* deliberately exposed to clients */ Unit relatedCallSite,
 			/* deliberately exposed to clients */ boolean isUnbalancedReturn, boolean schedule) {
+		// Guard against null targetVal — can occur when the alias solver
+		// callback injects an edge with a null abstraction. Without this
+		// guard, targetVal.getPathLength() below throws NPE.
+		if (targetVal == null)
+			return;
+
 		// Let the memory manager run
 		if (memoryManager != null) {
 			sourceVal = memoryManager.handleMemoryObject(sourceVal);
