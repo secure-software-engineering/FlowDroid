@@ -638,6 +638,12 @@ public class IFDSSolver<N, D extends FastSolverLinkedNode<D, N>, I extends BiDiI
 	protected void propagate(D sourceVal, N target, D targetVal,
 			/* deliberately exposed to clients */ N relatedCallSite,
 			/* deliberately exposed to clients */ boolean isUnbalancedReturn) {
+		// Guard against null targetVal — can occur when the alias solver
+		// callback injects an edge with a null abstraction. Without this
+		// guard, targetVal.getPathLength() below throws NPE.
+		if (targetVal == null)
+			return;
+
 		// Let the memory manager run
 		if (memoryManager != null) {
 			sourceVal = memoryManager.handleMemoryObject(sourceVal);
