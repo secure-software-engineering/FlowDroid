@@ -9,7 +9,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" 
-						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPath="[org.eclipse.collections.api.list.MutableCollection: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -19,7 +19,7 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" 
-						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPath="[org.eclipse.collections.api.list.MutableCollection: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
@@ -29,11 +29,35 @@
 			<flows>
 				<flow isAlias="true" typeChecking="false">
 					<from sourceSinkType="Field" 
-						  AccessPath="[org.eclipse.collections.api.list.MutableList: java.lang.Object[] innerArray]"
+						  AccessPath="[org.eclipse.collections.api.list.MutableCollection: java.lang.Object[] innerArray]"
 						  AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>
 		</method>
+		<method id="boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate)">
+			<flows>
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" 
+						ParameterIndex="0"
+						BaseType="org.eclipse.collections.api.block.predicate.Predicate"/>
+					<to sourceSinkType="Parameter"
+						BaseType="org.eclipse.collections.api.block.predicate.Predicate"
+						gap="1" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" 
+						  AccessPath="[org.eclipse.collections.api.list.MutableCollection: java.lang.Object[] innerArray]"
+						  AccessPathTypes="[java.lang.Object[]]" />
+					<to sourceSinkType="Parameter"
+						ParameterIndex="0"
+						gap="1" />
+	
+				</flow>
+			</flows>
+		</method>
 	</methods>
+	<gaps>
+		<gap num="1" id="&lt;org.eclipse.collections.api.block.predicate.Predicate: boolean accept(java.lang.Object)&gt;"/>
+	</gaps>
 </summary>

@@ -12,13 +12,13 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
-						gap="11" />
+						gap="1" />
 				</flow>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter"
                           ParameterIndex="0" />
                     <to sourceSinkType="GapBaseObject"
-                        gap="11" />
+                        gap="1" />
                 </flow>
 			</flows>
 		</method>
@@ -30,13 +30,13 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
-						gap="11" />
+						gap="2" />
 				</flow>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter"
                           ParameterIndex="0" />
                     <to sourceSinkType="GapBaseObject"
-                        gap="11" />
+                        gap="2" />
                 </flow>
 			</flows>
 		</method>
@@ -48,20 +48,20 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
-						gap="11" />
+						gap="3" />
 				</flow>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter"
                           ParameterIndex="0" />
                     <to sourceSinkType="GapBaseObject"
-                        gap="11" />
+                        gap="3" />
                 </flow>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter"
                           ParameterIndex="1" />
                     <to sourceSinkType="Parameter"
 						ParameterIndex="1"
-						gap="11" />
+						gap="3" />
                 </flow>
 			</flows>
 		</method>
@@ -73,15 +73,21 @@
 						AccessPathTypes="[java.lang.Object[]]" />
 					<to sourceSinkType="Parameter"
 						ParameterIndex="0"
-						gap="11" />
+						gap="4" />
 				</flow>
                 <flow isAlias="false" typeChecking="false">
                     <from sourceSinkType="Parameter"
                           ParameterIndex="0" />
                     <to sourceSinkType="GapBaseObject"
-                        gap="11" />
+                        gap="4" />
                 </flow>
 			</flows>
 		</method>
 	</methods>
+	<gaps>
+		<gap num="1" id="&lt;java.util.function.Consumer: void accept(java.lang.Object)&gt;"/>
+		<gap num="2" id="&lt;org.eclipse.collections.api.block.procedure.Procedure: void value(java.lang.Object)&gt;"/>
+		<gap num="3" id="&lt;org.eclipse.collections.api.block.procedure.Procedure2: void value(java.lang.Object,java.lang.Object)&gt;"/>
+		<gap num="4" id="&lt;org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure: void value(java.lang.Object,int)&gt;"/>
+	</gaps>
 </summary>
