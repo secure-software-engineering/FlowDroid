@@ -65,6 +65,7 @@ import soot.jimple.infoflow.data.AccessPathFactory;
 import soot.jimple.infoflow.data.ContainerContext;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.handlers.PreAnalysisHandler;
+import soot.jimple.infoflow.methodSummary.ai.SummaryApplicationAI;
 import soot.jimple.infoflow.methodSummary.data.provider.EagerSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.provider.IMethodSummaryProvider;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.AbstractFlowSinkSource;
@@ -122,6 +123,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 	protected IContainerStrategy containerStrategy;
 	protected IContainerStrategyFactory containerStrategyFactory;
+
+	protected SummaryApplicationAI aiAgent = new SummaryApplicationAI();
 
 	/**
 	 * Handler that is used for injecting taints from callbacks implemented in user
@@ -856,8 +859,15 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 
 		// Get the cached data flows
 		ClassSummaries flowsInCallees = getFlowSummariesForMethod(stmt, method, taintedAbs, classSupported);
-		if (flowsInCallees == null || flowsInCallees.isEmpty())
+		if (flowsInCallees == null || flowsInCallees.isEmpty()) {
+			// If we have an AI agent, we can ask it for insights on a method for which we
+			// don't have a summary
+			if (aiAgent != null)
+				return computeTaintsUsingAI(stmt, taintedAbs);
+
+			// No AI agent, give up
 			return null;
+		}
 
 		// Create a level-0 propagator for the initially tainted access path
 		Set<Taint> taintsFromAP = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, false, null);
@@ -907,6 +917,33 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 			}
 		}
 		return res;
+	}
+
+	/**
+	 * Uses an AI agent to compute the data flows across the given statement
+	 * 
+	 * @param stmt       The statement across which to compute the taints
+	 * @param taintedAbs The incoming taint abstraction
+	 * @return The outgoing set of taint abstractions
+	 */
+	private Set<AccessPath> computeTaintsUsingAI(Stmt stmt, Abstraction taintedAbs) {
+		// We have queried the LLM for this method before
+		Set<Taint> taints = createTaintFromAccessPathOnCall(taintedAbs.getAccessPath(), stmt, false, null);
+		if (taints != null) {
+			Set<AccessPath> newAPs = new HashSet<AccessPath>();
+			for (Taint taint : taints) {
+				// Do we already have an LLM answer for this taint in our cache?
+				Set<Taint> generatedTaints = aiAgent.propagate(stmt, taint);
+				if (generatedTaints != null) {
+					newAPs.addAll(generatedTaints.stream().map(t -> createAccessPathFromTaint(t, stmt, false))
+							.filter(t -> t != null).flatMap(t -> t.stream()).filter(ap -> ap != null)
+							.collect(Collectors.toSet()));
+				}
+
+			}
+			return newAPs;
+		}
+		return null;
 	}
 
 	/**
