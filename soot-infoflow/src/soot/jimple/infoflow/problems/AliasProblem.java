@@ -578,7 +578,7 @@ public class AliasProblem extends AbstractInfoflowProblem {
 										// If we have a reflective method call
 										// and the argument array is
 										// tainted, we taint all parameters
-										for (int j = 0; i < paramLocals.length; i++) {
+										for (int j = 0; j < paramLocals.length; j++) {
 											AccessPath ap = manager.getAccessPathFactory().copyWithNewValue(
 													source.getAccessPath(), paramLocals[j], null, false);
 											Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, stmt));
@@ -712,17 +712,39 @@ public class AliasProblem extends AbstractInfoflowProblem {
 										// Check whether the call site created an alias by having two equal
 										// arguments, e.g. caller(o, o);. If yes, inject the other parameter
 										// back into the callee.
-										for (int argIndex = 0; !isReflectiveCallSite
-												&& argIndex < ie.getArgCount(); argIndex++) {
-											if (i != argIndex && originalCallArg == ie.getArg(argIndex)) {
+										for (int callerArgIndex = 0; !isReflectiveCallSite
+												&& callerArgIndex < ie.getArgCount(); callerArgIndex++) {
+											if (originalCallArg == ie.getArg(callerArgIndex)) {
+												int calleeArgIndex = mapper.getCalleeIndexOfCallerParameter(callerArgIndex);
+
+												// Skip if the mapper cannot provide a valid callee index
+												if (calleeArgIndex < 0 || calleeArgIndex >= paramLocals.length)
+													continue;
+
+												// Skip if the mapped callee index is the same as the
+												// original parameter (no new alias)
+												if (calleeArgIndex == i)
+													continue;
+
+												Value aliasParam = paramLocals[calleeArgIndex];
+
+												// Primitive values do not participate in reference aliasing
+												if (aliasParam.getType() instanceof PrimType)
+													continue;
+
 												AccessPath aliasAp = manager.getAccessPathFactory().copyWithNewValue(
-														abs.getAccessPath(), paramLocals[argIndex],
+														abs.getAccessPath(), aliasParam,
 														abs.getAccessPath().getBaseType(), false);
+
+												if (aliasAp == null)
+													continue;
+
 												Abstraction aliasAbs = checkAbstraction(
 														source.deriveNewAbstraction(aliasAp, (Stmt) exitStmt));
 
-												manager.getMainSolver()
-														.processEdge(new PathEdge<>(d1, exitStmt, aliasAbs));
+												if (aliasAbs != null)
+													manager.getMainSolver()
+															.processEdge(new PathEdge<>(d1, exitStmt, aliasAbs));
 											}
 										}
 

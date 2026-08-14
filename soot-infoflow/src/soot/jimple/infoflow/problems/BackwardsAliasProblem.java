@@ -410,12 +410,20 @@ public class BackwardsAliasProblem extends AbstractInfoflowProblem {
 											res.add(abs);
 									}
 									// taint just the tainted parameter
-								} else {
-									AccessPath ap = manager.getAccessPathFactory()
-											.copyWithNewValue(source.getAccessPath(), paramLocals[i]);
-									Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
-									if (abs != null)
-										res.add(abs);
+								} else if (mappedIndex >= 0 && mappedIndex < paramLocals.length) {
+									// Use the mapped callee index, not the caller index
+									Value mappedParam = paramLocals[mappedIndex];
+
+									// Primitive values do not participate in reference aliasing
+									if (!(mappedParam.getType() instanceof PrimType)) {
+										AccessPath ap = manager.getAccessPathFactory()
+												.copyWithNewValue(source.getAccessPath(), mappedParam, null, false);
+										if (ap != null) {
+											Abstraction abs = checkAbstraction(source.deriveNewAbstraction(ap, callStmt));
+											if (abs != null)
+												res.add(abs);
+										}
+									}
 								}
 							}
 						}
