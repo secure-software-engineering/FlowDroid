@@ -1382,13 +1382,61 @@ public class InfoflowConfiguration {
 
 	public static class AIConfiguration {
 
+		private String llmEndpoint;
+		private String modelName;
+		private String apiKey;
+
 		/**
 		 * Merges the given configuration options into this configuration object
 		 *
 		 * @param config The configuration data to merge in
 		 */
 		public void merge(AIConfiguration config) {
-			//
+			this.llmEndpoint = config.llmEndpoint;
+			this.modelName = config.modelName;
+			this.apiKey = config.apiKey;
+		}
+
+		public String getLlmEndpoint() {
+			return llmEndpoint;
+		}
+
+		public void setLlmEndpoint(String llmEndpoint) {
+			this.llmEndpoint = llmEndpoint;
+		}
+
+		public String getModelName() {
+			return modelName;
+		}
+
+		public void setModelName(String modelName) {
+			this.modelName = modelName;
+		}
+
+		public String getApiKey() {
+			return apiKey;
+		}
+
+		public void setApiKey(String apiKey) {
+			this.apiKey = apiKey;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(apiKey, llmEndpoint, modelName);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			AIConfiguration other = (AIConfiguration) obj;
+			return Objects.equals(apiKey, other.apiKey) && Objects.equals(llmEndpoint, other.llmEndpoint)
+					&& Objects.equals(modelName, other.modelName);
 		}
 
 	}

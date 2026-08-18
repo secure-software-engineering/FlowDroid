@@ -124,7 +124,7 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	protected IContainerStrategy containerStrategy;
 	protected IContainerStrategyFactory containerStrategyFactory;
 
-	protected SummaryApplicationAI aiAgent = new SummaryApplicationAI();
+	protected SummaryApplicationAI aiAgent = null;
 
 	/**
 	 * Handler that is used for injecting taints from callbacks implemented in user
@@ -402,6 +402,8 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	@Override
 	public void initialize(InfoflowManager manager) {
 		this.manager = manager;
+		this.aiAgent = new SummaryApplicationAI(manager.getConfig().getAiConfiguration());
+
 		if (containerStrategyFactory != null)
 			this.containerStrategy = containerStrategyFactory.create(manager);
 
