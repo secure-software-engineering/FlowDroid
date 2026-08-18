@@ -49,6 +49,7 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowConfiguration;
+import soot.jimple.infoflow.InfoflowConfiguration.AIConfiguration;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.collections.ICollectionsSupport;
 import soot.jimple.infoflow.collections.context.UnknownContext;
@@ -402,7 +403,10 @@ public class SummaryTaintWrapper implements IReversibleTaintWrapper, ICollection
 	@Override
 	public void initialize(InfoflowManager manager) {
 		this.manager = manager;
-		this.aiAgent = new SummaryApplicationAI(manager.getConfig().getAiConfiguration());
+
+		// Initialize the AI integration
+		AIConfiguration aiConfig = manager.getConfig().getAiConfiguration();
+		this.aiAgent = aiConfig.isValid() ? new SummaryApplicationAI(aiConfig) : null;
 
 		if (containerStrategyFactory != null)
 			this.containerStrategy = containerStrategyFactory.create(manager);

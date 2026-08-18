@@ -1397,26 +1397,67 @@ public class InfoflowConfiguration {
 			this.apiKey = config.apiKey;
 		}
 
+		/**
+		 * Checks whether the configuration of the LLM endpoint is valid
+		 * 
+		 * @return True if the configuration of the AI integration is valid, false
+		 *         otherwise
+		 */
+		public boolean isValid() {
+			return llmEndpoint != null && !llmEndpoint.isBlank() && modelName != null && !modelName.isBlank()
+					&& apiKey != null && !apiKey.isBlank();
+		}
+
+		/**
+		 * Gets the URL of the LLM endpoint to use for AI-based reasoning
+		 * 
+		 * @return The URL of the LLM endpoint to use for AI-based reasoning
+		 */
 		public String getLlmEndpoint() {
 			return llmEndpoint;
 		}
 
+		/**
+		 * Sets the URL of the LLM endpoint to use for AI-based reasoning
+		 * 
+		 * @param llmEndpoint The URL of the LLM endpoint to use for AI-based reasoning
+		 */
 		public void setLlmEndpoint(String llmEndpoint) {
 			this.llmEndpoint = llmEndpoint;
 		}
 
+		/**
+		 * Gets the name of the model to use for AI-based reasoning
+		 * 
+		 * @return The name of the model to use for AI-based reasoning
+		 */
 		public String getModelName() {
 			return modelName;
 		}
 
+		/**
+		 * Sets the name of the model to use for AI-based reasoning
+		 * 
+		 * @param modelName The name of the model to use for AI-based reasoning
+		 */
 		public void setModelName(String modelName) {
 			this.modelName = modelName;
 		}
 
+		/**
+		 * Gets the API key to use for authentication against the LLM endpoint
+		 * 
+		 * @return The API key to use for authentication against the LLM endpoint
+		 */
 		public String getApiKey() {
 			return apiKey;
 		}
 
+		/**
+		 * Sets the API key to use for authentication against the LLM endpoint
+		 * 
+		 * @param apiKey The API key to use for authentication against the LLM endpoint
+		 */
 		public void setApiKey(String apiKey) {
 			this.apiKey = apiKey;
 		}
