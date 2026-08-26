@@ -1,0 +1,260 @@
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object" />
+	<methods>
+
+		<method id="android.content.SharedPreferences$Editor clear()">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						  constrained="True" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter"
+						  ParameterIndex="1" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="android.content.SharedPreferences$Editor putStringSet(java.lang.String,java.util.Set)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor remove(java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter"
+					 ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[java.util.Map: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="True" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[java.util.Map: java.lang.Object[] values]"
+					   AccessPathTypes="[java.lang.Object[]]"
+					   constrained="True"
+					   preventPropagation="false" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor putString(java.lang.String,java.lang.String)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor putInt(java.lang.String,int)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor putLong(java.lang.String,long)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor putBoolean(java.lang.String,boolean)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+
+		<method id="android.content.SharedPreferences$Editor putFloat(java.lang.String,float)">
+			<constraints>
+				<key sourceSinkType="Parameter" ParameterIndex="0" />
+			</constraints>
+			<flows>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] keys]"
+						AccessPathTypes="[java.lang.Object[]]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false" final="true">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+						constrained="true" />
+				</flow>
+				<flow isAlias="false" typeChecking="false" final="true">
+					<from sourceSinkType="Field"
+						AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+						AccessPathTypes="[java.lang.Object[]]"
+					    constrained="true" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+			<clears>
+				<clear sourceSinkType="Field"
+					   AccessPath="[android.content.SharedPreferences$Editor: java.lang.Object[] values]"
+					   preventPropagation="false"
+				       constrained="true"
+					   isAlias="true" />
+			</clears>
+		</method>
+	</methods>
+</summary>

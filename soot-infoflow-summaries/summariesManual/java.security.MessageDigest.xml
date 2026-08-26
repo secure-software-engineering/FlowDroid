@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.security.MessageDigestSpi" />
+	<methods>
+
+		<method id="void &lt;init&gt;(java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+				</flow>
+			</flows>
+		</method>
+		<method id="void &lt;init&gt;(java.lang.String,java.security.Provider)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.security.MessageDigest getInstance(java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.security.MessageDigest getInstance(java.lang.String,java.lang.String)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.security.MessageDigest getInstance(java.lang.String,java.security.Provider)">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void reset()">
+			<clears>
+				<clear sourceSinkType="Field"
+					AccessPath="java.security.MessageDigest: byte[] digest]" />
+			</clears>
+		</method>
+
+		<method id="void update(byte[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="byte[] digest()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Return" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="void update(byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.lang.String getAlgorithm()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="int digest(byte[],int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="byte[] digest(byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Return"/>
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void update(byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void update(java.nio.ByteBuffer)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" AccessPath="[java.nio.ByteBuffer: byte[] innerArray]"
+						AccessPathTypes="[byte[]]"/>
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" AccessPath="[java.security.MessageDigest: java.lang.String algo]" />
+					<to sourceSinkType="Field" AccessPath="[java.security.MessageDigest: byte[] digest]"
+						AccessPathTypes="[byte[]]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

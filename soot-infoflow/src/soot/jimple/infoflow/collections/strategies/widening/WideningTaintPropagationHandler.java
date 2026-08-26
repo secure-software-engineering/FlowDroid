@@ -10,6 +10,7 @@ import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 
 /**
  * Widening through a taint propagation handler. Because of the nature, a full
@@ -40,7 +41,7 @@ public class WideningTaintPropagationHandler implements TaintPropagationHandler 
 
 	@Override
 	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
+			InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 		if (type != FlowFunctionType.CallToReturnFlowFunction)
 			return false;
 

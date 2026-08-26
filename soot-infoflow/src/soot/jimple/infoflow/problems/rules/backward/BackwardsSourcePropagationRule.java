@@ -1,15 +1,12 @@
 package soot.jimple.infoflow.problems.rules.backward;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.IfStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.InvokeExpr;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.Stmt;
@@ -19,8 +16,7 @@ import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.data.AbstractionAtSink;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.problems.rules.AbstractTaintPropagationRule;
-import soot.jimple.infoflow.river.IAdditionalFlowSinkPropagationRule;
-import soot.jimple.infoflow.river.SecondarySinkDefinition;
+import soot.jimple.infoflow.river.Utils;
 import soot.jimple.infoflow.sourcesSinks.manager.IReversibleSourceSinkManager;
 import soot.jimple.infoflow.sourcesSinks.manager.SinkInfo;
 import soot.jimple.infoflow.util.BaseSelector;
@@ -34,8 +30,7 @@ import soot.jimple.infoflow.util.ByReferenceBoolean;
  * @author Steven Arzt
  * @author Tim Lange
  */
-public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
-		implements IAdditionalFlowSinkPropagationRule {
+public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule {
 
 	private boolean killState = false;
 
@@ -105,50 +100,9 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		return null;
 	}
 
-	/**
-	 * Checks whether the given taint is visible inside the method called at the
-	 * given call site
-	 * 
-	 * @param stmt   A call site where a sink method is called
-	 * @param source The taint that has arrived at the given statement
-	 * @return True if the callee has access to the tainted value, false otherwise
-	 */
-	protected boolean isTaintVisibleInCallee(Stmt stmt, Abstraction source) {
-		InvokeExpr iexpr = stmt.getInvokeExpr();
-		final Aliasing aliasing = getAliasing();
-
-		// Is an argument tainted?
-		final Value apBaseValue = source.getAccessPath().getPlainValue();
-		if (apBaseValue != null && aliasing != null) {
-			for (int i = 0; i < iexpr.getArgCount(); i++) {
-				if (aliasing.mayAlias(iexpr.getArg(i), apBaseValue)) {
-					if (source.getAccessPath().getTaintSubFields() || source.getAccessPath().isLocal())
-						return true;
-				}
-			}
-		}
-
-		// Is the base object tainted?
-		if (iexpr instanceof InstanceInvokeExpr) {
-			if (((InstanceInvokeExpr) iexpr).getBase() == source.getAccessPath().getPlainValue())
-				return true;
-		}
-
-		// Is return tainted?
-		if (stmt instanceof AssignStmt && aliasing != null
-				&& aliasing.mayAlias(apBaseValue, ((AssignStmt) stmt).getLeftOp()))
-			return true;
-
-		return false;
-	}
-
 	@Override
 	public Collection<Abstraction> propagateCallToReturnFlow(Abstraction d1, Abstraction source, Stmt stmt,
 			ByReferenceBoolean killSource, ByReferenceBoolean killAll) {
-
-		if (stmt.toString().equals(
-				"r1 = virtualinvoke r0.<soot.jimple.infoflow.test.methodSummary.ApiClassClient: java.lang.String stringSource()>()"))
-			System.out.println("x");
 
 		if (!(manager.getSourceSinkManager() instanceof IReversibleSourceSinkManager))
 			return null;
@@ -158,7 +112,7 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		if (source.isAbstractionActive() && !source.getAccessPath().isStaticFieldRef()
 				&& !source.getAccessPath().isEmpty()) {
 			// Is the taint even visible inside the callee?
-			if (!stmt.containsInvokeExpr() || isTaintVisibleInCallee(stmt, source)) {
+			if (!stmt.containsInvokeExpr() || Utils.isTaintVisibleInCallee(stmt, source, getAliasing())) {
 				// Get the sink descriptor
 				SinkInfo sourceInfo = ssm.getInverseSourceInfo(stmt, getManager(), source.getAccessPath());
 
@@ -190,26 +144,4 @@ public class BackwardsSourcePropagationRule extends AbstractTaintPropagationRule
 		return null;
 	}
 
-	// Note: Do not get confused with on the terms source/sink. In the general case,
-	// the backward
-	// analysis starts the analysis at sinks and records results at the source. For
-	// secondary flows,
-	// the secondary source is equal to the primary sink and the secondary sink is
-	// an interesting
-	// statement (an additional flow condition or a usage context) at which we
-	// record a result.
-	// That's why the backward source rule is also the secondary flow sink rule. */
-	@Override
-	public void processSecondaryFlowSink(Abstraction d1, Abstraction source, Stmt stmt) {
-		// Static fields are not part of the conditional flow model.
-		if (!source.isAbstractionActive() || source.getAccessPath().isStaticFieldRef())
-			return;
-
-		// Only proceed if stmt could influence the taint
-		if (!stmt.containsInvokeExpr() || !isTaintVisibleInCallee(stmt, source))
-			return;
-
-		getResults().addResult(
-				new AbstractionAtSink(Collections.singleton(SecondarySinkDefinition.INSTANCE), source, stmt));
-	}
 }

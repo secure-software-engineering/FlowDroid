@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.results.xml;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -68,29 +69,33 @@ public class InfoflowResultsSerializer {
 	 */
 	public void serialize(InfoflowResults results, String fileName) throws XMLStreamException, IOException {
 		this.startTime = System.currentTimeMillis();
-		try (OutputStream out = new FileOutputStream(fileName)) {
+		File f = new File(fileName);
+		f.getParentFile().mkdirs(); // create parent directories
+		try (OutputStream out = new FileOutputStream(f)) {
 			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter writer = factory.createXMLStreamWriter(out, "UTF-8");
 
 			writer.writeStartDocument("UTF-8", "1.0");
 			writer.writeStartElement(XmlConstants.Tags.root);
 			writer.writeAttribute(XmlConstants.Attributes.fileFormatVersion, FILE_FORMAT_VERSION + "");
-			writer.writeAttribute(XmlConstants.Attributes.terminationState,
-					terminationStateToString(results.getTerminationState()));
 
 			// Write out the data flow results
-			if (results != null && !results.isEmpty()) {
-				writer.writeStartElement(XmlConstants.Tags.results);
-				writeDataFlows(results, writer);
-				writer.writeEndElement();
-			}
+			if (results != null) {
+				writer.writeAttribute(XmlConstants.Attributes.terminationState,
+						terminationStateToString(results.getTerminationState()));
+				if (!results.isEmpty()) {
+					writer.writeStartElement(XmlConstants.Tags.results);
+					writeDataFlows(results, writer);
+					writer.writeEndElement();
+				}
 
-			// Write out performance data
-			InfoflowPerformanceData performanceData = results.getPerformanceData();
-			if (performanceData != null && !performanceData.isEmpty()) {
-				writer.writeStartElement(XmlConstants.Tags.performanceData);
-				writePerformanceData(performanceData, writer);
-				writer.writeEndElement();
+				// Write out performance data
+				InfoflowPerformanceData performanceData = results.getPerformanceData();
+				if (performanceData != null && !performanceData.isEmpty()) {
+					writer.writeStartElement(XmlConstants.Tags.performanceData);
+					writePerformanceData(performanceData, writer);
+					writer.writeEndElement();
+				}
 			}
 
 			writer.writeEndDocument();
@@ -99,8 +104,7 @@ public class InfoflowResultsSerializer {
 	}
 
 	/**
-	 * Converts the termination state from the enumeration to a human-readable
-	 * string
+	 * Converts the termination state from the enumeration to a human-readable string
 	 * 
 	 * @param terminationState The termination state
 	 * @return A human-readable version of the termination state
@@ -123,8 +127,7 @@ public class InfoflowResultsSerializer {
 	}
 
 	/**
-	 * Writes out the given data flow performance data into the given XML stream
-	 * writer
+	 * Writes out the given data flow performance data into the given XML stream writer
 	 * 
 	 * @param performanceData The performance data to write out
 	 * @param writer          The stream writer into which to write the data
@@ -148,8 +151,8 @@ public class InfoflowResultsSerializer {
 	}
 
 	/**
-	 * Writes a single performance data entry into the XML file. An entry has a name
-	 * and a value, where the name describes the performance metric.
+	 * Writes a single performance data entry into the XML file. An entry has a name and
+	 * a value, where the name describes the performance metric.
 	 * 
 	 * @param entryName  The name that describes the performance metric
 	 * @param entryValue The value of the performance metric
@@ -339,8 +342,8 @@ public class InfoflowResultsSerializer {
 	 * Sets whether the taint propagation path shall be serialized along with the
 	 * respective data flow result
 	 * 
-	 * @param serialize True if taint propagation paths shall be serialized,
-	 *                  otherwise false
+	 * @param serialize True if taint propagation paths shall be serialized, otherwise
+	 *                  false
 	 */
 	public void setSerializeTaintPath(boolean serialize) {
 		this.serializeTaintPath = serialize;

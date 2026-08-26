@@ -1,26 +1,19 @@
 <?xml version="1.0" ?>
 <summary fileFormatVersion="101">
-	<hierarchy superClass="java.lang.Object">
-		<interface name="java.io.Closeable" />
-		<interface name="java.io.Flushable" />
-		<interface name="java.lang.AutoCloseable" />
-	</hierarchy>
 	<methods>
-		<method id="void write(byte[])">
+		<method id="void &lt;init&gt;(java.io.OutputStream,javax.crypto.Cipher)">
 			<flows>
-				<flow isAlias="false" typeChecking="false">
+				<flow isAlias="true">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
 						AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
-						
 				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
+				<flow isAlias="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
 					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
+						AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
-						
 				</flow>
 			</flows>
 		</method>
@@ -29,13 +22,7 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
-						AccessPathTypes="[java.io.OutputStream]" />
-				</flow>
-				<flow isAlias="false" typeChecking="false">
-					<from sourceSinkType="Parameter" ParameterIndex="0" />
-					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
+						AccessPath="[java.io.BufferedOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
@@ -45,13 +32,17 @@
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: java.io.OutputStream innerStream]"
+						AccessPath="[java.io.BufferedOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
+			</flows>
+		</method>
+		<method id="void write(byte[])">
+			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Parameter" ParameterIndex="0" />
 					<to sourceSinkType="Field"
-						AccessPath="[java.io.OutputStream: byte[] innerArray]"
+						AccessPath="[java.io.BufferedOutputStream: java.io.OutputStream innerStream]"
 						AccessPathTypes="[java.io.OutputStream]" />
 				</flow>
 			</flows>
