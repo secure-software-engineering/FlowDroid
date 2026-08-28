@@ -2,6 +2,7 @@ package soot.jimple.infoflow.android.entryPointCreators.components;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import heros.TwoElementSet;
 import soot.Local;
@@ -10,6 +11,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootField;
 import soot.Type;
+import soot.Value;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
@@ -34,7 +36,7 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 	@Override
 	protected void generateComponentLifecycle() {
 		// We need the local for the parent activity
-		Local lcActivity = body.getParameterLocal(getDefaultMainMethodParams().size());
+		Local lcActivity = getParentActivityLocal();
 		if (!(lcActivity.getType() instanceof RefType))
 			throw new RuntimeException("Activities must be reference types");
 		RefType rtActivity = (RefType) lcActivity.getType();
@@ -50,6 +52,15 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 
 		// Render the fragment lifecycle
 		generateFragmentLifecycle(component, thisLocal, scActivity);
+	}
+
+	/**
+	 * Gets the local that stores the reference to the parent activity
+	 * 
+	 * @return The reference to the parent activity
+	 */
+	protected Local getParentActivityLocal() {
+		return body.getParameterLocal(getDefaultMainMethodParams().size());
 	}
 
 	/**
@@ -136,6 +147,20 @@ public class FragmentEntryPointCreator extends AbstractComponentEntryPointCreato
 	@Override
 	protected SootClass getModelledClass() {
 		return Scene.v().getSootClass(AndroidEntryPointConstants.FRAGMENTCLASS);
+	}
+
+	@Override
+	protected Value getValueForType(Type tp, Set<SootClass> constructionStack, Set<SootClass> parentClasses,
+			Set<Local> generatedLocals, boolean ignoreExcludes) {
+		// If we need an activity, we supply our host activity
+		if (tp instanceof RefType) {
+			SootClass sc = ((RefType) tp).getSootClass();
+			Local parentActivityLocal = getParentActivityLocal();
+			if (isCompatible(((RefType) parentActivityLocal.getType()).getSootClass(), sc))
+				return parentActivityLocal;
+		}
+
+		return super.getValueForType(tp, constructionStack, parentClasses, generatedLocals, ignoreExcludes);
 	}
 
 }
