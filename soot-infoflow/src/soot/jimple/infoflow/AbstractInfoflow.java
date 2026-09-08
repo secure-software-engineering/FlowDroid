@@ -565,7 +565,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		}
 	}
 
-	private void patchCode(Body body) {
+	protected void patchCode(Body body) {
 		if (config.isPatchInvokeDynamicInstructions()) {
 			patchDynamicInvokeInstructions(body);
 		}
@@ -582,7 +582,7 @@ public abstract class AbstractInfoflow implements IInfoflow {
 	 * @param body The method body in which to patch the dynamic invocation
 	 *             instructions
 	 */
-	protected static void patchDynamicInvokeInstructions(Body body) {
+	protected void patchDynamicInvokeInstructions(Body body) {
 		for (Iterator<Unit> unitIt = body.getUnits().snapshotIterator(); unitIt.hasNext();) {
 			Stmt stmt = (Stmt) unitIt.next();
 			if (stmt.containsInvokeExpr()) {
@@ -667,11 +667,14 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				while (uses.hasNext()) {
 					Value lop = assign.getLeftOp();
 					if (uses.next().getValue() == lop) {
-						//Since FlowDroid doesn't support tracking the taint over this statement, we have a problem:
-						//e.g.
-						//tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String (java.lang.String,java.lang.String)>(tainted, tainted2) ...
-						//this would erroneously clear the taint on tainted 
-						//to avoid that, we introduce an alias before that statement and use that instead for our concatenation.
+						// Since FlowDroid doesn't support tracking the taint over this statement, we
+						// have a problem:
+						// e.g.
+						// tainted = dynamicinvoke "makeConcatWithConstants" <java.lang.String
+						// (java.lang.String,java.lang.String)>(tainted, tainted2) ...
+						// this would erroneously clear the taint on tainted
+						// to avoid that, we introduce an alias before that statement and use that
+						// instead for our concatenation.
 						Local alias = lg.generateLocal(lop.getType());
 						Body body = callSite.getContainingBody();
 						AssignStmt assignAlias = Jimple.v().newAssignStmt(alias, lop);
@@ -964,8 +967,8 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		for (SootClass sc : Scene.v().getClasses()) {
 			for (SootMethod m : sc.getMethods()) {
 				if (m.hasActiveBody()) {
-					//We could use the local packer here, but we know exactly what was being split
-					//so we can be faster here
+					// We could use the local packer here, but we know exactly what was being split
+					// so we can be faster here
 					Body body = m.getActiveBody();
 					Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
 					while (it.hasNext()) {
@@ -987,9 +990,9 @@ public abstract class AbstractInfoflow implements IInfoflow {
 		}
 	}
 
-	//With newer soot versions, locals are reused more often, which 
-	//can be a problem for FlowDroid. So, we split the locals prior to 
-	//running FlowDroid.
+	// With newer soot versions, locals are reused more often, which
+	// can be a problem for FlowDroid. So, we split the locals prior to
+	// running FlowDroid.
 	protected void splitAllBodies(Iterator<? extends MethodOrMethodContext> it) {
 		FlowDroidLocalSplitter splitter = getLocalSplitter();
 		while (it.hasNext()) {
