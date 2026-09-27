@@ -58,10 +58,26 @@ public interface ISourceSinkDefinition {
 	/**
 	 * Sets the conditions under which the source/sink definition is valid
 	 *
-	 * @param conditions
-	 *            A set with the conditions under which the source/sink definition
-	 *            is valid, optionally <code>null</code> if no such conditions exist
+	 * @param conditions A set with the conditions under which the source/sink
+	 *                   definition is valid, optionally <code>null</code> if no
+	 *                   such conditions exist
 	 */
 	public void setConditions(Set<SourceSinkCondition> conditions);
+
+	/**
+	 * Sets the turn around points where the flow direction for River flows is
+	 * injected into a forward analysis
+	 * 
+	 * @param turnAround the method signatures that indicate turn around points
+	 */
+	public void setTurnArounds(Set<String> turnAround);
+
+	/**
+	 * Returns the turn around points where the flow direction for River flows is
+	 * injected into a forward analysis
+	 * 
+	 * @return returns the method signatures that indicate turn around points
+	 */
+	public Set<String> getTurnArounds();
 
 }

@@ -1,0 +1,459 @@
+<summary fileFormatVersion="101">
+	<hierarchy superClass="java.lang.Object" >
+            <interface name="java.sql.Statement" />
+	</hierarchy>
+	<methods>
+
+
+		<method id="void setBlob(int,java.io.InputStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setTimestamp(int,java.sql.Timestamp,java.util.Calendar)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setInt(int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setByte(int,byte)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+
+		<method id="void setAsciiStream(int,java.io.InputStream,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setClob(int,java.io.Reader)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setObject(int,java.lang.Object)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setNClob(int,java.sql.NClob)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.sql.ResultSet executeQuery()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+                    <from sourceSinkType="Field" />
+                    <to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBytes(int,byte[])">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setRef(int,java.sql.Ref)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setObject(int,java.lang.Object,java.sql.SQLType)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setURL(int,java.net.URL)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBigDecimal(int,java.math.BigDecimal)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setNClob(int,java.io.Reader)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setObject(int,java.lang.Object,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setLong(int,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setTime(int,java.sql.Time,java.util.Calendar)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+		
+		<method id="void setNClob(int,java.io.Reader,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setDate(int,java.sql.Date,java.util.Calendar)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setUnicodeStream(int,java.io.InputStream,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBinaryStream(int,java.io.InputStream,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setString(int,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBlob(int,java.io.InputStream,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBinaryStream(int,java.io.InputStream,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setTime(int,java.sql.Time)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBinaryStream(int,java.io.InputStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setDouble(int,double)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setArray(int,java.sql.Array)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setNString(int,java.lang.String)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setClob(int,java.sql.Clob)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setShort(int,short)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setObject(int,java.lang.Object,java.sql.SQLType,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setRowId(int,java.sql.RowId)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setAsciiStream(int,java.io.InputStream)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setCharacterStream(int,java.io.Reader,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setAsciiStream(int,java.io.InputStream,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setCharacterStream(int,java.io.Reader)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setTimestamp(int,java.sql.Timestamp)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setDate(int,java.sql.Date)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBlob(int,java.sql.Blob)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setCharacterStream(int,java.io.Reader,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setClob(int,java.io.Reader,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setNCharacterStream(int,java.io.Reader)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="java.sql.ResultSetMetaData getMetaData()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setNCharacterStream(int,java.io.Reader,long)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setObject(int,java.lang.Object,int,int)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="1" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setBoolean(int,boolean)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setSQLXML(int,java.sql.SQLXML)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+
+		<method id="void setFloat(int,float)">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Parameter" ParameterIndex="0" />
+					<to sourceSinkType="Field" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>

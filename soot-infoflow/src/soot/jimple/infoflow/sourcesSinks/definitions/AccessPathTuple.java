@@ -14,8 +14,8 @@ import soot.Value;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.AccessPath;
 import soot.jimple.infoflow.data.AccessPath.ArrayTaintType;
-import soot.jimple.infoflow.typing.TypeUtils;
 import soot.jimple.infoflow.data.AccessPathFragment;
+import soot.jimple.infoflow.typing.TypeUtils;
 
 /**
  * Helper to save an AccessPath with the information about sink and sources.
@@ -32,6 +32,7 @@ public class AccessPathTuple {
 	private String description;
 
 	private int hashCode = 0;
+	private boolean triggerAdditionalFlow;
 
 	private static AccessPathTuple SOURCE_TUPLE;
 	private static AccessPathTuple SINK_TUPLE;
@@ -305,6 +306,14 @@ public class AccessPathTuple {
 		}
 
 		return sb.toString();
+	}
+
+	public void setTriggerAdditionalFlow(boolean triggerAdditionalFlow) {
+		this.triggerAdditionalFlow = triggerAdditionalFlow;
+	}
+
+	public boolean isTriggerAdditionalFlow() {
+		return triggerAdditionalFlow;
 	}
 
 }

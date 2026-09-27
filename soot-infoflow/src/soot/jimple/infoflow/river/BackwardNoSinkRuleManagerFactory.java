@@ -50,6 +50,7 @@ public class BackwardNoSinkRuleManagerFactory implements IPropagationRuleManager
 
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
 			ruleList.add(new BackwardsImplicitFlowRule());
+		ruleList.add(new RiverPropagationRule());
 
 		return new PropagationRuleManager(manager, zeroValue, results, ruleList.toArray(new ITaintPropagationRule[0]));
 	}

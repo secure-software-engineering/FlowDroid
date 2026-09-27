@@ -217,6 +217,12 @@
 						AccessPath="[java.io.OutputStream: byte[] innerArray]"
 						AccessPathTypes="[byte[]]" />
 				</flow>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" BaseType="java.net.URLConnection"
+						AccessPath="[java.net.URLConnection: byte[] bytesWritten]" />
+					<to sourceSinkType="Return" BaseType="java.io.OutputStream"
+						AccessPath="java.io.OutputStream: java.io.OutputStream innerStream]" />
+				</flow>
 			</flows>
 		</method>
 		<method id="int getReadTimeout()">

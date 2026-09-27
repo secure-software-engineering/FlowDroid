@@ -3,18 +3,34 @@
 
 <xs:element name="sinkSources"> 
 	<xs:complexType> 
-	    <xs:sequence>
+	    <xs:choice minOccurs="1" maxOccurs="unbounded">
 	        <xs:element name="category" type="categoryType" minOccurs="1" maxOccurs="unbounded"/>
-	    </xs:sequence>
+	        <xs:element name="defineStereotype" type="stereotypeType" minOccurs="0" maxOccurs="unbounded"/>
+	    </xs:choice>
     </xs:complexType>
 </xs:element>
 
+<xs:complexType name="stereotypeTypeReference">
+	<xs:sequence minOccurs="0" maxOccurs="unbounded">
+	    <xs:any processContents="lax" />
+	</xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+</xs:complexType>
+
+<xs:complexType name="stereotypeType">
+	<xs:sequence minOccurs="0" maxOccurs="unbounded">
+	    <xs:any processContents="lax" />
+	</xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required" />
+    <xs:attribute name="description" type="xs:string" use="optional" />
+</xs:complexType>
 <!-- Help for describing the method for sinkSources -->
 <xs:complexType name="categoryType">
 	<xs:sequence>
 	    <xs:choice minOccurs="1" maxOccurs="unbounded">
 	        <xs:element name="method" type="methodType" />
 	        <xs:element name="field" type="fieldType" />
+	        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
 	    </xs:choice>
 	</xs:sequence>
     <xs:attribute name="id" type="xs:string" use="required" />
@@ -27,6 +43,7 @@
 			<xs:element name="base" type="apElement" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="return" type="apElement" minOccurs="0" maxOccurs="1" />
 			<xs:element name="param" type="apElementWithIndex" minOccurs="0" maxOccurs="unbounded" />
+	        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:choice>
 			<xs:sequence>
@@ -41,6 +58,7 @@
 <xs:complexType name="fieldType">
 	<xs:sequence>
 		<xs:element name="accessPath" type="metaPath" minOccurs="0" maxOccurs="1"/>	
+        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
 	</xs:sequence>
 	<xs:attribute name="signature" type="xs:string" use="required" />
 	<xs:attribute name="description" type="xs:string" use="optional" />
@@ -50,15 +68,18 @@
 	<xs:restriction base="xs:string">
 		<xs:enumeration value="methodCall" />
 		<xs:enumeration value="callback" />
+		<xs:enumeration value="return" />
 	</xs:restriction>
 </xs:simpleType>
 
 <xs:complexType name="apElement">
 	<xs:sequence>
 		<xs:element name="accessPath" type="metaPath" maxOccurs="unbounded"/>
+        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
 	</xs:sequence>
 	<xs:attribute name="type" type="xs:string" use="optional" />
 	<xs:attribute name="description" type="xs:string" use="optional" />
+	<xs:attribute name="triggerAdditionalFlow" type="xs:boolean" use="optional" />
 </xs:complexType>
 								
 <xs:complexType name="apElementWithIndex">
@@ -80,6 +101,7 @@
 <xs:complexType name="metaPath">
     <xs:sequence>
         <xs:element name="pathElement" type="pathElementType" minOccurs="0" maxOccurs="unbounded"/> 
+        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="isSource" type="xs:boolean" default="false"/>
     <xs:attribute name="isSink" type="xs:boolean" default="false"/>
@@ -95,6 +117,30 @@
     </xs:simpleContent>
 </xs:complexType>
 
+<xs:complexType name="valueParam">
+  <xs:simpleContent>
+     <xs:extension base="xs:string">
+      <xs:attribute name="index" type="xs:int" use="required"/>
+	  <xs:attribute name="regex" type="xs:boolean" use="optional" default="false"/>
+	  <xs:attribute name="caseSensitive" type="xs:boolean" use="optional" default="false"/>
+    </xs:extension>
+ </xs:simpleContent>
+
+</xs:complexType>
+
+<xs:complexType name="valueOnPath">
+	<xs:sequence>
+		<xs:choice minOccurs="1" maxOccurs="unbounded">
+			<xs:element name="param" type="valueParam" minOccurs="0" maxOccurs="unbounded" />
+	        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+	</xs:sequence>
+	<xs:attribute name="invocation" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="turnAround">
+	<xs:attribute name="invocation" type="xs:string" use="required"/>
+</xs:complexType>
 <xs:complexType name="additionalFlowConditionType">
 	<xs:sequence>
 		<xs:choice minOccurs="1" maxOccurs="unbounded">
@@ -108,9 +154,23 @@
 					<xs:attribute name="className" type="xs:string" />
 				</xs:complexType>
 			</xs:element>
+	        <xs:element name="valueOnPath" type="valueOnPath" />
+	        <xs:element name="turnAround" type="turnAround" />
+	        <xs:element name="stereotype" type="stereotypeTypeReference" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:choice>
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="excludeClassName">
+				<xs:complexType>
+					<xs:attribute name="className" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:sequence>
 </xs:complexType>
+
+
+
+
 
 
 </xs:schema>

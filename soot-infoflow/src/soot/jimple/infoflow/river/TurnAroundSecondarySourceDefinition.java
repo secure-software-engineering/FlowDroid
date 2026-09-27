@@ -4,13 +4,13 @@ import soot.jimple.infoflow.sourcesSinks.definitions.AbstractSourceSinkDefinitio
 import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 
 /**
- * Special source definition for sources of secondary flows that are also
- * conditional sinks.
+ * This is used as a source to denote a connection from a turnaround sink to a
+ * secondary sink.
  *
- * @author Tim Lange
+ * @author Marc Miltenberger
  */
-public class ConditionalSecondarySourceDefinition extends AbstractSourceSinkDefinition {
-	public static ConditionalSecondarySourceDefinition INSTANCE = new ConditionalSecondarySourceDefinition();
+public class TurnAroundSecondarySourceDefinition extends AbstractSourceSinkDefinition {
+	public static TurnAroundSecondarySourceDefinition INSTANCE = new TurnAroundSecondarySourceDefinition();
 
 	@Override
 	public ISourceSinkDefinition getSourceOnlyDefinition() {

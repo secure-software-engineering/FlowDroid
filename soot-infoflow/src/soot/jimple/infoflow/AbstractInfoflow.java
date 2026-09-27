@@ -126,6 +126,8 @@ import soot.jimple.infoflow.river.IConditionalFlowManager;
 import soot.jimple.infoflow.river.IUsageContextProvider;
 import soot.jimple.infoflow.river.SecondaryFlowGenerator;
 import soot.jimple.infoflow.river.SecondaryFlowListener;
+import soot.jimple.infoflow.river.TurnAroundFlowGenerator;
+import soot.jimple.infoflow.river.TurnAroundFlowListener;
 import soot.jimple.infoflow.solver.DefaultSolverPeerGroup;
 import soot.jimple.infoflow.solver.IInfoflowSolver;
 import soot.jimple.infoflow.solver.ISolverPeerGroup;
@@ -1135,18 +1137,10 @@ public abstract class AbstractInfoflow implements IInfoflow {
 			if (config.getAdditionalFlowsEnabled()) {
 				// Add the SecondaryFlowGenerator to the main forward taint analysis
 				TaintPropagationHandler forwardHandler = forwardProblem.getTaintPropagationHandler();
-				if (forwardHandler != null) {
-					if (forwardHandler instanceof SequentialTaintPropagationHandler) {
-						((SequentialTaintPropagationHandler) forwardHandler).addHandler(new SecondaryFlowGenerator());
-					} else {
-						SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
-						seqTpg.addHandler(forwardHandler);
-						seqTpg.addHandler(new SecondaryFlowGenerator());
-						forwardProblem.setTaintPropagationHandler(seqTpg);
-					}
-				} else {
-					forwardProblem.setTaintPropagationHandler(new SecondaryFlowGenerator());
-				}
+				forwardHandler = SequentialTaintPropagationHandler.concat(forwardHandler, new SecondaryFlowGenerator());
+				forwardHandler = SequentialTaintPropagationHandler.concat(forwardHandler, new SecondaryFlowListener());
+
+				forwardProblem.setTaintPropagationHandler(forwardHandler);
 
 				if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
 					throw new IllegalStateException("Additional Flows enabled but no ConditionalFlowManager in place!");
@@ -1168,7 +1162,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 				memoryWatcher.addSolver((IMemoryBoundedSolver) additionalSolver);
 
 				// Set all handlers to the additional problem
-				additionalProblem.setTaintPropagationHandler(new SecondaryFlowListener());
+				SequentialTaintPropagationHandler seqTpg = new SequentialTaintPropagationHandler();
+				seqTpg.addHandler(new SecondaryFlowListener());
+				seqTpg.addHandler(new TurnAroundFlowGenerator(forwardSolver));
+				seqTpg.addHandler(new TurnAroundFlowListener());
+				additionalProblem.setTaintPropagationHandler(seqTpg);
 				additionalProblem.setTaintWrapper(taintWrapper);
 				additionalNativeCallHandler = new BackwardNativeCallHandler();
 				additionalProblem.setNativeCallHandler(additionalNativeCallHandler);
@@ -1894,6 +1892,11 @@ public abstract class AbstractInfoflow implements IInfoflow {
 						s.addTag(FlowDroidSinkStatement.INSTANCE);
 					if (getConfig().getLogSourcesAndSinks())
 						collectedSinks.add(s);
+					for (ISourceSinkDefinition def : sos.sinkInfo.getDefinitions()) {
+						if (def.getTurnArounds() != null) {
+							sourcesSinks.addTurnArounds(def.getTurnArounds());
+						}
+					}
 					sinkCount++;
 					break;
 				case BOTH:

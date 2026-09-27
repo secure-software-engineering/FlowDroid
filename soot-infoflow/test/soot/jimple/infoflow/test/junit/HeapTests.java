@@ -20,7 +20,11 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import soot.*;
+import soot.RefType;
+import soot.Scene;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Unit;
 import soot.jimple.AssignStmt;
 import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
@@ -36,6 +40,7 @@ import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.entryPointCreators.DefaultEntryPointCreator;
 import soot.jimple.infoflow.entryPointCreators.SequentialEntryPointCreator;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.sourcesSinks.definitions.MethodSourceSinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.manager.ISourceSinkManager;
@@ -1049,7 +1054,8 @@ public abstract class HeapTests extends JUnitTests {
 					if (sCallSite instanceof AssignStmt) {
 						AssignStmt assignStmt = (AssignStmt) sCallSite;
 						if (assignStmt.getRightOp().toString().contains("taintedBySourceSinkManager"))
-							return new SourceInfo(manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
+							return new SourceInfo(
+									manager.getAccessPathFactory().createAccessPath(assignStmt.getLeftOp(), true));
 						else
 							return null;
 					}
@@ -1279,7 +1285,6 @@ public abstract class HeapTests extends JUnitTests {
 		negativeCheckInfoflow(infoflow);
 	}
 
-
 	@Test(timeout = 300000)
 	public void callSiteCreatesAlias() {
 		IInfoflow infoflow = initInfoflow();
@@ -1309,7 +1314,8 @@ public abstract class HeapTests extends JUnitTests {
 			}
 
 			@Override
-			public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing, InfoflowManager manager, FlowFunctionType type) {
+			public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
+					InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 				return false;
 			}
 		});
@@ -1317,7 +1323,6 @@ public abstract class HeapTests extends JUnitTests {
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
 	}
-
 
 	@Test(timeout = 300000)
 	public void testRecursiveAccessPath() {
@@ -1339,8 +1344,8 @@ public abstract class HeapTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest1()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
-				.map(res -> res.getSource().getStmt()).distinct().count());
+		Assert.assertEquals(2,
+				infoflow.getResults().getResultSet().stream().map(res -> res.getSource().getStmt()).distinct().count());
 	}
 
 	@Test(timeout = 300000)
@@ -1353,7 +1358,7 @@ public abstract class HeapTests extends JUnitTests {
 		epoints.add("<soot.jimple.infoflow.test.HeapTestCode: void removeEntailedAbstractionsTest2()>");
 		infoflow.computeInfoflow(appPath, libPath, epoints, sources, sinks);
 		checkInfoflow(infoflow, 1);
-		Assert.assertEquals(2, infoflow.getResults().getResultSet().stream()
-				.map(res -> res.getSource().getStmt()).distinct().count());
+		Assert.assertEquals(2,
+				infoflow.getResults().getResultSet().stream().map(res -> res.getSource().getStmt()).distinct().count());
 	}
 }

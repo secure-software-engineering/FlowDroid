@@ -28,6 +28,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import soot.Scene;
 import soot.jimple.infoflow.collections.data.IndexConstraint;
 import soot.jimple.infoflow.collections.data.KeyConstraint;
 import soot.jimple.infoflow.methodSummary.data.sourceSink.ConstraintType;
@@ -57,7 +58,7 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	/**
-	 * It takes quite a while to create a new XML Input Factory 
+	 * It takes quite a while to create a new XML Input Factory
 	 */
 	private static class CachedFactory {
 		WeakReference<Thread> thread;
@@ -81,8 +82,8 @@ public class SummaryReader extends AbstractXMLReader {
 	private CachedFactory cachedFactory;
 
 	/**
-	 * Reads a summary xml and places the new summaries into the given data object.
-	 * This method closes the reader.
+	 * Reads a summary xml and places the new summaries into the given data object. This
+	 * method closes the reader.
 	 *
 	 * @param reader    The reader from which to read the method summaries
 	 * @param summaries The data object in which to place the summaries
@@ -93,7 +94,7 @@ public class SummaryReader extends AbstractXMLReader {
 			throws XMLStreamException, SummaryXMLException, IOException {
 		XMLStreamReader xmlreader = null;
 		try {
-			//Sadly, the XML Input Factory is not thread safe :/
+			// Sadly, the XML Input Factory is not thread safe :/
 			CachedFactory cachedFact = cachedFactory;
 			if (cachedFact == null || !cachedFact.isValidForThisThread()) {
 				cachedFact = new CachedFactory();
@@ -555,7 +556,10 @@ public class SummaryReader extends AbstractXMLReader {
 		String ap = attributes.get(XMLConstants.ATTRIBUTE_ACCESSPATH);
 		if (ap != null) {
 			if (ap.length() > 3) {
-				String[] res = ap.substring(1, ap.length() - 1).split(",");
+				String apR = ap;
+				if (ap.startsWith("[") && ap.endsWith("]"))
+					apR = ap.substring(1, ap.length() - 1);
+				String[] res = apR.split(",");
 				for (int i = 0; i < res.length; i++) {
 					String curElement = res[i].trim();
 
@@ -578,13 +582,28 @@ public class SummaryReader extends AbstractXMLReader {
 		String ap = attributes.get(XMLConstants.ATTRIBUTE_ACCESSPATHTYPES);
 		if (ap != null) {
 			if (ap.length() > 3) {
-				String[] res = ap.substring(1, ap.length() - 1).split(",");
+				String apR = ap;
+				if (ap.startsWith("[") && ap.endsWith("]"))
+					apR = ap.substring(1, ap.length() - 1);
+				String[] res = apR.split(",");
 				for (int i = 0; i < res.length; i++)
 					res[i] = res[i].trim();
 				return res;
 			}
+			return null;
+		} else {
+			// infer the access path types as default behavior
+			String[] a = getAccessPath(attributes);
+			if (a == null)
+				return null;
+			String[] res = new String[a.length];
+			for (int i = 0; i < res.length; i++) {
+				String subsig = Scene.signatureToSubsignature(a[i]);
+				String fieldType = subsig.substring(0, subsig.indexOf(" "));
+				res[i] = fieldType;
+			}
+			return res;
 		}
-		return null;
 	}
 
 	private boolean isMatchStrict(Map<String, String> attributes) {
@@ -595,6 +614,8 @@ public class SummaryReader extends AbstractXMLReader {
 	}
 
 	private boolean isParameter(Map<String, String> attributes) {
+		if (attributes.get(ATTRIBUTE_FLOWTYPE) == null)
+			System.out.println();
 		return attributes.get(ATTRIBUTE_FLOWTYPE).equals(SourceSinkType.Parameter.toString());
 	}
 
@@ -642,8 +663,8 @@ public class SummaryReader extends AbstractXMLReader {
 	/**
 	 * Sets whether summaries shall be validated after they are read from disk
 	 *
-	 * @param validateSummariesOnRead True if summaries shall be validated after
-	 *                                they are read from disk, otherwise false
+	 * @param validateSummariesOnRead True if summaries shall be validated after they
+	 *                                are read from disk, otherwise false
 	 */
 	public void setValidateSummariesOnRead(boolean validateSummariesOnRead) {
 		this.validateSummariesOnRead = validateSummariesOnRead;

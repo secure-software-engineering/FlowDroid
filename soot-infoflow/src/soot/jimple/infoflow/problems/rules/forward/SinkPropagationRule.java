@@ -185,7 +185,8 @@ public class SinkPropagationRule extends AbstractTaintPropagationRule {
 
 	/**
 	 * Registers a taint result
-	 * @param sinkInfo information about the sink (must not be null)
+	 * 
+	 * @param sinkInfo          information about the sink (must not be null)
 	 * @param abstractionAtSink the abstraction at sink (must not be null)
 	 */
 	protected void registerTaintResult(SinkInfo sinkInfo, AbstractionAtSink abstractionAtSink) {

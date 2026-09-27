@@ -3,6 +3,7 @@ package soot.jimple.infoflow.river;
 import java.util.Set;
 
 import soot.Unit;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
@@ -15,7 +16,7 @@ import soot.jimple.infoflow.problems.rules.PropagationRuleManager;
  * TaintPropagationHandler to record which statements secondary flows reach.
  * Attach to the backward analysis.
  */
-public class SecondaryFlowListener implements TaintPropagationHandler {
+public class TurnAroundFlowListener implements TaintPropagationHandler {
 	private RiverPropagationRule sinkRule = null;
 
 	/**
@@ -50,14 +51,18 @@ public class SecondaryFlowListener implements TaintPropagationHandler {
 		ensureSourcePropagationRule(manager);
 		if (!(manager.getSourceSinkManager() instanceof IConditionalFlowManager))
 			return;
+		if (!Utils.isReadAt(unit, incoming.getAccessPath()))
+			return;
+
 		final IConditionalFlowManager ssm = (IConditionalFlowManager) manager.getSourceSinkManager();
 
 		Stmt stmt = (Stmt) unit;
-		if (ssm.isSecondarySink(stmt)
-				|| manager.getUsageContextProvider().isStatementWithAdditionalInformation(stmt, incoming)) {
+		InvokeExpr inv = stmt.getInvokeExprUnsafe();
+		if (inv != null && ssm.isTurnAroundPoint(inv.getMethod())) {
 			// Record the statement
-			sinkRule.processSecondaryFlowSink(null, incoming, stmt);
+			sinkRule.processTurnAroundSink(null, incoming, stmt);
 		}
+
 	}
 
 	@Override
