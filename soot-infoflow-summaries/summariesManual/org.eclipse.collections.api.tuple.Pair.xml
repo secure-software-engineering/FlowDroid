@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+<summary fileFormatVersion="101">
+	<hierarchy>
+		<interface name="java.lang.Comparable" />
+		<interface name="java.io.Serializable" />
+	</hierarchy>
+	<methods>
+		<method id="java.lang.Object getOne()" ignoreTypes="true">
+			<flows>
+				<flow isAlias="true" typeChecking="false" ignoreTypes="true">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object one]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object getTwo()" ignoreTypes="true">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object two]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.lang.Object swap()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object one]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object two]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object two]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object one]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+		<method id="java.util.Map$Entry toEntry()">
+			<flows>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object one]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map$Entry: java.lang.Object key]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+				<flow isAlias="true" typeChecking="false">
+					<from sourceSinkType="Field"
+						AccessPath="[org.eclipse.collections.api.tuple.Pair: java.lang.Object two]"
+						AccessPathTypes="[java.lang.Object]" />
+					<to sourceSinkType="Field"
+						AccessPath="[java.util.Map$Entry: java.lang.Object value]"
+						AccessPathTypes="[java.lang.Object]" />
+				</flow>
+			</flows>
+		</method>
+	</methods>
+</summary>
