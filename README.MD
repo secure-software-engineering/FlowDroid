@@ -134,7 +134,7 @@ the ``summariesManual`` folder and there is no need to change that.
 
 ## Publications
 
-If you want to read the details on how FlowDroid works, <a href="http://tuprints.ulb.tu-darmstadt.de/5937/">the PhD thesis of
+If you want to read the details on how FlowDroid works, <a href="http://tuprints.ulb.tu-darmstadt.de/5937">the PhD thesis of
 Steven Arzt</a> is a good place to start.
 
 ## Contributing to FlowDroid
