@@ -13,6 +13,7 @@ public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinit
 
 	protected ISourceSinkCategory category;
 	protected Set<SourceSinkCondition> conditions;
+	protected Set<String> turnArounds;
 
 	public AbstractSourceSinkDefinition() {
 	}
@@ -67,8 +68,22 @@ public abstract class AbstractSourceSinkDefinition implements ISourceSinkDefinit
 			if (other.conditions != null)
 				return false;
 		} else if (!conditions.equals(other.conditions))
+			return false;
+		if (turnArounds == null) {
+			if (other.turnArounds != null)
 				return false;
+		} else if (!turnArounds.equals(other.turnArounds))
+			return false;
 		return true;
 	}
 
+	@Override
+	public void setTurnArounds(Set<String> turnArounds) {
+		this.turnArounds = turnArounds;
+	}
+
+	@Override
+	public Set<String> getTurnArounds() {
+		return turnArounds;
+	}
 }

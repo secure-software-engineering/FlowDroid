@@ -323,5 +323,13 @@
 				</flow>
 			</flows>
 		</method>
+		<method id="android.net.Uri$Builder buildUpon()">
+			<flows>
+				<flow isAlias="false" typeChecking="false">
+					<from sourceSinkType="Field" />
+					<to sourceSinkType="Return" />
+				</flow>
+			</flows>
+		</method>
 	</methods>
 </summary>

@@ -69,6 +69,7 @@ import soot.util.MultiMap;
 
 public abstract class BaseSourceSinkManager
 		implements IReversibleSourceSinkManager, IOneSourceAtATimeManager, IConditionalFlowManager {
+
 	private final static String GLOBAL_SIG = "--GLOBAL--";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -110,7 +111,7 @@ public abstract class BaseSourceSinkManager
 	protected MultiMap<SootField, ISourceSinkDefinition> sinkFields;
 	protected MultiMap<Stmt, ISourceSinkDefinition> sinkStatements;
 
-	protected Set<SootMethod> conditionalSinks = new HashSet<>();
+	protected Map<SootMethod, ConditionalSinkInfo> conditionalSinks = new HashMap<>();
 	protected MultiMap<SootMethod, SootClass> conditionalSinkToExcludedClasses = new HashMultiMap<>();
 	protected Set<SootMethod> secondarySinkMethods = new HashSet<>();
 	protected Set<SootClass> secondarySinkClasses = new HashSet<>();
@@ -160,6 +161,8 @@ public abstract class BaseSourceSinkManager
 				}
 
 			});
+
+	private Set<SootMethod> turnArounds;
 
 	/**
 	 * Creates a new instance of the {@link BaseSourceSinkManager} class with either
@@ -840,7 +843,13 @@ public abstract class BaseSourceSinkManager
 		if (m == null || def.getConditions() == null || def.getConditions().isEmpty())
 			return;
 
-		conditionalSinks.add(m);
+		conditionalSinks.compute(m, (key, existing) -> {
+			if (existing == null)
+				existing = new ConditionalSinkInfo(def);
+			else
+				existing.add(def);
+			return existing;
+		});
 		for (SourceSinkCondition cond : def.getConditions()) {
 			conditionalSinkToExcludedClasses.putAll(m, cond.getExcludedClasses());
 			secondarySinkMethods.addAll(cond.getReferencedMethods());
@@ -1083,10 +1092,11 @@ public abstract class BaseSourceSinkManager
 
 	@Override
 	public boolean isSecondarySink(Stmt stmt) {
-		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
+		InvokeExpr inv = stmt.getInvokeExprUnsafe();
+		if (inv == null)
 			return false;
 
-		SootMethod callee = stmt.getInvokeExpr().getMethod();
+		SootMethod callee = inv.getMethod();
 		SootClass dc = callee.getDeclaringClass();
 		if (secondarySinkMethods.contains(callee) || secondarySinkClasses.contains(dc))
 			return true;
@@ -1135,23 +1145,49 @@ public abstract class BaseSourceSinkManager
 	}
 
 	@Override
-	public boolean isConditionalSink(Stmt stmt, SootClass baseClass) {
+	public ConditionalSinkInfo getConditionalSinkInfo(Stmt stmt, SootClass baseClass) {
 		// River only supports InstanceInvokeExprs
 		if (!stmt.containsInvokeExpr() || !(stmt.getInvokeExpr() instanceof InstanceInvokeExpr))
-			return false;
+			return null;
 
 		// Check if we have a direct hit
 		SootMethod callee = stmt.getInvokeExpr().getMethod();
-		if (conditionalSinks.contains(callee))
-			return !isExcludedInCondition(callee, baseClass);
+		ConditionalSinkInfo info = conditionalSinks.get(callee);
+		if (info != null && !isExcludedInCondition(callee, baseClass)) {
+			return info;
+		}
 
 		// Check if the current method inherits from a conditional sink
 		for (SootClass sc : parentClassesAndInterfaces.getUnchecked(callee.getDeclaringClass())) {
 			SootMethod superMethod = sc.getMethodUnsafe(callee.getSubSignature());
-			if (conditionalSinks.contains(superMethod))
-				return !isExcludedInCondition(superMethod, baseClass);
+			info = conditionalSinks.get(superMethod);
+			if (info != null && !isExcludedInCondition(superMethod, baseClass)) {
+				return info;
+			}
 		}
 
-		return false;
+		return null;
 	}
+
+	@Override
+	public boolean isTurnAroundPoint(SootMethod method) {
+		Set<SootMethod> ta = this.turnArounds;
+		if (ta == null)
+			return false;
+		return ta.contains(method);
+	}
+
+	@Override
+	public void addTurnArounds(Set<String> turnArounds) {
+		if (this.turnArounds == null) {
+			this.turnArounds = new HashSet<>(turnArounds.size());
+		}
+		for (String ta : turnArounds) {
+			SootMethod m = Scene.v().grabMethod("<" + ta + ">");
+			if (m != null) {
+				this.turnArounds.add(m);
+			}
+		}
+	}
+
 }

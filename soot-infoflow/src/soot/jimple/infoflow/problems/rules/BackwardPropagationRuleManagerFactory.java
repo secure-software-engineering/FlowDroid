@@ -16,6 +16,7 @@ import soot.jimple.infoflow.problems.rules.backward.BackwardsStrongUpdatePropaga
 import soot.jimple.infoflow.problems.rules.backward.BackwardsWrapperRule;
 import soot.jimple.infoflow.problems.rules.forward.SkipSystemClassRule;
 import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagationRule;
+import soot.jimple.infoflow.river.RiverPropagationRule;
 
 /**
  * Backward implementation of the {@link IPropagationRuleManagerFactory} class
@@ -49,6 +50,8 @@ public class BackwardPropagationRuleManagerFactory implements IPropagationRuleMa
 
 		if (manager.getConfig().getImplicitFlowMode().trackControlFlowDependencies())
 			ruleList.add(BackwardsImplicitFlowRule.class);
+		if (manager.getConfig().getAdditionalFlowsEnabled())
+			ruleList.add(RiverPropagationRule.class);
 
 		return new PropagationRuleManager(manager, zeroValue, results, ruleList);
 	}

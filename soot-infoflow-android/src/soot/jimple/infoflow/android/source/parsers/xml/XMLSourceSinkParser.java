@@ -212,13 +212,17 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 		return null;
 	}
 
+	@Override
 	protected ISourceSinkDefinition createMethodSourceSinkDefinition(AbstractMethodAndClass method,
 			Set<AccessPathTuple> baseAPs, Set<AccessPathTuple>[] paramAPs, Set<AccessPathTuple> returnAPs,
-			CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions) {
+			CallType callType, ISourceSinkCategory category, Set<SourceSinkCondition> conditions,
+			Set<String> turnAround) {
 		ISourceSinkDefinition ssdef = createMethodSourceSinkDefinition(method, baseAPs, paramAPs, returnAPs, callType,
 				category);
 		if (ssdef != null)
 			ssdef.setConditions(conditions);
+		if (turnAround != null)
+			ssdef.setTurnArounds(turnAround);
 		return ssdef;
 	}
 
@@ -253,7 +257,7 @@ public class XMLSourceSinkParser extends AbstractXMLSourceSinkParser implements 
 	@Override
 	protected void runParse(SAXParser parser, InputStream stream) {
 		try {
-			parser.parse(stream, new SAXHandler(this.categoryFilter));
+			parser.parse(stream, new PreprocessorHandler(new SAXHandler(this.categoryFilter)));
 		} catch (SAXException | IOException e) {
 			e.printStackTrace();
 		}

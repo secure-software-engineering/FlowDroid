@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.SootMethodAndClass;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
@@ -25,10 +26,11 @@ public abstract class SourceSinkCondition {
 	 *
 	 * @param result  The data flow result
 	 * @param results All results of this data flow analysis
+	 * @param manager The infoflow manager
 	 * @return True if the given data flow result matches the condition, otherwise
 	 *         false
 	 */
-	public abstract boolean evaluate(DataFlowResult result, InfoflowResults results);
+	public abstract boolean evaluate(DataFlowResult result, InfoflowResults results, InfoflowManager manager);
 
 	/**
 	 * Gets all methods referenced by this condition

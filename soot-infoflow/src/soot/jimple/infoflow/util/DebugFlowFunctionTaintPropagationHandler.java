@@ -7,6 +7,7 @@ import soot.Unit;
 import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.Abstraction;
 import soot.jimple.infoflow.handlers.TaintPropagationHandler;
+import soot.jimple.infoflow.problems.TaintPropagationResults;
 
 /**
  * Prints all propagations to stdout. Useful to debug small test cases.
@@ -56,7 +57,7 @@ public class DebugFlowFunctionTaintPropagationHandler implements TaintPropagatio
 
 	@Override
 	public boolean notifyFlowOut(Unit stmt, Abstraction d1, Abstraction incoming, Set<Abstraction> outgoing,
-			InfoflowManager manager, FlowFunctionType type) {
+			InfoflowManager manager, TaintPropagationResults results, FlowFunctionType type) {
 		if (this.filter != null && !this.filter.evaluate(manager.getICFG().getMethodOf(stmt).toString()))
 			return false;
 

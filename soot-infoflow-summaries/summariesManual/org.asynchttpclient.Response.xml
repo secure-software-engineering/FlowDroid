@@ -5,8 +5,7 @@
 			<flows>
 				<flow isAlias="false" typeChecking="false">
 					<from sourceSinkType="Field"
-						AccessPath="[org.asynchttpclient.Response: byte[] bytes]"
-						AccessPathTypes="[byte[]]" />
+						AccessPath="org.asynchttpclient.Response: byte[] bytes" />
 					<to sourceSinkType="Return" />
 				</flow>
 			</flows>

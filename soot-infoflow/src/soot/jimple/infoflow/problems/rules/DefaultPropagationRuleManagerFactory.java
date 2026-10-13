@@ -20,6 +20,7 @@ import soot.jimple.infoflow.problems.rules.forward.StopAfterFirstKFlowsPropagati
 import soot.jimple.infoflow.problems.rules.forward.StrongUpdatePropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.TypingPropagationRule;
 import soot.jimple.infoflow.problems.rules.forward.WrapperPropagationRule;
+import soot.jimple.infoflow.river.RiverPropagationRule;
 
 /**
  * Default implementation of the {@link IPropagationRuleManagerFactory} class
@@ -62,6 +63,8 @@ public class DefaultPropagationRuleManagerFactory implements IPropagationRuleMan
 		ruleList.add(SkipSystemClassRule.class);
 		if (manager.getConfig().getStopAfterFirstKFlows() > 0)
 			ruleList.add(StopAfterFirstKFlowsPropagationRule.class);
+		if (manager.getConfig().getAdditionalFlowsEnabled())
+			ruleList.add(RiverPropagationRule.class);
 
 		return new PropagationRuleManager(manager, zeroValue, results, ruleList);
 	}

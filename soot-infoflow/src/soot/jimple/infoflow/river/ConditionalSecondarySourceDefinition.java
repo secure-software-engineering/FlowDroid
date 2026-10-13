@@ -12,10 +12,6 @@ import soot.jimple.infoflow.sourcesSinks.definitions.ISourceSinkDefinition;
 public class ConditionalSecondarySourceDefinition extends AbstractSourceSinkDefinition {
 	public static ConditionalSecondarySourceDefinition INSTANCE = new ConditionalSecondarySourceDefinition();
 
-	private ConditionalSecondarySourceDefinition() {
-		//
-	}
-
 	@Override
 	public ISourceSinkDefinition getSourceOnlyDefinition() {
 		return null;

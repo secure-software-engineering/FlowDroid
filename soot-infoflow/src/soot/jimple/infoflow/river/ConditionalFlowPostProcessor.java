@@ -43,7 +43,7 @@ public class ConditionalFlowPostProcessor implements PostAnalysisHandler {
 			// One of the conditions must match. Within both, a class name and a signature
 			// must match.
 			if (conditions != null && !conditions.isEmpty()
-					&& conditions.stream().noneMatch(cond -> cond.evaluate(dfRes, results)))
+					&& conditions.stream().noneMatch(cond -> cond.evaluate(dfRes, results, manager)))
 				tbr.add(dfRes.getSink());
 		}
 

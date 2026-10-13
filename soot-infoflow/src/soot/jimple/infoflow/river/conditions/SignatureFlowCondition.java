@@ -1,34 +1,51 @@
 package soot.jimple.infoflow.river.conditions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import heros.solver.Pair;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
+import soot.Value;
+import soot.jimple.ClassConstant;
+import soot.jimple.Constant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.NumericConstant;
 import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.jimple.infoflow.InfoflowManager;
 import soot.jimple.infoflow.data.SootMethodAndClass;
+import soot.jimple.infoflow.data.ValueOnPath;
+import soot.jimple.infoflow.data.ValueOnPath.Parameter;
 import soot.jimple.infoflow.results.DataFlowResult;
 import soot.jimple.infoflow.results.InfoflowResults;
 import soot.jimple.infoflow.results.ResultSinkInfo;
 import soot.jimple.infoflow.results.ResultSourceInfo;
 import soot.jimple.infoflow.river.ConditionalSecondarySourceDefinition;
+import soot.jimple.infoflow.river.TurnAroundSecondarySinkDefinition;
 import soot.jimple.infoflow.sourcesSinks.definitions.SourceSinkCondition;
 import soot.jimple.infoflow.util.SootMethodRepresentationParser;
+import soot.util.HashMultiMap;
 import soot.util.MultiMap;
 
 /**
- * A condition that checks additional data flow to see whether a source or sink
- * is valid or not based on classes and methods on the secondary data flow
+ * A condition that checks additional data flow to see whether a source or sink is valid
+ * or not based on classes and methods on the secondary data flow
  *
  * @author Steven Arzt
  *
  */
 public class SignatureFlowCondition extends SourceSinkCondition {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Set<String> classNamesOnPath;
 	private final Set<String> signaturesOnPath;
@@ -37,25 +54,35 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	private Set<SootMethod> methodsOnPath = null;
 	private Set<SootClass> classesOnPath = null;
 	private Set<SootClass> excludedClasses = null;
+	private Set<ValueOnPath> valuesOnPath = null;
 
 	/**
 	 * Create a new additional flow condition
 	 *
 	 * @param classNamesOnPath   class names that have to be on the path
 	 * @param signaturesOnPath   signatures that have to be on the path
-	 * @param excludedClassNames class names of primary sinks that should be
-	 *                           filtered without context, e.g.
-	 *                           ByteArrayOutputStream for OutputStream
+	 * @param valuesOnPath       values that have to be on path
+	 * @param excludedClassNames class names of primary sinks that should be filtered
+	 *                           without context, e.g. ByteArrayOutputStream for
+	 *                           OutputStream
 	 */
 	public SignatureFlowCondition(Set<String> classNamesOnPath, Set<String> signaturesOnPath,
-			Set<String> excludedClassNames) {
+			Set<ValueOnPath> valuesOnPath, Set<String> excludedClassNames) {
 		this.classNamesOnPath = classNamesOnPath;
 		this.signaturesOnPath = signaturesOnPath;
+		this.valuesOnPath = valuesOnPath;
 		this.excludedClassNames = excludedClassNames;
+		if (valuesOnPath != null) {
+			for (ValueOnPath v : valuesOnPath) {
+				if (signaturesOnPath == null)
+					signaturesOnPath = new HashSet<>();
+				signaturesOnPath.add(v.getInvocation());
+			}
+		}
 	}
 
 	@Override
-	public boolean evaluate(DataFlowResult result, InfoflowResults results) {
+	public boolean evaluate(DataFlowResult result, InfoflowResults results, InfoflowManager manager) {
 		// If we have nothing to check, we accept everything
 		if (isEmpty())
 			return true;
@@ -75,35 +102,28 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 		// Because we injected the taint in the SecondaryFlowGenerator with a
 		// SecondarySinkDefinition,
 		// if there is a flow containing the sink, it is always also in the MultiMap.
-		Pair<Set<String>, Set<String>> flows = getSignaturesAndClassNamesReachedFromSink(additionalResults, sinkStmt);
-		ensureSootMethodsOnPath();
-		boolean sigMatch = signaturesOnPath == null || signaturesOnPath.isEmpty()
-				|| flows.getO1().stream().anyMatch(this::signatureMatches);
-		ensureSootClassesOnPath();
-		boolean classMatch = classesOnPath == null || classesOnPath.isEmpty()
-				|| flows.getO2().stream().anyMatch(c -> this.classMatches(c, classesOnPath));
 
-		return sigMatch && classMatch;
+		return checkConditions(result, additionalResults, sinkStmt, manager);
 	}
 
-	private boolean signatureMatches(String sig) {
+	private boolean signatureMatches(String sig, Set<SootMethod> methodsCheck) {
 		SootMethod sm = Scene.v().grabMethod(sig);
 		if (sm == null)
 			return false;
 
-		if (methodsOnPath.contains(sm))
+		if (methodsCheck.contains(sm))
 			return true;
 
 		for (SootClass ifc : sm.getDeclaringClass().getInterfaces()) {
 			SootMethod superMethod = ifc.getMethodUnsafe(sm.getSubSignature());
-			if (superMethod != null && methodsOnPath.contains(superMethod))
+			if (superMethod != null && methodsCheck.contains(superMethod))
 				return true;
 		}
 
 		SootClass superClass = sm.getDeclaringClass().getSuperclassUnsafe();
 		while (superClass != null) {
 			SootMethod superMethod = superClass.getMethodUnsafe(sm.getSubSignature());
-			if (superMethod != null && methodsOnPath.contains(superMethod))
+			if (superMethod != null && methodsCheck.contains(superMethod))
 				return true;
 			superClass = superClass.getSuperclassUnsafe();
 		}
@@ -179,8 +199,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	}
 
 	/**
-	 * Ensures that the set of Soot methods on the data flow path has been
-	 * initialized
+	 * Ensures that the set of Soot methods on the data flow path has been initialized
 	 */
 	private void ensureSootMethodsOnPath() {
 		if (methodsOnPath == null) {
@@ -196,8 +215,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	}
 
 	/**
-	 * Ensures that the set of Soot classeson the data flow path has been
-	 * initialized
+	 * Ensures that the set of Soot classeson the data flow path has been initialized
 	 */
 	private void ensureSootClassesOnPath() {
 		if (classesOnPath == null)
@@ -225,29 +243,70 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	}
 
 	/**
-	 * Retrieves the signatures and classes that can be reached from the primary
-	 * sink/secondary source
+	 * Checks the conditions
+	 * 
+	 * @param result
 	 *
 	 * @param additionalResults MultiMap containing the additional results
 	 * @param primarySinkStmt   Sink of interest
-	 * @return A list of all callee signatures and a list of declaring classes on
-	 *         the path from the sink on
+	 * @param manager
+	 * @return true if the conditions matched
 	 */
-	private Pair<Set<String>, Set<String>> getSignaturesAndClassNamesReachedFromSink(
-			MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults, Stmt primarySinkStmt) {
+	protected boolean checkConditions(DataFlowResult result,
+			MultiMap<ResultSinkInfo, ResultSourceInfo> additionalResults, Stmt primarySinkStmt,
+			InfoflowManager manager) {
 		Set<String> sigSet = new HashSet<>();
 		Set<String> classSet = new HashSet<>();
+		MultiMap<ValueOnPath, Stmt> valueStmtMap = new HashMultiMap<>();
+
+		List<Pair<ResultSourceInfo, ResultSinkInfo>> turnAroundFlows = new ArrayList<>();
+		for (ResultSinkInfo secondarySinkInfo : additionalResults.keySet()) {
+			for (ResultSourceInfo secondarySourceInfo : additionalResults.get(secondarySinkInfo)) {
+				if (secondarySourceInfo.getDefinition() instanceof TurnAroundSecondarySinkDefinition) {
+					turnAroundFlows.add(new Pair<>(secondarySourceInfo, secondarySinkInfo));
+				}
+
+			}
+		}
 
 		for (ResultSinkInfo secondarySinkInfo : additionalResults.keySet()) {
 			for (ResultSourceInfo secondarySourceInfo : additionalResults.get(secondarySinkInfo)) {
+				if (!(secondarySourceInfo.getDefinition() instanceof ConditionalSecondarySourceDefinition))
+					continue;
 				// Match secondary source with primary sink of interest
-				if (secondarySourceInfo.getStmt() == primarySinkStmt
-						&& secondarySourceInfo.getDefinition() instanceof ConditionalSecondarySourceDefinition) {
+				boolean matchesStmt = secondarySourceInfo.getStmt() == primarySinkStmt;
+				boolean hasTurnAround = false;
+				Stmt valueStmt = secondarySinkInfo.getStmt();
+				if (!matchesStmt) {
+					hasTurnAround = secondarySinkInfo.getDefinition() instanceof TurnAroundSecondarySinkDefinition;
+					if (hasTurnAround) {
+						valueStmt = null;
+						Stmt stmt = secondarySinkInfo.getStmt();
+						for (Pair<ResultSourceInfo, ResultSinkInfo> ta : turnAroundFlows) {
+							ResultSourceInfo src = ta.getO1();
+							if (src.getStmt() == stmt
+									&& src.getAccessPath().equals(secondarySinkInfo.getAccessPath())) {
+								matchesStmt = true;
+								valueStmt = ta.getO2().getStmt();
+								if (valueStmt.containsInvokeExpr()) {
+									SootMethod callee = valueStmt.getInvokeExpr().getMethod();
+									sigSet.add(callee.getSignature());
+									classSet.add(callee.getDeclaringClass().getName());
+								}
+								break;
+							}
+						}
+					}
+				}
+				if (matchesStmt) {
 					if (secondarySourceInfo.getPath() == null) {
 						// Fall back if path reconstruction is not enabled
 						SootMethod callee = secondarySinkInfo.getStmt().getInvokeExpr().getMethod();
 						sigSet.add(callee.getSignature());
 						classSet.add(callee.getDeclaringClass().getName());
+						if (valueStmt != null) {
+							mapValueOnPath(valueStmtMap, valueStmt);
+						}
 					} else {
 						Stmt[] path = secondarySourceInfo.getPath();
 						for (Stmt stmt : path) {
@@ -256,13 +315,82 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 								SootMethod callee = stmt.getInvokeExpr().getMethod();
 								sigSet.add(callee.getSignature());
 								classSet.add(callee.getDeclaringClass().getName());
+								mapValueOnPath(valueStmtMap, stmt);
 							}
 						}
 					}
 				}
 			}
 		}
-		return new Pair<>(sigSet, classSet);
+		boolean sigMatch = signaturesOnPath == null || signaturesOnPath.isEmpty()
+				|| sigSet.stream().anyMatch(c -> this.signatureMatches(c, methodsOnPath));
+		boolean classMatch = classesOnPath == null || classesOnPath.isEmpty()
+				|| classSet.stream().anyMatch(c -> this.classMatches(c, classesOnPath));
+		boolean valuesMatch = valuesOnPath == null || valuesOnPath.isEmpty()
+				|| valuesOnPath.stream().anyMatch(c -> this.valuesMatches(c, valueStmtMap.get(c)));
+		return sigMatch && classMatch && valuesMatch;
+	}
+
+	private void mapValueOnPath(MultiMap<ValueOnPath, Stmt> results, Stmt stmt) {
+		if (valuesOnPath != null) {
+			for (ValueOnPath v : valuesOnPath) {
+				SootMethod m = Scene.v().grabMethod(v.getInvocation());
+
+				if (m != null && signatureMatches(stmt.getInvokeExpr().getMethod().getSignature(),
+						Collections.singleton(m))) {
+					results.put(v, stmt);
+				}
+			}
+		}
+	}
+
+	private boolean valuesMatches(ValueOnPath c, Set<Stmt> stmts) {
+		nextStmt: for (Stmt s : stmts) {
+			InvokeExpr inv = s.getInvokeExpr();
+			// we use AND on the parameters
+			for (Parameter p : c.getParameters()) {
+				int idx = p.getParameterIndex();
+				if (idx < 0 || idx >= inv.getArgCount()) {
+					continue nextStmt;
+				}
+				Value v = inv.getArg(idx);
+				if (v instanceof Constant) {
+					String cmp;
+					if (v instanceof StringConstant)
+						cmp = ((StringConstant) v).value;
+					else if (v instanceof NumericConstant)
+						cmp = String.valueOf(((NumericConstant) v).getNumericValue());
+					else if (v instanceof ClassConstant)
+						cmp = ((ClassConstant) v).getValue();
+					else {
+						logger.warn(String.format("Unsupported constant type %s: %s", v.getType(), v));
+						continue nextStmt;
+					}
+					String vopContent = p.getContentToMatch();
+
+					boolean matched = false;
+					if (p.isRegex()) {
+						matched = p.getRegexMatcher().matcher(cmp).matches();
+					} else {
+						if (!p.isCaseSensitive()) {
+							matched = cmp.equalsIgnoreCase(vopContent);
+						} else {
+							matched = cmp.equals(vopContent);
+						}
+					}
+					if (!matched)
+						continue nextStmt;
+				} else {
+					logger.warn(String.format(
+							"Non-constant used at parameter %d at statement %s in %s, cannot be evaluated", idx,
+							s.toString(), s.getContainingBody().getMethod().getSignature()));
+					continue nextStmt;
+				}
+			}
+			// all matched
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -315,7 +443,7 @@ public class SignatureFlowCondition extends SourceSinkCondition {
 	@Override
 	public String toString() {
 		return "AdditionalFlowCondition: " + "classNamesOnPath=" + classNamesOnPath + ", signaturesOnPath="
-				+ signaturesOnPath + ", excludedClasses=" + excludedClassNames;
+				+ signaturesOnPath + ", excludedClasses=" + excludedClassNames + ", valuesOnPath=" + valuesOnPath;
 	}
 
 	@Override
