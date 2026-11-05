@@ -294,7 +294,7 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 				 * com.google.android.gcm.GCMBroadcastReceiver
 				 */
 				Unit setIntentU = Jimple.v().newAssignStmt(intentV,
-						Jimple.v().newVirtualInvokeExpr(thisLocal, componentExchangeInfo.getIntentMethod.makeRef()));
+						Jimple.v().newInterfaceInvokeExpr(thisLocal, componentExchangeInfo.getIntentMethod.makeRef()));
 
 				setIntentU.addTag(SimulatedCodeElementTag.TAG);
 				units.insertBefore(setIntentU, stmt);
@@ -502,11 +502,15 @@ public abstract class AbstractComponentEntryPointCreator extends AbstractAndroid
 	}
 
 	/**
-	 * Returns a local that will contain a new instance of a given class using an instantiator/factory.
-	 *  
-	 * @param createdClass the class/type that should be created
-	 * @param creatorMethodSubset the subsignature of the factory class that instantiates the desired instance type
-	 * @param values the values to pass on to the <i>creatorMethodSubset</i> method of the factory class
+	 * Returns a local that will contain a new instance of a given class using an
+	 * instantiator/factory.
+	 * 
+	 * @param createdClass        the class/type that should be created
+	 * @param creatorMethodSubset the subsignature of the factory class that
+	 *                            instantiates the desired instance type
+	 * @param values              the values to pass on to the
+	 *                            <i>creatorMethodSubset</i> method of the factory
+	 *                            class
 	 * @return the local (might be new or reused)
 	 */
 	public Local generateInstantiator(SootClass createdClass, String creatorMethodSubset, Value... values) {
