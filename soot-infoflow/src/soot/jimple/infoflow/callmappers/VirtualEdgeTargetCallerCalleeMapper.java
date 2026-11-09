@@ -6,6 +6,7 @@ import soot.MethodSubSignature;
 import soot.RefType;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.infoflow.InfoflowManager;
@@ -77,8 +78,13 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 		VirtualEdgesSummaries summaries = manager.getVirtualEdgeSummaries();
 		if (ie instanceof StaticInvokeExpr)
 			summary = summaries.getVirtualEdgesMatchingFunction(ie.getMethod().getSignature());
-		else
-			summary = summaries.getVirtualEdgesMatchingSubSig(new MethodSubSignature(ie.getMethod().makeRef()));
+		else if (ie instanceof InstanceInvokeExpr) {
+			InstanceInvokeExpr iie = (InstanceInvokeExpr) ie;
+			summary = summaries.getVirtualEdgesMatchingSubSig(iie.getType(),
+					new MethodSubSignature(ie.getMethod().makeRef()));
+		} else {
+			return null;
+		}
 		if (summary != null) {
 			for (VirtualEdgeTarget t : summary.getTargets()) {
 				if (t instanceof InvocationVirtualEdgeTarget) {
