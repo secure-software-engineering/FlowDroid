@@ -965,24 +965,26 @@ public abstract class AbstractInfoflow implements IInfoflow {
 
 	protected void unsplitAllBodies() {
 		for (SootClass sc : Scene.v().getClasses()) {
-			for (SootMethod m : sc.getMethods()) {
-				if (m.hasActiveBody()) {
-					// We could use the local packer here, but we know exactly what was being split
-					// so we can be faster here
-					Body body = m.getActiveBody();
-					Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
-					while (it.hasNext()) {
-						ValueBox box = it.next();
-						Value val = box.getValue();
-						if (val instanceof SplittedLocal) {
-							SplittedLocal l = (SplittedLocal) val;
-							box.setValue(l.getOriginalLocal());
+			if (sc.resolvingLevel() >= SootClass.SIGNATURES) {
+				for (SootMethod m : sc.getMethods()) {
+					if (m.hasActiveBody()) {
+						// We could use the local packer here, but we know exactly what was being split
+						// so we can be faster here
+						Body body = m.getActiveBody();
+						Iterator<ValueBox> it = body.getUseAndDefBoxesIterator();
+						while (it.hasNext()) {
+							ValueBox box = it.next();
+							Value val = box.getValue();
+							if (val instanceof SplittedLocal) {
+								SplittedLocal l = (SplittedLocal) val;
+								box.setValue(l.getOriginalLocal());
+							}
 						}
-					}
-					Iterator<Local> lit = body.getLocals().iterator();
-					while (lit.hasNext()) {
-						if (lit.next() instanceof SplittedLocal) {
-							lit.remove();
+						Iterator<Local> lit = body.getLocals().iterator();
+						while (lit.hasNext()) {
+							if (lit.next() instanceof SplittedLocal) {
+								lit.remove();
+							}
 						}
 					}
 				}

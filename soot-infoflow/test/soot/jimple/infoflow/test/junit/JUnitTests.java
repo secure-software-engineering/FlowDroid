@@ -130,7 +130,7 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 
 	protected void checkInfoflow(IInfoflow infoflow, int resultCount) {
 		checkCodeForNoSplitLocals();
-		//check that there are no splitted locals left
+		// check that there are no splitted locals left
 		if (infoflow.isResultAvailable()) {
 			InfoflowResults map = infoflow.getResults();
 			checkInfoflowResultsForNoSplitLocals(map);
@@ -155,21 +155,23 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 
 	private void checkCodeForNoSplitLocals() {
 		for (SootClass sc : Scene.v().getClasses()) {
-			for (SootMethod m : sc.getMethods()) {
-				if (m.hasActiveBody()) {
-					Body b = m.getActiveBody();
-					for (Local l : b.getLocals()) {
-						if (l instanceof SplittedLocal) {
-							fail(String.format("Found split local in %s: %s", m.getSignature(), l.getName()));
+			if (sc.resolvingLevel() >= SootClass.SIGNATURES) {
+				for (SootMethod m : sc.getMethods()) {
+					if (m.hasActiveBody()) {
+						Body b = m.getActiveBody();
+						for (Local l : b.getLocals()) {
+							if (l instanceof SplittedLocal) {
+								fail(String.format("Found split local in %s: %s", m.getSignature(), l.getName()));
+							}
 						}
-					}
 
-					Iterator<ValueBox> it = b.getUseAndDefBoxesIterator();
-					while (it.hasNext()) {
-						ValueBox vb = it.next();
-						Value v = vb.getValue();
-						if (v instanceof SplittedLocal) {
-							fail(String.format("Found split local in %s: %s", m.getSignature(), v));
+						Iterator<ValueBox> it = b.getUseAndDefBoxesIterator();
+						while (it.hasNext()) {
+							ValueBox vb = it.next();
+							Value v = vb.getValue();
+							if (v instanceof SplittedLocal) {
+								fail(String.format("Found split local in %s: %s", m.getSignature(), v));
+							}
 						}
 					}
 				}
@@ -233,7 +235,7 @@ public abstract class JUnitTests extends AbstractJUnitTests {
 			}
 
 		}
-		//		result.getConfig().setLogSourcesAndSinks(true);
+		// result.getConfig().setLogSourcesAndSinks(true);
 
 		return result;
 	}
