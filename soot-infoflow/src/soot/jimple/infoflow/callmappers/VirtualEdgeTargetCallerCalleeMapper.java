@@ -80,7 +80,7 @@ public class VirtualEdgeTargetCallerCalleeMapper implements ICallerCalleeArgumen
 			summary = summaries.getVirtualEdgesMatchingFunction(ie.getMethod().getSignature());
 		else if (ie instanceof InstanceInvokeExpr) {
 			InstanceInvokeExpr iie = (InstanceInvokeExpr) ie;
-			summary = summaries.getVirtualEdgesMatchingSubSig(iie.getType(),
+			summary = summaries.getVirtualEdgesMatchingSubSig(iie.getBase().getType(),
 					new MethodSubSignature(ie.getMethod().makeRef()));
 		} else {
 			return null;
