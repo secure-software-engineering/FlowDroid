@@ -135,13 +135,13 @@ public class LayoutFileParser extends AbstractResourceParser {
 	 */
 	private void addCallbackMethod(String layoutFile, String callback) {
 		layoutFile = layoutFile.replace("/layout-large/", "/layout/");
-		callbackMethods.put(layoutFile, callback);
-
-		// Recursively process any dependencies we might have collected before
-		// we have processed the target
-		if (includeDependencies.containsKey(layoutFile))
-			for (String target : includeDependencies.get(layoutFile))
-				addCallbackMethod(target, callback);
+		if (callbackMethods.put(layoutFile, callback)) {
+			// Recursively process any dependencies we might have collected before
+			// we have processed the target
+			if (includeDependencies.containsKey(layoutFile))
+				for (String target : includeDependencies.get(layoutFile))
+					addCallbackMethod(target, callback);
+		}
 	}
 
 	/**
@@ -156,13 +156,13 @@ public class LayoutFileParser extends AbstractResourceParser {
 			return;
 
 		layoutFile = layoutFile.replace("/layout-large/", "/layout/");
-		fragments.put(layoutFile, fragment);
-
-		// Recursively process any dependencies we might have collected before
-		// we have processed the target
-		if (includeDependencies.containsKey(layoutFile))
-			for (String target : includeDependencies.get(layoutFile))
-				addFragment(target, fragment);
+		if (fragments.put(layoutFile, fragment)) {
+			// Recursively process any dependencies we might have collected before
+			// we have processed the target
+			if (includeDependencies.containsKey(layoutFile))
+				for (String target : includeDependencies.get(layoutFile))
+					addFragment(target, fragment);
+		}
 	}
 
 	/**

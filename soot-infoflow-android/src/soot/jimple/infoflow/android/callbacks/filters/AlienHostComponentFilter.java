@@ -1,5 +1,6 @@
 package soot.jimple.infoflow.android.callbacks.filters;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import soot.RefType;
@@ -59,6 +60,7 @@ public class AlienHostComponentFilter extends AbstractCallbackFilter {
 		// outer class matches the component
 		{
 			SootClass curHandler = callbackHandler;
+			Set<SootClass> visitedClasses = new HashSet<>();
 			while (curHandler.isInnerClass()) {
 				SootClass outerClass = curHandler.getOuterClass();
 				if (components.contains(outerClass) && !Scene.v().getOrMakeFastHierarchy()
@@ -67,7 +69,7 @@ public class AlienHostComponentFilter extends AbstractCallbackFilter {
 				}
 
 				// Make sure that we don't loop infinitely, even if everything is weird
-				if (curHandler == outerClass)
+				if (!visitedClasses.add(outerClass))
 					break;
 				curHandler = outerClass;
 			}
