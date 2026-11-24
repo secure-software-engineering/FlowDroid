@@ -61,6 +61,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 	protected final static int SPEC_PUBLIC = 0x40000000;
 
+	protected final static int MAX_CHUNK_SIZE = 1 * 1024 * 1024;
+	protected final static int MAX_ENTRY_COUNT = 1000 * 1000;
+
 	/**
 	 * Contains no data
 	 */
@@ -282,6 +285,42 @@ public class ARSCFileParser extends AbstractResourceParser {
 
 	private boolean warnedUnsupportedWeak = false;
 	private boolean warnedUnsupportedCompact = false;
+
+	/**
+	 * Exception that is thrown when a resource inside an ARSC database violates
+	 * reasonable bounds. This exception indicates issues with the ARSC file that
+	 * could otherwise lead to OOM or very long run times. Especially when using the
+	 * ARSC parser on a server, this may indicate an attempted denial-of-service
+	 * attack.
+	 * 
+	 * @author Steven Arzt
+	 */
+	public static class ResourceOutOfBoundsException extends RuntimeException {
+
+		private static final long serialVersionUID = 8324289025422000062L;
+
+		public ResourceOutOfBoundsException() {
+			super();
+		}
+
+		public ResourceOutOfBoundsException(String message, Throwable cause, boolean enableSuppression,
+				boolean writableStackTrace) {
+			super(message, cause, enableSuppression, writableStackTrace);
+		}
+
+		public ResourceOutOfBoundsException(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		public ResourceOutOfBoundsException(String message) {
+			super(message);
+		}
+
+		public ResourceOutOfBoundsException(Throwable cause) {
+			super(cause);
+		}
+
+	}
 
 	public static class ResPackage {
 		private int packageId;
@@ -2145,6 +2184,9 @@ public class ARSCFileParser extends AbstractResourceParser {
 			return;
 
 		// Load the remaining data
+		if (remainingSize < 0 || remainingSize > MAX_CHUNK_SIZE)
+			throw new ResourceOutOfBoundsException(
+					String.format("Remaining buffer size out of bounds (%d bytes)", remainingSize));
 		byte[] remainingData = new byte[remainingSize];
 
 		int totalBytesRead = 0;
@@ -2322,7 +2364,12 @@ public class ARSCFileParser extends AbstractResourceParser {
 								ComplexResource cmpRes = new ComplexResource(resType.typeName);
 								res = cmpRes;
 
-								for (int j = 0; j < ((ResTable_Map_Entry) entry).count; j++) {
+								int entryCount = ((ResTable_Map_Entry) entry).count;
+								if (entryCount > MAX_ENTRY_COUNT)
+									throw new ResourceOutOfBoundsException(
+											String.format("Entry count %d out of bounds", remainingSize));
+
+								for (int j = 0; j < entryCount; j++) {
 									ResTable_Map map = new ResTable_Map();
 									entryOffset = readComplexValue(map, remainingData, entryOffset);
 
@@ -2392,6 +2439,10 @@ public class ARSCFileParser extends AbstractResourceParser {
 				}
 				packageCtr++;
 			}
+
+			// Prevent infinite loop on malformed blocks
+			if (nextChunkHeader.size == 0)
+				break;
 
 			// Skip the block
 			offset = beforeBlock + nextChunkHeader.size;
@@ -2713,7 +2764,7 @@ public class ARSCFileParser extends AbstractResourceParser {
 		}
 		offset += 1;
 
-		//this was reserved before and is now used! 
+		// this was reserved before and is now used!
 		typeSpecTable.typesCount = readUInt16(data, offset);
 		offset += 2;
 
