@@ -55,7 +55,7 @@ public class AndroidLibraryClassPatcher extends LibraryClassPatcher {
 		patchInstantiate(sc, AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATEACTIVITY,
 				getAllNames(AndroidEntryPointConstants.ACTIVITYCLASS));
 		patchInstantiate(sc, AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATEPROVIDER,
-				getAllNames(AndroidEntryPointConstants.BROADCASTRECEIVERCLASS));
+				getAllNames(AndroidEntryPointConstants.CONTENTPROVIDERCLASS));
 		patchInstantiate(sc, AndroidEntryPointConstants.APPCOMPONENTFACTORY_INSTANTIATERECEIVER,
 				getAllNames(AndroidEntryPointConstants.BROADCASTRECEIVERCLASS));
 
